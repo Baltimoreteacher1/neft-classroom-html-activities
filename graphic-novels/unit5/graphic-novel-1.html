@@ -3,21 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>Graphic Novel #1 · Theme Park Engineer: Area Architect</title>
     <style>
       :root {
-        --bg: #070d1f;
-        --ink: #eef3ff;
-        --muted: #9fb0d6;
+        --bg: #0a1228;
+        --ink: #f4f7ff;
+        --muted: #aebbdd;
         --accent: #ff8a3d;
-        --accent2: #5d7bff;
-        --panel: #101e44;
-        --line: #283f73;
+        --accent2: #3da5ff;
+        --panel: #13234d;
+        --line: #2a4378;
         --ok: #39d98a;
         --bad: #ff6b6b;
-        --gold: #ffd166;
-        --bubble: #0e1c40;
-        --bubble-ink: #eef3ff;
+        --bubble: #fffdf7;
+        --bubble-ink: #16213d;
         --font:
           "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
       }
@@ -28,14 +27,10 @@
       }
       html,
       body {
-        background: radial-gradient(
-          900px 600px at 80% -10%,
-          #15265a,
-          var(--bg) 65%
-        );
+        background: var(--bg);
         color: var(--ink);
         font-family: var(--font);
-        line-height: 1.55;
+        line-height: 1.5;
       }
       body {
         min-height: 100vh;
@@ -50,11 +45,12 @@
         color: var(--accent2);
       }
 
+      /* ---- Top bar ---- */
       .topbar {
         position: sticky;
         top: 0;
         z-index: 30;
-        background: rgba(7, 13, 31, 0.96);
+        background: rgba(10, 18, 40, 0.96);
         border-bottom: 1px solid var(--line);
         backdrop-filter: blur(6px);
       }
@@ -86,7 +82,7 @@
         font-weight: 700;
       }
       .title .v {
-        color: var(--accent2);
+        color: var(--accent);
       }
       .progress-wrap {
         flex: 1;
@@ -98,7 +94,7 @@
       .progress {
         flex: 1;
         height: 10px;
-        background: #0a142e;
+        background: #0b1530;
         border: 1px solid var(--line);
         border-radius: 999px;
         overflow: hidden;
@@ -116,6 +112,7 @@
         white-space: nowrap;
       }
 
+      /* ---- Tabs ---- */
       .tabs {
         display: flex;
         gap: 6px;
@@ -124,6 +121,7 @@
         max-width: 1000px;
         margin: 0 auto;
         width: 100%;
+        scrollbar-width: thin;
       }
       .tab {
         flex: 0 0 auto;
@@ -131,7 +129,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #0c1838;
+        background: #0e1c40;
         border: 1px solid var(--line);
         color: var(--muted);
         border-radius: 12px;
@@ -142,8 +140,8 @@
         white-space: nowrap;
       }
       .tab[aria-selected="true"] {
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
         border-color: transparent;
       }
       .tab:focus-visible {
@@ -158,6 +156,7 @@
         font-size: 0.8rem;
       }
 
+      /* ---- Stage ---- */
       main {
         flex: 1;
         width: 100%;
@@ -188,7 +187,7 @@
         border-radius: 18px;
         overflow: hidden;
         border: 1px solid var(--line);
-        background: #0a142e;
+        background: #0b1530;
         aspect-ratio: 16/9;
       }
       .art img {
@@ -204,15 +203,16 @@
         margin-bottom: 10px;
       }
       .scene-head h2 {
-        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+        font-size: clamp(1.2rem, 3.5vw, 1.7rem);
       }
       .scene-head .act {
         font-size: 0.75rem;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: var(--accent2);
+        color: var(--accent);
       }
 
+      /* ---- Dialogue ---- */
       .dialogue {
         margin-top: 14px;
         min-height: 96px;
@@ -220,26 +220,36 @@
       .bubble {
         background: var(--bubble);
         color: var(--bubble-ink);
-        border: 1px solid var(--line);
         border-radius: 16px;
         padding: 14px 16px;
+        position: relative;
         box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
         animation: fade 0.25s ease;
       }
       .bubble .who {
         font-weight: 800;
-        color: var(--accent);
+        color: #c2461d;
         font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 4px;
       }
       .bubble .en {
-        font-size: 1.06rem;
+        font-size: 1.05rem;
+      }
+      .bubble .es {
+        font-size: 0.92rem;
+        color: #566677;
+        margin-top: 6px;
+        font-style: italic;
       }
       .bubble.caption {
-        background: #0a142e;
-        border-style: dashed;
+        background: #0e1c40;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .bubble.caption .es {
+        color: var(--muted);
       }
       .dlg-row {
         display: flex;
@@ -257,15 +267,15 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #283f73;
+        background: #2a4378;
       }
       .dots i.on {
-        background: var(--accent2);
+        background: var(--accent);
       }
       .next {
         min-height: 44px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #5d7bff);
+        color: #02112a;
         border: none;
         border-radius: 12px;
         padding: 10px 18px;
@@ -277,10 +287,15 @@
         outline: 3px solid #fff;
         outline-offset: 2px;
       }
+      .next[disabled] {
+        opacity: 0.4;
+        cursor: default;
+      }
 
+      /* ---- Challenge / choice ---- */
       .challenge {
         margin-top: 16px;
-        background: #0c1838;
+        background: #0e1c40;
         border: 1px solid var(--line);
         border-radius: 16px;
         padding: 16px;
@@ -288,31 +303,52 @@
       .challenge h3 {
         font-size: 1.05rem;
         margin-bottom: 4px;
-        color: var(--accent2);
+        color: var(--accent);
       }
       .challenge .prompt {
         font-size: 1.05rem;
         margin-bottom: 6px;
       }
-      .challenge.bonus {
-        border-color: var(--gold);
-        background: #1c1606;
-        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      .challenge .prompt .es {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 4px;
       }
-      .challenge.bonus h3 {
-        color: var(--gold);
+      .figure {
+        font-family: "Courier New", monospace;
+        white-space: pre;
+        font-size: 0.95rem;
+        line-height: 1.3;
+        color: #bfe;
+        background: #0b1530;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 10px 0;
+        overflow-x: auto;
       }
-      .bonus-tag {
+      .formula {
         display: inline-block;
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #1a1200;
-        background: var(--gold);
-        border-radius: 6px;
-        padding: 3px 8px;
-        font-weight: 800;
-        margin-bottom: 6px;
+        font-family: "Courier New", monospace;
+        background: #11264f;
+        border: 1px solid var(--accent2);
+        border-radius: 8px;
+        padding: 2px 8px;
+        color: #cfe7ff;
+      }
+      .hint {
+        font-size: 0.9rem;
+        color: #ffd9b3;
+        background: #3a2410;
+        border: 1px solid #7a4d1f;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin: 8px 0;
+      }
+      .hint b {
+        color: var(--accent);
       }
       .choices {
         display: grid;
@@ -322,7 +358,7 @@
       .choice {
         min-height: 48px;
         text-align: left;
-        background: #101e44;
+        background: #13234d;
         border: 2px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -346,15 +382,6 @@
         border-color: var(--bad);
         background: #3a1414;
       }
-      .choice .tree {
-        font-family: "Courier New", monospace;
-        white-space: pre;
-        font-size: 0.95rem;
-        line-height: 1.35;
-        display: block;
-        margin-top: 4px;
-        color: #9ecbff;
-      }
       .feedback {
         margin-top: 12px;
         border-radius: 12px;
@@ -375,6 +402,27 @@
         background: #3a1414;
         border: 1px solid var(--bad);
         color: #ffd5d5;
+      }
+      .feedback .es {
+        display: block;
+        font-style: italic;
+        color: #9fd;
+        opacity: 0.85;
+        margin-top: 4px;
+        font-size: 0.9rem;
+      }
+
+      .frame {
+        margin-top: 12px;
+        font-size: 0.92rem;
+        color: var(--muted);
+        background: #0b1530;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .frame b {
+        color: var(--accent2);
       }
 
       .scene-foot {
@@ -405,25 +453,27 @@
         outline-offset: 2px;
       }
 
+      /* ---- Cover ---- */
       .cover-card {
         text-align: center;
       }
       .cover-card .art {
+        aspect-ratio: 16/9;
         margin-bottom: 16px;
       }
       .cover-card h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
       }
       .cover-card p {
         color: var(--muted);
-        max-width: 660px;
+        max-width: 620px;
         margin: 10px auto;
       }
       .start {
         min-height: 52px;
         margin-top: 8px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
         border: none;
         border-radius: 14px;
         padding: 14px 28px;
@@ -441,19 +491,20 @@
         font-size: 0.8rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #02112a;
+        background: var(--accent2);
         border-radius: 999px;
         padding: 5px 14px;
         font-weight: 700;
       }
 
+      /* ---- Glossary ---- */
       .gloss {
         display: grid;
         gap: 12px;
       }
       .term {
-        background: #0c1838;
+        background: #0e1c40;
         border: 1px solid var(--line);
         border-radius: 14px;
         padding: 14px 16px;
@@ -468,11 +519,17 @@
       .term h3 {
         font-size: 1.1rem;
       }
+      .term .es-term {
+        color: var(--accent2);
+        font-size: 0.9rem;
+        font-style: italic;
+      }
       .term p {
         color: var(--muted);
         margin-top: 4px;
       }
 
+      /* ---- Mission complete ---- */
       .complete {
         text-align: center;
         display: none;
@@ -484,8 +541,8 @@
         margin-bottom: 16px;
       }
       .complete h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
-        color: var(--accent2);
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        color: var(--accent);
       }
       .badge-done {
         display: inline-block;
@@ -495,7 +552,7 @@
       .restart {
         min-height: 48px;
         margin-top: 14px;
-        background: #0c1838;
+        background: #0e1c40;
         border: 1px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -514,6 +571,9 @@
       }
 
       @media (max-width: 480px) {
+        .topbar-inner {
+          gap: 8px;
+        }
         .title {
           font-size: 0.9rem;
           flex: 1 1 100%;
@@ -526,7 +586,7 @@
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
         <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
+          ><span class="v">#1</span> Theme Park Engineer: Area Architect</span
         >
         <div class="progress-wrap">
           <div
@@ -559,7 +619,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: The Slanted Plaza
         </button>
         <button
           class="tab locked"
@@ -568,7 +628,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: Signs &amp; Stages
         </button>
         <button
           class="tab locked"
@@ -577,7 +637,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Final Build
         </button>
         <button
           class="tab"
@@ -592,7 +652,7 @@
     </div>
 
     <main>
-      <!-- COVER -->
+      <!-- ============ COVER ============ -->
       <section
         class="scene active cover-card"
         id="scene-cover"
@@ -601,23 +661,28 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit5/cover.png"
+            alt="A young engineer named Maya stands on a hill looking at a glowing futuristic amusement park at sunset"
           />
         </div>
-        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
+        <h2>Theme Park Engineer: Area Architect &#127906;</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          You are <b>Maya</b>, a young theme park engineer. You will build a
+          futuristic park! Each ride opens when you find the correct
+          <b>area</b>. Area is the space inside a shape. Let&rsquo;s build!
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <p style="font-size: 0.92rem">
+          <i
+            >Eres Maya, una joven ingeniera. Vas a construir un parque. Cada
+            juego se abre cuando encuentras el &aacute;rea (el espacio dentro de
+            una figura).</i
+          >
+        </p>
+        <button class="start" id="start-btn">Start Building &#127906;</button>
       </section>
 
-      <!-- ACT 1 -->
+      <!-- ============ ACT 1 ============ -->
       <section
         class="scene"
         id="scene-act1"
@@ -625,14 +690,14 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act">Act 1 &middot; Area of Parallelograms</span>
+          <h2>The Slanted Plaza</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit5/design-plaza.png"
+            alt="Maya designs a slanted parallelogram-shaped entry plaza on a glowing holographic table"
           />
         </div>
 
@@ -642,99 +707,85 @@
           <button class="next" id="next-act1">Next &#9654;</button>
         </div>
 
+        <!-- Challenge 1a: area of a parallelogram -->
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>&#127959;&#65039; Build #1 &mdash; The Welcome Plaza</h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            The entry plaza is a <b>parallelogram</b>. A parallelogram is a
+            slanted box. To find its area, use
+            <span class="formula">A = b &times; h</span> (base times height).
+            The base is <b>12 m</b> and the height is <b>5 m</b>. What is the
+            area?
+            <span class="es"
+              >&Aacute;rea de un paralelogramo = base &times; altura. Base = 12,
+              altura = 5.</span
+            >
           </p>
+          <div class="figure">
+            _________________ / / / b = 12 / h = 5 / / /________________/
+          </div>
+          <div class="hint">
+            &#128161; <b>Hint:</b> Use the <b>height</b> (the straight-up
+            distance, 5), NOT the slanted side. Multiply: 12 &times; 5.
+          </div>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
-              >
+              17 m&sup2; &nbsp;(that is 12 + 5, not times)
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
+              60 m&sup2; &nbsp;(12 &times; 5)
             </button>
             <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
-              >
+              30 m&sup2; &nbsp;(that is &frac12; &times; 12 &times; 5)
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
+        <!-- Challenge 1b: second parallelogram -->
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>&#127959;&#65039; Build #2 &mdash; The Walkway</h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            Now build a slanted walkway. It is also a <b>parallelogram</b> with
+            base <b>8 m</b> and height <b>4 m</b>. Use
+            <span class="formula">A = b &times; h</span> again. What is the
+            area?
+            <span class="es"
+              >Base = 8, altura = 4. &Aacute;rea = b &times; h.</span
+            >
           </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> 8 &times; 4. Think 8, then double it twice:
+            8, 16, 32.
+          </div>
           <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              12 m&sup2; &nbsp;(that is 8 + 4)
+            </button>
+            <button class="choice" data-correct="false">
+              16 m&sup2; &nbsp;(that is &frac12; &times; 8 &times; 4)
+            </button>
             <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
+              32 m&sup2; &nbsp;(8 &times; 4)
             </button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
-        <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
-          </p>
-          <h3>The Self-Sealing Vault</h3>
-          <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
-          </p>
-          <div class="choices" id="choicesB1">
-            <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
-              >
-            </button>
-            <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
-              >
-            </button>
-          </div>
-          <div class="feedback" id="fbB1"></div>
+        <div class="frame" id="frame1" style="display: none">
+          <b>Sentence frame:</b> &ldquo;The area of a parallelogram is
+          <b>base &times; height</b>. The plaza is ____ &times; ____ = ____
+          square meters.&rdquo;
         </div>
 
         <div class="scene-foot">
           <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
+            Open the plaza &#127881;
           </button>
         </div>
       </section>
 
-      <!-- ACT 2 -->
+      <!-- ============ ACT 2 ============ -->
       <section
         class="scene"
         id="scene-act2"
@@ -742,18 +793,18 @@
         aria-labelledby="tab-act2"
       >
         <div class="locked-note" id="lock-act2">
-          &#128274; Complete Act 1 to unlock Act 2.
+          &#128274; Finish Act 1 first to unlock Act 2.
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act">Act 2 &middot; Triangles &amp; Trapezoids</span>
+            <h2>Signs &amp; Stages</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit5/triangle-trapezoid.png"
+              alt="Maya stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy"
             />
           </div>
 
@@ -763,90 +814,89 @@
             <button class="next" id="next-act2">Next &#9654;</button>
           </div>
 
+          <!-- Challenge 2a: area of a triangle -->
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#128293; Build #3 &mdash; The Triangle Sign</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              The big welcome sign is a <b>triangle</b>. A triangle is half of a
+              box. Use
+              <span class="formula">A = &frac12; &times; b &times; h</span>. The
+              base is <b>10 m</b> and the height is <b>6 m</b>. What is the
+              area?
+              <span class="es"
+                >&Aacute;rea de un tri&aacute;ngulo = &frac12; &times; base
+                &times; altura. Base = 10, altura = 6.</span
+              >
             </p>
+            <div class="figure">/\ / \ h = 6 / \ /______\ b = 10</div>
+            <div class="hint">
+              &#128161; <b>Hint:</b> First multiply 10 &times; 6 = 60. Then take
+              <b>half</b>: 60 &divide; 2 = 30.
+            </div>
             <div class="choices" id="choices2a">
               <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
-                >
+                60 m&sup2; &nbsp;(forgot to take half)
               </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
-                >
+                30 m&sup2; &nbsp;(&frac12; &times; 10 &times; 6)
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
-                >
+                16 m&sup2; &nbsp;(that is 10 + 6)
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
+          <!-- Challenge 2b: area of a trapezoid -->
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>&#127914; Build #4 &mdash; The Stage Canopy</h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              The stage roof is a <b>trapezoid</b> (a shape with two flat
+              parallel sides). Use
+              <span class="formula"
+                >A = &frac12; &times; (b&#8321; + b&#8322;) &times; h</span
+              >. The two parallel sides are <b>6 m</b> and <b>10 m</b>, and the
+              height is <b>4 m</b>. What is the area?
+              <span class="es"
+                >Trapecio: &frac12; &times; (lado1 + lado2) &times; altura.
+                Lados = 6 y 10, altura = 4.</span
+              >
             </p>
+            <div class="figure">____6____ / \ / \ h = 4 /_____________\ 10</div>
+            <div class="hint">
+              &#128161; <b>Hint:</b> First add the two flat sides: 6 + 10 = 16.
+              Then 16 &times; 4 = 64. Then take half: 64 &divide; 2 = 32.
+            </div>
             <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                64 m&sup2; &nbsp;(forgot to take half)
+              </button>
+              <button class="choice" data-correct="false">
+                40 m&sup2; &nbsp;(used only one side, 10 &times; 4)
+              </button>
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
-              </button>
-              <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
-              </button>
-              <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                32 m&sup2; &nbsp;(&frac12; &times; (6 + 10) &times; 4)
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
-          <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Relatively Prime Relay</h3>
-            <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
-            </p>
-            <div class="choices" id="choicesB2">
-              <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
-              </button>
-              <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
-                >
-              </button>
-              <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
-              </button>
-            </div>
-            <div class="feedback" id="fbB2"></div>
+          <div class="frame" id="frame2" style="display: none">
+            <b>Sentence frame:</b> &ldquo;For a triangle I use
+            <b>&frac12; &times; base &times; height</b>. For a trapezoid I add
+            the two parallel sides first: &frac12; &times; (____ + ____) &times;
+            ____ = ____.&rdquo;
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Light up the park &#10024;
             </button>
           </div>
         </div>
       </section>
 
-      <!-- FINAL -->
+      <!-- ============ FINAL ============ -->
       <section
         class="scene"
         id="scene-final"
@@ -854,18 +904,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Finish Act 2 first to unlock the Final Build.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Final Build &middot; Composite Figure</span>
+            <h2>The Grand Pavilion</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit5/composite-challenge.png"
+              alt="Maya faces a giant holographic master blueprint of the whole park made of combined shapes"
             />
           </div>
 
@@ -876,62 +926,54 @@
           </div>
 
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#127914; Final Build &mdash; The Pavilion</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              The grand pavilion is a <b>composite figure</b>: a
+              <b>rectangle</b> base with a <b>triangle</b> roof on top. Find the
+              area of EACH part, then ADD them. <br />Rectangle:
+              <b>10 m</b> wide &times; <b>4 m</b> tall. <br />Triangle roof:
+              base <b>10 m</b>, height <b>6 m</b>.
+              <span class="es"
+                >Figura compuesta: suma el &aacute;rea del rect&aacute;ngulo y
+                la del tri&aacute;ngulo.</span
+              >
             </p>
+            <div class="figure">
+              /\ / \ triangle h = 6 /____\ | | rectangle 10 x 4 |____| 10
+            </div>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Rectangle = 10 &times; 4 = 40. Triangle =
+              &frac12; &times; 10 &times; 6 = 30. Now ADD: 40 + 30.
+            </div>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
+                40 m&sup2; &nbsp;(only the rectangle)
               </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                70 m&sup2; &nbsp;(40 + 30, both parts)
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                100 m&sup2; &nbsp;(forgot to take half of the triangle)
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
-          <div class="challenge bonus" id="bonusF" style="display: none">
-            <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
-            >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Reactor Tessellation</h3>
-            <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
-            </p>
-            <div class="choices" id="choicesBF">
-              <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
-              </button>
-              <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
-              </button>
-              <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
-              </button>
-            </div>
-            <div class="feedback" id="fbBF"></div>
+          <div class="frame" id="frameF" style="display: none">
+            <b>Sentence frame:</b> &ldquo;The rectangle area is ____ and the
+            triangle area is ____. The whole pavilion is ____ + ____ = ____
+            square meters.&rdquo;
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Open the park! &#127881;
             </button>
           </div>
         </div>
       </section>
 
-      <!-- COMPLETE -->
+      <!-- ============ MISSION COMPLETE ============ -->
       <section
         class="scene complete"
         id="scene-complete"
@@ -940,22 +982,29 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit5/grand-opening.png"
+            alt="Maya raises her arms in triumph as the finished theme park glows with rides and fireworks"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#127906;&#11088;</span>
+        <h2>Grand Opening &mdash; Mission Complete!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          You built the whole park! You used
+          <b>A = b &times; h</b> for parallelograms, <b>A = &frac12;bh</b> for
+          triangles, and <b>A = &frac12;(b&#8321;+b&#8322;)h</b> for trapezoids.
+          You even added shapes together for the pavilion. Amazing work,
+          Engineer Maya!
         </p>
-        <button class="restart" id="restart-btn">Run again &#8635;</button>
+        <p style="color: var(--muted); font-size: 0.92rem">
+          <i
+            >&iexcl;Construiste todo el parque! Usaste las f&oacute;rmulas del
+            &aacute;rea. &iexcl;Excelente trabajo!</i
+          >
+        </p>
+        <button class="restart" id="restart-btn">Play again &#8635;</button>
       </section>
 
-      <!-- GLOSSARY -->
+      <!-- ============ GLOSSARY ============ -->
       <section
         class="scene"
         id="scene-gloss"
@@ -964,7 +1013,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Word Bank</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -974,128 +1023,130 @@
       (function () {
         "use strict";
 
+        /* ---------- Dialogue data (English + Spanish support) ---------- */
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "Park AI",
+              en: "Welcome, Engineer Maya! The first building is the entry PLAZA. It is shaped like a slanted box &mdash; a parallelogram.",
+              es: "&iexcl;Bienvenida, ingeniera Maya! El primer edificio es la PLAZA, con forma de paralelogramo (caja inclinada).",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Maya",
+              en: "Cool! To build it, I need its AREA. For a parallelogram, area = base times height.",
+              es: "&iexcl;Genial! Para construirla necesito el &Aacute;REA. Paralelogramo: &aacute;rea = base &times; altura.",
+            },
+            {
+              who: "Park AI",
+              en: "Exactly. Use the height that goes straight up, not the slanted side. Compute the area to pour the floor.",
+              es: "Exacto. Usa la altura recta, no el lado inclinado. Calcula el &aacute;rea para construir el piso.",
+              cap: true,
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
-            },
-          ],
-          bonus1: [
-            {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
-              cap: true,
+              who: "Maya",
+              en: "Plaza floor poured! Now a slanted WALKWAY. It is another parallelogram &mdash; same formula!",
+              es: "&iexcl;Piso listo! Ahora un PASILLO inclinado: otro paralelogramo. &iexcl;Misma f&oacute;rmula!",
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
+              who: "Park AI",
+              en: "Great work! Next, the big welcome SIGN is a triangle, and the stage ROOF is a trapezoid.",
+              es: "&iexcl;Buen trabajo! Ahora el LETRERO es un tri&aacute;ngulo y el TECHO del escenario es un trapecio.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Maya",
+              en: "A triangle is half of a box, so area = one-half times base times height. Let me build the sign!",
+              es: "Un tri&aacute;ngulo es la mitad de una caja: &aacute;rea = &frac12; &times; base &times; altura. &iexcl;A construir el letrero!",
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
-            },
-          ],
-          bonus2: [
-            {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
-              cap: true,
+              who: "Maya",
+              en: "Sign is glowing! Now the trapezoid roof. I add the two flat sides first, then use the half rule.",
+              es: "&iexcl;El letrero brilla! Ahora el techo trapecio: sumo los dos lados planos y luego uso la regla de la mitad.",
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "Park AI",
+              en: "Last build: the GRAND PAVILION. It is a rectangle with a triangle roof &mdash; two shapes joined together.",
+              es: "&Uacute;ltima construcci&oacute;n: el PABELL&Oacute;N. Es un rect&aacute;ngulo con techo triangular: dos figuras juntas.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Maya",
+              en: "I will find each area and ADD them. Rectangle plus triangle. Let's finish the park!",
+              es: "Voy a hallar cada &aacute;rea y SUMARLAS: rect&aacute;ngulo m&aacute;s tri&aacute;ngulo. &iexcl;Terminemos el parque!",
             },
           ],
         };
 
         var GLOSS = [
           {
-            ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
+            ico: "&#128208;",
+            en: "Area",
+            es: "&aacute;rea",
+            def: "The amount of flat space inside a shape. We measure it in square units, like square meters (m&sup2;).",
+          },
+          {
+            ico: "&#9645;",
+            en: "Base (b)",
+            es: "base",
+            def: "The flat bottom side of a shape that we measure along. Example: the bottom of a triangle.",
+          },
+          {
+            ico: "&#8597;",
+            en: "Height (h)",
+            es: "altura",
+            def: "The straight-up distance from the base to the top. It makes a right angle with the base.",
+          },
+          {
+            ico: "&#9647;",
+            en: "Parallelogram",
+            es: "paralelogramo",
+            def: "A slanted four-sided box. Area = base &times; height. Example: 12 &times; 5 = 60.",
+          },
+          {
+            ico: "&#9651;",
+            en: "Triangle",
+            es: "tri&aacute;ngulo",
+            def: "A three-sided shape. It is half of a box. Area = &frac12; &times; base &times; height.",
+          },
+          {
+            ico: "&#9186;",
+            en: "Trapezoid",
+            es: "trapecio",
+            def: "A four-sided shape with two parallel sides. Area = &frac12; &times; (side1 + side2) &times; height.",
+          },
+          {
+            ico: "&#9636;",
+            en: "Rectangle",
+            es: "rect&aacute;ngulo",
+            def: "A box with four right angles. Area = length &times; width.",
           },
           {
             ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
-          },
-          {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
-          },
-          {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
-          },
-          {
-            ico: "&#10094;&#10095;",
-            en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
+            en: "Composite figure",
+            es: "figura compuesta",
+            def: "A big shape made of smaller shapes. Find each area, then add them together.",
           },
           {
             ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
-          },
-          {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
-          },
-          {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
-          },
-          {
-            ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
-          },
-          {
-            ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
-          },
-          {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            en: "Square unit",
+            es: "unidad cuadrada",
+            def: "The unit for area, like a square meter (m&sup2;). It is a square that is 1 unit on each side.",
           },
         ];
 
+        /* ---------- State ---------- */
         var state = { act1: false, act2: false, final: false };
         var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+
         function $(id) {
           return document.getElementById(id);
         }
@@ -1105,6 +1156,7 @@
           );
         }
 
+        /* ---------- Progress ---------- */
         function updateProgress() {
           var done =
             (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
@@ -1115,13 +1167,8 @@
             .querySelector(".progress")
             .setAttribute("aria-valuenow", pct);
         }
-        function setLock(tabId, locked) {
-          var t = $(tabId);
-          t.classList.toggle("locked", locked);
-          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
-          t.innerHTML =
-            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
-        }
+
+        /* ---------- Tab locking ---------- */
         function refreshLocks() {
           setLock("tab-act2", !state.act1);
           setLock("tab-final", !state.act2);
@@ -1130,6 +1177,15 @@
           $("lock-final").classList.toggle("show", !state.act2);
           $("body-final").style.display = state.act2 ? "" : "none";
         }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+
+        /* ---------- Scene switching ---------- */
         function showScene(name) {
           SCENES.forEach(function (s) {
             var sc = $("scene-" + s);
@@ -1149,45 +1205,55 @@
           qa(".tab").forEach(function (t) {
             t.setAttribute("aria-selected", "false");
           });
-          $("scene-complete").classList.add("active", "show");
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
+
         qa(".tab").forEach(function (tab) {
           tab.addEventListener("click", function () {
-            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
           });
           tab.addEventListener("keydown", function (e) {
-            var arr = qa(".tab");
-            var i = arr.indexOf(tab);
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
             if (e.key === "ArrowRight") {
               e.preventDefault();
-              (arr[i + 1] || arr[0]).focus();
+              (tabsArr[i + 1] || tabsArr[0]).focus();
             }
             if (e.key === "ArrowLeft") {
               e.preventDefault();
-              (arr[i - 1] || arr[arr.length - 1]).focus();
+              (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus();
             }
           });
         });
 
+        /* ---------- Dialogue engine ---------- */
         function runDialogue(opts) {
-          var idx = 0,
-            dlgBox = $(opts.dlgId),
+          var idx = 0;
+          var dlgBox = $(opts.dlgId),
             nextBtn = $(opts.nextId),
             dots = $(opts.dotsId);
           dots.innerHTML = "";
           opts.dlg.forEach(function () {
-            dots.appendChild(document.createElement("i"));
+            var i = document.createElement("i");
+            dots.appendChild(i);
           });
           function render() {
             var line = opts.dlg[idx];
             dlgBox.innerHTML =
               '<div class="bubble' +
               (line.cap ? " caption" : "") +
-              '"><div class="who">' +
+              '">' +
+              '<div class="who">' +
               line.who +
-              '</div><div class="en">' +
+              "</div>" +
+              '<div class="en">' +
               line.en +
+              "</div>" +
+              '<div class="es">' +
+              line.es +
               "</div></div>";
             qa("i", dots).forEach(function (d, k) {
               d.classList.toggle("on", k <= idx);
@@ -1201,22 +1267,27 @@
             if (idx < opts.dlg.length - 1) {
               idx++;
               render();
-            } else if (opts.onDone) opts.onDone();
+            } else {
+              if (opts.onDone) opts.onDone();
+            }
           };
           render();
         }
 
+        /* ---------- Choice handler ---------- */
         function wireChoices(opts) {
           var solved = false;
           qa(".choice", $(opts.choicesId)).forEach(function (btn) {
             btn.addEventListener("click", function () {
               if (solved) return;
+              var correct = btn.dataset.correct === "true";
               var fb = $(opts.feedbackId);
-              if (btn.dataset.correct === "true") {
+              if (correct) {
                 solved = true;
                 btn.classList.add("correct");
                 fb.className = "feedback show good";
-                fb.innerHTML = opts.goodEn;
+                fb.innerHTML =
+                  opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
                 qa(".choice", $(opts.choicesId)).forEach(function (b) {
                   b.disabled = true;
                 });
@@ -1225,12 +1296,14 @@
                 btn.classList.add("wrong");
                 btn.disabled = true;
                 fb.className = "feedback show bad";
-                fb.innerHTML = opts.badEn;
+                fb.innerHTML =
+                  opts.badEn + '<span class="es">' + opts.badEs + "</span>";
               }
             });
           });
         }
 
+        /* ---------- Build glossary ---------- */
         (function () {
           var list = $("gloss-list");
           GLOSS.forEach(function (g) {
@@ -1241,31 +1314,23 @@
               g.ico +
               "</div><div><h3>" +
               g.en +
-              "</h3><p>" +
+              ' <span class="es-term">(' +
+              g.es +
+              ")</span></h3><p>" +
               g.def +
               "</p></div>";
             list.appendChild(d);
           });
         })();
 
-        function showBubble(boxId, line) {
-          $(boxId).innerHTML =
-            '<div class="bubble' +
-            (line.cap ? " caption" : "") +
-            '"><div class="who">' +
-            line.who +
-            '</div><div class="en">' +
-            line.en +
-            "</div></div>";
-        }
-
+        /* ---------- ACT 1 flow ---------- */
         function initAct1() {
           runDialogue({
             dlgId: "dlg-act1",
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Build the plaza ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,44 +1344,43 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Yes! A = 12 &times; 5 = 60 m&sup2;. The plaza floor is poured!",
+            goodEs: "&iexcl;S&iacute;! 12 &times; 5 = 60. &iexcl;Plaza lista!",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; Not yet. For a parallelogram, MULTIPLY base &times; height: 12 &times; 5. Use the hint.",
+            badEs:
+              "A&uacute;n no. Paralelogramo: multiplica base &times; altura (12 &times; 5).",
             onSolve: function () {
+              var box = $("dlg-act1");
               setTimeout(function () {
-                showBubble("dlg-act1", DLG.act1b[0]);
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act1b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act1b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act1b[0].es +
+                  "</div></div>";
                 $("chal1b").style.display = "block";
-              }, 450);
+                $("frame1").style.display = "block";
+              }, 500);
             },
           });
           wireChoices({
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; Perfect! A = 8 &times; 4 = 32 m&sup2;. The walkway connects the plaza. PLAZA OPEN!",
+            goodEs: "&iexcl;Perfecto! 8 &times; 4 = 32. &iexcl;Plaza abierta!",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; Close &mdash; for area you MULTIPLY base &times; height: 8 &times; 4. Try again.",
+            badEs: "Multiplica base &times; altura: 8 &times; 4.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
+              $("art-act1").src = "../_art/unit5/parallelogram-build.png";
+              $("art-act1").alt =
+                "Maya watches the glowing slanted plaza floor light up as construction robots finish it";
               $("adv-act1").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act1", DLG.bonus1[0]);
-                $("bonus1").style.display = "block";
-              }, 450);
             },
-          });
-          wireChoices({
-            choicesId: "choicesB1",
-            feedbackId: "fbB1",
-            goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
-            badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1326,13 +1390,14 @@
           });
         }
 
+        /* ---------- ACT 2 flow ---------- */
         function initAct2() {
           runDialogue({
             dlgId: "dlg-act2",
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Build the sign ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,41 +1411,43 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; Yes! &frac12; &times; 10 &times; 6 = 30 m&sup2;. The triangle sign lights up!",
+            goodEs:
+              "&iexcl;S&iacute;! &frac12; &times; 10 &times; 6 = 30. &iexcl;El letrero brilla!",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; Remember the HALF. First 10 &times; 6 = 60, then divide by 2 = 30.",
+            badEs:
+              "Recuerda la MITAD. 10 &times; 6 = 60, luego &divide; 2 = 30.",
             onSolve: function () {
+              var box = $("dlg-act2");
               setTimeout(function () {
-                showBubble("dlg-act2", DLG.act2b[0]);
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act2b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act2b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act2b[0].es +
+                  "</div></div>";
                 $("chal2b").style.display = "block";
-              }, 450);
+                $("frame2").style.display = "block";
+              }, 500);
             },
           });
           wireChoices({
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; Excellent! &frac12; &times; (6 + 10) &times; 4 = &frac12; &times; 64 = 32 m&sup2;. The stage roof is up! PARK LIT!",
+            goodEs:
+              "&iexcl;Excelente! &frac12; &times; (6 + 10) &times; 4 = 32. &iexcl;Techo listo!",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; Add BOTH parallel sides first (6 + 10 = 16), times 4 = 64, then take half = 32.",
+            badEs:
+              "Suma los dos lados (6 + 10 = 16), &times; 4 = 64, mitad = 32.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
               $("adv-act2").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act2", DLG.bonus2[0]);
-                $("bonus2").style.display = "block";
-              }, 450);
             },
-          });
-          wireChoices({
-            choicesId: "choicesB2",
-            feedbackId: "fbB2",
-            goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
-            badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-act2").addEventListener("click", function () {
             state.act2 = true;
@@ -1390,16 +1457,18 @@
           });
         }
 
+        /* ---------- FINAL flow ---------- */
         function initFinal() {
           runDialogue({
             dlgId: "dlg-final",
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Build the pavilion ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
+              $("frameF").style.display = "block";
               $("chalF").scrollIntoView({
                 behavior: "smooth",
                 block: "center",
@@ -1410,26 +1479,15 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; AMAZING! Rectangle 10 &times; 4 = 40, triangle &frac12; &times; 10 &times; 6 = 30, total 40 + 30 = 70 m&sup2;. THE PARK IS COMPLETE!",
+            goodEs:
+              "&iexcl;Incre&iacute;ble! Rect&aacute;ngulo 40 + tri&aacute;ngulo 30 = 70. &iexcl;Parque listo!",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; Find EACH area, then ADD. Rectangle = 10 &times; 4 = 40. Triangle = &frac12; &times; 10 &times; 6 = 30. 40 + 30 = 70.",
+            badEs: "Halla cada &aacute;rea y s&uacute;malas: 40 + 30 = 70.",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
               $("adv-final").classList.add("show");
-              setTimeout(function () {
-                $("bonusF").style.display = "block";
-              }, 300);
             },
-          });
-          wireChoices({
-            choicesId: "choicesBF",
-            feedbackId: "fbBF",
-            goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
-            badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-final").addEventListener("click", function () {
             state.final = true;
@@ -1438,6 +1496,7 @@
           });
         }
 
+        /* ---------- Wire start / restart ---------- */
         $("start-btn").addEventListener("click", function () {
           showScene("act1");
         });
@@ -1445,6 +1504,7 @@
           location.reload();
         });
 
+        /* ---------- Init ---------- */
         initAct1();
         initAct2();
         initFinal();

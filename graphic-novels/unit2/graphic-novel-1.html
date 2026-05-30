@@ -3,21 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>Graphic Novel #1 · Master Chef Kitchen: The Recipe Rescue</title>
     <style>
       :root {
-        --bg: #070d1f;
-        --ink: #eef3ff;
-        --muted: #9fb0d6;
+        --bg: #2a0f0a;
+        --ink: #fff6ef;
+        --muted: #f0c9ad;
         --accent: #ff8a3d;
-        --accent2: #5d7bff;
-        --panel: #101e44;
-        --line: #283f73;
+        --accent2: #ffc14d;
+        --panel: #4a1c12;
+        --line: #7a3a22;
         --ok: #39d98a;
         --bad: #ff6b6b;
-        --gold: #ffd166;
-        --bubble: #0e1c40;
-        --bubble-ink: #eef3ff;
+        --bubble: #fffdf7;
+        --bubble-ink: #2a160c;
         --font:
           "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
       }
@@ -28,14 +27,10 @@
       }
       html,
       body {
-        background: radial-gradient(
-          900px 600px at 80% -10%,
-          #15265a,
-          var(--bg) 65%
-        );
+        background: var(--bg);
         color: var(--ink);
         font-family: var(--font);
-        line-height: 1.55;
+        line-height: 1.5;
       }
       body {
         min-height: 100vh;
@@ -50,11 +45,12 @@
         color: var(--accent2);
       }
 
+      /* ---- Top bar ---- */
       .topbar {
         position: sticky;
         top: 0;
         z-index: 30;
-        background: rgba(7, 13, 31, 0.96);
+        background: rgba(42, 15, 10, 0.96);
         border-bottom: 1px solid var(--line);
         backdrop-filter: blur(6px);
       }
@@ -86,7 +82,7 @@
         font-weight: 700;
       }
       .title .v {
-        color: var(--accent2);
+        color: var(--accent);
       }
       .progress-wrap {
         flex: 1;
@@ -98,7 +94,7 @@
       .progress {
         flex: 1;
         height: 10px;
-        background: #0a142e;
+        background: #1f0a06;
         border: 1px solid var(--line);
         border-radius: 999px;
         overflow: hidden;
@@ -116,6 +112,7 @@
         white-space: nowrap;
       }
 
+      /* ---- Tabs ---- */
       .tabs {
         display: flex;
         gap: 6px;
@@ -124,6 +121,7 @@
         max-width: 1000px;
         margin: 0 auto;
         width: 100%;
+        scrollbar-width: thin;
       }
       .tab {
         flex: 0 0 auto;
@@ -131,7 +129,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #0c1838;
+        background: #3a160d;
         border: 1px solid var(--line);
         color: var(--muted);
         border-radius: 12px;
@@ -142,8 +140,8 @@
         white-space: nowrap;
       }
       .tab[aria-selected="true"] {
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #2a0d02;
         border-color: transparent;
       }
       .tab:focus-visible {
@@ -158,6 +156,7 @@
         font-size: 0.8rem;
       }
 
+      /* ---- Stage ---- */
       main {
         flex: 1;
         width: 100%;
@@ -188,7 +187,7 @@
         border-radius: 18px;
         overflow: hidden;
         border: 1px solid var(--line);
-        background: #0a142e;
+        background: #1f0a06;
         aspect-ratio: 16/9;
       }
       .art img {
@@ -204,15 +203,16 @@
         margin-bottom: 10px;
       }
       .scene-head h2 {
-        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+        font-size: clamp(1.2rem, 3.5vw, 1.7rem);
       }
       .scene-head .act {
         font-size: 0.75rem;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: var(--accent2);
+        color: var(--accent);
       }
 
+      /* ---- Dialogue ---- */
       .dialogue {
         margin-top: 14px;
         min-height: 96px;
@@ -220,26 +220,36 @@
       .bubble {
         background: var(--bubble);
         color: var(--bubble-ink);
-        border: 1px solid var(--line);
         border-radius: 16px;
         padding: 14px 16px;
+        position: relative;
         box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
         animation: fade 0.25s ease;
       }
       .bubble .who {
         font-weight: 800;
-        color: var(--accent);
+        color: #c2461d;
         font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 4px;
       }
       .bubble .en {
-        font-size: 1.06rem;
+        font-size: 1.05rem;
+      }
+      .bubble .es {
+        font-size: 0.92rem;
+        color: #7a5540;
+        margin-top: 6px;
+        font-style: italic;
       }
       .bubble.caption {
-        background: #0a142e;
-        border-style: dashed;
+        background: #3a160d;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .bubble.caption .es {
+        color: var(--muted);
       }
       .dlg-row {
         display: flex;
@@ -257,15 +267,15 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #283f73;
+        background: #7a3a22;
       }
       .dots i.on {
-        background: var(--accent2);
+        background: var(--accent);
       }
       .next {
         min-height: 44px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #ffac3d);
+        color: #2a1500;
         border: none;
         border-radius: 12px;
         padding: 10px 18px;
@@ -277,10 +287,15 @@
         outline: 3px solid #fff;
         outline-offset: 2px;
       }
+      .next[disabled] {
+        opacity: 0.4;
+        cursor: default;
+      }
 
+      /* ---- Challenge / choice ---- */
       .challenge {
         margin-top: 16px;
-        background: #0c1838;
+        background: #3a160d;
         border: 1px solid var(--line);
         border-radius: 16px;
         padding: 16px;
@@ -288,31 +303,30 @@
       .challenge h3 {
         font-size: 1.05rem;
         margin-bottom: 4px;
-        color: var(--accent2);
+        color: var(--accent);
       }
       .challenge .prompt {
         font-size: 1.05rem;
         margin-bottom: 6px;
       }
-      .challenge.bonus {
-        border-color: var(--gold);
-        background: #1c1606;
-        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      .challenge .prompt .es {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 4px;
       }
-      .challenge.bonus h3 {
-        color: var(--gold);
+      .hint {
+        font-size: 0.9rem;
+        color: #ffe8cf;
+        background: #5a2a14;
+        border: 1px solid #944d24;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin: 8px 0;
       }
-      .bonus-tag {
-        display: inline-block;
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #1a1200;
-        background: var(--gold);
-        border-radius: 6px;
-        padding: 3px 8px;
-        font-weight: 800;
-        margin-bottom: 6px;
+      .hint b {
+        color: var(--accent2);
       }
       .choices {
         display: grid;
@@ -322,7 +336,7 @@
       .choice {
         min-height: 48px;
         text-align: left;
-        background: #101e44;
+        background: #4a1c12;
         border: 2px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -346,14 +360,11 @@
         border-color: var(--bad);
         background: #3a1414;
       }
-      .choice .tree {
-        font-family: "Courier New", monospace;
-        white-space: pre;
-        font-size: 0.95rem;
-        line-height: 1.35;
+      .choice .note {
+        font-size: 0.9rem;
         display: block;
         margin-top: 4px;
-        color: #9ecbff;
+        color: #ffd9b3;
       }
       .feedback {
         margin-top: 12px;
@@ -376,6 +387,27 @@
         border: 1px solid var(--bad);
         color: #ffd5d5;
       }
+      .feedback .es {
+        display: block;
+        font-style: italic;
+        color: #9fd;
+        opacity: 0.85;
+        margin-top: 4px;
+        font-size: 0.9rem;
+      }
+
+      .frame {
+        margin-top: 12px;
+        font-size: 0.92rem;
+        color: var(--muted);
+        background: #1f0a06;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .frame b {
+        color: var(--accent2);
+      }
 
       .scene-foot {
         margin-top: 18px;
@@ -385,7 +417,7 @@
       .advance {
         min-height: 48px;
         background: linear-gradient(135deg, var(--accent), #ff6a3d);
-        color: #1a0d02;
+        color: #2a0d02;
         border: none;
         border-radius: 12px;
         padding: 12px 22px;
@@ -405,25 +437,27 @@
         outline-offset: 2px;
       }
 
+      /* ---- Cover ---- */
       .cover-card {
         text-align: center;
       }
       .cover-card .art {
+        aspect-ratio: 16/9;
         margin-bottom: 16px;
       }
       .cover-card h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
       }
       .cover-card p {
         color: var(--muted);
-        max-width: 660px;
+        max-width: 620px;
         margin: 10px auto;
       }
       .start {
         min-height: 52px;
         margin-top: 8px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #2a0d02;
         border: none;
         border-radius: 14px;
         padding: 14px 28px;
@@ -441,19 +475,20 @@
         font-size: 0.8rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #2a0d02;
+        background: var(--accent2);
         border-radius: 999px;
         padding: 5px 14px;
         font-weight: 700;
       }
 
+      /* ---- Glossary ---- */
       .gloss {
         display: grid;
         gap: 12px;
       }
       .term {
-        background: #0c1838;
+        background: #3a160d;
         border: 1px solid var(--line);
         border-radius: 14px;
         padding: 14px 16px;
@@ -468,11 +503,17 @@
       .term h3 {
         font-size: 1.1rem;
       }
+      .term .es-term {
+        color: var(--accent2);
+        font-size: 0.9rem;
+        font-style: italic;
+      }
       .term p {
         color: var(--muted);
         margin-top: 4px;
       }
 
+      /* ---- Mission complete ---- */
       .complete {
         text-align: center;
         display: none;
@@ -484,8 +525,8 @@
         margin-bottom: 16px;
       }
       .complete h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
-        color: var(--accent2);
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        color: var(--accent);
       }
       .badge-done {
         display: inline-block;
@@ -495,7 +536,7 @@
       .restart {
         min-height: 48px;
         margin-top: 14px;
-        background: #0c1838;
+        background: #3a160d;
         border: 1px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -514,6 +555,9 @@
       }
 
       @media (max-width: 480px) {
+        .topbar-inner {
+          gap: 8px;
+        }
         .title {
           font-size: 0.9rem;
           flex: 1 1 100%;
@@ -526,13 +570,14 @@
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
         <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
+          ><span class="v">#1</span> Master Chef Kitchen: The Recipe
+          Rescue</span
         >
         <div class="progress-wrap">
           <div
             class="progress"
             role="progressbar"
-            aria-label="Mission progress"
+            aria-label="Kitchen progress"
             aria-valuemin="0"
             aria-valuemax="100"
             aria-valuenow="0"
@@ -559,7 +604,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: The Locked Pantry
         </button>
         <button
           class="tab locked"
@@ -568,7 +613,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: The Big Order
         </button>
         <button
           class="tab locked"
@@ -577,7 +622,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Final Dish
         </button>
         <button
           class="tab"
@@ -592,7 +637,7 @@
     </div>
 
     <main>
-      <!-- COVER -->
+      <!-- ============ COVER ============ -->
       <section
         class="scene active cover-card"
         id="scene-cover"
@@ -601,23 +646,28 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit2/cover.png"
+            alt="Kai, a young chef, strikes a hero pose in a glowing futuristic kitchen with floating order tickets"
           />
         </div>
-        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
+        <h2>Master Chef Kitchen: The Recipe Rescue</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          You are <b>Kai</b>, a young chef. The restaurant is very busy! The
+          pantry is locked. You must <b>divide fractions</b> to portion the food
+          and unlock the kitchen. Save dinner!
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <p style="font-size: 0.92rem">
+          <i
+            >Eres Kai, un chef joven. El restaurante est&aacute; muy ocupado.
+            Debes <b>dividir fracciones</b> para servir la comida y abrir la
+            despensa.</i
+          >
+        </p>
+        <button class="start" id="start-btn">Start Cooking &#128722;</button>
       </section>
 
-      <!-- ACT 1 -->
+      <!-- ============ ACT 1 ============ -->
       <section
         class="scene"
         id="scene-act1"
@@ -625,14 +675,14 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act">Act 1 &middot; Lesson 2-1</span>
+          <h2>The Locked Pantry</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit2/kitchen-orders.png"
+            alt="Kai stands at a prep station looking at floating order tickets and a locked pantry door"
           />
         </div>
 
@@ -642,99 +692,84 @@
           <button class="next" id="next-act1">Next &#9654;</button>
         </div>
 
+        <!-- Challenge 1a: what does 3 ÷ 1/4 mean? -->
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>&#127858; Order Ticket #1 &mdash; What does it mean?</h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            Kai has <b>3 cups</b> of soup. Each bowl gets <b>1/4 cup</b>. The
+            ticket asks: <b>3 &divide; 1/4</b>. What does this question really
+            mean?
+            <span class="es">&iquest;Qu&eacute; significa 3 &divide; 1/4?</span>
           </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> &ldquo;Divide by 1/4&rdquo; means &ldquo;How
+            many <b>1/4-cup</b> pieces fit inside?&rdquo; Think: how many
+            quarters are in the whole amount?
+          </div>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
-              >
+              How much is 3 plus 1/4?
+              <span class="note">(that is adding, not dividing)</span>
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
+              How many 1/4-cup bowls can I fill from 3 cups?
+              <span class="note">(divide 3 into 1/4-cup groups)</span>
             </button>
             <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
-              >
+              How much is 3 times 1/4?
+              <span class="note">(that is multiplying, not dividing)</span>
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
+        <!-- Challenge 1b: solve 3 ÷ 1/4 -->
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>&#128272; Pantry Lock &mdash; Solve It</h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            Now find the answer. How many <b>1/4-cup</b> bowls can Kai fill from
+            <b>3 cups</b> of soup? Solve <b>3 &divide; 1/4</b>.
+            <span class="es"
+              >&iquest;Cu&aacute;ntos tazones de 1/4 de taza salen de 3
+              tazas?</span
+            >
           </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> Each whole cup makes <b>4</b> quarter-cups.
+            So 3 cups make 3 &times; 4. To divide by a fraction, flip it and
+            multiply: 3 &times; 4/1 = 3 &times; 4.
+          </div>
           <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              3/4 of a bowl
+              <span class="note">(that is 3 &times; 1/4, not dividing)</span>
+            </button>
             <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
-              >
+              12 bowls
+              <span class="note">(3 &times; 4 = 12 quarter-cups)</span>
             </button>
             <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
+              7 bowls
+              <span class="note">(that is 3 + 4, not 3 &times; 4)</span>
             </button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
-        <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
-          </p>
-          <h3>The Self-Sealing Vault</h3>
-          <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
-          </p>
-          <div class="choices" id="choicesB1">
-            <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
-              >
-            </button>
-            <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
-              >
-            </button>
-          </div>
-          <div class="feedback" id="fbB1"></div>
+        <div class="frame" id="frame1" style="display: none">
+          <b>Sentence frame:</b> &ldquo;3 &divide; 1/4 means: how many ____-cup
+          bowls fit in 3 cups. Each cup makes ____ quarter-cups, so the answer
+          is 3 &times; ____ = ____ bowls.&rdquo;
         </div>
 
         <div class="scene-foot">
           <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
+            Open the pantry &#128722;
           </button>
         </div>
       </section>
 
-      <!-- ACT 2 -->
+      <!-- ============ ACT 2 ============ -->
       <section
         class="scene"
         id="scene-act2"
@@ -742,18 +777,18 @@
         aria-labelledby="tab-act2"
       >
         <div class="locked-note" id="lock-act2">
-          &#128274; Complete Act 1 to unlock Act 2.
+          &#128274; Finish Act 1 first to unlock Act 2.
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act">Act 2 &middot; Lesson 2-2</span>
+            <h2>The Big Order</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit2/scaling-recipe.png"
+              alt="Kai pours flour into measuring cups while scaling up a recipe"
             />
           </div>
 
@@ -763,90 +798,89 @@
             <button class="next" id="next-act2">Next &#9654;</button>
           </div>
 
+          <!-- Challenge 2a: whole ÷ unit fraction (servings) -->
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#127859; Serving Lock #1 &mdash; Count the Servings</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              A big pot holds <b>6 cups</b> of stew. Each plate gets a
+              <b>1/3-cup</b> serving. How many plates can Kai serve? Solve
+              <b>6 &divide; 1/3</b>.
+              <span class="es"
+                >&iquest;Cu&aacute;ntos platos de 1/3 de taza salen de 6
+                tazas?</span
+              >
             </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Each cup makes <b>3</b> thirds. Flip 1/3 to
+              get 3, then multiply: 6 &times; 3.
+            </div>
             <div class="choices" id="choices2a">
               <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
-                >
+                2 plates
+                <span class="note">(that is 6 &times; 1/3, not dividing)</span>
               </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
-                >
+                18 plates
+                <span class="note">(6 &times; 3 = 18)</span>
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
-                >
+                9 plates
+                <span class="note">(that is 6 + 3, not 6 &times; 3)</span>
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
+          <!-- Challenge 2b: fraction ÷ fraction (scaling) -->
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>&#129360; Serving Lock #2 &mdash; Fraction by Fraction</h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              Kai has <b>3/4 cup</b> of sauce. Each small dish needs
+              <b>1/8 cup</b>. How many dishes can Kai fill? Solve
+              <b>3/4 &divide; 1/8</b>.
+              <span class="es"
+                >&iquest;Cu&aacute;ntos platos de 1/8 de taza salen de 3/4 de
+                taza?</span
+              >
             </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> To divide fractions, <b>flip</b> the second
+              one and multiply: 3/4 &times; 8/1 = (3 &times; 8) / 4 = 24/4.
+            </div>
             <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                3/32 of a dish
+                <span class="note"
+                  >(that is 3/4 &times; 1/8, not flipping)</span
+                >
+              </button>
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
+                6 dishes
+                <span class="note">(3/4 &times; 8 = 24/4 = 6)</span>
               </button>
               <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
-              </button>
-              <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                8 dishes
+                <span class="note">(you forgot the 3/4)</span>
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
-          <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Relatively Prime Relay</h3>
-            <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
-            </p>
-            <div class="choices" id="choicesB2">
-              <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
-              </button>
-              <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
-                >
-              </button>
-              <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
-              </button>
-            </div>
-            <div class="feedback" id="fbB2"></div>
+          <div class="frame" id="frame2" style="display: none">
+            <b>Sentence frame:</b> &ldquo;6 &divide; 1/3 = 6 &times; ____ = ____
+            plates. To divide 3/4 &divide; 1/8, I flip 1/8 to get ____, so 3/4
+            &times; ____ = ____ dishes.&rdquo;
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Send the order &#9889;
             </button>
           </div>
         </div>
       </section>
 
-      <!-- FINAL -->
+      <!-- ============ FINAL ============ -->
       <section
         class="scene"
         id="scene-final"
@@ -854,18 +888,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Finish Act 2 first to unlock the Final Dish.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Final Dish &middot; Boss</span>
+            <h2>The Banquet</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit2/final-banquet.png"
+              alt="Kai rolls up sleeves to face a huge glowing banquet order ticket"
             />
           </div>
 
@@ -876,86 +910,80 @@
           </div>
 
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#127869;&#65039; The Banquet Code &mdash; Big Order</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              The banquet pot holds <b>4 cups</b> of curry. Each guest bowl
+              takes <b>2/3 cup</b>. How many bowls can Kai serve? Solve
+              <b>4 &divide; 2/3</b>.
+              <span class="es"
+                >&iquest;Cu&aacute;ntos tazones de 2/3 de taza salen de 4
+                tazas?</span
+              >
             </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Flip 2/3 to get 3/2, then multiply: 4
+              &times; 3/2 = 12/2 = 6.
+            </div>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
+                4 bowls
+                <span class="note">(you flipped only part of it)</span>
               </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                6 bowls
+                <span class="note">(4 &times; 3/2 = 12/2 = 6)</span>
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                8/3 of a bowl
+                <span class="note">(that is 4 &times; 2/3, not dividing)</span>
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
-          <div class="challenge bonus" id="bonusF" style="display: none">
-            <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
-            >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Reactor Tessellation</h3>
-            <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
-            </p>
-            <div class="choices" id="choicesBF">
-              <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
-              </button>
-              <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
-              </button>
-              <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
-              </button>
-            </div>
-            <div class="feedback" id="fbBF"></div>
+          <div class="frame" id="frameF" style="display: none">
+            <b>Sentence frame:</b> &ldquo;4 &divide; 2/3: I flip 2/3 to get
+            ____, so 4 &times; ____ = ____ &divide; 2 = ____ bowls.&rdquo;
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Serve the banquet &#127775;
             </button>
           </div>
         </div>
       </section>
 
-      <!-- COMPLETE -->
+      <!-- ============ MISSION COMPLETE ============ -->
       <section
         class="scene complete"
         id="scene-complete"
         role="tabpanel"
-        aria-label="Mission complete"
+        aria-label="Kitchen saved"
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit2/celebration.png"
+            alt="Kai proudly presents a banquet of finished dishes while chef friends cheer"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#128722;&#11088;</span>
+        <h2>Kitchen Saved!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          You did it, Chef Kai! You used <b>dividing fractions</b> to portion
+          the soup, scale the recipes, and serve the whole banquet. Every guest
+          is happy. Great cooking!
         </p>
-        <button class="restart" id="restart-btn">Run again &#8635;</button>
+        <p style="color: var(--muted); font-size: 0.92rem">
+          <i
+            >&iexcl;Lo lograste, Chef Kai! Usaste la divisi&oacute;n de
+            fracciones para servir a todos. &iexcl;Excelente trabajo!</i
+          >
+        </p>
+        <button class="restart" id="restart-btn">Cook again &#8635;</button>
       </section>
 
-      <!-- GLOSSARY -->
+      <!-- ============ GLOSSARY ============ -->
       <section
         class="scene"
         id="scene-gloss"
@@ -964,7 +992,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Word Bank</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -974,128 +1002,130 @@
       (function () {
         "use strict";
 
+        /* ---------- Dialogue data (English + Spanish support) ---------- */
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "Head Chef",
+              en: "Kai! The dinner rush is here and the pantry is LOCKED. Only correct portions will open it!",
+              es: "&iexcl;Kai! Llegaron muchos clientes y la despensa est&aacute; CERRADA. &iexcl;Solo las porciones correctas la abren!",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Kai",
+              en: "I can do this. The first ticket says 3 ÷ 1/4. Let me think about what that means.",
+              es: "Puedo hacerlo. El primer ticket dice 3 ÷ 1/4. Voy a pensar qué significa.",
+            },
+            {
+              who: "Head Chef",
+              en: "First, tell me what the ticket is really asking before you cook!",
+              es: "&iexcl;Primero dime qu&eacute; pregunta el ticket antes de cocinar!",
+              cap: true,
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
-            },
-          ],
-          bonus1: [
-            {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
-              cap: true,
+              who: "Kai",
+              en: "Got it! Now I just need the answer to fill the bowls and open the pantry.",
+              es: "&iexcl;Entendido! Ahora necesito la respuesta para llenar los tazones y abrir la despensa.",
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
+              who: "Head Chef",
+              en: "Nice work! Now a BIG party ordered. We must portion the stew and scale the sauce. Fast!",
+              es: "&iexcl;Buen trabajo! Ahora pidi&oacute; una fiesta GRANDE. Debemos servir el guiso y escalar la salsa. &iexcl;R&aacute;pido!",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Kai",
+              en: "Six cups of stew, each plate gets 1/3 cup. I need to divide to count the plates.",
+              es: "Seis tazas de guiso, cada plato lleva 1/3 de taza. Necesito dividir para contar los platos.",
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
-            },
-          ],
-          bonus2: [
-            {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
-              cap: true,
+              who: "Kai",
+              en: "Plates ready! Now the sauce: 3/4 cup, split into 1/8-cup dishes. Divide the fractions!",
+              es: "&iexcl;Platos listos! Ahora la salsa: 3/4 de taza en platos de 1/8. &iexcl;Divido las fracciones!",
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "Head Chef",
+              en: "The banquet table is the BIGGEST order tonight. One more portion problem, Kai. You ready?",
+              es: "La mesa del banquete es el pedido M&Aacute;S GRANDE de la noche. Un problema m&aacute;s, Kai. &iquest;Listo?",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Kai",
+              en: "Four cups of curry, 2/3 cup per bowl. Flip and multiply. Let's serve the banquet!",
+              es: "Cuatro tazas de curry, 2/3 de taza por taz&oacute;n. Invierto y multiplico. &iexcl;A servir el banquete!",
             },
           ],
         };
 
         var GLOSS = [
           {
-            ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
+            ico: "&#10135;",
+            en: "Divide",
+            es: "dividir",
+            def: "To split an amount into equal groups, or to count how many equal pieces fit. 12 ÷ 4 = 3.",
           },
           {
-            ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
+            ico: "&#127869;&#65039;",
+            en: "Fraction",
+            es: "fracción",
+            def: "A part of a whole. 1/4 means one of four equal pieces. The top is the numerator, the bottom is the denominator.",
           },
           {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
+            ico: "&#129348;",
+            en: "Unit fraction",
+            es: "fracción unitaria",
+            def: "A fraction with 1 on top, like 1/3 or 1/4. It means one equal piece of the whole.",
           },
           {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
-          },
-          {
-            ico: "&#10094;&#10095;",
-            en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
+            ico: "&#128260;",
+            en: "Reciprocal (flip)",
+            es: "recíproco (invertir)",
+            def: "Turn a fraction upside down. The reciprocal of 1/4 is 4/1, and of 2/3 is 3/2.",
           },
           {
             ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
+            en: "Multiply",
+            es: "multiplicar",
+            def: "Repeated adding of equal groups. 3 × 4 = 12. To divide by a fraction, flip it and multiply.",
           },
           {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
+            ico: "&#127858;",
+            en: "Serving (portion)",
+            es: "porción",
+            def: "One share of food, like 1/4 cup. Dividing finds how many servings fit in the whole amount.",
           },
           {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
+            ico: "&#9878;&#65039;",
+            en: "Scale a recipe",
+            es: "escalar una receta",
+            def: "Make a recipe bigger or smaller by multiplying or dividing every amount by the same number.",
           },
           {
-            ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
+            ico: "&#129516;",
+            en: "Quotient",
+            es: "cociente",
+            def: "The answer to a division problem. In 6 ÷ 1/3 = 18, the quotient is 18.",
           },
           {
-            ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
-          },
-          {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            ico: "&#10145;&#65039;",
+            en: "Keep-Flip-Multiply",
+            es: "Mantener-Invertir-Multiplicar",
+            def: "A way to divide fractions: keep the first, flip the second, then multiply. 3/4 ÷ 1/8 = 3/4 × 8/1.",
           },
         ];
 
+        /* ---------- State ---------- */
         var state = { act1: false, act2: false, final: false };
         var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+
         function $(id) {
           return document.getElementById(id);
         }
@@ -1105,6 +1135,7 @@
           );
         }
 
+        /* ---------- Progress ---------- */
         function updateProgress() {
           var done =
             (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
@@ -1115,13 +1146,8 @@
             .querySelector(".progress")
             .setAttribute("aria-valuenow", pct);
         }
-        function setLock(tabId, locked) {
-          var t = $(tabId);
-          t.classList.toggle("locked", locked);
-          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
-          t.innerHTML =
-            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
-        }
+
+        /* ---------- Tab locking ---------- */
         function refreshLocks() {
           setLock("tab-act2", !state.act1);
           setLock("tab-final", !state.act2);
@@ -1130,6 +1156,15 @@
           $("lock-final").classList.toggle("show", !state.act2);
           $("body-final").style.display = state.act2 ? "" : "none";
         }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+
+        /* ---------- Scene switching ---------- */
         function showScene(name) {
           SCENES.forEach(function (s) {
             var sc = $("scene-" + s);
@@ -1149,45 +1184,55 @@
           qa(".tab").forEach(function (t) {
             t.setAttribute("aria-selected", "false");
           });
-          $("scene-complete").classList.add("active", "show");
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
+
         qa(".tab").forEach(function (tab) {
           tab.addEventListener("click", function () {
-            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
           });
           tab.addEventListener("keydown", function (e) {
-            var arr = qa(".tab");
-            var i = arr.indexOf(tab);
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
             if (e.key === "ArrowRight") {
               e.preventDefault();
-              (arr[i + 1] || arr[0]).focus();
+              (tabsArr[i + 1] || tabsArr[0]).focus();
             }
             if (e.key === "ArrowLeft") {
               e.preventDefault();
-              (arr[i - 1] || arr[arr.length - 1]).focus();
+              (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus();
             }
           });
         });
 
+        /* ---------- Dialogue engine ---------- */
         function runDialogue(opts) {
-          var idx = 0,
-            dlgBox = $(opts.dlgId),
+          var idx = 0;
+          var dlgBox = $(opts.dlgId),
             nextBtn = $(opts.nextId),
             dots = $(opts.dotsId);
           dots.innerHTML = "";
           opts.dlg.forEach(function () {
-            dots.appendChild(document.createElement("i"));
+            var i = document.createElement("i");
+            dots.appendChild(i);
           });
           function render() {
             var line = opts.dlg[idx];
             dlgBox.innerHTML =
               '<div class="bubble' +
               (line.cap ? " caption" : "") +
-              '"><div class="who">' +
+              '">' +
+              '<div class="who">' +
               line.who +
-              '</div><div class="en">' +
+              "</div>" +
+              '<div class="en">' +
               line.en +
+              "</div>" +
+              '<div class="es">' +
+              line.es +
               "</div></div>";
             qa("i", dots).forEach(function (d, k) {
               d.classList.toggle("on", k <= idx);
@@ -1201,22 +1246,27 @@
             if (idx < opts.dlg.length - 1) {
               idx++;
               render();
-            } else if (opts.onDone) opts.onDone();
+            } else {
+              if (opts.onDone) opts.onDone();
+            }
           };
           render();
         }
 
+        /* ---------- Choice handler ---------- */
         function wireChoices(opts) {
           var solved = false;
           qa(".choice", $(opts.choicesId)).forEach(function (btn) {
             btn.addEventListener("click", function () {
               if (solved) return;
+              var correct = btn.dataset.correct === "true";
               var fb = $(opts.feedbackId);
-              if (btn.dataset.correct === "true") {
+              if (correct) {
                 solved = true;
                 btn.classList.add("correct");
                 fb.className = "feedback show good";
-                fb.innerHTML = opts.goodEn;
+                fb.innerHTML =
+                  opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
                 qa(".choice", $(opts.choicesId)).forEach(function (b) {
                   b.disabled = true;
                 });
@@ -1225,12 +1275,14 @@
                 btn.classList.add("wrong");
                 btn.disabled = true;
                 fb.className = "feedback show bad";
-                fb.innerHTML = opts.badEn;
+                fb.innerHTML =
+                  opts.badEn + '<span class="es">' + opts.badEs + "</span>";
               }
             });
           });
         }
 
+        /* ---------- Build glossary ---------- */
         (function () {
           var list = $("gloss-list");
           GLOSS.forEach(function (g) {
@@ -1241,31 +1293,23 @@
               g.ico +
               "</div><div><h3>" +
               g.en +
-              "</h3><p>" +
+              ' <span class="es-term">(' +
+              g.es +
+              ")</span></h3><p>" +
               g.def +
               "</p></div>";
             list.appendChild(d);
           });
         })();
 
-        function showBubble(boxId, line) {
-          $(boxId).innerHTML =
-            '<div class="bubble' +
-            (line.cap ? " caption" : "") +
-            '"><div class="who">' +
-            line.who +
-            '</div><div class="en">' +
-            line.en +
-            "</div></div>";
-        }
-
+        /* ---------- ACT 1 flow ---------- */
         function initAct1() {
           runDialogue({
             dlgId: "dlg-act1",
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Read the ticket ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,44 +1323,46 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Yes! 3 &divide; 1/4 asks how many 1/4-cup bowls fit in 3 cups. Now find the number!",
+            goodEs:
+              "&iexcl;S&iacute;! 3 &divide; 1/4 pregunta cu&aacute;ntos tazones de 1/4 caben en 3 tazas.",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; That is a different operation. Dividing by 1/4 means counting how many 1/4-cup pieces fit. Try again.",
+            badEs:
+              "Esa es otra operaci&oacute;n. Dividir entre 1/4 cuenta cu&aacute;ntos pedazos de 1/4 caben.",
             onSolve: function () {
+              var box = $("dlg-act1");
               setTimeout(function () {
-                showBubble("dlg-act1", DLG.act1b[0]);
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act1b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act1b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act1b[0].es +
+                  "</div></div>";
                 $("chal1b").style.display = "block";
-              }, 450);
+                $("frame1").style.display = "block";
+              }, 500);
             },
           });
           wireChoices({
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; Perfect! Each cup makes 4 quarter-cups, so 3 &times; 4 = 12 bowls. PANTRY OPEN!",
+            goodEs:
+              "&iexcl;Perfecto! Cada taza da 4 cuartos, as&iacute; 3 &times; 4 = 12 tazones. &iexcl;Despensa abierta!",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; Not quite. Dividing by 1/4 means flip to 4 and multiply: 3 &times; 4. Use the hint.",
+            badEs:
+              "Casi. Dividir entre 1/4 es invertir a 4 y multiplicar: 3 &times; 4. Usa la pista.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
+              $("art-act1").src = "../_art/unit2/pantry-open.png";
+              $("art-act1").alt =
+                "The pantry door bursts open with golden light as Kai raises a fist";
               $("adv-act1").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act1", DLG.bonus1[0]);
-                $("bonus1").style.display = "block";
-              }, 450);
             },
-          });
-          wireChoices({
-            choicesId: "choicesB1",
-            feedbackId: "fbB1",
-            goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
-            badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1326,13 +1372,14 @@
           });
         }
 
+        /* ---------- ACT 2 flow ---------- */
         function initAct2() {
           runDialogue({
             dlgId: "dlg-act2",
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Count the plates ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,41 +1393,43 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; Yes! Each cup makes 3 thirds, so 6 &times; 3 = 18 plates. Stew portioned!",
+            goodEs:
+              "&iexcl;S&iacute;! Cada taza da 3 tercios, as&iacute; 6 &times; 3 = 18 platos.",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; Dividing by 1/3 means flip to 3 and multiply: 6 &times; 3. Check the hint.",
+            badEs:
+              "Dividir entre 1/3 es invertir a 3 y multiplicar: 6 &times; 3. Revisa la pista.",
             onSolve: function () {
+              var box = $("dlg-act2");
               setTimeout(function () {
-                showBubble("dlg-act2", DLG.act2b[0]);
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act2b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act2b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act2b[0].es +
+                  "</div></div>";
                 $("chal2b").style.display = "block";
-              }, 450);
+                $("frame2").style.display = "block";
+              }, 500);
             },
           });
           wireChoices({
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; Great! Flip 1/8 to 8 and multiply: 3/4 &times; 8 = 24/4 = 6 dishes. ORDER READY!",
+            goodEs:
+              "&iexcl;Genial! Invierte 1/8 a 8 y multiplica: 3/4 &times; 8 = 24/4 = 6 platos.",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; Flip the SECOND fraction: 3/4 &times; 8/1 = 24/4 = 6. Try the hint.",
+            badEs:
+              "Invierte la SEGUNDA fracci&oacute;n: 3/4 &times; 8/1 = 24/4 = 6.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
               $("adv-act2").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act2", DLG.bonus2[0]);
-                $("bonus2").style.display = "block";
-              }, 450);
             },
-          });
-          wireChoices({
-            choicesId: "choicesB2",
-            feedbackId: "fbB2",
-            goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
-            badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-act2").addEventListener("click", function () {
             state.act2 = true;
@@ -1390,16 +1439,18 @@
           });
         }
 
+        /* ---------- FINAL flow ---------- */
         function initFinal() {
           runDialogue({
             dlgId: "dlg-final",
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Plate the banquet ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
+              $("frameF").style.display = "block";
               $("chalF").scrollIntoView({
                 behavior: "smooth",
                 block: "center",
@@ -1410,26 +1461,16 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; BANQUET SERVED! 4 &divide; 2/3 = 4 &times; 3/2 = 12/2 = 6 bowls. Every guest is fed!",
+            goodEs:
+              "&iexcl;BANQUETE SERVIDO! 4 &divide; 2/3 = 4 &times; 3/2 = 12/2 = 6 tazones.",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; Flip 2/3 to 3/2, then 4 &times; 3/2 = 12/2 = 6. Use the hint and try again.",
+            badEs:
+              "Invierte 2/3 a 3/2, luego 4 &times; 3/2 = 12/2 = 6. Usa la pista.",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
               $("adv-final").classList.add("show");
-              setTimeout(function () {
-                $("bonusF").style.display = "block";
-              }, 300);
             },
-          });
-          wireChoices({
-            choicesId: "choicesBF",
-            feedbackId: "fbBF",
-            goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
-            badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-final").addEventListener("click", function () {
             state.final = true;
@@ -1438,6 +1479,7 @@
           });
         }
 
+        /* ---------- Wire start / restart ---------- */
         $("start-btn").addEventListener("click", function () {
           showScene("act1");
         });
@@ -1445,6 +1487,7 @@
           location.reload();
         });
 
+        /* ---------- Init ---------- */
         initAct1();
         initAct2();
         initFinal();

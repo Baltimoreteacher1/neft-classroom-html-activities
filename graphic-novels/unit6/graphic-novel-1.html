@@ -3,21 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>
+      Graphic Novel #1 &middot; Festival Producer: Power Up the Show
+    </title>
     <style>
       :root {
-        --bg: #070d1f;
-        --ink: #eef3ff;
-        --muted: #9fb0d6;
-        --accent: #ff8a3d;
-        --accent2: #5d7bff;
-        --panel: #101e44;
-        --line: #283f73;
+        --bg: #150a28;
+        --ink: #fdf4ff;
+        --muted: #d3b9e8;
+        --accent: #ff4fd8;
+        --accent2: #2fd0ff;
+        --panel: #261148;
+        --line: #4a2a78;
         --ok: #39d98a;
         --bad: #ff6b6b;
-        --gold: #ffd166;
-        --bubble: #0e1c40;
-        --bubble-ink: #eef3ff;
+        --bubble: #fffdf7;
+        --bubble-ink: #1c0e2e;
         --font:
           "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
       }
@@ -28,14 +29,10 @@
       }
       html,
       body {
-        background: radial-gradient(
-          900px 600px at 80% -10%,
-          #15265a,
-          var(--bg) 65%
-        );
+        background: var(--bg);
         color: var(--ink);
         font-family: var(--font);
-        line-height: 1.55;
+        line-height: 1.5;
       }
       body {
         min-height: 100vh;
@@ -50,11 +47,12 @@
         color: var(--accent2);
       }
 
+      /* ---- Top bar ---- */
       .topbar {
         position: sticky;
         top: 0;
         z-index: 30;
-        background: rgba(7, 13, 31, 0.96);
+        background: rgba(21, 10, 40, 0.96);
         border-bottom: 1px solid var(--line);
         backdrop-filter: blur(6px);
       }
@@ -86,7 +84,7 @@
         font-weight: 700;
       }
       .title .v {
-        color: var(--accent2);
+        color: var(--accent);
       }
       .progress-wrap {
         flex: 1;
@@ -98,7 +96,7 @@
       .progress {
         flex: 1;
         height: 10px;
-        background: #0a142e;
+        background: #0e0620;
         border: 1px solid var(--line);
         border-radius: 999px;
         overflow: hidden;
@@ -116,6 +114,7 @@
         white-space: nowrap;
       }
 
+      /* ---- Tabs ---- */
       .tabs {
         display: flex;
         gap: 6px;
@@ -124,6 +123,7 @@
         max-width: 1000px;
         margin: 0 auto;
         width: 100%;
+        scrollbar-width: thin;
       }
       .tab {
         flex: 0 0 auto;
@@ -131,7 +131,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #0c1838;
+        background: #1d0f3a;
         border: 1px solid var(--line);
         color: var(--muted);
         border-radius: 12px;
@@ -142,8 +142,8 @@
         white-space: nowrap;
       }
       .tab[aria-selected="true"] {
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #220018;
         border-color: transparent;
       }
       .tab:focus-visible {
@@ -158,6 +158,7 @@
         font-size: 0.8rem;
       }
 
+      /* ---- Stage ---- */
       main {
         flex: 1;
         width: 100%;
@@ -188,7 +189,7 @@
         border-radius: 18px;
         overflow: hidden;
         border: 1px solid var(--line);
-        background: #0a142e;
+        background: #0e0620;
         aspect-ratio: 16/9;
       }
       .art img {
@@ -204,15 +205,16 @@
         margin-bottom: 10px;
       }
       .scene-head h2 {
-        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+        font-size: clamp(1.2rem, 3.5vw, 1.7rem);
       }
       .scene-head .act {
         font-size: 0.75rem;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: var(--accent2);
+        color: var(--accent);
       }
 
+      /* ---- Dialogue ---- */
       .dialogue {
         margin-top: 14px;
         min-height: 96px;
@@ -220,26 +222,36 @@
       .bubble {
         background: var(--bubble);
         color: var(--bubble-ink);
-        border: 1px solid var(--line);
         border-radius: 16px;
         padding: 14px 16px;
+        position: relative;
         box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
         animation: fade 0.25s ease;
       }
       .bubble .who {
         font-weight: 800;
-        color: var(--accent);
+        color: #b51d8e;
         font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 4px;
       }
       .bubble .en {
-        font-size: 1.06rem;
+        font-size: 1.05rem;
+      }
+      .bubble .es {
+        font-size: 0.92rem;
+        color: #5a4a66;
+        margin-top: 6px;
+        font-style: italic;
       }
       .bubble.caption {
-        background: #0a142e;
-        border-style: dashed;
+        background: #1d0f3a;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .bubble.caption .es {
+        color: var(--muted);
       }
       .dlg-row {
         display: flex;
@@ -257,15 +269,15 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #283f73;
+        background: #4a2a78;
       }
       .dots i.on {
-        background: var(--accent2);
+        background: var(--accent);
       }
       .next {
         min-height: 44px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #5d7bff);
+        color: #02112a;
         border: none;
         border-radius: 12px;
         padding: 10px 18px;
@@ -277,10 +289,15 @@
         outline: 3px solid #fff;
         outline-offset: 2px;
       }
+      .next[disabled] {
+        opacity: 0.4;
+        cursor: default;
+      }
 
+      /* ---- Challenge / choice ---- */
       .challenge {
         margin-top: 16px;
-        background: #0c1838;
+        background: #1d0f3a;
         border: 1px solid var(--line);
         border-radius: 16px;
         padding: 16px;
@@ -288,31 +305,30 @@
       .challenge h3 {
         font-size: 1.05rem;
         margin-bottom: 4px;
-        color: var(--accent2);
+        color: var(--accent);
       }
       .challenge .prompt {
         font-size: 1.05rem;
         margin-bottom: 6px;
       }
-      .challenge.bonus {
-        border-color: var(--gold);
-        background: #1c1606;
-        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      .challenge .prompt .es {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 4px;
       }
-      .challenge.bonus h3 {
-        color: var(--gold);
+      .hint {
+        font-size: 0.9rem;
+        color: #ffd9f4;
+        background: #3a1030;
+        border: 1px solid #7a1f64;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin: 8px 0;
       }
-      .bonus-tag {
-        display: inline-block;
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #1a1200;
-        background: var(--gold);
-        border-radius: 6px;
-        padding: 3px 8px;
-        font-weight: 800;
-        margin-bottom: 6px;
+      .hint b {
+        color: var(--accent);
       }
       .choices {
         display: grid;
@@ -322,7 +338,7 @@
       .choice {
         min-height: 48px;
         text-align: left;
-        background: #101e44;
+        background: #261148;
         border: 2px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -346,14 +362,13 @@
         border-color: var(--bad);
         background: #3a1414;
       }
-      .choice .tree {
+      .choice .work {
         font-family: "Courier New", monospace;
-        white-space: pre;
         font-size: 0.95rem;
         line-height: 1.35;
         display: block;
         margin-top: 4px;
-        color: #9ecbff;
+        color: #b9f;
       }
       .feedback {
         margin-top: 12px;
@@ -376,6 +391,27 @@
         border: 1px solid var(--bad);
         color: #ffd5d5;
       }
+      .feedback .es {
+        display: block;
+        font-style: italic;
+        color: #9fd;
+        opacity: 0.85;
+        margin-top: 4px;
+        font-size: 0.9rem;
+      }
+
+      .frame {
+        margin-top: 12px;
+        font-size: 0.92rem;
+        color: var(--muted);
+        background: #0e0620;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .frame b {
+        color: var(--accent2);
+      }
 
       .scene-foot {
         margin-top: 18px;
@@ -385,7 +421,7 @@
       .advance {
         min-height: 48px;
         background: linear-gradient(135deg, var(--accent), #ff6a3d);
-        color: #1a0d02;
+        color: #220018;
         border: none;
         border-radius: 12px;
         padding: 12px 22px;
@@ -405,25 +441,27 @@
         outline-offset: 2px;
       }
 
+      /* ---- Cover ---- */
       .cover-card {
         text-align: center;
       }
       .cover-card .art {
+        aspect-ratio: 16/9;
         margin-bottom: 16px;
       }
       .cover-card h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
       }
       .cover-card p {
         color: var(--muted);
-        max-width: 660px;
+        max-width: 620px;
         margin: 10px auto;
       }
       .start {
         min-height: 52px;
         margin-top: 8px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #220018;
         border: none;
         border-radius: 14px;
         padding: 14px 28px;
@@ -441,19 +479,20 @@
         font-size: 0.8rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #02112a;
+        background: var(--accent2);
         border-radius: 999px;
         padding: 5px 14px;
         font-weight: 700;
       }
 
+      /* ---- Glossary ---- */
       .gloss {
         display: grid;
         gap: 12px;
       }
       .term {
-        background: #0c1838;
+        background: #1d0f3a;
         border: 1px solid var(--line);
         border-radius: 14px;
         padding: 14px 16px;
@@ -468,11 +507,17 @@
       .term h3 {
         font-size: 1.1rem;
       }
+      .term .es-term {
+        color: var(--accent2);
+        font-size: 0.9rem;
+        font-style: italic;
+      }
       .term p {
         color: var(--muted);
         margin-top: 4px;
       }
 
+      /* ---- Mission complete ---- */
       .complete {
         text-align: center;
         display: none;
@@ -484,8 +529,8 @@
         margin-bottom: 16px;
       }
       .complete h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
-        color: var(--accent2);
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        color: var(--accent);
       }
       .badge-done {
         display: inline-block;
@@ -495,7 +540,7 @@
       .restart {
         min-height: 48px;
         margin-top: 14px;
-        background: #0c1838;
+        background: #1d0f3a;
         border: 1px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -514,6 +559,9 @@
       }
 
       @media (max-width: 480px) {
+        .topbar-inner {
+          gap: 8px;
+        }
         .title {
           font-size: 0.9rem;
           flex: 1 1 100%;
@@ -526,7 +574,7 @@
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
         <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
+          ><span class="v">#1</span> Festival Producer: Power Up the Show</span
         >
         <div class="progress-wrap">
           <div
@@ -559,7 +607,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: Speaker Power
         </button>
         <button
           class="tab locked"
@@ -568,7 +616,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: Stage &amp; Lights
         </button>
         <button
           class="tab locked"
@@ -577,7 +625,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Final Show
         </button>
         <button
           class="tab"
@@ -592,7 +640,7 @@
     </div>
 
     <main>
-      <!-- COVER -->
+      <!-- ============ COVER ============ -->
       <section
         class="scene active cover-card"
         id="scene-cover"
@@ -601,23 +649,28 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit6/cover.png"
+            alt="Mika, a young festival producer, stands center stage at a glowing music festival with speakers and lights behind her"
           />
         </div>
-        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
+        <h2>Festival Producer: Power Up the Show &#127908;</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          You are <b>Mika</b>, a young music festival producer. The big show is
+          tonight! But the stages are dark. To turn on the speakers, lights, and
+          screens, you must solve <b>powers</b> and <b>expressions</b>. Power up
+          the show!
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <p style="font-size: 0.92rem">
+          <i
+            >Eres Mika, productora de un festival de m&uacute;sica. Usa
+            <b>potencias</b> y <b>expresiones</b> para encender el escenario.</i
+          >
+        </p>
+        <button class="start" id="start-btn">Start the Show &#127881;</button>
       </section>
 
-      <!-- ACT 1 -->
+      <!-- ============ ACT 1 ============ -->
       <section
         class="scene"
         id="scene-act1"
@@ -625,14 +678,14 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act">Act 1 &middot; Powers &amp; Exponents</span>
+          <h2>Speaker Power</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit6/speaker-power.png"
+            alt="Mika looks up at a giant wall of speakers with a glowing power gauge"
           />
         </div>
 
@@ -642,99 +695,78 @@
           <button class="next" id="next-act1">Next &#9654;</button>
         </div>
 
+        <!-- Challenge 1a: meaning of a power -->
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>&#128266; Speaker Lock #1</h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            The speaker power is <b>2<sup>4</sup></b
+            >. A power means <b>repeated multiplication</b>. The base is 2 and
+            the exponent is 4. What is 2<sup>4</sup>?
+            <span class="es"
+              >&iquest;Cu&aacute;nto es 2<sup>4</sup> (2 multiplicado 4
+              veces)?</span
+            >
           </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> 2<sup>4</sup> = 2 &times; 2 &times; 2 &times;
+            2. Multiply two at a time: 2&times;2 = 4, then 4&times;2 = 8, then
+            8&times;2 = 16.
+          </div>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
-              >
+              8 <span class="work">(that is only 2 &times; 4)</span>
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
+              16
+              <span class="work">(2 &times; 2 &times; 2 &times; 2 = 16)</span>
             </button>
             <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
-              >
+              6 <span class="work">(that is only 2 + 4)</span>
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
+        <!-- Challenge 1b: evaluate another power -->
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>&#128161; Light Tower Lock #2</h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            Each light tower runs on <b>5<sup>3</sup></b> watts. Evaluate the
+            power to turn on the towers.
+            <span class="es">Eval&uacute;a la potencia 5<sup>3</sup>.</span>
           </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> 5<sup>3</sup> = 5 &times; 5 &times; 5. First
+            5&times;5 = 25, then 25&times;5 = 125.
+          </div>
           <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              15 <span class="work">(that is only 5 &times; 3)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              25 <span class="work">(that is only 5 &times; 5)</span>
+            </button>
             <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
+              125 <span class="work">(5 &times; 5 &times; 5 = 125)</span>
             </button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
-        <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
-          </p>
-          <h3>The Self-Sealing Vault</h3>
-          <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
-          </p>
-          <div class="choices" id="choicesB1">
-            <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
-              >
-            </button>
-            <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
-              >
-            </button>
-          </div>
-          <div class="feedback" id="fbB1"></div>
+        <div class="frame" id="frame1" style="display: none">
+          <b>Sentence frame:</b> &ldquo;The power 2<sup>4</sup> means 2 times
+          itself ____ times, which equals ____. The power 5<sup>3</sup> equals
+          ____.&rdquo;
         </div>
 
         <div class="scene-foot">
           <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
+            Power the speakers &#128266;
           </button>
         </div>
       </section>
 
-      <!-- ACT 2 -->
+      <!-- ============ ACT 2 ============ -->
       <section
         class="scene"
         id="scene-act2"
@@ -742,18 +774,20 @@
         aria-labelledby="tab-act2"
       >
         <div class="locked-note" id="lock-act2">
-          &#128274; Complete Act 1 to unlock Act 2.
+          &#128274; Finish Act 1 first to unlock Act 2.
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act"
+              >Act 2 &middot; Evaluate &amp; Write Expressions</span
+            >
+            <h2>Stage &amp; Lights</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit6/expression-build.png"
+              alt="Mika builds a glowing budget expression from floating math blocks at a mixing console"
             />
           </div>
 
@@ -763,90 +797,90 @@
             <button class="next" id="next-act2">Next &#9654;</button>
           </div>
 
+          <!-- Challenge 2a: evaluate with order of operations -->
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#127917; Stage Cost &mdash; Order of Operations</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              The stage costs <b>3 + 4 &times; 5</b> coins. Use the
+              <b>order of operations</b>: do <b>multiply</b> before <b>add</b>.
+              What is the cost?
+              <span class="es"
+                >Eval&uacute;a 3 + 4 &times; 5. Multiplica antes de sumar.</span
+              >
             </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> First multiply: 4 &times; 5 = 20. Then add:
+              3 + 20 = 23.
+            </div>
             <div class="choices" id="choices2a">
               <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
+                35
+                <span class="work"
+                  >(added 3 + 4 first &mdash; not allowed)</span
                 >
               </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
-                >
+                23
+                <span class="work">(4 &times; 5 = 20, then 3 + 20 = 23)</span>
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
+                27
+                <span class="work"
+                  >(that is 3 &times; 4 + 5 &mdash; wrong order)</span
                 >
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
+          <!-- Challenge 2b: write an algebraic expression -->
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>&#128161; Light Budget &mdash; Write the Expression</h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              Each light costs <b>8 coins</b>. You buy <b>n</b> lights, plus a
+              flat <b>20 coin</b> setup fee. Write the expression for the total
+              cost.
+              <span class="es"
+                >Escribe la expresi&oacute;n: 8 coins por cada luz (n luces)
+                m&aacute;s 20 de cuota fija.</span
+              >
             </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> &ldquo;8 coins for each of n lights&rdquo;
+              means 8 &times; n = 8n. Then add the 20 fee: 8n + 20.
+            </div>
             <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                8 + 20n
+                <span class="work"
+                  >(the 20 is the flat fee, not per light)</span
+                >
+              </button>
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
+                8n + 20 <span class="work">(8 per light, plus 20 fee)</span>
               </button>
               <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
-              </button>
-              <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                28n <span class="work">(you cannot add 8 and 20 here)</span>
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
-          <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Relatively Prime Relay</h3>
-            <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
-            </p>
-            <div class="choices" id="choicesB2">
-              <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
-              </button>
-              <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
-                >
-              </button>
-              <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
-              </button>
-            </div>
-            <div class="feedback" id="fbB2"></div>
+          <div class="frame" id="frame2" style="display: none">
+            <b>Sentence frame:</b> &ldquo;3 + 4 &times; 5 equals ____ because I
+            multiply first. &lsquo;8 coins for each of n lights plus a 20
+            fee&rsquo; is the expression ____.&rdquo;
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Light the stage &#10024;
             </button>
           </div>
         </div>
       </section>
 
-      <!-- FINAL -->
+      <!-- ============ FINAL ============ -->
       <section
         class="scene"
         id="scene-final"
@@ -854,18 +888,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Finish Act 2 first to unlock the Final Show.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Final Show &middot; Boss</span>
+            <h2>The Headliner</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit6/final-show.png"
+              alt="Mika at the master control booth ready to start the big headliner show"
             />
           </div>
 
@@ -876,62 +910,55 @@
           </div>
 
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#127908; Master Switch &mdash; Power AND Expression</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              The big show needs BOTH skills. The master power is
+              <b>2<sup>3</sup> + 6 &times; 4</b>. Evaluate it: do the
+              <b>power</b> first, then <b>multiply</b>, then <b>add</b>. What is
+              the total?
+              <span class="es"
+                >Eval&uacute;a 2<sup>3</sup> + 6 &times; 4 (potencia, luego
+                multiplicar, luego sumar).</span
+              >
             </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> 2<sup>3</sup> = 8. Then 6 &times; 4 = 24.
+              Last, add: 8 + 24 = 32.
+            </div>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
+                56
+                <span class="work"
+                  >(added 8 + 6 first, then &times;4 &mdash; wrong order)</span
+                >
               </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                32 <span class="work">(8 + 24 = 32)</span>
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                44
+                <span class="work"
+                  >(used 2 &times; 3 = 6 instead of 2<sup>3</sup>)</span
+                >
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
-          <div class="challenge bonus" id="bonusF" style="display: none">
-            <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
-            >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Reactor Tessellation</h3>
-            <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
-            </p>
-            <div class="choices" id="choicesBF">
-              <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
-              </button>
-              <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
-              </button>
-              <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
-              </button>
-            </div>
-            <div class="feedback" id="fbBF"></div>
+          <div class="frame" id="frameF" style="display: none">
+            <b>Sentence frame:</b> &ldquo;First 2<sup>3</sup> = ____. Then 6
+            &times; 4 = ____. Last, ____ + ____ = ____.&rdquo;
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Start the headliner &#127775;
             </button>
           </div>
         </div>
       </section>
 
-      <!-- COMPLETE -->
+      <!-- ============ MISSION COMPLETE ============ -->
       <section
         class="scene complete"
         id="scene-complete"
@@ -940,22 +967,28 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit6/celebration.png"
+            alt="Mika celebrates with arms raised as the festival crowd cheers under fireworks and lights"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#127908;&#11088;</span>
+        <h2>Show Complete!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          You powered up the whole festival! You used
+          <b>powers and exponents</b> for the speakers and lights, and
+          <b>expressions</b> to plan the costs. The crowd is cheering. Amazing
+          work, Producer Mika!
         </p>
-        <button class="restart" id="restart-btn">Run again &#8635;</button>
+        <p style="color: var(--muted); font-size: 0.92rem">
+          <i
+            >&iexcl;Encendiste todo el festival! Usaste potencias y expresiones.
+            &iexcl;Excelente trabajo!</i
+          >
+        </p>
+        <button class="restart" id="restart-btn">Play again &#8635;</button>
       </section>
 
-      <!-- GLOSSARY -->
+      <!-- ============ GLOSSARY ============ -->
       <section
         class="scene"
         id="scene-gloss"
@@ -964,7 +997,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Word Bank</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -974,128 +1007,130 @@
       (function () {
         "use strict";
 
+        /* ---------- Dialogue data (English + Spanish support) ---------- */
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "Mika",
+              en: "The show is tonight and the stages are dark! The speaker wall needs power 2 to the 4th.",
+              es: "&iexcl;El show es esta noche y los escenarios est&aacute;n apagados! El muro de bocinas necesita la potencia 2 a la 4.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Mika",
+              en: "A power means I multiply the base by itself. The base is 2, the exponent is 4. Let me read the panel.",
+              es: "Una potencia significa multiplicar la base por s&iacute; misma. La base es 2 y el exponente es 4. Voy a leer el panel.",
+            },
+            {
+              who: "Sound Engineer",
+              en: "First, evaluate the power to wake the speakers, Mika!",
+              es: "&iexcl;Primero, eval&uacute;a la potencia para encender las bocinas, Mika!",
+              cap: true,
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
-            },
-          ],
-          bonus1: [
-            {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
-              cap: true,
+              who: "Mika",
+              en: "Speakers on! Now the light towers need power 5 to the 3rd. Let me evaluate it.",
+              es: "&iexcl;Bocinas encendidas! Ahora las torres de luz necesitan 5 a la 3. Voy a evaluarla.",
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
+              who: "Stage Manager",
+              en: "Great job, Mika! Now we have to pay for the stage and the lights. Watch your math!",
+              es: "&iexcl;Buen trabajo, Mika! Ahora hay que pagar el escenario y las luces. &iexcl;Cuidado con las matem&aacute;ticas!",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Mika",
+              en: "The stage cost is 3 + 4 times 5. I have to multiply BEFORE I add. Order of operations!",
+              es: "El costo del escenario es 3 + 4 por 5. Debo multiplicar ANTES de sumar. &iexcl;Orden de operaciones!",
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
-            },
-          ],
-          bonus2: [
-            {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
-              cap: true,
+              who: "Mika",
+              en: "Stage paid! Now I will write an expression for the lights: 8 coins each, plus a setup fee.",
+              es: "&iexcl;Escenario pagado! Ahora escribir&eacute; una expresi&oacute;n para las luces: 8 coins cada una, m&aacute;s una cuota.",
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "Sound Engineer",
+              en: "It's almost showtime! The master switch needs BOTH skills at once, Mika.",
+              es: "&iexcl;Ya casi es hora del show! El interruptor maestro necesita AMBAS destrezas, Mika.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Mika",
+              en: "A power AND order of operations. I'm ready. Let's start the headliner!",
+              es: "Una potencia Y el orden de operaciones. Estoy lista. &iexcl;Que empiece el show principal!",
             },
           ],
         };
 
         var GLOSS = [
           {
-            ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
-          },
-          {
-            ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
-          },
-          {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
-          },
-          {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
-          },
-          {
             ico: "&#10094;&#10095;",
+            en: "Power",
+            es: "potencia",
+            def: "A way to show repeated multiplication. Example: 2&#8308; means 2 multiplied 4 times.",
+          },
+          {
+            ico: "&#128290;",
+            en: "Base",
+            es: "base",
+            def: "The number being multiplied in a power. In 2&#8308;, the base is 2.",
+          },
+          {
+            ico: "&#11014;&#65039;",
             en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
+            es: "exponente",
+            def: "The small raised number that tells how many times to multiply the base. In 2&#8308;, the exponent is 4.",
           },
           {
             ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
+            en: "Evaluate",
+            es: "evaluar",
+            def: "To find the value of a math expression. Evaluate 5&sup3; to get 125.",
           },
           {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
+            ico: "&#128221;",
+            en: "Expression",
+            es: "expresi&oacute;n",
+            def: "Numbers, letters, and operations put together, like 8n + 20. It has no equals sign.",
           },
           {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
+            ico: "&#127991;&#65039;",
+            en: "Variable",
+            es: "variable",
+            def: "A letter that stands for a number we do not know yet. In 8n, the variable is n.",
           },
           {
-            ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
+            ico: "&#10133;",
+            en: "Order of operations",
+            es: "orden de operaciones",
+            def: "The rules for what to do first: powers, then multiply/divide, then add/subtract.",
           },
           {
-            ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
+            ico: "&#10005;",
+            en: "Coefficient",
+            es: "coeficiente",
+            def: "The number multiplied by a variable. In 8n, the coefficient is 8.",
           },
           {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            ico: "&#127908;",
+            en: "Term",
+            es: "t&eacute;rmino",
+            def: "Each part of an expression separated by + or &minus;. In 8n + 20, the terms are 8n and 20.",
           },
         ];
 
+        /* ---------- State ---------- */
         var state = { act1: false, act2: false, final: false };
         var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+
         function $(id) {
           return document.getElementById(id);
         }
@@ -1105,6 +1140,7 @@
           );
         }
 
+        /* ---------- Progress ---------- */
         function updateProgress() {
           var done =
             (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
@@ -1115,13 +1151,8 @@
             .querySelector(".progress")
             .setAttribute("aria-valuenow", pct);
         }
-        function setLock(tabId, locked) {
-          var t = $(tabId);
-          t.classList.toggle("locked", locked);
-          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
-          t.innerHTML =
-            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
-        }
+
+        /* ---------- Tab locking ---------- */
         function refreshLocks() {
           setLock("tab-act2", !state.act1);
           setLock("tab-final", !state.act2);
@@ -1130,6 +1161,15 @@
           $("lock-final").classList.toggle("show", !state.act2);
           $("body-final").style.display = state.act2 ? "" : "none";
         }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+
+        /* ---------- Scene switching ---------- */
         function showScene(name) {
           SCENES.forEach(function (s) {
             var sc = $("scene-" + s);
@@ -1149,45 +1189,55 @@
           qa(".tab").forEach(function (t) {
             t.setAttribute("aria-selected", "false");
           });
-          $("scene-complete").classList.add("active", "show");
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
+
         qa(".tab").forEach(function (tab) {
           tab.addEventListener("click", function () {
-            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
           });
           tab.addEventListener("keydown", function (e) {
-            var arr = qa(".tab");
-            var i = arr.indexOf(tab);
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
             if (e.key === "ArrowRight") {
               e.preventDefault();
-              (arr[i + 1] || arr[0]).focus();
+              (tabsArr[i + 1] || tabsArr[0]).focus();
             }
             if (e.key === "ArrowLeft") {
               e.preventDefault();
-              (arr[i - 1] || arr[arr.length - 1]).focus();
+              (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus();
             }
           });
         });
 
+        /* ---------- Dialogue engine ---------- */
         function runDialogue(opts) {
-          var idx = 0,
-            dlgBox = $(opts.dlgId),
+          var idx = 0;
+          var dlgBox = $(opts.dlgId),
             nextBtn = $(opts.nextId),
             dots = $(opts.dotsId);
           dots.innerHTML = "";
           opts.dlg.forEach(function () {
-            dots.appendChild(document.createElement("i"));
+            var i = document.createElement("i");
+            dots.appendChild(i);
           });
           function render() {
             var line = opts.dlg[idx];
             dlgBox.innerHTML =
               '<div class="bubble' +
               (line.cap ? " caption" : "") +
-              '"><div class="who">' +
+              '">' +
+              '<div class="who">' +
               line.who +
-              '</div><div class="en">' +
+              "</div>" +
+              '<div class="en">' +
               line.en +
+              "</div>" +
+              '<div class="es">' +
+              line.es +
               "</div></div>";
             qa("i", dots).forEach(function (d, k) {
               d.classList.toggle("on", k <= idx);
@@ -1201,22 +1251,27 @@
             if (idx < opts.dlg.length - 1) {
               idx++;
               render();
-            } else if (opts.onDone) opts.onDone();
+            } else {
+              if (opts.onDone) opts.onDone();
+            }
           };
           render();
         }
 
+        /* ---------- Choice handler ---------- */
         function wireChoices(opts) {
           var solved = false;
           qa(".choice", $(opts.choicesId)).forEach(function (btn) {
             btn.addEventListener("click", function () {
               if (solved) return;
+              var correct = btn.dataset.correct === "true";
               var fb = $(opts.feedbackId);
-              if (btn.dataset.correct === "true") {
+              if (correct) {
                 solved = true;
                 btn.classList.add("correct");
                 fb.className = "feedback show good";
-                fb.innerHTML = opts.goodEn;
+                fb.innerHTML =
+                  opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
                 qa(".choice", $(opts.choicesId)).forEach(function (b) {
                   b.disabled = true;
                 });
@@ -1225,12 +1280,14 @@
                 btn.classList.add("wrong");
                 btn.disabled = true;
                 fb.className = "feedback show bad";
-                fb.innerHTML = opts.badEn;
+                fb.innerHTML =
+                  opts.badEn + '<span class="es">' + opts.badEs + "</span>";
               }
             });
           });
         }
 
+        /* ---------- Build glossary ---------- */
         (function () {
           var list = $("gloss-list");
           GLOSS.forEach(function (g) {
@@ -1241,31 +1298,23 @@
               g.ico +
               "</div><div><h3>" +
               g.en +
-              "</h3><p>" +
+              ' <span class="es-term">(' +
+              g.es +
+              ")</span></h3><p>" +
               g.def +
               "</p></div>";
             list.appendChild(d);
           });
         })();
 
-        function showBubble(boxId, line) {
-          $(boxId).innerHTML =
-            '<div class="bubble' +
-            (line.cap ? " caption" : "") +
-            '"><div class="who">' +
-            line.who +
-            '</div><div class="en">' +
-            line.en +
-            "</div></div>";
-        }
-
+        /* ---------- ACT 1 flow ---------- */
         function initAct1() {
           runDialogue({
             dlgId: "dlg-act1",
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Try the lock ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,44 +1328,46 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Yes! 2&#8308; = 2&times;2&times;2&times;2 = 16. The speaker wall lights up!",
+            goodEs:
+              "&iexcl;S&iacute;! 2&#8308; = 16. &iexcl;Las bocinas encienden!",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; An exponent means multiply, not add. 2&#8308; is 2&times;2&times;2&times;2, not 2&times;4 or 2+4. Use the hint.",
+            badEs:
+              "El exponente significa multiplicar, no sumar. 2&#8308; = 2&times;2&times;2&times;2. Usa la pista.",
             onSolve: function () {
+              var box = $("dlg-act1");
               setTimeout(function () {
-                showBubble("dlg-act1", DLG.act1b[0]);
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act1b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act1b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act1b[0].es +
+                  "</div></div>";
                 $("chal1b").style.display = "block";
-              }, 450);
+                $("frame1").style.display = "block";
+              }, 500);
             },
           });
           wireChoices({
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; Perfect! 5&sup3; = 5&times;5&times;5 = 125. The light towers glow. SPEAKERS AND LIGHTS ON!",
+            goodEs:
+              "&iexcl;Perfecto! 5&sup3; = 125. &iexcl;Bocinas y luces encendidas!",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; Remember 5&sup3; means 5&times;5&times;5. First 5&times;5 = 25, then 25&times;5 = 125. Try again.",
+            badEs:
+              "5&sup3; = 5&times;5&times;5 = 125. Int&eacute;ntalo de nuevo.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
+              $("art-act1").src = "../_art/unit6/stage-lit.png";
+              $("art-act1").alt =
+                "Mika raises a fist as the stage blazes to life with lights and lasers";
               $("adv-act1").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act1", DLG.bonus1[0]);
-                $("bonus1").style.display = "block";
-              }, 450);
             },
-          });
-          wireChoices({
-            choicesId: "choicesB1",
-            feedbackId: "fbB1",
-            goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
-            badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1326,13 +1377,14 @@
           });
         }
 
+        /* ---------- ACT 2 flow ---------- */
         function initAct2() {
           runDialogue({
             dlgId: "dlg-act2",
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Find the cost ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,41 +1398,43 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; Right! 4&times;5 = 20 first, then 3 + 20 = 23. Stage paid!",
+            goodEs:
+              "&iexcl;Correcto! 4&times;5 = 20, luego 3 + 20 = 23. &iexcl;Escenario pagado!",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; Multiply BEFORE you add. Do 4&times;5 = 20 first, then add the 3. Use the hint.",
+            badEs:
+              "Multiplica ANTES de sumar. 4&times;5 = 20, luego suma 3. Usa la pista.",
             onSolve: function () {
+              var box = $("dlg-act2");
               setTimeout(function () {
-                showBubble("dlg-act2", DLG.act2b[0]);
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act2b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act2b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act2b[0].es +
+                  "</div></div>";
                 $("chal2b").style.display = "block";
-              }, 450);
+                $("frame2").style.display = "block";
+              }, 500);
             },
           });
           wireChoices({
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; Excellent! 8n means 8 coins for each of n lights, and + 20 is the flat fee. The expression is 8n + 20. LIGHTS PAID!",
+            goodEs:
+              "&iexcl;Excelente! 8n + 20: 8 por cada luz m&aacute;s 20 de cuota. &iexcl;Luces pagadas!",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; The 8 is the cost for EACH light, so it multiplies n: 8n. The 20 is added once. Try 8n + 20.",
+            badEs:
+              "El 8 es por cada luz: 8n. El 20 se suma una vez. Prueba 8n + 20.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
               $("adv-act2").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act2", DLG.bonus2[0]);
-                $("bonus2").style.display = "block";
-              }, 450);
             },
-          });
-          wireChoices({
-            choicesId: "choicesB2",
-            feedbackId: "fbB2",
-            goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
-            badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-act2").addEventListener("click", function () {
             state.act2 = true;
@@ -1390,16 +1444,18 @@
           });
         }
 
+        /* ---------- FINAL flow ---------- */
         function initFinal() {
           runDialogue({
             dlgId: "dlg-final",
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Throw the switch ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
+              $("frameF").style.display = "block";
               $("chalF").scrollIntoView({
                 behavior: "smooth",
                 block: "center",
@@ -1410,26 +1466,16 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; SHOWTIME! 2&sup3; = 8, then 6&times;4 = 24, then 8 + 24 = 32. Both skills, perfect. THE HEADLINER BEGINS!",
+            goodEs:
+              "&iexcl;HORA DEL SHOW! 2&sup3; = 8, 6&times;4 = 24, 8 + 24 = 32. &iexcl;Empieza el show principal!",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; Order matters: do the power 2&sup3; = 8 first, then multiply 6&times;4 = 24, then add. The total is 32.",
+            badEs:
+              "El orden importa: 2&sup3; = 8, luego 6&times;4 = 24, luego suma. El total es 32.",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
               $("adv-final").classList.add("show");
-              setTimeout(function () {
-                $("bonusF").style.display = "block";
-              }, 300);
             },
-          });
-          wireChoices({
-            choicesId: "choicesBF",
-            feedbackId: "fbBF",
-            goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
-            badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-final").addEventListener("click", function () {
             state.final = true;
@@ -1438,6 +1484,7 @@
           });
         }
 
+        /* ---------- Wire start / restart ---------- */
         $("start-btn").addEventListener("click", function () {
           showScene("act1");
         });
@@ -1445,6 +1492,7 @@
           location.reload();
         });
 
+        /* ---------- Init ---------- */
         initAct1();
         initAct2();
         initFinal();

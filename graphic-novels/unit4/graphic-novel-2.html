@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>Graphic Novel #2 · Shopping Mall Mogul</title>
     <style>
       :root {
         --bg: #070d1f;
@@ -314,6 +314,11 @@
         font-weight: 800;
         margin-bottom: 6px;
       }
+      .bonus-note {
+        font-size: 0.85rem;
+        color: #ffe6a8;
+        margin: 4px 0 2px;
+      }
       .choices {
         display: grid;
         gap: 10px;
@@ -346,11 +351,9 @@
         border-color: var(--bad);
         background: #3a1414;
       }
-      .choice .tree {
+      .choice .calc {
         font-family: "Courier New", monospace;
-        white-space: pre;
-        font-size: 0.95rem;
-        line-height: 1.35;
+        font-size: 0.92rem;
         display: block;
         margin-top: 4px;
         color: #9ecbff;
@@ -525,9 +528,7 @@
     <div class="topbar">
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
-        <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
-        >
+        <span class="title"><span class="v">#2</span> Shopping Mall Mogul</span>
         <div class="progress-wrap">
           <div
             class="progress"
@@ -559,7 +560,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: Best Buy
         </button>
         <button
           class="tab locked"
@@ -568,7 +569,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: Markdowns
         </button>
         <button
           class="tab locked"
@@ -577,7 +578,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Grand Opening
         </button>
         <button
           class="tab"
@@ -601,20 +602,24 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit4/cover.png"
+            alt="A young entrepreneur smiles in front of a bright futuristic shopping mall with floating price tags"
           />
         </div>
         <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <h2>Shopping Mall Mogul &#128717;&#65039;</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          Mateo just took over the Nexus Galleria, the city&rsquo;s most
+          ambitious smart-mall. Every shop he wants to open is gated behind a
+          pricing puzzle. To out-negotiate rival retailers and pack the
+          galleria, he must master <b>unit rates</b>, <b>percent markdowns</b>,
+          and the slippery world of percents <b>over 100%</b> and
+          <b>under 1%</b>. Sharpen your deal-making instincts &mdash; the best
+          bargain hunter wins the mall.
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <button class="start" id="start-btn">
+          Take the Reins &#128717;&#65039;
+        </button>
       </section>
 
       <!-- ACT 1 -->
@@ -625,14 +630,14 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act">Act 1 &middot; Rates &amp; Unit Rates</span>
+          <h2>The Best Buy</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit4/unit-rate.png"
+            alt="Mateo weighs two products, deciding which is the better deal"
           />
         </div>
 
@@ -642,85 +647,82 @@
           <button class="next" id="next-act1">Next &#9654;</button>
         </div>
 
+        <!-- Core 1: best buy via unit rate, different units -->
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>&#128722; Supplier Bid #1 &mdash; Best Value</h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            Two suppliers pitch the same energy drink. Vendor A: a
+            <b>750 mL</b> bottle for <b>$4.50</b>. Vendor B: a
+            <b>1.25 L</b> (1250 mL) bottle for <b>$6.25</b>. Stock the better
+            value &mdash; compare the price per millilitre.
           </p>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
+              Vendor A &mdash; 750 mL for $4.50<span class="calc"
+                >4.50 &divide; 750 = $0.0060/mL</span
               >
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
+              Vendor B &mdash; 1.25 L for $6.25<span class="calc"
+                >6.25 &divide; 1250 = $0.0050/mL (cheaper)</span
               >
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
+        <!-- Core 2: unit rate per 100 g -->
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>&#128722; Supplier Bid #2 &mdash; Price per 100 g</h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            The roastery offers <b>240 g</b> of premium coffee for <b>$9.60</b>.
+            Shoppers compare prices <b>per 100 g</b>. What is the unit rate per
+            100 g?
           </p>
           <div class="choices" id="choices1b">
             <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
+              $4.00 per 100 g<span class="calc"
+                >9.60 &divide; 240 = $0.04/g &rarr; &times;100 = $4.00</span
               >
             </button>
             <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
+              $2.50 per 100 g<span class="calc"
+                >240 &divide; 9.60 (inverted)</span
               >
             </button>
             <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
+              $0.40 per 100 g<span class="calc">off by a factor of 10</span>
             </button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
+        <!-- Bonus (OPTIONAL) -->
         <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
+          <span class="bonus-tag">&#11088; Mogul&rsquo;s Bonus</span>
+          <p class="bonus-note">
+            Optional extra credit &mdash; you can open the shop without it.
           </p>
-          <h3>The Self-Sealing Vault</h3>
+          <h3>The Loyalty Reorder</h3>
           <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
+            A boutique reorders notebooks. Pack X: <b>5</b> for <b>$7.50</b>.
+            Pack Y: <b>8</b> for <b>$11.20</b>. Which is the better buy, and by
+            how much per notebook?
           </p>
           <div class="choices" id="choicesB1">
             <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
+              Pack X, by $0.10<span class="calc"
+                >7.50 &divide; 5 = $1.50 each</span
               >
             </button>
             <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
+              Pack Y, by $0.10<span class="calc"
+                >$1.50 vs 11.20 &divide; 8 = $1.40; saves $0.10/book</span
               >
             </button>
             <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
+              They cost the same per notebook<span class="calc"
+                >$1.50 &ne; $1.40</span
               >
             </button>
           </div>
@@ -728,9 +730,7 @@
         </div>
 
         <div class="scene-foot">
-          <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
-          </button>
+          <button class="advance" id="adv-act1">Open the shop &#128722;</button>
         </div>
       </section>
 
@@ -746,14 +746,16 @@
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act"
+              >Act 2 &middot; Fractions, Decimals &amp; Percents</span
+            >
+            <h2>The Markdown War</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit4/discount.png"
+              alt="Mateo presents a storefront covered in bright percent-off sale signs"
             />
           </div>
 
@@ -763,76 +765,79 @@
             <button class="next" id="next-act2">Next &#9654;</button>
           </div>
 
+          <!-- Core 1: sale price with percent off -->
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#127991;&#65039; Markdown #1 &mdash; The Sale Price</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              A rival drops sneaker prices, so you counter. Your sneakers list
+              at <b>$80</b> and you mark them <b>35% off</b>. What is the
+              <b>sale price</b> shoppers pay?
             </p>
             <div class="choices" id="choices2a">
-              <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
-                >
-              </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
+                $52.00<span class="calc"
+                  >80 &times; (1 &minus; 0.35) = 80 &times; 0.65</span
                 >
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
+                $28.00<span class="calc"
+                  >that is the discount, not the price</span
                 >
+              </button>
+              <button class="choice" data-correct="false">
+                $45.00<span class="calc">not 80 &times; 0.65</span>
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
+          <!-- Core 2: percents >100% and <1% -->
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>
+              &#127991;&#65039; Markdown #2 &mdash; Beyond 100% and Below 1%
+            </h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              Your dashboard shows growth of <b>250%</b> and a tiny
+              transaction-fee of <b>0.5%</b>. Percents can be greater than 100%
+              or less than 1%. Which row converts <b>both</b> correctly?
             </p>
             <div class="choices" id="choices2b">
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
+                250% = 2.5 = 5/2 &nbsp;and&nbsp; 0.5% = 0.005 = 1/200
               </button>
               <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
+                250% = 25 &nbsp;and&nbsp; 0.5% = 0.5
               </button>
               <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                250% = 0.25 &nbsp;and&nbsp; 0.5% = 0.05
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
+          <!-- Bonus (OPTIONAL): find original price -->
           <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <span class="bonus-tag">&#11088; Mogul&rsquo;s Bonus</span>
+            <p class="bonus-note">
+              Optional extra credit &mdash; skip it and still launch the sale.
             </p>
-            <h3>The Relatively Prime Relay</h3>
+            <h3>Reverse the Markdown</h3>
             <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
+              A designer coat is on the rack at <b>$60</b> after a
+              <b>25% off</b> sale. Working backward, what was the
+              <b>original price</b>?
             </p>
             <div class="choices" id="choicesB2">
-              <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
-              </button>
               <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
+                $80<span class="calc"
+                  >60 &divide; 0.75 = 80 (since 60 = 75% of original)</span
                 >
               </button>
               <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
+                $75<span class="calc">added 25% of 60, not the right base</span>
+              </button>
+              <button class="choice" data-correct="false">
+                $85<span class="calc">60 &divide; 0.75 &ne; 85</span>
               </button>
             </div>
             <div class="feedback" id="fbB2"></div>
@@ -840,7 +845,7 @@
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Launch the sale &#127881;
             </button>
           </div>
         </div>
@@ -854,18 +859,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Complete Act 2 to unlock the Grand Opening.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Grand Opening &middot; Boss</span>
+            <h2>The Headline Deal</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit4/final-challenge.png"
+              alt="Mateo stands before a giant mall command console covered in deal charts"
             />
           </div>
 
@@ -875,49 +880,57 @@
             <button class="next" id="next-final">Next &#9654;</button>
           </div>
 
+          <!-- Core: unit rate + percent off -->
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#11088; Headline Deal &mdash; Both Skills</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              The grand-opening special: a <b>6-pack</b> of smart bulbs at
+              <b>$48</b>, then <b>15% off</b>. Find the final price for
+              <b>one bulb</b>.
             </p>
             <div class="choices" id="choicesF">
-              <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
-              </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                $6.80<span class="calc"
+                  >48 &divide; 6 = $8 &rarr; 8 &times; 0.85 = $6.80</span
+                >
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                $8.00<span class="calc">unit rate before the discount</span>
+              </button>
+              <button class="choice" data-correct="false">
+                $7.20<span class="calc">subtracted 10%, not 15%</span>
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
+          <!-- Bonus (OPTIONAL): compare two final unit prices -->
           <div class="challenge bonus" id="bonusF" style="display: none">
-            <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
-            >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <span class="bonus-tag">&#11088; Mogul&rsquo;s Final Bonus</span>
+            <p class="bonus-note">
+              Optional extra credit &mdash; the mall opens whether or not you
+              solve it.
             </p>
-            <h3>The Reactor Tessellation</h3>
+            <h3>The Smarter Bundle</h3>
             <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
+              A competitor counters your bulb deal. <b>Deal A</b> (yours): 6 for
+              $48, then 15% off. <b>Deal B</b> (theirs): 4 for $30, then 10%
+              off. Which deal is the better value <b>per bulb</b>?
             </p>
             <div class="choices" id="choicesBF">
               <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
+                Deal B<span class="calc"
+                  >B: (30 &divide; 4) &times; 0.90 = $6.75 &lt; A&rsquo;s
+                  $6.80</span
+                >
               </button>
               <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
+                Deal A<span class="calc">$6.80 is higher than $6.75</span>
               </button>
               <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
+                They are identical per bulb<span class="calc"
+                  >$6.80 &ne; $6.75</span
+                >
               </button>
             </div>
             <div class="feedback" id="fbBF"></div>
@@ -925,7 +938,7 @@
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Open the mall! &#127775;
             </button>
           </div>
         </div>
@@ -940,17 +953,18 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit4/finish.png"
+            alt="Mateo celebrates on the balcony of his thriving mall with confetti and a cheering crowd"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#128717;&#65039;&#11088;</span>
+        <h2>Galleria Launched &mdash; Mission Complete!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          The Nexus Galleria is the busiest mall in the city. You out-priced
+          every rival with sharp <b>unit-rate</b> comparisons, ran precise
+          <b>percent markdowns</b>, and even handled percents beyond 100% and
+          below 1%. Investors are calling, Mogul &mdash; the empire is just
+          getting started.
         </p>
         <button class="restart" id="restart-btn">Run again &#8635;</button>
       </section>
@@ -964,7 +978,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Mogul&rsquo;s Codex</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -977,120 +991,120 @@
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "Floor Manager",
+              en: "Welcome to the Nexus Galleria, boss. Suppliers are bidding for shelf space &mdash; but only the sharpest VALUE wins shoppers.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Mateo",
+              en: "Then I reduce every offer to a unit rate &mdash; price per millilitre, per gram, per item. Whoever's cheaper per unit gets the shelf.",
+            },
+            {
+              who: "Floor Manager",
+              en: "First bid is on the energy drinks. Different sizes, different prices. Pick the real best value.",
+              cap: true,
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
+              who: "Mateo",
+              en: "Shelf secured. Next, the roastery quotes a bulk price &mdash; I'll express it per 100 grams so shoppers can compare instantly.",
             },
           ],
           bonus1: [
             {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
+              who: "Floor Manager",
+              en: "Optional: a loyalty boutique wants the absolute best notebook reorder. Crunch it if you want the bonus &mdash; not required to open.",
               cap: true,
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
+              who: "Floor Manager",
+              en: "A rival across the atrium just slashed prices. It's a markdown war, and shoppers are watching the percent signs.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Mateo",
+              en: "Discounts are just percents of the price. Convert the percent to a decimal, multiply, subtract &mdash; or multiply by what remains. Let's counter.",
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
+              who: "Mateo",
+              en: "My dashboard is throwing huge growth numbers and microscopic fees. Percents over 100% and under 1% &mdash; I have to read them precisely.",
             },
           ],
           bonus2: [
             {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
+              who: "Floor Manager",
+              en: "Optional puzzle: a shopper asks what a coat originally cost before its sale. Reverse the markdown for the bonus &mdash; or skip ahead.",
               cap: true,
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "Floor Manager",
+              en: "Grand opening, boss. The headline deal goes on every billboard &mdash; it has to fuse a unit rate with a percent markdown, flawlessly.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Mateo",
+              en: "Per-unit price first, then the discount. One clean number for one bulb. Let's give this city the deal of the year.",
             },
           ],
         };
 
         var GLOSS = [
           {
-            ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
+            ico: "&#128181;",
+            en: "Rate",
+            def: "A ratio comparing two quantities with different units, such as $6.25 per 1250 mL or 240 g per $9.60.",
           },
           {
-            ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
+            ico: "&#49;&#65039;&#8419;",
+            en: "Unit rate",
+            def: "A rate expressed per single unit (per 1). Computed as quantity-A &divide; quantity-B, e.g. price &divide; amount = $0.04 per gram.",
           },
           {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
+            ico: "&#128722;",
+            en: "Best buy",
+            def: "The option with the lowest unit rate. Comparisons are only valid in the same unit (per mL, per 100 g, per item).",
           },
           {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
+            ico: "&#37;",
+            en: "Percent",
+            def: "A ratio out of 100. 35% = 35/100 = 0.35. Percents can exceed 100% or be less than 1%.",
           },
           {
-            ico: "&#10094;&#10095;",
-            en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
+            ico: "&#128201;",
+            en: "Markdown / Discount",
+            def: "An amount subtracted from the original price. A p% discount gives sale price = original &times; (1 &minus; p/100).",
           },
           {
-            ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
+            ico: "&#128200;",
+            en: "Percent over 100%",
+            def: "Values greater than the whole. 250% = 2.5 = 5/2; e.g. 250% of 40 is 100.",
           },
           {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
+            ico: "&#128302;",
+            en: "Percent under 1%",
+            def: "Values smaller than one hundredth of the whole. 0.5% = 0.005 = 1/200.",
           },
           {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
+            ico: "&#128260;",
+            en: "Equivalent forms",
+            def: "Fractions, decimals, and percents can name the same value: 3/4 = 0.75 = 75%.",
           },
           {
-            ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
+            ico: "&#9194;",
+            en: "Reverse percent",
+            def: "Finding an original amount from a result. If $60 is 75% of the original, original = 60 &divide; 0.75 = $80.",
           },
           {
-            ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
-          },
-          {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            ico: "&#9878;&#65039;",
+            en: "Value comparison",
+            def: "Comparing deals by reducing each to a final unit price, then choosing the lowest.",
           },
         ];
 
@@ -1118,7 +1132,7 @@
         function setLock(tabId, locked) {
           var t = $(tabId);
           t.classList.toggle("locked", locked);
-          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Grand)/, "$1");
           t.innerHTML =
             (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
         }
@@ -1259,13 +1273,14 @@
             "</div></div>";
         }
 
+        /* ---------- ACT 1 ---------- */
         function initAct1() {
           runDialogue({
             dlgId: "dlg-act1",
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Compare value ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,9 +1294,9 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Vendor B wins: $6.25 &divide; 1250 mL = $0.0050/mL beats $4.50 &divide; 750 mL = $0.0060/mL. Shelf secured.",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; Compare the same unit. Divide each price by its millilitres &mdash; the lower price per mL is the better value.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.act1b[0]);
@@ -1293,14 +1308,14 @@
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; $9.60 &divide; 240 g = $0.04/g, so per 100 g it's $4.00. Clear, comparable pricing &mdash; shoppers love it.",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
+              $("art-act1").src = "../_art/unit4/unlock.png";
+              $("art-act1").alt =
+                "Mateo celebrates as a new shop unlocks with golden light and confetti";
+              // Core locks done -> allow advancing (bonus is OPTIONAL)
               $("adv-act1").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.bonus1[0]);
@@ -1312,11 +1327,9 @@
             choicesId: "choicesB1",
             feedbackId: "fbB1",
             goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
+              "&#11088; Pack Y: $11.20 &divide; 8 = $1.40 vs Pack X's $7.50 &divide; 5 = $1.50 &mdash; $0.10 cheaper per notebook. Bonus claimed!",
             badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.)",
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1326,13 +1339,14 @@
           });
         }
 
+        /* ---------- ACT 2 ---------- */
         function initAct2() {
           runDialogue({
             dlgId: "dlg-act2",
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Set the price ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,9 +1360,9 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; $80 &times; 0.65 = $52.00 (you keep 65% after taking 35% off). Rival countered.",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; Sale price = original &times; (1 &minus; 0.35) = 80 &times; 0.65. $28 is only the discount itself.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.act2b[0]);
@@ -1360,11 +1374,11 @@
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; 250% = 2.5 = 5/2 and 0.5% = 0.005 = 1/200. Percents above 100% and below 1% handled cleanly.",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; Divide each percent by 100: 250 &divide; 100 = 2.5; 0.5 &divide; 100 = 0.005.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
+              // Core locks done -> allow advancing (bonus is OPTIONAL)
               $("adv-act2").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.bonus2[0]);
@@ -1376,11 +1390,9 @@
             choicesId: "choicesB2",
             feedbackId: "fbB2",
             goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
+              "&#11088; $60 is 75% of the original, so original = 60 &divide; 0.75 = $80. Reverse markdown solved!",
             badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; The $60 equals 75% of the original. Divide: 60 &divide; 0.75. (Optional &mdash; you can still advance.)",
           });
           $("adv-act2").addEventListener("click", function () {
             state.act2 = true;
@@ -1390,13 +1402,14 @@
           });
         }
 
+        /* ---------- FINAL ---------- */
         function initFinal() {
           runDialogue({
             dlgId: "dlg-final",
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Build the deal ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
@@ -1410,11 +1423,11 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; $48 &divide; 6 = $8 per bulb, then $8 &times; 0.85 = $6.80. Unit rate and markdown fused perfectly.",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80).",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
+              // Core done -> allow advancing (bonus is OPTIONAL)
               $("adv-final").classList.add("show");
               setTimeout(function () {
                 $("bonusF").style.display = "block";
@@ -1425,11 +1438,9 @@
             choicesId: "choicesBF",
             feedbackId: "fbBF",
             goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
+              "&#11088; Deal B: ($30 &divide; 4) &times; 0.90 = $7.50 &times; 0.90 = $6.75 per bulb, beating your $6.80. A true mogul knows when the rival is right!",
             badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.)",
           });
           $("adv-final").addEventListener("click", function () {
             state.final = true;

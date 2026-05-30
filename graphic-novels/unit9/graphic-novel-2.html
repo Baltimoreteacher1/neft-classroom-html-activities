@@ -3,21 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>Graphic Novel #2 · Treasure Map Navigator</title>
     <style>
       :root {
-        --bg: #070d1f;
-        --ink: #eef3ff;
-        --muted: #9fb0d6;
-        --accent: #ff8a3d;
-        --accent2: #5d7bff;
-        --panel: #101e44;
-        --line: #283f73;
+        --bg: #04201b;
+        --ink: #eefbf5;
+        --muted: #97cdbd;
+        --accent: #ffb43d;
+        --accent2: #28c8b6;
+        --panel: #0b332b;
+        --line: #1c5347;
         --ok: #39d98a;
         --bad: #ff6b6b;
         --gold: #ffd166;
-        --bubble: #0e1c40;
-        --bubble-ink: #eef3ff;
+        --bubble: #0b332b;
+        --bubble-ink: #eefbf5;
         --font:
           "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
       }
@@ -30,7 +30,7 @@
       body {
         background: radial-gradient(
           900px 600px at 80% -10%,
-          #15265a,
+          #0c4438,
           var(--bg) 65%
         );
         color: var(--ink);
@@ -54,7 +54,7 @@
         position: sticky;
         top: 0;
         z-index: 30;
-        background: rgba(7, 13, 31, 0.96);
+        background: rgba(4, 32, 27, 0.96);
         border-bottom: 1px solid var(--line);
         backdrop-filter: blur(6px);
       }
@@ -98,7 +98,7 @@
       .progress {
         flex: 1;
         height: 10px;
-        background: #0a142e;
+        background: #051d18;
         border: 1px solid var(--line);
         border-radius: 999px;
         overflow: hidden;
@@ -131,7 +131,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #0c1838;
+        background: #093029;
         border: 1px solid var(--line);
         color: var(--muted);
         border-radius: 12px;
@@ -142,8 +142,8 @@
         white-space: nowrap;
       }
       .tab[aria-selected="true"] {
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #18a695);
+        color: #032019;
         border-color: transparent;
       }
       .tab:focus-visible {
@@ -188,7 +188,7 @@
         border-radius: 18px;
         overflow: hidden;
         border: 1px solid var(--line);
-        background: #0a142e;
+        background: #051d18;
         aspect-ratio: 16/9;
       }
       .art img {
@@ -238,7 +238,7 @@
         font-size: 1.06rem;
       }
       .bubble.caption {
-        background: #0a142e;
+        background: #051d18;
         border-style: dashed;
       }
       .dlg-row {
@@ -257,15 +257,15 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #283f73;
+        background: #1c5347;
       }
       .dots i.on {
         background: var(--accent2);
       }
       .next {
         min-height: 44px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #18a695);
+        color: #032019;
         border: none;
         border-radius: 12px;
         padding: 10px 18px;
@@ -280,7 +280,7 @@
 
       .challenge {
         margin-top: 16px;
-        background: #0c1838;
+        background: #093029;
         border: 1px solid var(--line);
         border-radius: 16px;
         padding: 16px;
@@ -314,6 +314,53 @@
         font-weight: 800;
         margin-bottom: 6px;
       }
+      .bonus-note {
+        font-size: 0.82rem;
+        color: #ffe2a8;
+        font-style: italic;
+        margin: 4px 0 2px;
+      }
+      .skip-bonus {
+        min-height: 40px;
+        margin-top: 10px;
+        background: transparent;
+        border: 1px dashed var(--gold);
+        color: var(--gold);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .skip-bonus:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      /* grids */
+      .grid-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .grid-wrap svg {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+        background: #051d18;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+      .numline-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .numline-wrap svg {
+        width: 100%;
+        max-width: 470px;
+        height: auto;
+      }
       .choices {
         display: grid;
         gap: 10px;
@@ -322,7 +369,7 @@
       .choice {
         min-height: 48px;
         text-align: left;
-        background: #101e44;
+        background: #0b332b;
         border: 2px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -348,12 +395,10 @@
       }
       .choice .tree {
         font-family: "Courier New", monospace;
-        white-space: pre;
-        font-size: 0.95rem;
-        line-height: 1.35;
+        font-size: 0.9rem;
         display: block;
         margin-top: 4px;
-        color: #9ecbff;
+        color: #9ee9da;
       }
       .feedback {
         margin-top: 12px;
@@ -384,8 +429,8 @@
       }
       .advance {
         min-height: 48px;
-        background: linear-gradient(135deg, var(--accent), #ff6a3d);
-        color: #1a0d02;
+        background: linear-gradient(135deg, var(--accent), #ff8a3d);
+        color: #2a1602;
         border: none;
         border-radius: 12px;
         padding: 12px 22px;
@@ -422,8 +467,8 @@
       .start {
         min-height: 52px;
         margin-top: 8px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #18a695);
+        color: #032019;
         border: none;
         border-radius: 14px;
         padding: 14px 28px;
@@ -441,8 +486,8 @@
         font-size: 0.8rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #032019;
+        background: linear-gradient(135deg, var(--accent2), #18a695);
         border-radius: 999px;
         padding: 5px 14px;
         font-weight: 700;
@@ -453,7 +498,7 @@
         gap: 12px;
       }
       .term {
-        background: #0c1838;
+        background: #093029;
         border: 1px solid var(--line);
         border-radius: 14px;
         padding: 14px 16px;
@@ -495,7 +540,7 @@
       .restart {
         min-height: 48px;
         margin-top: 14px;
-        background: #0c1838;
+        background: #093029;
         border: 1px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -526,7 +571,7 @@
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
         <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
+          ><span class="v">#2</span> Treasure Map Navigator</span
         >
         <div class="progress-wrap">
           <div
@@ -559,7 +604,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: Charting the Grid
         </button>
         <button
           class="tab locked"
@@ -568,7 +613,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: Elevations &amp; Depths
         </button>
         <button
           class="tab locked"
@@ -577,7 +622,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Final: The Cache
         </button>
         <button
           class="tab"
@@ -601,20 +646,24 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit9/cover.png"
+            alt="Maya the young explorer holds up a glowing treasure map on a tropical cliff above the sea"
           />
         </div>
         <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <h2>Treasure Map Navigator</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          A storm-worn chart names a lost cache somewhere across the
+          archipelago. As the navigator <b>Maya</b>, you must chart ordered
+          pairs across all four quadrants,
+          <b>reflect points across the axes</b>, and reason with
+          <b>integers and absolute value</b> &mdash; reading elevation above the
+          waves and depth below them &mdash; to triangulate the treasure before
+          the tide turns.
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <button class="start" id="start-btn">
+          Begin the Expedition &#128506;&#65039;
+        </button>
       </section>
 
       <!-- ACT 1 -->
@@ -625,14 +674,14 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act">Act 1 &middot; Graph on the Coordinate Plane</span>
+          <h2>Charting the Grid</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit9/map-grid.png"
+            alt="Maya studies a treasure map overlaid with a glowing coordinate grid"
           />
         </div>
 
@@ -642,94 +691,96 @@
           <button class="next" id="next-act1">Next &#9654;</button>
         </div>
 
+        <!-- 1a: reflection across x-axis -->
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>
+            &#128205; Cartographer&rsquo;s Lock &mdash; Reflect the Marker
+          </h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            A landmark sits at the lighthouse, <b>(&minus;6, 4)</b>. The chart
+            says its mirror beacon lies <b>reflected across the x-axis</b>.
+            Where is the beacon?
           </p>
+          <div class="grid-wrap" id="grid1a"></div>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
-              >
+              (6, 4) <span class="tree">(reflected across the y-axis)</span>
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
+              (&minus;6, &minus;4)
+              <span class="tree">(x stays, y changes sign)</span>
             </button>
             <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
-              >
+              (6, &minus;4)
+              <span class="tree">(reflected across both axes)</span>
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
+        <!-- 1b: distance between points sharing a coordinate -->
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>&#128205; Survey Lock &mdash; Distance on the Chart</h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            Two buoys lie at <b>(&minus;3, 2)</b> and <b>(5, 2)</b>. They share
+            the same y-value, so the leg between them is horizontal. Using
+            absolute value, how long is that leg?
           </p>
+          <div class="grid-wrap" id="grid1b"></div>
           <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              2 units <span class="tree">(that is the shared y-value)</span>
+            </button>
             <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
-              >
+              8 units
+              <span class="tree">(|&minus;3 &minus; 5| = |&minus;8| = 8)</span>
             </button>
             <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
+              &minus;8 units
+              <span class="tree">(distance is never negative)</span>
             </button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
+        <!-- BONUS 1 (optional) -->
         <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
+          <span class="bonus-tag">&#11088; Navigator&rsquo;s Challenge</span>
+          <p class="bonus-note">
+            Optional &mdash; you can skip this anytime; it never blocks your
+            progress.
           </p>
-          <h3>The Self-Sealing Vault</h3>
+          <h3>The Double Reflection</h3>
           <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
+            A point starts at <b>(4, &minus;7)</b>. Reflect it across the
+            <b>y-axis</b>, then reflect that result across the <b>x-axis</b>.
+            Where does it land?
           </p>
           <div class="choices" id="choicesB1">
             <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
-              >
+              (4, 7) <span class="tree">(only reflected across x-axis)</span>
             </button>
             <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
+              (&minus;4, 7)
+              <span class="tree"
+                >(both signs flip: (4,&minus;7) &rarr; (&minus;4,&minus;7)
+                &rarr; (&minus;4,7))</span
               >
             </button>
             <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
-              >
+              (&minus;4, &minus;7)
+              <span class="tree">(only reflected across y-axis)</span>
             </button>
           </div>
           <div class="feedback" id="fbB1"></div>
+          <button class="skip-bonus" id="skipB1">
+            Skip bonus &rarr; Breach onward
+          </button>
         </div>
 
         <div class="scene-foot">
           <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
+            Sail to the cliffs &#129517;
           </button>
         </div>
       </section>
@@ -746,14 +797,16 @@
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act"
+              >Act 2 &middot; Integers &amp; Absolute Value</span
+            >
+            <h2>Elevations &amp; Depths</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit9/elevation.png"
+              alt="Maya at a cliff edge reading a vertical scale of heights above and depths below the sea"
             />
           </div>
 
@@ -763,84 +816,98 @@
             <button class="next" id="next-act2">Next &#9654;</button>
           </div>
 
+          <!-- 2a: order integers in context -->
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#127956;&#65039; Depth Gauge &mdash; Order the Stations</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              Five dive stations read: reef shelf <b>&minus;9 m</b>, gull rock
+              <b>+14 m</b>, surface buoy <b>0 m</b>, wreck <b>&minus;23 m</b>,
+              and the cliff ledge <b>+5 m</b>. List them from
+              <b>deepest to highest</b>.
             </p>
+            <div class="numline-wrap" id="nline2a"></div>
             <div class="choices" id="choices2a">
               <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
+                &minus;9, &minus;23, 0, 5, 14
+                <span class="tree"
+                  >(&minus;9 and &minus;23 are out of order)</span
                 >
               </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
-                >
+                &minus;23, &minus;9, 0, 5, 14
+                <span class="tree">(deepest = most negative = least)</span>
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
-                >
+                14, 5, 0, &minus;9, &minus;23
+                <span class="tree">(that is highest to deepest)</span>
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
+          <!-- 2b: absolute value compares distances -->
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>&#127754; Pressure Lock &mdash; Distance From the Surface</h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              A drone hovers at <b>+18 m</b> above the waves; a diver works at
+              <b>&minus;25 m</b>. Sea level is 0.
+              <b>Who is farther from the surface</b>, and by how much, using
+              absolute value?
             </p>
             <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                The drone &mdash; +18 &gt; &minus;25
+                <span class="tree">(compares value, not distance)</span>
+              </button>
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
+                The diver &mdash; |&minus;25| = 25 &gt; |18| = 18
+                <span class="tree">(distance ignores sign)</span>
               </button>
               <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
-              </button>
-              <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                They are equal &mdash; both 0 from the surface
+                <span class="tree">(only the surface is 0 away)</span>
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
+          <!-- BONUS 2 (optional) -->
           <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <span class="bonus-tag">&#11088; Navigator&rsquo;s Challenge</span>
+            <p class="bonus-note">
+              Optional &mdash; skip anytime; it never blocks your progress.
             </p>
-            <h3>The Relatively Prime Relay</h3>
+            <h3>The Temperature Trap</h3>
             <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
+              Two cave inscriptions warn of cold: chamber A at
+              <b>&minus;4&deg;C</b> and chamber B at <b>&minus;11&deg;C</b>.
+              Which statement is true?
             </p>
             <div class="choices" id="choicesB2">
               <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
-              </button>
-              <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
+                &minus;11 &gt; &minus;4, so B is warmer
+                <span class="tree"
+                  >(&minus;11 is actually less than &minus;4)</span
                 >
               </button>
+              <button class="choice" data-correct="true">
+                &minus;4 &gt; &minus;11, so A is warmer, but B is farther from 0
+                <span class="tree">(|&minus;11| = 11 &gt; |&minus;4| = 4)</span>
+              </button>
               <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
+                They are equal because both are negative
+                <span class="tree">(sign alone doesn&rsquo;t set order)</span>
               </button>
             </div>
             <div class="feedback" id="fbB2"></div>
+            <button class="skip-bonus" id="skipB2">
+              Skip bonus &rarr; Engage onward
+            </button>
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Triangulate the cache &#9889;
             </button>
           </div>
         </div>
@@ -854,18 +921,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Complete Act 2 to unlock the Final.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Final &middot; Navigate to the Treasure</span>
+            <h2>The Cache</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit9/final-nav.png"
+              alt="Maya stands at a glowing X on the map grid near a steep cliff edge"
             />
           </div>
 
@@ -876,56 +943,79 @@
           </div>
 
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#128081; Master Bearing &mdash; The Combined Fix</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              The cache marker is plotted at <b>(&minus;7, &minus;3)</b> and
+              lies buried at <b>&minus;12 m</b> relative to the surface. Choose
+              the single line that is <b>entirely correct</b>: the quadrant, the
+              reflection of the marker across the y-axis, and the burial depth
+              as a distance.
             </p>
+            <div class="grid-wrap" id="gridF"></div>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
+                Quadrant III; reflection across y-axis = (&minus;7, 3); depth
+                |&minus;12| = 12 m
+                <span class="tree"
+                  >(reflection across y-axis flips x, not y)</span
+                >
               </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                Quadrant III; reflection across y-axis = (7, &minus;3); depth
+                |&minus;12| = 12 m
+                <span class="tree">(x &rarr; &minus;x, y unchanged)</span>
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                Quadrant II; reflection across y-axis = (7, &minus;3); depth
+                |&minus;12| = &minus;12 m
+                <span class="tree"
+                  >(left+down is QIII, and distance &ge; 0)</span
+                >
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
+          <!-- BONUS F (optional) -->
           <div class="challenge bonus" id="bonusF" style="display: none">
             <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
+              >&#11088; Navigator&rsquo;s Final Challenge</span
             >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <p class="bonus-note">
+              Optional &mdash; skip anytime; the treasure is already yours.
             </p>
-            <h3>The Reactor Tessellation</h3>
+            <h3>The Vertical Span</h3>
             <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
+              From a watch-point at <b>+9 m</b> elevation, the cache sits at
+              <b>&minus;12 m</b>. What is the total <b>vertical distance</b> the
+              rope must span between them?
             </p>
             <div class="choices" id="choicesBF">
+              <button class="choice" data-correct="false">
+                3 m
+                <span class="tree"
+                  >(that is 9 + (&minus;12), not a distance)</span
+                >
+              </button>
               <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
+                21 m
+                <span class="tree"
+                  >(|9| + |&minus;12| = 9 + 12, opposite sides of 0)</span
+                >
               </button>
               <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
-              </button>
-              <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
+                12 m <span class="tree">(that is only the depth below 0)</span>
               </button>
             </div>
             <div class="feedback" id="fbBF"></div>
+            <button class="skip-bonus" id="skipBF">
+              Skip bonus &rarr; Claim the treasure
+            </button>
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Unearth the cache &#127775;
             </button>
           </div>
         </div>
@@ -940,19 +1030,20 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit9/treasure-found.png"
+            alt="Maya opens a glowing treasure chest full of gold on the beach at sunset"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#128176;&#11088;</span>
+        <h2>Cache Recovered &mdash; Expedition Complete!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          The treasure is unearthed, Navigator. You charted ordered pairs across
+          every quadrant, <b>reflected points across the axes</b>, ordered
+          integers from the deepest wreck to the highest gull rock, and used
+          <b>absolute value</b> to measure true distances from the surface. A
+          flawless fix. The map &mdash; and the gold &mdash; are yours.
         </p>
-        <button class="restart" id="restart-btn">Run again &#8635;</button>
+        <button class="restart" id="restart-btn">Run it again &#8635;</button>
       </section>
 
       <!-- GLOSSARY -->
@@ -964,7 +1055,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Navigator&rsquo;s Codex</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -974,123 +1065,253 @@
       (function () {
         "use strict";
 
+        /* ---------- Coordinate grid SVG (-8..8) ---------- */
+        function gridSVG(points, label) {
+          var size = 260,
+            cx = size / 2,
+            step = size / 16;
+          function X(x) {
+            return cx + x * step;
+          }
+          function Y(y) {
+            return cx - y * step;
+          }
+          var s =
+            '<svg viewBox="0 0 ' +
+            size +
+            " " +
+            size +
+            '" role="img" aria-label="Coordinate grid showing ' +
+            label +
+            '">';
+          var i;
+          for (i = -8; i <= 8; i++) {
+            s +=
+              '<line x1="' +
+              X(i) +
+              '" y1="0" x2="' +
+              X(i) +
+              '" y2="' +
+              size +
+              '" stroke="#1c5347" stroke-width="1"/>';
+            s +=
+              '<line x1="0" y1="' +
+              Y(i) +
+              '" x2="' +
+              size +
+              '" y2="' +
+              Y(i) +
+              '" stroke="#1c5347" stroke-width="1"/>';
+          }
+          s +=
+            '<line x1="0" y1="' +
+            cx +
+            '" x2="' +
+            size +
+            '" y2="' +
+            cx +
+            '" stroke="#97cdbd" stroke-width="2"/>';
+          s +=
+            '<line x1="' +
+            cx +
+            '" y1="0" x2="' +
+            cx +
+            '" y2="' +
+            size +
+            '" stroke="#97cdbd" stroke-width="2"/>';
+          points.forEach(function (p) {
+            s +=
+              '<circle cx="' +
+              X(p[0]) +
+              '" cy="' +
+              Y(p[1]) +
+              '" r="6" fill="' +
+              (p[2] || "#28c8b6") +
+              '" stroke="#04201b" stroke-width="1.5"/>';
+          });
+          s += "</svg>";
+          return s;
+        }
+
+        /* ---------- Number line SVG ---------- */
+        function numlineSVG(points) {
+          var w = 460,
+            h = 70,
+            cy = 38,
+            pad = 22;
+          var min = -25,
+            max = 16;
+          function X(v) {
+            return pad + ((v - min) / (max - min)) * (w - 2 * pad);
+          }
+          var s =
+            '<svg viewBox="0 0 ' +
+            w +
+            " " +
+            h +
+            '" role="img" aria-label="Number line of station depths and heights">';
+          s +=
+            '<line x1="' +
+            pad +
+            '" y1="' +
+            cy +
+            '" x2="' +
+            (w - pad) +
+            '" y2="' +
+            cy +
+            '" stroke="#97cdbd" stroke-width="2"/>';
+          [-25, -20, -15, -10, -5, 0, 5, 10, 15].forEach(function (t) {
+            s +=
+              '<line x1="' +
+              X(t) +
+              '" y1="' +
+              (cy - 5) +
+              '" x2="' +
+              X(t) +
+              '" y2="' +
+              (cy + 5) +
+              '" stroke="#97cdbd" stroke-width="1.5"/>';
+            s +=
+              '<text x="' +
+              X(t) +
+              '" y="' +
+              (cy + 20) +
+              '" fill="#97cdbd" font-size="10" text-anchor="middle">' +
+              t +
+              "</text>";
+          });
+          points.forEach(function (p) {
+            s +=
+              '<circle cx="' +
+              X(p) +
+              '" cy="' +
+              cy +
+              '" r="5" fill="#28c8b6" stroke="#04201b" stroke-width="1.5"/>';
+            s +=
+              '<text x="' +
+              X(p) +
+              '" y="' +
+              (cy - 12) +
+              '" fill="#28c8b6" font-size="10" text-anchor="middle" font-weight="bold">' +
+              p +
+              "</text>";
+          });
+          s += "</svg>";
+          return s;
+        }
+
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "Captain's Log",
+              en: "The chart is gridded like a coordinate plane &mdash; origin at the old harbor, four quadrants spanning the archipelago. Read every mark precisely.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Maya",
+              en: "Ordered pairs I can do in my sleep. The tricky part is the reflections &mdash; the chart mirrors beacons across the axes. Let me chart the first.",
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
+              who: "Maya",
+              en: "Beacon located. Next the survey wants a leg length between two buoys &mdash; absolute value gives me the distance.",
             },
           ],
           bonus1: [
             {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
+              who: "Captain's Log",
+              en: "Optional waypoint: a double reflection puzzle is etched in the margin. Attempt it for extra glory, or sail on &mdash; your route is already open.",
               cap: true,
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
-              cap: true,
+              who: "Maya",
+              en: "The cliffs! Sea level is my zero. Above the waves is positive elevation; below is negative depth. The chart lists stations all up and down the water column.",
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Captain's Log",
+              en: "Order them, then judge true distance from the surface with absolute value. A deep number can be far from zero even while being 'less'.",
+              cap: true,
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
+              who: "Maya",
+              en: "Stations ordered. Now the pressure lock wants who's farther from the surface &mdash; that's a contest of absolute values, not raw integers.",
             },
           ],
           bonus2: [
             {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
+              who: "Captain's Log",
+              en: "Optional: a frozen chamber riddle on comparing negative temperatures. Skip freely &mdash; it won't hold the cache from you.",
               cap: true,
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "Captain's Log",
+              en: "The cache marker is fixed. The final bearing fuses everything: quadrant, a reflection, and burial depth as a true distance.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Maya",
+              en: "One line, no errors. Plot, reflect, measure. Standing by to dig.",
             },
           ],
         };
 
         var GLOSS = [
           {
-            ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
+            ico: "&#128511;",
+            en: "Coordinate plane",
+            def: "A grid formed by a horizontal x-axis and vertical y-axis meeting at the origin, dividing space into four quadrants.",
           },
           {
-            ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
+            ico: "&#128205;",
+            en: "Ordered pair (x, y)",
+            def: "A pair naming a unique point: x is horizontal displacement, y is vertical. Order matters &mdash; (3, &minus;2) &ne; (&minus;2, 3).",
           },
           {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
+            ico: "&#129517;",
+            en: "Quadrant",
+            def: "I (+,+), II (&minus;,+), III (&minus;,&minus;), IV (+,&minus;), numbered counterclockwise from the top-right.",
           },
           {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
+            ico: "&#128260;",
+            en: "Reflection across the x-axis",
+            def: "Maps (x, y) to (x, &minus;y): the x-coordinate stays, the y-coordinate changes sign.",
           },
           {
-            ico: "&#10094;&#10095;",
-            en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
+            ico: "&#128259;",
+            en: "Reflection across the y-axis",
+            def: "Maps (x, y) to (&minus;x, y): the y-coordinate stays, the x-coordinate changes sign.",
           },
           {
-            ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
+            ico: "&#127759;",
+            en: "Integer",
+            def: "A number from the set { &hellip; &minus;2, &minus;1, 0, 1, 2 &hellip; }: positive, negative, or zero, with no fractional part.",
           },
           {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
+            ico: "&#128207;",
+            en: "Absolute value |x|",
+            def: "The distance of x from 0 on the number line; always non-negative. |&minus;25| = 25, |18| = 18.",
           },
           {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
+            ico: "&#9878;&#65039;",
+            en: "Compare &amp; order integers",
+            def: "On a number line, a value to the right is greater. So &minus;4 &gt; &minus;11 even though 11 &gt; 4 in size.",
           },
           {
-            ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
+            ico: "&#128207;",
+            en: "Distance between points",
+            def: "For points sharing a coordinate, the distance is the absolute value of the difference of the others: |&minus;3 &minus; 5| = 8.",
           },
           {
-            ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
-          },
-          {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            ico: "&#127777;&#65039;",
+            en: "Opposite / signed quantity",
+            def: "Opposites are equal distance from 0 with different signs (+18 and &minus;18). Signs encode direction: up vs. down, hot vs. cold.",
           },
         ];
 
@@ -1259,13 +1480,37 @@
             "</div></div>";
         }
 
+        /* render grids / number line */
+        $("grid1a").innerHTML = gridSVG(
+          [
+            [-6, 4, "#ffb43d"],
+            [-6, -4, "#28c8b6"],
+          ],
+          "lighthouse and reflected beacon",
+        );
+        $("grid1b").innerHTML = gridSVG(
+          [
+            [-3, 2, "#ffb43d"],
+            [5, 2, "#ffb43d"],
+          ],
+          "two buoys on a horizontal leg",
+        );
+        $("gridF").innerHTML = gridSVG(
+          [
+            [-7, -3, "#ffb43d"],
+            [7, -3, "#28c8b6"],
+          ],
+          "cache marker and its reflection",
+        );
+        $("nline2a").innerHTML = numlineSVG([-23, -9, 0, 5, 14]);
+
         function initAct1() {
           runDialogue({
             dlgId: "dlg-act1",
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Chart the beacon ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,9 +1524,9 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Correct. Reflecting (&minus;6, 4) across the x-axis keeps x and negates y &rarr; (&minus;6, &minus;4).",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; Across the x-axis, x stays and y flips sign. (&minus;6, 4) &rarr; (&minus;6, &minus;4).",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.act1b[0]);
@@ -1293,18 +1538,15 @@
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; Right. Same y, so the leg is |&minus;3 &minus; 5| = |&minus;8| = 8 units.",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; The points share y = 2, so subtract the x-values and take the absolute value: |&minus;3 &minus; 5| = 8.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
-              $("adv-act1").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.bonus1[0]);
                 $("bonus1").style.display = "block";
+                // core locks solved -> allow advance immediately (bonus optional)
+                $("adv-act1").classList.add("show");
               }, 450);
             },
           });
@@ -1312,11 +1554,19 @@
             choicesId: "choicesB1",
             feedbackId: "fbB1",
             goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
+              "&#11088; Elegant. Across y-axis: (4,&minus;7)&rarr;(&minus;4,&minus;7); then across x-axis: &rarr;(&minus;4, 7).",
             badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Apply them in order: y-axis flips x, then x-axis flips y. Result is (&minus;4, 7).",
+            onSolve: function () {
+              $("adv-act1").classList.add("show");
+            },
+          });
+          $("skipB1").addEventListener("click", function () {
+            $("adv-act1").classList.add("show");
+            $("adv-act1").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1332,7 +1582,7 @@
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Order the stations ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,9 +1596,9 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; Deepest to highest: &minus;23, &minus;9, 0, 5, 14. The most negative depth is the least value.",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; More negative means deeper and smaller. Deepest-first is &minus;23, &minus;9, 0, 5, 14.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.act2b[0]);
@@ -1360,15 +1610,14 @@
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; The diver: |&minus;25| = 25 exceeds |18| = 18. Distance from the surface ignores the sign.",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; Compare DISTANCES, not signed values: |&minus;25| = 25 &gt; |18| = 18, so the diver is farther.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
-              $("adv-act2").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.bonus2[0]);
                 $("bonus2").style.display = "block";
+                $("adv-act2").classList.add("show");
               }, 450);
             },
           });
@@ -1376,11 +1625,19 @@
             choicesId: "choicesB2",
             feedbackId: "fbB2",
             goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
+              "&#11088; Exactly. &minus;4 &gt; &minus;11 so A is warmer, yet |&minus;11| &gt; |&minus;4|, so B is farther from 0.",
             badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; On the number line &minus;4 is to the right of &minus;11, so &minus;4 &gt; &minus;11.",
+            onSolve: function () {
+              $("adv-act2").classList.add("show");
+            },
+          });
+          $("skipB2").addEventListener("click", function () {
+            $("adv-act2").classList.add("show");
+            $("adv-act2").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
           });
           $("adv-act2").addEventListener("click", function () {
             state.act2 = true;
@@ -1396,7 +1653,7 @@
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Enter the fix ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
@@ -1410,26 +1667,37 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; All correct: (&minus;7,&minus;3) is Quadrant III; reflected across the y-axis it is (7,&minus;3); and |&minus;12| = 12 m deep.",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; Left+down is Quadrant III; y-axis reflection flips only x &rarr; (7,&minus;3); and depth = |&minus;12| = 12 m (never negative).",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
-              $("adv-final").classList.add("show");
               setTimeout(function () {
+                showBubble("dlg-final", {
+                  who: "Maya",
+                  en: "Fix confirmed! One optional span calculation remains for bonus glory &mdash; or I dig right now.",
+                });
                 $("bonusF").style.display = "block";
-              }, 300);
+                $("adv-final").classList.add("show");
+              }, 350);
             },
           });
           wireChoices({
             choicesId: "choicesBF",
             feedbackId: "fbBF",
             goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
+              "&#11088; The points straddle 0, so the span is |9| + |&minus;12| = 9 + 12 = 21 m of rope.",
             badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; They are on opposite sides of 0, so add the distances: |9| + |&minus;12| = 21 m.",
+            onSolve: function () {
+              $("adv-final").classList.add("show");
+            },
+          });
+          $("skipBF").addEventListener("click", function () {
+            $("adv-final").classList.add("show");
+            $("adv-final").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
           });
           $("adv-final").addEventListener("click", function () {
             state.final = true;

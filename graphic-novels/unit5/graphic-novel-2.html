@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>Graphic Novel #2 · Theme Park Engineer: Area Architect</title>
     <style>
       :root {
         --bg: #070d1f;
@@ -314,6 +314,34 @@
         font-weight: 800;
         margin-bottom: 6px;
       }
+      .bonus-skip {
+        font-size: 0.85rem;
+        color: #ffe7ad;
+        margin: 4px 0 8px;
+        font-style: italic;
+      }
+      .figure {
+        font-family: "Courier New", monospace;
+        white-space: pre;
+        font-size: 0.95rem;
+        line-height: 1.3;
+        color: #9ecbff;
+        background: #0a142e;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 10px 0;
+        overflow-x: auto;
+      }
+      .formula {
+        display: inline-block;
+        font-family: "Courier New", monospace;
+        background: #11214d;
+        border: 1px solid var(--accent2);
+        border-radius: 8px;
+        padding: 2px 8px;
+        color: #cfe0ff;
+      }
       .choices {
         display: grid;
         gap: 10px;
@@ -349,7 +377,7 @@
       .choice .tree {
         font-family: "Courier New", monospace;
         white-space: pre;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         line-height: 1.35;
         display: block;
         margin-top: 4px;
@@ -526,7 +554,7 @@
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
         <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
+          ><span class="v">#2</span> Theme Park Engineer: Area Architect</span
         >
         <div class="progress-wrap">
           <div
@@ -559,7 +587,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: The Slanted Plaza
         </button>
         <button
           class="tab locked"
@@ -568,7 +596,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: Signs &amp; Stages
         </button>
         <button
           class="tab locked"
@@ -577,7 +605,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Final Build
         </button>
         <button
           class="tab"
@@ -601,20 +629,21 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit5/cover.png"
+            alt="A young engineer named Maya stands on a hill looking at a glowing futuristic amusement park at sunset"
           />
         </div>
         <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <h2>Theme Park Engineer: Area Architect &#127906;</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          Lead engineer <b>Maya</b> has thirty days to deliver the most
+          ambitious amusement park ever drafted. Every ride, plaza, and pavilion
+          stays locked in the simulator until its <b>surface area</b> is
+          calculated to the square meter. Master the area of parallelograms,
+          triangles, and trapezoids &mdash; then fuse them into
+          <b>composite figures</b> &mdash; to bring the whole park online.
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <button class="start" id="start-btn">Begin Build &#128640;</button>
       </section>
 
       <!-- ACT 1 -->
@@ -625,14 +654,14 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act">Act 1 &middot; Area of Parallelograms</span>
+          <h2>The Slanted Plaza</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit5/design-plaza.png"
+            alt="Maya designs a slanted parallelogram-shaped entry plaza on a glowing holographic table"
           />
         </div>
 
@@ -642,86 +671,81 @@
           <button class="next" id="next-act1">Next &#9654;</button>
         </div>
 
+        <!-- Challenge 1a: parallelogram with slant-height distractor -->
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>&#127959;&#65039; Build #1 &mdash; The Welcome Plaza</h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            The entry plaza is a parallelogram. Use
+            <span class="formula">A = b &times; h</span>, where <b>h</b> is the
+            <b>perpendicular</b> height &mdash; not the slanted side. The base
+            is <b>14 m</b>, the perpendicular height is <b>6 m</b>, and the
+            slanted edge measures <b>7 m</b>. What is the area?
           </p>
+          <div class="figure">
+            ___________________ / / / b = 14 / 7 m slant | h = 6 (perp.) / /
+            /__________________/
+          </div>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
-              >
+              98 m&sup2; &nbsp;(used the 7 m slant, not the height)
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
+              84 m&sup2; &nbsp;(14 &times; 6, perpendicular height)
             </button>
             <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
-              >
+              27 m&sup2; &nbsp;(added 14 + 7 + 6)
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
+        <!-- Challenge 1b: reverse / missing dimension -->
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>
+            &#127959;&#65039; Build #2 &mdash; The Reverse-Engineered Walkway
+          </h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            The walkway must cover exactly <b>96 m&sup2;</b> of ground, and the
+            blueprint fixes the base at <b>12 m</b>. Working backward from
+            <span class="formula">A = b &times; h</span>, what height must the
+            parallelogram have?
           </p>
           <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              108 m &nbsp;(added 96 + 12)
+            </button>
             <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
-              >
+              8 m &nbsp;(h = A &divide; b = 96 &divide; 12)
             </button>
             <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
+              1152 m &nbsp;(multiplied 96 &times; 12)
             </button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
+        <!-- Bonus 1 (OPTIONAL) -->
         <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
+          <span class="bonus-tag">&#11088; Engineer&rsquo;s Bonus</span>
+          <p class="bonus-skip">
+            Optional &mdash; the plaza is already open. Skip anytime; this never
+            blocks the next act.
           </p>
-          <h3>The Self-Sealing Vault</h3>
+          <h3>The VIP Diamond Court</h3>
           <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
+            A diamond-shaped VIP court is a parallelogram that must cover
+            <b>150 m&sup2;</b>. Its perpendicular height is fixed at
+            <b>10 m</b>. Reverse-engineer the base it needs.
           </p>
           <div class="choices" id="choicesB1">
             <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
-              >
+              1500 m &nbsp;(150 &times; 10)
             </button>
             <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
-              >
+              15 m &nbsp;(b = A &divide; h = 150 &divide; 10)
             </button>
             <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
-              >
+              140 m &nbsp;(150 &minus; 10)
             </button>
           </div>
           <div class="feedback" id="fbB1"></div>
@@ -729,7 +753,7 @@
 
         <div class="scene-foot">
           <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
+            Open the plaza &#127881;
           </button>
         </div>
       </section>
@@ -746,14 +770,14 @@
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act">Act 2 &middot; Triangles &amp; Trapezoids</span>
+            <h2>Signs &amp; Stages</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit5/triangle-trapezoid.png"
+              alt="Maya stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy"
             />
           </div>
 
@@ -763,76 +787,79 @@
             <button class="next" id="next-act2">Next &#9654;</button>
           </div>
 
+          <!-- Challenge 2a: triangle -->
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#128293; Build #3 &mdash; The Beacon Sign</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              The triangular beacon sign uses
+              <span class="formula">A = &frac12; &times; b &times; h</span>. The
+              base spans <b>16 m</b> and the height rises <b>9 m</b>. Find the
+              area of the sign face.
             </p>
+            <div class="figure">/\ / \ h = 9 / \ /______\ b = 16</div>
             <div class="choices" id="choices2a">
               <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
-                >
+                144 m&sup2; &nbsp;(forgot the &frac12;: that is 16 &times; 9)
               </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
-                >
+                72 m&sup2; &nbsp;(&frac12; &times; 16 &times; 9)
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
-                >
+                25 m&sup2; &nbsp;(added 16 + 9)
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
+          <!-- Challenge 2b: trapezoid -->
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>&#127914; Build #4 &mdash; The Trapezoid Canopy</h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              The amphitheater canopy is a trapezoid:
+              <span class="formula">A = &frac12;(b&#8321; + b&#8322;)h</span>.
+              The parallel edges are <b>8 m</b> and <b>14 m</b>, and the height
+              between them is <b>10 m</b>. Compute the canopy area.
             </p>
+            <div class="figure">
+              _____8_____ / \ / \ h = 10 /_______________\ 14
+            </div>
             <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                220 m&sup2; &nbsp;(forgot the &frac12;)
+              </button>
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
+                110 m&sup2; &nbsp;(&frac12; &times; (8 + 14) &times; 10)
               </button>
               <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
-              </button>
-              <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                70 m&sup2; &nbsp;(only &frac12; &times; 14 &times; 10)
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
+          <!-- Bonus 2 (OPTIONAL) -->
           <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <span class="bonus-tag">&#11088; Engineer&rsquo;s Bonus</span>
+            <p class="bonus-skip">
+              Optional &mdash; signs and stages are already lit. Skip anytime;
+              this never blocks the final build.
             </p>
-            <h3>The Relatively Prime Relay</h3>
+            <h3>The Reverse Sail Banner</h3>
             <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
+              A triangular sail banner must cover exactly <b>54 m&sup2;</b>, and
+              its base is locked at <b>12 m</b>. Working backward from
+              <span class="formula">A = &frac12;bh</span>, what height does the
+              sail need?
             </p>
             <div class="choices" id="choicesB2">
               <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
+                4.5 m &nbsp;(divided by base only: 54 &divide; 12)
               </button>
               <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
-                >
+                9 m &nbsp;(h = 2A &divide; b = 108 &divide; 12)
               </button>
               <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
+                18 m &nbsp;(forgot to divide by the base)
               </button>
             </div>
             <div class="feedback" id="fbB2"></div>
@@ -840,7 +867,7 @@
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Light up the park &#10024;
             </button>
           </div>
         </div>
@@ -854,18 +881,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Complete Act 2 to unlock the Final Build.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Final Build &middot; Composite Figure</span>
+            <h2>The Grand Pavilion</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit5/composite-challenge.png"
+              alt="Maya faces a giant holographic master blueprint of the whole park made of combined shapes"
             />
           </div>
 
@@ -875,49 +902,56 @@
             <button class="next" id="next-final">Next &#9654;</button>
           </div>
 
+          <!-- Core final: trapezoid + triangle composite -->
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#127914; Final Build &mdash; The Grand Pavilion</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              The pavilion roof is a <b>composite figure</b>: a trapezoid stage
+              with a triangular spire on top. Find each area, then add.
+              <br />Trapezoid: parallel sides <b>10 m</b> and <b>18 m</b>,
+              height <b>8 m</b>. <br />Triangle spire: base <b>18 m</b>, height
+              <b>6 m</b>.
             </p>
+            <div class="figure">
+              /\ / \ triangle: b=18, h=6 /____\ / 10 \ / \ trapezoid: b1=10,
+              b2=18, h=8 /__________\ 18
+            </div>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
+                112 m&sup2; &nbsp;(only the trapezoid)
               </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                166 m&sup2; &nbsp;(112 + 54, both parts)
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                220 m&sup2; &nbsp;(forgot both &frac12; factors)
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
+          <!-- Bonus F (OPTIONAL) -->
           <div class="challenge bonus" id="bonusF" style="display: none">
-            <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
-            >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <span class="bonus-tag">&#11088; Master Engineer Bonus</span>
+            <p class="bonus-skip">
+              Optional &mdash; the park is already open! Skip anytime; this
+              never blocks your Grand Opening.
             </p>
-            <h3>The Reactor Tessellation</h3>
+            <h3>The Reflecting Pool Cutout</h3>
             <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
+              The central courtyard is a <b>20 m by 12 m</b> rectangle, but a
+              triangular reflecting pool (base <b>8 m</b>, height <b>6 m</b>) is
+              cut OUT of it. How much paved area remains? Subtract the cutout.
             </p>
             <div class="choices" id="choicesBF">
+              <button class="choice" data-correct="false">
+                264 m&sup2; &nbsp;(added the pool instead of subtracting)
+              </button>
               <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
+                216 m&sup2; &nbsp;(240 &minus; 24)
               </button>
               <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
-              </button>
-              <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
+                192 m&sup2; &nbsp;(subtracted the full 8 &times; 6 = 48)
               </button>
             </div>
             <div class="feedback" id="fbBF"></div>
@@ -925,7 +959,7 @@
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Open the park! &#127881;
             </button>
           </div>
         </div>
@@ -940,17 +974,18 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit5/grand-opening.png"
+            alt="Maya raises her arms in triumph as the finished theme park glows with rides and fireworks"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#127906;&#11088;</span>
+        <h2>Grand Opening &mdash; Mission Complete!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          The park is fully online, Engineer Maya. You computed parallelogram
+          areas with the true perpendicular height, reverse-engineered missing
+          dimensions, mastered triangles and trapezoids, and decomposed the
+          pavilion into a composite figure. Every structure passed inspection to
+          the square meter &mdash; a flawless launch.
         </p>
         <button class="restart" id="restart-btn">Run again &#8635;</button>
       </section>
@@ -964,7 +999,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Engineering Codex</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -977,120 +1012,115 @@
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "Park AI",
+              en: "Lead Engineer Maya, the simulator is live. The entry plaza renders as a parallelogram &mdash; pour its slab once you compute the area.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Maya",
+              en: "Standard A = b &times; h. The trap is the slanted edge &mdash; area only ever uses the perpendicular height. Feeding the solver now.",
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
+              who: "Maya",
+              en: "Slab poured. Next the walkway is defined by its target area, not its height &mdash; so I reverse the formula and solve for the missing dimension.",
             },
           ],
           bonus1: [
             {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
+              who: "Park AI",
+              en: "Optional contract available: the VIP diamond court. Pure prestige, fully skippable &mdash; want to reverse-engineer its base?",
               cap: true,
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
+              who: "Park AI",
+              en: "Plaza certified. The beacon sign is triangular and the amphitheater canopy is a trapezoid &mdash; two new formulas to fabricate.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Maya",
+              en: "Triangle is half a parallelogram, trapezoid averages its parallel sides. I add the bases first, then apply the one-half. Building.",
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
+              who: "Maya",
+              en: "Beacon online. Now the canopy &mdash; two parallel edges, one height. Average the edges, scale by height. Straightforward.",
             },
           ],
           bonus2: [
             {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
+              who: "Park AI",
+              en: "Optional flourish: a sail banner with a fixed area. Reverse the triangle formula for its height &mdash; or move straight to the final build.",
               cap: true,
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "Park AI",
+              en: "Final structure: the Grand Pavilion. The simulator reads it as one composite figure &mdash; a trapezoid stage crowned by a triangular spire.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Maya",
+              en: "Decompose, solve each region, recombine. One total area and the whole park goes live. Running the master calculation.",
             },
           ],
         };
 
         var GLOSS = [
           {
-            ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
+            ico: "&#128208;",
+            en: "Area",
+            def: "The measure of the two-dimensional region enclosed by a figure, expressed in square units (m&sup2;).",
+          },
+          {
+            ico: "&#9647;",
+            en: "Parallelogram",
+            def: "A quadrilateral with two pairs of parallel sides. A = b &times; h, where h is the perpendicular distance between the bases.",
+          },
+          {
+            ico: "&#8597;",
+            en: "Perpendicular height",
+            def: "The straight-line distance from a base to the opposite side, meeting at a right angle. It is NOT the slanted side length.",
+          },
+          {
+            ico: "&#9651;",
+            en: "Triangle",
+            def: "A three-sided polygon. A = &frac12;bh; it is exactly half of a parallelogram with the same base and height.",
+          },
+          {
+            ico: "&#9186;",
+            en: "Trapezoid",
+            def: "A quadrilateral with one pair of parallel sides (bases b&#8321; and b&#8322;). A = &frac12;(b&#8321; + b&#8322;)h.",
+          },
+          {
+            ico: "&#9636;",
+            en: "Rectangle",
+            def: "A parallelogram with four right angles. A = length &times; width; the side length equals the perpendicular height.",
           },
           {
             ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
+            en: "Composite figure",
+            def: "A figure built from two or more basic shapes. Decompose it, find each area, then add (or subtract a cutout).",
           },
           {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
+            ico: "&#128260;",
+            en: "Reverse problem",
+            def: "Solving for a missing dimension when the area is known: rearrange the formula, e.g. h = A &divide; b, or h = 2A &divide; b for a triangle.",
           },
           {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
-          },
-          {
-            ico: "&#10094;&#10095;",
-            en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
+            ico: "&#10134;",
+            en: "Cutout / subtraction",
+            def: "When a shape is removed from a larger one, the remaining area = whole area &minus; cutout area.",
           },
           {
             ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
-          },
-          {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
-          },
-          {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
-          },
-          {
-            ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
-          },
-          {
-            ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
-          },
-          {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            en: "Square unit",
+            def: "The unit of area &mdash; a square measuring one unit on each side, such as a square meter (m&sup2;).",
           },
         ];
 
@@ -1265,7 +1295,7 @@
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Compute area ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,9 +1309,9 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Correct. A = 14 &times; 6 = 84 m&sup2;. You ignored the 7 m slant and used the perpendicular height. Slab poured.",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; Area uses the PERPENDICULAR height (6 m), never the slanted edge (7 m). Recompute 14 &times; 6.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.act1b[0]);
@@ -1293,14 +1323,14 @@
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; Exactly. Rearranged: h = A &divide; b = 96 &divide; 12 = 8 m. Walkway laid to spec. The plaza is open &mdash; advance whenever you like.",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; Reverse the formula: since A = b &times; h, solve h = A &divide; b = 96 &divide; 12.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
+              // CORE locks solved -> reveal advance immediately (bonus stays optional)
+              $("art-act1").src = "../_art/unit5/parallelogram-build.png";
+              $("art-act1").alt =
+                "Maya watches the glowing slanted plaza floor light up as construction robots finish it";
               $("adv-act1").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.bonus1[0]);
@@ -1312,11 +1342,10 @@
             choicesId: "choicesB1",
             feedbackId: "fbB1",
             goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
+              "&#11088; Sharp. b = A &divide; h = 150 &divide; 10 = 15 m. The VIP diamond court is yours.",
             badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; To find a base from area, divide: b = A &divide; h = 150 &divide; 10.",
+            onSolve: function () {}, // optional: no gating
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1332,7 +1361,7 @@
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Fabricate sign ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,9 +1375,9 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; A = &frac12; &times; 16 &times; 9 = 72 m&sup2;. Beacon sign fabricated.",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; A triangle is HALF a parallelogram. Compute 16 &times; 9 = 144, then halve it.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.act2b[0]);
@@ -1360,11 +1389,11 @@
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; A = &frac12;(8 + 14) &times; 10 = &frac12; &times; 220 = 110 m&sup2;. Canopy raised. Signs and stages are lit &mdash; advance whenever you like.",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; Add BOTH parallel sides first (8 + 14 = 22), times height 10 = 220, then take half.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
+              // CORE locks solved -> reveal advance now (bonus optional)
               $("adv-act2").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.bonus2[0]);
@@ -1376,10 +1405,9 @@
             choicesId: "choicesB2",
             feedbackId: "fbB2",
             goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
+              "&#11088; Reverse triangle: h = 2A &divide; b = (2 &times; 54) &divide; 12 = 108 &divide; 12 = 9 m. Sail banner trimmed perfectly.",
             badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
+              "&#10060; Undo the &frac12; first: multiply the area by 2, THEN divide by the base. h = 2A &divide; b.",
             onSolve: function () {},
           });
           $("adv-act2").addEventListener("click", function () {
@@ -1396,7 +1424,7 @@
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Run master calc ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
@@ -1410,11 +1438,11 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; Trapezoid &frac12;(10 + 18) &times; 8 = 112, triangle &frac12; &times; 18 &times; 6 = 54, total 112 + 54 = 166 m&sup2;. Pavilion certified &mdash; the park can open!",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; Solve each region: trapezoid = &frac12;(10+18)&times;8 = 112; triangle = &frac12;&times;18&times;6 = 54; then ADD: 112 + 54 = 166.",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
+              // CORE composite solved -> reveal advance now (bonus optional)
               $("adv-final").classList.add("show");
               setTimeout(function () {
                 $("bonusF").style.display = "block";
@@ -1425,10 +1453,9 @@
             choicesId: "choicesBF",
             feedbackId: "fbBF",
             goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
+              "&#11088; Rectangle 20 &times; 12 = 240, minus triangular pool &frac12; &times; 8 &times; 6 = 24, leaves 240 &minus; 24 = 216 m&sup2; paved. Masterful.",
             badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
+              "&#10060; This is a SUBTRACTION composite: whole rectangle (240) minus the triangle cutout (&frac12;&times;8&times;6 = 24).",
             onSolve: function () {},
           });
           $("adv-final").addEventListener("click", function () {

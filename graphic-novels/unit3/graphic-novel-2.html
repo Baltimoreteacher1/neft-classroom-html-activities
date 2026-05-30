@@ -3,21 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>Graphic Novel #2 · Global Travel Planner</title>
     <style>
       :root {
-        --bg: #070d1f;
-        --ink: #eef3ff;
-        --muted: #9fb0d6;
-        --accent: #ff8a3d;
-        --accent2: #5d7bff;
-        --panel: #101e44;
-        --line: #283f73;
+        --bg: #05121f;
+        --ink: #eef6ff;
+        --muted: #9bb6d2;
+        --accent: #ffb02e;
+        --accent2: #36c7ff;
+        --panel: #0c2438;
+        --line: #1f4866;
         --ok: #39d98a;
         --bad: #ff6b6b;
         --gold: #ffd166;
-        --bubble: #0e1c40;
-        --bubble-ink: #eef3ff;
+        --bubble: #0c2438;
+        --bubble-ink: #eef6ff;
         --font:
           "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
       }
@@ -30,7 +30,7 @@
       body {
         background: radial-gradient(
           900px 600px at 80% -10%,
-          #15265a,
+          #103354,
           var(--bg) 65%
         );
         color: var(--ink);
@@ -54,7 +54,7 @@
         position: sticky;
         top: 0;
         z-index: 30;
-        background: rgba(7, 13, 31, 0.96);
+        background: rgba(5, 18, 31, 0.96);
         border-bottom: 1px solid var(--line);
         backdrop-filter: blur(6px);
       }
@@ -98,7 +98,7 @@
       .progress {
         flex: 1;
         height: 10px;
-        background: #0a142e;
+        background: #07182a;
         border: 1px solid var(--line);
         border-radius: 999px;
         overflow: hidden;
@@ -131,7 +131,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #0c1838;
+        background: #0a2034;
         border: 1px solid var(--line);
         color: var(--muted);
         border-radius: 12px;
@@ -142,8 +142,8 @@
         white-space: nowrap;
       }
       .tab[aria-selected="true"] {
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #2f86ff);
+        color: #02121f;
         border-color: transparent;
       }
       .tab:focus-visible {
@@ -188,7 +188,7 @@
         border-radius: 18px;
         overflow: hidden;
         border: 1px solid var(--line);
-        background: #0a142e;
+        background: #07182a;
         aspect-ratio: 16/9;
       }
       .art img {
@@ -238,7 +238,7 @@
         font-size: 1.06rem;
       }
       .bubble.caption {
-        background: #0a142e;
+        background: #07182a;
         border-style: dashed;
       }
       .dlg-row {
@@ -257,15 +257,15 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #283f73;
+        background: #1f4866;
       }
       .dots i.on {
         background: var(--accent2);
       }
       .next {
         min-height: 44px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #2f86ff);
+        color: #02121f;
         border: none;
         border-radius: 12px;
         padding: 10px 18px;
@@ -280,7 +280,7 @@
 
       .challenge {
         margin-top: 16px;
-        background: #0c1838;
+        background: #0a2034;
         border: 1px solid var(--line);
         border-radius: 16px;
         padding: 16px;
@@ -296,7 +296,7 @@
       }
       .challenge.bonus {
         border-color: var(--gold);
-        background: #1c1606;
+        background: #20180a;
         box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
       }
       .challenge.bonus h3 {
@@ -314,6 +314,37 @@
         font-weight: 800;
         margin-bottom: 6px;
       }
+      .bonus-note {
+        font-size: 0.82rem;
+        color: #ffe6ab;
+        margin: 2px 0 8px;
+        font-style: italic;
+      }
+      .rtable {
+        margin: 10px 0;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      .rtable caption {
+        text-align: left;
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+      }
+      .rtable th,
+      .rtable td {
+        border: 1px solid var(--line);
+        padding: 8px 14px;
+        text-align: center;
+      }
+      .rtable th {
+        background: #0f2c47;
+        color: var(--accent2);
+      }
+      .rtable td.q {
+        color: var(--accent);
+        font-weight: 800;
+      }
       .choices {
         display: grid;
         gap: 10px;
@@ -322,7 +353,7 @@
       .choice {
         min-height: 48px;
         text-align: left;
-        background: #101e44;
+        background: #0f2c47;
         border: 2px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -346,11 +377,9 @@
         border-color: var(--bad);
         background: #3a1414;
       }
-      .choice .tree {
+      .choice .sub {
         font-family: "Courier New", monospace;
-        white-space: pre;
-        font-size: 0.95rem;
-        line-height: 1.35;
+        font-size: 0.9rem;
         display: block;
         margin-top: 4px;
         color: #9ecbff;
@@ -384,8 +413,8 @@
       }
       .advance {
         min-height: 48px;
-        background: linear-gradient(135deg, var(--accent), #ff6a3d);
-        color: #1a0d02;
+        background: linear-gradient(135deg, var(--accent), #ff8a1e);
+        color: #2a1500;
         border: none;
         border-radius: 12px;
         padding: 12px 22px;
@@ -422,8 +451,8 @@
       .start {
         min-height: 52px;
         margin-top: 8px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #2f86ff);
+        color: #02121f;
         border: none;
         border-radius: 14px;
         padding: 14px 28px;
@@ -441,8 +470,8 @@
         font-size: 0.8rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #02121f;
+        background: linear-gradient(135deg, var(--accent2), #2f86ff);
         border-radius: 999px;
         padding: 5px 14px;
         font-weight: 700;
@@ -453,7 +482,7 @@
         gap: 12px;
       }
       .term {
-        background: #0c1838;
+        background: #0a2034;
         border: 1px solid var(--line);
         border-radius: 14px;
         padding: 14px 16px;
@@ -495,7 +524,7 @@
       .restart {
         min-height: 48px;
         margin-top: 14px;
-        background: #0c1838;
+        background: #0a2034;
         border: 1px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -526,7 +555,7 @@
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
         <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
+          ><span class="v">#2</span> Global Travel Planner</span
         >
         <div class="progress-wrap">
           <div
@@ -559,7 +588,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: Paris Ratios
         </button>
         <button
           class="tab locked"
@@ -568,7 +597,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: Tokyo Tables
         </button>
         <button
           class="tab locked"
@@ -577,7 +606,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Final Trip
         </button>
         <button
           class="tab"
@@ -601,20 +630,23 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit3/cover.png"
+            alt="Maya, a young travel planner, stands on a giant glowing globe holding a travel map with airplane trails arcing between landmarks"
           />
         </div>
         <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <h2>Global Travel Planner</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          Maya has won a contest: plan one perfect
+          <b>around-the-world</b> expedition. But every destination is sealed
+          behind a ratio cipher. Reason with <b>ratios</b>, <b>unit rates</b>,
+          and <b>ratio tables</b> &mdash; and graph them &mdash; to chart the
+          route and unlock the world. Each act also hides an optional
+          <b>&#11088; Globetrotter Challenge</b> for extra glory.
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <button class="start" id="start-btn">
+          Begin the Expedition &#9992;&#65039;
+        </button>
       </section>
 
       <!-- ACT 1 -->
@@ -625,14 +657,14 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act">Act 1 &middot; Understand Ratios</span>
+          <h2>Paris: Reason with Ratios</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit3/ratios-compare.png"
+            alt="Maya stands before the Eiffel Tower holding passports with a glowing ratio comparison floating beside her"
           />
         </div>
 
@@ -643,85 +675,74 @@
         </div>
 
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>&#127467;&#127479; Cipher #1 &mdash; Equivalent Ratios</h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            The expedition manifest lists <b>4 crew for every 6 travelers</b>.
+            Which ratio is <b>equivalent</b> (the same comparison written a
+            different way)?
           </p>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
-              >
+              6 : 9
+              <span class="sub">(that is 2:3 of travelers:?, wrong order)</span>
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
+              2 : 3 <span class="sub">(divide both 4 and 6 by 2)</span>
             </button>
             <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
-              >
+              4 : 12 <span class="sub">(only the travelers doubled)</span>
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>&#127467;&#127479; Cipher #2 &mdash; Unit Rate</h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            The shuttle covers <b>18 km using 3 liters</b> of fuel. To compare
+            offers, Maya needs the <b>unit rate</b>: kilometers per
+            <b>1 liter</b>. What is it?
           </p>
           <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              3 km per liter
+              <span class="sub">(that divides the wrong way)</span>
+            </button>
             <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
-              >
+              6 km per liter <span class="sub">(18 &divide; 3 = 6)</span>
             </button>
             <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
+              15 km per liter <span class="sub">(that is 18 &minus; 3)</span>
             </button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
+        <!-- OPTIONAL Bonus -->
         <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
+          <span class="bonus-tag">&#11088; Globetrotter Challenge</span>
+          <p class="bonus-note">
+            Optional extra credit &mdash; skip it any time and still fly on.
           </p>
-          <h3>The Self-Sealing Vault</h3>
+          <h3>The Best Deal</h3>
           <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
+            Two taxi apps wait outside the Louvre. App A: <b>$24 for 8 km</b>.
+            App B: <b>$15 for 5 km</b>. Using unit rates (price per km), which
+            is the better deal &mdash; or are they the same?
           </p>
           <div class="choices" id="choicesB1">
             <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
+              App A is cheaper
+              <span class="sub"
+                >($24&divide;8 = $3/km vs $15&divide;5 = $3/km)</span
               >
             </button>
             <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
-              >
+              They cost the same <span class="sub">both are $3 per km</span>
             </button>
             <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
-              >
+              App B is cheaper
+              <span class="sub">(check both unit rates again)</span>
             </button>
           </div>
           <div class="feedback" id="fbB1"></div>
@@ -729,7 +750,7 @@
 
         <div class="scene-foot">
           <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
+            Fly to Tokyo &#9992;&#65039;
           </button>
         </div>
       </section>
@@ -746,14 +767,14 @@
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act">Act 2 &middot; Ratio Tables &amp; Graphs</span>
+            <h2>Tokyo: Tables &amp; the Graph</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit3/ratio-table.png"
+              alt="Maya draws a glowing ratio table and a rising line graph in the air on a Tokyo street"
             />
           </div>
 
@@ -764,75 +785,109 @@
           </div>
 
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#127471;&#127477; Cipher #3 &mdash; Scale the Table</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              The bullet train logs <b>240 km in 3 hours</b> at a steady speed.
+              Complete the ratio table for <b>7 hours</b>.
             </p>
+            <table class="rtable">
+              <caption>
+                Hours and kilometers (constant speed)
+              </caption>
+              <tr>
+                <th scope="row">Hours</th>
+                <td>1</td>
+                <td>3</td>
+                <td>5</td>
+                <td>7</td>
+              </tr>
+              <tr>
+                <th scope="row">Km</th>
+                <td>80</td>
+                <td>240</td>
+                <td>400</td>
+                <td class="q">?</td>
+              </tr>
+            </table>
             <div class="choices" id="choices2a">
               <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
-                >
+                540 km <span class="sub">(added 140, not the unit rate)</span>
               </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
+                560 km
+                <span class="sub"
+                  >(unit rate 240&divide;3 = 80, so 7&times;80)</span
                 >
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
-                >
+                480 km <span class="sub">(that is 6 hours)</span>
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>&#127471;&#127477; Cipher #4 &mdash; Plot the Graph</h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              Maya graphs the table, plotting (hours, km). Because the ratio is
+              constant, the points form a straight line through the origin.
+              Which ordered pair is <b>on that line</b>?
             </p>
             <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                (4, 360) <span class="sub">(4&times;80 = 320, not 360)</span>
+              </button>
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
+                (6, 480)
+                <span class="sub">(6&times;80 = 480 &mdash; on the line)</span>
               </button>
               <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
-              </button>
-              <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                (2, 80) <span class="sub">(2&times;80 = 160, not 80)</span>
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
+          <!-- OPTIONAL Bonus -->
           <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <span class="bonus-tag">&#11088; Globetrotter Challenge</span>
+            <p class="bonus-note">
+              Optional extra credit &mdash; skip it any time and still fly on.
             </p>
-            <h3>The Relatively Prime Relay</h3>
+            <h3>Currency Conversion</h3>
             <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
+              At the exchange counter, <b>5 euros = 6 dollars</b>. Maya wants to
+              convert <b>30 dollars</b> back into euros using a ratio table. How
+              many euros?
             </p>
+            <table class="rtable">
+              <caption>
+                Euros and dollars
+              </caption>
+              <tr>
+                <th scope="row">Euros</th>
+                <td>5</td>
+                <td>10</td>
+                <td class="q">?</td>
+              </tr>
+              <tr>
+                <th scope="row">Dollars</th>
+                <td>6</td>
+                <td>12</td>
+                <td>30</td>
+              </tr>
+            </table>
             <div class="choices" id="choicesB2">
               <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
+                36 euros
+                <span class="sub">(scaled the dollars, not the euros)</span>
               </button>
               <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
-                >
+                25 euros
+                <span class="sub">(30&divide;6 = 5, so 5&times;5 = 25)</span>
               </button>
               <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
+                29 euros <span class="sub">(that is 30 &minus; 1)</span>
               </button>
             </div>
             <div class="feedback" id="fbB2"></div>
@@ -840,7 +895,7 @@
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Fly to Egypt &#9992;&#65039;
             </button>
           </div>
         </div>
@@ -854,18 +909,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Complete Act 2 to unlock the Final Trip.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Final Trip &middot; Combined</span>
+            <h2>The Master Gateway</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit3/final-challenge.png"
+              alt="Maya stands before a huge glowing globe gateway with ratio tables and route lines orbiting her"
             />
           </div>
 
@@ -876,48 +931,61 @@
           </div>
 
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#127759; Master Cipher &mdash; Ratio + Table + Graph</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              The final gateway fuses every skill. A flight burns
+              <b>9 liters every 2 hours</b> (a steady rate). Pick the single
+              line that is fully correct: the unit rate, the fuel for an 8-hour
+              leg, and a point on the graph.
             </p>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
+                4.5 L/hr; 8 hours needs 32 L; (6, 27) is on the line
+                <span class="sub">(8&times;4.5 = 36, not 32)</span>
               </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                4.5 L/hr; 8 hours needs 36 L; (6, 27) is on the line
+                <span class="sub"
+                  >(9&divide;2 = 4.5; 8&times;4.5 = 36; 6&times;4.5 = 27)</span
+                >
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                9 L/hr; 8 hours needs 72 L; (6, 54) is on the line
+                <span class="sub"
+                  >(used 9 per hour instead of per 2 hours)</span
+                >
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
+          <!-- OPTIONAL Bonus -->
           <div class="challenge bonus" id="bonusF" style="display: none">
-            <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
-            >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <span class="bonus-tag">&#11088; Globetrotter Final Challenge</span>
+            <p class="bonus-note">
+              Optional extra credit &mdash; skip it any time; your trip is
+              already complete.
             </p>
-            <h3>The Reactor Tessellation</h3>
+            <h3>The Layover Optimizer</h3>
             <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
+              Two routes home. Route X: <b>1500 km in 3 hours</b>. Route Y:
+              <b>2400 km in 4 hours</b>. Using unit rates (km per hour), which
+              route is faster, and by how much per hour?
             </p>
             <div class="choices" id="choicesBF">
               <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
+                Route Y is faster by 100 km/hr
+                <span class="sub">(500 km/hr vs 600 km/hr)</span>
               </button>
               <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
+                Route X is faster by 100 km/hr
+                <span class="sub"
+                  >(compare 1500&divide;3 and 2400&divide;4 again)</span
+                >
               </button>
               <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
+                They are the same speed
+                <span class="sub">(the unit rates differ)</span>
               </button>
             </div>
             <div class="feedback" id="fbBF"></div>
@@ -925,7 +993,7 @@
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Complete the Expedition &#127881;
             </button>
           </div>
         </div>
@@ -936,23 +1004,25 @@
         class="scene complete"
         id="scene-complete"
         role="tabpanel"
-        aria-label="Mission complete"
+        aria-label="Expedition complete"
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit3/celebrate.png"
+            alt="Maya celebrates with arms wide, surrounded by world landmarks, fireworks, and a passport full of stamps"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#9992;&#65039;&#11088;</span>
+        <h2>Expedition Complete!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          Every gateway is open and the route around the world is charted. You
+          reasoned with <b>equivalent ratios</b> and <b>unit rates</b>, scaled
+          <b>ratio tables</b>, and read <b>graphs</b> of constant ratios to
+          conquer currency, distance, and fuel. The world is yours, Maya.
         </p>
-        <button class="restart" id="restart-btn">Run again &#8635;</button>
+        <button class="restart" id="restart-btn">
+          Plan another expedition &#8635;
+        </button>
       </section>
 
       <!-- GLOSSARY -->
@@ -964,7 +1034,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Expedition Codex</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -977,120 +1047,115 @@
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "Expedition AI",
+              en: "Maya, you have arrived in Paris. The first cipher demands an equivalent ratio &mdash; same comparison, leaner form.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Maya",
+              en: "Equivalent ratios scale together. I'll divide both parts by their common factor and prove it's the same comparison.",
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
+              who: "Maya",
+              en: "Cipher cracked. Now I need a unit rate to compare offers fairly &mdash; everything per single unit.",
             },
           ],
           bonus1: [
             {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
+              who: "Expedition AI",
+              en: "Optional: two taxis are bidding for your fare. Find the better deal by unit rate &mdash; or fly on if you prefer.",
               cap: true,
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
+              who: "Expedition AI",
+              en: "Tokyo, online. Tickets require a ratio table scaled to your exact itinerary &mdash; and then a graph to prove it.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Maya",
+              en: "Find the unit rate, scale the table by it, then plot the pairs. Constant ratio means a straight line through the origin.",
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
+              who: "Maya",
+              en: "Table scaled. Now I confirm a point lands exactly on that line. If the ratio holds, the graph won't lie.",
             },
           ],
           bonus2: [
             {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
+              who: "Expedition AI",
+              en: "Optional exchange puzzle: convert your dollars back to euros with a ratio table. Skip it any time.",
               cap: true,
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "Expedition AI",
+              en: "The Master Gateway ahead fuses ratios, unit rates, tables, and graphs into one cipher. No partial credit.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Maya",
+              en: "Every skill, one line, zero errors. Compute the rate, scale the leg, verify the point. Entering the cipher now.",
             },
           ],
         };
 
         var GLOSS = [
           {
-            ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
+            ico: "&#9878;&#65039;",
+            en: "Ratio",
+            def: "A multiplicative comparison of two quantities, written a : b, a to b, or a/b. Order matters.",
           },
           {
-            ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
+            ico: "&#129516;",
+            en: "Equivalent ratios",
+            def: "Ratios that name the same comparison; multiply or divide both terms by the same nonzero number. 4:6 = 2:3 = 12:18.",
           },
           {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
+            ico: "&#9889;",
+            en: "Unit rate",
+            def: "A rate per single unit of the second quantity, e.g. 80 km per 1 hour from 240 km in 3 hours.",
           },
           {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
+            ico: "&#128202;",
+            en: "Ratio table",
+            def: "A table of equivalent ratios; scale rows by multiplying both quantities by the same factor.",
           },
           {
-            ico: "&#10094;&#10095;",
-            en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
+            ico: "&#128200;",
+            en: "Graph of a ratio table",
+            def: "Plotting the (x, y) pairs yields collinear points on a straight line through the origin (0, 0).",
           },
           {
-            ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
+            ico: "&#128176;",
+            en: "Quantity",
+            def: "A measurable amount being compared, such as kilometers, liters, dollars, or travelers.",
           },
           {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
+            ico: "&#128178;",
+            en: "Currency exchange rate",
+            def: "A fixed ratio between two currencies, e.g. 5 euros = 6 dollars, used to convert amounts proportionally.",
           },
           {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
+            ico: "&#128207;",
+            en: "Constant of proportionality",
+            def: "The fixed multiplier between paired quantities; it equals the unit rate (the y-value when x = 1).",
           },
           {
-            ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
+            ico: "&#127759;",
+            en: "Proportional relationship",
+            def: "Two quantities vary so their ratio stays constant; its graph is a line through the origin.",
           },
           {
-            ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
-          },
-          {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            ico: "&#128208;",
+            en: "Origin",
+            def: "The point (0, 0) on a coordinate grid; graphs of proportional ratios always pass through it.",
           },
         ];
 
@@ -1265,7 +1330,7 @@
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Decode ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,9 +1344,9 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Correct. 4:6 divides by 2 to give 2:3 &mdash; the same comparison. Cipher one cracked.",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 &rarr; 2:3.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.act1b[0]);
@@ -1293,15 +1358,16 @@
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; Unit rate = 18 &divide; 3 = 6 km per liter. PARIS UNLOCKED!",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; A unit rate is per ONE liter: divide km by liters, 18 &divide; 3 = 6.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
+              // Core locks done -> reveal advance immediately (bonus is OPTIONAL)
+              $("art-act1").src = "../_art/unit3/unlock.png";
+              $("art-act1").alt =
+                "A glowing gateway opens to reveal pyramids as Maya cheers";
               $("adv-act1").classList.add("show");
+              // Offer the optional bonus, but it does NOT gate advancing
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.bonus1[0]);
                 $("bonus1").style.display = "block";
@@ -1312,11 +1378,10 @@
             choicesId: "choicesB1",
             feedbackId: "fbB1",
             goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
+              "&#11088; Sharp. App A = $24&divide;8 = $3/km, App B = $15&divide;5 = $3/km &mdash; identical. Bonus earned!",
             badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Compute each price per km: $24&divide;8 and $15&divide;5. Compare those unit rates.",
+            // No onSolve gating: advance is already available
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1332,7 +1397,7 @@
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Scale the table ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,9 +1411,9 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; Unit rate = 240&divide;3 = 80 km/hr, so 7&times;80 = 560 km. Table scaled.",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; Find the unit rate first: 240&divide;3 = 80 km/hr, then multiply by 7.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.act2b[0]);
@@ -1360,11 +1425,11 @@
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; (6, 480) works: 6&times;80 = 480, so it lands on the line through the origin. TOKYO UNLOCKED!",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; A point is on the line only if km = 80&times;hours. Test each pair against that.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
+              // Core locks done -> reveal advance (bonus OPTIONAL)
               $("adv-act2").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.bonus2[0]);
@@ -1376,11 +1441,9 @@
             choicesId: "choicesB2",
             feedbackId: "fbB2",
             goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
+              "&#11088; 30 dollars &divide; 6 = 5 groups, and 5 euros &times; 5 = 25 euros. Bonus earned!",
             badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Scale by matching dollars: 30&divide;6 = 5, then 5&times;5 euros = 25 euros.",
           });
           $("adv-act2").addEventListener("click", function () {
             state.act2 = true;
@@ -1396,7 +1459,7 @@
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Enter the cipher ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
@@ -1410,11 +1473,11 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; Unit rate 9&divide;2 = 4.5 L/hr; 8&times;4.5 = 36 L; 6&times;4.5 = 27 so (6, 27) is on the line. Cipher verified!",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point.",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
+              // Core final lock done -> reveal advance (bonus OPTIONAL)
               $("adv-final").classList.add("show");
               setTimeout(function () {
                 $("bonusF").style.display = "block";
@@ -1425,11 +1488,9 @@
             choicesId: "choicesBF",
             feedbackId: "fbBF",
             goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
+              "&#11088; Route X = 1500&divide;3 = 500 km/hr, Route Y = 2400&divide;4 = 600 km/hr. Y is faster by 100 km/hr. Bonus earned!",
             badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Compare the unit rates: 1500&divide;3 vs 2400&divide;4. The larger km/hr is faster.",
           });
           $("adv-final").addEventListener("click", function () {
             state.final = true;

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>Graphic Novel #2 · Court Vision: The Data Analyst</title>
     <style>
       :root {
         --bg: #070d1f;
@@ -213,6 +213,39 @@
         color: var(--accent2);
       }
 
+      /* ---- Data table ---- */
+      .dataset {
+        margin-top: 12px;
+        background: #0a142e;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        overflow-x: auto;
+      }
+      .dataset table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        min-width: 300px;
+      }
+      .dataset caption {
+        text-align: left;
+        font-weight: 700;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .dataset th,
+      .dataset td {
+        border: 1px solid var(--line);
+        padding: 7px 9px;
+        text-align: center;
+      }
+      .dataset th {
+        background: #101e44;
+        color: var(--ink);
+      }
+
       .dialogue {
         margin-top: 14px;
         min-height: 96px;
@@ -314,6 +347,28 @@
         font-weight: 800;
         margin-bottom: 6px;
       }
+      .skip-note {
+        font-size: 0.85rem;
+        color: var(--gold);
+        opacity: 0.85;
+        margin-top: 8px;
+      }
+      .skip-bonus {
+        min-height: 40px;
+        margin-top: 10px;
+        background: transparent;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+      .skip-bonus:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
       .choices {
         display: grid;
         gap: 10px;
@@ -346,11 +401,9 @@
         border-color: var(--bad);
         background: #3a1414;
       }
-      .choice .tree {
+      .choice .calc {
         font-family: "Courier New", monospace;
-        white-space: pre;
-        font-size: 0.95rem;
-        line-height: 1.35;
+        font-size: 0.9rem;
         display: block;
         margin-top: 4px;
         color: #9ecbff;
@@ -526,7 +579,7 @@
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
         <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
+          ><span class="v">#2</span> Court Vision: The Data Analyst</span
         >
         <div class="progress-wrap">
           <div
@@ -559,7 +612,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: The Big Question
         </button>
         <button
           class="tab locked"
@@ -568,7 +621,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: Center &amp; Spread
         </button>
         <button
           class="tab locked"
@@ -577,7 +630,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Final Call
         </button>
         <button
           class="tab"
@@ -601,20 +654,21 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit8/cover.png"
+            alt="A young sports data analyst stands in an arena data room surrounded by glowing holographic basketball stats"
           />
         </div>
         <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <h2>Court Vision: The Data Analyst</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          The playoffs are on the line and the front office is counting on you.
+          As lead <b>analyst</b> Maya, you must distinguish
+          <b>statistical questions</b>, decide when the <b>mean</b> lies and the
+          <b>median</b> tells the truth, and quantify a player's consistency
+          with the <b>mean absolute deviation (MAD)</b>. Every call you make is
+          driven by the data.
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <button class="start" id="start-btn">Begin Analysis &#127936;</button>
       </section>
 
       <!-- ACT 1 -->
@@ -625,14 +679,16 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act"
+            >Act 1 &middot; Statistical Questions &amp; Data</span
+          >
+          <h2>The Big Question</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit8/data-room.png"
+            alt="Maya at a glowing analyst desk studying holographic player statistics"
           />
         </div>
 
@@ -643,93 +699,112 @@
         </div>
 
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>&#128202; Decision #1 &mdash; Frame a Statistical Question</h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            A <b>statistical question</b> anticipates <b>variability</b> in the
+            data &mdash; it expects answers that differ. Which question is
+            statistical?
           </p>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
-              >
+              Did our point guard play in last night's game?
+              <span class="calc">(yes/no — a single answer)</span>
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
+              How many minutes does each player log per game this season?
+              <span class="calc">(answers vary across players/games)</span>
             </button>
             <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
-              >
+              What is the final score of last night's game?
+              <span class="calc">(one fixed value)</span>
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>&#128202; Decision #2 &mdash; Interrogate the Data Set</h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            Below are rebounds across 6 games. Reading the set, what is the
+            <b>range</b> (greatest minus least)?
           </p>
+          <div class="dataset">
+            <table>
+              <caption>
+                Rivera &mdash; Rebounds per Game
+              </caption>
+              <tr>
+                <th>Game</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+              </tr>
+              <tr>
+                <th>Rebounds</th>
+                <td>9</td>
+                <td>4</td>
+                <td>11</td>
+                <td>7</td>
+                <td>5</td>
+                <td>12</td>
+              </tr>
+            </table>
+          </div>
           <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              12 <span class="calc">(that is the maximum, not the range)</span>
+            </button>
             <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
-              >
+              8 <span class="calc">(12 − 4 = 8)</span>
             </button>
             <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
+              7 <span class="calc">(that is one data value)</span>
             </button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
+        <!-- Optional bonus -->
         <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
-          </p>
-          <h3>The Self-Sealing Vault</h3>
+          <span class="bonus-tag"
+            >&#11088; Analyst's Bonus &mdash; Optional</span
+          >
+          <h3>The Right Display</h3>
           <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
+            You want to show how Rivera's rebounds are <b>distributed</b> across
+            their values. Which display best shows the <b>shape and spread</b>
+            of a single numeric data set?
           </p>
           <div class="choices" id="choicesB1">
             <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
-              >
+              A pie chart of the six game numbers
+              <span class="calc">(pie charts show parts of a whole)</span>
             </button>
             <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
-              >
+              A dot plot (line plot) of the rebound values
+              <span class="calc">(shows each value, clusters &amp; gaps)</span>
             </button>
             <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
-              >
+              A single bar showing the total rebounds
+              <span class="calc">(hides the spread entirely)</span>
             </button>
           </div>
           <div class="feedback" id="fbB1"></div>
+          <p class="skip-note">
+            &#11088; This bonus is optional &mdash; you can skip it anytime and
+            still advance.
+          </p>
+          <button class="skip-bonus" id="skip1" type="button">
+            Skip bonus &rarr;
+          </button>
         </div>
 
         <div class="scene-foot">
           <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
+            Submit the report &#127936;
           </button>
         </div>
       </section>
@@ -746,14 +821,14 @@
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act">Act 2 &middot; Mean, Median, Mode &amp; MAD</span>
+            <h2>Center &amp; Spread</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit8/spread-mad.png"
+              alt="Maya studies a holographic scatter of glowing dots spread around a center line"
             />
           </div>
 
@@ -763,84 +838,125 @@
             <button class="next" id="next-act2">Next &#9654;</button>
           </div>
 
+          <!-- Challenge: mean vs median, skewed -->
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#127919; Insight #1 &mdash; When the Mean Lies</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              A scout's salary offers (in $1000s) are <b>10, 11, 12, 13, 54</b>.
+              The mean is <b>20</b> (sum 100 &divide; 5), but the median is
+              <b>12</b>. Which measure better describes a <b>typical</b> offer,
+              and why?
             </p>
             <div class="choices" id="choices2a">
               <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
-                >
+                The mean (20), because it uses every value
+                <span class="calc">(but the 54 outlier inflates it)</span>
               </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
-                >
+                The median (12), because one large outlier (54) pulls the mean
+                up
+                <span class="calc">(median resists skew)</span>
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
-                >
+                Neither — only the mode can describe typical values
+                <span class="calc">(this set has no repeated mode)</span>
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
+          <!-- Challenge: compute MAD -->
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>&#127919; Insight #2 &mdash; Compute the MAD</h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              Player A scored <b>4, 6, 8, 10, 2</b>. The <b>mean</b> is 6.
+              Compute the <b>mean absolute deviation</b>: average the distance
+              of each value from the mean. What is the MAD?
             </p>
             <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                3.0
+                <span class="calc">(check each |value − 6| again)</span>
+              </button>
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
+                2.4
+                <span class="calc">|−2|+0+|2|+|4|+|−4| = 12, 12÷5 = 2.4</span>
               </button>
               <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
-              </button>
-              <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                12
+                <span class="calc"
+                  >(that is the sum of distances, not the average)</span
+                >
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
-          <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Relatively Prime Relay</h3>
+          <!-- Challenge: interpret spread -->
+          <div class="challenge" id="chal2c" style="display: none">
+            <h3>&#127919; Insight #3 &mdash; Interpret the Spread</h3>
             <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
+              Two guards both <b>average 10 points</b>. Guard X has a
+              <b>MAD of 1.2</b>; Guard Y has a <b>MAD of 4.8</b>. For a
+              must-have-points possession, who is more <b>consistent</b>?
             </p>
-            <div class="choices" id="choicesB2">
+            <div class="choices" id="choices2c">
               <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
+                Guard Y — a larger MAD means more scoring
+                <span class="calc">(MAD measures spread, not total)</span>
               </button>
               <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
-                >
+                Guard X — a smaller MAD means scores cluster tightly near 10
+                <span class="calc">(less variability = more reliable)</span>
               </button>
               <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
+                They are equally consistent — same mean
+                <span class="calc"
+                  >(equal means can hide very different spread)</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fb2c"></div>
+          </div>
+
+          <!-- Optional bonus -->
+          <div class="challenge bonus" id="bonus2" style="display: none">
+            <span class="bonus-tag"
+              >&#11088; Analyst's Bonus &mdash; Optional</span
+            >
+            <h3>The Consistency Duel</h3>
+            <p class="prompt">
+              Two players both average 10. Player P: <b>8, 9, 10, 11, 12</b>.
+              Player Q: <b>2, 6, 10, 14, 18</b>. Compute both MADs and pick the
+              correct comparison.
+            </p>
+            <div class="choices" id="choicesB2">
+              <button class="choice" data-correct="true">
+                P's MAD = 1.2, Q's MAD = 4.8 &mdash; P is far more consistent
+                <span class="calc">P: (2+1+0+1+2)/5; Q: (8+4+0+4+8)/5</span>
+              </button>
+              <button class="choice" data-correct="false">
+                P's MAD = 4.8, Q's MAD = 1.2 &mdash; Q is more consistent
+                <span class="calc">(the values are swapped)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                Both MADs = 0 because the means are equal
+                <span class="calc">(equal mean ≠ zero spread)</span>
               </button>
             </div>
             <div class="feedback" id="fbB2"></div>
+            <p class="skip-note">
+              &#11088; This bonus is optional &mdash; you can skip it anytime
+              and still advance.
+            </p>
+            <button class="skip-bonus" id="skip2" type="button">
+              Skip bonus &rarr;
+            </button>
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Deliver the spread report &#9889;
             </button>
           </div>
         </div>
@@ -854,18 +970,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Complete Act 2 to unlock the Final Call.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Final Call &middot; Boss</span>
+            <h2>The Playoff Decision</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit8/final-analysis.png"
+              alt="Maya before a giant wall of holographic data making a big decision"
             />
           </div>
 
@@ -876,56 +992,68 @@
           </div>
 
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#127942; Full Scouting Report &mdash; The Combined Cipher</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              Closer candidate's last 5 clutch scores: <b>6, 8, 10, 12, 14</b>.
+              Build the complete profile: <b>mean</b>, <b>median</b>, and
+              <b>MAD</b>. Pick the line that is fully correct.
             </p>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
+                Mean = 10, Median = 10, MAD = 4
+                <span class="calc">(distances are 4,2,0,2,4 → sum 12)</span>
               </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                Mean = 10, Median = 10, MAD = 2.4
+                <span class="calc">sum 50÷5 = 10; (4+2+0+2+4)/5 = 2.4</span>
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                Mean = 10, Median = 12, MAD = 2.4
+                <span class="calc">(median of 6,8,10,12,14 is 10, not 12)</span>
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
+          <!-- Optional final bonus -->
           <div class="challenge bonus" id="bonusF" style="display: none">
             <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
+              >&#11088; Analyst's Final Bonus &mdash; Optional</span
             >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Reactor Tessellation</h3>
+            <h3>The Tie-Breaker</h3>
             <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
+              A rival closer has the <b>same mean (10)</b> and
+              <b>same median (10)</b>, but clutch scores
+              <b>1, 5, 10, 15, 19</b>. Compute their MAD and decide who to trust
+              for one final shot.
             </p>
             <div class="choices" id="choicesBF">
               <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
+                Rival's MAD = 5.6, so trust our closer (MAD 2.4) — more reliable
+                <span class="calc">(9+5+0+5+9)/5 = 28/5 = 5.6</span>
               </button>
               <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
+                Both equal — same mean and median means same reliability
+                <span class="calc">(spread can still differ)</span>
               </button>
               <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
+                Trust the rival — a larger MAD is better
+                <span class="calc">(larger MAD = less consistent)</span>
               </button>
             </div>
             <div class="feedback" id="fbBF"></div>
+            <p class="skip-note">
+              &#11088; This bonus is optional &mdash; skip anytime and still
+              finish the mission.
+            </p>
+            <button class="skip-bonus" id="skipF" type="button">
+              Skip bonus &rarr;
+            </button>
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Make the playoff call &#127775;
             </button>
           </div>
         </div>
@@ -940,19 +1068,22 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit8/celebrate.png"
+            alt="Maya celebrates on the court with the winning team holding her tablet high"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#127936;&#11088;</span>
+        <h2>Series Clinched &mdash; Mission Complete!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          Brilliant work, Analyst. You separated statistical questions from
+          single-answer facts, recognized when an <b>outlier</b> makes the
+          <b>median</b> the honest measure, and used the <b>MAD</b> to prove
+          which player was truly reliable under pressure. Your data-driven call
+          won the series.
         </p>
-        <button class="restart" id="restart-btn">Run again &#8635;</button>
+        <button class="restart" id="restart-btn">
+          Run analysis again &#8635;
+        </button>
       </section>
 
       <!-- GLOSSARY -->
@@ -964,7 +1095,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Analyst Codex</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -977,120 +1108,131 @@
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "GM",
+              en: "Maya, the playoff window is open and the data is a mess. Tell me what's worth measuring.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Maya",
+              en: "First principle: a statistical question expects variability. If every answer is identical, it isn't statistical — it's a fact.",
+            },
+            {
+              who: "GM",
+              en: "Then frame the question that will actually generate a data set we can analyze.",
+              cap: true,
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
+              who: "Maya",
+              en: "Question locked. Now I read the set itself — range, gaps, and any value that looks out of place.",
             },
           ],
           bonus1: [
             {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
+              who: "GM",
+              en: "Optional, if you want the edge: pick the display that best reveals the distribution. Skip it if you'd rather move on.",
               cap: true,
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
+              who: "GM",
+              en: "Numbers are in. But one offer sheet looks distorted. Find the center that tells the truth, then quantify the spread.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Maya",
+              en: "Center isn't one number — mean, median, and mode each tell a story. And the MAD tells me how tightly the data hugs the center.",
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
+              who: "Maya",
+              en: "Median chosen. Now the spread: I'll average every value's distance from the mean — the mean absolute deviation.",
+            },
+          ],
+          act2c: [
+            {
+              who: "Maya",
+              en: "MAD computed. Equal means can hide wildly different consistency — the spread decides who I trust.",
             },
           ],
           bonus2: [
             {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
+              who: "GM",
+              en: "Optional duel: two players, same average. Prove with MAD who's steadier. Skip if you'd rather lock the report.",
               cap: true,
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "GM",
+              en: "Game 7, final possession. I need a complete profile on our closer — center and spread — before I make the call.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Maya",
+              en: "Mean, median, and MAD in one report. No guesswork. Pulling the full cipher now.",
             },
           ],
         };
 
         var GLOSS = [
           {
+            ico: "&#10067;",
+            en: "Statistical question",
+            def: "A question that anticipates variability in its answers and is answered by collecting data (e.g., minutes played per game).",
+          },
+          {
+            ico: "&#128202;",
+            en: "Data set",
+            def: "A collection of related numeric or categorical values gathered to answer a question.",
+          },
+          {
+            ico: "&#9878;&#65039;",
+            en: "Mean",
+            def: "The arithmetic average: sum of all values divided by the count. Sensitive to outliers.",
+          },
+          {
+            ico: "&#9995;",
+            en: "Median",
+            def: "The middle value of an ordered data set; with an even count, the average of the two middle values. Resistant to outliers.",
+          },
+          {
+            ico: "&#128293;",
+            en: "Mode",
+            def: "The value (or values) that occur most frequently. A set may have no mode or several.",
+          },
+          {
+            ico: "&#128207;",
+            en: "Range",
+            def: "A simple measure of spread: greatest value minus least value.",
+          },
+          {
+            ico: "&#127991;&#65039;",
+            en: "Outlier",
+            def: "A value far from the rest of the data; it can pull the mean toward it while barely affecting the median.",
+          },
+          {
+            ico: "&#9696;",
+            en: "Skewed data",
+            def: "A distribution stretched toward high or low values, so the mean and median differ; the median is often the better center.",
+          },
+          {
+            ico: "&#128208;",
+            en: "Mean absolute deviation (MAD)",
+            def: "The average distance of values from the mean: average of |value − mean|. A smaller MAD means data clusters tightly (more consistent).",
+          },
+          {
+            ico: "&#128201;",
+            en: "Variability / spread",
+            def: "How much the values differ from one another. Measured by range or MAD; key to judging consistency.",
+          },
+          {
             ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
-          },
-          {
-            ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
-          },
-          {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
-          },
-          {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
-          },
-          {
-            ico: "&#10094;&#10095;",
-            en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
-          },
-          {
-            ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
-          },
-          {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
-          },
-          {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
-          },
-          {
-            ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
-          },
-          {
-            ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
-          },
-          {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            en: "Distribution",
+            def: "The overall pattern of a data set — its center, spread, and shape — often shown with a dot plot or histogram.",
           },
         ];
 
@@ -1265,7 +1407,7 @@
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Frame the question ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,13 +1421,17 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Exactly. Minutes per player per game vary — that variability is the hallmark of a statistical question.",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; That question resolves to a single fixed answer, so it isn't statistical. Look for the one whose answers vary.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.act1b[0]);
                 $("chal1b").style.display = "block";
+                $("chal1b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
               }, 450);
             },
           });
@@ -1293,18 +1439,19 @@
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; Range = 12 − 4 = 8. You read the full set and spotted the extremes.",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; Range is greatest minus least: 12 − 4. Re-scan the row for the max and min.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
-              $("adv-act1").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.bonus1[0]);
                 $("bonus1").style.display = "block";
+                // CORE solved -> advance is available regardless of bonus
+                $("adv-act1").classList.add("show");
+                $("bonus1").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
               }, 450);
             },
           });
@@ -1312,11 +1459,15 @@
             choicesId: "choicesB1",
             feedbackId: "fbB1",
             goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
+              "&#11088; A dot plot shows every value, revealing clusters, gaps, and spread — the distribution's shape.",
             badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; That display hides the spread. You want one that shows each value's position. (Optional — you can still advance.)",
+          });
+          $("skip1").addEventListener("click", function () {
+            $("adv-act1").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1332,7 +1483,7 @@
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Find the true center ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,13 +1497,17 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; Right. The 54 is an outlier that drags the mean to 20; the median (12) reflects a typical offer. Use the median for skewed data.",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; Reconsider the outlier. The lone 54 inflates the mean — the median is the resistant, honest center here.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.act2b[0]);
                 $("chal2b").style.display = "block";
+                $("chal2b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
               }, 450);
             },
           });
@@ -1360,15 +1515,37 @@
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; MAD = 2.4. Distances from 6 are 2, 0, 2, 4, 4 → sum 12, and 12 ÷ 5 = 2.4.",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; Take |value − 6| for each: 2, 0, 2, 4, 4. Sum is 12, then divide by 5 — don't stop at the sum.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
-              $("adv-act2").classList.add("show");
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.act2c[0]);
+                $("chal2c").style.display = "block";
+                $("chal2c").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2c",
+            feedbackId: "fb2c",
+            goodEn:
+              "&#9989; Guard X. A smaller MAD (1.2) means their scores stay tightly near 10 — far more reliable than Guard Y's MAD of 4.8.",
+            badEn:
+              "&#10060; MAD measures spread, not total points. The smaller MAD signals the more consistent scorer.",
+            onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.bonus2[0]);
                 $("bonus2").style.display = "block";
+                // CORE solved -> advance available regardless of bonus
+                $("adv-act2").classList.add("show");
+                $("bonus2").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
               }, 450);
             },
           });
@@ -1376,11 +1553,15 @@
             choicesId: "choicesB2",
             feedbackId: "fbB2",
             goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
+              "&#11088; Correct. P: distances 2,1,0,1,2 → 6 ÷ 5 = 1.2. Q: 8,4,0,4,8 → 24 ÷ 5 = 4.8. P is far steadier.",
             badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Compute each MAD: average the absolute distances from 10. P clusters tightly; Q is widely spread. (Optional — you can still advance.)",
+          });
+          $("skip2").addEventListener("click", function () {
+            $("adv-act2").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
           });
           $("adv-act2").addEventListener("click", function () {
             state.act2 = true;
@@ -1396,7 +1577,7 @@
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Build the profile ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
@@ -1410,26 +1591,35 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; Complete profile: mean = 50 ÷ 5 = 10, median = 10, MAD = (4+2+0+2+4) ÷ 5 = 2.4. Verified.",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; One statistic is off. Mean and median are both 10; the MAD averages distances 4,2,0,2,4 → 12 ÷ 5 = 2.4.",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
-              $("adv-final").classList.add("show");
               setTimeout(function () {
+                showBubble("dlg-final", DLG.final[1]);
                 $("bonusF").style.display = "block";
-              }, 300);
+                // CORE solved -> advance available regardless of bonus
+                $("adv-final").classList.add("show");
+                $("bonusF").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 350);
             },
           });
           wireChoices({
             choicesId: "choicesBF",
             feedbackId: "fbBF",
             goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
+              "&#11088; Rival's distances from 10 are 9, 5, 0, 5, 9 → sum 28, and 28 ÷ 5 = 5.6. Our closer's MAD (2.4) is smaller, so they're more reliable — trust our closer.",
             badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Average the rival's absolute distances from 10 (9,5,0,5,9). A larger MAD means LESS consistency. (Optional — you can still finish.)",
+          });
+          $("skipF").addEventListener("click", function () {
+            $("adv-final").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
           });
           $("adv-final").addEventListener("click", function () {
             state.final = true;

@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>
+      Graphic Novel #2 · Detective Case Files: The Equation Mysteries
+    </title>
     <style>
       :root {
         --bg: #070d1f;
@@ -294,6 +296,18 @@
         font-size: 1.05rem;
         margin-bottom: 6px;
       }
+      .case-eq {
+        font-family: "Courier New", monospace;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #9ecbff;
+        background: #0a142e;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 8px 0;
+        text-align: center;
+      }
       .challenge.bonus {
         border-color: var(--gold);
         background: #1c1606;
@@ -301,6 +315,10 @@
       }
       .challenge.bonus h3 {
         color: var(--gold);
+      }
+      .challenge.bonus .case-eq {
+        color: var(--gold);
+        background: #100b02;
       }
       .bonus-tag {
         display: inline-block;
@@ -313,6 +331,12 @@
         padding: 3px 8px;
         font-weight: 800;
         margin-bottom: 6px;
+      }
+      .skip-note {
+        font-size: 0.85rem;
+        color: #ffe6ad;
+        font-style: italic;
+        margin: 4px 0 8px;
       }
       .choices {
         display: grid;
@@ -346,11 +370,9 @@
         border-color: var(--bad);
         background: #3a1414;
       }
-      .choice .tree {
+      .choice .eq {
         font-family: "Courier New", monospace;
-        white-space: pre;
         font-size: 0.95rem;
-        line-height: 1.35;
         display: block;
         margin-top: 4px;
         color: #9ecbff;
@@ -526,13 +548,13 @@
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
         <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
+          ><span class="v">#2</span> Detective Case Files</span
         >
         <div class="progress-wrap">
           <div
             class="progress"
             role="progressbar"
-            aria-label="Mission progress"
+            aria-label="Case progress"
             aria-valuemin="0"
             aria-valuemax="100"
             aria-valuenow="0"
@@ -559,7 +581,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: The First Clue
         </button>
         <button
           class="tab locked"
@@ -568,7 +590,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: The Locked Boxes
         </button>
         <button
           class="tab locked"
@@ -577,7 +599,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Final Case
         </button>
         <button
           class="tab"
@@ -601,20 +623,27 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit7/cover.png"
+            alt="A young detective stands in a cozy office at night with a board of clues and a locked evidence box"
           />
         </div>
         <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <h2>Detective Case Files: The Equation Mysteries</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          Detective Mateo has inherited the precinct's coldest, trickiest cases.
+          Every locked evidence box guards an unknown quantity. Your job:
+          <b>translate layered clues into equations</b>, <b>solve</b> them, and
+          <b>verify</b> each answer before the lock will yield. Only airtight
+          reasoning cracks these files.
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <p style="font-size: 0.95rem; color: var(--gold)">
+          &#11088; Each act hides an <b>optional</b> Detective&rsquo;s
+          Challenge. It is bonus glory only &mdash; you can skip it anytime and
+          still solve the case.
+        </p>
+        <button class="start" id="start-btn">
+          Open the Case &#128373;&#65039;
+        </button>
       </section>
 
       <!-- ACT 1 -->
@@ -625,14 +654,14 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act">Act 1 &middot; Write Equations</span>
+          <h2>The First Clue</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit7/evidence-room.png"
+            alt="Detective Mateo examines a wall of clues with his magnifying glass"
           />
         </div>
 
@@ -642,86 +671,80 @@
           <button class="next" id="next-act1">Next &#9654;</button>
         </div>
 
+        <!-- Core 1a: layered clue -> two-step equation -->
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>&#128373;&#65039; Clue #1 &mdash; Model the Theft</h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            The case file reads: &ldquo;The vault held some bills. The thief
+            took
+            <b>half</b> of them, then a guard recovered <b>8</b>, leaving
+            <b>30</b> in the vault.&rdquo; Let <b>b</b> = the original number of
+            bills. Which equation models the clue, in order?
           </p>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
-              >
+              2b + 8 = 30 <span class="eq">(this doubles the bills)</span>
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
+              b/2 + 8 = 30
+              <span class="eq">(half remained, plus the 8 recovered)</span>
             </button>
             <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
-              >
+              b/2 &minus; 8 = 30
+              <span class="eq">(8 was recovered, not removed)</span>
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
+        <!-- Core 1b: layered clue -> two-step equation -->
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>&#128373;&#65039; Clue #2 &mdash; The Fingerprint Count</h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            Lab note: &ldquo;<b>Three more</b> than <b>four times</b> the number
+            of usable fingerprints (<b>f</b>) equals <b>23</b>.&rdquo; Translate
+            it into an equation.
           </p>
           <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              4(f + 3) = 23
+              <span class="eq">(this adds 3 first, then multiplies)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              3f + 4 = 23 <span class="eq">(mixed up the 3 and the 4)</span>
+            </button>
             <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
+              4f + 3 = 23
+              <span class="eq">(four times f, then three more)</span>
             </button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
+        <!-- Optional bonus 1: equation with variables on both sides -->
         <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
+          <span class="bonus-tag">&#11088; Detective&rsquo;s Challenge</span>
+          <h3>The Double-Cross</h3>
+          <p class="skip-note">
+            Optional &mdash; pure bonus. The case is already cracked; skip
+            anytime with the button below.
           </p>
-          <h3>The Self-Sealing Vault</h3>
           <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
+            A coded confession says: &ldquo;<b>Twice</b> a number,
+            <b>decreased by 7</b>, gives the <b>same result</b> as the number
+            <b>increased by 5</b>.&rdquo; Which equation captures it?
           </p>
           <div class="choices" id="choicesB1">
-            <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
-              >
-            </button>
             <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
-              >
+              2n &minus; 7 = n + 5
+              <span class="eq">(both sides describe the same value)</span>
             </button>
             <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
-              >
+              2n + 7 = n &minus; 5 <span class="eq">(signs reversed)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              2(n &minus; 7) = n + 5
+              <span class="eq">("twice a number" is 2n, not 2(n&minus;7))</span>
             </button>
           </div>
           <div class="feedback" id="fbB1"></div>
@@ -729,7 +752,7 @@
 
         <div class="scene-foot">
           <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
+            File the clues &#128373;&#65039;
           </button>
         </div>
       </section>
@@ -746,14 +769,14 @@
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act">Act 2 &middot; Solve Equations</span>
+            <h2>The Locked Boxes</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit7/unlock-box.png"
+              alt="Detective Mateo opens a locked evidence box with golden light pouring out"
             />
           </div>
 
@@ -763,76 +786,80 @@
             <button class="next" id="next-act2">Next &#9654;</button>
           </div>
 
+          <!-- Core 2a: one-step division -->
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#128272; Box #1 &mdash; Solve to Unlock</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              The first lock opens to the value of <b>x</b>. Isolate the
+              variable and find the code.
             </p>
+            <div class="case-eq">x / 6 = 9</div>
             <div class="choices" id="choices2a">
-              <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
-                >
-              </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
-                >
+                x = 54
+                <span class="eq">(multiply both sides by 6: 9 &times; 6)</span>
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
-                >
+                x = 15 <span class="eq">(this added 6)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                x = 1.5 <span class="eq">(this divided 9 by 6)</span>
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
+          <!-- Core 2b: two-step solve (deeper reasoning) -->
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>&#128272; Box #2 &mdash; The Stubborn Lock</h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              This lock needs two moves. Solve for <b>n</b>, then
+              <b>verify</b> by substituting back.
             </p>
+            <div class="case-eq">3n + 5 = 26</div>
             <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                n = 9 <span class="eq">(check: 3&times;9+5 = 32, not 26)</span>
+              </button>
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
+                n = 7
+                <span class="eq"
+                  >(subtract 5, then divide by 3; check: 3&times;7+5=26)</span
+                >
               </button>
               <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
-              </button>
-              <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                n = 10
+                <span class="eq">(check: 3&times;10+5 = 35, not 26)</span>
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
+          <!-- Optional bonus 2: check the solution / verify by substitution -->
           <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <span class="bonus-tag">&#11088; Detective&rsquo;s Challenge</span>
+            <h3>The Verification Trap</h3>
+            <p class="skip-note">
+              Optional &mdash; pure bonus. Both boxes are already open; skip
+              anytime with the button below.
             </p>
-            <h3>The Relatively Prime Relay</h3>
             <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
+              A tampered file claims a solution. Use substitution to find the
+              value of <b>m</b> that <b>actually makes</b> the equation true.
             </p>
+            <div class="case-eq">8 = m &minus; 15</div>
             <div class="choices" id="choicesB2">
               <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
+                m = 7
+                <span class="eq">(check: 7 &minus; 15 = &minus;8, not 8)</span>
               </button>
               <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
-                >
+                m = 23
+                <span class="eq">(check: 23 &minus; 15 = 8 &check;)</span>
               </button>
               <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
+                m = &minus;7
+                <span class="eq">(check: &minus;7 &minus; 15 = &minus;22)</span>
               </button>
             </div>
             <div class="feedback" id="fbB2"></div>
@@ -840,7 +867,7 @@
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Open the next case &#128273;
             </button>
           </div>
         </div>
@@ -854,18 +881,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Complete Act 2 to unlock the Final Case.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Final Case &middot; Boss</span>
+            <h2>The Vault Mystery</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit7/final-case.png"
+              alt="Detective Mateo faces a giant vault door covered in locks and dials"
             />
           </div>
 
@@ -875,49 +902,65 @@
             <button class="next" id="next-final">Next &#9654;</button>
           </div>
 
+          <!-- Core final: write AND solve from layered clue -->
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#128274; The Vault &mdash; Write, Solve, Verify</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              The master clue: &ldquo;When you take <b>twice</b> the number of
+              stolen coins and <b>subtract 12</b>, you are left with
+              <b>30</b>.&rdquo; Let <b>c</b> = stolen coins. Pick the line whose
+              equation AND solution are both correct.
             </p>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
+                2c &minus; 12 = 30, c = 9
+                <span class="eq"
+                  >(equation right, but check: 2&times;9&minus;12=6)</span
+                >
               </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                2c &minus; 12 = 30, c = 21
+                <span class="eq"
+                  >(add 12 &rarr; 2c=42 &rarr; c=21; check:
+                  2&times;21&minus;12=30)</span
+                >
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                2c + 12 = 30, c = 9
+                <span class="eq">(the clue subtracts 12, not adds)</span>
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
+          <!-- Optional bonus final -->
           <div class="challenge bonus" id="bonusF" style="display: none">
             <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
+              >&#11088; Detective&rsquo;s Final Challenge</span
             >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
+            <h3>The Inner Safe</h3>
+            <p class="skip-note">
+              Optional &mdash; pure bonus. The vault is already open and the
+              case solved; skip anytime with the button below.
             </p>
-            <h3>The Reactor Tessellation</h3>
             <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
+              Behind the vault sits a smaller safe. Its code <b>y</b> satisfies
+              the clue below. Solve and verify.
             </p>
+            <div class="case-eq">y / 4 + 6 = 13</div>
             <div class="choices" id="choicesBF">
               <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
+                y = 28
+                <span class="eq"
+                  >(subtract 6 &rarr; y/4=7 &rarr; y=28; check: 28/4+6=13)</span
+                >
               </button>
               <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
+                y = 76 <span class="eq">(check: 76/4+6 = 25, not 13)</span>
               </button>
               <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
+                y = 1.75
+                <span class="eq">(divided too early; handle +6 first)</span>
               </button>
             </div>
             <div class="feedback" id="fbBF"></div>
@@ -925,7 +968,7 @@
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Crack the Vault &#127775;
             </button>
           </div>
         </div>
@@ -936,21 +979,21 @@
         class="scene complete"
         id="scene-complete"
         role="tabpanel"
-        aria-label="Mission complete"
+        aria-label="Case solved"
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit7/solved.png"
+            alt="Detective Mateo celebrates with confetti as all the evidence boxes stand open"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#128373;&#65039;&#11088;</span>
+        <h2>Case Closed &mdash; Brilliantly Solved!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          Masterful work, Detective. You translated tangled clues into precise
+          <b>equations</b>, <b>solved</b> one-step and multi-step locks, and
+          <b>verified</b> every solution before trusting it. The
+          precinct&rsquo;s coldest case is officially closed.
         </p>
         <button class="restart" id="restart-btn">Run again &#8635;</button>
       </section>
@@ -964,7 +1007,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Case Codex</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -977,120 +1020,115 @@
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "Caption",
+              en: "Midnight at the precinct. The coldest files in the archive land on Detective Mateo's desk &mdash; each one an unknown waiting to be named.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Mateo",
+              en: "Words are just equations in disguise. I read the clue, name the unknown with a variable, and translate every phrase into an operation &mdash; in the right order.",
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
+              who: "Mateo",
+              en: "First clue modeled. Now a lab note &mdash; 'three more than four times.' Order matters here: I multiply before I add.",
             },
           ],
           bonus1: [
             {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
+              who: "Caption",
+              en: "Optional: a coded confession surfaces, with the unknown on BOTH sides of the equals sign. Worth a look, Detective?",
               cap: true,
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
+              who: "Caption",
+              en: "The evidence room. Rows of locked boxes, each code equal to a hidden variable.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Mateo",
+              en: "I isolate the variable using inverse operations, then substitute my answer back to prove the lock is really open. No guesses.",
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
+              who: "Mateo",
+              en: "One-step lock cleared. This next box takes two moves &mdash; peel off the constant, then undo the coefficient.",
             },
           ],
           bonus2: [
             {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
+              who: "Caption",
+              en: "Optional: a tampered file lists a 'confirmed' answer. Care to verify it by substitution before signing off?",
               cap: true,
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "Caption",
+              en: "The grand vault &mdash; the case behind every case. Its lock demands the full method: write, solve, and verify in one move.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Mateo",
+              en: "Translate the clue, solve it cleanly, check it cold. One airtight line opens this door.",
             },
           ],
         };
 
         var GLOSS = [
           {
-            ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
+            ico: "&#10067;",
+            en: "Variable",
+            def: "A symbol (often a letter) representing an unknown or changing quantity. In 4f + 3 = 23, f is the variable.",
           },
           {
-            ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
+            ico: "&#9878;&#65039;",
+            en: "Equation",
+            def: "A statement that two expressions are equal. A solution is any value of the variable that makes it true.",
           },
           {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
+            ico: "&#9881;&#65039;",
+            en: "Coefficient",
+            def: "The number multiplying a variable. In 3n the coefficient is 3; undo it by dividing.",
           },
           {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
+            ico: "&#10133;",
+            en: "Constant",
+            def: "A fixed number with no variable, such as the +5 in 3n + 5 = 26. Undo it first when solving.",
           },
           {
-            ico: "&#10094;&#10095;",
-            en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
+            ico: "&#128260;",
+            en: "Inverse operation",
+            def: "The operation that reverses another. Addition/subtraction are inverses; multiplication/division are inverses.",
           },
           {
-            ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
+            ico: "&#10145;&#65039;",
+            en: "Order of operations",
+            def: "When translating 'three more than four times f,' multiply (4f) before adding (+3): 4f + 3.",
           },
           {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
+            ico: "&#9878;&#65039;",
+            en: "Balance / both sides",
+            def: "Whatever you do to one side of an equation, do to the other, so equality is preserved.",
           },
           {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
+            ico: "&#128269;",
+            en: "Substitution",
+            def: "Replacing the variable with a value to test it. 23 &minus; 15 = 8 confirms m = 23 solves 8 = m &minus; 15.",
           },
           {
             ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
+            en: "Verify / check",
+            def: "Substituting your solution back into the original equation to confirm it is true before trusting it.",
           },
           {
             ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
-          },
-          {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            en: "Multi-step equation",
+            def: "An equation needing more than one inverse operation to isolate the variable, e.g. 3n + 5 = 26.",
           },
         ];
 
@@ -1265,7 +1303,7 @@
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Read the clue ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,9 +1317,9 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Precise. Half remained (b/2), the guard added 8 back, total 30: b/2 + 8 = 30. Clue modeled.",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; Track the actions in order: HALF remained (b&divide;2), then 8 were RECOVERED (added). Re-read and try again.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.act1b[0]);
@@ -1293,14 +1331,14 @@
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; Exactly. 'Four times f' is 4f; 'three more' adds 3: 4f + 3 = 23. Operation order preserved.",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; 'Four times the prints' is 4f, and 'three more' adds 3 AFTER multiplying: 4f + 3. Watch the order.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
+              $("art-act1").src = "../_art/unit7/write-equation.png";
+              $("art-act1").alt =
+                "Detective Mateo writes equations at his desk under a warm lamp";
+              // CORE locks done -> reveal advance immediately (bonus is optional)
               $("adv-act1").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act1", DLG.bonus1[0]);
@@ -1312,11 +1350,12 @@
             choicesId: "choicesB1",
             feedbackId: "fbB1",
             goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
+              "&#11088; Sharp. 'Twice a number decreased by 7' is 2n &minus; 7; 'the number increased by 5' is n + 5. So 2n &minus; 7 = n + 5 (and n = 12).",
             badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; 'Twice a number' is 2n (not 2(n&minus;7)); 'decreased by 7' subtracts after. Compare to n + 5.",
+            onSolve: function () {
+              // bonus does not gate; advance already shown
+            },
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1332,7 +1371,7 @@
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Solve box one ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,9 +1385,9 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; x &divide; 6 = 9, so multiply both sides by 6: x = 54. Check: 54 &divide; 6 = 9. Lock released.",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; Division by 6 is undone by MULTIPLYING both sides by 6: x = 9 &times; 6.",
             onSolve: function () {
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.act2b[0]);
@@ -1360,11 +1399,11 @@
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; Subtract 5 &rarr; 3n = 21; divide by 3 &rarr; n = 7. Verify: 3&times;7 + 5 = 26. Box open.",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; Two moves: first subtract the constant 5, THEN divide by the coefficient 3. Substitute to check.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
+              // CORE locks done -> advance available (bonus optional)
               $("adv-act2").classList.add("show");
               setTimeout(function () {
                 showBubble("dlg-act2", DLG.bonus2[0]);
@@ -1376,11 +1415,12 @@
             choicesId: "choicesB2",
             feedbackId: "fbB2",
             goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
+              "&#11088; Verified. 8 = m &minus; 15 means m = 23, and 23 &minus; 15 = 8 checks out. The file was honest after all.",
             badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Substitute each value into 8 = m &minus; 15. Only the one giving a true statement is the solution.",
+            onSolve: function () {
+              // bonus does not gate
+            },
           });
           $("adv-act2").addEventListener("click", function () {
             state.act2 = true;
@@ -1396,7 +1436,7 @@
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Enter the vault ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
@@ -1410,11 +1450,11 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; VAULT OPEN! 2c &minus; 12 = 30 &rarr; add 12 &rarr; 2c = 42 &rarr; c = 21. Check: 2&times;21 &minus; 12 = 30. Airtight.",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; The clue subtracts 12 from TWICE the coins: 2c &minus; 12 = 30. Add 12, then divide by 2, then verify.",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
+              // CORE solved -> advance available; bonus is optional
               $("adv-final").classList.add("show");
               setTimeout(function () {
                 $("bonusF").style.display = "block";
@@ -1425,11 +1465,12 @@
             choicesId: "choicesBF",
             feedbackId: "fbBF",
             goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
+              "&#11088; y &divide; 4 + 6 = 13 &rarr; subtract 6 &rarr; y &divide; 4 = 7 &rarr; y = 28. Check: 28 &divide; 4 + 6 = 13. Inner safe cracked.",
             badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; Undo the +6 first (subtract 6), THEN multiply by 4. Verify by substituting back.",
+            onSolve: function () {
+              // bonus does not gate
+            },
           });
           $("adv-final").addEventListener("click", function () {
             state.final = true;

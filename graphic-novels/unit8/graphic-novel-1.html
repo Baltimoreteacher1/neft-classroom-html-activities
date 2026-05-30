@@ -3,21 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Prime Station: The Factor Code</title>
+    <title>Graphic Novel #1 · Court Vision: The Data Analyst</title>
     <style>
       :root {
-        --bg: #070d1f;
-        --ink: #eef3ff;
-        --muted: #9fb0d6;
+        --bg: #0a1228;
+        --ink: #f4f7ff;
+        --muted: #aebbdd;
         --accent: #ff8a3d;
-        --accent2: #5d7bff;
-        --panel: #101e44;
-        --line: #283f73;
+        --accent2: #3da5ff;
+        --panel: #13234d;
+        --line: #2a4378;
         --ok: #39d98a;
         --bad: #ff6b6b;
-        --gold: #ffd166;
-        --bubble: #0e1c40;
-        --bubble-ink: #eef3ff;
+        --bubble: #fffdf7;
+        --bubble-ink: #16213d;
         --font:
           "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
       }
@@ -28,14 +27,10 @@
       }
       html,
       body {
-        background: radial-gradient(
-          900px 600px at 80% -10%,
-          #15265a,
-          var(--bg) 65%
-        );
+        background: var(--bg);
         color: var(--ink);
         font-family: var(--font);
-        line-height: 1.55;
+        line-height: 1.5;
       }
       body {
         min-height: 100vh;
@@ -50,11 +45,12 @@
         color: var(--accent2);
       }
 
+      /* ---- Top bar ---- */
       .topbar {
         position: sticky;
         top: 0;
         z-index: 30;
-        background: rgba(7, 13, 31, 0.96);
+        background: rgba(10, 18, 40, 0.96);
         border-bottom: 1px solid var(--line);
         backdrop-filter: blur(6px);
       }
@@ -86,7 +82,7 @@
         font-weight: 700;
       }
       .title .v {
-        color: var(--accent2);
+        color: var(--accent);
       }
       .progress-wrap {
         flex: 1;
@@ -98,7 +94,7 @@
       .progress {
         flex: 1;
         height: 10px;
-        background: #0a142e;
+        background: #0b1530;
         border: 1px solid var(--line);
         border-radius: 999px;
         overflow: hidden;
@@ -116,6 +112,7 @@
         white-space: nowrap;
       }
 
+      /* ---- Tabs ---- */
       .tabs {
         display: flex;
         gap: 6px;
@@ -124,6 +121,7 @@
         max-width: 1000px;
         margin: 0 auto;
         width: 100%;
+        scrollbar-width: thin;
       }
       .tab {
         flex: 0 0 auto;
@@ -131,7 +129,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #0c1838;
+        background: #0e1c40;
         border: 1px solid var(--line);
         color: var(--muted);
         border-radius: 12px;
@@ -142,8 +140,8 @@
         white-space: nowrap;
       }
       .tab[aria-selected="true"] {
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
         border-color: transparent;
       }
       .tab:focus-visible {
@@ -158,6 +156,7 @@
         font-size: 0.8rem;
       }
 
+      /* ---- Stage ---- */
       main {
         flex: 1;
         width: 100%;
@@ -188,7 +187,7 @@
         border-radius: 18px;
         overflow: hidden;
         border: 1px solid var(--line);
-        background: #0a142e;
+        background: #0b1530;
         aspect-ratio: 16/9;
       }
       .art img {
@@ -204,15 +203,49 @@
         margin-bottom: 10px;
       }
       .scene-head h2 {
-        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+        font-size: clamp(1.2rem, 3.5vw, 1.7rem);
       }
       .scene-head .act {
         font-size: 0.75rem;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: var(--accent2);
+        color: var(--accent);
       }
 
+      /* ---- Data table ---- */
+      .dataset {
+        margin-top: 12px;
+        background: #0b1530;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        overflow-x: auto;
+      }
+      .dataset table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        min-width: 280px;
+      }
+      .dataset caption {
+        text-align: left;
+        font-weight: 700;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .dataset th,
+      .dataset td {
+        border: 1px solid var(--line);
+        padding: 7px 9px;
+        text-align: center;
+      }
+      .dataset th {
+        background: #13234d;
+        color: var(--ink);
+      }
+
+      /* ---- Dialogue ---- */
       .dialogue {
         margin-top: 14px;
         min-height: 96px;
@@ -220,26 +253,36 @@
       .bubble {
         background: var(--bubble);
         color: var(--bubble-ink);
-        border: 1px solid var(--line);
         border-radius: 16px;
         padding: 14px 16px;
+        position: relative;
         box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
         animation: fade 0.25s ease;
       }
       .bubble .who {
         font-weight: 800;
-        color: var(--accent);
+        color: #c2461d;
         font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 4px;
       }
       .bubble .en {
-        font-size: 1.06rem;
+        font-size: 1.05rem;
+      }
+      .bubble .es {
+        font-size: 0.92rem;
+        color: #566677;
+        margin-top: 6px;
+        font-style: italic;
       }
       .bubble.caption {
-        background: #0a142e;
-        border-style: dashed;
+        background: #0e1c40;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .bubble.caption .es {
+        color: var(--muted);
       }
       .dlg-row {
         display: flex;
@@ -257,15 +300,15 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #283f73;
+        background: #2a4378;
       }
       .dots i.on {
-        background: var(--accent2);
+        background: var(--accent);
       }
       .next {
         min-height: 44px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #5d7bff);
+        color: #02112a;
         border: none;
         border-radius: 12px;
         padding: 10px 18px;
@@ -277,10 +320,15 @@
         outline: 3px solid #fff;
         outline-offset: 2px;
       }
+      .next[disabled] {
+        opacity: 0.4;
+        cursor: default;
+      }
 
+      /* ---- Challenge / choice ---- */
       .challenge {
         margin-top: 16px;
-        background: #0c1838;
+        background: #0e1c40;
         border: 1px solid var(--line);
         border-radius: 16px;
         padding: 16px;
@@ -288,31 +336,30 @@
       .challenge h3 {
         font-size: 1.05rem;
         margin-bottom: 4px;
-        color: var(--accent2);
+        color: var(--accent);
       }
       .challenge .prompt {
         font-size: 1.05rem;
         margin-bottom: 6px;
       }
-      .challenge.bonus {
-        border-color: var(--gold);
-        background: #1c1606;
-        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      .challenge .prompt .es {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 4px;
       }
-      .challenge.bonus h3 {
-        color: var(--gold);
+      .hint {
+        font-size: 0.9rem;
+        color: #ffd9b3;
+        background: #3a2410;
+        border: 1px solid #7a4d1f;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin: 8px 0;
       }
-      .bonus-tag {
-        display: inline-block;
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #1a1200;
-        background: var(--gold);
-        border-radius: 6px;
-        padding: 3px 8px;
-        font-weight: 800;
-        margin-bottom: 6px;
+      .hint b {
+        color: var(--accent);
       }
       .choices {
         display: grid;
@@ -322,7 +369,7 @@
       .choice {
         min-height: 48px;
         text-align: left;
-        background: #101e44;
+        background: #13234d;
         border: 2px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -346,14 +393,12 @@
         border-color: var(--bad);
         background: #3a1414;
       }
-      .choice .tree {
+      .choice .calc {
         font-family: "Courier New", monospace;
-        white-space: pre;
-        font-size: 0.95rem;
-        line-height: 1.35;
+        font-size: 0.9rem;
         display: block;
         margin-top: 4px;
-        color: #9ecbff;
+        color: #bfe;
       }
       .feedback {
         margin-top: 12px;
@@ -375,6 +420,27 @@
         background: #3a1414;
         border: 1px solid var(--bad);
         color: #ffd5d5;
+      }
+      .feedback .es {
+        display: block;
+        font-style: italic;
+        color: #9fd;
+        opacity: 0.85;
+        margin-top: 4px;
+        font-size: 0.9rem;
+      }
+
+      .frame {
+        margin-top: 12px;
+        font-size: 0.92rem;
+        color: var(--muted);
+        background: #0b1530;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .frame b {
+        color: var(--accent2);
       }
 
       .scene-foot {
@@ -405,25 +471,27 @@
         outline-offset: 2px;
       }
 
+      /* ---- Cover ---- */
       .cover-card {
         text-align: center;
       }
       .cover-card .art {
+        aspect-ratio: 16/9;
         margin-bottom: 16px;
       }
       .cover-card h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
       }
       .cover-card p {
         color: var(--muted);
-        max-width: 660px;
+        max-width: 620px;
         margin: 10px auto;
       }
       .start {
         min-height: 52px;
         margin-top: 8px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
         border: none;
         border-radius: 14px;
         padding: 14px 28px;
@@ -441,19 +509,20 @@
         font-size: 0.8rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #02112a;
+        background: var(--accent2);
         border-radius: 999px;
         padding: 5px 14px;
         font-weight: 700;
       }
 
+      /* ---- Glossary ---- */
       .gloss {
         display: grid;
         gap: 12px;
       }
       .term {
-        background: #0c1838;
+        background: #0e1c40;
         border: 1px solid var(--line);
         border-radius: 14px;
         padding: 14px 16px;
@@ -468,11 +537,17 @@
       .term h3 {
         font-size: 1.1rem;
       }
+      .term .es-term {
+        color: var(--accent2);
+        font-size: 0.9rem;
+        font-style: italic;
+      }
       .term p {
         color: var(--muted);
         margin-top: 4px;
       }
 
+      /* ---- Mission complete ---- */
       .complete {
         text-align: center;
         display: none;
@@ -484,8 +559,8 @@
         margin-bottom: 16px;
       }
       .complete h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
-        color: var(--accent2);
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        color: var(--accent);
       }
       .badge-done {
         display: inline-block;
@@ -495,7 +570,7 @@
       .restart {
         min-height: 48px;
         margin-top: 14px;
-        background: #0c1838;
+        background: #0e1c40;
         border: 1px solid var(--line);
         color: var(--ink);
         border-radius: 12px;
@@ -514,6 +589,9 @@
       }
 
       @media (max-width: 480px) {
+        .topbar-inner {
+          gap: 8px;
+        }
         .title {
           font-size: 0.9rem;
           flex: 1 1 100%;
@@ -526,7 +604,7 @@
       <div class="topbar-inner">
         <a class="home" href="../index.html">&#8592; Home</a>
         <span class="title"
-          ><span class="v">#2</span> Prime Station: The Factor Code</span
+          ><span class="v">#1</span> Court Vision: The Data Analyst</span
         >
         <div class="progress-wrap">
           <div
@@ -559,7 +637,7 @@
           data-scene="act1"
           id="tab-act1"
         >
-          Act 1: The Locked Bay
+          Act 1: The Big Question
         </button>
         <button
           class="tab locked"
@@ -568,7 +646,7 @@
           data-scene="act2"
           id="tab-act2"
         >
-          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+          <span class="lk">&#128274;</span> Act 2: Center of the Game
         </button>
         <button
           class="tab locked"
@@ -577,7 +655,7 @@
           data-scene="final"
           id="tab-final"
         >
-          <span class="lk">&#128274;</span> Final Code
+          <span class="lk">&#128274;</span> Final Call
         </button>
         <button
           class="tab"
@@ -592,7 +670,7 @@
     </div>
 
     <main>
-      <!-- COVER -->
+      <!-- ============ COVER ============ -->
       <section
         class="scene active cover-card"
         id="scene-cover"
@@ -601,23 +679,28 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/cover.png"
-            alt="A young space cadet on a station bridge surrounded by glowing holographic factor trees"
+            src="../_art/unit8/cover.png"
+            alt="A young sports data analyst stands in an arena data room surrounded by glowing holographic basketball stats"
           />
         </div>
-        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Prime Station: The Factor Code</h2>
+        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
+        <h2>Court Vision: The Data Analyst</h2>
         <p>
-          Orbital Station Kepler-9 is crippled and adrift. Every critical system
-          is sealed behind <b>factor-encrypted</b> bulkheads. As the cadet on
-          duty, only your command of <b>prime factorization</b> and the
-          <b>greatest common factor</b> can bring the station back online
-          &mdash; before life support fails.
+          You are Maya, the new <b>data analyst</b> for the team! The coach
+          needs your help. Read the <b>data</b>, find the
+          <b>mean, median, and mode</b>, and make the right call to win the
+          game!
         </p>
-        <button class="start" id="start-btn">Begin Mission &#128640;</button>
+        <p style="font-size: 0.92rem">
+          <i
+            >Eres Maya, la analista de datos del equipo. Lee los datos y haz la
+            jugada correcta para ganar el partido.</i
+          >
+        </p>
+        <button class="start" id="start-btn">Start the Game &#127936;</button>
       </section>
 
-      <!-- ACT 1 -->
+      <!-- ============ ACT 1 ============ -->
       <section
         class="scene"
         id="scene-act1"
@@ -625,14 +708,16 @@
         aria-labelledby="tab-act1"
       >
         <div class="scene-head">
-          <span class="act">Act 1 &middot; Lesson 1-1</span>
-          <h2>The Locked Bay</h2>
+          <span class="act"
+            >Act 1 &middot; Statistical Questions &amp; Data</span
+          >
+          <h2>The Big Question</h2>
         </div>
         <div class="art">
           <img
             id="art-act1"
-            src="../_art/unit1/airlock-locked.png"
-            alt="The cadet faces a locked airlock with a glowing orange code panel"
+            src="../_art/unit8/data-room.png"
+            alt="Maya sits at a glowing analyst desk studying holographic player statistics"
           />
         </div>
 
@@ -642,99 +727,99 @@
           <button class="next" id="next-act1">Next &#9654;</button>
         </div>
 
+        <!-- Challenge 1: statistical question -->
         <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128272; Encryption Cylinder &mdash; Prime Key</h3>
+          <h3>&#128202; Decision #1 &mdash; Pick a Statistical Question</h3>
           <p class="prompt">
-            The cylinder accepts only the value whose
-            <b>complete prime factorization</b> is shown using exponents. Which
-            option is written correctly?
+            A <b>statistical question</b> has <b>many different answers</b> you
+            collect as data. Which question is statistical?
+            <span class="es"
+              >Una pregunta estad&iacute;stica tiene muchas respuestas
+              diferentes. &iquest;Cu&aacute;l lo es?</span
+            >
           </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> If everyone would give the
+            <b>same one answer</b>, it is NOT statistical. If answers
+            <b>vary</b> (change from game to game), it IS statistical.
+          </div>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              72 = 2&sup3; &times; 3 &nbsp;<span class="tree"
-                >(missing a factor of 3)</span
-              >
+              How many points did Jordan score last night?
+              <span class="calc">(only one answer)</span>
             </button>
             <button class="choice" data-correct="true">
-              72 = 2&sup3; &times; 3&sup2; &nbsp;<span class="tree"
-                >(8 &times; 9 = 72)</span
-              >
+              How many points does Jordan score each game this season?
+              <span class="calc">(many answers &rarr; data!)</span>
             </button>
             <button class="choice" data-correct="false">
-              72 = 2&sup2; &times; 3&sup3; &nbsp;<span class="tree"
-                >(4 &times; 27 = 108)</span
-              >
+              How tall is the team's tallest player?
+              <span class="calc">(only one answer)</span>
             </button>
           </div>
           <div class="feedback" id="fb1a"></div>
         </div>
 
+        <!-- Challenge 2: read the data set -->
         <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128272; Bulkhead Code &mdash; Build the Tree</h3>
+          <h3>&#128202; Decision #2 &mdash; Read the Data</h3>
           <p class="prompt">
-            Open the bay by choosing the <b>fully reduced</b> factor tree for
-            <b>120</b> (every leaf must be prime).
+            Here is Jordan's points data for 5 games. Read the table. How many
+            points did Jordan score in <b>Game 3</b>?
+            <span class="es"
+              >Lee la tabla. &iquest;Cu&aacute;ntos puntos anot&oacute; en el
+              Juego 3?</span
+            >
           </p>
+          <div class="dataset">
+            <table>
+              <caption>
+                Jordan &mdash; Points per Game
+              </caption>
+              <tr>
+                <th>Game</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+              </tr>
+              <tr>
+                <th>Points</th>
+                <td>8</td>
+                <td>12</td>
+                <td>10</td>
+                <td>6</td>
+                <td>14</td>
+              </tr>
+            </table>
+          </div>
+          <div class="hint">
+            &#128161; <b>Hint:</b> Find the column labeled <b>Game 3</b>, then
+            look at the <b>Points</b> row right below it.
+          </div>
           <div class="choices" id="choices1b">
-            <button class="choice" data-correct="true">
-              A) 120 = 2&sup3; &times; 3 &times; 5<span class="tree">
-                120 / \ 8 15 /|\\ / \ 2 2 2 3 5</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              B) 120 = 2 &times; 60<span class="tree">
-                120 / \ 2 60 (60 not reduced)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              C) 120 = 4 &times; 5 &times; 6<span class="tree">
-                120 = 4 &times; 5 &times; 6 (4 and 6 are not prime)</span
-              >
-            </button>
+            <button class="choice" data-correct="false">8 points</button>
+            <button class="choice" data-correct="true">10 points</button>
+            <button class="choice" data-correct="false">14 points</button>
           </div>
           <div class="feedback" id="fb1b"></div>
         </div>
 
-        <!-- Captain's Challenge -->
-        <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-          <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-            Optional &mdash; skip anytime, not required to advance.
-          </p>
-          <h3>The Self-Sealing Vault</h3>
-          <p class="prompt">
-            A perfect square unlocks the captain&rsquo;s cache. Using prime
-            factorization, which number is a <b>perfect square</b> (every prime
-            appears an even number of times)?
-          </p>
-          <div class="choices" id="choicesB1">
-            <button class="choice" data-correct="false">
-              200 = 2&sup3; &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 appears 3 times &mdash; odd)</span
-              >
-            </button>
-            <button class="choice" data-correct="true">
-              324 = 2&sup2; &times; 3&#8308; &nbsp;<span class="tree"
-                >(all even powers &rarr; 18&sup2;)</span
-              >
-            </button>
-            <button class="choice" data-correct="false">
-              150 = 2 &times; 3 &times; 5&sup2; &nbsp;<span class="tree"
-                >(2 and 3 appear once)</span
-              >
-            </button>
-          </div>
-          <div class="feedback" id="fbB1"></div>
+        <div class="frame" id="frame1" style="display: none">
+          <b>Sentence frame:</b> &ldquo;A statistical question is statistical
+          because the answers ____ (vary / stay the same). In Game 3, Jordan
+          scored ____ points.&rdquo;
         </div>
 
         <div class="scene-foot">
           <button class="advance" id="adv-act1">
-            Breach the bay &#128640;
+            Bring the data to Coach &#127936;
           </button>
         </div>
       </section>
 
-      <!-- ACT 2 -->
+      <!-- ============ ACT 2 ============ -->
       <section
         class="scene"
         id="scene-act2"
@@ -742,18 +827,18 @@
         aria-labelledby="tab-act2"
       >
         <div class="locked-note" id="lock-act2">
-          &#128274; Complete Act 1 to unlock Act 2.
+          &#128274; Finish Act 1 first to unlock Act 2.
         </div>
         <div id="body-act2">
           <div class="scene-head">
-            <span class="act">Act 2 &middot; Lesson 1-2</span>
-            <h2>The Twin Engines</h2>
+            <span class="act">Act 2 &middot; Mean, Median &amp; Mode</span>
+            <h2>Center of the Game</h2>
           </div>
           <div class="art">
             <img
               id="art-act2"
-              src="../_art/unit1/twin-engines.png"
-              alt="The cadet stands between two glowing starship engines"
+              src="../_art/unit8/mean-median.png"
+              alt="Maya points at a holographic display showing numbers balancing to find a center"
             />
           </div>
 
@@ -763,90 +848,109 @@
             <button class="next" id="next-act2">Next &#9654;</button>
           </div>
 
+          <!-- Challenge: mean -->
           <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#9881;&#65039; Harmonic Sync &mdash; GCF by Factorization</h3>
+            <h3>&#127919; Stat Lock #1 &mdash; The Mean (Average)</h3>
             <p class="prompt">
-              Engine A draws <b>48</b> units, Engine B draws <b>72</b>. Sync
-              them by finding the <b>GCF</b> from their prime factorizations: 48
-              = 2&#8308;&times;3, 72 = 2&sup3;&times;3&sup2;. Take the
-              <b>lowest power</b> of each shared prime.
+              Jordan's points were <b>8, 12, 10, 6, 14</b>. The <b>mean</b> is
+              the average: add them all, then divide by how many games. What is
+              the mean?
+              <span class="es"
+                >La media: suma todos los puntos y divide entre el n&uacute;mero
+                de juegos.</span
+              >
             </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> 8 + 12 + 10 + 6 + 14 = <b>50</b>. There are
+              <b>5</b> games. Now do 50 &divide; 5.
+            </div>
             <div class="choices" id="choices2a">
               <button class="choice" data-correct="false">
-                2&#8308; &times; 3&sup2; = 144 &nbsp;<span class="tree"
-                  >(took highest powers &mdash; that's the LCM)</span
-                >
+                50 <span class="calc">(that is the total, not the mean)</span>
               </button>
               <button class="choice" data-correct="true">
-                2&sup3; &times; 3 = 24 &nbsp;<span class="tree"
-                  >(lowest power of each shared prime)</span
-                >
+                10 <span class="calc">(50 &divide; 5 = 10)</span>
               </button>
               <button class="choice" data-correct="false">
-                2 &times; 3 = 6 &nbsp;<span class="tree"
-                  >(not the greatest)</span
-                >
+                5 <span class="calc">(that is the number of games)</span>
               </button>
             </div>
             <div class="feedback" id="fb2a"></div>
           </div>
 
+          <!-- Challenge: median + mode -->
           <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#9881;&#65039; Fair Distribution &mdash; Rationing Crates</h3>
+            <h3>&#127919; Stat Lock #2 &mdash; The Median (Middle)</h3>
             <p class="prompt">
-              You have <b>54</b> oxygen cells and <b>90</b> ration packs. To
-              stock identical kits with nothing left over, how many kits can you
-              make, and what is in each?
+              Put the points in order from least to greatest:
+              <b>6, 8, 10, 12, 14</b>. The <b>median</b> is the
+              <b>middle</b> number. What is the median?
+              <span class="es"
+                >La mediana es el n&uacute;mero del medio cuando est&aacute;n en
+                orden.</span
+              >
             </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> With 5 numbers in order, the middle one is
+              the <b>3rd</b> number: 6, 8, <b>10</b>, 12, 14.
+            </div>
             <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                6 <span class="calc">(that is the smallest)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                14 <span class="calc">(that is the largest)</span>
+              </button>
               <button class="choice" data-correct="true">
-                18 kits &mdash; GCF(54,90)=18, so 3 cells &amp; 5 packs each
-              </button>
-              <button class="choice" data-correct="false">
-                9 kits &mdash; uses a common factor, but not the greatest
-              </button>
-              <button class="choice" data-correct="false">
-                6 kits &mdash; 6 divides both, but larger kits are possible
+                10 <span class="calc">(the middle number)</span>
               </button>
             </div>
             <div class="feedback" id="fb2b"></div>
           </div>
 
-          <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Captain&rsquo;s Challenge</span>
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Relatively Prime Relay</h3>
+          <!-- Challenge: mode -->
+          <div class="challenge" id="chal2c" style="display: none">
+            <h3>&#127919; Stat Lock #3 &mdash; The Mode (Most Often)</h3>
             <p class="prompt">
-              Two relay codes are <b>relatively prime</b> if their GCF is 1
-              (they share no prime factors). Which pair is relatively prime?
+              In a new game series, Maya wrote the assists:
+              <b>7, 7, 9, 4, 7</b>. The <b>mode</b> is the number that appears
+              <b>most often</b>. What is the mode?
+              <span class="es"
+                >La moda es el n&uacute;mero que aparece m&aacute;s veces.</span
+              >
             </p>
-            <div class="choices" id="choicesB2">
+            <div class="hint">
+              &#128161; <b>Hint:</b> Count each number. 7 appears <b>three</b>
+              times. Every other number appears once.
+            </div>
+            <div class="choices" id="choices2c">
               <button class="choice" data-correct="false">
-                14 and 35 &nbsp;<span class="tree">(both share 7)</span>
+                4 <span class="calc">(appears only once)</span>
               </button>
               <button class="choice" data-correct="true">
-                8 and 15 &nbsp;<span class="tree"
-                  >(2&sup3; and 3&times;5 &mdash; no shared prime)</span
-                >
+                7 <span class="calc">(appears 3 times &mdash; the most)</span>
               </button>
               <button class="choice" data-correct="false">
-                12 and 18 &nbsp;<span class="tree">(share 2 and 3)</span>
+                9 <span class="calc">(appears only once)</span>
               </button>
             </div>
-            <div class="feedback" id="fbB2"></div>
+            <div class="feedback" id="fb2c"></div>
+          </div>
+
+          <div class="frame" id="frame2" style="display: none">
+            <b>Sentence frame:</b> &ldquo;The mean is ____. The median (middle)
+            is ____. The mode (most often) is ____.&rdquo;
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-act2">
-              Engage the sync &#9889;
+              Report the stats &#9889;
             </button>
           </div>
         </div>
       </section>
 
-      <!-- FINAL -->
+      <!-- ============ FINAL ============ -->
       <section
         class="scene"
         id="scene-final"
@@ -854,18 +958,18 @@
         aria-labelledby="tab-final"
       >
         <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Code.
+          &#128274; Finish Act 2 first to unlock the Final Call.
         </div>
         <div id="body-final">
           <div class="scene-head">
-            <span class="act">Final Code &middot; Boss</span>
-            <h2>The Master Door</h2>
+            <span class="act">Final Call &middot; Boss</span>
+            <h2>The Game-Winning Decision</h2>
           </div>
           <div class="art">
             <img
               id="art-final"
-              src="../_art/unit1/boss-door.png"
-              alt="A giant glowing boss door with rings of orange light"
+              src="../_art/unit8/final-analysis.png"
+              alt="Maya stands before a giant wall of holographic data making a big decision"
             />
           </div>
 
@@ -876,62 +980,51 @@
           </div>
 
           <div class="challenge" id="chalF" style="display: none">
-            <h3>&#128274; Master Override &mdash; Combined Cipher</h3>
+            <h3>&#127942; Coach's Call &mdash; Who Should Take the Shot?</h3>
             <p class="prompt">
-              The reactor core demands one line that is fully correct: the prime
-              factorization of <b>84</b> in exponent form, and the
-              <b>GCF of 84 and 126</b>.
+              Coach asks for the <b>most reliable</b> scorer. Maya's last 5
+              shots scored: <b>5, 5, 5, 7, 3</b>. Find the <b>mean</b> AND the
+              <b>mode</b>, then pick the line that is fully correct.
+              <span class="es"
+                >Encuentra la media Y la moda. Elige la l&iacute;nea
+                correcta.</span
+              >
             </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Sum = 5+5+5+7+3 = <b>25</b>, and 25
+              &divide; 5 = mean. The number that repeats most is the mode.
+            </div>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 21
+                Mean = 25, Mode = 5
+                <span class="calc">(25 is the total, not the mean)</span>
               </button>
               <button class="choice" data-correct="true">
-                84 = 2&sup2;&times;3&times;7, &nbsp; GCF(84,126) = 42
+                Mean = 5, Mode = 5
+                <span class="calc">(25 &divide; 5 = 5; 5 repeats most)</span>
               </button>
               <button class="choice" data-correct="false">
-                84 = 2&times;3&times;14, &nbsp; GCF(84,126) = 42
+                Mean = 5, Mode = 7
+                <span class="calc">(7 appears only once)</span>
               </button>
             </div>
             <div class="feedback" id="fbF"></div>
           </div>
 
-          <div class="challenge bonus" id="bonusF" style="display: none">
-            <span class="bonus-tag"
-              >&#11088; Captain&rsquo;s Final Challenge</span
-            >
-            <p class="prompt" style="font-size: 0.85rem; color: var(--muted)">
-              Optional &mdash; skip anytime, not required to advance.
-            </p>
-            <h3>The Reactor Tessellation</h3>
-            <p class="prompt">
-              The reactor floor is 84 cm by 126 cm and must be tiled with
-              identical square plates, as large as possible, with no gaps. What
-              is the side length of each plate, and how many plates fit?
-            </p>
-            <div class="choices" id="choicesBF">
-              <button class="choice" data-correct="true">
-                42 cm plates &mdash; GCF(84,126)=42, so 2 &times; 3 = 6 plates
-              </button>
-              <button class="choice" data-correct="false">
-                21 cm plates &mdash; a common factor, but not the largest
-              </button>
-              <button class="choice" data-correct="false">
-                42 cm plates &mdash; 12 plates fit
-              </button>
-            </div>
-            <div class="feedback" id="fbBF"></div>
+          <div class="frame" id="frameF" style="display: none">
+            <b>Sentence frame:</b> &ldquo;The mean is ____. The mode is ____. So
+            Maya is a reliable scorer because her scores stay near ____.&rdquo;
           </div>
 
           <div class="scene-foot">
             <button class="advance" id="adv-final">
-              Override the core &#127775;
+              Make the call &#127775;
             </button>
           </div>
         </div>
       </section>
 
-      <!-- COMPLETE -->
+      <!-- ============ MISSION COMPLETE ============ -->
       <section
         class="scene complete"
         id="scene-complete"
@@ -940,22 +1033,27 @@
       >
         <div class="art">
           <img
-            src="../_art/unit1/mission-complete.png"
-            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+            src="../_art/unit8/celebrate.png"
+            alt="Maya celebrates on the court with the winning team holding her tablet high"
           />
         </div>
-        <span class="badge-done">&#127881;&#128640;&#11088;</span>
-        <h2>Station Restored &mdash; Mission Complete!</h2>
+        <span class="badge-done">&#127881;&#127936;&#11088;</span>
+        <h2>Game Won!</h2>
         <p>
-          Kepler-9 is fully online. You decomposed every lock into its
-          <b>prime factors</b>, synced the engines with the <b>GCF</b>, and
-          cracked the reactor&rsquo;s combined cipher. Command has logged a
-          commendation, Captain.
+          You did it, Analyst! You found the <b>statistical question</b>, read
+          the <b>data</b>, and used the <b>mean, median, and mode</b> to make
+          the game-winning call. The team is celebrating &mdash; thanks to you!
         </p>
-        <button class="restart" id="restart-btn">Run again &#8635;</button>
+        <p style="color: var(--muted); font-size: 0.92rem">
+          <i
+            >&iexcl;Lo lograste! Usaste la media, la mediana y la moda para
+            ganar. &iexcl;Excelente trabajo!</i
+          >
+        </p>
+        <button class="restart" id="restart-btn">Play again &#8635;</button>
       </section>
 
-      <!-- GLOSSARY -->
+      <!-- ============ GLOSSARY ============ -->
       <section
         class="scene"
         id="scene-gloss"
@@ -964,7 +1062,7 @@
       >
         <div class="scene-head">
           <span class="act">Reference</span>
-          <h2>Glossary &middot; Mission Codex</h2>
+          <h2>Glossary &middot; Word Bank</h2>
         </div>
         <div class="gloss" id="gloss-list"></div>
       </section>
@@ -974,128 +1072,137 @@
       (function () {
         "use strict";
 
+        /* ---------- Dialogue data (English + Spanish support) ---------- */
         var DLG = {
           act1: [
             {
-              who: "Station AI",
-              en: "Cadet, hull integrity is failing. Each bay is sealed behind a factor-encrypted cylinder. Decrypt or we lose the deck.",
+              who: "Coach",
+              en: "Analyst! Big game tonight. I need you to study our data and help me make smart calls.",
+              es: "&iexcl;Analista! Gran partido hoy. Necesito que estudies los datos y me ayudes a decidir.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Then I decompose every code into its prime factors. No composite gets past me. Patch me into the cylinder.",
+              who: "Maya",
+              en: "On it, Coach! First I need a STATISTICAL question — one with many answers I can collect as data.",
+              es: "&iexcl;Voy! Primero necesito una pregunta estad&iacute;stica: una con muchas respuestas que pueda recolectar.",
+            },
+            {
+              who: "Coach",
+              en: "Good thinking. Pick the question that will give us real data to work with.",
+              es: "Buena idea. Elige la pregunta que nos dar&aacute; datos reales.",
+              cap: true,
             },
           ],
           act1b: [
             {
-              who: "Cadet",
-              en: "Key accepted. Now the bulkhead wants a full factor tree &mdash; reduced all the way to primes. Building it.",
-            },
-          ],
-          bonus1: [
-            {
-              who: "Station AI",
-              en: "Optional: the captain&rsquo;s cache is nearby. Its lock only yields to a perfect square. Care to try?",
-              cap: true,
+              who: "Maya",
+              en: "Statistical question, locked in! Now let me READ Jordan's points data table carefully.",
+              es: "&iexcl;Pregunta estad&iacute;stica lista! Ahora voy a leer la tabla de puntos de Jordan con cuidado.",
             },
           ],
           act2: [
             {
-              who: "Station AI",
-              en: "Bay clear. Critical fault: the twin drives are running at different draws and will tear the mounts apart unless you harmonize them.",
+              who: "Coach",
+              en: "Great data! Now find the CENTER of Jordan's scores. Start with the mean — the average.",
+              es: "&iexcl;Buenos datos! Ahora encuentra el centro. Empieza con la media: el promedio.",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Factor both draws, take the shared primes at their lowest powers &mdash; that&rsquo;s the GCF. That&rsquo;s our sync frequency.",
+              who: "Maya",
+              en: "Mean, median, and mode all describe the center. I'll compute each one step by step.",
+              es: "La media, la mediana y la moda describen el centro. Calcular&eacute; cada una paso a paso.",
             },
           ],
           act2b: [
             {
-              who: "Cadet",
-              en: "Drives harmonized. Now I split the remaining supplies into identical kits with nothing wasted &mdash; another GCF problem.",
+              who: "Maya",
+              en: "Mean done! Next is the MEDIAN — I put the numbers in order and find the middle one.",
+              es: "&iexcl;Media lista! Ahora la mediana: pongo los n&uacute;meros en orden y busco el del medio.",
             },
           ],
-          bonus2: [
+          act2c: [
             {
-              who: "Station AI",
-              en: "Optional relay puzzle detected: find the code pair that shares no prime factors at all.",
-              cap: true,
+              who: "Maya",
+              en: "Median found! Last is the MODE — the number that shows up the most often.",
+              es: "&iexcl;Mediana lista! Por &uacute;ltimo, la moda: el n&uacute;mero que aparece m&aacute;s veces.",
             },
           ],
           final: [
             {
-              who: "Station AI",
-              en: "Reactor core ahead &mdash; the Master Door. It will only open to a single cipher that fuses factorization and the GCF.",
+              who: "Coach",
+              en: "It's the final play. I need our most RELIABLE scorer. Use the stats to decide!",
+              es: "Es la jugada final. Necesito al anotador m&aacute;s confiable. &iexcl;Usa las estad&iacute;sticas!",
               cap: true,
             },
             {
-              who: "Cadet",
-              en: "Both skills, one line, no mistakes. Stand by. Entering the override.",
+              who: "Maya",
+              en: "I'll use the mean AND the mode together. If both point to the same number, that player is steady.",
+              es: "Usar&eacute; la media Y la moda juntas. Si ambas apuntan al mismo n&uacute;mero, ese jugador es estable.",
             },
           ],
         };
 
         var GLOSS = [
           {
+            ico: "&#10067;",
+            en: "Statistical question",
+            es: "pregunta estad&iacute;stica",
+            def: "A question that has many different answers you collect as data. Example: How many points does Jordan score each game?",
+          },
+          {
+            ico: "&#128202;",
+            en: "Data",
+            es: "datos",
+            def: "The facts or numbers you collect to answer a question. Example: 8, 12, 10, 6, 14 points.",
+          },
+          {
             ico: "&#128290;",
-            en: "Prime number",
-            def: "An integer greater than 1 with exactly two distinct factors: 1 and itself (2, 3, 5, 7, 11&hellip;).",
+            en: "Data set",
+            es: "conjunto de datos",
+            def: "A whole group of data values collected together, often shown in a table or list.",
           },
           {
-            ico: "&#129513;",
-            en: "Composite number",
-            def: "An integer greater than 1 with more than two factors; it can be factored into smaller integers.",
+            ico: "&#9878;&#65039;",
+            en: "Mean (average)",
+            es: "media (promedio)",
+            def: "Add all the values, then divide by how many there are. Mean of 8,12,10,6,14 is 50 ÷ 5 = 10.",
           },
           {
-            ico: "&#127795;",
-            en: "Prime factorization",
-            def: "Expressing an integer as a product of primes; unique for every integer (Fundamental Theorem of Arithmetic). 72 = 2&sup3;&times;3&sup2;.",
+            ico: "&#9995;",
+            en: "Median",
+            es: "mediana",
+            def: "The middle value when the numbers are in order from least to greatest. Median of 6,8,10,12,14 is 10.",
           },
           {
-            ico: "&#127794;",
-            en: "Factor tree",
-            def: "A branching diagram that repeatedly splits a number into factors until every leaf is prime.",
+            ico: "&#128293;",
+            en: "Mode",
+            es: "moda",
+            def: "The value that appears the most often. Mode of 7,7,9,4,7 is 7.",
           },
           {
-            ico: "&#10094;&#10095;",
-            en: "Exponent",
-            def: "Notation for repeated multiplication; in 2&sup3; the exponent 3 means 2&times;2&times;2.",
+            ico: "&#128207;",
+            en: "Order (least to greatest)",
+            es: "ordenar de menor a mayor",
+            def: "Lining up numbers from smallest to biggest. This helps you find the median.",
           },
           {
-            ico: "&#10006;&#65039;",
-            en: "Factor",
-            def: "An integer that divides another evenly. The factors of 12 are 1, 2, 3, 4, 6, 12.",
+            ico: "&#10133;",
+            en: "Sum (total)",
+            es: "suma (total)",
+            def: "The answer when you add numbers together. The sum of 8+12+10+6+14 is 50.",
           },
           {
-            ico: "&#129309;",
-            en: "Common factor",
-            def: "A factor shared by two or more numbers; found among the primes their factorizations have in common.",
-          },
-          {
-            ico: "&#127942;",
-            en: "GCF (Greatest Common Factor)",
-            def: "The largest factor two numbers share. From factorizations, multiply each shared prime raised to its lowest power.",
-          },
-          {
-            ico: "&#9989;",
-            en: "Divisible",
-            def: "A is divisible by B when A&divide;B leaves no remainder, i.e. B is a factor of A.",
-          },
-          {
-            ico: "&#129518;",
-            en: "Relatively prime",
-            def: "Two numbers whose GCF is 1 &mdash; they share no common prime factors (e.g. 8 and 15).",
-          },
-          {
-            ico: "&#9633;",
-            en: "Perfect square",
-            def: "A number whose prime factorization has all even exponents, so it equals an integer squared. 324 = 2&sup2;&times;3&#8308; = 18&sup2;.",
+            ico: "&#10134;",
+            en: "Divide",
+            es: "dividir",
+            def: "To split a total into equal groups. To find the mean you divide the sum by the count.",
           },
         ];
 
+        /* ---------- State ---------- */
         var state = { act1: false, act2: false, final: false };
         var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+
         function $(id) {
           return document.getElementById(id);
         }
@@ -1105,6 +1212,7 @@
           );
         }
 
+        /* ---------- Progress ---------- */
         function updateProgress() {
           var done =
             (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
@@ -1115,13 +1223,8 @@
             .querySelector(".progress")
             .setAttribute("aria-valuenow", pct);
         }
-        function setLock(tabId, locked) {
-          var t = $(tabId);
-          t.classList.toggle("locked", locked);
-          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
-          t.innerHTML =
-            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
-        }
+
+        /* ---------- Tab locking ---------- */
         function refreshLocks() {
           setLock("tab-act2", !state.act1);
           setLock("tab-final", !state.act2);
@@ -1130,6 +1233,15 @@
           $("lock-final").classList.toggle("show", !state.act2);
           $("body-final").style.display = state.act2 ? "" : "none";
         }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+
+        /* ---------- Scene switching ---------- */
         function showScene(name) {
           SCENES.forEach(function (s) {
             var sc = $("scene-" + s);
@@ -1149,45 +1261,55 @@
           qa(".tab").forEach(function (t) {
             t.setAttribute("aria-selected", "false");
           });
-          $("scene-complete").classList.add("active", "show");
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
+
         qa(".tab").forEach(function (tab) {
           tab.addEventListener("click", function () {
-            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
           });
           tab.addEventListener("keydown", function (e) {
-            var arr = qa(".tab");
-            var i = arr.indexOf(tab);
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
             if (e.key === "ArrowRight") {
               e.preventDefault();
-              (arr[i + 1] || arr[0]).focus();
+              (tabsArr[i + 1] || tabsArr[0]).focus();
             }
             if (e.key === "ArrowLeft") {
               e.preventDefault();
-              (arr[i - 1] || arr[arr.length - 1]).focus();
+              (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus();
             }
           });
         });
 
+        /* ---------- Dialogue engine ---------- */
         function runDialogue(opts) {
-          var idx = 0,
-            dlgBox = $(opts.dlgId),
+          var idx = 0;
+          var dlgBox = $(opts.dlgId),
             nextBtn = $(opts.nextId),
             dots = $(opts.dotsId);
           dots.innerHTML = "";
           opts.dlg.forEach(function () {
-            dots.appendChild(document.createElement("i"));
+            var i = document.createElement("i");
+            dots.appendChild(i);
           });
           function render() {
             var line = opts.dlg[idx];
             dlgBox.innerHTML =
               '<div class="bubble' +
               (line.cap ? " caption" : "") +
-              '"><div class="who">' +
+              '">' +
+              '<div class="who">' +
               line.who +
-              '</div><div class="en">' +
+              "</div>" +
+              '<div class="en">' +
               line.en +
+              "</div>" +
+              '<div class="es">' +
+              line.es +
               "</div></div>";
             qa("i", dots).forEach(function (d, k) {
               d.classList.toggle("on", k <= idx);
@@ -1201,22 +1323,27 @@
             if (idx < opts.dlg.length - 1) {
               idx++;
               render();
-            } else if (opts.onDone) opts.onDone();
+            } else {
+              if (opts.onDone) opts.onDone();
+            }
           };
           render();
         }
 
+        /* ---------- Choice handler ---------- */
         function wireChoices(opts) {
           var solved = false;
           qa(".choice", $(opts.choicesId)).forEach(function (btn) {
             btn.addEventListener("click", function () {
               if (solved) return;
+              var correct = btn.dataset.correct === "true";
               var fb = $(opts.feedbackId);
-              if (btn.dataset.correct === "true") {
+              if (correct) {
                 solved = true;
                 btn.classList.add("correct");
                 fb.className = "feedback show good";
-                fb.innerHTML = opts.goodEn;
+                fb.innerHTML =
+                  opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
                 qa(".choice", $(opts.choicesId)).forEach(function (b) {
                   b.disabled = true;
                 });
@@ -1225,12 +1352,14 @@
                 btn.classList.add("wrong");
                 btn.disabled = true;
                 fb.className = "feedback show bad";
-                fb.innerHTML = opts.badEn;
+                fb.innerHTML =
+                  opts.badEn + '<span class="es">' + opts.badEs + "</span>";
               }
             });
           });
         }
 
+        /* ---------- Build glossary ---------- */
         (function () {
           var list = $("gloss-list");
           GLOSS.forEach(function (g) {
@@ -1241,31 +1370,23 @@
               g.ico +
               "</div><div><h3>" +
               g.en +
-              "</h3><p>" +
+              ' <span class="es-term">(' +
+              g.es +
+              ")</span></h3><p>" +
               g.def +
               "</p></div>";
             list.appendChild(d);
           });
         })();
 
-        function showBubble(boxId, line) {
-          $(boxId).innerHTML =
-            '<div class="bubble' +
-            (line.cap ? " caption" : "") +
-            '"><div class="who">' +
-            line.who +
-            '</div><div class="en">' +
-            line.en +
-            "</div></div>";
-        }
-
+        /* ---------- ACT 1 flow ---------- */
         function initAct1() {
           runDialogue({
             dlgId: "dlg-act1",
             nextId: "next-act1",
             dotsId: "dots-act1",
             dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
+            lastLabel: "Pick the question ▶",
             onDone: function () {
               $("next-act1").style.display = "none";
               $("chal1a").style.display = "block";
@@ -1279,44 +1400,47 @@
             choicesId: "choices1a",
             feedbackId: "fb1a",
             goodEn:
-              "&#9989; Correct. 72 = 2&sup3;&times;3&sup2; = 8&times;9. Cylinder decrypted.",
+              "&#9989; Yes! “How many points each game” gives many answers — that is a statistical question.",
+            goodEs:
+              "&iexcl;S&iacute;! Esa pregunta tiene muchas respuestas: es estad&iacute;stica.",
             badEn:
-              "&#10060; That product doesn&rsquo;t equal 72. Recompute the powers and verify.",
+              "&#10060; That question has only ONE answer. A statistical question must have answers that vary. Try again.",
+            badEs:
+              "Esa pregunta tiene solo UNA respuesta. Una pregunta estad&iacute;stica var&iacute;a. Intenta otra vez.",
             onSolve: function () {
+              var box = $("dlg-act1");
               setTimeout(function () {
-                showBubble("dlg-act1", DLG.act1b[0]);
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act1b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act1b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act1b[0].es +
+                  "</div></div>";
                 $("chal1b").style.display = "block";
-              }, 450);
+                $("frame1").style.display = "block";
+                $("chal1b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 500);
             },
           });
           wireChoices({
             choicesId: "choices1b",
             feedbackId: "fb1b",
             goodEn:
-              "&#9989; Fully reduced: 120 = 2&sup3;&times;3&times;5. Every leaf is prime. Bulkhead releasing&hellip;",
+              "&#9989; Correct! Game 3 shows 10 points. You read the data table perfectly!",
+            goodEs:
+              "&iexcl;Correcto! El Juego 3 muestra 10 puntos. &iexcl;Leíste bien la tabla!",
             badEn:
-              "&#10060; That tree still contains composite leaves. Reduce every branch to primes.",
+              "&#10060; Look again — find the Game 3 column, then the Points row. Use the hint.",
+            badEs:
+              "Mira otra vez: busca la columna del Juego 3 y la fila de Puntos. Usa la pista.",
             onSolve: function () {
-              // Core locks solved (1a + 1b): breach the bay and reveal advance.
-              // The optional bonus does NOT gate advancing.
-              $("art-act1").src = "../_art/unit1/airlock-open.png";
-              $("art-act1").alt = "The airlock slides open with golden light";
               $("adv-act1").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act1", DLG.bonus1[0]);
-                $("bonus1").style.display = "block";
-              }, 450);
             },
-          });
-          wireChoices({
-            choicesId: "choicesB1",
-            feedbackId: "fbB1",
-            goodEn:
-              "&#11088; Sharp. 324 = 2&sup2;&times;3&#8308;, all even exponents, so 324 = 18&sup2;. Captain&rsquo;s cache unlocked.",
-            badEn:
-              "&#10060; Check the exponents &mdash; a perfect square needs every prime to an even power.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-act1").addEventListener("click", function () {
             state.act1 = true;
@@ -1326,13 +1450,14 @@
           });
         }
 
+        /* ---------- ACT 2 flow ---------- */
         function initAct2() {
           runDialogue({
             dlgId: "dlg-act2",
             nextId: "next-act2",
             dotsId: "dots-act2",
             dlg: DLG.act2,
-            lastLabel: "Compute GCF ▶",
+            lastLabel: "Find the mean ▶",
             onDone: function () {
               $("next-act2").style.display = "none";
               $("chal2a").style.display = "block";
@@ -1346,41 +1471,73 @@
             choicesId: "choices2a",
             feedbackId: "fb2a",
             goodEn:
-              "&#9989; GCF = 2&sup3;&times;3 = 24 (lowest power of each shared prime). Drives locking to a common frequency.",
+              "&#9989; The mean is 10! 8+12+10+6+14 = 50, and 50 &divide; 5 = 10.",
+            goodEs: "&iexcl;La media es 10! 50 &divide; 5 = 10.",
             badEn:
-              "&#10060; Re-read the rule: GCF uses the LOWEST power of each shared prime, not the highest.",
+              "&#10060; Not quite. Add to get 50, then divide by 5 games. Check the hint.",
+            badEs: "Casi. Suma 50 y divide entre 5 juegos. Usa la pista.",
             onSolve: function () {
               setTimeout(function () {
-                showBubble("dlg-act2", DLG.act2b[0]);
+                $("dlg-act2").innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act2b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act2b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act2b[0].es +
+                  "</div></div>";
                 $("chal2b").style.display = "block";
-              }, 450);
+                $("chal2b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 500);
             },
           });
           wireChoices({
             choicesId: "choices2b",
             feedbackId: "fb2b",
             goodEn:
-              "&#9989; GCF(54,90)=18 &rarr; 18 identical kits, each with 54&divide;18=3 cells and 90&divide;18=5 packs. Nothing wasted.",
+              "&#9989; The median is 10 — the middle of 6, 8, 10, 12, 14.",
+            goodEs:
+              "&iexcl;La mediana es 10! Es el n&uacute;mero del medio: 6, 8, 10, 12, 14.",
             badEn:
-              "&#10060; A common factor works, but the question wants the MOST kits &mdash; use the greatest common factor.",
+              "&#10060; The median is the MIDDLE number when in order. The middle of 5 numbers is the 3rd. Try again.",
+            badEs:
+              "La mediana es el n&uacute;mero del MEDIO. En 5 n&uacute;meros es el 3.&ordm;. Intenta otra vez.",
             onSolve: function () {
-              // Core locks solved (2a + 2b): reveal advance. Bonus is optional.
-              $("adv-act2").classList.add("show");
               setTimeout(function () {
-                showBubble("dlg-act2", DLG.bonus2[0]);
-                $("bonus2").style.display = "block";
-              }, 450);
+                $("dlg-act2").innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act2c[0].who +
+                  '</div><div class="en">' +
+                  DLG.act2c[0].en +
+                  '</div><div class="es">' +
+                  DLG.act2c[0].es +
+                  "</div></div>";
+                $("chal2c").style.display = "block";
+                $("frame2").style.display = "block";
+                $("chal2c").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 500);
             },
           });
           wireChoices({
-            choicesId: "choicesB2",
-            feedbackId: "fbB2",
+            choicesId: "choices2c",
+            feedbackId: "fb2c",
             goodEn:
-              "&#11088; Right. 8 = 2&sup3; and 15 = 3&times;5 share no prime, so GCF = 1: relatively prime.",
+              "&#9989; The mode is 7 — it appears 3 times, more than any other number. Stats complete!",
+            goodEs:
+              "&iexcl;La moda es 7! Aparece 3 veces, m&aacute;s que las dem&aacute;s.",
             badEn:
-              "&#10060; Those share a prime factor, so their GCF is greater than 1.",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
+              "&#10060; The mode appears MOST often. Count how many times each number shows up. Try again.",
+            badEs:
+              "La moda aparece M&Aacute;S veces. Cuenta cada n&uacute;mero. Intenta otra vez.",
+            onSolve: function () {
+              $("adv-act2").classList.add("show");
+            },
           });
           $("adv-act2").addEventListener("click", function () {
             state.act2 = true;
@@ -1390,16 +1547,18 @@
           });
         }
 
+        /* ---------- FINAL flow ---------- */
         function initFinal() {
           runDialogue({
             dlgId: "dlg-final",
             nextId: "next-final",
             dotsId: "dots-final",
             dlg: DLG.final,
-            lastLabel: "Enter cipher ▶",
+            lastLabel: "Make the call ▶",
             onDone: function () {
               $("next-final").style.display = "none";
               $("chalF").style.display = "block";
+              $("frameF").style.display = "block";
               $("chalF").scrollIntoView({
                 behavior: "smooth",
                 block: "center",
@@ -1410,26 +1569,16 @@
             choicesId: "choicesF",
             feedbackId: "fbF",
             goodEn:
-              "&#9989; 84 = 2&sup2;&times;3&times;7 and GCF(84,126)=2&times;3&times;7=42. Cipher verified.",
+              "&#9989; PERFECT CALL! Mean = 25 &divide; 5 = 5, and 5 is the mode (it repeats most). Maya is the reliable scorer!",
+            goodEs:
+              "&iexcl;JUGADA PERFECTA! Media = 5 y moda = 5. &iexcl;Maya es la anotadora confiable!",
             badEn:
-              "&#10060; One half is off. Confirm 84&rsquo;s primes, then take each shared prime of 84 &amp; 126 at its lowest power.",
+              "&#10060; One part is off. Mean = total 25 &divide; 5 = 5 (not 25). The mode is the value that repeats most (5).",
+            badEs:
+              "Una parte est&aacute; mal. Media = 25 &divide; 5 = 5. La moda es 5.",
             onSolve: function () {
-              // Core lock solved: reveal the override/complete trigger. Bonus is optional.
               $("adv-final").classList.add("show");
-              setTimeout(function () {
-                $("bonusF").style.display = "block";
-              }, 300);
             },
-          });
-          wireChoices({
-            choicesId: "choicesBF",
-            feedbackId: "fbBF",
-            goodEn:
-              "&#11088; The largest square tile is GCF(84,126)=42 cm. Grid is (84&divide;42)&times;(126&divide;42)=2&times;3=6 plates. CORE OVERRIDDEN!",
-            badEn:
-              "&#10060; The tile side must be the GREATEST common factor, and count = (84/side)&times;(126/side).",
-            // Optional bonus &mdash; skip anytime, not required to advance.
-            onSolve: function () {},
           });
           $("adv-final").addEventListener("click", function () {
             state.final = true;
@@ -1438,6 +1587,7 @@
           });
         }
 
+        /* ---------- Wire start / restart ---------- */
         $("start-btn").addEventListener("click", function () {
           showScene("act1");
         });
@@ -1445,6 +1595,7 @@
           location.reload();
         });
 
+        /* ---------- Init ---------- */
         initAct1();
         initAct2();
         initFinal();
