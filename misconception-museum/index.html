@@ -952,6 +952,14 @@
               style="min-height: 90px"
             ></textarea>
 
+            <div style="background:#fff9e6; border: 1px solid #ffd8a8; padding: 15px; border-radius: 12px; margin-top: 20px;" class="no-print">
+              <label class="write-label" for="curatorName" style="color:#d9480f; margin-bottom: 4px;">👤 Curator Name (For Certification Badge)</label>
+              <p class="hint" style="margin-bottom:10px;">Enter your name to generate your official, printable certified Gold Star Curator Badge below.</p>
+              <input type="text" id="curatorName" placeholder="Enter your name..." style="width:100%; border: 2px solid var(--museum-line); border-radius:10px; padding: 10px 12px; background: white; color: var(--museum-ink);" />
+            </div>
+
+            <div id="curatorBadgeWrap" style="margin-top: 24px; display: none;"></div>
+
             <h3 style="margin-top: 24px">📋 Your Finished Exhibit</h3>
             <p class="print-only" id="printClusterTitle"></p>
 
@@ -1483,6 +1491,8 @@
           modelCaption: document.getElementById("modelCaption"),
           curatorNote: document.getElementById("curatorNote"),
           errorTypeList: document.getElementById("errorTypeList"),
+          curatorName: document.getElementById("curatorName"),
+          curatorBadgeWrap: document.getElementById("curatorBadgeWrap"),
           repairText: document.getElementById("repairText"),
           repairHint: document.getElementById("repairHint"),
           warningText: document.getElementById("warningText"),
@@ -1912,6 +1922,56 @@
           );
         }
 
+        function renderCuratorBadge() {
+          var name = el.curatorName.value.trim() || 'Star Curator';
+          var topic = currentCluster.title;
+          var date = new Date().toLocaleDateString();
+          var wrap = el.curatorBadgeWrap;
+          if (!wrap) return;
+          
+          var svg = `
+            <svg width="100%" height="auto" viewBox="0 0 600 420" xmlns="http://www.w3.org/2000/svg" style="background:#fff; border: 8px solid var(--museum-gold); border-radius: 16px; box-shadow: var(--museum-shadow); display:block; margin:20px auto; max-width:600px;">
+              <rect x="15" y="15" width="570" height="390" fill="#fcfaf2" stroke="var(--museum-gold)" stroke-width="2"/>
+              <rect x="25" y="25" width="550" height="370" fill="none" stroke="#e6c387" stroke-width="1" stroke-dasharray="4,4"/>
+              
+              <path d="M 35 60 L 35 35 L 60 35" fill="none" stroke="var(--museum-gold)" stroke-width="3"/>
+              <path d="M 565 60 L 565 35 L 540 35" fill="none" stroke="var(--museum-gold)" stroke-width="3"/>
+              <path d="M 35 360 L 35 385 L 60 385" fill="none" stroke="var(--museum-gold)" stroke-width="3"/>
+              <path d="M 565 360 L 565 385 L 540 385" fill="none" stroke="var(--museum-gold)" stroke-width="3"/>
+              
+              <circle cx="500" cy="300" r="40" fill="var(--museum-gold)" opacity="0.15"/>
+              <circle cx="500" cy="300" r="35" fill="none" stroke="var(--museum-gold)" stroke-width="2" stroke-dasharray="3,3"/>
+              <text x="500" y="306" font-family="'Sora', sans-serif" font-size="10" fill="var(--museum-gold)" text-anchor="middle" font-weight="900">APPROVED</text>
+              
+              <g transform="translate(300, 190)">
+                <path d="M 0,-15 L 4,-4 L 15,-4 L 7,3 L 10,14 L 0,8 L -10,14 L -7,3 L -15,-4 L -4,-4 Z" fill="var(--museum-gold)"/>
+                <path d="M -40,-12 L -37,-3 L -28,-3 L -35,2 L -33,11 L -40,6 L -47,11 L -45,2 L -52,-3 L -43,-3 Z" fill="var(--museum-gold)"/>
+                <path d="M 40,-12 L 43,-3 L 52,-3 L 45,2 L 47,11 L 40,6 L 33,11 L 35,2 L 28,-3 L 37,-3 Z" fill="var(--museum-gold)"/>
+                <path d="M -80,-7 L -78,1 L -70,1 L -77,5 L -75,13 L -80,9 L -85,13 L -83,5 L -90,1 L -82,1 Z" fill="var(--museum-gold)"/>
+                <path d="M 80,-7 L 82,1 L 90,1 L 83,5 L 85,13 L 80,9 L 75,13 L 77,5 L 70,1 L 78,1 Z" fill="var(--museum-gold)"/>
+              </g>
+              
+              <text x="300" y="80" font-family="'Sora', sans-serif" font-size="28" fill="var(--museum-teal-dark)" text-anchor="middle" font-weight="900" letter-spacing="1">MISCONCEPTION MUSEUM</text>
+              <text x="300" y="110" font-family="'Outfit', sans-serif" font-size="12" fill="var(--museum-muted)" text-anchor="middle" font-weight="800" letter-spacing="2">CERTIFIED CURATOR ACHIEVEMENT BADGE</text>
+              
+              <text x="300" y="150" font-family="'Outfit', sans-serif" font-size="14" fill="var(--museum-ink)" text-anchor="middle" font-style="italic">This official badge is proudly awarded to:</text>
+              <text x="300" y="235" font-family="'Sora', sans-serif" font-size="24" fill="var(--museum-teal-dark)" text-anchor="middle" font-weight="900">${name}</text>
+              <line x1="180" y1="245" x2="420" y2="245" stroke="var(--museum-teal)" stroke-width="2"/>
+              
+              <text x="300" y="275" font-family="'Outfit', sans-serif" font-size="13" fill="var(--museum-muted)" text-anchor="middle" font-weight="700">For outstanding mathematical scholarship in auditing, correcting, and warning against the trap of:</text>
+              <text x="300" y="298" font-family="'Sora', sans-serif" font-size="14" fill="#c2410c" text-anchor="middle" font-weight="800">"${topic}"</text>
+              
+              <line x1="80" y1="365" x2="220" y2="365" stroke="var(--museum-line)" stroke-width="1.5"/>
+              <text x="150" y="380" font-family="'Outfit', sans-serif" font-size="11" fill="var(--museum-muted)" text-anchor="middle" font-weight="700">Lead Curator, Mr. Neft</text>
+              
+              <line x1="380" y1="365" x2="520" y2="365" stroke="var(--museum-line)" stroke-width="1.5"/>
+              <text x="450" y="380" font-family="'Outfit', sans-serif" font-size="11" fill="var(--museum-muted)" text-anchor="middle" font-weight="700">Audit Date: ${date}</text>
+            </svg>
+          `;
+          wrap.innerHTML = svg;
+          wrap.style.display = 'block';
+        }
+
         function refreshReview() {
           el.reviewMistake.textContent =
             currentCluster.title + " — " + currentCluster.misconception;
@@ -1927,6 +1987,12 @@
             el.warningText.value,
             "Not written yet.",
           );
+          
+          if (el.curatorName && el.curatorName.value.trim()) {
+            renderCuratorBadge();
+          } else if (el.curatorBadgeWrap) {
+            el.curatorBadgeWrap.style.display = 'none';
+          }
         }
 
         function setReviewField(node, value, emptyText) {
@@ -1961,7 +2027,6 @@
           el.nextButton.hidden = index === TOTAL_STEPS - 1;
           el.progressText.textContent =
             "Step " + (index + 1) + " of " + TOTAL_STEPS;
-          // Focus the active step heading region for screen readers
           stepSections[index].focus();
           stepSections[index].scrollIntoView({
             block: "start",
@@ -1989,6 +2054,7 @@
           var draft = {
             clusterId: currentCluster.id,
             errorType: selectedErrorType(),
+            curatorName: el.curatorName.value,
             diagnosis: el.diagnosisText.value,
             repair: el.repairText.value,
             warning: el.warningText.value,
@@ -2013,6 +2079,7 @@
               renderCluster(draftCluster);
             }
             setSelectedErrorType(draft.errorType || "");
+            if (el.curatorName) el.curatorName.value = draft.curatorName || "";
             el.diagnosisText.value = draft.diagnosis || "";
             el.repairText.value = draft.repair || "";
             el.warningText.value = draft.warning || "";
@@ -2029,6 +2096,7 @@
         function clearDraft() {
           localStorage.removeItem(STORAGE_KEY);
           setSelectedErrorType("");
+          if (el.curatorName) el.curatorName.value = "";
           el.diagnosisText.value = "";
           el.repairText.value = "";
           el.warningText.value = "";
@@ -2131,6 +2199,7 @@
           );
           el.repairText.addEventListener("input", refreshReview);
           el.warningText.addEventListener("input", refreshReview);
+          if (el.curatorName) el.curatorName.addEventListener("input", refreshReview);
 
           Array.prototype.forEach.call(
             document.querySelectorAll(".chip-row"),

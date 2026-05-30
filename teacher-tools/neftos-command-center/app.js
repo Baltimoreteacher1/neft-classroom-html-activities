@@ -526,12 +526,14 @@
         var cachedRoster = JSON.parse(localStorage.getItem('neftos.roster.v1'));
         if (Array.isArray(cachedRoster)) {
           displayRosterSummary(cachedRoster);
+          renderDiagnosticsMatrix(cachedRoster);
         }
       } catch(e) {}
     }
     
     renderPlaylistOptions();
     switchGeneratorTab('lesson');
+    renderWeeklyCalendar();
   }
 
   window.switchGeneratorTab = function(tabName) {
@@ -679,6 +681,8 @@
     });
     var uniqueStandards = Object.keys(standardsMap);
     document.getElementById('rosterStandardCount').textContent = uniqueStandards.length + " unique";
+    
+    renderDiagnosticsMatrix(roster);
   }
 
   window.generateLessonPrompt = function() {
@@ -880,4 +884,182 @@
       navigator.serviceWorker.register('./service-worker.js').catch(() => {});
     }
   }
+
+  function renderWeeklyCalendar() {
+    const wrap = document.getElementById('weeklyCalendarWrap');
+    if (!wrap) return;
+
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    let cached = {};
+    try {
+      cached = JSON.parse(localStorage.getItem('neftos.planner.v1')) || {};
+    } catch(e) {}
+
+    wrap.innerHTML = days.map(day => {
+      const dayKey = day.toLowerCase();
+      const std = cached[dayKey + '_std'] || '';
+      const obj = cached[dayKey + '_obj'] || '';
+      const play = cached[dayKey + '_play'] || '';
+
+      return `
+        <div style="background: white; border: 1px solid var(--neft-line); padding: 12px; border-radius: 12px; display: grid; gap: 8px;">
+          <span style="font-weight: 800; font-size: 0.85rem; color: var(--neft-teal-dark); border-bottom: 1px solid var(--neft-line); padding-bottom: 4px; display: block;">📅 ${day}</span>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <label style="font-size: 0.78rem; font-weight: normal; margin:0; display: block;">Standard
+              <input type="text" class="planner-input" data-day="${dayKey}" data-field="std" value="${escapeHtml(std)}" placeholder="MGSE6.NS.4" style="min-height:30px; padding:4px 8px; font-size:0.8rem; margin-top:2px; box-sizing: border-box; width: 100%; border: 1px solid var(--neft-line); border-radius: 6px; background: white; color: var(--neft-navy);" />
+            </label>
+            <label style="font-size: 0.78rem; font-weight: normal; margin:0; display: block;">Objective
+              <input type="text" class="planner-input" data-day="${dayKey}" data-field="obj" value="${escapeHtml(obj)}" placeholder="Find GCF of whole numbers" style="min-height:30px; padding:4px 8px; font-size:0.8rem; margin-top:2px; box-sizing: border-box; width: 100%; border: 1px solid var(--neft-line); border-radius: 6px; background: white; color: var(--neft-navy);" />
+            </label>
+          </div>
+          <label style="font-size: 0.78rem; font-weight: normal; margin:0; display: block;">Playlist / Sequence
+            <input type="text" class="planner-input" data-day="${dayKey}" data-field="play" value="${escapeHtml(play)}" placeholder="Do-Now Worksheet -> Playlist Sequence" style="min-height:30px; padding:4px 8px; font-size:0.8rem; margin-top:2px; box-sizing: border-box; width: 100%; border: 1px solid var(--neft-line); border-radius: 6px; background: white; color: var(--neft-navy);" />
+          </label>
+        </div>
+      `;
+    }).join('');
+
+    wrap.querySelectorAll('.planner-input').forEach(input => {
+      input.addEventListener('input', () => {
+        const day = input.dataset.day;
+        const field = input.dataset.field;
+        let data = {};
+        try {
+          data = JSON.parse(localStorage.getItem('neftos.planner.v1')) || {};
+        } catch(e) {}
+        data[day + '_' + field] = input.value;
+        localStorage.setItem('neftos.planner.v1', JSON.stringify(data));
+      });
+    });
+  }
+
+  function renderDiagnosticsMatrix(roster) {
+    const body = document.getElementById('diagnosticsMatrixBody');
+    if (!body) return;
+
+    if (!roster || roster.length === 0) {
+      body.innerHTML = `
+        <tr>
+          <td colspan="5" style="padding: 12px; text-align: center; color: var(--neft-muted);">No student data connector active. Click "Load Sample" or import a file above to view diagnostics.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    body.innerHTML = roster.map(student => {
+      const isHighRiskWida = /level\s*[1-2]/i.test(student.wida) || /entering|emerging/i.test(student.wida);
+      const strugglesFactoring = student.struggling && student.struggling.includes('NS.4');
+      const strugglesDecimals = student.struggling && student.struggling.includes('NS.3');
+      
+      let tag = '<span class="tag" style="background:#e0f2fe; color:#0369a1; font-weight:800; padding:2px 6px; border-radius:6px; font-size:0.72rem;">DEVELOPING</span>';
+      if (isHighRiskWida) {
+        tag = '<span class="tag" style="background:#fef2f2; color:#b91c1c; font-weight:800; padding:2px 6px; border-radius:6px; font-size:0.72rem;">HIGH ESOL RISK</span>';
+      } else if (strugglesFactoring || strugglesDecimals) {
+        tag = '<span class="tag" style="background:#fef3c7; color:#b45309; font-weight:800; padding:2px 6px; border-radius:6px; font-size:0.72rem;">STANDARDS AT RISK</span>';
+      }
+
+      return `
+        <tr style="border-bottom: 1px solid var(--neft-line); transition: background 0.15s ease;" onmouseover="this.style.background='var(--neft-sage)'" onmouseout="this.style.background='none'">
+          <td style="padding: 10px; font-weight: bold; color: var(--neft-navy);">${escapeHtml(student.name)}</td>
+          <td style="padding: 10px;">${escapeHtml(student.wida)}</td>
+          <td style="padding: 10px; color: ${strugglesFactoring ? 'var(--neft-coral)' : '#16a34a'}; font-weight: bold;">
+            ${strugglesFactoring ? '⚠️ Struggling' : '✓ Proficient'}
+          </td>
+          <td style="padding: 10px; color: ${strugglesDecimals ? 'var(--neft-coral)' : '#16a34a'}; font-weight: bold;">
+             ${strugglesDecimals ? '⚠️ Struggling' : '✓ Proficient'}
+          </td>
+          <td style="padding: 10px;">${tag}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  window.auditAppsScript = function() {
+    const code = document.getElementById('appsScriptInput').value;
+    const feedback = document.getElementById('appsScriptFeedback');
+    if (!code.trim()) {
+      feedback.style.display = 'block';
+      feedback.style.background = '#fef2f2';
+      feedback.style.borderColor = '#fca5a5';
+      feedback.style.color = '#991b1b';
+      feedback.innerHTML = '<strong>Error:</strong> Please paste some Google Apps Script code to audit.';
+      return;
+    }
+
+    const stack = [];
+    const matching = { '}': '{', ']': '[', ')': '(' };
+    let lines = code.split('\n');
+    let braceError = null;
+    
+    for (let lNum = 0; lNum < lines.length; lNum++) {
+      let line = lines[lNum];
+      for (let charIdx = 0; charIdx < line.length; charIdx++) {
+        let char = line[charIdx];
+        if (char === '{' || char === '[' || char === '(') {
+          stack.push({ char, line: lNum + 1, col: charIdx + 1 });
+        } else if (char === '}' || char === ']' || char === ')') {
+          if (stack.length === 0) {
+            braceError = `Unexpected closed bracket '${char}' at line ${lNum + 1}, column ${charIdx + 1}.`;
+            break;
+          }
+          let top = stack.pop();
+          if (top.char !== matching[char]) {
+            braceError = `Mismatch: opened '${top.char}' at line ${top.line} but closed with '${char}' at line ${lNum + 1}, column ${charIdx + 1}.`;
+            break;
+          }
+        }
+      }
+      if (braceError) break;
+    }
+
+    if (!braceError && stack.length > 0) {
+      let top = stack.pop();
+      braceError = `Unclosed bracket '${top.char}' opened at line ${top.line}, column ${top.col}.`;
+    }
+
+    let hazards = [];
+    let batchCheck = true;
+    
+    let hasLoop = /for\s*\(|while\s*\(|\.forEach\s*\(/.test(code);
+    let hasSingleCell = /\.getValue\(|\.setValue\(|\.setComment\(|\.setFont\(/.test(code);
+    if (hasLoop && hasSingleCell) {
+      hazards.push("⚠️ <strong>Runtime Hazard:</strong> Single-cell write/read (.getValue/.setValue) inside a loop. Please batch your data using <code>getValues()</code> and <code>setValues()</code> to avoid massive script slowing or timeouts.");
+      batchCheck = false;
+    }
+
+    let hasConfig = /CONFIG\s*=/.test(code);
+    let hasValidateConfig = /validateConfig\s*\(/.test(code);
+    let hasSelfTest = /selfTest\s*\(/.test(code);
+
+    let suggestions = [];
+    if (!hasConfig) suggestions.push("Consider defining a centralized <code>CONFIG</code> block for your properties.");
+    if (!hasValidateConfig) suggestions.push("Add a <code>validateConfig()</code> routine to verify parameters at startup.");
+    if (!hasSelfTest) suggestions.push("Implement a <code>selfTest()</code> function to verify spreadsheet or doc schema stability.");
+
+    let passed = !braceError && batchCheck;
+    feedback.style.display = 'block';
+    
+    if (passed) {
+      feedback.style.background = '#f0fdf4';
+      feedback.style.borderColor = '#86efac';
+      feedback.style.color = '#166534';
+      let html = `<strong>🟢 Preflight Audit: PASS</strong><br>Brace balancing looks complete! Structure is clean.`;
+      if (suggestions.length > 0) {
+        html += `<br><br><strong>Architecture Recommendations:</strong><ul>` + suggestions.map(s => `<li>${s}</li>`).join('') + `</ul>`;
+      }
+      feedback.innerHTML = html;
+    } else {
+      feedback.style.background = '#fef2f2';
+      feedback.style.borderColor = '#fca5a5';
+      feedback.style.color = '#991b1b';
+      let html = `<strong>🔴 Preflight Audit: FAIL</strong><br>`;
+      if (braceError) {
+        html += `<strong>Syntax / Bracket Mismatch:</strong><br>${braceError}<br><br>`;
+      }
+      if (hazards.length > 0) {
+        html += `<strong>Critical Hazards Identified:</strong><br>` + hazards.map(h => `<p style="margin:4px 0;">${h}</p>`).join('') + `<br>`;
+      }
+      feedback.innerHTML = html;
+    }
+  };
 })();

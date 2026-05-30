@@ -462,8 +462,17 @@
 
         <section>
           <article class="panel model-panel" aria-labelledby="model-title">
-            <div class="model-header">
-              <h2 id="model-title">Model Inspector</h2>
+            <div class="model-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; border-bottom:1px solid var(--studio-line); flex-wrap: wrap;">
+              <h2 id="model-title" style="margin:0;">Model Inspector</h2>
+              <div style="display:flex; align-items:center; gap:8px;" class="no-print">
+                <label for="coachLang" style="margin:0; font-size:0.8rem; font-weight:800; color:var(--studio-muted);">Coach Language:</label>
+                <select id="coachLang" style="min-height:30px; padding:2px 8px; font-size:0.8rem; border-radius:6px; width:auto; border-color:#b9c6d6; background:white; color:var(--studio-ink);" onchange="updateCoachLanguage()">
+                  <option value="en">🇺🇸 English</option>
+                  <option value="es">🇪🇸 Español</option>
+                  <option value="ar">🇸🇦 العربية</option>
+                  <option value="vi">🇻🇳 Tiếng Việt</option>
+                </select>
+              </div>
               <span class="badge" id="modelKind">Model</span>
             </div>
             <div class="model-stage">
@@ -854,6 +863,137 @@
           loadDraft();
         }
 
+        var TRANSLATIONS = {
+          es: {
+            "Notice what quantities are being compared.": "Observe qué cantidades se están comparando.",
+            "Use labels from the model as evidence.": "Utilice las etiquetas del modelo como evidencia.",
+            "Connect the picture to a mathematical sentence.": "Conecte la imagen a una oración matemática.",
+            "GCF and LCM Venn Diagram": "Diagrama de Venn para MCD y MCM",
+            "Coordinate Plotter": "Graficador de coordenadas",
+            "Ratio tape diagram model": "Modelo de diagrama de cinta de razón",
+            "Geometry resizable model": "Modelo geométrico redimensionable",
+            "comparison": "Comparación",
+            "factor": "Factores",
+            "decimal": "Decimales",
+            "division": "División",
+            "fraction": "Fracciones",
+            "ratio": "Razón",
+            "percent": "Porcentaje",
+            "finance": "Finanzas",
+            "area": "Área",
+            "expression": "Expresiones",
+            "equation": "Ecuaciones",
+            "inequality": "Desigualdades",
+            "data": "Datos",
+            "coordinate": "Coordenadas",
+            "volume": "Volumen",
+            "surface": "Superficie",
+            "Big Idea of Focus:": "Idea principal de enfoque:",
+            "What to Look For": "¿Qué buscar?",
+            "Claim-Evidence-Reasoning Blueprint": "Plano de Afirmación-Evidencia-Razonamiento",
+            "1. Claim": "1. Afirmación",
+            "2. Evidence (Mathematical Observations)": "2. Evidencia (Observaciones matemáticas)",
+            "3. Reasoning (Mathematical Justification)": "3. Razonamiento (Justificación matemática)",
+            "4. Student Reflection": "4. Reflexión del estudiante",
+            "Unit": "Unidad",
+            "Standard": "Estándar",
+            "Cluster": "Grupo",
+            "Place Value Decimal Grid": "Cuadrícula decimal de valor posicional",
+            "Decimal value": "Valor decimal"
+          },
+          ar: {
+            "Notice what quantities are being compared.": "لاحظ الكميات التي يتم مقارنتها.",
+            "Use labels from the model as evidence.": "استخدم التسميات من النموذج كدليل.",
+            "Connect the picture to a mathematical sentence.": "قم بتوصيل الصورة بجملة رياضية.",
+            "GCF and LCM Venn Diagram": "مخطط فين للقاسم المشترك الأكبر والمضاعف المشترك الأصغر",
+            "Coordinate Plotter": "راسم الإحداثيات",
+            "Ratio tape diagram model": "نموذج مخطط شريطي للنسبة",
+            "Geometry resizable model": "نموذج هندسي قابل لتغيير الحجم",
+            "comparison": "مقارنة",
+            "factor": "عوامل",
+            "decimal": "عشري",
+            "division": "قسمة",
+            "fraction": "كسور",
+            "ratio": "نسبة",
+            "percent": "نسبة مئوية",
+            "finance": "المالية",
+            "area": "مساحة",
+            "expression": "تعبيرات",
+            "equation": "معادلات",
+            "inequality": "متباينات",
+            "data": "بيانات",
+            "coordinate": "إحداثيات",
+            "volume": "حجم",
+            "surface": "مساحة السطح",
+            "Big Idea of Focus:": "الفكرة الكبرى للتركيز:",
+            "What to Look For": "ما الذي يجب البحث عنه",
+            "Claim-Evidence-Reasoning Blueprint": "مخطط الادعاء والأدلة والتبرير",
+            "1. Claim": "1. الادعاء",
+            "2. Evidence (Mathematical Observations)": "2. الأدلة (الملاحظات الرياضية)",
+            "3. Reasoning (Mathematical Justification)": "3. التبرير (التبرير الرياضي)",
+            "4. Student Reflection": "4. تأمل الطالب",
+            "Unit": "الوحدة",
+            "Standard": "المعيار",
+            "Cluster": "المجموعة",
+            "Place Value Decimal Grid": "شبكة القيمة المكانية العشرية",
+            "Decimal value": "القيمة العشرية"
+          },
+          vi: {
+            "Notice what quantities are being compared.": "Lưu ý những đại lượng nào đang được so sánh.",
+            "Use labels from the model as evidence.": "Sử dụng các nhãn từ mô hình làm bằng chứng.",
+            "Connect the picture to a mathematical sentence.": "Kết nối hình ảnh với một câu toán học.",
+            "GCF and LCM Venn Diagram": "Sơ đồ Venn cho UCLN và BCNN",
+            "Coordinate Plotter": "Trình vẽ tọa độ",
+            "Ratio tape diagram model": "Mô hình sơ đồ băng tỷ số",
+            "Geometry resizable model": "Mô hình hình học có thể thay đổi kích thước",
+            "comparison": "So sánh",
+            "factor": "Ước số",
+            "decimal": "Thập phân",
+            "division": "Phép chia",
+            "fraction": "Phân số",
+            "ratio": "Tỷ số",
+            "percent": "Phần trăm",
+            "finance": "Tài chính",
+            "area": "Diện tích",
+            "expression": "Biểu thức",
+            "equation": "Phương trình",
+            "inequality": "Bất đẳng thức",
+            "data": "Dữ liệu",
+            "coordinate": "Tọa độ",
+            "volume": "Thể tích",
+            "surface": "Diện tích bề mặt",
+            "Big Idea of Focus:": "Ý tưởng lớn trọng tâm:",
+            "What to Look For": "Những điều cần tìm kiếm",
+            "Claim-Evidence-Reasoning Blueprint": "Bản thiết kế Khẳng định - Bằng chứng - Lập luận",
+            "1. Claim": "1. Khẳng định",
+            "2. Evidence (Mathematical Observations)": "2. Bằng chứng (Quan sát toán học)",
+            "3. Reasoning (Mathematical Justification)": "3. Lập luận (Giải thích toán học)",
+            "4. Student Reflection": "4. Phản ánh của học sinh",
+            "Unit": "Bài học",
+            "Standard": "Tiêu chuẩn",
+            "Cluster": "Nhóm",
+            "Place Value Decimal Grid": "Lưới giá trị chữ số thập phân",
+            "Decimal value": "Giá trị thập phân"
+          }
+        };
+
+        function translateText(text, targetLang) {
+          if (!targetLang || targetLang === 'en') return text;
+          if (TRANSLATIONS[targetLang] && TRANSLATIONS[targetLang][text]) {
+            return TRANSLATIONS[targetLang][text];
+          }
+          if (text === "Prime factors, GCF, and LCM are different tools for organizing whole-number relationships.") {
+            if (targetLang === 'es') return "Los factores primos, MCD y MCM son herramientas diferentes para organizar las relaciones de números enteros.";
+            if (targetLang === 'ar') return "العوامل الأولية والقاسم المشترك الأكبر والمضاعف المشترك الأصغر هي أدوات مختلفة لتنظيم علاقات الأعداد الصحيحة.";
+            if (targetLang === 'vi') return "Các thừa số nguyên tố, UCLN và BCNN là các công cụ khác nhau để tổ chức các mối quan hệ số nguyên.";
+          }
+          return text;
+        }
+
+        window.updateCoachLanguage = function() {
+          renderCurrentLesson();
+        };
+
         function renderCurrentLesson() {
           if (!state.lesson) {
             renderEmptyData();
@@ -864,27 +1004,29 @@
           var unit = state.unit;
           var cluster = state.cluster;
           var info = modelInfo(cluster, lesson);
+          var lang = document.getElementById("coachLang") ? document.getElementById("coachLang").value : "en";
 
+          var bigIdeaText = cluster ? translateText(cluster.bigIdea, lang) : '';
           var bigIdeaHtml = cluster ? `
             <div class="meta-item" style="grid-column: 1 / -1; background:#f0fdfa; border-color:#ccfbf1;">
-              <span class="meta-label" style="color:var(--studio-green)">Big Idea <button class="action-btn" type="button" onclick="speakBigIdea()" style="background:none; border:none; cursor:pointer; font-size:1rem; padding:0 4px;" title="Listen to Big Idea">🔊 Listen</button></span>
-              <span class="meta-value" style="font-weight:600; color:#115e59;">${escapeHtml(cluster.bigIdea)}</span>
+              <span class="meta-label" style="color:var(--studio-green)">${translateText("Big Idea of Focus:", lang)} <button class="action-btn" type="button" onclick="speakBigIdea()" style="background:none; border:none; cursor:pointer; font-size:1rem; padding:0 4px;" title="Listen to Big Idea">🔊 Listen</button></span>
+              <span class="meta-value" style="font-weight:600; color:#115e59;">${escapeHtml(bigIdeaText)}</span>
             </div>
           ` : '';
 
           els.lessonTitle.textContent = lessonLabel(lesson);
           els.lessonMeta.innerHTML =
-            metaItem("Unit", unitLabel(unit, lesson)) +
-            metaItem("Standard", getStandard(lesson, cluster)) +
-            metaItem("Cluster", getClusterName(lesson, cluster)) +
+            metaItem(translateText("Unit", lang), unitLabel(unit, lesson)) +
+            metaItem(translateText("Standard", lang), getStandard(lesson, cluster)) +
+            metaItem(translateText("Cluster", lang), getClusterName(lesson, cluster)) +
             bigIdeaHtml;
             
-          els.modelKind.textContent = info.label;
+          els.modelKind.textContent = translateText(info.label, lang);
           els.modelFrame.innerHTML = renderSvg(info.kind);
           
           els.modelPrompts.innerHTML = info.prompts
             .map(function (prompt) {
-              return "<li>" + escapeHtml(prompt) + "</li>";
+              return "<li>" + escapeHtml(translateText(prompt, lang)) + "</li>";
             })
             .join("");
             
@@ -894,8 +1036,13 @@
         window.speakBigIdea = function() {
           if (!window.speechSynthesis || !state.cluster) return;
           window.speechSynthesis.cancel();
-          var u = new SpeechSynthesisUtterance(state.cluster.bigIdea);
-          u.lang = "en-US";
+          var lang = document.getElementById("coachLang") ? document.getElementById("coachLang").value : "en";
+          var text = translateText(state.cluster.bigIdea, lang);
+          var u = new SpeechSynthesisUtterance(text);
+          if (lang === 'es') u.lang = 'es-ES';
+          else if (lang === 'ar') u.lang = 'ar-SA';
+          else if (lang === 'vi') u.lang = 'vi-VN';
+          else u.lang = 'en-US';
           u.rate = 0.92;
           window.speechSynthesis.speak(u);
         };
@@ -903,9 +1050,15 @@
         window.speakPrompts = function() {
           if (!window.speechSynthesis || !state.cluster) return;
           window.speechSynthesis.cancel();
-          var promptsText = state.cluster.prompts.join(". ");
+          var lang = document.getElementById("coachLang") ? document.getElementById("coachLang").value : "en";
+          var info = modelInfo(state.cluster, state.lesson);
+          var translated = info.prompts.map(function(p) { return translateText(p, lang); });
+          var promptsText = translated.join(". ");
           var u = new SpeechSynthesisUtterance(promptsText);
-          u.lang = "en-US";
+          if (lang === 'es') u.lang = 'es-ES';
+          else if (lang === 'ar') u.lang = 'ar-SA';
+          else if (lang === 'vi') u.lang = 'vi-VN';
+          else u.lang = 'en-US';
           u.rate = 0.92;
           window.speechSynthesis.speak(u);
         };
@@ -1101,7 +1254,7 @@
           if (cleanKind.indexOf("number") !== -1 || cleanKind.indexOf("line") !== -1 || cleanKind === "inequality") {
             return numberLineSvg();
           }
-          if (cleanKind.indexOf("area") !== -1 || cleanKind.indexOf("array") !== -1 || cleanKind === "fraction" || cleanKind === "percent") {
+          if (cleanKind.indexOf("area") !== -1 || cleanKind.indexOf("array") !== -1 || cleanKind === "fraction" || cleanKind === "percent" || cleanKind === "decimal") {
             return areaSvg(cleanKind);
           }
           if (cleanKind.indexOf("coordinate") !== -1 || cleanKind.indexOf("graph") !== -1) {
@@ -1250,6 +1403,31 @@
           var cells = "";
           var cols = 8;
           var rows = 4;
+          
+          if (cleanKind === 'decimal') {
+            var tenths = state.val1 || 0;
+            var hundredths = state.val2 || 0;
+            var totalShaded = tenths * 10 + hundredths;
+            for (var row = 0; row < 10; row += 1) {
+              for (var col = 0; col < 10; col += 1) {
+                var cellNum = row * 10 + col;
+                var shaded = cellNum < totalShaded;
+                cells +=
+                  '<rect x="' +
+                  (110 + col * 28) +
+                  '" y="' +
+                  (40 + row * 22) +
+                  '" width="28" height="22" fill="' +
+                  (shaded ? "var(--studio-blue)" : "#ffffff") +
+                  '" stroke="#cbd5e1" stroke-width="1"/>';
+              }
+            }
+            return svgShell(
+              "Place Value Decimal Grid",
+              cells +
+                `<text x="260" y="295" text-anchor="middle" font-size="20" font-weight="900" fill="#17212f">Decimal value: 0.${tenths}${hundredths}</text>`
+            );
+          }
           
           if (cleanKind === 'percent') {
             var activePercent = state.val5 || 75;
