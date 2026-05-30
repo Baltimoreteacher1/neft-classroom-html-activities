@@ -2,21 +2,21 @@
    Executive-function planner. Calm, low-distraction, fully offline (system fonts only). */
 
 :root {
-  --navy: #16324a;
-  --navy-deep: #0f1f2e;
-  --teal: #147c78;
-  --teal-bright: #1aa39d;
-  --amber: #d99028;
-  --red: #c0473a;
-  --green: #2a8f5c;
-  --bg: #eef3f1;
-  --bg-2: #f8fbf8;
-  --paper: #fffdf8;
-  --line: #d8e2dc;
-  --ink: #142033;
-  --muted: #5c6b7a;
-  --shadow-sm: 0 6px 18px rgba(21, 35, 52, 0.07);
-  --shadow: 0 16px 40px rgba(21, 35, 52, 0.12);
+  --navy: #1e293b;
+  --navy-deep: #0f172a;
+  --teal: #0d9488;
+  --teal-bright: #14b8a6;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --green: #16a34a;
+  --bg: #eef2f7;
+  --bg-2: #f8fafc;
+  --paper: #ffffff;
+  --line: #e2e8f0;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.06);
+  --shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
   --radius: 18px;
   --radius-lg: 26px;
   --focus-ring: 0 0 0 3px #fff, 0 0 0 6px var(--teal-bright);
@@ -1008,4 +1008,70 @@ html[data-theme="dark"] .toast {
   .hero .now-actions {
     display: none;
   }
+}
+
+/* Calendar month grid */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-top: 4px;
+}
+.cal-head {
+  text-align: center;
+  font-weight: 900;
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding: 4px 0;
+}
+.cal-day {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--bg-2);
+}
+.cal-day.is-today {
+  background: var(--teal);
+  color: #fff;
+}
+.cal-dot {
+  position: absolute;
+  bottom: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--red);
+}
+.cal-day.is-today .cal-dot {
+  background: #fff;
+}
+.cal-legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.cal-legend .sw {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.cal-legend .sw.teal {
+  background: var(--teal);
+}
+.cal-legend .sw.red {
+  background: var(--red);
+}
+.item.done {
+  opacity: 0.6;
 }

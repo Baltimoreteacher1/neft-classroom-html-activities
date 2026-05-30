@@ -78,6 +78,36 @@
         })
       : "";
 
+  // ---- Weekly schedule helpers (recurring class blocks per weekday) ----
+  const DAYS = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  const todayName = () =>
+    new Date().toLocaleDateString(undefined, { weekday: "long" });
+  const timeSort = (t) => (t ? Number(String(t).replace(":", "")) : 9999);
+  const minutesOf = (t) => {
+    if (!t) return 0;
+    const [h, m] = t.split(":").map(Number);
+    return (h || 0) * 60 + (m || 0);
+  };
+  // 24h "HH:MM" -> friendly "9:00 AM"
+  const timeLabel = (t) => {
+    if (!t) return "Any time";
+    const [h, m] = t.split(":").map(Number);
+    const d = new Date();
+    d.setHours(h || 0, m || 0, 0, 0);
+    return d.toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
+
   // ---------------------------------------------------------------------------
   // Storage: IndexedDB with localStorage migration + fallback
   // ---------------------------------------------------------------------------
@@ -135,7 +165,9 @@
   // State model
   // ---------------------------------------------------------------------------
   const CARDS = [
+    ["schedule", "Today's schedule"],
     ["glance", "Today at a glance"],
+    ["upcoming", "Calendar & due soon"],
     ["routine", "Right routine"],
     ["momentum", "Momentum"],
     ["soon", "Coming up"],
@@ -234,6 +266,33 @@
       items: r.items.map((t) => ({ id: uid("i"), text: t })),
     }));
 
+  const DEFAULT_REMINDERS = () => [
+    {
+      id: uid("rem"),
+      text: "Check Google Classroom / planner",
+      time: "16:00",
+      repeat: "Daily",
+      day: "",
+      done: false,
+    },
+    {
+      id: uid("rem"),
+      text: "Pack bag for tomorrow",
+      time: "20:45",
+      repeat: "Weekdays",
+      day: "",
+      done: false,
+    },
+    {
+      id: uid("rem"),
+      text: "Charge Chromebook",
+      time: "20:30",
+      repeat: "Daily",
+      day: "",
+      done: false,
+    },
+  ];
+
   function seed() {
     const c = (name, color) => ({
       id: uid("c"),
@@ -242,8 +301,55 @@
       email: "",
       color,
     });
+    const math = c("Math", "#147c78");
+    const ela = c("English / ELA", "#c0473a");
+    const sci = c("Science", "#2a8f5c");
+    const social = c("Social Studies", "#d99028");
+    const emptyWeek = () => DAYS.reduce((o, d) => ((o[d] = []), o), {});
+    const schedule = emptyWeek();
+    // A light starter weekday schedule the student can edit/replace.
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].forEach((d) => {
+      schedule[d] = [
+        {
+          id: uid("sch"),
+          start: "08:15",
+          end: "09:00",
+          title: "Homeroom / Advisory",
+          location: "",
+          classId: "",
+          notes: "",
+        },
+        {
+          id: uid("sch"),
+          start: "09:00",
+          end: "09:45",
+          title: "Math",
+          location: "",
+          classId: math.id,
+          notes: "",
+        },
+        {
+          id: uid("sch"),
+          start: "09:50",
+          end: "10:35",
+          title: "Science",
+          location: "",
+          classId: sci.id,
+          notes: "",
+        },
+        {
+          id: uid("sch"),
+          start: "10:40",
+          end: "11:25",
+          title: "English / ELA",
+          location: "",
+          classId: ela.id,
+          notes: "",
+        },
+      ];
+    });
     return {
-      version: 11,
+      version: 12,
       settings: {
         studentName: "Noam",
         gmail: "",
@@ -258,13 +364,10 @@
         hiddenCards: [],
         sync: { enabled: false, code: "", lastAt: "" },
       },
-      classes: [
-        c("Math", "#147c78"),
-        c("English / ELA", "#c0473a"),
-        c("Science", "#2a8f5c"),
-        c("Social Studies", "#d99028"),
-      ],
+      classes: [math, ela, sci, social],
+      schedule, // { Monday: [block], ... } recurring weekly class schedule
       assignments: [],
+      reminders: DEFAULT_REMINDERS(),
       routines: DEFAULT_ROUTINES(),
       routineLog: {}, // { dateKey: { routineId: [doneItemIds] } }
       activity: {}, // { dateKey: { tasks, focusMin, routines } }
@@ -299,9 +402,13 @@
         Array.isArray(x.classes) && x.classes.length
           ? x.classes.map(normalizeClass)
           : base.classes,
+      schedule: normalizeSchedule(x.schedule),
       assignments: Array.isArray(x.assignments)
         ? x.assignments.map(normalizeTask)
         : [],
+      reminders: Array.isArray(x.reminders)
+        ? x.reminders.map(normalizeReminder)
+        : base.reminders,
       routines:
         Array.isArray(x.routines) && x.routines.length
           ? x.routines
@@ -329,6 +436,40 @@
       teacher: String(c.teacher || "").slice(0, 80),
       email: String(c.email || "").slice(0, 120),
       color: safeColor(c.color),
+    };
+  }
+
+  function normalizeBlock(b) {
+    b = b || {};
+    return {
+      id: b.id || uid("sch"),
+      start: TIME_RE.test(b.start) ? b.start : "08:00",
+      end: TIME_RE.test(b.end) ? b.end : "",
+      title: String(b.title || "Block").slice(0, 60),
+      location: String(b.location || "").slice(0, 60),
+      classId: b.classId || "",
+      notes: String(b.notes || "").slice(0, 200),
+    };
+  }
+  function normalizeSchedule(sch) {
+    sch = sch && typeof sch === "object" ? sch : {};
+    const out = {};
+    DAYS.forEach((d) => {
+      out[d] = Array.isArray(sch[d]) ? sch[d].map(normalizeBlock) : [];
+    });
+    return out;
+  }
+  function normalizeReminder(r) {
+    r = r || {};
+    return {
+      id: r.id || uid("rem"),
+      text: String(r.text || "Reminder").slice(0, 120),
+      time: TIME_RE.test(r.time) ? r.time : "",
+      repeat: ["Daily", "Weekdays", "Weekly", "Once"].includes(r.repeat)
+        ? r.repeat
+        : "Daily",
+      day: DAYS.includes(r.day) ? r.day : "",
+      done: !!r.done,
     };
   }
 
@@ -402,6 +543,60 @@
       color: "#147c78",
     };
   const openTasks = () => state.assignments.filter((a) => a.status !== "done");
+
+  // ---- Schedule derived data ----
+  const todaySchedule = () =>
+    (state.schedule[todayName()] || [])
+      .slice()
+      .sort((a, b) => timeSort(a.start) - timeSort(b.start));
+  // Find the block happening now and the next one today.
+  function currentSchedule() {
+    const list = todaySchedule();
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    let cur = null,
+      next = null;
+    for (const s of list) {
+      const st = minutesOf(s.start);
+      const en = minutesOf(s.end || s.start);
+      if (nowMin >= st && nowMin < en) cur = s;
+      if (nowMin < st && !next) next = s;
+    }
+    return { cur, next };
+  }
+
+  // ---- Reminders derived data ----
+  function isReminderActiveToday(r) {
+    const d = todayName();
+    if (r.repeat === "Weekly") return !r.day || r.day === d;
+    if (r.repeat === "Weekdays") return !["Saturday", "Sunday"].includes(d);
+    return true; // Daily / Once
+  }
+  const activeReminders = () =>
+    state.reminders
+      .filter((r) => !r.done && isReminderActiveToday(r))
+      .sort((a, b) => timeSort(a.time) - timeSort(b.time));
+
+  // ---- Calendar: merge upcoming assignment due dates into one feed ----
+  function upcomingItems(limit = 15) {
+    const today = todayKey();
+    return state.assignments
+      .filter((a) => a.status !== "done" && a.due && a.due >= today)
+      .map((a) => ({
+        title: a.title,
+        date: a.due,
+        time: a.dueTime || "",
+        type: "assignment",
+        classId: a.classId,
+        id: a.id,
+      }))
+      .sort(
+        (a, b) =>
+          a.date.localeCompare(b.date) || timeSort(a.time) - timeSort(b.time),
+      )
+      .slice(0, limit);
+  }
+
   const stepPct = (a) =>
     a.steps.length
       ? Math.round(
@@ -454,8 +649,8 @@
   const TABS = [
     ["home", "Now", "🎯"],
     ["today", "Today", "📅"],
-    ["tasks", "Tasks", "✅"],
-    ["routines", "Routines", "🔁"],
+    ["schedule", "Schedule", "🗓"],
+    ["calendar", "Calendar", "📆"],
     ["more", "More", "⋯"],
   ];
   let view = "home";
@@ -638,6 +833,47 @@
     return `<div class="empty"><div class="big-emoji" aria-hidden="true">${emoji}</div><p>${esc(text)}</p></div>`;
   }
 
+  // A row in the calendar/upcoming feed (an assignment due date for now).
+  function upcomingRow(x) {
+    const c = x.classId ? cls(x.classId) : null;
+    return `<div class="item"><div class="head"><div>
+      <h4>${esc(x.title)}</h4>
+      <p class="meta">${dueIcon(daysUntil(x.date))} ${esc(dueLabel(x.date, x.time))}${c ? " · " + esc(c.name) : ""}</p>
+    </div><div class="row"><span class="pill red">Due</span></div></div></div>`;
+  }
+
+  // A single schedule block row. `mark` flags it as the current/next class.
+  function schedBlock(s, day, { editable = true, mark = "" } = {}) {
+    const c = s.classId ? cls(s.classId) : null;
+    const color = c ? c.color : "var(--navy)";
+    const tag =
+      mark === "now"
+        ? '<span class="pill green">▶ Now</span>'
+        : mark === "next"
+          ? '<span class="pill amber">→ Next</span>'
+          : c
+            ? `<span class="pill" style="background:${esc(color)}1f;color:var(--ink)">${esc(c.name)}</span>`
+            : "";
+    return `<div class="item ${mark === "now" ? "today-due" : ""}" style="border-left:4px solid ${esc(color)}">
+      <div class="head">
+        <div>
+          <h4>${esc(s.title)}</h4>
+          <p class="meta">⏰ ${esc(timeLabel(s.start))}${s.end ? "–" + esc(timeLabel(s.end)) : ""}${s.location ? " · 📍 " + esc(s.location) : ""}</p>
+          ${s.notes ? `<p class="muted" style="font-size:.84rem">${esc(s.notes)}</p>` : ""}
+        </div>
+        <div class="row">${tag}</div>
+      </div>
+      ${
+        editable
+          ? `<div class="row" style="margin-top:8px">
+        <button class="btn sm" data-act="edit-block" data-id="${s.id}" data-arg="${esc(day)}">✏️ Edit</button>
+        <button class="btn danger sm" data-act="delete-block" data-id="${s.id}" data-arg="${esc(day)}">Delete</button>
+      </div>`
+          : ""
+      }
+    </div>`;
+  }
+
   // ---------------------------------------------------------------------------
   // Views
   // ---------------------------------------------------------------------------
@@ -651,7 +887,33 @@
         open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7),
       ).slice(0, 3);
       const routine = pickRoutineForNow();
+      const { cur, next: nextClass } = currentSchedule();
+      const sched = todaySchedule();
+      const upcoming = upcomingItems(5);
       const map = {
+        schedule: card(
+          "schedule",
+          "🗓 Today's schedule",
+          sched.length
+            ? cur
+              ? `Now: ${cur.title}`
+              : nextClass
+                ? `Next: ${nextClass.title} at ${timeLabel(nextClass.start)}`
+                : "All blocks done for today."
+            : "",
+          (sched.length
+            ? sched
+                .slice(0, 5)
+                .map((s) =>
+                  schedBlock(s, todayName(), {
+                    editable: false,
+                    mark: s === cur ? "now" : s === nextClass ? "next" : "",
+                  }),
+                )
+                .join("")
+            : emptyState("🗓", `No classes scheduled for ${todayName()}.`)) +
+            `<div class="row" style="margin-top:8px"><button class="btn sm" data-act="nav" data-arg="schedule">Full schedule →</button></div>`,
+        ),
         glance: card(
           "glance",
           "Today at a glance",
@@ -659,6 +921,15 @@
           today.length
             ? today.map((a) => taskItem(a)).join("")
             : emptyState("🌤", "Nothing is due today. Nice."),
+        ),
+        upcoming: card(
+          "upcoming",
+          "📆 Calendar & due soon",
+          "What's coming up.",
+          (upcoming.length
+            ? upcoming.map(upcomingRow).join("")
+            : emptyState("📭", "Nothing on the calendar yet.")) +
+            `<div class="row" style="margin-top:8px"><button class="btn sm" data-act="nav" data-arg="calendar">Open calendar →</button></div>`,
         ),
         routine: routineCard(routine),
         momentum: momentumCard(),
@@ -712,6 +983,127 @@
         <div class="section-title">🟠 Due today (${today.length})</div>
         ${today.length ? today.map((a) => taskItem(a)).join("") : emptyState("✅", "All clear for today!")}
         ${noDate.length ? `<div class="section-title">🗓 No due date (${noDate.length})</div>${noDate.map((a) => taskItem(a)).join("")}` : ""}
+        ${(() => {
+          const { cur, next: nx } = currentSchedule();
+          const sched = todaySchedule();
+          return (
+            `<div class="section-title">🗓 Today's classes (${sched.length})</div>` +
+            (sched.length
+              ? sched
+                  .map((s) =>
+                    schedBlock(s, todayName(), {
+                      editable: false,
+                      mark: s === cur ? "now" : s === nx ? "next" : "",
+                    }),
+                  )
+                  .join("")
+              : emptyState("🗓", `No classes scheduled for ${todayName()}.`))
+          );
+        })()}
+      `;
+    },
+
+    schedule() {
+      const tn = todayName();
+      return `
+        <div class="row" style="justify-content:space-between;margin-bottom:6px">
+          <h2 style="margin:0;color:var(--navy);font-size:1.2rem">Weekly schedule</h2>
+          <button class="btn primary" data-act="add-block" data-arg="${tn}">＋ Add block</button>
+        </div>
+        <p class="muted" style="margin-top:0">Your recurring class schedule. Today (${tn}) is highlighted.</p>
+        ${DAYS.map((day) => {
+          const blocks = (state.schedule[day] || [])
+            .slice()
+            .sort((a, b) => timeSort(a.start) - timeSort(b.start));
+          const isToday = day === tn;
+          return card(
+            "sched-" + day,
+            `${isToday ? "📍 " : ""}${day}`,
+            `${blocks.length} block${blocks.length === 1 ? "" : "s"}`,
+            (blocks.length
+              ? blocks.map((s) => schedBlock(s, day)).join("")
+              : emptyState("🗓", "No blocks yet.")) +
+              `<div class="row" style="margin-top:8px"><button class="btn sm" data-act="add-block" data-arg="${day}">＋ Add to ${day}</button></div>`,
+          );
+        }).join("")}
+      `;
+    },
+
+    calendar() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const monthName = now.toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric",
+      });
+      const dueDates = new Set(
+        state.assignments
+          .filter((a) => a.status !== "done" && a.due)
+          .map((a) => a.due),
+      );
+      let cells = ["S", "M", "T", "W", "T", "F", "S"]
+        .map((d) => `<div class="cal-head">${d}</div>`)
+        .join("");
+      for (let i = 0; i < firstDay; i++) cells += `<div></div>`;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const ds = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+        const isToday = ds === todayKey();
+        const hasDue = dueDates.has(ds);
+        cells += `<div class="cal-day ${isToday ? "is-today" : ""}" ${hasDue ? 'aria-label="Assignment due"' : ""}>${d}${hasDue ? '<span class="cal-dot" aria-hidden="true"></span>' : ""}</div>`;
+      }
+      const upcoming = upcomingItems(15);
+      return `
+        ${card(
+          "cal",
+          "📆 Calendar",
+          `${monthName} — assignment due dates at a glance.`,
+          `<div class="cal-grid" role="grid" aria-label="${esc(monthName)}">${cells}</div>
+           <div class="cal-legend"><span><span class="sw teal"></span> Today</span><span><span class="sw red"></span> Due</span></div>`,
+        )}
+        <div class="section-title">Upcoming (${upcoming.length})</div>
+        ${upcoming.length ? upcoming.map(upcomingRow).join("") : emptyState("📭", "Nothing upcoming. Add an assignment with a due date.")}
+      `;
+    },
+
+    reminders() {
+      const tn = todayName();
+      const all = state.reminders
+        .slice()
+        .sort((a, b) => timeSort(a.time) - timeSort(b.time));
+      const active = activeReminders();
+      return `
+        <div class="row" style="justify-content:space-between;margin-bottom:6px">
+          <h2 style="margin:0;color:var(--navy);font-size:1.2rem">Reminders</h2>
+          <button class="btn primary" data-act="add-reminder">＋ New reminder</button>
+        </div>
+        <p class="muted" style="margin-top:0">Timed nudges, sorted by time. Repeating ones come back each day.</p>
+        <div class="section-title">Active today (${active.length})</div>
+        ${
+          all.length
+            ? all
+                .map((r) => {
+                  const activeToday = !r.done && isReminderActiveToday(r);
+                  return `<div class="item ${r.done ? "done" : ""}">
+              <div class="head">
+                <div>
+                  <h4>${r.done ? "✓ " : ""}${esc(r.text)}</h4>
+                  <p class="meta">⏰ ${esc(timeLabel(r.time))} · ${esc(r.repeat)}${r.day ? " · " + esc(r.day) : ""}${activeToday ? " · active today" : ""}</p>
+                </div>
+                <div class="row"><span class="pill ${activeToday ? "green" : ""}">${r.repeat}</span></div>
+              </div>
+              <div class="row" style="margin-top:8px">
+                <button class="btn sm" data-act="toggle-reminder" data-id="${r.id}">${r.done ? "↩ Mark active" : "✓ Done for now"}</button>
+                <button class="btn sm" data-act="edit-reminder" data-id="${r.id}">✏️ Edit</button>
+                <button class="btn danger sm" data-act="delete-reminder" data-id="${r.id}">Delete</button>
+              </div>
+            </div>`;
+                })
+                .join("")
+            : emptyState("🔔", "No reminders yet. Add one to get a nudge.")
+        }
       `;
     },
 
@@ -799,12 +1191,44 @@
           .join("")}</div>`;
       return `
         <h2 style="margin:0 0 10px;color:var(--navy);font-size:1.2rem">More</h2>
+        <div class="section-title">Plan &amp; track</div>
+        ${grid([
+          {
+            act: "nav",
+            arg: "tasks",
+            ic: "✅",
+            title: "All tasks",
+            sub: "Every assignment, by due date",
+          },
+          {
+            act: "nav",
+            arg: "routines",
+            ic: "🔁",
+            title: "Routines",
+            sub: "Daily checklists",
+          },
+          {
+            act: "nav",
+            arg: "reminders",
+            ic: "🔔",
+            title: "Reminders",
+            sub: "Timed nudges",
+          },
+        ])}
+        <div class="section-title">School</div>
         ${grid([
           {
             act: "view-classes",
             ic: "🏫",
             title: "My classes",
             sub: "Teachers, emails, colors",
+          },
+          {
+            act: "nav",
+            arg: "schedule",
+            ic: "🗓",
+            title: "Weekly schedule",
+            sub: "Class blocks by day",
           },
           {
             act: "view-email",
@@ -1220,6 +1644,39 @@ Due May 31"></textarea>
       <button class="btn primary block" data-act="save-class" data-id="${esc(c.id || "")}">Save class</button>`;
   }
 
+  function scheduleForm(s, day) {
+    s = s || {};
+    day = day || todayName();
+    return `
+      <div class="g2 grid">
+        <div class="field"><label>Day</label><select id="sDay">${DAYS.map((d) => `<option ${day === d ? "selected" : ""}>${d}</option>`).join("")}</select></div>
+        <div class="field"><label>Class (optional)</label><select id="sClass"><option value="">None</option>${state.classes.map((c) => `<option value="${c.id}" ${s.classId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+      </div>
+      <div class="field"><label>Title</label><input id="sTitle" value="${esc(s.title || "")}" placeholder="Math, Lunch, Advisory…"></div>
+      <div class="g2 grid">
+        <div class="field"><label>Start</label><input type="time" id="sStart" value="${esc(s.start || "08:00")}"></div>
+        <div class="field"><label>End</label><input type="time" id="sEnd" value="${esc(s.end || "08:45")}"></div>
+      </div>
+      <div class="g2 grid">
+        <div class="field"><label>Location (optional)</label><input id="sLocation" value="${esc(s.location || "")}"></div>
+        <div class="field"><label>Notes (optional)</label><input id="sNotes" value="${esc(s.notes || "")}"></div>
+      </div>
+      <button class="btn primary block" data-act="save-block" data-id="${esc(s.id || "")}" data-arg="${esc(day)}">Save block</button>`;
+  }
+
+  function reminderForm(r) {
+    r = r || {};
+    const repeats = ["Daily", "Weekdays", "Weekly", "Once"];
+    return `
+      <div class="field"><label>Remind me to…</label><input id="remText" value="${esc(r.text || "")}" placeholder="Pack bag for tomorrow"></div>
+      <div class="g2 grid">
+        <div class="field"><label>Time</label><input type="time" id="remTime" value="${esc(r.time || "16:00")}"></div>
+        <div class="field"><label>Repeat</label><select id="remRepeat">${repeats.map((p) => `<option ${r.repeat === p ? "selected" : ""}>${p}</option>`).join("")}</select></div>
+      </div>
+      <div class="field"><label>Day (for weekly)</label><select id="remDay"><option value="">Any day</option>${DAYS.map((d) => `<option ${r.day === d ? "selected" : ""}>${d}</option>`).join("")}</select></div>
+      <button class="btn primary block" data-act="save-reminder" data-id="${esc(r.id || "")}">Save reminder</button>`;
+  }
+
   function routineForm(r) {
     r = r || { items: [] };
     return `
@@ -1413,6 +1870,23 @@ Due May 31"></textarea>
           });
         } catch {}
       }
+    });
+    // Timed reminders: fire when their time arrives (within a 1-min window).
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    activeReminders().forEach((r) => {
+      if (!r.time) return;
+      const diff = minutesOf(r.time) - nowMin;
+      if (diff > 0 || diff < -1) return; // only at/just after the reminder time
+      const key = r.id + ":" + todayKey();
+      if (notified.has(key)) return;
+      notified.add(key);
+      try {
+        new Notification("Reminder", {
+          body: r.text,
+          tag: key,
+          icon: "icons/icon-192.png",
+        });
+      } catch {}
     });
   }
 
@@ -1740,6 +2214,83 @@ Due May 31"></textarea>
       save();
       closeModal();
       render();
+    },
+
+    // ---- Schedule blocks ----
+    "add-block": (_id, arg) =>
+      openModal("Add schedule block", scheduleForm({}, arg || todayName())),
+    "edit-block": (id, day) => {
+      const s = (state.schedule[day] || []).find((x) => x.id === id);
+      openModal("Edit schedule block", scheduleForm(s, day));
+    },
+    "save-block": (id, originalDay) => {
+      const day = $("#sDay").value;
+      const data = {
+        id: id || uid("sch"),
+        title: $("#sTitle").value.trim() || "Block",
+        classId: $("#sClass").value,
+        start: $("#sStart").value || "08:00",
+        end: $("#sEnd").value || "",
+        location: $("#sLocation").value.trim(),
+        notes: $("#sNotes").value.trim(),
+      };
+      // If editing and the day changed, remove from the old day first.
+      if (id && originalDay && state.schedule[originalDay]) {
+        state.schedule[originalDay] = state.schedule[originalDay].filter(
+          (x) => x.id !== id,
+        );
+      }
+      state.schedule[day] = state.schedule[day] || [];
+      const ex = state.schedule[day].find((x) => x.id === id);
+      if (ex) Object.assign(ex, data);
+      else state.schedule[day].push(data);
+      save();
+      closeModal();
+      render();
+      toast(id ? "Block saved" : "Block added");
+    },
+    "delete-block": (id, day) => {
+      if (state.schedule[day])
+        state.schedule[day] = state.schedule[day].filter((x) => x.id !== id);
+      save();
+      render();
+      toast("Block deleted");
+    },
+
+    // ---- Reminders ----
+    "add-reminder": () => openModal("New reminder", reminderForm()),
+    "edit-reminder": (id) =>
+      openModal(
+        "Edit reminder",
+        reminderForm(state.reminders.find((r) => r.id === id)),
+      ),
+    "save-reminder": (id) => {
+      const r = id
+        ? state.reminders.find((x) => x.id === id)
+        : { id: uid("rem"), done: false };
+      r.text = $("#remText").value.trim() || "Reminder";
+      r.time = $("#remTime").value || "";
+      r.repeat = $("#remRepeat").value;
+      r.day = $("#remDay").value;
+      if (!id) state.reminders.push(r);
+      save();
+      closeModal();
+      render();
+      toast(id ? "Reminder saved" : "Reminder added");
+    },
+    "toggle-reminder": (id) => {
+      const r = state.reminders.find((x) => x.id === id);
+      if (r) {
+        r.done = !r.done;
+        save();
+        render();
+      }
+    },
+    "delete-reminder": (id) => {
+      state.reminders = state.reminders.filter((r) => r.id !== id);
+      save();
+      render();
+      toast("Reminder deleted");
     },
 
     "add-routine": () => openModal("New routine", routineForm()),
