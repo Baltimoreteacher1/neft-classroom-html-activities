@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Volume Vault — Museum Heist</title>
+    <title>Volume Vault — Crate Packer</title>
     <style>
       * {
         margin: 0;
@@ -18,34 +18,46 @@
         background: #0a0a0a;
         font-family: "Segoe UI", system-ui, sans-serif;
       }
+      #game {
+        width: 100%;
+        height: 100%;
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-<script>
-  // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-  // (document.write blocks parsing so the mirror is ready before the game script runs).
-  if (typeof Phaser === "undefined") {
-    document.write('<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>');
-  }
-  // If both CDNs are unreachable, show a clear message instead of a blank page.
-  window.addEventListener("load", function () {
-    if (typeof Phaser === "undefined") {
-      document.body.innerHTML =
-        '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-    }
-  });
-</script>
+    <script>
+      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror.
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
   </head>
   <body>
+    <div id="game"></div>
     <script>
-      // Volume Vault — Museum Heist
-      // Grade 6: 6.G.2, 6.G.4 (Volume & Surface Area)
-      // Neft Teacher
-
+      // ───────────────────────────────────────────────────────────
+      // VOLUME VAULT — CRATE PACKER  (Neft Teacher)
+      // Grade 6: 6.G.A.2 — Volume of rectangular prisms (V = l × w × h).
+      //
+      // REAL GAME: A physics-driven packing game. Unit cubes fall from a
+      // conveyor; you slide a crate left/right to catch them and pack the
+      // prism EXACTLY to its target volume. The math IS the mechanic — you
+      // build the prism layer-by-layer and the live volume counter teaches
+      // V = l × w × h as you fill the box. Over-pack and the crate jams;
+      // hit the exact volume to seal the vault and advance.
+      // ───────────────────────────────────────────────────────────
       const W = 1024,
         H = 768;
-      const LS_KEY = "volumevault_highscore";
+      const LS_KEY = "volumevault_packer_hi";
 
-      // --- SFX ---
+      // ── Web Audio SFX ──
       class SFX {
         constructor() {
           this.ctx = null;
@@ -58,7 +70,7 @@
               )();
             } catch (e) {}
         }
-        tone(f, d, t = "sine", v = 0.08) {
+        tone(f, d, t = "sine", v = 0.07) {
           if (!this.ctx) return;
           try {
             const o = this.ctx.createOscillator(),
@@ -76,2092 +88,622 @@
             o.stop(this.ctx.currentTime + d);
           } catch (e) {}
         }
-        noise(d, v = 0.04) {
-          if (!this.ctx) return;
-          try {
-            const bufSize = this.ctx.sampleRate * d;
-            const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
-            const data = buf.getChannelData(0);
-            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
-            const src = this.ctx.createBufferSource();
-            src.buffer = buf;
-            const g = this.ctx.createGain();
-            g.gain.setValueAtTime(v, this.ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + d,
-            );
-            src.connect(g);
-            g.connect(this.ctx.destination);
-            src.start();
-          } catch (e) {}
+        catch() {
+          this.tone(523, 0.08, "square", 0.05);
+          this.tone(784, 0.1, "sine", 0.05);
         }
-        crack() {
-          [600, 800, 1000, 1200].forEach((f, i) =>
-            setTimeout(() => this.tone(f, 0.08), i * 40),
-          );
+        seal() {
+          this.tone(659, 0.12, "sine");
+          setTimeout(() => this.tone(988, 0.18, "sine"), 90);
         }
-        alarm() {
-          this.tone(400, 0.15, "square");
-          setTimeout(() => this.tone(600, 0.15, "square"), 120);
-          setTimeout(() => this.tone(400, 0.15, "square"), 240);
+        jam() {
+          this.tone(160, 0.25, "sawtooth", 0.08);
         }
-        click() {
-          this.tone(500, 0.04);
-        }
-        laser() {
-          this.tone(1200, 0.05);
-          setTimeout(() => this.tone(800, 0.08), 40);
-        }
-        vault() {
-          this.tone(200, 0.2, "triangle");
-          setTimeout(() => this.tone(300, 0.2, "triangle"), 150);
-          setTimeout(() => this.tone(500, 0.3, "triangle"), 300);
-        }
-        grab() {
-          this.tone(880, 0.06);
-          setTimeout(() => this.tone(1100, 0.08), 50);
-          setTimeout(() => this.tone(1320, 0.1), 100);
-        }
-        win() {
-          [523, 659, 784, 880, 1047, 1319].forEach((f, i) =>
-            setTimeout(() => this.tone(f, 0.1), i * 60),
-          );
-        }
-        winBig() {
-          [523, 659, 784, 1047, 1319, 1568, 2093].forEach((f, i) =>
-            setTimeout(() => this.tone(f, 0.15, "sine", 0.1), i * 80),
-          );
-          setTimeout(() => {
-            [1047, 1319, 1568].forEach((f, i) =>
-              setTimeout(() => this.tone(f, 0.25, "triangle", 0.06), i * 60),
-            );
-          }, 600);
-        }
-        lose() {
-          [500, 400, 300, 200, 150].forEach((f, i) =>
-            setTimeout(() => this.tone(f, 0.15, "sawtooth"), i * 100),
-          );
-        }
-        stealth() {
-          this.tone(150, 0.1, "triangle", 0.03);
-        }
-        glassBreak() {
-          this.noise(0.3, 0.08);
-          this.tone(800, 0.05, "square", 0.06);
-          setTimeout(() => this.noise(0.15, 0.04), 50);
-          setTimeout(() => this.tone(400, 0.08, "sawtooth", 0.05), 80);
-        }
-        streakMilestone(level) {
-          const base = 500 + level * 150;
-          [base, base + 200, base + 400, base + 600].forEach((f, i) =>
-            setTimeout(() => this.tone(f, 0.08, "sine", 0.07), i * 40),
-          );
-        }
-        powerUp() {
-          [400, 600, 800, 1000, 1200].forEach((f, i) =>
-            setTimeout(() => this.tone(f, 0.06, "sine", 0.06), i * 30),
-          );
-        }
-        phaseTransition() {
-          [150, 200, 300, 400, 500, 700, 900].forEach((f, i) =>
-            setTimeout(() => this.tone(f, 0.15, "triangle", 0.06), i * 70),
-          );
-        }
-        speedBonus() {
-          this.tone(1200, 0.06, "sine", 0.06);
-          setTimeout(() => this.tone(1500, 0.08, "sine", 0.05), 40);
-        }
-        crowdCheer(intensity) {
-          const v = Math.min(0.03 + intensity * 0.005, 0.08);
-          this.noise(0.4, v);
-          this.tone(300 + intensity * 40, 0.3, "triangle", v * 0.5);
+        miss() {
+          this.tone(220, 0.12, "triangle", 0.05);
         }
       }
       const sfx = new SFX();
 
-      // --- QUESTIONS ---
-      function genQuestions() {
-        const qs = [];
-        function shuf(a) {
-          const b = [...a];
-          for (let i = b.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [b[i], b[j]] = [b[j], b[i]];
-          }
-          return b;
+      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+
+      // ── Level generation: pick a target prism l×w×h within grade range ──
+      function makeLevel(floor) {
+        // Difficulty scales the dimensions (and thus the target volume).
+        let lMax, hMax;
+        if (floor <= 2) {
+          lMax = 4;
+          hMax = 3;
+        } else if (floor <= 5) {
+          lMax = 5;
+          hMax = 4;
+        } else {
+          lMax = 6;
+          hMax = 5;
         }
-        function mk(text, correct, wrongs, explain, tier, floor) {
-          const opts = shuf([correct, ...wrongs]);
-          return { text, correct, options: opts, explain, tier, floor };
-        }
-        // FLOOR 1 (Tier 1): Basic volume of rectangular prisms
-        const f1dims = [
-          [8, 5, 3, 120],
-          [10, 4, 6, 240],
-          [7, 7, 4, 196],
-          [12, 3, 5, 180],
-          [9, 6, 2, 108],
-        ];
-        f1dims.forEach((d) => {
-          const [l, w, h, v] = d;
-          const w1 = v + Phaser.Math.Between(-10, 10);
-          const w2 = v + Phaser.Math.Between(5, 20);
-          const w3 = v - Phaser.Math.Between(5, 15);
-          qs.push(
-            mk(
-              `Vault is ${l}ft × ${w}ft × ${h}ft. Volume?`,
-              `${v} cubic ft`,
-              [
-                `${w1 === v ? w1 + 4 : w1} cubic ft`,
-                `${w2} cubic ft`,
-                `${Math.abs(w3)} cubic ft`,
-              ],
-              `V = ${l} × ${w} × ${h} = ${v} cubic ft`,
-              1,
-              "Lobby",
-            ),
-          );
-        });
-        // FLOOR 2 (Tier 2): Decimals + Surface Area
-        qs.push(
-          mk(
-            "Display case: 4.5in × 3in × 2in. Volume?",
-            "27 cubic in",
-            ["24 cubic in", "30 cubic in", "25.5 cubic in"],
-            "V = 4.5 × 3 × 2 = 27 cubic in",
-            2,
-            "Gallery",
-          ),
-        );
-        qs.push(
-          mk(
-            "Crate: 6cm × 2.5cm × 4cm. Volume?",
-            "60 cubic cm",
-            ["50 cubic cm", "55 cubic cm", "65 cubic cm"],
-            "V = 6 × 2.5 × 4 = 60 cubic cm",
-            2,
-            "Gallery",
-          ),
-        );
-        qs.push(
-          mk(
-            "Wrap a box: l=5in, w=3in, h=4in. Surface area?",
-            "94 sq in",
-            ["60 sq in", "80 sq in", "47 sq in"],
-            "SA = 2(5×3) + 2(5×4) + 2(3×4) = 30+40+24 = 94",
-            2,
-            "Gallery",
-          ),
-        );
-        qs.push(
-          mk(
-            "Laser grid box: 8cm × 6cm × 2cm. Surface area?",
-            "152 sq cm",
-            ["148 sq cm", "96 sq cm", "132 sq cm"],
-            "SA = 2(48) + 2(16) + 2(12) = 96+32+24 = 152",
-            2,
-            "Gallery",
-          ),
-        );
-        qs.push(
-          mk(
-            "Getaway container: 3.5ft × 2ft × 5ft. Volume?",
-            "35 cubic ft",
-            ["30 cubic ft", "32.5 cubic ft", "37.5 cubic ft"],
-            "V = 3.5 × 2 × 5 = 35 cubic ft",
-            2,
-            "Gallery",
-          ),
-        );
-        // FLOOR 3 (Tier 3): Fractions, missing dimensions, pyramids
-        qs.push(
-          mk(
-            "Jewel box: ½ft × ¾ft × 2ft. Volume?",
-            "¾ cubic ft",
-            ["½ cubic ft", "1 cubic ft", "1½ cubic ft"],
-            "V = ½ × ¾ × 2 = 6/8 = ¾ cubic ft",
-            3,
-            "Vault",
-          ),
-        );
-        qs.push(
-          mk(
-            "Prism volume = 360 ft³. l=12ft, w=6ft. Height?",
-            "5 ft",
-            ["4 ft", "6 ft", "3 ft"],
-            "360 = 12 × 6 × h → h = 360/72 = 5 ft",
-            3,
-            "Vault",
-          ),
-        );
-        qs.push(
-          mk(
-            "Prism edges: 2½in × 1⅓in × 3in. Volume?",
-            "10 cubic in",
-            ["8 cubic in", "9 cubic in", "12 cubic in"],
-            "5/2 × 4/3 × 3 = 60/6 = 10 cubic in",
-            3,
-            "Vault",
-          ),
-        );
-        qs.push(
-          mk(
-            "Triangular prism: base 6cm, height 4cm, sides 5cm, length 10cm. Surface area?",
-            "184 sq cm",
-            ["160 sq cm", "200 sq cm", "174 sq cm"],
-            "2 triangles: 24. 3 rects: 60+50+50. Total = 184",
-            3,
-            "Vault",
-          ),
-        );
-        qs.push(
-          mk(
-            "Square pyramid: base 8m, slant height 5m. Total surface area?",
-            "144 sq m",
-            ["128 sq m", "160 sq m", "112 sq m"],
-            "Base: 64. 4 triangles: 4(½×8×5)=80. SA=144",
-            3,
-            "Vault",
-          ),
-        );
-        return shuf(qs).slice(0, 15);
+        const l = randInt(2, lMax); // crate footprint length (columns)
+        const w = randInt(2, 3); // crate depth — affects cubes-per-cell weighting
+        const h = randInt(2, hMax); // target stack height (layers)
+        return { l, w, h, target: l * w * h };
       }
 
-      // --- AMBIENT PARTICLES ---
-      function createAmbientDust(scene, color1, color2) {
-        scene.add
-          .particles(W / 2, H / 2, "__WHITE", {
-            x: { min: 0, max: W },
-            y: { min: 0, max: H },
-            speed: { min: 2, max: 8 },
-            angle: { min: 260, max: 280 },
-            scale: { start: 0.12, end: 0 },
-            alpha: { start: 0.25, end: 0 },
-            lifespan: { min: 5000, max: 10000 },
-            tint: [color1, color2, 0xffffff],
-            quantity: 1,
-            frequency: 400,
-            blendMode: "ADD",
-          })
-          .setDepth(0);
-      }
-
-      // --- BOOT ---
+      // ════════════════════════════════════════════════════════════
+      //  BOOT
+      // ════════════════════════════════════════════════════════════
       class BootScene extends Phaser.Scene {
         constructor() {
           super("Boot");
         }
         create() {
+          // procedural cube texture (isometric-ish gold ingot block)
+          const g = this.add.graphics();
+          const drawCube = (key, top, left, right) => {
+            g.clear();
+            g.fillStyle(top, 1);
+            g.fillPoints(
+              [
+                { x: 22, y: 0 },
+                { x: 44, y: 12 },
+                { x: 22, y: 24 },
+                { x: 0, y: 12 },
+              ],
+              true,
+            );
+            g.fillStyle(left, 1);
+            g.fillPoints(
+              [
+                { x: 0, y: 12 },
+                { x: 22, y: 24 },
+                { x: 22, y: 44 },
+                { x: 0, y: 32 },
+              ],
+              true,
+            );
+            g.fillStyle(right, 1);
+            g.fillPoints(
+              [
+                { x: 44, y: 12 },
+                { x: 22, y: 24 },
+                { x: 22, y: 44 },
+                { x: 44, y: 32 },
+              ],
+              true,
+            );
+            g.generateTexture(key, 44, 44);
+          };
+          drawCube("cube", 0xffe066, 0xf2b705, 0xd99e04);
+          drawCube("cubeBad", 0xff8585, 0xe05656, 0xc33d3d);
+          g.destroy();
           this.scene.start("Title");
         }
       }
 
-      // --- TITLE ---
+      // ════════════════════════════════════════════════════════════
+      //  TITLE
+      // ════════════════════════════════════════════════════════════
       class TitleScene extends Phaser.Scene {
         constructor() {
           super("Title");
         }
         create() {
-          sfx.init();
-          const cx = W / 2;
-          this.cameras.main.setBackgroundColor("#0a0a0a");
-
-          // Museum architecture
-          for (let i = 0; i < 6; i++) {
-            const x = 100 + i * 170;
-            this.add.rectangle(x, H / 2, 20, H, 0x1e293b).setDepth(0);
-            this.add.rectangle(x, 60, 30, 15, 0x334155).setDepth(0);
-            this.add.rectangle(x, H - 40, 30, 15, 0x334155).setDepth(0);
-          }
-          // Floor tiles
-          for (let r = 0; r < 3; r++) {
-            for (let c = 0; c < 15; c++) {
-              const checker = (r + c) % 2 === 0 ? 0x1a1a2e : 0x111827;
-              this.add
-                .rectangle(c * 75 + 37, H - 100 + r * 40, 72, 37, checker)
-                .setDepth(0);
-            }
-          }
-
-          // Ambient dust particles
-          createAmbientDust(this, 0xfbbf24, 0xef4444);
-
-          // Laser beams (decorative) with more animation
-          for (let i = 0; i < 4; i++) {
-            const y = 250 + i * 80;
-            const laser = this.add
-              .rectangle(cx, y, W - 200, 1.5, 0xef4444, 0.25)
-              .setDepth(1);
-            this.tweens.add({
-              targets: laser,
-              alpha: 0.08,
-              duration: 1000 + i * 300,
-              yoyo: true,
-              repeat: -1,
-            });
-            // Laser scan effect
-            const laserDot = this.add
-              .circle(100, y, 3, 0xef4444, 0.6)
-              .setDepth(2);
-            this.tweens.add({
-              targets: laserDot,
-              x: W - 100,
-              duration: 3000 + i * 500,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-          }
-
-          // Vault door with enhanced animation
-          const vault = this.add.graphics().setPosition(cx, 380).setDepth(2);
-          vault.fillStyle(0x475569);
-          vault.fillRoundedRect(-70, -80, 140, 160, 12);
-          vault.lineStyle(3, 0x64748b);
-          vault.strokeRoundedRect(-70, -80, 140, 160, 12);
-          vault.fillStyle(0x334155);
-          vault.fillCircle(0, 0, 40);
-          vault.lineStyle(2, 0x94a3b8);
-          vault.strokeCircle(0, 0, 40);
-          for (let i = 0; i < 12; i++) {
-            const a = (i * Math.PI) / 6;
-            vault.fillStyle(0x94a3b8);
-            vault.fillCircle(Math.cos(a) * 30, Math.sin(a) * 30, 3);
-          }
-          vault.fillStyle(0xfbbf24);
-          vault.fillCircle(0, 0, 8);
-          this.tweens.add({
-            targets: vault,
-            angle: 360,
-            duration: 8000,
-            repeat: -1,
-            ease: "Linear",
-          });
-
-          // Vault glow pulse
-          const vaultGlow = this.add
-            .circle(cx, 380, 85, 0xfbbf24, 0.05)
-            .setDepth(1);
-          this.tweens.add({
-            targets: vaultGlow,
-            alpha: 0.12,
-            scaleX: 1.2,
-            scaleY: 1.2,
-            duration: 2000,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-
-          // Title with animated glow
-          const titleVol = this.add
-            .text(cx, 60, "VOLUME", {
-              fontSize: "58px",
-              fontFamily: "monospace",
-              color: "#fbbf24",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          this.tweens.add({
-            targets: titleVol,
-            alpha: 0.7,
-            duration: 1500,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-
-          const titleVault = this.add
-            .text(cx, 125, "VAULT", {
-              fontSize: "72px",
-              fontFamily: "monospace",
-              color: "#ef4444",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          this.tweens.add({
-            targets: titleVault,
-            scaleX: 1.03,
-            scaleY: 1.03,
-            duration: 2000,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-
-          this.add
-            .text(cx, 180, "Museum Heist", {
-              fontSize: "24px",
-              color: "#94a3b8",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx, 210, "6.G.2 / 6.G.4 | Neft Teacher", {
-              fontSize: "13px",
-              color: "#64748b",
-            })
-            .setOrigin(0.5);
-
-          // High score display
-          const hi = parseInt(localStorage.getItem(LS_KEY)) || 0;
-          if (hi > 0) {
+          this.cameras.main.setBackgroundColor("#0c1733");
+          for (let i = 0; i < 40; i++) {
             this.add
-              .text(cx, 235, `HIGH SCORE: ${hi}`, {
-                fontSize: "14px",
-                color: "#fbbf24",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5);
+              .rectangle(
+                randInt(0, W),
+                randInt(0, H),
+                2,
+                2,
+                0x3b5bdb,
+                Phaser.Math.FloatBetween(0.2, 0.7),
+              )
+              .setDepth(0);
           }
-
-          // Spy character with idle animation
-          const spy = this.add
-            .graphics()
-            .setPosition(cx - 180, 420)
-            .setDepth(3);
-          spy.fillStyle(0x1e293b);
-          spy.fillRoundedRect(-15, -35, 30, 50, 5);
-          spy.fillStyle(0x374151);
-          spy.fillCircle(0, -45, 14);
-          spy.fillStyle(0xe2e8f0);
-          spy.fillCircle(-4, -47, 3);
-          spy.fillCircle(4, -47, 3);
-          spy.fillStyle(0x111827);
-          spy.fillRect(-18, -58, 36, 8);
-          spy.fillRect(-12, -65, 24, 10);
-          spy.fillStyle(0x475569);
-          spy.fillRect(-10, 15, 8, 20);
-          spy.fillRect(2, 15, 8, 20);
-          this.tweens.add({
-            targets: spy,
-            y: spy.y - 6,
-            duration: 900,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-
-          // Spy eye blink
-          const spyEyes = this.add
-            .graphics()
-            .setPosition(cx - 180, 420)
-            .setDepth(4);
-          spyEyes.fillStyle(0xe2e8f0);
-          spyEyes.fillCircle(-4, -47, 3);
-          spyEyes.fillCircle(4, -47, 3);
-          this.tweens.add({
-            targets: spy,
-            y: spy.y - 6,
-            duration: 900,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-
-          // Floors preview with animated entrance
-          const floors = [
-            { name: "LOBBY", sub: "Volume basics", color: 0x22c55e },
-            { name: "GALLERY", sub: "SA + decimals", color: 0xf59e0b },
-            { name: "THE VAULT", sub: "Boss puzzles", color: 0xef4444 },
-          ];
-          floors.forEach((f, i) => {
-            const fx = cx - 280 + i * 280,
-              fy = 540;
-            const card = this.add
-              .rectangle(fx, fy, 220, 65, 0x1e293b)
-              .setStrokeStyle(2, f.color)
-              .setAlpha(0);
-            const name = this.add
-              .text(fx, fy - 10, "Floor " + (i + 1) + ": " + f.name, {
-                fontSize: "14px",
-                color: "#" + f.color.toString(16).padStart(6, "0"),
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            const sub = this.add
-              .text(fx, fy + 12, f.sub, { fontSize: "11px", color: "#94a3b8" })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.tweens.add({
-              targets: [card, name, sub],
-              alpha: 1,
-              y: "-=8",
-              duration: 400,
-              delay: 400 + i * 200,
-              ease: "Back.easeOut",
-            });
-          });
-
-          // Start button with pulse
-          const btn = this.add
-            .rectangle(cx, 630, 260, 60, 0xfbbf24)
-            .setStrokeStyle(2, 0xf59e0b)
-            .setInteractive({ useHandCursor: true });
-          const btnText = this.add
-            .text(cx, 630, "BEGIN HEIST", {
-              fontSize: "26px",
-              color: "#0a0a0a",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          this.tweens.add({
-            targets: btn,
-            scaleX: 1.04,
-            scaleY: 1.04,
-            duration: 800,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-          btn.on("pointerover", () => {
-            btn.setFillStyle(0xf59e0b);
-            this.tweens.add({
-              targets: [btn, btnText],
-              scaleX: 1.08,
-              scaleY: 1.08,
-              duration: 150,
-            });
-          });
-          btn.on("pointerout", () => {
-            btn.setFillStyle(0xfbbf24);
-            this.tweens.add({
-              targets: [btn, btnText],
-              scaleX: 1,
-              scaleY: 1,
-              duration: 150,
-            });
-          });
-          btn.on("pointerdown", () => {
-            sfx.vault();
-            this.cameras.main.fade(400, 0, 0, 0);
-            this.time.delayedCall(400, () => this.scene.start("Game"));
-          });
           this.add
-            .text(cx, 685, "Keys 1-4 or click answers | Arrows + Enter", {
-              fontSize: "12px",
-              color: "#475569",
+            .text(W / 2, 150, "VOLUME VAULT", {
+              fontFamily: "Segoe UI",
+              fontSize: "72px",
+              fontStyle: "900",
+              color: "#ffe066",
             })
             .setOrigin(0.5);
-          this.input.keyboard.on("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              sfx.vault();
-              this.cameras.main.fade(400, 0, 0, 0);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            }
+          this.add
+            .text(W / 2, 222, "CRATE PACKER", {
+              fontFamily: "Segoe UI",
+              fontSize: "30px",
+              fontStyle: "700",
+              color: "#74c0fc",
+              letterSpacing: 8,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              330,
+              "Catch falling cubes and pack the crate to its EXACT volume.\nV = length × width × height. Fill every layer — no more, no less!",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "20px",
+                color: "#dbe4ff",
+                align: "center",
+                lineSpacing: 8,
+              },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              440,
+              "← →  or  A / D  to slide the crate    •    Catch cubes to stack layers",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "18px",
+                color: "#94a3b8",
+              },
+            )
+            .setOrigin(0.5);
+
+          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
+          this.add
+            .text(W / 2, 500, "Best vault total: " + hi, {
+              fontFamily: "Segoe UI",
+              fontSize: "18px",
+              color: "#ffd43b",
+            })
+            .setOrigin(0.5);
+
+          const btn = this.add
+            .rectangle(W / 2, 600, 280, 70, 0xffe066)
+            .setInteractive({ useHandCursor: true });
+          const btnT = this.add
+            .text(W / 2, 600, "START HEIST", {
+              fontFamily: "Segoe UI",
+              fontSize: "28px",
+              fontStyle: "800",
+              color: "#0c1733",
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: [btn, btnT],
+            scale: 1.05,
+            duration: 700,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.inOut",
           });
+          const go = () => {
+            sfx.init();
+            this.scene.start("Game");
+          };
+          btn.on("pointerdown", go);
+          this.input.keyboard.once("keydown-ENTER", go);
+          this.input.keyboard.once("keydown-SPACE", go);
         }
       }
 
-      // --- GAME ---
+      // ════════════════════════════════════════════════════════════
+      //  GAME — the real packing loop
+      // ════════════════════════════════════════════════════════════
       class GameScene extends Phaser.Scene {
         constructor() {
           super("Game");
         }
         create() {
-          sfx.init();
-          this.questions = genQuestions();
-          this.qIndex = 0;
+          this.cameras.main.setBackgroundColor("#0c1733");
           this.score = 0;
+          this.floor = 1;
           this.lives = 3;
-          this.streak = 0;
-          this.bestStreak = 0;
-          this.multiplier = 1;
-          this.totalQ = Math.min(15, this.questions.length);
-          this.answered = false;
-          this.startTime = Date.now();
-          this.questionStartTime = Date.now();
-          this.selectedIdx = -1;
-          this.loot = 0;
-          this.currentFloor = "";
-          this.powerUps = { fiftyFifty: 1, doublePoints: 1 };
-          this.doublePointsActive = false;
-          this.cameras.main.setBackgroundColor("#0a0a0a");
-          this.cameras.main.fadeIn(500);
-          this.buildHUD();
-          this.buildPowerUpButtons();
-          this.loadQuestion();
-          this.input.keyboard.on("keydown", this.handleKey, this);
-        }
+          this.cubesInCrate = 0; // current packed volume
+          this.fallingCubes = [];
+          this.spawnTimer = 0;
+          this.spawnEvery = 1100;
+          this.gameOver = false;
 
-        buildFloor(floorName) {
-          if (this.floorGroup) this.floorGroup.destroy(true);
-          this.floorGroup = this.add.group();
-          const colors = {
-            Lobby: { bg: 0x0f172a, wall: 0x1e293b, accent: 0x22c55e },
-            Gallery: { bg: 0x1a0a00, wall: 0x2d1b00, accent: 0xf59e0b },
-            Vault: { bg: 0x0a0a1a, wall: 0x1a1a2e, accent: 0xef4444 },
-          };
-          const c = colors[floorName] || colors.Lobby;
-          this.cameras.main.setBackgroundColor(c.bg);
+          // crate footprint geometry (in screen space)
+          this.CELL = 46;
+          this.crateY = H - 90;
 
-          // Checker tiles
-          for (let r = 0; r < 4; r++) {
-            for (let col = 0; col < 20; col++) {
-              const checker = (r + col) % 2 === 0 ? c.wall : c.bg;
-              const tile = this.add
-                .rectangle(col * 55 + 27, H - 60 + r * 20, 52, 18, checker)
-                .setDepth(0);
-              this.floorGroup.add(tile);
-            }
-          }
-          // Columns
-          for (let i = 0; i < 4; i++) {
-            const x = 80 + i * 300;
-            const col = this.add
-              .rectangle(x, H / 2 - 50, 16, 400, c.wall)
-              .setDepth(0);
-            this.floorGroup.add(col);
-          }
-          // Floor label
-          const floorLabel = this.add
-            .text(W / 2, 60, floorName.toUpperCase(), {
-              fontSize: "16px",
-              color: "#" + c.accent.toString(16).padStart(6, "0"),
-              fontStyle: "bold",
-              letterSpacing: 6,
-            })
-            .setOrigin(0.5)
-            .setDepth(5);
-          this.floorGroup.add(floorLabel);
-
-          // Ambient dust themed to floor
-          const dustColors = {
-            Lobby: [0x22c55e, 0x334155],
-            Gallery: [0xfbbf24, 0xf59e0b],
-            Vault: [0xef4444, 0xa78bfa],
-          };
-          const dc = dustColors[floorName] || dustColors.Lobby;
-          const dustEmitter = this.add
-            .particles(W / 2, H / 2, "__WHITE", {
-              x: { min: 0, max: W },
-              y: { min: 100, max: H - 100 },
-              speed: { min: 2, max: 8 },
-              angle: { min: 260, max: 280 },
-              scale: { start: 0.1, end: 0 },
-              alpha: { start: 0.2, end: 0 },
-              lifespan: { min: 4000, max: 8000 },
-              tint: [dc[0], dc[1], 0xffffff],
-              quantity: 1,
-              frequency: 500,
-              blendMode: "ADD",
-            })
-            .setDepth(0);
-          this.floorGroup.add(dustEmitter);
-
-          // Lasers for Gallery and Vault
-          if (floorName === "Gallery" || floorName === "Vault") {
-            const laserCount = floorName === "Vault" ? 5 : 3;
-            for (let i = 0; i < laserCount; i++) {
-              const ly = 180 + i * 80 + Phaser.Math.Between(-20, 20);
-              const lx1 = Phaser.Math.Between(50, 200),
-                lx2 = Phaser.Math.Between(W - 200, W - 50);
-              const laser = this.add
-                .line(0, 0, lx1, ly, lx2, ly, 0xef4444, 0.3)
-                .setDepth(1);
-              this.tweens.add({
-                targets: laser,
-                alpha: 0.08,
-                duration: 800 + i * 200,
-                yoyo: true,
-                repeat: -1,
-              });
-              this.floorGroup.add(laser);
-            }
-          }
-          // Spy character
-          if (this.spy) this.spy.destroy();
-          this.spy = this.add
-            .graphics()
-            .setPosition(80, H - 130)
-            .setDepth(4);
-          this.drawSpy(this.spy);
-          this.tweens.add({
-            targets: this.spy,
-            y: this.spy.y - 4,
-            duration: 700,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-          // Display cases / vault elements
-          if (floorName === "Lobby") {
-            const desk = this.add
-              .rectangle(W - 150, H - 120, 120, 40, c.wall)
-              .setStrokeStyle(1, c.accent, 0.3)
-              .setDepth(1);
-            this.floorGroup.add(desk);
-          }
-          if (floorName === "Gallery") {
-            for (let i = 0; i < 3; i++) {
-              const fx = 250 + i * 220,
-                fy = 160;
-              const frame = this.add
-                .rectangle(fx, fy, 80, 60, c.wall)
-                .setStrokeStyle(2, 0xfbbf24, 0.4)
-                .setDepth(1);
-              this.floorGroup.add(frame);
-              const gem = this.add
-                .circle(fx, fy, 10, 0xfbbf24, 0.3)
-                .setDepth(2);
-              this.tweens.add({
-                targets: gem,
-                alpha: 0.1,
-                duration: 1500,
-                yoyo: true,
-                repeat: -1,
-              });
-              this.floorGroup.add(gem);
-            }
-          }
-          if (floorName === "Vault") {
-            const vd = this.add
-              .graphics()
-              .setPosition(W - 120, 300)
-              .setDepth(1);
-            vd.fillStyle(0x475569, 0.3);
-            vd.fillRoundedRect(-50, -60, 100, 120, 8);
-            vd.lineStyle(2, 0x64748b, 0.3);
-            vd.strokeCircle(0, 0, 30);
-            this.floorGroup.add(vd);
-            // Vault glow
-            const vGlow = this.add
-              .circle(W - 120, 300, 55, 0xef4444, 0.04)
-              .setDepth(0);
-            this.tweens.add({
-              targets: vGlow,
-              alpha: 0.1,
-              scaleX: 1.2,
-              scaleY: 1.2,
-              duration: 1500,
-              yoyo: true,
-              repeat: -1,
-            });
-            this.floorGroup.add(vGlow);
-          }
-        }
-
-        drawSpy(g) {
-          g.clear();
-          g.fillStyle(0x1e293b);
-          g.fillRoundedRect(-12, -30, 24, 42, 4);
-          g.fillStyle(0x374151);
-          g.fillCircle(0, -38, 12);
-          g.fillStyle(0xe2e8f0);
-          g.fillCircle(-3, -40, 2.5);
-          g.fillCircle(3, -40, 2.5);
-          g.fillStyle(0x111827);
-          g.fillRect(-15, -50, 30, 7);
-          g.fillRect(-10, -56, 20, 8);
-          g.fillStyle(0x475569);
-          g.fillRect(-8, 12, 7, 18);
-          g.fillRect(1, 12, 7, 18);
-        }
-
-        drawSpyAlert(g) {
-          g.clear();
-          g.fillStyle(0xef4444);
-          g.fillRoundedRect(-12, -30, 24, 42, 4);
-          g.fillStyle(0x991b1b);
-          g.fillCircle(0, -38, 12);
-          g.fillStyle(0xfbbf24);
-          g.fillCircle(-3, -40, 2.5);
-          g.fillCircle(3, -40, 2.5);
-          g.fillStyle(0x111827);
-          g.fillRect(-15, -50, 30, 7);
-          g.fillRect(-10, -56, 20, 8);
-          g.fillStyle(0x7f1d1d);
-          g.fillRect(-8, 12, 7, 18);
-          g.fillRect(1, 12, 7, 18);
-        }
-
-        showFloatingText(x, y, text, color, size = 22) {
-          const ft = this.add
-            .text(x, y, text, {
-              fontSize: `${size}px`,
-              color: color,
-              fontStyle: "bold",
-              stroke: "#000",
-              strokeThickness: 3,
-            })
-            .setOrigin(0.5)
-            .setDepth(20);
-          this.tweens.add({
-            targets: ft,
-            y: y - 60,
-            alpha: 0,
-            scaleX: 1.3,
-            scaleY: 1.3,
-            duration: 1000,
-            ease: "Power2",
-            onComplete: () => ft.destroy(),
-          });
-        }
-
-        showPhaseTransition(floorName, floorColor) {
-          const overlay = this.add
-            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.8)
-            .setDepth(50);
-          const label = this.add
-            .text(W / 2, H / 2 - 25, floorName.toUpperCase(), {
-              fontSize: "48px",
-              color: floorColor,
-              fontStyle: "bold",
-              stroke: "#000",
-              strokeThickness: 4,
-            })
-            .setOrigin(0.5)
-            .setDepth(51)
-            .setAlpha(0)
-            .setScale(0.3);
-          const sub = this.add
-            .text(W / 2, H / 2 + 25, "INFILTRATING...", {
-              fontSize: "16px",
-              color: "#94a3b8",
-            })
-            .setOrigin(0.5)
-            .setDepth(51)
-            .setAlpha(0);
-
-          sfx.phaseTransition();
-
-          // Dramatic laser sweep
-          const sweep = this.add
-            .rectangle(0, H / 2, W * 2, 3, 0xef4444, 0.5)
-            .setDepth(52);
-          this.tweens.add({
-            targets: sweep,
-            x: W,
-            duration: 600,
-            onComplete: () => sweep.destroy(),
-          });
-
-          this.tweens.add({
-            targets: label,
-            alpha: 1,
-            scaleX: 1,
-            scaleY: 1,
-            duration: 400,
-            ease: "Back.easeOut",
-          });
-          this.tweens.add({
-            targets: sub,
-            alpha: 1,
-            duration: 400,
-            delay: 200,
-          });
-          this.time.delayedCall(1200, () => {
-            this.tweens.add({
-              targets: [overlay, label, sub],
-              alpha: 0,
-              duration: 400,
-              onComplete: () => {
-                overlay.destroy();
-                label.destroy();
-                sub.destroy();
-              },
-            });
-          });
-        }
-
-        buildHUD() {
-          this.hudBg = this.add
-            .rectangle(W / 2, 22, W, 44, 0x000000, 0.85)
-            .setDepth(10);
-          this.hudQ = this.add
-            .text(15, 10, "", {
-              fontSize: "14px",
-              color: "#94a3b8",
-              fontStyle: "bold",
-            })
-            .setDepth(11);
+          // HUD
           this.hudScore = this.add
-            .text(170, 10, "", {
-              fontSize: "14px",
-              color: "#fbbf24",
-              fontStyle: "bold",
+            .text(20, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              fontStyle: "700",
+              color: "#ffe066",
             })
-            .setDepth(11);
-          this.hudLives = this.add
-            .text(340, 10, "", { fontSize: "14px", color: "#ef4444" })
-            .setDepth(11);
-          this.hudStreak = this.add
-            .text(510, 10, "", { fontSize: "14px", color: "#f59e0b" })
-            .setDepth(11);
+            .setDepth(20);
           this.hudFloor = this.add
-            .text(660, 10, "", { fontSize: "14px", color: "#a78bfa" })
-            .setDepth(11);
-          this.hudTimer = this.add
-            .text(W - 100, 10, "", { fontSize: "14px", color: "#94a3b8" })
-            .setDepth(11);
-          this.hudLoot = this.add
-            .text(820, 10, "", { fontSize: "14px", color: "#fbbf24" })
-            .setDepth(11);
-          this.hudMultiplier = this.add
-            .text(W - 200, 10, "", {
-              fontSize: "14px",
-              color: "#f59e0b",
-              fontStyle: "bold",
+            .text(W - 20, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              fontStyle: "700",
+              color: "#74c0fc",
             })
-            .setDepth(11);
-
-          // Progress bar
-          this.progBg = this.add
-            .rectangle(W / 2, 44, W - 20, 6, 0x1e293b)
-            .setDepth(10);
-          this.progFill = this.add
-            .rectangle(10, 44, 0, 6, 0xfbbf24)
-            .setOrigin(0, 0.5)
-            .setDepth(10);
-
-          // Question counter dots
-          this.qDots = [];
-          for (let i = 0; i < this.totalQ; i++) {
-            const dot = this.add
-              .circle(15 + i * 18, 56, 4, 0x1e293b)
-              .setStrokeStyle(1, 0x334155)
-              .setDepth(10);
-            this.qDots.push(dot);
-          }
-
-          // Streak counter display
-          this.streakContainer = this.add.container(W / 2, H - 30).setDepth(15);
-          this.streakBg = this.add
-            .rectangle(0, 0, 220, 28, 0x000000, 0)
-            .setDepth(15);
-          this.streakText = this.add
-            .text(0, 0, "", {
-              fontSize: "16px",
-              color: "#f59e0b",
-              fontStyle: "bold",
+            .setOrigin(1, 0)
+            .setDepth(20);
+          this.hudLives = this.add
+            .text(W / 2, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              color: "#ff8787",
             })
-            .setOrigin(0.5)
-            .setDepth(15);
-          this.streakContainer.add([this.streakBg, this.streakText]);
+            .setOrigin(0.5, 0)
+            .setDepth(20);
 
-          // Speed indicator
-          this.speedIndicator = this.add
-            .text(400, 56, "", {
-              fontSize: "11px",
-              color: "#22c55e",
+          // live volume equation display
+          this.eq = this.add
+            .text(W / 2, 58, "", {
+              fontFamily: "Consolas, monospace",
+              fontSize: "26px",
+              fontStyle: "700",
+              color: "#ffffff",
+              backgroundColor: "#11224a",
+              padding: { x: 14, y: 6 },
             })
-            .setDepth(11);
-        }
+            .setOrigin(0.5, 0)
+            .setDepth(20);
 
-        buildPowerUpButtons() {
-          // 50/50 button
-          const pu1bg = this.add
-            .rectangle(430, H - 30, 80, 24, 0x1e293b)
-            .setStrokeStyle(1, 0xf59e0b)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(12);
-          this.pu1text = this.add
-            .text(430, H - 30, "50/50 (1)", {
-              fontSize: "11px",
-              color: "#f59e0b",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(13);
-          pu1bg.on("pointerdown", () => this.usePowerUp("fiftyFifty"));
-          pu1bg.on("pointerover", () => pu1bg.setFillStyle(0x334155));
-          pu1bg.on("pointerout", () => pu1bg.setFillStyle(0x1e293b));
-          this.pu1bg = pu1bg;
+          // crate container (slides left/right)
+          this.crate = this.add.container(W / 2, this.crateY).setDepth(10);
+          this.cells = []; // packed cube sprites
 
-          // Double Points button
-          const pu2bg = this.add
-            .rectangle(540, H - 30, 90, 24, 0x1e293b)
-            .setStrokeStyle(1, 0xfbbf24)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(12);
-          this.pu2text = this.add
-            .text(540, H - 30, "2x PTS (1)", {
-              fontSize: "11px",
-              color: "#fbbf24",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(13);
-          pu2bg.on("pointerdown", () => this.usePowerUp("doublePoints"));
-          pu2bg.on("pointerover", () => pu2bg.setFillStyle(0x334155));
-          pu2bg.on("pointerout", () => pu2bg.setFillStyle(0x1e293b));
-          this.pu2bg = pu2bg;
-        }
-
-        usePowerUp(type) {
-          if (this.answered) return;
-          if (type === "fiftyFifty" && this.powerUps.fiftyFifty > 0) {
-            this.powerUps.fiftyFifty--;
-            sfx.powerUp();
-            const q = this.questions[this.qIndex];
-            let removed = 0;
-            this.answerBtns.forEach((b) => {
-              if (b.optText !== q.correct && removed < 2) {
-                b.bg.setAlpha(0.3);
-                b.txt.setAlpha(0.3);
-                b.bg.disableInteractive();
-                b.eliminated = true;
-                removed++;
-              }
-            });
-            this.pu1text.setText(
-              this.powerUps.fiftyFifty > 0
-                ? `50/50 (${this.powerUps.fiftyFifty})`
-                : "50/50 --",
+          // input
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.keyA = this.input.keyboard.addKey("A");
+          this.keyD = this.input.keyboard.addKey("D");
+          this.input.on("pointermove", (p) => {
+            this.targetX = Phaser.Math.Clamp(
+              p.x,
+              this.halfCrate,
+              W - this.halfCrate,
             );
-            if (this.powerUps.fiftyFifty <= 0) this.pu1bg.setAlpha(0.4);
-            this.showFloatingText(430, H - 50, "50/50!", "#f59e0b", 18);
-          }
-          if (type === "doublePoints" && this.powerUps.doublePoints > 0) {
-            this.powerUps.doublePoints--;
-            this.doublePointsActive = true;
-            sfx.powerUp();
-            this.pu2text.setText(
-              this.powerUps.doublePoints > 0
-                ? `2x PTS (${this.powerUps.doublePoints})`
-                : "2x PTS --",
-            );
-            if (this.powerUps.doublePoints <= 0) this.pu2bg.setAlpha(0.4);
-            this.showFloatingText(540, H - 50, "DOUBLE LOOT!", "#fbbf24", 18);
-            this.cameras.main.flash(200, 251, 191, 36);
-          }
+          });
+
+          this.startFloor();
         }
 
-        loadQuestion() {
-          if (this.qIndex >= this.totalQ || this.lives <= 0) {
-            this.endGame();
+        startFloor() {
+          this.level = makeLevel(this.floor);
+          this.cubesInCrate = 0;
+          this.fallingCubes.forEach((c) => c.destroy());
+          this.fallingCubes = [];
+          this.cells.forEach((c) => c.destroy());
+          this.cells = [];
+          this.crate.removeAll(true);
+
+          const { l, w } = this.level;
+          this.cols = l;
+          this.rows = w;
+          this.crateW = this.cols * this.CELL;
+          this.halfCrate = this.crateW / 2;
+          this.targetX = W / 2;
+          this.crate.x = W / 2;
+
+          // draw crate base + outline
+          const base = this.add
+            .rectangle(0, 14, this.crateW + 14, 20, 0x5a3d1f)
+            .setStrokeStyle(3, 0x3a2510);
+          this.crate.add(base);
+          // grid guides for each column
+          for (let c = 0; c < this.cols; c++) {
+            const x = -this.halfCrate + this.CELL / 2 + c * this.CELL;
+            const guide = this.add
+              .rectangle(
+                x,
+                -6,
+                this.CELL - 6,
+                this.level.h * 24 + 8,
+                0x1b2a52,
+                0.5,
+              )
+              .setStrokeStyle(1, 0x3b5bdb, 0.6);
+            this.crate.add(guide);
+          }
+          this.colHeights = new Array(this.cols).fill(0); // cubes stacked per column
+
+          // floor banner
+          const banner = this.add
+            .text(
+              W / 2,
+              H / 2 - 40,
+              `FLOOR ${this.floor}\nTarget volume: ${this.level.target} cubic units\n${this.level.l} × ${this.level.w} × ${this.level.h}`,
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "30px",
+                fontStyle: "800",
+                color: "#ffe066",
+                align: "center",
+                backgroundColor: "#0a142e",
+                padding: { x: 24, y: 16 },
+                lineSpacing: 8,
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(30);
+          this.crateLocked = true;
+          this.time.delayedCall(1600, () => {
+            banner.destroy();
+            this.crateLocked = false;
+          });
+          this.updateHUD();
+        }
+
+        spawnCube() {
+          // a cube falls down one of the columns' screen x-positions
+          const x = randInt(120, W - 120);
+          const bad = Math.random() < 0.18 && this.floor > 2; // hazard "lead" cube
+          const spr = this.add
+            .image(x, -30, bad ? "cubeBad" : "cube")
+            .setDepth(8)
+            .setData("bad", bad);
+          spr.vy = Phaser.Math.FloatBetween(2.4, 3.4) + this.floor * 0.15;
+          this.fallingCubes.push(spr);
+        }
+
+        catchCube(spr) {
+          const bad = spr.getData("bad");
+          if (bad) {
+            // lead cube jams the works
+            sfx.jam();
+            this.cameras.main.shake(180, 0.01);
+            this.loseLife();
+            this.flashEq("#ff6b6b");
             return;
           }
-          this.answered = false;
-          this.selectedIdx = -1;
-          this.questionStartTime = Date.now();
-          const q = this.questions[this.qIndex];
-
-          // Build floor if changed (with transition)
-          const prevFloor =
-            this.qIndex > 0 ? this.questions[this.qIndex - 1].floor : "";
-          if (q.floor !== prevFloor || this.qIndex === 0) {
-            if (this.qIndex > 0 && q.floor !== prevFloor) {
-              const floorColors = {
-                Lobby: "#22c55e",
-                Gallery: "#f59e0b",
-                Vault: "#ef4444",
-              };
-              this.showPhaseTransition(
-                q.floor,
-                floorColors[q.floor] || "#94a3b8",
-              );
+          // place into the shortest column to keep stacking even & visible
+          let col = 0,
+            min = Infinity;
+          for (let c = 0; c < this.cols; c++) {
+            if (this.colHeights[c] < min) {
+              min = this.colHeights[c];
+              col = c;
             }
-            this.buildFloor(q.floor);
-            this.currentFloor = q.floor;
           }
+          this.cubesInCrate++;
+          const layerCap = this.cols * this.rows * this.level.h; // == target
+          const cx = -this.halfCrate + this.CELL / 2 + col * this.CELL;
+          const cy = -8 - this.colHeights[col] * 22;
+          const cube = this.add
+            .image(cx, cy - 40, "cube")
+            .setDepth(9)
+            .setScale(0.9);
+          this.crate.add(cube);
+          this.cells.push(cube);
+          this.colHeights[col]++;
+          this.tweens.add({
+            targets: cube,
+            y: cy,
+            duration: 180,
+            ease: "Bounce.out",
+          });
+          sfx.catch();
+          this.score += 5;
 
           this.updateHUD();
-          // Animate progress bar
-          this.tweens.add({
-            targets: this.progFill,
-            width: (this.qIndex / this.totalQ) * (W - 20),
-            duration: 300,
-            ease: "Power2",
-          });
 
-          // Clean old question elements
-          if (this.qGroup) this.qGroup.destroy(true);
-          this.qGroup = this.add.group();
-          const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
-          const tierNames = ["Floor 1", "Floor 2", "Floor 3"];
-
-          // 3D prism visualization
-          this.draw3DPrism(q);
-
-          // Question panel
-          const panelW = 500,
-            panelH = 80;
-          const panel = this.add
-            .rectangle(W / 2 + 50, 140, panelW, panelH, 0x000000, 0.85)
-            .setStrokeStyle(2, 0xfbbf24)
-            .setDepth(5);
-          this.qGroup.add(panel);
-          const badge = this.add
-            .text(W / 2 + 50 - panelW / 2 + 10, 110, tierNames[q.tier - 1], {
-              fontSize: "11px",
-              color: tierColors[q.tier - 1],
-              backgroundColor: "#1e293b",
-              padding: { x: 6, y: 2 },
-              fontStyle: "bold",
-            })
-            .setDepth(6);
-          this.qGroup.add(badge);
-          const qt = this.add
-            .text(W / 2 + 50, 145, q.text, {
-              fontSize: "16px",
-              color: "#e2e8f0",
-              fontStyle: "bold",
-              align: "center",
-              wordWrap: { width: panelW - 30 },
-            })
-            .setOrigin(0.5)
-            .setDepth(6);
-          this.qGroup.add(qt);
-
-          // Animate question entrance
-          panel.setAlpha(0).setScale(0.9);
-          qt.setAlpha(0);
-          badge.setAlpha(0);
-          this.tweens.add({
-            targets: panel,
-            alpha: 0.85,
-            scaleX: 1,
-            scaleY: 1,
-            duration: 300,
-            ease: "Back.easeOut",
-          });
-          this.tweens.add({
-            targets: [qt, badge],
-            alpha: 1,
-            duration: 300,
-            delay: 100,
-          });
-
-          // Answer options (2x2 grid)
-          this.answerBtns = [];
-          q.options.forEach((opt, i) => {
-            const col = i % 2,
-              row = Math.floor(i / 2);
-            const bx = W / 2 - 100 + col * 280,
-              by = 230 + row * 60;
-            const bg = this.add
-              .rectangle(bx, by, 250, 48, 0x1e293b)
-              .setStrokeStyle(2, 0x334155)
-              .setInteractive({ useHandCursor: true })
-              .setDepth(6);
-            const num = this.add
-              .text(bx - 115, by - 6, String(i + 1), {
-                fontSize: "10px",
-                color: "#64748b",
-              })
-              .setDepth(7);
-            const txt = this.add
-              .text(bx, by, opt, {
-                fontSize: "15px",
-                color: "#e2e8f0",
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5)
-              .setDepth(7);
-
-            // Animate entrance
-            bg.setAlpha(0).setX(bx - 20);
-            txt.setAlpha(0);
-            num.setAlpha(0);
-            this.tweens.add({
-              targets: bg,
-              alpha: 1,
-              x: bx,
-              duration: 250,
-              delay: 150 + i * 60,
-              ease: "Power2",
-            });
-            this.tweens.add({
-              targets: [txt, num],
-              alpha: 1,
-              duration: 250,
-              delay: 200 + i * 60,
-            });
-
-            bg.on("pointerover", () => {
-              if (!this.answered) {
-                bg.setStrokeStyle(3, 0xfbbf24);
-                this.tweens.add({
-                  targets: bg,
-                  scaleX: 1.03,
-                  scaleY: 1.03,
-                  duration: 100,
-                });
-                sfx.click();
-              }
-            });
-            bg.on("pointerout", () => {
-              if (!this.answered && this.selectedIdx !== i) {
-                bg.setStrokeStyle(2, 0x334155);
-                this.tweens.add({
-                  targets: bg,
-                  scaleX: 1,
-                  scaleY: 1,
-                  duration: 100,
-                });
-              }
-            });
-            bg.on("pointerdown", () => {
-              if (!this.answered) this.submitAnswer(i);
-            });
-            this.qGroup.add(bg);
-            this.qGroup.add(txt);
-            this.qGroup.add(num);
-            this.answerBtns.push({
-              bg,
-              txt,
-              num,
-              optText: opt,
-              eliminated: false,
-            });
-          });
-
-          // Feedback
-          this.fbObj = this.add
-            .text(W / 2, 380, "", {
-              fontSize: "14px",
-              color: "#94a3b8",
-              align: "center",
-              wordWrap: { width: 600 },
-            })
-            .setOrigin(0.5)
-            .setDepth(8);
-          this.qGroup.add(this.fbObj);
-          this.hintObj = this.add
-            .text(W / 2, 410, "", {
-              fontSize: "11px",
-              color: "#64748b",
-              align: "center",
-              wordWrap: { width: 600 },
-            })
-            .setOrigin(0.5)
-            .setDepth(8);
-          this.qGroup.add(this.hintObj);
+          if (this.cubesInCrate === this.level.target) {
+            this.sealVault();
+          } else if (this.cubesInCrate > this.level.target) {
+            // overfilled — crate jams
+            sfx.jam();
+            this.cameras.main.shake(200, 0.012);
+            this.flashEq("#ff6b6b");
+            this.loseLife();
+            // remove the overflow cube
+            const extra = this.cells.pop();
+            if (extra) extra.destroy();
+            this.cubesInCrate--;
+            this.colHeights[col]--;
+          }
         }
 
-        draw3DPrism(q) {
-          const dimMatch = q.text.match(
-            /(\d+\.?\d*)\s*(?:ft|in|cm|m)\s*[×x]\s*(\d+\.?\d*)\s*(?:ft|in|cm|m)\s*[×x]\s*(\d+\.?\d*)/i,
-          );
-          if (!dimMatch) return;
-          const l = parseFloat(dimMatch[1]),
-            w = parseFloat(dimMatch[2]),
-            h = parseFloat(dimMatch[3]);
-          const bx = W / 2 + 50,
-            by = 500;
-          const scale = 8;
-          const sl = l * scale,
-            sw = w * scale,
-            sh = h * scale;
-          const iso = { x: 0.7, y: 0.4 };
-          const g = this.add.graphics().setDepth(3);
-          // Front face
-          g.fillStyle(0x3b82f6, 0.5);
-          g.fillRect(bx - sl / 2, by - sh, sl, sh);
-          g.lineStyle(2, 0x60a5fa);
-          g.strokeRect(bx - sl / 2, by - sh, sl, sh);
-          // Top face
-          g.fillStyle(0x60a5fa, 0.3);
-          g.beginPath();
-          g.moveTo(bx - sl / 2, by - sh);
-          g.lineTo(bx - sl / 2 + sw * iso.x, by - sh - sw * iso.y);
-          g.lineTo(bx + sl / 2 + sw * iso.x, by - sh - sw * iso.y);
-          g.lineTo(bx + sl / 2, by - sh);
-          g.closePath();
-          g.fillPath();
-          g.strokePath();
-          // Right face
-          g.fillStyle(0x2563eb, 0.4);
-          g.beginPath();
-          g.moveTo(bx + sl / 2, by - sh);
-          g.lineTo(bx + sl / 2 + sw * iso.x, by - sh - sw * iso.y);
-          g.lineTo(bx + sl / 2 + sw * iso.x, by - sw * iso.y);
-          g.lineTo(bx + sl / 2, by);
-          g.closePath();
-          g.fillPath();
-          g.strokePath();
-          // Dimension labels
-          const lbl1 = this.add
-            .text(bx, by + 15, `${l}`, {
-              fontSize: "12px",
-              color: "#60a5fa",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(4);
-          const lbl2 = this.add
-            .text(
-              bx + sl / 2 + sw * iso.x + 12,
-              by - sh / 2 - (sw * iso.y) / 2,
-              `${h}`,
-              {
-                fontSize: "12px",
-                color: "#60a5fa",
-                fontStyle: "bold",
-              },
-            )
-            .setOrigin(0.5)
-            .setDepth(4);
-          const lbl3 = this.add
-            .text(
-              bx + sl / 4 + (sw * iso.x) / 2,
-              by - sh - (sw * iso.y) / 2 - 10,
-              `${w}`,
-              {
-                fontSize: "12px",
-                color: "#60a5fa",
-                fontStyle: "bold",
-              },
-            )
-            .setOrigin(0.5)
-            .setDepth(4);
-          this.qGroup.add(g);
-          this.qGroup.add(lbl1);
-          this.qGroup.add(lbl2);
-          this.qGroup.add(lbl3);
-        }
-
-        submitAnswer(idx) {
-          if (this.answered) return;
-          if (this.answerBtns[idx].eliminated) return;
-          this.answered = true;
-          const q = this.questions[this.qIndex];
-          const chosen = this.answerBtns[idx].optText;
-          const correct = chosen === q.correct;
-          const answerTime = (Date.now() - this.questionStartTime) / 1000;
-
-          if (correct) {
-            // Score calculation
-            let pts = q.tier * 15 + Math.min(this.streak, 5) * 5;
-            let timeBonus = 0;
-            if (answerTime < 5) {
-              timeBonus = 15;
-              this.showFloatingText(
-                W / 2,
-                340,
-                "SPEED BONUS! +15",
-                "#22c55e",
-                14,
-              );
-              sfx.speedBonus();
-            } else if (answerTime < 10) {
-              timeBonus = 8;
-              this.showFloatingText(W / 2, 340, "QUICK! +8", "#22c55e", 12);
-            }
-            pts += timeBonus;
-
-            // Multiplier from streak
-            this.multiplier = 1 + Math.floor(this.streak / 2) * 0.5;
-            pts = Math.round(pts * this.multiplier);
-
-            if (this.doublePointsActive) {
-              pts *= 2;
-              this.doublePointsActive = false;
-              this.showFloatingText(W / 2, 180, "DOUBLE LOOT!", "#fbbf24", 20);
-            }
-
-            this.score += pts;
-            this.loot++;
-            this.streak++;
-            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-
-            this.answerBtns[idx].bg.setFillStyle(0x22c55e);
-            this.answerBtns[idx].bg.setStrokeStyle(3, 0x22c55e);
-
-            // Floating score text
-            this.showFloatingText(
-              this.answerBtns[idx].bg.x,
-              this.answerBtns[idx].bg.y - 30,
-              `+${pts}`,
-              "#22c55e",
-              28,
-            );
-
-            // Streak milestone effects
-            if (this.streak === 3) {
-              this.showFloatingText(
-                W / 2,
-                H / 2 - 50,
-                "HEIST COMBO x3!",
-                "#f59e0b",
-                36,
-              );
-              sfx.streakMilestone(1);
-              sfx.crowdCheer(3);
-            } else if (this.streak === 5) {
-              this.showFloatingText(
-                W / 2,
-                H / 2 - 50,
-                "MASTER THIEF x5!!",
-                "#fbbf24",
-                42,
-              );
-              sfx.streakMilestone(2);
-              sfx.crowdCheer(5);
-              // Gold confetti burst
-              for (let i = 0; i < 3; i++) {
-                this.time.delayedCall(i * 100, () => {
-                  this.add
-                    .particles(
-                      Phaser.Math.Between(100, W - 100),
-                      Phaser.Math.Between(100, 300),
-                      "__WHITE",
-                      {
-                        speed: { min: 80, max: 200 },
-                        angle: { min: 0, max: 360 },
-                        scale: { start: 0.4, end: 0 },
-                        lifespan: 800,
-                        tint: [0xfbbf24, 0xf59e0b, 0x22c55e, 0xef4444],
-                        quantity: 10,
-                        emitting: false,
-                        blendMode: "ADD",
-                      },
-                    )
-                    .explode(12);
-                });
-              }
-            } else if (this.streak === 7) {
-              this.showFloatingText(
-                W / 2,
-                H / 2 - 50,
-                "LEGENDARY x7!!!",
-                "#ef4444",
-                48,
-              );
-              sfx.streakMilestone(3);
-              sfx.crowdCheer(7);
-              this.cameras.main.flash(300, 200, 100, 0);
-            }
-
-            let fbText = "VAULT CRACKED! +" + pts + " pts";
-            if (this.streak >= 3)
-              fbText += " HEIST COMBO x" + this.streak + "!";
-            if (this.multiplier > 1) fbText += ` (${this.multiplier}x)`;
-            this.fbObj.setText(fbText);
-            this.fbObj.setColor("#22c55e");
-            sfx.crack();
-            sfx.grab();
-
-            // Loot sparkle with scaling intensity
-            const particleCount = 15 + this.streak * 3;
-            const spark = this.add
-              .particles(
-                this.answerBtns[idx].bg.x,
-                this.answerBtns[idx].bg.y,
-                "__WHITE",
-                {
-                  speed: { min: 40, max: 150 + this.streak * 15 },
-                  angle: { min: 0, max: 360 },
-                  scale: { start: 0.3, end: 0 },
-                  lifespan: 500 + this.streak * 50,
-                  tint: [0xfbbf24, 0x22c55e, 0xf59e0b],
-                  quantity: particleCount,
-                  emitting: false,
-                  blendMode: "ADD",
-                },
-              )
-              .setDepth(9);
-            spark.explode(particleCount);
-
-            // Screen shake scales with streak
-            const shakeIntensity = 0.003 + this.streak * 0.001;
-            this.cameras.main.shake(
-              100 + this.streak * 20,
-              Math.min(shakeIntensity, 0.015),
-            );
-
-            // Spy sneaks forward
+        sealVault() {
+          this.crateLocked = true;
+          sfx.seal();
+          this.score += 50 + this.floor * 10;
+          this.flashEq("#51cf66");
+          // sparkle
+          for (let i = 0; i < 18; i++) {
+            const s = this.add
+              .rectangle(this.crate.x, this.crateY - 30, 4, 4, 0xffe066)
+              .setDepth(40);
             this.tweens.add({
-              targets: this.spy,
-              x: this.spy.x + 30,
-              duration: 400,
-              ease: "Power2",
-            });
-
-            // Update streak display
-            this.updateStreakDisplay();
-
-            // Update question dot
-            if (this.qDots[this.qIndex]) {
-              this.qDots[this.qIndex].setFillStyle(0x22c55e);
-              this.tweens.add({
-                targets: this.qDots[this.qIndex],
-                scaleX: 1.5,
-                scaleY: 1.5,
-                duration: 200,
-                yoyo: true,
-              });
-            }
-          } else {
-            this.lives--;
-            this.streak = 0;
-            this.multiplier = 1;
-            this.doublePointsActive = false;
-            this.answerBtns[idx].bg.setFillStyle(0xef4444);
-            this.answerBtns[idx].bg.setStrokeStyle(3, 0xef4444);
-            const ci = this.answerBtns.findIndex(
-              (b) => b.optText === q.correct,
-            );
-            if (ci >= 0) {
-              this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
-              this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
-            }
-            this.fbObj.setText("ALARM! Security alerted! Answer: " + q.correct);
-            this.fbObj.setColor("#ef4444");
-            this.hintObj.setText(q.explain);
-
-            sfx.glassBreak();
-            sfx.alarm();
-
-            // More dramatic wrong answer
-            this.cameras.main.shake(350, 0.02);
-            this.cameras.main.flash(200, 255, 0, 0);
-
-            // Red vignette
-            const vignette = this.add
-              .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.15)
-              .setDepth(25);
-            this.tweens.add({
-              targets: vignette,
+              targets: s,
+              x: this.crate.x + randInt(-160, 160),
+              y: this.crateY - 30 + randInt(-160, 60),
               alpha: 0,
-              duration: 600,
-              onComplete: () => vignette.destroy(),
+              duration: 700,
+              onComplete: () => s.destroy(),
             });
-
-            // Spy alert pose
-            this.drawSpyAlert(this.spy);
-            this.time.delayedCall(500, () => this.drawSpy(this.spy));
-
-            // Update streak display
-            this.updateStreakDisplay();
-
-            // Update question dot
-            if (this.qDots[this.qIndex]) {
-              this.qDots[this.qIndex].setFillStyle(0xef4444);
-            }
           }
+          const msg = this.add
+            .text(
+              W / 2,
+              H / 2 - 30,
+              "VAULT SEALED!\n+" + (50 + this.floor * 10),
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "40px",
+                fontStyle: "900",
+                color: "#51cf66",
+                align: "center",
+                backgroundColor: "#0a142e",
+                padding: { x: 28, y: 18 },
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(40);
           this.updateHUD();
-          this.time.delayedCall(correct ? 1500 : 2500, () => {
-            this.qIndex++;
-            this.loadQuestion();
+          this.time.delayedCall(1400, () => {
+            msg.destroy();
+            this.floor++;
+            if (this.floor > 10) this.endGame(true);
+            else this.startFloor();
           });
         }
 
-        updateStreakDisplay() {
-          if (this.streak >= 2) {
-            this.streakBg.setFillStyle(0xf59e0b, 0.2);
-            this.streakText.setText(`HEIST COMBO: ${this.streak}x`);
-            this.tweens.add({
-              targets: this.streakText,
-              scaleX: 1.2,
-              scaleY: 1.2,
-              duration: 150,
-              yoyo: true,
-            });
-          } else {
-            this.streakBg.setFillStyle(0x000000, 0);
-            this.streakText.setText("");
-          }
+        loseLife() {
+          this.lives--;
+          this.updateHUD();
+          if (this.lives <= 0) this.endGame(false);
         }
 
-        handleKey(e) {
-          if (this.answered) return;
-          if (e.key >= "1" && e.key <= "4") {
-            const i = parseInt(e.key) - 1;
-            if (i < this.answerBtns.length && !this.answerBtns[i].eliminated)
-              this.submitAnswer(i);
-          }
-          if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-            do {
-              this.selectedIdx = Math.min(
-                this.selectedIdx + 1,
-                this.answerBtns.length - 1,
-              );
-            } while (
-              this.answerBtns[this.selectedIdx].eliminated &&
-              this.selectedIdx < this.answerBtns.length - 1
-            );
-            if (this.selectedIdx < 0) this.selectedIdx = 0;
-            this.highlightSel();
-          }
-          if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-            do {
-              this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
-            } while (
-              this.answerBtns[this.selectedIdx].eliminated &&
-              this.selectedIdx > 0
-            );
-            this.highlightSel();
-          }
-          if (
-            e.key === "Enter" &&
-            this.selectedIdx >= 0 &&
-            !this.answerBtns[this.selectedIdx].eliminated
-          )
-            this.submitAnswer(this.selectedIdx);
-          // Power-up hotkeys
-          if (e.key === "q" || e.key === "Q") this.usePowerUp("fiftyFifty");
-          if (e.key === "w" || e.key === "W") this.usePowerUp("doublePoints");
-        }
-
-        highlightSel() {
-          this.answerBtns.forEach((b, i) => {
-            if (!b.eliminated) {
-              b.bg.setStrokeStyle(
-                i === this.selectedIdx ? 3 : 2,
-                i === this.selectedIdx ? 0xfbbf24 : 0x334155,
-              );
-              if (i === this.selectedIdx) {
-                this.tweens.add({
-                  targets: b.bg,
-                  scaleX: 1.03,
-                  scaleY: 1.03,
-                  duration: 100,
-                });
-              } else {
-                this.tweens.add({
-                  targets: b.bg,
-                  scaleX: 1,
-                  scaleY: 1,
-                  duration: 100,
-                });
-              }
-            }
-          });
-          sfx.click();
+        flashEq(color) {
+          this.eq.setColor(color);
+          this.time.delayedCall(350, () => this.eq.setColor("#ffffff"));
         }
 
         updateHUD() {
-          const q = this.questions[Math.min(this.qIndex, this.totalQ - 1)];
-          this.hudQ.setText(`PUZZLE ${this.qIndex + 1}/${this.totalQ}`);
-          this.hudScore.setText(`SCORE: ${this.score}`);
-          this.hudLives.setText(
-            "LIVES: " + "■".repeat(this.lives) + "□".repeat(3 - this.lives),
-          );
-          this.hudStreak.setText(
-            this.streak >= 2 ? `COMBO x${this.streak}` : "",
-          );
-          this.hudFloor.setText(q ? q.floor.toUpperCase() : "");
-          this.hudLoot.setText(`LOOT: ${this.loot}`);
-          this.hudMultiplier.setText(
-            this.multiplier > 1 ? `${this.multiplier}x` : "",
-          );
-          const el = Math.floor((Date.now() - this.startTime) / 1000);
-          const m = Math.floor(el / 60),
-            s = el % 60;
-          this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
-
-          // Speed indicator
-          if (!this.answered) {
-            const elapsed = (Date.now() - this.questionStartTime) / 1000;
-            if (elapsed < 5) {
-              this.speedIndicator.setText("FAST").setColor("#22c55e");
-            } else if (elapsed < 10) {
-              this.speedIndicator.setText("GOOD").setColor("#fbbf24");
-            } else {
-              this.speedIndicator.setText("").setColor("#94a3b8");
-            }
-          } else {
-            this.speedIndicator.setText("");
+          this.hudScore.setText("SCORE  " + this.score);
+          this.hudFloor.setText("FLOOR  " + this.floor + " / 10");
+          this.hudLives.setText("♥".repeat(Math.max(0, this.lives)));
+          if (this.level) {
+            const remaining = this.level.target - this.cubesInCrate;
+            this.eq.setText(
+              `PACKED ${this.cubesInCrate}  /  TARGET ${this.level.target}` +
+                `   (need ${remaining} more)`,
+            );
           }
         }
 
-        update() {
-          this.updateHUD();
+        endGame(won) {
+          this.gameOver = true;
+          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
+          if (this.score > hi) localStorage.setItem(LS_KEY, this.score);
+          this.scene.start("Results", { score: this.score, won });
         }
 
-        endGame() {
-          const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-          const correct = this.loot;
-          this.cameras.main.fade(500, 0, 0, 0);
-          this.time.delayedCall(500, () => {
-            this.scene.start("Results", {
-              score: this.score,
-              total: this.totalQ,
-              correct,
-              bestStreak: this.bestStreak,
-              time: elapsed,
-              loot: this.loot,
-            });
-          });
+        update(time, delta) {
+          if (this.gameOver) return;
+          // slide crate
+          if (!this.crateLocked) {
+            let dir = 0;
+            if (this.cursors.left.isDown || this.keyA.isDown) dir = -1;
+            else if (this.cursors.right.isDown || this.keyD.isDown) dir = 1;
+            if (dir !== 0) {
+              this.targetX = Phaser.Math.Clamp(
+                this.crate.x + dir * 9,
+                this.halfCrate,
+                W - this.halfCrate,
+              );
+            }
+            this.crate.x = Phaser.Math.Linear(
+              this.crate.x,
+              this.targetX ?? this.crate.x,
+              0.25,
+            );
+          }
+
+          // spawn
+          this.spawnTimer += delta;
+          if (this.spawnTimer > this.spawnEvery && !this.crateLocked) {
+            this.spawnTimer = 0;
+            this.spawnCube();
+          }
+
+          // move falling cubes + collision with crate mouth
+          const mouthL = this.crate.x - this.halfCrate;
+          const mouthR = this.crate.x + this.halfCrate;
+          for (let i = this.fallingCubes.length - 1; i >= 0; i--) {
+            const c = this.fallingCubes[i];
+            c.y += c.vy;
+            c.angle += 1.5;
+            // caught when reaching crate rim within mouth
+            if (c.y >= this.crateY - 50) {
+              if (c.x >= mouthL && c.x <= mouthR && !this.crateLocked) {
+                this.catchCube(c);
+              } else if (!c.getData("bad")) {
+                sfx.miss();
+              }
+              c.destroy();
+              this.fallingCubes.splice(i, 1);
+            } else if (c.y > H + 40) {
+              c.destroy();
+              this.fallingCubes.splice(i, 1);
+            }
+          }
         }
       }
 
-      // --- RESULTS ---
+      // ════════════════════════════════════════════════════════════
+      //  RESULTS
+      // ════════════════════════════════════════════════════════════
       class ResultsScene extends Phaser.Scene {
         constructor() {
           super("Results");
         }
-        init(data) {
-          this.d = data;
+        init(d) {
+          this.data2 = d || {};
         }
         create() {
-          sfx.init();
-          const d = this.d,
-            cx = W / 2;
-          this.cameras.main.setBackgroundColor("#0a0a0a");
-          this.cameras.main.fadeIn(500);
-
-          // Ambient dust
-          createAmbientDust(this, 0xfbbf24, 0xef4444);
-
-          const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
-          const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
-
-          // High score check
-          const prevHigh = parseInt(localStorage.getItem(LS_KEY)) || 0;
-          const isNewHigh = d.score > prevHigh;
-          if (isNewHigh) {
-            localStorage.setItem(LS_KEY, d.score);
-          }
-
-          if (stars >= 2) {
-            if (stars === 3) sfx.winBig();
-            else sfx.win();
-            const bursts = stars === 3 ? 8 : 5;
-            for (let i = 0; i < bursts; i++) {
-              this.time.delayedCall(i * 150, () => {
-                this.add
-                  .particles(
-                    Phaser.Math.Between(100, W - 100),
-                    Phaser.Math.Between(30, 150),
-                    "__WHITE",
-                    {
-                      speed: { min: 60, max: 220 },
-                      angle: { min: 0, max: 360 },
-                      scale: { start: 0.35, end: 0 },
-                      lifespan: 1200,
-                      tint: [0xfbbf24, 0xef4444, 0x22c55e, 0xa78bfa, 0x22d3ee],
-                      quantity: 15,
-                      emitting: false,
-                      blendMode: "ADD",
-                    },
-                  )
-                  .explode(18);
-              });
-            }
-          } else sfx.lose();
-
-          const titles = [
-            "Caught by Security!",
-            "Amateur Thief",
-            "Expert Burglar!",
-            "MASTER THIEF!",
-          ];
-
-          const titleText = this.add
-            .text(cx, 55, titles[stars], {
-              fontSize: "40px",
-              color: stars >= 2 ? "#fbbf24" : "#94a3b8",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setAlpha(0)
-            .setScale(0.5);
-          this.tweens.add({
-            targets: titleText,
-            alpha: 1,
-            scaleX: 1,
-            scaleY: 1,
-            duration: 600,
-            ease: "Back.easeOut",
-          });
-
-          // Animated star fill
-          for (let i = 0; i < 3; i++) {
-            const starChar = i < stars ? "★" : "☆";
-            const s = this.add
-              .text(cx - 60 + i * 60, 110, starChar, {
-                fontSize: "48px",
-                color: "#fbbf24",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0)
-              .setScale(0);
-            this.tweens.add({
-              targets: s,
-              alpha: 1,
-              scaleX: 1,
-              scaleY: 1,
-              duration: 400,
-              delay: 600 + i * 300,
-              ease: "Back.easeOut",
-              onStart: () => {
-                if (i < stars) sfx.grab();
-              },
-            });
-          }
-
-          // New High Score banner
-          if (isNewHigh && d.score > 0) {
-            const hsBanner = this.add
-              .text(cx, 155, "NEW HIGH SCORE!", {
-                fontSize: "28px",
-                color: "#fbbf24",
-                fontStyle: "bold",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.tweens.add({
-              targets: hsBanner,
-              alpha: 1,
-              duration: 400,
-              delay: 1500,
-            });
-            this.tweens.add({
-              targets: hsBanner,
-              scaleX: 1.05,
-              scaleY: 1.05,
-              duration: 500,
-              yoyo: true,
-              repeat: -1,
-              delay: 1500,
-            });
-            // Celebration particles
-            this.time.delayedCall(1500, () => {
-              for (let i = 0; i < 3; i++) {
-                this.time.delayedCall(i * 150, () => {
-                  this.add
-                    .particles(
-                      cx + Phaser.Math.Between(-100, 100),
-                      155,
-                      "__WHITE",
-                      {
-                        speed: { min: 40, max: 120 },
-                        angle: { min: 0, max: 360 },
-                        scale: { start: 0.3, end: 0 },
-                        lifespan: 600,
-                        tint: [0xfbbf24, 0xf59e0b],
-                        quantity: 8,
-                        emitting: false,
-                        blendMode: "ADD",
-                      },
-                    )
-                    .explode(10);
-                });
-              }
-            });
-          }
-
-          // Loot display
-          const lootY = isNewHigh ? 200 : 185;
+          this.cameras.main.setBackgroundColor("#0c1733");
+          const won = this.data2.won;
           this.add
-            .rectangle(cx, lootY, 250, 55, 0x1e293b)
-            .setStrokeStyle(2, 0xfbbf24);
-          const lootText = this.add
-            .text(cx, lootY - 10, "LOOT: 0 items", {
+            .text(W / 2, 200, won ? "VAULT CLEARED!" : "HEIST OVER", {
+              fontFamily: "Segoe UI",
+              fontSize: "60px",
+              fontStyle: "900",
+              color: won ? "#51cf66" : "#ff8787",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 300, "Score: " + (this.data2.score || 0), {
+              fontFamily: "Segoe UI",
+              fontSize: "34px",
+              color: "#ffe066",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 370, "Best: " + localStorage.getItem(LS_KEY), {
+              fontFamily: "Segoe UI",
               fontSize: "22px",
-              color: "#fbbf24",
-              fontStyle: "bold",
+              color: "#74c0fc",
             })
             .setOrigin(0.5);
-          // Animate loot count
-          this.tweens.addCounter({
-            from: 0,
-            to: d.loot,
-            duration: 800,
-            delay: 300,
-            onUpdate: (t) => {
-              lootText.setText(`LOOT: ${Math.round(t.getValue())} items`);
-            },
-          });
           this.add
-            .text(cx, lootY + 15, "secured from the museum", {
-              fontSize: "11px",
-              color: "#64748b",
-            })
+            .text(
+              W / 2,
+              440,
+              "Every sealed vault = length × width × height cubic units.",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "18px",
+                color: "#94a3b8",
+              },
+            )
             .setOrigin(0.5);
-
-          // Score circle
-          const scoreY = isNewHigh ? 280 : 265;
-          this.add.circle(cx, scoreY, 55, 0x1e293b).setStrokeStyle(3, 0xfbbf24);
-          const pctText = this.add
-            .text(cx, scoreY - 10, "0%", {
-              fontSize: "30px",
-              color: "#e2e8f0",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          // Animate percentage
-          this.tweens.addCounter({
-            from: 0,
-            to: pct,
-            duration: 1000,
-            delay: 500,
-            onUpdate: (t) => {
-              pctText.setText(Math.round(t.getValue()) + "%");
-            },
-          });
-          this.add
-            .text(cx, scoreY + 15, "Accuracy", {
-              fontSize: "12px",
-              color: "#64748b",
-            })
-            .setOrigin(0.5);
-
-          const statsY = isNewHigh ? 370 : 360;
-          const stats = [
-            { l: "Score", v: d.score, c: "#fbbf24" },
-            { l: "Vaults", v: `${d.correct}/${d.total}`, c: "#22c55e" },
-            { l: "Best Combo", v: d.bestStreak, c: "#f59e0b" },
-            {
-              l: "Time",
-              v: `${Math.floor(d.time / 60)}:${(d.time % 60 < 10 ? "0" : "") + (d.time % 60)}`,
-              c: "#94a3b8",
-            },
-          ];
-          stats.forEach((s, i) => {
-            const x = cx - 240 + i * 165,
-              y = statsY;
-            const card = this.add
-              .rectangle(x, y, 135, 60, 0x1e293b)
-              .setStrokeStyle(1, 0x334155)
-              .setAlpha(0);
-            const val = this.add
-              .text(x, y - 8, String(s.v), {
-                fontSize: "22px",
-                color: s.c,
-                fontStyle: "bold",
-              })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            const lbl = this.add
-              .text(x, y + 14, s.l, { fontSize: "11px", color: "#64748b" })
-              .setOrigin(0.5)
-              .setAlpha(0);
-            this.tweens.add({
-              targets: [card, val, lbl],
-              alpha: 1,
-              duration: 300,
-              delay: 800 + i * 100,
-            });
-          });
-
-          // Previous high score
-          if (prevHigh > 0 && !isNewHigh) {
-            this.add
-              .text(cx, statsY + 45, `Personal Best: ${prevHigh}`, {
-                fontSize: "12px",
-                color: "#64748b",
-              })
-              .setOrigin(0.5);
-          }
-
-          // Floor progress
-          const floorsReached =
-            d.correct <= 5
-              ? "Lobby"
-              : d.correct <= 10
-                ? "Gallery"
-                : "The Vault";
-          this.add
-            .text(cx, statsY + 60, `Deepest floor reached: ${floorsReached}`, {
-              fontSize: "14px",
-              color: "#94a3b8",
-            })
-            .setOrigin(0.5);
-
-          // Buttons
-          const btnY = statsY + 110;
-          const btn1 = this.add
-            .rectangle(cx - 110, btnY, 190, 50, 0xfbbf24)
-            .setStrokeStyle(2, 0xf59e0b)
+          const btn = this.add
+            .rectangle(W / 2, 540, 240, 64, 0xffe066)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx - 110, btnY, "HEIST AGAIN", {
-              fontSize: "17px",
-              color: "#0a0a0a",
-              fontStyle: "bold",
+            .text(W / 2, 540, "PLAY AGAIN", {
+              fontFamily: "Segoe UI",
+              fontSize: "26px",
+              fontStyle: "800",
+              color: "#0c1733",
             })
             .setOrigin(0.5);
-          btn1.on("pointerdown", () => {
-            sfx.click();
-            this.cameras.main.fade(400, 0, 0, 0);
-            this.time.delayedCall(400, () => this.scene.start("Game"));
-          });
-          btn1.on("pointerover", () => {
-            btn1.setFillStyle(0xf59e0b);
-            this.tweens.add({
-              targets: btn1,
-              scaleX: 1.05,
-              scaleY: 1.05,
-              duration: 100,
-            });
-          });
-          btn1.on("pointerout", () => {
-            btn1.setFillStyle(0xfbbf24);
-            this.tweens.add({
-              targets: btn1,
-              scaleX: 1,
-              scaleY: 1,
-              duration: 100,
-            });
-          });
-
-          const btn2 = this.add
-            .rectangle(cx + 110, btnY, 190, 50, 0x1e293b)
-            .setStrokeStyle(2, 0x334155)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(cx + 110, btnY, "MAIN MENU", {
-              fontSize: "17px",
-              color: "#94a3b8",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          btn2.on("pointerdown", () => {
-            sfx.click();
-            this.cameras.main.fade(400, 0, 0, 0);
-            this.time.delayedCall(400, () => this.scene.start("Title"));
-          });
-          btn2.on("pointerover", () => {
-            btn2.setFillStyle(0x334155);
-            this.tweens.add({
-              targets: btn2,
-              scaleX: 1.05,
-              scaleY: 1.05,
-              duration: 100,
-            });
-          });
-          btn2.on("pointerout", () => {
-            btn2.setFillStyle(0x1e293b);
-            this.tweens.add({
-              targets: btn2,
-              scaleX: 1,
-              scaleY: 1,
-              duration: 100,
-            });
-          });
-
-          this.add
-            .text(cx, H - 25, "Volume Vault — Neft Teacher — 6.G.2 / 6.G.4", {
-              fontSize: "11px",
-              color: "#475569",
-            })
-            .setOrigin(0.5);
-
-          this.input.keyboard.on("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              this.cameras.main.fade(400, 0, 0, 0);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            }
-            if (e.key === "Escape") {
-              this.cameras.main.fade(400, 0, 0, 0);
-              this.time.delayedCall(400, () => this.scene.start("Title"));
-            }
-          });
+          btn.on("pointerdown", () => this.scene.start("Title"));
+          this.input.keyboard.once("keydown-ENTER", () =>
+            this.scene.start("Title"),
+          );
         }
       }
 
-      // --- CONFIG ---
-      new Phaser.Game({
+      // ════════════════════════════════════════════════════════════
+      const config = {
         type: Phaser.AUTO,
         width: W,
         height: H,
-        parent: document.body,
-        backgroundColor: "#0a0a0a",
-        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultsScene],
-        physics: {
-          default: "arcade",
-          arcade: { gravity: { y: 0 }, debug: false },
+        parent: "game",
+        backgroundColor: "#0c1733",
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
         },
-        input: { keyboard: true, mouse: true, touch: true },
-      });
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+      };
+      new Phaser.Game(config);
     </script>
   </body>
 </html>

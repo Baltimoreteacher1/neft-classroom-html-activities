@@ -2,2185 +2,581 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>Discount Dash — Shopping Spree Tycoon | Unit 4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discount Dash — Sale Runner</title>
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      body {
-        background: #1a0a2e;
+      body,
+      html {
+        width: 100%;
+        height: 100%;
         overflow: hidden;
+        background: #0a0a0a;
         font-family: "Segoe UI", system-ui, sans-serif;
       }
-      canvas {
-        display: block;
-        margin: 0 auto;
+      #game {
+        width: 100%;
+        height: 100%;
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-<script>
-  // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-  // (document.write blocks parsing so the mirror is ready before the game script runs).
-  if (typeof Phaser === "undefined") {
-    document.write('<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>');
-  }
-  // If both CDNs are unreachable, show a clear message instead of a blank page.
-  window.addEventListener("load", function () {
-    if (typeof Phaser === "undefined") {
-      document.body.innerHTML =
-        '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-    }
-  });
-</script>
+    <script>
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
+        );
+      }
+      window.addEventListener("load", function () {
+        if (typeof Phaser === "undefined") {
+          document.body.innerHTML =
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
   </head>
   <body>
+    <div id="game"></div>
     <script>
-      // ── DISCOUNT DASH — Shopping Spree Tycoon (Enhanced) ──
-      // Phaser 3 — Grade 6 ESOL — Percents, Decimals, Conversions
+      // ───────────────────────────────────────────────────────────
+      // DISCOUNT DASH — SALE RUNNER  (Neft Teacher)
+      // Grade 6: 6.RP.A.3c — percent of a quantity (discounts, sale price).
+      //
+      // REAL GAME: A 3-lane endless runner. The shopper sprints down a mall
+      // aisle that scrolls toward the player. Deal-pads appear across the
+      // lanes, each a SAME item at a different "% off". The player must steer
+      // (lane-change) into the lane holding the BEST DEAL — the lowest sale
+      // price = original × (1 − pct/100) — and grab it before it whizzes past.
+      // Grabbing the cheaper deal banks the savings; grabbing the worse one
+      // (or a "full price" trap) costs a life. Speed ramps up, a coin combo
+      // builds, and the percent math is the split-second steering decision.
+      // ───────────────────────────────────────────────────────────
+      const W = 1024,
+        H = 768;
+      const LS_KEY = "discountdash_runner_hi";
+      const LANES = [W / 2 - 240, W / 2, W / 2 + 240];
 
-      const LS_KEY = "discount_dash_hiscore";
-
-      const SFX = {
-        ctx: null,
+      class SFX {
+        constructor() {
+          this.ctx = null;
+        }
         init() {
           if (!this.ctx)
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        },
-        play(t, f, d, v = 0.2) {
-          this.init();
-          const c = this.ctx,
-            o = c.createOscillator(),
-            g = c.createGain();
-          o.type = t;
-          o.frequency.value = f;
-          g.gain.setValueAtTime(v, c.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
-          o.connect(g);
-          g.connect(c.destination);
-          o.start();
-          o.stop(c.currentTime + d);
-        },
-        noise(d, v = 0.1) {
-          this.init();
-          const c = this.ctx;
-          const bufferSize = c.sampleRate * d;
-          const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
-          const data = buffer.getChannelData(0);
-          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-          const src = c.createBufferSource();
-          src.buffer = buffer;
-          const g = c.createGain();
-          g.gain.setValueAtTime(v, c.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
-          src.connect(g);
-          g.connect(c.destination);
-          src.start();
-        },
-        cha_ching() {
-          this.play("sine", 800, 0.08, 0.3);
-          this.play("sine", 1200, 0.12, 0.25);
-        },
-        scan() {
-          this.play("square", 1000, 0.05, 0.15);
-          this.play("square", 1500, 0.05, 0.1);
-        },
-        wrong() {
-          this.play("sawtooth", 200, 0.25, 0.2);
-        },
-        glassBreak() {
-          this.noise(0.25, 0.18);
-          this.play("square", 150, 0.1, 0.12);
-          this.play("square", 100, 0.15, 0.08);
-        },
-        coin() {
-          this.play("sine", 1400, 0.08, 0.2);
-          this.play("sine", 1800, 0.1, 0.15);
-        },
-        combo() {
-          this.play("sine", 784, 0.08);
-          this.play("sine", 988, 0.1);
-          this.play("sine", 1175, 0.12);
-        },
-        tick() {
-          this.play("square", 600, 0.03, 0.08);
-        },
-        bonus() {
-          [659, 784, 988, 1175].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.12, 0.25), i * 80),
-          );
-        },
-        win() {
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.2, 0.3), i * 120),
-          );
-        },
-        winElaborate() {
-          [523, 659, 784, 1047, 1319, 1047, 1319, 1568].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.22, 0.28), i * 100),
-          );
-        },
-        lose() {
-          [400, 350, 300, 200].forEach((f, i) =>
-            setTimeout(() => this.play("sawtooth", f, 0.3, 0.15), i * 180),
-          );
-        },
-        pickup() {
-          this.play("triangle", 660, 0.1, 0.2);
-        },
-        drop() {
-          this.noise(0.08, 0.1);
-        },
-        streak3() {
-          [784, 988, 1175].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.1, 0.25), i * 60),
-          );
-        },
-        streak5() {
-          [784, 988, 1175, 1319, 1568].forEach((f, i) =>
-            setTimeout(() => this.play("triangle", f, 0.12, 0.28), i * 50),
-          );
-        },
-        streak7() {
-          [523, 659, 784, 988, 1175, 1319, 1568].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.14, 0.3), i * 45),
-          );
-        },
-        powerUp() {
-          [660, 880, 1100, 1320].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.08, 0.25), i * 50),
-          );
-        },
-        newRecord() {
-          [523, 659, 784, 1047, 784, 1047, 1319, 1568].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.15, 0.3), i * 90),
-          );
-        },
-        phaseTransition() {
-          [440, 554, 659, 880].forEach((f, i) =>
-            setTimeout(() => this.play("triangle", f, 0.15, 0.2), i * 80),
-          );
-        },
-        crowd(level) {
-          const v = Math.min(0.06, 0.015 + level * 0.008);
-          this.noise(0.25, v);
-        },
-      };
-
-      function randInt(a, b) {
-        return Math.floor(Math.random() * (b - a + 1)) + a;
-      }
-      function shuffle(a) {
-        const r = [...a];
-        for (let i = r.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [r[i], r[j]] = [r[j], r[i]];
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
         }
-        return r;
+        tone(f, d, t = "sine", v = 0.06) {
+          if (!this.ctx) return;
+          try {
+            const o = this.ctx.createOscillator(),
+              g = this.ctx.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + d,
+            );
+            o.connect(g);
+            g.connect(this.ctx.destination);
+            o.start();
+            o.stop(this.ctx.currentTime + d);
+          } catch (e) {}
+        }
+        grab() {
+          this.tone(660, 0.08, "sine");
+          setTimeout(() => this.tone(990, 0.1, "sine"), 60);
+        }
+        bad() {
+          this.tone(150, 0.25, "sawtooth", 0.08);
+        }
+        swish() {
+          this.tone(400, 0.05, "triangle", 0.03);
+        }
+      }
+      const sfx = new SFX();
+      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const money = (n) => "$" + n.toFixed(2);
+
+      // Build a deal-row: an item at one original price, with a different
+      // percent-off in each lane. Exactly one lane is the best (lowest) deal.
+      function makeRow(round) {
+        const items = [
+          "👟",
+          "🎧",
+          "🧥",
+          "🎒",
+          "⌚",
+          "📱",
+          "🕹️",
+          "👕",
+          "🧢",
+          "👜",
+        ];
+        const base = randInt(round < 4 ? 10 : 20, round < 4 ? 60 : 120);
+        // percents get closer together as rounds climb (harder to compare)
+        const pcts =
+          round < 3 ? [10, 25, 50] : round < 6 ? [15, 30, 45] : [20, 35, 40];
+        Phaser.Utils.Array.Shuffle(pcts);
+        const emoji = Phaser.Utils.Array.GetRandom(items);
+        const cells = pcts.map((p) => ({
+          pct: p,
+          sale: Math.round(base * (1 - p / 100) * 100) / 100,
+        }));
+        // best deal = lowest sale price
+        let bestIdx = 0;
+        cells.forEach((c, i) => {
+          if (c.sale < cells[bestIdx].sale) bestIdx = i;
+        });
+        return { emoji, base, cells, bestIdx };
       }
 
-      // ── Question Generator ──
-      function generateQuestions(difficulty) {
-        const qs = [];
-        const items = [
-          { name: "Jacket", emoji: "🧥", base: 80 },
-          { name: "Sneakers", emoji: "👟", base: 60 },
-          { name: "Headphones", emoji: "🎧", base: 50 },
-          { name: "Backpack", emoji: "🎒", base: 45 },
-          { name: "Watch", emoji: "⌚", base: 120 },
-          { name: "Tablet", emoji: "📱", base: 200 },
-          { name: "Game", emoji: "🎮", base: 40 },
-          { name: "Book", emoji: "📚", base: 25 },
-          { name: "Sunglasses", emoji: "🕶️", base: 35 },
-          { name: "Hat", emoji: "🧢", base: 20 },
-          { name: "Scarf", emoji: "🧣", base: 30 },
-          { name: "Boots", emoji: "👢", base: 90 },
-          { name: "Lamp", emoji: "💡", base: 55 },
-          { name: "Speaker", emoji: "🔊", base: 75 },
-          { name: "Camera", emoji: "📷", base: 150 },
-          { name: "Skateboard", emoji: "🛹", base: 65 },
-        ];
+      class BootScene extends Phaser.Scene {
+        constructor() {
+          super("Boot");
+        }
+        create() {
+          this.scene.start("Title");
+        }
+      }
 
-        for (let i = 0; i < 20; i++) {
-          const item = items[i % items.length];
-          let prompt, answer, choices, category;
-          const type = randInt(0, 5);
+      class TitleScene extends Phaser.Scene {
+        constructor() {
+          super("Title");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#10243f");
+          this.add
+            .text(W / 2, 140, "DISCOUNT DASH", {
+              fontFamily: "Segoe UI",
+              fontSize: "66px",
+              fontStyle: "900",
+              color: "#ffe066",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 208, "SALE RUNNER", {
+              fontFamily: "Segoe UI",
+              fontSize: "28px",
+              fontStyle: "700",
+              color: "#74c0fc",
+              letterSpacing: 6,
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              320,
+              "Sprint the aisle. Each row shows the SAME item at\ndifferent % off. Steer into the lane with the\nLOWEST sale price to grab the best deal!",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "21px",
+                color: "#dbe4ff",
+                align: "center",
+                lineSpacing: 8,
+              },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              440,
+              "← →  or  A / D  to change lanes    •    sale price = price × (1 − %/100)",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "18px",
+                color: "#94a3b8",
+              },
+            )
+            .setOrigin(0.5);
+          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
+          this.add
+            .text(W / 2, 500, "Best savings total: " + hi, {
+              fontFamily: "Segoe UI",
+              fontSize: "18px",
+              color: "#ffd43b",
+            })
+            .setOrigin(0.5);
+          const btn = this.add
+            .rectangle(W / 2, 600, 280, 70, 0xffe066)
+            .setInteractive({ useHandCursor: true });
+          const t = this.add
+            .text(W / 2, 600, "START SPREE", {
+              fontFamily: "Segoe UI",
+              fontSize: "28px",
+              fontStyle: "800",
+              color: "#10243f",
+            })
+            .setOrigin(0.5);
+          this.tweens.add({
+            targets: [btn, t],
+            scale: 1.05,
+            duration: 700,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.inOut",
+          });
+          const go = () => {
+            sfx.init();
+            this.scene.start("Game");
+          };
+          btn.on("pointerdown", go);
+          this.input.keyboard.once("keydown-ENTER", go);
+        }
+      }
 
-          if (type === 0) {
-            const fracs = [
-              [1, 4, "25%"],
-              [1, 2, "50%"],
-              [3, 4, "75%"],
-              [1, 5, "20%"],
-              [2, 5, "40%"],
-              [3, 5, "60%"],
-              [1, 10, "10%"],
-              [3, 10, "30%"],
-              [7, 10, "70%"],
-            ];
-            const f = fracs[randInt(0, fracs.length - 1)];
-            prompt = `Convert ${f[0]}/${f[1]} to a percent`;
-            answer = f[2];
-            choices = [
-              answer,
-              `${f[0] * 10}%`,
-              `${f[1] * 5}%`,
-              `${100 - parseInt(f[2])}%`,
-            ];
-            category = "Convert";
-          } else if (type === 1) {
-            const decs = [
-              [0.25, "25%"],
-              [0.5, "50%"],
-              [0.75, "75%"],
-              [0.1, "10%"],
-              [0.4, "40%"],
-              [0.6, "60%"],
-              [0.85, "85%"],
-              [0.15, "15%"],
-              [0.33, "33%"],
-            ];
-            const d = decs[randInt(0, decs.length - 1)];
-            prompt = `What is ${d[0]} as a percent?`;
-            answer = d[1];
-            const pct = parseInt(d[1]);
-            choices = [
-              answer,
-              `${pct + 10}%`,
-              `${Math.max(5, pct - 15)}%`,
-              `${pct * 2 > 100 ? pct / 2 : pct * 2}%`,
-            ];
-            category = "Convert";
-          } else if (type === 2) {
-            const percents =
-              difficulty === "easy"
-                ? [10, 20, 25, 50]
-                : difficulty === "medium"
-                  ? [10, 15, 20, 25, 30, 40, 50]
-                  : [5, 8, 12, 15, 18, 20, 25, 30, 35, 40, 50];
-            const pct = percents[randInt(0, percents.length - 1)];
-            const price = item.base;
-            const disc = (price * pct) / 100;
-            prompt = `${item.emoji} ${item.name} costs $${price}. ${pct}% off = how much discount?`;
-            answer = `$${disc}`;
-            choices = [
-              answer,
-              `$${disc + 5}`,
-              `$${Math.max(1, disc - 3)}`,
-              `$${price - disc}`,
-            ];
-            category = "Discount";
-          } else if (type === 3) {
-            const pct = [10, 20, 25, 30, 50][randInt(0, 4)];
-            const price = item.base;
-            const sale = price - (price * pct) / 100;
-            prompt = `${item.emoji} ${item.name}: $${price} with ${pct}% off. Sale price?`;
-            answer = `$${sale}`;
-            choices = [
-              answer,
-              `$${sale + 10}`,
-              `$${(price * pct) / 100}`,
-              `$${Math.max(5, sale - 5)}`,
-            ];
-            category = "Sale Price";
-          } else if (type === 4) {
-            const taxRates = difficulty === "easy" ? [5, 10] : [5, 6, 7, 8, 10];
-            const tax = taxRates[randInt(0, taxRates.length - 1)];
-            const price = Math.round(item.base / 5) * 5;
-            const total = price + (price * tax) / 100;
-            prompt = `${item.emoji} $${price} + ${tax}% tax = total?`;
-            answer = `$${total}`;
-            choices = [
-              answer,
-              `$${total + 2}`,
-              `$${price + tax}`,
-              `$${Math.max(price, total - 5)}`,
-            ];
-            category = "Tax";
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#10243f");
+          this.score = 0;
+          this.savings = 0;
+          this.lives = 3;
+          this.combo = 0;
+          this.round = 1;
+          this.lane = 1;
+          this.speed = 4;
+          this.gameOver = false;
+          this.rows = [];
+          this.rowGap = 360;
+          this.distSinceRow = 0;
+
+          // scrolling floor stripes
+          this.stripes = [];
+          for (let i = 0; i < 14; i++) {
+            const s = this.add
+              .rectangle(
+                W / 2,
+                i * 60 - 60,
+                700,
+                30,
+                i % 2 ? 0x16335a : 0x12294a,
+              )
+              .setDepth(0);
+            this.stripes.push(s);
+          }
+          // lane dividers
+          for (const lx of [W / 2 - 120, W / 2 + 120]) {
+            for (let i = 0; i < 20; i++)
+              this.add.rectangle(lx, i * 80, 4, 40, 0x2c4a72, 0.6).setDepth(1);
+          }
+
+          // player shopper
+          this.player = this.add
+            .text(LANES[this.lane], H - 130, "🛒", { fontSize: "70px" })
+            .setOrigin(0.5)
+            .setDepth(10);
+
+          // HUD
+          this.hud = this.add
+            .text(20, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              fontStyle: "700",
+              color: "#ffe066",
+            })
+            .setDepth(20);
+          this.savHud = this.add
+            .text(W - 20, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              fontStyle: "700",
+              color: "#51cf66",
+            })
+            .setOrigin(1, 0)
+            .setDepth(20);
+          this.comboHud = this.add
+            .text(W / 2, 16, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "20px",
+              color: "#ff7eb6",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(20);
+
+          // input
+          this.input.keyboard.on("keydown-LEFT", () => this.move(-1));
+          this.input.keyboard.on("keydown-RIGHT", () => this.move(1));
+          this.input.keyboard.on("keydown-A", () => this.move(-1));
+          this.input.keyboard.on("keydown-D", () => this.move(1));
+          this.input.on("pointerdown", (p) => {
+            if (p.x < W / 2 - 60) this.move(-1);
+            else if (p.x > W / 2 + 60) this.move(1);
+          });
+
+          this.spawnRow();
+          this.updateHUD();
+        }
+
+        move(dir) {
+          const nl = Phaser.Math.Clamp(this.lane + dir, 0, 2);
+          if (nl !== this.lane) {
+            this.lane = nl;
+            sfx.swish();
+            this.tweens.add({
+              targets: this.player,
+              x: LANES[this.lane],
+              duration: 120,
+              ease: "Quad.out",
+            });
+          }
+        }
+
+        spawnRow() {
+          const data = makeRow(this.round);
+          const y = -120;
+          const cells = data.cells.map((cell, i) => {
+            const c = this.add.container(LANES[i], y).setDepth(5);
+            const pad = this.add
+              .rectangle(0, 0, 200, 150, 0x1d3a63)
+              .setStrokeStyle(3, 0x3b6cb5);
+            const emo = this.add
+              .text(0, -42, data.emoji, { fontSize: "40px" })
+              .setOrigin(0.5);
+            const wasT = this.add
+              .text(0, 2, money(data.base), {
+                fontFamily: "Segoe UI",
+                fontSize: "16px",
+                color: "#94a3b8",
+              })
+              .setOrigin(0.5);
+            wasT.setStyle({ fontStyle: "italic" });
+            const pctT = this.add
+              .text(0, 26, cell.pct + "% OFF", {
+                fontFamily: "Segoe UI",
+                fontSize: "24px",
+                fontStyle: "900",
+                color: "#ffe066",
+              })
+              .setOrigin(0.5);
+            c.add([pad, emo, wasT, pctT]);
+            return c;
+          });
+          this.rows.push({ data, cells, y, scored: false });
+        }
+
+        grabCell(row, laneIdx) {
+          row.scored = true;
+          const isBest = laneIdx === row.data.bestIdx;
+          if (isBest) {
+            const saved = row.data.base - row.data.cells[laneIdx].sale;
+            this.combo++;
+            const pts = 100 + this.combo * 15;
+            this.score += pts;
+            this.savings += saved;
+            sfx.grab();
+            this.popText(
+              "BEST DEAL!  saved " + money(saved) + "  +" + pts,
+              "#51cf66",
+            );
+            // sparkle
+            for (let i = 0; i < 10; i++) {
+              const s = this.add
+                .rectangle(this.player.x, this.player.y, 4, 4, 0xffe066)
+                .setDepth(15);
+              this.tweens.add({
+                targets: s,
+                x: this.player.x + randInt(-90, 90),
+                y: this.player.y + randInt(-90, 20),
+                alpha: 0,
+                duration: 500,
+                onComplete: () => s.destroy(),
+              });
+            }
           } else {
-            const tipRates = [10, 15, 20];
-            const tip = tipRates[randInt(0, 2)];
-            const meal = randInt(3, 12) * 5;
-            const tipAmt = (meal * tip) / 100;
-            prompt = `Meal: $${meal}. Leave a ${tip}% tip. How much tip?`;
-            answer = `$${tipAmt}`;
-            choices = [
-              answer,
-              `$${tipAmt + 2}`,
-              `$${Math.max(1, tipAmt - 1)}`,
-              `$${meal + tipAmt}`,
-            ];
-            category = "Tip";
+            this.combo = 0;
+            this.lives--;
+            sfx.bad();
+            this.cameras.main.shake(160, 0.008);
+            const best = row.data.cells[row.data.bestIdx];
+            this.popText(
+              "Overpaid! Best was " +
+                best.pct +
+                "% off (" +
+                money(best.sale) +
+                ")",
+              "#ff6b6b",
+            );
           }
+          this.updateHUD();
+          if (this.lives <= 0) this.endGame();
+        }
 
-          choices = [...new Set(choices)];
-          while (choices.length < 4) choices.push(`$${randInt(5, 100)}`);
-          choices = choices.slice(0, 4);
-          if (!choices.includes(answer)) {
-            choices[3] = answer;
-          }
-          choices = shuffle(choices);
-
-          qs.push({
-            prompt,
-            answer,
-            choices,
-            category,
-            item,
-            timeLimit:
-              difficulty === "easy" ? 30 : difficulty === "medium" ? 24 : 18,
+        popText(msg, color) {
+          const t = this.add
+            .text(W / 2, H - 230, msg, {
+              fontFamily: "Segoe UI",
+              fontSize: "26px",
+              fontStyle: "800",
+              color,
+              backgroundColor: "#0a1830",
+              padding: { x: 14, y: 6 },
+            })
+            .setOrigin(0.5)
+            .setDepth(25);
+          this.tweens.add({
+            targets: t,
+            y: H - 290,
+            alpha: 0,
+            duration: 1100,
+            onComplete: () => t.destroy(),
           });
         }
-        return qs;
+
+        updateHUD() {
+          this.hud.setText(
+            "SCORE " +
+              this.score +
+              "    " +
+              "♥".repeat(Math.max(0, this.lives)),
+          );
+          this.savHud.setText("SAVED  " + money(this.savings));
+          this.comboHud.setText(
+            "ROUND " + this.round + (this.combo > 1 ? "   x" + this.combo : ""),
+          );
+        }
+
+        endGame() {
+          this.gameOver = true;
+          const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
+          if (this.score > hi) localStorage.setItem(LS_KEY, this.score);
+          this.scene.start("Results", {
+            score: this.score,
+            savings: this.savings,
+          });
+        }
+
+        update(time, delta) {
+          if (this.gameOver) return;
+          const dt = delta / 16.67;
+          const v = this.speed * dt;
+
+          // scroll stripes
+          this.stripes.forEach((s) => {
+            s.y += v;
+            if (s.y > H + 30) s.y -= 14 * 60;
+          });
+
+          // move rows down, detect grab line near player
+          for (let i = this.rows.length - 1; i >= 0; i--) {
+            const row = this.rows[i];
+            row.y += v;
+            row.cells.forEach((c) => (c.y = row.y));
+            // grab zone aligned to player row
+            if (!row.scored && row.y >= H - 150) {
+              this.grabCell(row, this.lane);
+            }
+            if (row.y > H + 100) {
+              row.cells.forEach((c) => c.destroy());
+              this.rows.splice(i, 1);
+            }
+          }
+
+          // spawn next row by distance
+          this.distSinceRow += v;
+          if (this.distSinceRow >= this.rowGap) {
+            this.distSinceRow = 0;
+            this.round++;
+            this.speed = Math.min(9, 4 + this.round * 0.25);
+            this.spawnRow();
+            this.updateHUD();
+          }
+        }
       }
 
-      const W = 800,
-        H = 600;
+      class ResultsScene extends Phaser.Scene {
+        constructor() {
+          super("Results");
+        }
+        init(d) {
+          this.r = d || {};
+        }
+        create() {
+          this.cameras.main.setBackgroundColor("#10243f");
+          this.add
+            .text(W / 2, 200, "CHECKOUT!", {
+              fontFamily: "Segoe UI",
+              fontSize: "60px",
+              fontStyle: "900",
+              color: "#ffe066",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 300, "Score: " + (this.r.score || 0), {
+              fontFamily: "Segoe UI",
+              fontSize: "34px",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              360,
+              "Total saved: $" + (this.r.savings || 0).toFixed(2),
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "26px",
+                color: "#51cf66",
+              },
+            )
+            .setOrigin(0.5);
+          this.add
+            .text(W / 2, 410, "Best: " + localStorage.getItem(LS_KEY), {
+              fontFamily: "Segoe UI",
+              fontSize: "20px",
+              color: "#74c0fc",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              W / 2,
+              470,
+              "Best deal = lowest sale price = price × (1 − % off ÷ 100).",
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "18px",
+                color: "#94a3b8",
+              },
+            )
+            .setOrigin(0.5);
+          const btn = this.add
+            .rectangle(W / 2, 560, 240, 64, 0xffe066)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2, 560, "SHOP AGAIN", {
+              fontFamily: "Segoe UI",
+              fontSize: "26px",
+              fontStyle: "800",
+              color: "#10243f",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerdown", () => this.scene.start("Title"));
+          this.input.keyboard.once("keydown-ENTER", () =>
+            this.scene.start("Title"),
+          );
+        }
+      }
 
       const config = {
         type: Phaser.AUTO,
         width: W,
         height: H,
-        parent: document.body,
-        backgroundColor: "#1a0a2e",
-        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        physics: {
-          default: "arcade",
-          arcade: { debug: false, gravity: { y: 0 } },
+        parent: "game",
+        backgroundColor: "#10243f",
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
         },
-        scene: [
-          BootScene,
-          TitleScene,
-          DiffScene,
-          GameScene,
-          BonusScene,
-          ResultScene,
-        ],
+        scene: [BootScene, TitleScene, GameScene, ResultsScene],
       };
-
-      // ── BOOT ──
-      function BootScene() {
-        return new Phaser.Scene("Boot");
-      }
-      BootScene.prototype = Object.create(Phaser.Scene.prototype);
-      BootScene.prototype.constructor = BootScene;
-      BootScene.prototype.create = function () {
-        const g = this.make.graphics({ add: false });
-
-        // Shopper character
-        g.fillStyle(0x4488ff);
-        g.fillRoundedRect(5, 0, 20, 20, 6);
-        g.fillStyle(0xff6688);
-        g.fillRoundedRect(0, 22, 30, 30, 4);
-        g.fillStyle(0x333333);
-        g.fillRect(4, 54, 8, 16);
-        g.fillRect(18, 54, 8, 16);
-        g.generateTexture("shopper", 30, 70);
-        g.clear();
-
-        // Shopping cart
-        g.lineStyle(3, 0x888888);
-        g.strokeRect(0, 10, 40, 25);
-        g.fillStyle(0x888888);
-        g.fillCircle(8, 40, 5);
-        g.fillCircle(32, 40, 5);
-        g.fillStyle(0xaaaaaa);
-        g.fillRect(0, 0, 4, 35);
-        g.generateTexture("cart", 40, 45);
-        g.clear();
-
-        // Store shelf
-        g.fillStyle(0x664422);
-        g.fillRect(0, 0, 120, 20);
-        g.fillStyle(0x553311);
-        g.fillRect(0, 18, 120, 4);
-        g.generateTexture("shelf", 120, 22);
-        g.clear();
-
-        // Price tag
-        g.fillStyle(0xffee88);
-        g.fillRoundedRect(0, 0, 70, 35, 6);
-        g.lineStyle(2, 0xdd8800);
-        g.strokeRoundedRect(0, 0, 70, 35, 6);
-        g.generateTexture("pricetag", 70, 35);
-        g.clear();
-
-        // Item box
-        g.fillStyle(0xffffff);
-        g.fillRoundedRect(0, 0, 80, 80, 8);
-        g.lineStyle(2, 0xdddddd);
-        g.strokeRoundedRect(0, 0, 80, 80, 8);
-        g.generateTexture("itembox", 80, 80);
-        g.clear();
-
-        // Coin
-        g.fillStyle(0xffdd00);
-        g.fillCircle(10, 10, 10);
-        g.fillStyle(0xffaa00);
-        g.fillCircle(10, 10, 7);
-        g.generateTexture("coin", 20, 20);
-        g.clear();
-
-        // Particle
-        g.fillStyle(0xffffff);
-        g.fillCircle(3, 3, 3);
-        g.generateTexture("particle", 6, 6);
-        g.clear();
-
-        // Star
-        g.fillStyle(0xffdd00);
-        g.fillCircle(4, 4, 4);
-        g.generateTexture("star", 8, 8);
-        g.clear();
-
-        // Big star for results
-        g.fillStyle(0xffdd00);
-        g.fillCircle(16, 16, 16);
-        g.generateTexture("bigstar", 32, 32);
-        g.clear();
-
-        // Empty star
-        g.lineStyle(3, 0x666666);
-        g.strokeCircle(16, 16, 15);
-        g.generateTexture("emptystar", 32, 32);
-        g.clear();
-
-        // Confetti piece
-        g.fillStyle(0xff4488);
-        g.fillRect(0, 0, 6, 4);
-        g.generateTexture("confetti", 6, 4);
-        g.clear();
-
-        // Spark
-        g.fillStyle(0xffffff);
-        g.fillCircle(2, 2, 2);
-        g.generateTexture("spark", 4, 4);
-        g.clear();
-
-        // Mall floor tile
-        g.fillStyle(0xf0e6d0);
-        g.fillRect(0, 0, 60, 60);
-        g.lineStyle(1, 0xddccaa);
-        g.strokeRect(0, 0, 60, 60);
-        g.generateTexture("tile", 60, 60);
-        g.clear();
-
-        // Dust for ambient
-        g.fillStyle(0xffffee);
-        g.fillCircle(2, 2, 2);
-        g.generateTexture("dust", 4, 4);
-        g.clear();
-
-        // Glow
-        g.fillStyle(0xffffff);
-        g.fillCircle(8, 8, 8);
-        g.generateTexture("glow", 16, 16);
-        g.clear();
-
-        g.destroy();
-        this.scene.start("Title");
-      };
-
-      // ── TITLE ──
-      function TitleScene() {
-        return new Phaser.Scene("Title");
-      }
-      TitleScene.prototype = Object.create(Phaser.Scene.prototype);
-      TitleScene.prototype.constructor = TitleScene;
-      TitleScene.prototype.create = function () {
-        const cx = W / 2;
-        this.add.rectangle(cx, H / 2, W, H, 0x1a0a2e);
-
-        // Ambient sparkle particles
-        this.add.particles(0, 0, "dust", {
-          x: { min: 0, max: W },
-          y: { min: 0, max: H },
-          speed: { min: 3, max: 12 },
-          scale: { start: 0.4, end: 0 },
-          alpha: { start: 0.3, end: 0 },
-          lifespan: { min: 3000, max: 6000 },
-          frequency: 180,
-          tint: [0xec4899, 0xffdd00, 0xaa44ff],
-        });
-
-        // Floating items
-        const emojis = [
-          "🧥",
-          "👟",
-          "🎧",
-          "🎒",
-          "⌚",
-          "📱",
-          "🎮",
-          "📚",
-          "🕶️",
-          "🧢",
-          "💰",
-          "🏷️",
-        ];
-        for (let i = 0; i < 15; i++) {
-          const t = this.add
-            .text(
-              randInt(30, W - 30),
-              randInt(60, H - 60),
-              emojis[i % emojis.length],
-              { fontSize: randInt(24, 44) + "px" },
-            )
-            .setAlpha(0.25);
-          this.tweens.add({
-            targets: t,
-            y: t.y - 15,
-            alpha: { from: 0.15, to: 0.35 },
-            duration: randInt(2000, 4000),
-            yoyo: true,
-            repeat: -1,
-          });
-        }
-
-        // Neon glow rectangles with improved animation
-        for (let i = 0; i < 3; i++) {
-          const rect = this.add
-            .rectangle(cx, 200 + i * 2, 400 - i * 40, 160 - i * 30, 0x000000, 0)
-            .setStrokeStyle(2, [0xec4899, 0xffdd00, 0x00ccff][i], 0.3);
-          this.tweens.add({
-            targets: rect,
-            alpha: { from: 0.2, to: 0.6 },
-            duration: 1500 + i * 300,
-            yoyo: true,
-            repeat: -1,
-          });
-        }
-
-        this.add.text(cx, 70, "💰", { fontSize: "64px" }).setOrigin(0.5);
-
-        // Title with pulsing glow
-        const titleDiscount = this.add
-          .text(cx, 130, "DISCOUNT", {
-            fontSize: "60px",
-            fontFamily: "Impact,sans-serif",
-            color: "#ec4899",
-            stroke: "#4a0028",
-            strokeThickness: 5,
-          })
-          .setOrigin(0.5);
-        const titleDash = this.add
-          .text(cx, 195, "DASH", {
-            fontSize: "60px",
-            fontFamily: "Impact,sans-serif",
-            color: "#ffdd00",
-            stroke: "#5a4400",
-            strokeThickness: 5,
-          })
-          .setOrigin(0.5);
-
-        this.tweens.add({
-          targets: titleDiscount,
-          scaleX: { from: 1, to: 1.04 },
-          scaleY: { from: 1, to: 1.04 },
-          duration: 1200,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut",
-        });
-        this.tweens.add({
-          targets: titleDash,
-          scaleX: { from: 1, to: 1.04 },
-          scaleY: { from: 1, to: 1.04 },
-          duration: 1200,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut",
-          delay: 200,
-        });
-
-        this.add
-          .text(cx, 240, "SHOPPING SPREE TYCOON", {
-            fontSize: "16px",
-            color: "#cc88dd",
-            letterSpacing: 5,
-          })
-          .setOrigin(0.5);
-
-        this.add
-          .text(
-            cx,
-            278,
-            "Percents  •  Decimals  •  Discounts  •  Tax  •  Tips",
-            { fontSize: "14px", color: "#9966aa" },
-          )
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 302, "Shop smart — calculate the best deals!", {
-            fontSize: "13px",
-            color: "#775588",
-          })
-          .setOrigin(0.5);
-
-        // High score display
-        const hiScore = parseInt(localStorage.getItem(LS_KEY) || "0");
-        if (hiScore > 0) {
-          this.add
-            .text(cx, 325, `Personal Best: ${hiScore}`, {
-              fontSize: "13px",
-              color: "#ffdd00",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-        }
-
-        // Animated cart + shopper
-        const cart = this.add.image(cx - 60, 400, "cart").setScale(2);
-        const shopper = this.add.image(cx + 60, 390, "shopper").setScale(1.5);
-        this.tweens.add({
-          targets: cart,
-          x: { from: cx - 80, to: cx - 40 },
-          angle: { from: -2, to: 2 },
-          duration: 2000,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut",
-        });
-        this.tweens.add({
-          targets: shopper,
-          x: { from: cx + 40, to: cx + 80 },
-          y: { from: 390, to: 385 },
-          duration: 2000,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut",
-        });
-
-        // Coins with spin effect
-        for (let i = 0; i < 5; i++) {
-          const c = this.add
-            .image(randInt(100, W - 100), randInt(340, 430), "coin")
-            .setScale(1.5)
-            .setAlpha(0.5);
-          this.tweens.add({
-            targets: c,
-            y: c.y - 15,
-            angle: 360,
-            scaleX: { from: 1.5, to: 0.3 },
-            duration: randInt(1500, 3000),
-            yoyo: true,
-            repeat: -1,
-          });
-        }
-
-        const btn = this.add
-          .rectangle(cx, 520, 260, 56, 0xec4899)
-          .setInteractive({ useHandCursor: true });
-        const btnT = this.add
-          .text(cx, 520, "START SHOPPING", {
-            fontSize: "22px",
-            fontStyle: "bold",
-            color: "#fff",
-          })
-          .setOrigin(0.5);
-        this.tweens.add({
-          targets: [btn, btnT],
-          scaleX: { from: 1, to: 1.05 },
-          scaleY: { from: 1, to: 1.05 },
-          duration: 800,
-          yoyo: true,
-          repeat: -1,
-        });
-
-        btn.on("pointerover", () => btn.setFillStyle(0xff66aa));
-        btn.on("pointerout", () => btn.setFillStyle(0xec4899));
-
-        btn.on("pointerdown", () => {
-          SFX.init();
-          SFX.cha_ching();
-          this.cameras.main.fadeOut(400);
-          this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
-        });
-        this.input.keyboard.on("keydown-SPACE", () => {
-          SFX.init();
-          SFX.cha_ching();
-          this.cameras.main.fadeOut(400);
-          this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
-        });
-        this.cameras.main.fadeIn(500);
-      };
-
-      // ── DIFFICULTY ──
-      function DiffScene() {
-        return new Phaser.Scene("DiffSelect");
-      }
-      DiffScene.prototype = Object.create(Phaser.Scene.prototype);
-      DiffScene.prototype.constructor = DiffScene;
-      DiffScene.prototype.create = function () {
-        const cx = W / 2;
-        this.add.rectangle(cx, H / 2, W, H, 0x1a0a2e);
-
-        // Ambient
-        this.add.particles(0, 0, "dust", {
-          x: { min: 0, max: W },
-          y: { min: 0, max: H },
-          speed: { min: 3, max: 10 },
-          scale: { start: 0.3, end: 0 },
-          alpha: { start: 0.2, end: 0 },
-          lifespan: 4000,
-          frequency: 300,
-          tint: [0xec4899, 0xaa44ff],
-        });
-
-        this.add
-          .text(cx, 60, "CHOOSE YOUR MALL", {
-            fontSize: "32px",
-            fontStyle: "bold",
-            color: "#ec4899",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 100, "Bigger malls = harder math + less time", {
-            fontSize: "14px",
-            color: "#9966aa",
-          })
-          .setOrigin(0.5);
-
-        const diffs = [
-          {
-            key: "easy",
-            label: "CORNER SHOP",
-            sub: "Basic percents & conversions, 30s",
-            emoji: "🏪",
-            color: 0x22c55e,
-            y: 200,
-          },
-          {
-            key: "medium",
-            label: "DEPARTMENT STORE",
-            sub: "Discounts & tax, 24s",
-            emoji: "🏬",
-            color: 0xf59e0b,
-            y: 320,
-          },
-          {
-            key: "hard",
-            label: "MEGA MALL",
-            sub: "Multi-step, tips & comparing, 18s",
-            emoji: "🏰",
-            color: 0xef4444,
-            y: 440,
-          },
-        ];
-        diffs.forEach((d, idx) => {
-          const btn = this.add
-            .rectangle(cx, d.y, 380, 95, d.color, 0.85)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(cx - 150, d.y - 10, d.emoji, { fontSize: "40px" })
-            .setOrigin(0, 0.5);
-          this.add
-            .text(cx + 10, d.y - 14, d.label, {
-              fontSize: "26px",
-              fontStyle: "bold",
-              color: "#fff",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(cx + 10, d.y + 16, d.sub, {
-              fontSize: "13px",
-              color: "#ffffffcc",
-            })
-            .setOrigin(0.5);
-
-          btn.on("pointerover", () => {
-            btn.setFillStyle(d.color, 1);
-            this.tweens.add({
-              targets: btn,
-              scaleX: 1.03,
-              scaleY: 1.03,
-              duration: 100,
-            });
-          });
-          btn.on("pointerout", () => {
-            btn.setFillStyle(d.color, 0.85);
-            btn.setScale(1);
-          });
-          btn.on("pointerdown", () => {
-            SFX.scan();
-            this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () =>
-              this.scene.start("Game", { difficulty: d.key }),
-            );
-          });
-
-          // Entrance animation
-          btn.setAlpha(0).setScale(0.8);
-          this.tweens.add({
-            targets: btn,
-            alpha: 0.85,
-            scaleX: 1,
-            scaleY: 1,
-            duration: 400,
-            delay: idx * 150,
-            ease: "Back.easeOut",
-          });
-        });
-        this.cameras.main.fadeIn(400);
-      };
-
-      // ── GAME SCENE ──
-      function GameScene() {
-        return new Phaser.Scene("Game");
-      }
-      GameScene.prototype = Object.create(Phaser.Scene.prototype);
-      GameScene.prototype.constructor = GameScene;
-
-      GameScene.prototype.init = function (data) {
-        this.difficulty = data.difficulty || "easy";
-        this.questions = generateQuestions(this.difficulty);
-        this.currentQ = 0;
-        this.score = 0;
-        this.combo = 0;
-        this.maxCombo = 0;
-        this.lives = 3;
-        this.totalCorrect = 0;
-        this.totalWrong = 0;
-        this.budget =
-          data.budget ||
-          (this.difficulty === "easy"
-            ? 500
-            : this.difficulty === "medium"
-              ? 400
-              : 300);
-        this.spent = 0;
-        this.savings = 0;
-        this.timeLeft = 0;
-        this.timerRunning = false;
-        this.answered = false;
-        this.bonusRound = false;
-        this.itemsGrabbed = 0;
-        // Power-ups
-        this.powerups = { fiftyFifty: 1, doublePoints: 1, extraTime: 1 };
-        this.doublePointsActive = false;
-        this.questionStartTime = 0;
-        this.crowdLevel = 0;
-        this.lastCrowdTime = 0;
-      };
-
-      GameScene.prototype.create = function () {
-        // Mall floor
-        this.add.rectangle(W / 2, H / 2, W, H, 0xf0e6d0);
-        for (let x = 0; x < W; x += 60) {
-          for (let y = 0; y < H; y += 60) {
-            this.add.image(x + 30, y + 30, "tile").setAlpha(0.5);
-          }
-        }
-
-        // Ambient mall sparkle particles
-        this.ambientMall = this.add.particles(0, 0, "dust", {
-          x: { min: 0, max: W },
-          y: { min: 60, max: H },
-          speed: { min: 2, max: 8 },
-          scale: { start: 0.3, end: 0 },
-          alpha: { start: 0.15, end: 0 },
-          lifespan: { min: 4000, max: 8000 },
-          frequency: 250,
-          tint: [0xffdd88, 0xffcc66, 0xeeddcc],
-        });
-
-        // Shelves decoration
-        for (let i = 0; i < 5; i++) {
-          this.add
-            .image(80 + i * 170, H - 30, "shelf")
-            .setScale(1.2)
-            .setAlpha(0.4);
-        }
-
-        // HUD bar
-        this.add.rectangle(W / 2, 0, W, 55, 0x1a0a2e, 0.9).setOrigin(0.5, 0);
-        this.scoreText = this.add.text(16, 8, "Score: 0", {
-          fontSize: "16px",
-          color: "#ec4899",
-          fontStyle: "bold",
-        });
-        this.budgetText = this.add.text(16, 30, "Budget: $500", {
-          fontSize: "14px",
-          color: "#ffdd00",
-        });
-        this.livesText = this.add
-          .text(W - 16, 8, "", { fontSize: "16px", color: "#ff4444" })
-          .setOrigin(1, 0);
-
-        // Streak display (visual, grows/pulses)
-        this.streakContainer = this.add.container(W - 80, 34);
-        this.streakBg = this.add
-          .rectangle(0, 0, 110, 20, 0xff8800, 0)
-          .setOrigin(0.5);
-        this.streakLabel = this.add
-          .text(0, 0, "", {
-            fontSize: "14px",
-            color: "#ffdd00",
-            fontStyle: "bold",
-            stroke: "#000",
-            strokeThickness: 2,
-          })
-          .setOrigin(0.5);
-        this.streakContainer.add([this.streakBg, this.streakLabel]);
-        this.streakContainer.setDepth(5);
-
-        this.savingsText = this.add
-          .text(W / 2, 8, "Saved: $0", { fontSize: "14px", color: "#22c55e" })
-          .setOrigin(0.5, 0);
-
-        // Timer
-        this.timerBg = this.add.rectangle(W / 2, 50, 500, 10, 0x333333);
-        this.timerBar = this.add
-          .rectangle(W / 2 - 250, 50, 500, 8, 0x22c55e)
-          .setOrigin(0, 0.5);
-        this.timerLabel = this.add
-          .text(W / 2 + 270, 50, "", { fontSize: "12px", color: "#ffdd00" })
-          .setOrigin(0, 0.5);
-
-        // Progress bar (question counter)
-        this.add.rectangle(W / 2, 62, 500, 5, 0x222222, 0.5);
-        this.progressBar = this.add
-          .rectangle(W / 2 - 250, 62, 0, 4, 0xec4899)
-          .setOrigin(0, 0.5);
-        this.progressLabel = this.add
-          .text(W / 2, 62, "", {
-            fontSize: "8px",
-            color: "#ffffff",
-            fontStyle: "bold",
-          })
-          .setOrigin(0.5);
-
-        // Store closing countdown at top
-        this.closingText = this.add
-          .text(W / 2, 30, "", { fontSize: "12px", color: "#cc88dd" })
-          .setOrigin(0.5, 0);
-
-        // Item display area
-        this.itemBg = this.add
-          .rectangle(W / 2, 130, 520, 90, 0xffffff, 0.95)
-          .setStrokeStyle(2, 0xec4899);
-        this.categoryText = this.add
-          .text(W / 2, 95, "", {
-            fontSize: "13px",
-            color: "#ec4899",
-            fontStyle: "bold",
-          })
-          .setOrigin(0.5);
-        this.promptText = this.add
-          .text(W / 2, 135, "", {
-            fontSize: "20px",
-            color: "#1a0a2e",
-            fontStyle: "bold",
-            wordWrap: { width: 480 },
-            align: "center",
-          })
-          .setOrigin(0.5);
-
-        // Speed indicator
-        this.speedIndText = this.add
-          .text(W / 2, 168, "", { fontSize: "10px", color: "#888888" })
-          .setOrigin(0.5);
-
-        // Item number
-        this.qNumText = this.add
-          .text(W / 2, 182, "", { fontSize: "12px", color: "#9966aa" })
-          .setOrigin(0.5);
-
-        // 4 answer cards
-        this.cards = [];
-        this.cardTexts = [];
-        this.cardLetters = [];
-        this.cardTags = [];
-        const cardW = 150,
-          cardH = 110;
-        for (let i = 0; i < 4; i++) {
-          const col = i % 2,
-            row = Math.floor(i / 2);
-          const x = W / 2 - 90 + col * 180;
-          const y = 260 + row * 130;
-
-          const card = this.add
-            .rectangle(x, y, cardW, cardH, 0xffffff, 0.95)
-            .setStrokeStyle(2, 0xddccaa)
-            .setInteractive({ useHandCursor: true });
-          const tag = this.add.image(x, y - 25, "pricetag").setScale(0.9);
-          const letter = this.add.text(
-            x - 55,
-            y - 45,
-            String.fromCharCode(65 + i),
-            { fontSize: "14px", color: "#ec4899", fontStyle: "bold" },
-          );
-          const txt = this.add
-            .text(x, y + 5, "", {
-              fontSize: "22px",
-              color: "#1a0a2e",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-
-          // Enhanced hover with glow
-          card.on("pointerover", () => {
-            if (this.answered) return;
-            card.setStrokeStyle(3, 0xec4899);
-            this.tweens.add({
-              targets: [card, tag, letter, txt],
-              scaleX: 1.06,
-              scaleY: 1.06,
-              duration: 80,
-            });
-          });
-          card.on("pointerout", () => {
-            if (this.answered) return;
-            card.setStrokeStyle(2, 0xddccaa);
-            card.setScale(1);
-            tag.setScale(0.9);
-            letter.setScale(1);
-            txt.setScale(1);
-          });
-          card.on("pointerdown", () => this.selectAnswer(i));
-
-          this.cards.push(card);
-          this.cardTexts.push(txt);
-          this.cardLetters.push(letter);
-          this.cardTags.push(tag);
-        }
-
-        // Keyboard
-        this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
-        this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
-        this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
-        this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
-
-        // Feedback
-        this.feedbackText = this.add
-          .text(W / 2, 495, "", {
-            fontSize: "20px",
-            color: "#fff",
-            fontStyle: "bold",
-            stroke: "#000",
-            strokeThickness: 3,
-          })
-          .setOrigin(0.5)
-          .setAlpha(0);
-
-        // Confetti emitter
-        this.confettiEmitter = this.add.particles(0, 0, "confetti", {
-          speed: { min: 80, max: 250 },
-          scale: { start: 1.2, end: 0 },
-          lifespan: 800,
-          emitting: false,
-          quantity: 20,
-          tint: [0xec4899, 0xffdd00, 0x22c55e, 0x4488ff, 0xaa44ff],
-          angle: { min: 0, max: 360 },
-          rotate: { min: 0, max: 360 },
-          gravityY: 200,
-        });
-
-        // Sparkle emitter for streaks
-        this.sparkleEmitter = this.add.particles(0, 0, "spark", {
-          speed: { min: 50, max: 150 },
-          scale: { start: 1.5, end: 0 },
-          lifespan: 500,
-          emitting: false,
-          quantity: 15,
-          tint: [0xffdd00, 0xffffff, 0xec4899],
-          angle: { min: 0, max: 360 },
-        });
-
-        // Coin particles
-        this.coinParticles = this.add.particles(0, 0, "coin", {
-          speed: { min: 50, max: 200 },
-          scale: { start: 1, end: 0 },
-          lifespan: 500,
-          emitting: false,
-          quantity: 6,
-          tint: [0xffdd00],
-        });
-
-        // Star sparkles
-        this.sparkles = this.add.particles(0, 0, "star", {
-          speed: { min: 40, max: 180 },
-          scale: { start: 1.5, end: 0 },
-          lifespan: 600,
-          emitting: false,
-          quantity: 10,
-          tint: [0xec4899, 0xffdd00, 0x22c55e],
-        });
-
-        // Power-up buttons area
-        this.puContainer = this.add.container(0, 0).setDepth(3);
-
-        // Cart at bottom
-        this.cartImg = this.add
-          .image(W / 2, H - 30, "cart")
-          .setScale(2)
-          .setAlpha(0.6);
-        this.tweens.add({
-          targets: this.cartImg,
-          x: { from: W / 2 - 20, to: W / 2 + 20 },
-          duration: 3000,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut",
-        });
-
-        this.loadQuestion();
-        this.updateHUD();
-        this.cameras.main.fadeIn(500);
-      };
-
-      GameScene.prototype.loadQuestion = function () {
-        if (this.currentQ >= this.questions.length || this.lives <= 0) {
-          this.endGame();
-          return;
-        }
-
-        // Bonus round every 7 questions
-        if (this.currentQ > 0 && this.currentQ % 7 === 0 && !this.bonusRound) {
-          this.bonusRound = true;
-          SFX.phaseTransition();
-
-          // Phase transition animation
-          const transText = this.add
-            .text(W / 2, H / 2, "SPEED ROUND!", {
-              fontSize: "40px",
-              fontStyle: "bold",
-              color: "#ffdd00",
-              stroke: "#5a4400",
-              strokeThickness: 4,
-            })
-            .setOrigin(0.5)
-            .setDepth(20);
-          this.tweens.add({
-            targets: transText,
-            scaleX: { from: 0.3, to: 1.5 },
-            scaleY: { from: 0.3, to: 1.5 },
-            alpha: { from: 1, to: 0 },
-            duration: 1000,
-            onComplete: () => {
-              transText.destroy();
-              this.scene.start("Bonus", {
-                difficulty: this.difficulty,
-                score: this.score,
-                combo: this.maxCombo,
-                lives: this.lives,
-                budget: this.budget,
-                spent: this.spent,
-                savings: this.savings,
-                totalCorrect: this.totalCorrect,
-                totalWrong: this.totalWrong,
-                questions: this.questions,
-                currentQ: this.currentQ,
-                itemsGrabbed: this.itemsGrabbed,
-              });
-            },
-          });
-          return;
-        }
-        this.bonusRound = false;
-
-        const q = this.questions[this.currentQ];
-        this.categoryText.setText(`🏷️ ${q.category}`);
-        this.promptText.setText(q.prompt);
-        this.qNumText.setText(
-          `Item ${this.currentQ + 1} of ${this.questions.length}`,
-        );
-        this.speedIndText.setText("Answer fast for bonus points!");
-
-        q.choices.forEach((c, i) => {
-          if (i < 4) this.cardTexts[i].setText(c);
-        });
-
-        // Reset cards
-        this.cards.forEach((c, i) => {
-          c.setFillStyle(0xffffff, 0.95);
-          c.setStrokeStyle(2, 0xddccaa);
-          c.setScale(1);
-          c.setAlpha(1);
-          c.setInteractive({ useHandCursor: true });
-          this.cardLetters[i].setAlpha(1);
-          this.cardTags[i].setScale(0.9).setAlpha(1);
-          this.cardTexts[i].setAlpha(1).setScale(1);
-        });
-        this.feedbackText.setAlpha(0);
-        this.answered = false;
-        this.questionStartTime = Date.now();
-
-        // Timer
-        this.timeLeft = q.timeLimit;
-        this.maxTime = q.timeLimit;
-        this.timerRunning = true;
-        this.timerBar.setDisplaySize(500, 8);
-        this.timerBar.setFillStyle(0x22c55e);
-
-        // Item entrance animation
-        this.tweens.add({
-          targets: this.itemBg,
-          scaleX: { from: 0.9, to: 1 },
-          scaleY: { from: 0.9, to: 1 },
-          duration: 250,
-          ease: "Back.easeOut",
-        });
-
-        // Card entrance stagger
-        this.cards.forEach((card, i) => {
-          card.setAlpha(0);
-          card.setScale(0.8);
-          this.tweens.add({
-            targets: card,
-            alpha: 0.95,
-            scaleX: 1,
-            scaleY: 1,
-            duration: 200,
-            delay: i * 60,
-            ease: "Back.easeOut",
-          });
-        });
-
-        // Rebuild power-up buttons
-        this.puContainer.removeAll(true);
-        this.buildPowerUpButtons(q);
-
-        // Update progress
-        const pPct = this.currentQ / this.questions.length;
-        this.progressBar.setDisplaySize(500 * pPct, 4);
-        this.progressLabel.setText(`${this.currentQ}/${this.questions.length}`);
-
-        SFX.scan();
-      };
-
-      GameScene.prototype.buildPowerUpButtons = function (q) {
-        const puY = 540;
-        let puX = W / 2 - 140;
-
-        // 50/50
-        if (this.powerups.fiftyFifty > 0) {
-          const bg = this.add
-            .rectangle(puX, puY, 90, 30, 0x664488)
-            .setInteractive({ useHandCursor: true });
-          const txt = this.add
-            .text(puX, puY, "50/50", {
-              fontSize: "12px",
-              color: "#ddaaff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          this.puContainer.add([bg, txt]);
-          bg.on("pointerover", () => {
-            bg.setFillStyle(0x8866aa);
-            this.tweens.add({
-              targets: bg,
-              scaleX: 1.08,
-              scaleY: 1.08,
-              duration: 60,
-            });
-          });
-          bg.on("pointerout", () => {
-            bg.setFillStyle(0x664488);
-            bg.setScale(1);
-          });
-          bg.on("pointerdown", () => {
-            if (this.powerups.fiftyFifty <= 0 || this.answered) return;
-            this.powerups.fiftyFifty--;
-            SFX.powerUp();
-            bg.disableInteractive();
-            bg.setAlpha(0.3);
-            let removed = 0;
-            q.choices.forEach((c, i) => {
-              if (c !== q.answer && removed < 2) {
-                this.cards[i].setAlpha(0.2);
-                this.cards[i].disableInteractive();
-                this.cardTexts[i].setAlpha(0.2);
-                this.cardLetters[i].setAlpha(0.2);
-                this.cardTags[i].setAlpha(0.2);
-                removed++;
-              }
-            });
-          });
-          puX += 100;
-        }
-
-        // Double Points
-        if (this.powerups.doublePoints > 0) {
-          const bg = this.add
-            .rectangle(puX, puY, 90, 30, 0x448866)
-            .setInteractive({ useHandCursor: true });
-          const txt = this.add
-            .text(puX, puY, "2x PTS", {
-              fontSize: "12px",
-              color: "#aaffcc",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          this.puContainer.add([bg, txt]);
-          bg.on("pointerover", () => {
-            bg.setFillStyle(0x66aa88);
-            this.tweens.add({
-              targets: bg,
-              scaleX: 1.08,
-              scaleY: 1.08,
-              duration: 60,
-            });
-          });
-          bg.on("pointerout", () => {
-            bg.setFillStyle(0x448866);
-            bg.setScale(1);
-          });
-          bg.on("pointerdown", () => {
-            if (this.powerups.doublePoints <= 0 || this.answered) return;
-            this.powerups.doublePoints--;
-            SFX.powerUp();
-            this.doublePointsActive = true;
-            bg.disableInteractive();
-            bg.setAlpha(0.3);
-            const dblTxt = this.add
-              .text(W / 2, H / 2, "DOUBLE POINTS!", {
-                fontSize: "22px",
-                color: "#aaffcc",
-                fontStyle: "bold",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5)
-              .setDepth(18);
-            this.tweens.add({
-              targets: dblTxt,
-              y: dblTxt.y - 40,
-              alpha: 0,
-              scaleX: 1.3,
-              scaleY: 1.3,
-              duration: 900,
-              onComplete: () => dblTxt.destroy(),
-            });
-          });
-          puX += 100;
-        }
-
-        // Extra Time
-        if (this.powerups.extraTime > 0) {
-          const bg = this.add
-            .rectangle(puX, puY, 90, 30, 0x886644)
-            .setInteractive({ useHandCursor: true });
-          const txt = this.add
-            .text(puX, puY, "+15s", {
-              fontSize: "12px",
-              color: "#ffccaa",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          this.puContainer.add([bg, txt]);
-          bg.on("pointerover", () => {
-            bg.setFillStyle(0xaa8866);
-            this.tweens.add({
-              targets: bg,
-              scaleX: 1.08,
-              scaleY: 1.08,
-              duration: 60,
-            });
-          });
-          bg.on("pointerout", () => {
-            bg.setFillStyle(0x886644);
-            bg.setScale(1);
-          });
-          bg.on("pointerdown", () => {
-            if (this.powerups.extraTime <= 0 || this.answered) return;
-            this.powerups.extraTime--;
-            SFX.powerUp();
-            this.timeLeft = Math.min(this.timeLeft + 15, this.maxTime + 15);
-            bg.disableInteractive();
-            bg.setAlpha(0.3);
-            const timeTxt = this.add
-              .text(W / 2, H / 2, "+15 SECONDS!", {
-                fontSize: "22px",
-                color: "#ffccaa",
-                fontStyle: "bold",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5)
-              .setDepth(18);
-            this.tweens.add({
-              targets: timeTxt,
-              y: timeTxt.y - 40,
-              alpha: 0,
-              duration: 800,
-              onComplete: () => timeTxt.destroy(),
-            });
-          });
-        }
-      };
-
-      GameScene.prototype.selectAnswer = function (idx) {
-        if (this.answered || !this.timerRunning) return;
-        this.answered = true;
-        this.timerRunning = false;
-
-        const q = this.questions[this.currentQ];
-        const chosen = q.choices[idx];
-        const isCorrect = chosen === q.answer;
-        const answerTime = (Date.now() - this.questionStartTime) / 1000;
-
-        if (isCorrect) {
-          SFX.cha_ching();
-          this.combo++;
-          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-          this.totalCorrect++;
-          this.itemsGrabbed++;
-
-          // Time bonus
-          let timeBonus = Math.max(
-            0,
-            Math.floor((this.maxTime - answerTime) * 5),
-          );
-          let pts = 100 + Math.floor(this.timeLeft * 5) + timeBonus;
-          if (this.combo >= 3) pts = Math.floor(pts * 1.5);
-          if (this.combo >= 5) pts = Math.floor(pts * 2);
-          if (this.doublePointsActive) {
-            pts *= 2;
-            this.doublePointsActive = false;
-          }
-          this.score += pts;
-
-          // Track savings
-          if (q.category === "Discount" || q.category === "Sale Price") {
-            const num = parseInt(q.answer.replace("$", "")) || 0;
-            this.savings += num > 0 ? randInt(5, 15) : 0;
-          }
-
-          this.cards[idx].setFillStyle(0xd4ffdd);
-          this.cards[idx].setStrokeStyle(3, 0x22c55e);
-
-          // Screen shake scales with streak
-          const shakeIntensity = Math.min(0.025, 0.005 + this.combo * 0.003);
-          this.cameras.main.shake(120, shakeIntensity);
-
-          // Confetti burst
-          this.confettiEmitter.emitParticleAt(
-            this.cards[idx].x,
-            this.cards[idx].y,
-          );
-          this.coinParticles.emitParticleAt(
-            this.cards[idx].x,
-            this.cards[idx].y - 20,
-          );
-
-          // Floating score text
-          let scoreLabel = `+${pts}`;
-          if (timeBonus > 20) scoreLabel += " FAST!";
-          const floatTxt = this.add
-            .text(this.cards[idx].x, this.cards[idx].y - 30, scoreLabel, {
-              fontSize: "26px",
-              color: "#ffdd00",
-              fontStyle: "bold",
-              stroke: "#000",
-              strokeThickness: 3,
-            })
-            .setOrigin(0.5)
-            .setDepth(15);
-          this.tweens.add({
-            targets: floatTxt,
-            y: floatTxt.y - 60,
-            alpha: 0,
-            scaleX: 1.3,
-            scaleY: 1.3,
-            duration: 900,
-            onComplete: () => floatTxt.destroy(),
-          });
-
-          this.feedbackText
-            .setText(`✓ Correct! +${pts}`)
-            .setColor("#22c55e")
-            .setAlpha(1);
-
-          // Streak milestone effects
-          if (this.combo === 3) {
-            SFX.streak3();
-            this.showStreakMilestone("STREAK x3!", 0xff8800);
-          } else if (this.combo === 5) {
-            SFX.streak5();
-            this.showStreakMilestone("STREAK x5!!", 0xff4400);
-            this.sparkleEmitter.emitParticleAt(W / 2, H / 2);
-          } else if (this.combo === 7) {
-            SFX.streak7();
-            this.showStreakMilestone("STREAK x7!!!", 0xff0000);
-            this.sparkleEmitter.emitParticleAt(W / 2, 200);
-            this.sparkleEmitter.emitParticleAt(W / 2, 400);
-          } else if (this.combo >= 10) {
-            SFX.streak7();
-            this.showStreakMilestone(`UNSTOPPABLE x${this.combo}!`, 0xaa00ff);
-            this.sparkleEmitter.emitParticleAt(W / 2, H / 2);
-          } else if (this.combo >= 3) {
-            SFX.combo();
-          }
-        } else {
-          SFX.glassBreak();
-          this.combo = 0;
-          this.streakLabel.setText("");
-          this.streakBg.setAlpha(0);
-          this.totalWrong++;
-          this.lives--;
-
-          this.cards[idx].setFillStyle(0xffdddd);
-          this.cards[idx].setStrokeStyle(3, 0xff3333);
-          const ci = q.choices.indexOf(q.answer);
-          if (ci >= 0) {
-            this.cards[ci].setFillStyle(0xd4ffdd);
-            this.cards[ci].setStrokeStyle(3, 0x22c55e);
-          }
-
-          // Red flash overlay
-          const redFlash = this.add
-            .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.3)
-            .setDepth(14);
-          this.tweens.add({
-            targets: redFlash,
-            alpha: 0,
-            duration: 400,
-            onComplete: () => redFlash.destroy(),
-          });
-
-          // Strong camera shake
-          this.cameras.main.shake(350, 0.03);
-
-          this.feedbackText
-            .setText(`✗ Answer: ${q.answer}`)
-            .setColor("#ef4444")
-            .setAlpha(1);
-        }
-
-        this.updateHUD();
-        this.time.delayedCall(1400, () => {
-          this.currentQ++;
-          this.loadQuestion();
-        });
-      };
-
-      GameScene.prototype.showStreakMilestone = function (text, color) {
-        const milestone = this.add
-          .text(W / 2, H / 2, text, {
-            fontSize: "32px",
-            fontStyle: "bold",
-            color: "#" + color.toString(16).padStart(6, "0"),
-            stroke: "#000",
-            strokeThickness: 4,
-          })
-          .setOrigin(0.5)
-          .setDepth(19);
-        this.tweens.add({
-          targets: milestone,
-          y: milestone.y - 50,
-          scaleX: { from: 0.5, to: 1.5 },
-          scaleY: { from: 0.5, to: 1.5 },
-          alpha: { from: 1, to: 0 },
-          duration: 1200,
-          ease: "Cubic.easeOut",
-          onComplete: () => milestone.destroy(),
-        });
-      };
-
-      GameScene.prototype.endGame = function () {
-        this.timerRunning = false;
-        this.time.delayedCall(500, () => {
-          this.scene.start("Results", {
-            score: this.score,
-            maxCombo: this.maxCombo,
-            lives: this.lives,
-            totalCorrect: this.totalCorrect,
-            totalWrong: this.totalWrong,
-            difficulty: this.difficulty,
-            savings: this.savings,
-            budget: this.budget,
-            spent: this.spent,
-            itemsGrabbed: this.itemsGrabbed,
-          });
-        });
-      };
-
-      GameScene.prototype.updateHUD = function () {
-        this.scoreText.setText(`Score: ${this.score}`);
-        this.livesText.setText(
-          "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
-        );
-        this.budgetText.setText(`Budget: $${this.budget - this.spent}`);
-        this.savingsText.setText(`Saved: $${this.savings}`);
-        const remaining = this.questions.length - this.currentQ;
-        this.closingText.setText(`${remaining} items left in store`);
-
-        // Streak display
-        if (this.combo >= 2) {
-          this.streakBg.setAlpha(0.6);
-          this.streakLabel.setText(`STREAK x${this.combo}`);
-          const s = Math.min(1.5, 1 + this.combo * 0.05);
-          this.streakContainer.setScale(s);
-        } else {
-          this.streakBg.setAlpha(0);
-          this.streakLabel.setText("");
-          this.streakContainer.setScale(1);
-        }
-      };
-
-      GameScene.prototype.update = function (time, delta) {
-        if (this.timerRunning && this.timeLeft > 0) {
-          this.timeLeft -= delta / 1000;
-          if (this.timeLeft <= 0) {
-            this.timeLeft = 0;
-            this.timerRunning = false;
-            this.answered = true;
-            SFX.glassBreak();
-            this.combo = 0;
-            this.streakLabel.setText("");
-            this.streakBg.setAlpha(0);
-            this.totalWrong++;
-            this.lives--;
-
-            const q = this.questions[this.currentQ];
-            const ci = q.choices.indexOf(q.answer);
-            if (ci >= 0) {
-              this.cards[ci].setFillStyle(0xd4ffdd);
-              this.cards[ci].setStrokeStyle(3, 0x22c55e);
-            }
-
-            // Red flash
-            const redFlash = this.add
-              .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.25)
-              .setDepth(14);
-            this.tweens.add({
-              targets: redFlash,
-              alpha: 0,
-              duration: 400,
-              onComplete: () => redFlash.destroy(),
-            });
-
-            this.cameras.main.shake(200, 0.02);
-
-            this.feedbackText
-              .setText(`⏱ Time! Answer: ${q.answer}`)
-              .setColor("#f59e0b")
-              .setAlpha(1);
-            this.updateHUD();
-            this.time.delayedCall(1400, () => {
-              this.currentQ++;
-              this.loadQuestion();
-            });
-          }
-          const pct = this.timeLeft / this.maxTime;
-          this.timerBar.setDisplaySize(500 * Math.min(1, pct), 8);
-          this.timerBar.setFillStyle(
-            pct > 0.5 ? 0x22c55e : pct > 0.25 ? 0xf59e0b : 0xef4444,
-          );
-          this.timerLabel.setText(`${Math.ceil(this.timeLeft)}s`);
-          if (this.timeLeft <= 5)
-            this.timerBar.setAlpha(this.timerBar.alpha > 0.7 ? 0.5 : 1);
-        }
-
-        // Ambient crowd for streaks
-        if (this.combo >= 3 && time - this.lastCrowdTime > 4000) {
-          this.lastCrowdTime = time;
-          SFX.crowd(this.combo);
-        }
-
-        // Streak pulse
-        if (this.combo >= 3 && this.streakContainer) {
-          const pulse = 1 + Math.sin(time * 0.005) * 0.05;
-          this.streakContainer.setScale(
-            Math.min(1.5, 1 + this.combo * 0.05) * pulse,
-          );
-        }
-      };
-
-      // ── BONUS ROUND ──
-      function BonusScene() {
-        return new Phaser.Scene("Bonus");
-      }
-      BonusScene.prototype = Object.create(Phaser.Scene.prototype);
-      BonusScene.prototype.constructor = BonusScene;
-      BonusScene.prototype.init = function (data) {
-        this.gd = data;
-      };
-      BonusScene.prototype.create = function () {
-        const cx = W / 2,
-          d = this.gd;
-        SFX.bonus();
-
-        this.add.rectangle(cx, H / 2, W, H, 0x1a0a2e);
-
-        // Ambient particles
-        this.add.particles(0, 0, "spark", {
-          x: { min: 0, max: W },
-          y: { min: 0, max: H },
-          speed: { min: 5, max: 20 },
-          scale: { start: 0.5, end: 0 },
-          alpha: { start: 0.3, end: 0 },
-          lifespan: 3000,
-          frequency: 200,
-          tint: [0xffdd00, 0xff8800],
-        });
-
-        this.add
-          .text(cx, 40, "⚡ SPEED ROUND ⚡", {
-            fontSize: "36px",
-            fontStyle: "bold",
-            color: "#ffdd00",
-            stroke: "#5a4400",
-            strokeThickness: 3,
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 80, "Quick mental math! +50 per correct answer!", {
-            fontSize: "16px",
-            color: "#cc88dd",
-          })
-          .setOrigin(0.5);
-
-        const quickQs = [];
-        for (let i = 0; i < 5; i++) {
-          const pct = [10, 20, 25, 50][randInt(0, 3)];
-          const num = randInt(2, 20) * 10;
-          const ans = (num * pct) / 100;
-          quickQs.push({ q: `${pct}% of $${num}?`, answer: ans });
-        }
-
-        let qIdx = 0,
-          bonusScore = 0,
-          bonusTimer = 15;
-        const qText = this.add
-          .text(cx, 180, "", {
-            fontSize: "30px",
-            color: "#fff",
-            fontStyle: "bold",
-          })
-          .setOrigin(0.5);
-        const inputText = this.add
-          .text(cx, 240, "_", {
-            fontSize: "36px",
-            color: "#ffdd00",
-            fontStyle: "bold",
-          })
-          .setOrigin(0.5);
-        const timerText = this.add
-          .text(cx, 300, "", { fontSize: "20px", color: "#ff8888" })
-          .setOrigin(0.5);
-        const scoreText = this.add
-          .text(cx, 340, "Bonus: 0", { fontSize: "18px", color: "#22c55e" })
-          .setOrigin(0.5);
-        const resultText = this.add
-          .text(cx, 400, "", { fontSize: "18px", color: "#ffdd00" })
-          .setOrigin(0.5);
-
-        let currentInput = "";
-        let done = false;
-
-        const showQ = () => {
-          if (qIdx >= quickQs.length || done) {
-            done = true;
-            d.score += bonusScore;
-            resultText.setText(`Speed bonus: +${bonusScore} points!`);
-            this.time.delayedCall(2000, () => {
-              this.scene.start("Game", d);
-            });
-            return;
-          }
-          qText.setText(quickQs[qIdx].q);
-          currentInput = "";
-          inputText.setText("$_");
-        };
-
-        // Number input
-        for (let n = 0; n <= 9; n++) {
-          this.input.keyboard.on(
-            `keydown-${n === 0 ? "ZERO" : ["ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"][n - 1]}`,
-            () => {
-              if (done) return;
-              currentInput += String(n);
-              inputText.setText("$" + currentInput + "_");
-            },
-          );
-        }
-        this.input.keyboard.on("keydown", (e) => {
-          if (done) return;
-          if (e.key === "Backspace") {
-            currentInput = currentInput.slice(0, -1);
-            inputText.setText("$" + (currentInput || "") + "_");
-          }
-          if (e.key === "Enter" || e.key === " ") {
-            const val = parseFloat(currentInput);
-            if (!isNaN(val) && val === quickQs[qIdx].answer) {
-              SFX.coin();
-              bonusScore += 50;
-              scoreText.setText(`Bonus: ${bonusScore}`);
-              const ok = this.add
-                .text(cx, 180, "✓", { fontSize: "40px", color: "#22c55e" })
-                .setOrigin(0.5);
-              this.tweens.add({
-                targets: ok,
-                alpha: 0,
-                y: 160,
-                scaleX: 1.5,
-                scaleY: 1.5,
-                duration: 400,
-                onComplete: () => ok.destroy(),
-              });
-            } else {
-              SFX.wrong();
-              const no = this.add
-                .text(cx, 180, `✗ $${quickQs[qIdx].answer}`, {
-                  fontSize: "24px",
-                  color: "#ff4444",
-                })
-                .setOrigin(0.5);
-              this.tweens.add({
-                targets: no,
-                alpha: 0,
-                y: 160,
-                duration: 600,
-                onComplete: () => no.destroy(),
-              });
-            }
-            qIdx++;
-            showQ();
-          }
-        });
-
-        // On-screen number pad
-        for (let n = 0; n <= 9; n++) {
-          const col = n % 5,
-            row = Math.floor(n / 5);
-          const bx = cx - 160 + col * 80,
-            by = 460 + row * 55;
-          const btn = this.add
-            .rectangle(bx, by, 65, 42, 0x334466)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(bx, by, String(n), {
-              fontSize: "22px",
-              color: "#fff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          btn.on("pointerover", () => btn.setFillStyle(0x446688));
-          btn.on("pointerout", () => btn.setFillStyle(0x334466));
-          btn.on("pointerdown", () => {
-            if (done) return;
-            currentInput += String(n);
-            inputText.setText("$" + currentInput + "_");
-          });
-        }
-        const enterBtn = this.add
-          .rectangle(cx + 160, 460, "GO".length * 20 + 20, 42, 0x22c55e)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx + 160, 460, "GO", {
-            fontSize: "18px",
-            color: "#fff",
-            fontStyle: "bold",
-          })
-          .setOrigin(0.5);
-        enterBtn.on("pointerover", () => enterBtn.setFillStyle(0x44dd77));
-        enterBtn.on("pointerout", () => enterBtn.setFillStyle(0x22c55e));
-        enterBtn.on("pointerdown", () => {
-          if (done) return;
-          const val = parseFloat(currentInput);
-          if (!isNaN(val) && val === quickQs[qIdx].answer) {
-            SFX.coin();
-            bonusScore += 50;
-            scoreText.setText(`Bonus: ${bonusScore}`);
-          } else {
-            SFX.wrong();
-          }
-          qIdx++;
-          showQ();
-        });
-        const bsBtn = this.add
-          .rectangle(cx + 160, 515, 65, 42, 0x664444)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx + 160, 515, "DEL", {
-            fontSize: "16px",
-            color: "#ffaaaa",
-            fontStyle: "bold",
-          })
-          .setOrigin(0.5);
-        bsBtn.on("pointerover", () => bsBtn.setFillStyle(0x886666));
-        bsBtn.on("pointerout", () => bsBtn.setFillStyle(0x664444));
-        bsBtn.on("pointerdown", () => {
-          currentInput = currentInput.slice(0, -1);
-          inputText.setText("$" + (currentInput || "") + "_");
-        });
-
-        const timerEvent = this.time.addEvent({
-          delay: 1000,
-          repeat: bonusTimer - 1,
-          callback: () => {
-            bonusTimer--;
-            timerText.setText(`⏱ ${bonusTimer}s`);
-            if (bonusTimer <= 5) {
-              timerText.setColor("#ff4444");
-            }
-            if (bonusTimer <= 0) {
-              done = true;
-              d.score += bonusScore;
-              resultText.setText(`Speed bonus: +${bonusScore} points!`);
-              this.time.delayedCall(2000, () => this.scene.start("Game", d));
-            }
-          },
-        });
-
-        showQ();
-        timerText.setText(`⏱ ${bonusTimer}s`);
-        this.cameras.main.fadeIn(400);
-      };
-
-      // ── RESULTS ──
-      function ResultScene() {
-        return new Phaser.Scene("Results");
-      }
-      ResultScene.prototype = Object.create(Phaser.Scene.prototype);
-      ResultScene.prototype.constructor = ResultScene;
-      ResultScene.prototype.init = function (data) {
-        this.d = data;
-      };
-      ResultScene.prototype.create = function () {
-        const cx = W / 2,
-          d = this.d;
-        this.add.rectangle(cx, H / 2, W, H, 0x1a0a2e);
-
-        const won = d.lives > 0;
-        const pct =
-          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
-        const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
-
-        // Check high score
-        const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0");
-        const isNewHighScore = d.score > prevHigh;
-        if (isNewHighScore) {
-          localStorage.setItem(LS_KEY, String(d.score));
-        }
-
-        if (won) {
-          if (stars === 3) SFX.winElaborate();
-          else SFX.win();
-        } else {
-          SFX.lose();
-        }
-
-        // Victory confetti
-        if (won) {
-          for (let i = 0; i < 8; i++) {
-            this.time.delayedCall(i * 250, () => {
-              const p = this.add.particles(0, 0, "confetti", {
-                speed: { min: 60, max: 250 },
-                scale: { start: 1.5, end: 0 },
-                lifespan: 900,
-                quantity: 15,
-                tint: [0xec4899, 0xffdd00, 0x22c55e, 0x4488ff, 0xaa44ff],
-                angle: { min: 0, max: 360 },
-                rotate: { min: 0, max: 360 },
-                gravityY: 150,
-              });
-              p.emitParticleAt(randInt(100, W - 100), randInt(50, 200));
-              this.time.delayedCall(1000, () => p.destroy());
-            });
-          }
-        }
-
-        this.add
-          .text(cx, 28, won ? "SHOPPING COMPLETE!" : "STORE CLOSED!", {
-            fontSize: "36px",
-            fontStyle: "bold",
-            color: won ? "#22c55e" : "#ef4444",
-            stroke: "#000",
-            strokeThickness: 4,
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 62, won ? "Great shopping today!" : "Out of lives!", {
-            fontSize: "16px",
-            color: "#cc88dd",
-          })
-          .setOrigin(0.5);
-
-        // Star rating with animated fill
-        const starY = 88;
-        for (let i = 0; i < 3; i++) {
-          const sx = cx - 50 + i * 50;
-          this.add.image(sx, starY, "emptystar").setScale(1.5).setDepth(1);
-          if (i < stars) {
-            this.time.delayedCall(500 + i * 400, () => {
-              const filledStar = this.add
-                .image(sx, starY, "bigstar")
-                .setScale(0)
-                .setDepth(2);
-              this.tweens.add({
-                targets: filledStar,
-                scaleX: 1.5,
-                scaleY: 1.5,
-                duration: 400,
-                ease: "Back.easeOut",
-              });
-              const sparkle = this.add.particles(0, 0, "spark", {
-                speed: { min: 30, max: 80 },
-                scale: { start: 1, end: 0 },
-                lifespan: 400,
-                quantity: 8,
-                tint: [0xffdd00, 0xffaa00],
-              });
-              sparkle.emitParticleAt(sx, starY);
-              this.time.delayedCall(500, () => sparkle.destroy());
-              SFX.coin();
-            });
-          }
-        }
-
-        // New High Score banner
-        if (isNewHighScore && d.score > 0) {
-          SFX.newRecord();
-          const nhs = this.add
-            .text(cx, 118, "NEW HIGH SCORE!", {
-              fontSize: "22px",
-              fontStyle: "bold",
-              color: "#ffdd00",
-              stroke: "#664400",
-              strokeThickness: 3,
-            })
-            .setOrigin(0.5);
-          this.tweens.add({
-            targets: nhs,
-            scaleX: { from: 1, to: 1.15 },
-            scaleY: { from: 1, to: 1.15 },
-            duration: 500,
-            yoyo: true,
-            repeat: -1,
-          });
-        }
-
-        // Receipt style
-        const receiptTop = isNewHighScore ? 142 : 120;
-        this.add
-          .rectangle(cx, receiptTop + 175, 400, 340, 0xfffff0, 0.95)
-          .setStrokeStyle(2, 0xddccaa);
-        this.add
-          .text(cx, receiptTop + 15, "🧾 RECEIPT", {
-            fontSize: "20px",
-            color: "#1a0a2e",
-            fontStyle: "bold",
-          })
-          .setOrigin(0.5);
-        this.add.rectangle(cx, receiptTop + 32, 350, 2, 0xddccaa);
-
-        const stats = [
-          { label: "Final Score", val: String(d.score), color: "#ec4899" },
-          {
-            label: "Items Grabbed",
-            val: String(d.itemsGrabbed),
-            color: "#4488cc",
-          },
-          { label: "Correct", val: String(d.totalCorrect), color: "#22c55e" },
-          { label: "Wrong", val: String(d.totalWrong), color: "#ef4444" },
-          { label: "Max Combo", val: `x${d.maxCombo}`, color: "#f59e0b" },
-          { label: "Savings", val: `$${d.savings}`, color: "#22c55e" },
-          {
-            label: "Difficulty",
-            val: d.difficulty.toUpperCase(),
-            color: "#9966aa",
-          },
-        ];
-        if (prevHigh > 0 && !isNewHighScore) {
-          stats.push({
-            label: "Personal Best",
-            val: String(prevHigh),
-            color: "#ffdd00",
-          });
-        }
-        stats.forEach((s, i) => {
-          const y = receiptTop + 52 + i * 38;
-          this.add
-            .text(cx - 160, y, s.label, { fontSize: "14px", color: "#666" })
-            .setOrigin(0, 0.5);
-          const v = this.add
-            .text(cx + 160, y, s.val, {
-              fontSize: "17px",
-              fontStyle: "bold",
-              color: s.color,
-            })
-            .setOrigin(1, 0.5)
-            .setAlpha(0);
-          this.tweens.add({
-            targets: v,
-            alpha: 1,
-            x: { from: cx + 200, to: cx + 160 },
-            duration: 350,
-            delay: i * 120,
-          });
-        });
-
-        // Grade
-        const gradeY = receiptTop + 52 + stats.length * 38 + 12;
-        const grade =
-          pct >= 90
-            ? "A+"
-            : pct >= 80
-              ? "A"
-              : pct >= 70
-                ? "B"
-                : pct >= 60
-                  ? "C"
-                  : "D";
-        this.add.rectangle(cx, gradeY, 100, 50, 0x1a0a2e, 0.8);
-        this.add
-          .text(cx, gradeY, grade, {
-            fontSize: "40px",
-            fontStyle: "bold",
-            color: pct >= 80 ? "#22c55e" : pct >= 60 ? "#f59e0b" : "#ef4444",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(cx, gradeY + 30, `${Math.round(pct)}% Accuracy`, {
-            fontSize: "13px",
-            color: "#cc88dd",
-          })
-          .setOrigin(0.5);
-
-        const btnY = Math.min(575, gradeY + 55);
-        const retry = this.add
-          .rectangle(cx - 100, btnY, 170, 40, 0xec4899)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx - 100, btnY, "SHOP AGAIN", {
-            fontSize: "16px",
-            fontStyle: "bold",
-            color: "#fff",
-          })
-          .setOrigin(0.5);
-        retry.on("pointerover", () => retry.setFillStyle(0xff66aa));
-        retry.on("pointerout", () => retry.setFillStyle(0xec4899));
-        retry.on("pointerdown", () => {
-          this.cameras.main.fadeOut(300);
-          this.time.delayedCall(300, () =>
-            this.scene.start("Game", { difficulty: d.difficulty }),
-          );
-        });
-
-        const menu = this.add
-          .rectangle(cx + 100, btnY, 170, 40, 0x334466)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx + 100, btnY, "MAIN MENU", {
-            fontSize: "16px",
-            fontStyle: "bold",
-            color: "#cc88dd",
-          })
-          .setOrigin(0.5);
-        menu.on("pointerover", () => menu.setFillStyle(0x446688));
-        menu.on("pointerout", () => menu.setFillStyle(0x334466));
-        menu.on("pointerdown", () => {
-          this.cameras.main.fadeOut(300);
-          this.time.delayedCall(300, () => this.scene.start("Title"));
-        });
-
-        this.cameras.main.fadeIn(600);
-      };
-
       new Phaser.Game(config);
     </script>
   </body>
