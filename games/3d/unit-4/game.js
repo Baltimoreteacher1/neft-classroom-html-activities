@@ -32,11 +32,18 @@ function fmt(n) {
   return Number.isInteger(r) ? String(r) : String(r);
 }
 
+// ---- Level / problem set ----------------------------------------------------
+// Both levels are split into stages of escalating difficulty so the shift
+// builds from warm-up packing to multi-step factoring. Level 1 (support) keeps
+// hints on and friendlier numbers; Level 2 (enrichment) drops hints, adds
+// trickier decimals and tougher distributive factoring.
 function makeLevel(level) {
   if (level === 1) {
     return {
       hints: true,
+      // 9 rounds across 3 stages (was 4 rounds total).
       rounds: [
+        // Stage 1 — pack equal groups (GCF) and sync runs (LCM).
         {
           kind: "gcf",
           a: 12,
@@ -45,12 +52,20 @@ function makeLevel(level) {
             "Pack 12 gears and 8 bolts into identical kits with none left over. How many kits?",
         },
         {
+          kind: "gcf",
+          a: 18,
+          b: 24,
+          prompt:
+            "Bundle 18 nuts and 24 washers into matching packs, none left over. Largest pack count?",
+        },
+        {
           kind: "lcm",
           a: 4,
           b: 6,
           prompt:
             "Gear trays hold 4, bolt trays hold 6. What is the smallest run length where both finish together?",
         },
+        // Stage 2 — weigh and balance the order (decimal +/-).
         {
           kind: "decimal-sum",
           a: 3.5,
@@ -65,12 +80,43 @@ function makeLevel(level) {
           op: "-",
           prompt: "A 9.4 kg bin loses a 3.7 kg parcel. Remaining weight?",
         },
+        {
+          kind: "decimal-sum",
+          a: 6.75,
+          b: 1.5,
+          op: "+",
+          prompt: "Combine a 6.75 kg crate and a 1.5 kg crate. Total weight?",
+        },
+        // Stage 3 — more sync + a gentle factoring intro.
+        {
+          kind: "lcm",
+          a: 5,
+          b: 10,
+          prompt:
+            "Belt A cycles every 5 s, belt B every 10 s. When do they next line up?",
+        },
+        {
+          kind: "gcf",
+          a: 16,
+          b: 40,
+          prompt:
+            "Split 16 red parts and 40 blue parts into identical crates. Largest crate count?",
+        },
+        {
+          kind: "distributive",
+          a: 20,
+          b: 35,
+          prompt:
+            "Factor the order 20 + 35 as factor × (sum). Pull out the greatest common factor.",
+        },
       ],
     };
   }
   return {
     hints: false,
+    // 9 rounds across 3 stages (was 5 rounds total).
     rounds: [
+      // Stage 1 — precision weighing (decimal × and ÷).
       {
         kind: "decimal-prod",
         a: 2.4,
@@ -86,6 +132,22 @@ function makeLevel(level) {
         prompt: "Split 7.2 kg of resin into 0.6 kg cartridges. How many?",
       },
       {
+        kind: "decimal-prod",
+        a: 1.25,
+        b: 8,
+        op: "×",
+        prompt: "A bracket is 1.25 kg. Pack 8 of them. Total mass?",
+      },
+      {
+        kind: "decimal-prod",
+        a: 9.6,
+        b: 0.8,
+        op: "÷",
+        prompt:
+          "Pour 9.6 L of coolant into 0.8 L canisters. How many canisters?",
+      },
+      // Stage 2 — factor the order (distributive property).
+      {
         kind: "distributive",
         a: 36,
         b: 8,
@@ -99,14 +161,34 @@ function makeLevel(level) {
         prompt: "Factor 18 + 30 as factor × (sum) using the GCF.",
       },
       {
+        kind: "distributive",
+        a: 24,
+        b: 40,
+        prompt:
+          "Factor 24 + 40 as factor × (sum). Pull out the GREATEST factor.",
+      },
+      // Stage 3 — sync the presses (LCM) and a final GCF check.
+      {
         kind: "lcm",
         a: 8,
         b: 12,
         prompt:
           "Press A finishes every 8 s, press B every 12 s. When do they sync?",
       },
+      {
+        kind: "gcf",
+        a: 30,
+        b: 45,
+        prompt:
+          "Crate 30 caps and 45 lids into identical boxes, none left over. Largest box count?",
+      },
     ],
   };
+}
+
+// Which stage (1-based) a round index belongs to. Stages are blocks of 3.
+function stageOf(roundIndex) {
+  return Math.floor(roundIndex / 3) + 1;
 }
 
 // Expected answer + how the player adjusts the value for a given round.
@@ -240,12 +322,17 @@ export default {
     liveLabel.position.set(0, 3.2, 0);
     group.add(liveLabel);
 
+    // Stage banner above the live equation.
+    const stageLabel = makeLabel("", { scale: 0.6 });
+    stageLabel.position.set(0, 4.3, 0);
+    group.add(stageLabel);
+
     const cratesGeo = new THREE.BoxGeometry(0.7, 0.7, 0.7);
     const disposables = [cratesGeo, rollerGeo];
     const crateGroup = new THREE.Group();
     group.add(crateGroup);
 
-    // ---- Round state ----
+    // ---- Round / progression state ----
     let roundIndex = 0;
     let round = null;
     let spec = null;
@@ -254,7 +341,9 @@ export default {
     let streak = 0; // consecutive correct
     let bestStreak = 0;
     let solvedCount = 0;
+    let attemptsThisRound = 0; // wrong tries on the current round
     let unbindFrame = null;
+    let celebrate = 0; // seconds left of a win pulse (for crate bounce)
     const timers = [];
     const later = (fn, ms) => {
       const id = setTimeout(fn, ms);
@@ -281,10 +370,12 @@ export default {
     }
 
     // Build a row of crates grouped into `groups` bundles (visual grouping).
+    // Capped so big distributive/LCM numbers stay light on Chromebooks.
     function layoutCrates(total, groups, colorIdx) {
       clearCrates();
+      total = Math.min(Math.max(0, Math.round(total)), 48);
       if (total <= 0) return;
-      groups = Math.max(1, groups);
+      groups = Math.max(1, Math.round(groups));
       const perGroup = total / groups;
       const color = COLORS.crate[colorIdx % COLORS.crate.length];
       const mat = new THREE.MeshStandardMaterial({
@@ -294,7 +385,6 @@ export default {
       });
       const gap = 0.95; // between groups
       const cw = 0.8; // crate spacing
-      // Total width to center the whole run.
       const groupWidth = (g) => g * cw;
       let totalWidth = 0;
       for (let g = 0; g < groups; g++) totalWidth += groupWidth(perGroup) + gap;
@@ -302,13 +392,15 @@ export default {
       let x = -totalWidth / 2;
       for (let g = 0; g < groups; g++) {
         const n = Math.round(perGroup);
-        // crate stack for this group
+        // Stack tall groups in rows of up to 6 so wide bundles stay on the belt.
         for (let k = 0; k < n; k++) {
           const c = new THREE.Mesh(cratesGeo, mat);
-          c.position.set(x + k * cw + cw / 2, 0.35, 0);
+          const col = k % 6;
+          const rowi = Math.floor(k / 6);
+          c.position.set(x + col * cw + cw / 2, 0.35 + rowi * 0.75, 0);
           crateGroup.add(c);
         }
-        x += groupWidth(perGroup) + gap;
+        x += groupWidth(Math.min(perGroup, 6)) + gap;
       }
     }
 
@@ -318,13 +410,17 @@ export default {
       round = cfg.rounds[roundIndex];
       spec = roundSpec(round);
       value = spec.min;
+      attemptsThisRound = 0;
       solved = false;
 
       hud.setLevel(level === 2 ? "Level 2" : "Level 1");
-      // Persistent "Step X of Y" for the whole round.
+      // Persistent "Step X of Y" for the whole shift.
       if (typeof hud.setProgress === "function")
         hud.setProgress(roundIndex, cfg.rounds.length);
-      announce(`Round ${roundIndex + 1}. ${round.prompt}`);
+      updateLabel(stageLabel, `Stage ${stageOf(roundIndex)} · ${stageName()}`);
+      announce(
+        `Round ${roundIndex + 1} of ${cfg.rounds.length}. ${round.prompt}`,
+      );
       caption(round.prompt);
       hud.setObjective(round.prompt);
 
@@ -332,6 +428,22 @@ export default {
         hud.message(hintFor(round), { tone: "info", duration: 3200 });
 
       refresh();
+    }
+
+    function stageName() {
+      const s = stageOf(roundIndex);
+      if (level === 1) {
+        return s === 1
+          ? "Pack equal groups"
+          : s === 2
+            ? "Weigh the order"
+            : "Sync & factor";
+      }
+      return s === 1
+        ? "Precision weighing"
+        : s === 2
+          ? "Factor the order"
+          : "Sync the presses";
     }
 
     function hintFor(r) {
@@ -345,6 +457,12 @@ export default {
             "Line up the decimal points, then " +
             (r.op === "+" ? "add." : "subtract.")
           );
+        case "decimal-prod":
+          return r.op === "×"
+            ? "Multiply, then count decimal places to place the point."
+            : "Divide: how many of the smaller weight fit into the larger?";
+        case "distributive":
+          return "First find the GCF of both numbers, then pull it out front.";
         default:
           return "Use the up/down arrows to set your answer, then confirm.";
       }
@@ -378,12 +496,12 @@ export default {
 
       // Visual grouping for GCF/LCM/distributive rounds.
       if (round.kind === "gcf") {
-        // Split `a` items into `value` equal groups when value divides evenly.
+        // Split `a` items into `a/value` equal groups when value divides evenly.
         const divides = value > 0 && round.a % value === 0;
         layoutCrates(round.a, divides ? round.a / value : round.a, 0);
       } else if (round.kind === "lcm") {
         layoutCrates(
-          Math.min(value, 24),
+          Math.min(value, 48),
           Math.max(1, Math.round(value / round.a) || 1),
           1,
         );
@@ -428,8 +546,10 @@ export default {
     function confirm() {
       if (solved) return;
       if (!isCorrect()) {
+        attemptsThisRound += 1;
         const tip =
           round.kind === "distributive" &&
+          value > 0 &&
           round.a % value === 0 &&
           round.b % value === 0
             ? "That factor works, but it is not the GREATEST common factor — pull out more."
@@ -445,44 +565,74 @@ export default {
       win();
     }
 
+    // Scoring: base by stage difficulty + level bonus + streak combo bonus,
+    // with a small first-try bonus to reward clean packing.
+    function scoreFor() {
+      const stage = stageOf(roundIndex);
+      const base = 15 + stage * 5; // 20 / 25 / 30 by stage
+      const levelBonus = level === 2 ? 10 : 0;
+      const combo = Math.min(streak, 5) * 4; // up to +20 for a hot streak
+      const firstTry = attemptsThisRound === 0 ? 5 : 0;
+      return { pts: base + levelBonus + combo + firstTry, combo, firstTry };
+    }
+
     function win() {
       solved = true;
       solvedCount += 1;
       streak += 1;
       if (streak > bestStreak) bestStreak = streak;
       if (typeof hud.setStreak === "function") hud.setStreak(streak);
-      const base = 20;
-      const levelBonus = level === 2 ? 10 : 0;
-      const pts = base + levelBonus;
+
+      const { pts, combo, firstTry } = scoreFor();
       onScore(pts, {
         round: roundIndex + 1,
+        stage: stageOf(roundIndex),
         kind: round.kind,
         answer: spec.answer,
+        streak,
       });
 
-      feel.shake(0.3);
+      // Juice scales with the streak so a hot run feels bigger.
+      feel.shake(0.3 + Math.min(streak, 5) * 0.03);
       feel.burst(
         { x: 0, y: 1.2, z: 0 },
-        { color: COLORS.ok, count: 36, spread: 4 },
+        { color: COLORS.ok, count: 36 + Math.min(streak, 5) * 6, spread: 4 },
       );
-      const msg = `Correct! ${liveText()}  +${pts}`;
+      celebrate = 0.8;
+
+      let extra = "";
+      if (combo > 0) extra += `  combo +${combo}`;
+      if (firstTry > 0) extra += `  clean +${firstTry}`;
+      const msg = `Correct! ${liveText()}  +${pts}${extra}`;
       if (typeof hud.feedback === "function") hud.feedback(true, msg);
       else hud.message(msg, { tone: "ok", duration: 2400 });
-      announce(`Correct. ${liveText()}. You earned ${pts} points.`);
+      announce(
+        `Correct. ${liveText()}. You earned ${pts} points.` +
+          (streak >= 2 ? ` Streak ${streak}.` : ""),
+      );
 
       later(() => {
         if (roundIndex < cfg.rounds.length - 1) {
+          const prevStage = stageOf(roundIndex);
           roundIndex += 1;
+          if (stageOf(roundIndex) !== prevStage) {
+            announce(`Stage ${stageOf(roundIndex)}: ${stageName()}.`);
+          }
           startRound();
         } else {
           clearCrates();
           updateLabel(liveLabel, "Shift complete!");
+          updateLabel(stageLabel, "★ Shift complete ★");
           hud.setObjective(
             `Factory shift complete — ${solvedCount} of ${cfg.rounds.length} orders packaged, best streak ${bestStreak}. Great work, Operator!`,
           );
           hud.message("All orders packaged!", { tone: "ok", duration: 0 });
           announce(
             `All orders packaged. You completed ${solvedCount} with a best streak of ${bestStreak}. Great work, Operator.`,
+          );
+          feel.burst(
+            { x: 0, y: 1.5, z: 0 },
+            { color: COLORS.box, count: 48, spread: 5 },
           );
         }
       }, 2600);
@@ -523,6 +673,13 @@ export default {
           unbindFrame = ctx.onFrame((dt, t) => {
             for (const r of rollers) r.rotation.y = t * 1.5;
             liveLabel.position.y = 3.2 + Math.sin(t * 2) * 0.08;
+            if (celebrate > 0) {
+              celebrate = Math.max(0, celebrate - dt);
+              const bounce = Math.sin(celebrate * 18) * celebrate * 0.25;
+              crateGroup.position.y = bounce;
+            } else if (crateGroup.position.y !== 0) {
+              crateGroup.position.y = 0;
+            }
           });
         }
       },
