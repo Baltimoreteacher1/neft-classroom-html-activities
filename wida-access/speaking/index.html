@@ -1723,6 +1723,32 @@
                   developmental feedback...
                 </div>
               </div>
+
+              <!-- Action Button Row -->
+              <div
+                style="
+                  display: flex;
+                  justify-content: flex-end;
+                  margin-top: 12px;
+                  border-top: 1px solid var(--line-muted);
+                  padding-top: 12px;
+                "
+              >
+                <button
+                  id="downloadSpeakingDocx"
+                  class="action-btn"
+                  onclick="downloadSpeakingCaseFile()"
+                  style="
+                    background: #2b579a;
+                    color: white;
+                    padding: 8px 16px;
+                    font-size: 0.85rem;
+                    box-shadow: 0 4px 6px rgba(43, 87, 154, 0.15);
+                  "
+                >
+                  📥 Download Speaking Case File (.docx)
+                </button>
+              </div>
             </div>
           </section>
         </div>
@@ -4730,6 +4756,166 @@
         STORE.checklistRubric = true;
         updateChecklistUI();
       }
+
+      function downloadSpeakingCaseFile() {
+        var draft = document.getElementById("rehearsalDraftBox").value.trim();
+        var task = WIDA_SPEAKING_TASKS[STORE.activeTaskIdx];
+        var title = task.title;
+        var taskId = task.id;
+        var domain = task.kind || task.domain || "Speaking Domain";
+        var promptText = STORE.activeTier === "A" ? task.promptA : task.promptB;
+        var tier = STORE.activeTier;
+        
+        var wordsCount = draft ? draft.split(/\s+/).filter(function(w){return w.length > 0;}).length : 0;
+        var charsCount = draft ? draft.length : 0;
+        
+        // Rubric scores
+        var rubricLing = document.getElementById("rubricLinguistic");
+        var rubricLingText = rubricLing.options[rubricLing.selectedIndex].text;
+        var rubricVoc = document.getElementById("rubricVocabulary");
+        var rubricVocText = rubricVoc.options[rubricVoc.selectedIndex].text;
+        var rubricCtrl = document.getElementById("rubricControl");
+        var rubricCtrlText = rubricCtrl.options[rubricCtrl.selectedIndex].text;
+        var overallRating = document.getElementById("liveELPBadge").textContent;
+        
+        var coachContent = document.getElementById("widaCoachContent").innerHTML;
+
+        // Audio recording status
+        var audioStatus = STORE.audioBlobUrl ? "🔊 Recorded & Saved (Offline Cache)" : "⚠️ No Audio Recorded";
+
+        // Gamification metrics
+        var streak = localStorage.getItem("widaStreak") || "0";
+        var xp = STORE.sparkPoints || "1200";
+
+        // Vocabulary word wall usage check
+        var usedTerms = [];
+        task.terms.forEach(function(word) {
+          var regex = new RegExp("\\b" + word + "(s|es|ed|ing)?\\b", "i");
+          if (draft && regex.test(draft)) {
+            usedTerms.push(word);
+          }
+        });
+        var usedTermsStr = usedTerms.length > 0 ? usedTerms.join(", ") : "None";
+
+        var today = new Date();
+        var dateString = today.toLocaleDateString() + " " + today.toLocaleTimeString();
+
+        // Building high-fidelity MHTML/XML content
+        var htmlContent = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>\n" +
+          "<head>\n" +
+          "  <meta charset='utf-8'>\n" +
+          "  <title>WIDA ACCESS Student Speaking Case File</title>\n" +
+          "  <!--[if gte mso 9]>\n" +
+          "  <xml>\n" +
+          "    <w:WordDocument>\n" +
+          "      <w:View>Print</w:View>\n" +
+          "      <w:Zoom>100</w:Zoom>\n" +
+          "      <w:DoNotOptimizeForBrowser/>\n" +
+          "    </w:WordDocument>\n" +
+          "  </xml>\n" +
+          "  <![endif]-->\n" +
+          "  <style>\n" +
+          "    body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; color: #333333; line-height: 1.5; margin: 1in; }\n" +
+          "    .header { border-bottom: 3px double #2b579a; padding-bottom: 12px; margin-bottom: 20px; }\n" +
+          "    .title { font-family: 'Georgia', serif; color: #2b579a; font-size: 26pt; font-weight: bold; margin: 0; }\n" +
+          "    .subtitle { font-size: 11pt; color: #555555; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }\n" +
+          "    h2 { font-family: 'Georgia', serif; color: #1e3a8a; font-size: 16pt; margin-top: 22pt; border-bottom: 1px solid #d1d5db; padding-bottom: 4px; }\n" +
+          "    table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 15px; }\n" +
+          "    th { background-color: #f2f5f9; color: #2b579a; border: 1px solid #d1d5db; padding: 10px; font-weight: bold; text-align: left; font-size: 10pt; }\n" +
+          "    td { border: 1px solid #d1d5db; padding: 10px; font-size: 10pt; vertical-align: top; }\n" +
+          "    .meta-label { font-weight: bold; color: #4b5563; text-transform: uppercase; font-size: 8.5pt; }\n" +
+          "    .essay-box { border: 2px dashed #9ca3af; background-color: #f9fafb; padding: 18px; font-size: 12pt; line-height: 1.6; margin-top: 10px; font-family: 'Georgia', serif; border-radius: 4px; white-space: pre-wrap; color: #4b5563; }\n" +
+          "    .coach-box { background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px; margin-top: 10px; font-size: 10pt; color: #b45309; }\n" +
+          "    .footer { font-size: 8.5pt; color: #9ca3af; text-align: center; margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 10px; }\n" +
+          "    .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 9pt; }\n" +
+          "    .badge-primary { background-color: #eff6ff; color: #1d4ed8; }\n" +
+          "    .badge-success { background-color: #f0fdf4; color: #15803d; }\n" +
+          "  </style>\n" +
+          "</head>\n" +
+          "<body>\n" +
+          "  <div class='header'>\n" +
+          "    <p class='subtitle'>WIDA ACCESS Bilingual Speaking Simulator Portfolio</p>\n" +
+          "    <h1 class='title'>Student Speaking Case File</h1>\n" +
+          "  </div>\n" +
+          "  \n" +
+          "  <table>\n" +
+          "    <tr>\n" +
+          "      <td width='50%'><span class='meta-label'>Task ID & Title:</span><br><strong>" + taskId + " · " + title + "</strong></td>\n" +
+          "      <td width='50%'><span class='meta-label'>Submission Date:</span><br>" + dateString + "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><span class='meta-label'>Speaking Skill type:</span><br>" + domain + "</td>\n" +
+          "      <td><span class='meta-label'>ELP Tier:</span><br>Tier " + tier + "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><span class='meta-label'>Gamification Stats:</span><br>🔥 " + streak + " Day Streak &middot; ✨ " + xp + " XP</td>\n" +
+          "      <td><span class='meta-label'>Voice Response:</span><br><strong>" + audioStatus + "</strong></td>\n" +
+          "    </tr>\n" +
+          "  </table>\n" +
+          "  \n" +
+          "  <h2>📋 Speaking Task Prompt</h2>\n" +
+          "  <p style='font-style: italic; color: #374151; font-size: 10.5pt;'>" + promptText + "</p>\n" +
+          "  \n" +
+          "  <h2>✍️ Rehearsal Draft Transcription (Optional)</h2>\n" +
+          "  <div class='essay-box'>" + (draft || "*(No rehearsal text was written. Response was delivered entirely via live audio.)*") + "</div>\n" +
+          "  \n" +
+          "  <h2>🎯 Vocabulary Word Wall Report</h2>\n" +
+          "  <table>\n" +
+          "    <tr>\n" +
+          "      <th width='30%'>Required Vocabulary</th>\n" +
+          "      <td width='70%'>" + task.terms.join(", ") + "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <th>Used in Draft</th>\n" +
+          "      <td><strong>" + usedTermsStr + "</strong> (" + usedTerms.length + " of " + task.terms.length + " used)</td>\n" +
+          "    </tr>\n" +
+          "  </table>\n" +
+          "  \n" +
+          "  <h2>🏆 WIDA Speaking Rubric Self-Check</h2>\n" +
+          "  <table>\n" +
+          "    <tr>\n" +
+          "      <th width='40%'>Criterion</th>\n" +
+          "      <th width='60%'>Self-Evaluation Score</th>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><strong>Linguistic Complexity</strong></td>\n" +
+          "      <td>" + rubricLingText + "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><strong>Vocabulary Usage</strong></td>\n" +
+          "      <td>" + rubricVocText + "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><strong>Language Control / Conventions</strong></td>\n" +
+          "      <td>" + rubricCtrlText + "</td>\n" +
+          "    </tr>\n" +
+          "    <tr style='background-color: #f9fafb;'>\n" +
+          "      <td><strong>Overall Rating</strong></td>\n" +
+          "      <td><span class='badge badge-success'>" + overallRating + "</span></td>\n" +
+          "    </tr>\n" +
+          "  </table>\n" +
+          "  \n" +
+          "  <h2>💡 WIDA Speaking Coach Advice</h2>\n" +
+          "  <div class='coach-box'>" + coachContent + "</div>\n" +
+          "  \n" +
+          "  <div class='footer'>\n" +
+          "    <p>Generated by NeftOS Educational Suite &middot; Private, Client-Side, Local-First Architecture</p>\n" +
+          "  </div>\n" +
+          "</body>\n" +
+          "</html>";
+
+        var blob = new Blob(["\ufeff" + htmlContent], { type: "application/msword;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "WIDA_Speaking_CaseFile_" + taskId + "_" + tier + ".doc";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        logToTerminal("WIDA Speaking Case File downloaded successfully!");
+      }
+
 
       // Checklist updates
       function updateChecklistUI() {

@@ -117,6 +117,177 @@
       </div>
     </section>
 
+    <!-- ════════ CURRICULUM HUB UPGRADES ════════ -->
+    <section class="section-block" id="curriculumHub" aria-labelledby="curriculum-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Curriculum Hub Upgrades</p>
+          <h2 id="curriculum-title">Curriculum Planner &amp; Generators Hub</h2>
+          <p>Import student rosters to auto-generate personalized lesson prompts with struggling small-groups. Generate print-ready factoring worksheets and URLs sequence playlists.</p>
+        </div>
+      </div>
+      
+      <!-- Student Data Connector Panel -->
+      <div class="control-strip" style="grid-template-columns: 1fr auto; margin-bottom: 20px; gap: 18px; align-items: center;">
+        <div>
+          <h3 style="margin-top: 0; margin-bottom: 6px; font-size: 1.15rem; color: var(--neft-teal-dark);">📁 Student Roster Data Connector</h3>
+          <p style="margin: 0; font-size: 0.88rem; color: var(--neft-muted); text-transform: none; letter-spacing: 0;">Upload student JSON or CSV backups from the Growth Tracker to auto-inject risk vectors into planning prompts.</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <label class="import-label" style="background: var(--neft-teal); color: white; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin: 0;">
+            📥 Load Student Roster
+            <input id="rosterFileUploader" type="file" accept=".json,.csv" style="display: none;" />
+          </label>
+          <button type="button" onclick="loadSampleRoster()" class="secondary-action" style="font-size: 0.85rem; padding: 8px 12px; margin: 0; border-radius: 999px;">
+            💡 Load Sample
+          </button>
+        </div>
+      </div>
+      
+      <!-- Roster Summary Grid (Hidden by default, displayed if data loaded) -->
+      <div id="rosterSummaryPanel" class="control-strip" style="display: none; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 20px; background: var(--neft-sage);">
+        <div style="background: white; padding: 12px; border-radius: 12px; border: 1px solid var(--neft-line); min-width: 0;">
+          <h4 style="margin: 0; font-size: 0.76rem; color: var(--neft-muted); text-transform: uppercase;">📊 Roster Size</h4>
+          <span id="rosterTotalCount" style="font-size: 1.6rem; font-weight: 900; color: var(--neft-navy);">0 students</span>
+        </div>
+        <div style="background: white; padding: 12px; border-radius: 12px; border: 1px solid var(--neft-line); min-width: 0;">
+          <h4 style="margin: 0; font-size: 0.76rem; color: var(--neft-muted); text-transform: uppercase;">🚨 Small Groups (Low WIDA)</h4>
+          <span id="rosterRiskCount" style="font-size: 1.6rem; font-weight: 900; color: var(--neft-coral);">0 target groups</span>
+        </div>
+        <div style="background: white; padding: 12px; border-radius: 12px; border: 1px solid var(--neft-line); min-width: 0;">
+          <h4 style="margin: 0; font-size: 0.76rem; color: var(--neft-muted); text-transform: uppercase;">🎯 Struggling Standards</h4>
+          <span id="rosterStandardCount" style="font-size: 1.6rem; font-weight: 900; color: var(--neft-gold);">0 standards</span>
+        </div>
+      </div>
+
+      <!-- Tabbed Generators Panel -->
+      <div class="brief-layout" style="grid-template-columns: minmax(240px, 0.3fr) minmax(0, 0.7fr);">
+        <!-- Sidebar Navigation Tabs -->
+        <article class="brief-card" style="padding: 14px; min-width: 0;">
+          <h3 style="margin-bottom: 12px; font-size: 1.05rem;">🛠️ Choose Generator</h3>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button type="button" id="tabBtnLesson" class="primary-action small" onclick="switchGeneratorTab('lesson')" style="width: 100%; border-radius: 10px; text-align: left; padding: 10px 14px; margin: 0; box-shadow: none;">
+              📝 Lesson Planner
+            </button>
+            <button type="button" id="tabBtnWorksheet" class="secondary-action small" onclick="switchGeneratorTab('worksheet')" style="width: 100%; border-radius: 10px; text-align: left; padding: 10px 14px; margin: 0;">
+              🧮 GCF/LCM Worksheet
+            </button>
+            <button type="button" id="tabBtnPlaylist" class="secondary-action small" onclick="switchGeneratorTab('playlist')" style="width: 100%; border-radius: 10px; text-align: left; padding: 10px 14px; margin: 0;">
+              🔗 Playlist Builder
+            </button>
+          </div>
+        </article>
+        
+        <!-- Tab Content Cards -->
+        <article class="brief-card" style="padding: 20px; min-width: 0;">
+          <!-- Tab 1: Lesson Planner -->
+          <div id="tabContentLesson" class="tab-content-panel">
+            <h3 style="margin-top: 0; color: var(--neft-teal-dark);">📝 Lesson Plan Scaffold Generator</h3>
+            <p style="font-size: 0.86rem; color: var(--neft-muted); margin-bottom: 15px; text-transform: none; letter-spacing: 0;">Generates WIDA-aligned lesson plan prompts with auto-scaffolding instructions tailored to roster risk lists.</p>
+            <div style="display: grid; gap: 12px; margin-bottom: 15px;">
+              <label>Learning Standard Code
+                <input id="lpStandard" type="text" placeholder="Example: MGSE6.NS.4" />
+              </label>
+              <label>Lesson Core Topic
+                <input id="lpTopic" type="text" placeholder="Example: Finding the GCF of two whole numbers" />
+              </label>
+            </div>
+            <div class="micro-actions" style="margin-bottom: 15px;">
+              <button type="button" onclick="generateLessonPrompt()" class="primary-action" style="box-shadow: none;">Compile Lesson Prompt</button>
+            </div>
+            <label>Compiled Prompt (Copy to clipboard)
+              <textarea id="lpOutputPrompt" rows="8" readonly placeholder="Your compiled lesson plan prompt will appear here..." style="font-size: 0.88rem; font-family: monospace;"></textarea>
+            </label>
+            <div class="micro-actions" style="margin-top: 10px;">
+              <button type="button" onclick="copyLessonPrompt()" class="secondary-action">📋 Copy Prompt</button>
+            </div>
+          </div>
+          
+          <!-- Tab 2: Worksheet Generator -->
+          <div id="tabContentWorksheet" class="tab-content-panel" style="display: none;">
+            <h3 style="margin-top: 0; color: var(--neft-teal-dark);">🧮 Do-Now GCF/LCM Worksheet Generator</h3>
+            <p style="font-size: 0.86rem; color: var(--neft-muted); margin-bottom: 15px; text-transform: none; letter-spacing: 0;">Generates print-ready worksheet matrices with factored lists and visually styled SVG Venn diagrams.</p>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 15px;">
+              <label>First Number (Value A)
+                <input id="wsNumA" type="number" value="12" min="1" max="100" />
+              </label>
+              <label>Second Number (Value B)
+                <input id="wsNumB" type="number" value="18" min="1" max="100" />
+              </label>
+            </div>
+            <div class="micro-actions" style="margin-bottom: 15px;">
+              <button type="button" onclick="generateDoNowWorksheet()" class="primary-action" style="box-shadow: none;">Generate Do-Now Worksheet</button>
+            </div>
+            
+            <!-- Output Worksheet Display Area -->
+            <div id="worksheetDisplayArea" style="display: none; border: 1px solid var(--neft-line); padding: 15px; border-radius: 12px; background: white; margin-top: 15px; min-width: 0;">
+              <div style="text-align: center; border-bottom: 2px solid var(--neft-teal); padding-bottom: 8px; margin-bottom: 15px;">
+                <h4 style="margin: 0; color: var(--neft-teal-dark); font-size: 1.1rem; font-family: 'Georgia', serif;">📝 Mathematics Do-Now: GCF Exploration</h4>
+                <small style="color: var(--neft-muted);">Name: ______________________ &middot; Date: _________________</small>
+              </div>
+              
+              <div style="display: grid; grid-template-columns: 1fr; gap: 15px; min-width: 0;">
+                <div>
+                  <p style="margin: 0; font-weight: bold; font-size: 0.95rem; color: var(--neft-navy); font-family: 'Georgia', serif;">Problem: Find the Greatest Common Factor (GCF) of <span id="wsValA">12</span> and <span id="wsValB">18</span>.</p>
+                  <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.88rem; text-transform: none; letter-spacing: 0;">
+                    <thead>
+                      <tr>
+                        <th style="border: 1px solid var(--neft-line); padding: 6px; background: var(--neft-sage); text-align: left; color: var(--neft-teal-dark); font-weight: 800;">Number</th>
+                        <th style="border: 1px solid var(--neft-line); padding: 6px; background: var(--neft-sage); text-align: left; color: var(--neft-teal-dark); font-weight: 800;">Factoring breakdown / List of Factors</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="border: 1px solid var(--neft-line); padding: 6px; font-weight: bold;"><span id="wsValA_row">12</span></td>
+                        <td style="border: 1px solid var(--neft-line); padding: 6px;" id="wsFactorsA">1, 2, 3, 4, 6, 12</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--neft-line); padding: 6px; font-weight: bold;"><span id="wsValB_row">18</span></td>
+                        <td style="border: 1px solid var(--neft-line); padding: 6px;" id="wsFactorsB">1, 2, 3, 6, 9, 18</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+                <!-- Visual Math Circle Venn Diagram (Generated programmatically using pure inline SVG) -->
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; padding: 12px; border-radius: 8px; border: 1px dashed var(--neft-line); min-width: 0;">
+                  <div style="font-weight: 800; font-size: 0.74rem; text-transform: uppercase; color: var(--neft-teal-dark); margin-bottom: 8px; letter-spacing: 0.05em;">Visual Math Circle Model: GCF Venn Diagram</div>
+                  <div id="svgVennContainer" style="background: white; border-radius: 6px; overflow: hidden; min-width: 0;">
+                    <!-- Inline SVG generated dynamically -->
+                  </div>
+                </div>
+              </div>
+              
+              <div style="margin-top: 15px; border-top: 1px solid var(--neft-line); padding-top: 10px; font-size: 0.95rem; font-weight: bold; color: var(--neft-coral); font-family: 'Georgia', serif;">
+                🎯 Greatest Common Factor (GCF) = <span id="wsGcfResult">6</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tab 3: Playlist Builder -->
+          <div id="tabContentPlaylist" class="tab-content-panel" style="display: none;">
+            <h3 style="margin-top: 0; color: var(--neft-teal-dark);">🔗 Classroom Playlist Builder</h3>
+            <p style="font-size: 0.86rem; color: var(--neft-muted); margin-bottom: 15px; text-transform: none; letter-spacing: 0;">Creates formatted sequential playlists of classroom URLs copyable to the clipboard.</p>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+              <span style="font-size: 0.8rem; font-weight: bold; color: var(--neft-muted); text-transform: uppercase; letter-spacing: 0.04em;">Select Activities to Sequence:</span>
+              <div id="playlistSelectionWrap" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding: 10px; border: 1px solid var(--neft-line); border-radius: 10px; background: var(--neft-sage);">
+                <!-- Checkboxes populated from links -->
+              </div>
+            </div>
+            <div class="micro-actions" style="margin-bottom: 15px;">
+              <button type="button" onclick="compileClassroomPlaylist()" class="primary-action" style="box-shadow: none;">Compile Playlist Markdown</button>
+            </div>
+            <label>Compiled Playlist Markdown
+              <textarea id="playlistOutputMarkdown" rows="8" readonly placeholder="Your compiled playlist Markdown will appear here..." style="font-size: 0.88rem; font-family: monospace;"></textarea>
+            </label>
+            <div class="micro-actions" style="margin-top: 10px;">
+              <button type="button" onclick="copyPlaylistMarkdown()" class="secondary-action">📋 Copy Playlist</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <section class="section-block" aria-labelledby="workflow-title">
       <div class="section-heading">
         <p class="eyebrow">Reusable production workflows</p>
