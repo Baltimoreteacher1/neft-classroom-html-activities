@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Class Results — Neft Teacher</title>
+    <meta
+      name="description"
+      content="Collect every pre-test and post-test result captured on this device, review them in a sortable table, and export one combined CSV for your gradebook or data dashboard."
+    />
+    <style>
+      :root {
+        --ink: #17202a;
+        --muted: #53616f;
+        --teal: #0f766e;
+        --teal-dark: #115e59;
+        --cream: #fffaf0;
+        --sage: #eef4f3;
+        --gold: #b7791f;
+        --coral: #c2410c;
+        --line: #d8dfdc;
+        --shadow: 0 16px 38px rgba(23, 32, 42, 0.11);
+        --radius: 18px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            1200px 600px at 12% -10%,
+            var(--sage),
+            transparent 60%
+          ),
+          var(--cream);
+        line-height: 1.5;
+      }
+      .skip-link {
+        position: absolute;
+        left: -999px;
+        top: 12px;
+        z-index: 30;
+        padding: 10px 14px;
+        background: var(--ink);
+        color: #fff;
+        border-radius: 999px;
+        font-weight: 850;
+        text-decoration: none;
+      }
+      .skip-link:focus {
+        left: 12px;
+      }
+      .shell {
+        width: min(100% - 32px, 1180px);
+        margin: 0 auto;
+        padding: 28px 0 64px;
+      }
+      .crumb {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+      .crumb a {
+        color: var(--teal-dark);
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .crumb a:hover {
+        text-decoration: underline;
+      }
+      header.hero {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: clamp(20px, 3vw, 32px);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 850;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--teal-dark);
+        background: var(--sage);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 5px 12px;
+      }
+      h1 {
+        font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+        margin: 12px 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .hero p {
+        margin: 0;
+        max-width: 760px;
+        color: var(--muted);
+      }
+      .stat-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+      }
+      @media (max-width: 720px) {
+        .stat-row {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      .stat {
+        background: var(--sage);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+      }
+      .stat .v {
+        font-size: 1.5rem;
+        font-weight: 850;
+        color: var(--teal-dark);
+      }
+      .stat .l {
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-weight: 700;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin: 22px 0 14px;
+      }
+      .btn {
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+        border-radius: 12px;
+        border: 1px solid var(--teal-dark);
+        background: var(--teal);
+        color: #fff;
+        padding: 11px 18px;
+        transition:
+          transform 0.06s ease,
+          filter 0.15s ease;
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.secondary {
+        background: #fff;
+        color: var(--teal-dark);
+      }
+      .btn.danger {
+        background: #fff;
+        color: var(--coral);
+        border-color: var(--coral);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .search {
+        flex: 1 1 220px;
+        min-width: 180px;
+        font: inherit;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+      }
+      .panel {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.93rem;
+      }
+      caption {
+        text-align: left;
+        padding: 14px 18px;
+        font-weight: 800;
+        color: var(--muted);
+        border-bottom: 1px solid var(--line);
+      }
+      th,
+      td {
+        padding: 11px 14px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      thead th {
+        position: sticky;
+        top: 0;
+        background: var(--sage);
+        color: var(--ink);
+        font-weight: 850;
+        cursor: pointer;
+        user-select: none;
+      }
+      thead th:focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: -3px;
+      }
+      thead th .arrow {
+        font-size: 0.75rem;
+        color: var(--teal-dark);
+        margin-left: 4px;
+      }
+      tbody tr:nth-child(even) {
+        background: #fbfdfc;
+      }
+      tbody tr:hover {
+        background: var(--sage);
+      }
+      td.pct {
+        font-weight: 800;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 3px 10px;
+        background: var(--sage);
+        border: 1px solid var(--line);
+        color: var(--teal-dark);
+      }
+      .empty {
+        padding: 40px 24px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .empty strong {
+        display: block;
+        color: var(--ink);
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      footer {
+        margin-top: 28px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        text-align: center;
+      }
+      .note {
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to results</a>
+    <div class="shell">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <a href="/teacher-tools/">Teacher Tools</a> /
+        <span aria-current="page">Class Results</span>
+      </nav>
+
+      <header class="hero">
+        <span class="badge">Local-first · no login · no cloud</span>
+        <h1>Class Results</h1>
+        <p>
+          Every pre-test and post-test a student finishes on this device logs
+          its result here automatically. Review the whole set in one place, then
+          export a single combined CSV for your gradebook or the Neft data
+          dashboard — no more collecting one download per student.
+        </p>
+        <div class="stat-row" id="statRow">
+          <div class="stat">
+            <div class="v" id="statAttempts">0</div>
+            <div class="l">Logged rows</div>
+          </div>
+          <div class="stat">
+            <div class="v" id="statStudents">0</div>
+            <div class="l">Students</div>
+          </div>
+          <div class="stat">
+            <div class="v" id="statAssessments">0</div>
+            <div class="l">Assessments</div>
+          </div>
+          <div class="stat">
+            <div class="v" id="statAvg">—</div>
+            <div class="l">Avg overall %</div>
+          </div>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <input
+          type="search"
+          class="search"
+          id="search"
+          placeholder="Filter by student, assessment, or standard…"
+          aria-label="Filter results"
+        />
+        <button class="btn" id="exportBtn" type="button">
+          Export Combined CSV
+        </button>
+        <button class="btn secondary" id="refreshBtn" type="button">
+          Refresh
+        </button>
+        <button class="btn danger" id="clearBtn" type="button">
+          Clear Log
+        </button>
+      </div>
+
+      <main id="main" class="panel">
+        <div class="table-wrap">
+          <table id="resultsTable">
+            <caption id="caption">
+              All logged attempts
+            </caption>
+            <thead>
+              <tr id="headRow"></tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="emptyState" hidden>
+          <strong>No results logged yet on this device.</strong>
+          When a student taps “Download Results (CSV for teacher)” on any
+          pre-test or post-test, their attempt is recorded here automatically.
+        </div>
+      </main>
+
+      <p class="note">
+        Results are stored only in this browser (localStorage key
+        <code>nt_results_log</code>). Clearing your browser data or using a
+        different device starts a fresh log. Export regularly to keep a
+        permanent copy.
+      </p>
+
+      <footer>Neft Teacher &copy; 2026 · Class Results</footer>
+    </div>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script>
+      "use strict";
+
+      // Columns to surface in the table (subset of the full CSV schema, in
+      // teacher-reading order). Each entry: [displayLabel, csvKey, type].
+      var COLS = [
+        ["Student", "Student Name", "text"],
+        ["Class", "Class", "text"],
+        ["Assessment", "Assessment", "text"],
+        ["Skill", "Skill", "text"],
+        ["Standard", "Standard", "text"],
+        ["Score", "Score", "num"],
+        ["Percent", "Percent", "num"],
+        ["Date", "Date", "text"],
+        ["ACCESS Level", "ACCESS Level", "text"],
+      ];
+
+      var sortKey = "Date";
+      var sortDir = -1; // -1 = desc, 1 = asc
+      var filterText = "";
+
+      function rows() {
+        return NTResults.readLog();
+      }
+
+      function buildHead() {
+        var tr = document.getElementById("headRow");
+        tr.innerHTML = "";
+        COLS.forEach(function (c) {
+          var th = document.createElement("th");
+          th.scope = "col";
+          th.tabIndex = 0;
+          th.dataset.key = c[1];
+          var arrow = sortKey === c[1] ? (sortDir === 1 ? " ▲" : " ▼") : "";
+          th.innerHTML = c[0] + '<span class="arrow">' + arrow + "</span>";
+          th.setAttribute(
+            "aria-sort",
+            sortKey === c[1]
+              ? sortDir === 1
+                ? "ascending"
+                : "descending"
+              : "none",
+          );
+          th.addEventListener("click", function () {
+            setSort(c[1]);
+          });
+          th.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setSort(c[1]);
+            }
+          });
+          tr.appendChild(th);
+        });
+      }
+
+      function setSort(key) {
+        if (sortKey === key) sortDir = -sortDir;
+        else {
+          sortKey = key;
+          sortDir = 1;
+        }
+        render();
+      }
+
+      function matchesFilter(r) {
+        if (!filterText) return true;
+        var hay =
+          (r["Student Name"] || "") +
+          " " +
+          (r["Assessment"] || "") +
+          " " +
+          (r["Standard"] || "") +
+          " " +
+          (r["Skill"] || "");
+        return hay.toLowerCase().indexOf(filterText) !== -1;
+      }
+
+      function colType(key) {
+        for (var i = 0; i < COLS.length; i++)
+          if (COLS[i][1] === key) return COLS[i][2];
+        return "text";
+      }
+
+      function render() {
+        var data = rows().filter(matchesFilter);
+        var type = colType(sortKey);
+        data.sort(function (a, b) {
+          var av = a[sortKey],
+            bv = b[sortKey];
+          if (type === "num") {
+            av = parseFloat(av) || 0;
+            bv = parseFloat(bv) || 0;
+            return (av - bv) * sortDir;
+          }
+          av = String(av == null ? "" : av).toLowerCase();
+          bv = String(bv == null ? "" : bv).toLowerCase();
+          if (av < bv) return -1 * sortDir;
+          if (av > bv) return 1 * sortDir;
+          return 0;
+        });
+
+        buildHead();
+        var tbody = document.getElementById("tbody");
+        tbody.innerHTML = "";
+        data.forEach(function (r) {
+          var tr = document.createElement("tr");
+          COLS.forEach(function (c) {
+            var td = document.createElement("td");
+            var key = c[1];
+            var val = r[key] == null ? "" : r[key];
+            if (key === "Percent") {
+              td.className = "pct";
+              td.textContent = val === "" ? "—" : val + "%";
+            } else if (key === "ACCESS Level" && val) {
+              td.innerHTML =
+                '<span class="pill">' + escapeHtml(val) + "</span>";
+            } else if (key === "Score") {
+              td.className = "pct";
+              td.textContent = val;
+            } else {
+              td.textContent = val;
+            }
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        var all = rows();
+        document.getElementById("emptyState").hidden = all.length > 0;
+        document.getElementById("resultsTable").style.display = all.length
+          ? ""
+          : "none";
+        document.getElementById("caption").textContent = filterText
+          ? "Showing " + data.length + " of " + all.length + " logged rows"
+          : "All logged attempts (" + all.length + " rows)";
+
+        updateStats(all);
+        document.getElementById("exportBtn").disabled = all.length === 0;
+        document.getElementById("clearBtn").disabled = all.length === 0;
+      }
+
+      function updateStats(all) {
+        var students = {},
+          assessments = {},
+          overallPctSum = 0,
+          overallCount = 0;
+        all.forEach(function (r) {
+          if (r["Student Name"]) students[r["Student Name"]] = 1;
+          if (r["Assessment"]) assessments[r["Assessment"]] = 1;
+          if (r["Skill"] === "Overall") {
+            var p = parseFloat(r["Percent"]);
+            if (!isNaN(p)) {
+              overallPctSum += p;
+              overallCount++;
+            }
+          }
+        });
+        document.getElementById("statAttempts").textContent = all.length;
+        document.getElementById("statStudents").textContent =
+          Object.keys(students).length;
+        document.getElementById("statAssessments").textContent =
+          Object.keys(assessments).length;
+        document.getElementById("statAvg").textContent = overallCount
+          ? Math.round(overallPctSum / overallCount) + "%"
+          : "—";
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          }[c];
+        });
+      }
+
+      // ── Controls ──
+      document.getElementById("search").addEventListener("input", function (e) {
+        filterText = e.target.value.trim().toLowerCase();
+        render();
+      });
+      document.getElementById("refreshBtn").addEventListener("click", render);
+      document
+        .getElementById("exportBtn")
+        .addEventListener("click", function () {
+          var ok = NTResults.exportLog(
+            "neft-class-results-" +
+              new Date().toISOString().slice(0, 10) +
+              ".csv",
+          );
+          if (!ok) alert("No results to export yet.");
+        });
+      document
+        .getElementById("clearBtn")
+        .addEventListener("click", function () {
+          if (
+            confirm(
+              "Clear ALL logged results on this device? Export first if you need a copy — this cannot be undone.",
+            )
+          ) {
+            NTResults.clearLog();
+            render();
+          }
+        });
+
+      render();
+    </script>
+  </body>
+</html>
