@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="en" data-nt-level="1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      🗺️ Unit 9 Review: Integers and Coordinate Plane — Level 1 (Support)
+    </title>
+    <style>
+      :root {
+        --primary: #d4a574;
+        --primary-dark: #b8895a;
+        --bg: #fdf6e3;
+        --text: #4a3728;
+        --text-light: #6b5744;
+        --accent: #daa520;
+        --accent-light: #f5deb3;
+        --correct: #2e7d32;
+        --correct-bg: #e8f5e9;
+        --incorrect: #c62828;
+        --incorrect-bg: #ffebee;
+        --card-bg: #ffffff;
+        --border: #d4a574;
+        --shadow: rgba(74, 55, 40, 0.12);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: white;
+        text-align: center;
+        padding: 20px;
+        box-shadow: 0 3px 10px var(--shadow);
+      }
+      .header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 4px;
+      }
+      .header p {
+        font-size: 0.95rem;
+        opacity: 0.9;
+      }
+
+      .container {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* LOGIN */
+      .login-screen {
+        text-align: center;
+        padding: 40px 20px;
+      }
+      .login-screen h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .login-screen p {
+        color: var(--text-light);
+        margin-bottom: 24px;
+      }
+      .login-screen input {
+        display: block;
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto 16px;
+        padding: 12px 16px;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        font-size: 1rem;
+        background: var(--card-bg);
+        color: var(--text);
+      }
+      .login-screen input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 32px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--shadow);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+      .btn-accent {
+        background: var(--accent);
+        color: white;
+      }
+      .btn-sm {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+      }
+
+      /* PROGRESS BAR */
+      .progress-wrap {
+        background: var(--accent-light);
+        border-radius: 20px;
+        height: 12px;
+        margin: 16px 0;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        border-radius: 20px;
+        transition: width 0.4s ease;
+      }
+      .progress-text {
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 8px;
+      }
+
+      /* SECTION BANNER */
+      .section-banner {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: white;
+        padding: 14px 20px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        text-align: center;
+      }
+      .section-banner h3 {
+        font-size: 1.15rem;
+      }
+      .section-banner p {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+
+      /* QUESTION CARD */
+      .question-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px var(--shadow);
+        border-left: 5px solid var(--primary);
+      }
+      .q-number {
+        font-size: 0.8rem;
+        color: var(--primary-dark);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+
+      /* MC OPTIONS */
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .option-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        border: 2px solid #e0d5c8;
+        border-radius: 10px;
+        background: var(--bg);
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        color: var(--text);
+      }
+      .option-btn:hover:not(.locked) {
+        border-color: var(--primary);
+        background: #fff8f0;
+      }
+      .option-btn.selected {
+        border-color: var(--primary);
+        background: #fff0e0;
+        font-weight: 600;
+      }
+      .option-btn.correct-answer {
+        border-color: var(--correct);
+        background: var(--correct-bg);
+      }
+      .option-btn.wrong-answer {
+        border-color: var(--incorrect);
+        background: var(--incorrect-bg);
+      }
+      .option-btn.locked {
+        cursor: default;
+      }
+
+      /* FILL-IN */
+      .fill-input {
+        width: 100%;
+        max-width: 280px;
+        padding: 10px 14px;
+        border: 2px solid #e0d5c8;
+        border-radius: 10px;
+        font-size: 1rem;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .fill-input.correct-input {
+        border-color: var(--correct);
+        background: var(--correct-bg);
+      }
+      .fill-input.wrong-input {
+        border-color: var(--incorrect);
+        background: var(--incorrect-bg);
+      }
+
+      .submit-row {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      /* FEEDBACK */
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        display: none;
+      }
+      .feedback.correct {
+        background: var(--correct-bg);
+        color: var(--correct);
+        display: block;
+      }
+      .feedback.incorrect {
+        background: var(--incorrect-bg);
+        color: var(--incorrect);
+        display: block;
+      }
+      .feedback strong {
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      /* NAV */
+      .nav-row {
+        display: flex;
+        justify-content: center;
+        margin-top: 16px;
+      }
+
+      /* SUMMARY */
+      .summary-screen {
+        display: none;
+      }
+      .score-ring {
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 20px;
+        position: relative;
+      }
+      .score-ring svg {
+        transform: rotate(-90deg);
+      }
+      .score-ring .score-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-score {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 4px var(--shadow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .section-score .label {
+        font-weight: 600;
+      }
+      .section-score .badge {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: white;
+      }
+      .badge-green {
+        background: var(--correct);
+      }
+      .badge-yellow {
+        background: var(--accent);
+      }
+      .badge-red {
+        background: var(--incorrect);
+      }
+
+      .tips-box {
+        background: #fff8f0;
+        border: 2px solid var(--accent-light);
+        border-radius: 12px;
+        padding: 18px;
+        margin: 20px 0;
+      }
+      .tips-box h4 {
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+      }
+      .tips-box ul {
+        padding-left: 20px;
+      }
+      .tips-box li {
+        margin-bottom: 6px;
+        color: var(--text-light);
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+        border-top: 1px solid var(--accent-light);
+        margin-top: 30px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* COORDINATE GRID for visual questions */
+      .coord-grid {
+        display: inline-block;
+        margin: 8px 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+        line-height: 1.3;
+        background: #fffdf5;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #e0d5c8;
+        white-space: pre;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 14px;
+        }
+        .header h1 {
+          font-size: 1.3rem;
+        }
+        .question-card {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🗺️ Unit 9 Review: Integers and Coordinate Plane</h1>
+      <p>Grade 6 &middot; Standards 6.NS.5 &ndash; 6.NS.8</p>
+    </div>
+
+    <div class="container" id="app">
+      <!-- LOGIN -->
+      <div id="loginScreen" class="login-screen">
+        <h2>🗺️ Welcome, Explorer!</h2>
+        <p>
+          Enter your name to begin your review of integers and the coordinate
+          plane.
+        </p>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Your name"
+          maxlength="30"
+          autocomplete="off"
+        />
+        <br />
+        <button class="btn btn-primary" onclick="startReview()">
+          Start Review
+        </button>
+        <div
+          id="resumeMsg"
+          class="hidden"
+          style="margin-top: 16px; color: var(--text-light); font-size: 0.9rem"
+        ></div>
+      </div>
+
+      <!-- QUIZ -->
+      <div id="quizScreen" class="hidden">
+        <div style="text-align: center; margin-bottom: 10px">
+          <span
+            style="
+              display: inline-block;
+              padding: 4px 14px;
+              border-radius: 20px;
+              background: #2e7d32;
+              color: #ffffff;
+              font-size: 0.8rem;
+              font-weight: 700;
+              letter-spacing: 0.3px;
+            "
+            >Level 1 · Support</span
+          >
+        </div>
+        <div class="progress-text" id="progressText">Question 1 of 20</div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progressBar" style="width: 5%"></div>
+        </div>
+        <div id="sectionBanner"></div>
+        <div id="questionArea"></div>
+        <div class="nav-row">
+          <button
+            class="btn btn-primary"
+            id="nextBtn"
+            onclick="nextQuestion()"
+            style="display: none"
+          >
+            Next &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="summaryScreen" class="summary-screen">
+        <h2 style="text-align: center; margin-bottom: 4px">Review Complete!</h2>
+        <p
+          style="
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 16px;
+          "
+          id="summaryName"
+        ></p>
+        <div class="score-ring">
+          <svg width="140" height="140">
+            <circle
+              cx="70"
+              cy="70"
+              r="60"
+              fill="none"
+              stroke="#E0D5C8"
+              stroke-width="12"
+            />
+            <circle
+              cx="70"
+              cy="70"
+              r="60"
+              fill="none"
+              stroke="var(--accent)"
+              stroke-width="12"
+              stroke-dasharray="377"
+              stroke-dashoffset="377"
+              stroke-linecap="round"
+              id="scoreCircle"
+            />
+          </svg>
+          <div class="score-label" id="scoreLabel">0%</div>
+        </div>
+        <div id="sectionScores"></div>
+        <div id="tipsBox" class="tips-box">
+          <h4>📖 Study Tips</h4>
+          <ul id="tipsList"></ul>
+        </div>
+        <div
+          style="
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <button class="btn btn-primary" onclick="exportResults()">
+            Export Results
+          </button>
+          <button class="btn btn-accent" onclick="resetReview()">
+            Retake Review
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Neft Teacher &middot; Grade 6 Math Review</div>
+
+    <script>
+      // ============================================================
+      // DATA
+      // ============================================================
+      const STORAGE_KEY = "unit9Review_v1_L1";
+      const SECTIONS = [
+        { name: "Vocabulary", icon: "📖", count: 5, type: "mc" },
+        { name: "Quick Check", icon: "⚡", count: 5, type: "mc" },
+        { name: "Practice", icon: "✏️", count: 5, type: "fill" },
+        { name: "Challenge", icon: "🏆", count: 5, type: "mc" },
+      ];
+
+      const questions = [
+        // ===== SECTION 1: VOCABULARY (MC) =====
+        {
+          section: 0,
+          text: "What is the absolute value of −12?",
+          options: ["−12", "12", "0", "−1"],
+          answer: 1,
+          explanation:
+            "Absolute value is the distance from zero on a number line. |−12| = 12.",
+        },
+        {
+          section: 0,
+          text: "Which of the following best defines an integer?",
+          options: [
+            "Any number with a decimal point",
+            "A whole number and its opposite (positive, negative, or zero)",
+            "Only positive whole numbers",
+            "A fraction between −1 and 1",
+          ],
+          answer: 1,
+          explanation:
+            "Integers are the set of whole numbers and their opposites: …, −3, −2, −1, 0, 1, 2, 3, …",
+        },
+        {
+          section: 0,
+          text: "The point where the x-axis and y-axis cross is called the:",
+          options: ["Quadrant", "Origin", "Coordinate", "Vertex"],
+          answer: 1,
+          explanation:
+            "The origin is the point (0, 0) where the two axes intersect.",
+        },
+        {
+          section: 0,
+          text: "Two numbers that are the same distance from zero but on opposite sides of the number line are called:",
+          options: ["Absolute values", "Integers", "Opposites", "Factors"],
+          answer: 2,
+          explanation:
+            "Opposites are numbers like 5 and −5 — equal distance from zero, different signs.",
+        },
+        {
+          section: 0,
+          text: "In the ordered pair (−3, 7), the number 7 represents the:",
+          options: [
+            "x-coordinate",
+            "y-coordinate",
+            "Quadrant number",
+            "Origin",
+          ],
+          answer: 1,
+          explanation:
+            "In an ordered pair (x, y), the second number is always the y-coordinate.",
+        },
+
+        // ===== SECTION 2: QUICK CHECK (MC) =====
+        {
+          section: 1,
+          text: "Which integer is greater: −8 or −3?",
+          options: ["−8", "−3", "They are equal", "Cannot be determined"],
+          answer: 1,
+          explanation:
+            "On a number line, −3 is to the right of −8, so −3 > −8.",
+        },
+        {
+          section: 1,
+          text: "What is |−25| + |10|?",
+          options: ["−15", "15", "35", "−35"],
+          answer: 2,
+          explanation: "|−25| = 25 and |10| = 10. So 25 + 10 = 35.",
+        },
+        {
+          section: 1,
+          text: "The point (−4, 5) is located in which quadrant?",
+          options: ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"],
+          answer: 1,
+          explanation:
+            "Quadrant II has negative x-values and positive y-values. (−4, 5) fits: x = −4, y = 5.",
+        },
+        {
+          section: 1,
+          text: "Which list shows the integers in order from least to greatest?",
+          options: [
+            "3, −1, −5, 0, 7",
+            "−5, −1, 0, 3, 7",
+            "7, 3, 0, −1, −5",
+            "0, −1, −5, 3, 7",
+          ],
+          answer: 1,
+          explanation: "From least to greatest: −5 < −1 < 0 < 3 < 7.",
+        },
+        {
+          section: 1,
+          text: "If you reflect the point (2, −6) across the x-axis, what is the new point?",
+          options: ["(−2, −6)", "(2, 6)", "(−2, 6)", "(2, −6)"],
+          answer: 1,
+          explanation:
+            "Reflecting across the x-axis changes the sign of the y-coordinate: (2, −6) → (2, 6).",
+        },
+
+        // ===== SECTION 3: PRACTICE (FILL-IN) =====
+        {
+          section: 2,
+          text: "What is the opposite of −14?",
+          acceptedAnswers: ["14"],
+          explanation:
+            "The opposite of −14 is 14 (same distance from zero, opposite side).",
+        },
+        {
+          section: 2,
+          text: "What is |−9| − |4|?",
+          acceptedAnswers: ["5"],
+          explanation: "|−9| = 9 and |4| = 4. So 9 − 4 = 5.",
+        },
+        {
+          section: 2,
+          text: "A point is at (3, −2). After reflecting it across the y-axis, what is the x-coordinate of the new point?",
+          acceptedAnswers: ["-3", "−3", "–3"],
+          explanation:
+            "Reflecting across the y-axis changes the sign of the x-coordinate: (3, −2) → (−3, −2). The x-coordinate is −3.",
+        },
+        {
+          section: 2,
+          text: "What is the distance between the points (−5, 3) and (−5, −4) on the coordinate plane?",
+          acceptedAnswers: ["7"],
+          explanation:
+            "Same x-values, so distance = |3 − (−4)| = |3 + 4| = 7 units.",
+        },
+        {
+          section: 2,
+          text: "The point (6, 0) lies on which axis?",
+          acceptedAnswers: [
+            "x-axis",
+            "x axis",
+            "x",
+            "the x-axis",
+            "the x axis",
+          ],
+          explanation: "When y = 0, the point lies on the x-axis.",
+        },
+
+        // ===== SECTION 4: CHALLENGE (MC word problems) =====
+        {
+          section: 3,
+          text: "A submarine is at −150 feet. It rises 90 feet. What is its new depth?",
+          options: ["−240 feet", "−60 feet", "60 feet", "−90 feet"],
+          answer: 1,
+          explanation: "Starting at −150 and rising 90: −150 + 90 = −60 feet.",
+        },
+        {
+          section: 3,
+          text: "Two friends are on a number line. Aiden is at −7 and Bella is at 5. How far apart are they?",
+          options: ["2 units", "7 units", "12 units", "−12 units"],
+          answer: 2,
+          explanation: "Distance = |−7 − 5| = |−12| = 12 units.",
+        },
+        {
+          section: 3,
+          text: "A treasure map shows a chest at point A = (4, 3) and its mirror image across the y-axis at point B. What are the coordinates of point B?",
+          options: ["(4, −3)", "(−4, 3)", "(−4, −3)", "(3, 4)"],
+          answer: 1,
+          explanation:
+            "Reflecting across the y-axis changes the sign of the x-coordinate: (4, 3) → (−4, 3).",
+        },
+        {
+          section: 3,
+          text: "The temperature at sunrise was −4°F. By noon it was 13°F. How many degrees did the temperature rise?",
+          options: ["9°F", "13°F", "17°F", "−17°F"],
+          answer: 2,
+          explanation: "Change = 13 − (−4) = 13 + 4 = 17°F.",
+        },
+        {
+          section: 3,
+          text: "Point P is at (−3, −5) and Point Q is at (4, −5). What is the distance between P and Q?",
+          options: ["1 unit", "5 units", "7 units", "9 units"],
+          answer: 2,
+          explanation:
+            "Same y-values, so distance = |−3 − 4| = |−7| = 7 units.",
+        },
+      ];
+
+      // ============================================================
+      // STATE
+      // ============================================================
+      let studentName = "";
+      let currentQ = 0;
+      let answers = new Array(20).fill(null); // null = unanswered
+      let results = new Array(20).fill(null); // true/false
+      let answered = new Array(20).fill(false);
+      let attempts = new Array(20).fill(0); // Level 1: wrong-attempt counter
+      let retryMsg = new Array(20).fill(false); // show "try again" prompt
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      window.addEventListener("DOMContentLoaded", () => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            const d = JSON.parse(saved);
+            if (d.answers && d.studentName) {
+              document.getElementById("resumeMsg").classList.remove("hidden");
+              document.getElementById("resumeMsg").innerHTML =
+                `Welcome back, <strong>${esc(d.studentName)}</strong>! Your previous progress will be restored.`;
+              document.getElementById("nameInput").value = d.studentName;
+            }
+          } catch (e) {}
+        }
+      });
+
+      function startReview() {
+        const name = document.getElementById("nameInput").value.trim();
+        if (!name) {
+          document.getElementById("nameInput").focus();
+          return;
+        }
+        studentName = name;
+
+        // Try restore
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            const d = JSON.parse(saved);
+            if (d.studentName === studentName && d.answers) {
+              answers = d.answers;
+              results = d.results;
+              answered = d.answered;
+              attempts = d.attempts || new Array(20).fill(0);
+              retryMsg = new Array(20).fill(false);
+              currentQ = d.currentQ || 0;
+              // If already completed, jump to summary
+              if (answered.every((a) => a)) {
+                showSummary();
+                return;
+              }
+            }
+          } catch (e) {}
+        }
+
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuestion();
+      }
+
+      // ============================================================
+      // RENDER
+      // ============================================================
+      function getSectionForQ(idx) {
+        let count = 0;
+        for (let i = 0; i < SECTIONS.length; i++) {
+          count += SECTIONS[i].count;
+          if (idx < count) return i;
+        }
+        return SECTIONS.length - 1;
+      }
+
+      function renderQuestion() {
+        const q = questions[currentQ];
+        const secIdx = getSectionForQ(currentQ);
+        const sec = SECTIONS[secIdx];
+
+        // Progress
+        document.getElementById("progressText").textContent =
+          `Question ${currentQ + 1} of 20`;
+        document.getElementById("progressBar").style.width =
+          ((currentQ + 1) / 20) * 100 + "%";
+
+        // Section banner (show at first question of each section)
+        let firstOfSection = 0;
+        for (let i = 0; i < secIdx; i++) firstOfSection += SECTIONS[i].count;
+        const banner = document.getElementById("sectionBanner");
+        if (currentQ === firstOfSection) {
+          banner.innerHTML = `<div class="section-banner"><h3>${sec.icon} Section ${secIdx + 1}: ${sec.name}</h3><p>${sec.count} questions &middot; ${sec.type === "mc" ? "Multiple Choice" : "Fill-in Answer"}</p></div>`;
+        } else {
+          banner.innerHTML = "";
+        }
+
+        // Question
+        const area = document.getElementById("questionArea");
+        let html = `<div class="question-card">
+    <div class="q-number">${sec.icon} ${sec.name} &mdash; Question ${currentQ + 1}</div>
+    <div class="q-text">${esc(q.text)}</div>`;
+
+        if (sec.type === "mc" || q.options) {
+          html += `<div class="options">`;
+          const letters = ["A", "B", "C", "D"];
+          q.options.forEach((opt, i) => {
+            let cls = "option-btn";
+            if (answered[currentQ]) {
+              cls += " locked";
+              if (i === q.answer) cls += " correct-answer";
+              else if (answers[currentQ] === i && i !== q.answer)
+                cls += " wrong-answer";
+            } else if (answers[currentQ] === i) {
+              cls += " selected";
+            }
+            html += `<button class="${cls}" onclick="selectOption(${i})" ${answered[currentQ] ? "disabled" : ""}>${letters[i]}. ${esc(opt)}</button>`;
+          });
+          html += `</div>`;
+          if (!answered[currentQ]) {
+            html += `<div class="submit-row"><button class="btn btn-accent btn-sm" onclick="submitMC()">Check Answer</button></div>`;
+          }
+        } else {
+          // fill-in
+          let inputCls = "fill-input";
+          if (answered[currentQ]) {
+            inputCls += results[currentQ] ? " correct-input" : " wrong-input";
+          }
+          html += `<input type="text" class="${inputCls}" id="fillInput" placeholder="Your answer" value="${answers[currentQ] !== null ? esc(String(answers[currentQ])) : ""}" ${answered[currentQ] ? "disabled" : ""} autocomplete="off">`;
+          if (!answered[currentQ]) {
+            html += `<div class="submit-row"><button class="btn btn-accent btn-sm" onclick="submitFill()">Check Answer</button></div>`;
+          }
+        }
+
+        // Level 1: retry prompt (after 1st wrong attempt, still answerable)
+        if (!answered[currentQ] && retryMsg[currentQ]) {
+          html += `<div class="feedback incorrect">
+      <strong>Not quite — try again</strong>
+      Take another look and pick your answer once more.
+    </div>`;
+        }
+
+        // Feedback (only once locked)
+        if (answered[currentQ]) {
+          const isCorrect = results[currentQ];
+          html += `<div class="feedback ${isCorrect ? "correct" : "incorrect"}">
+      <strong>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</strong>
+      ${esc(q.explanation)}
+    </div>`;
+        }
+
+        html += `</div>`;
+        area.innerHTML = html;
+
+        // Next button
+        const nextBtn = document.getElementById("nextBtn");
+        nextBtn.style.display = answered[currentQ] ? "inline-block" : "none";
+        nextBtn.textContent = currentQ === 19 ? "View Results" : "Next →";
+
+        if (!answered[currentQ] && (sec.type === "fill" || !q.options)) {
+          setTimeout(() => {
+            const fi = document.getElementById("fillInput");
+            if (fi) fi.focus();
+          }, 100);
+        }
+      }
+
+      // ============================================================
+      // INTERACTIONS
+      // ============================================================
+      function selectOption(idx) {
+        if (answered[currentQ]) return;
+        answers[currentQ] = idx;
+        renderQuestion();
+      }
+
+      function submitMC() {
+        if (answers[currentQ] === null) return;
+        const q = questions[currentQ];
+        const isCorrect = answers[currentQ] === q.answer;
+        // Level 1: one retry on a wrong first attempt
+        if (!isCorrect && attempts[currentQ] === 0) {
+          attempts[currentQ] = 1;
+          retryMsg[currentQ] = true;
+          saveProgress();
+          renderQuestion();
+          return;
+        }
+        retryMsg[currentQ] = false;
+        results[currentQ] = isCorrect;
+        answered[currentQ] = true;
+        saveProgress();
+        renderQuestion();
+      }
+
+      function submitFill() {
+        const input = document.getElementById("fillInput");
+        if (!input) return;
+        const val = input.value.trim();
+        if (!val) {
+          input.focus();
+          return;
+        }
+        answers[currentQ] = val;
+        const q = questions[currentQ];
+        const normalized = val.toLowerCase().replace(/\s+/g, " ");
+        const isCorrect = q.acceptedAnswers.some(
+          (a) => a.toLowerCase().replace(/\s+/g, " ") === normalized,
+        );
+        // Level 1: one retry on a wrong first attempt
+        if (!isCorrect && attempts[currentQ] === 0) {
+          attempts[currentQ] = 1;
+          retryMsg[currentQ] = true;
+          saveProgress();
+          renderQuestion();
+          return;
+        }
+        retryMsg[currentQ] = false;
+        results[currentQ] = isCorrect;
+        answered[currentQ] = true;
+        saveProgress();
+        renderQuestion();
+      }
+
+      function nextQuestion() {
+        if (currentQ === 19) {
+          showSummary();
+          return;
+        }
+        currentQ++;
+        saveProgress();
+        renderQuestion();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // ============================================================
+      // SUMMARY
+      // ============================================================
+      function showSummary() {
+        document.getElementById("quizScreen").classList.add("hidden");
+        document.getElementById("summaryScreen").style.display = "block";
+        document.getElementById("summaryName").textContent = studentName;
+
+        const total = results.filter((r) => r === true).length;
+        const pct = Math.round((total / 20) * 100);
+
+        // Animate ring
+        const circle = document.getElementById("scoreCircle");
+        const circumference = 2 * Math.PI * 60; // ~377
+        const offset = circumference - (pct / 100) * circumference;
+        setTimeout(() => {
+          circle.style.strokeDashoffset = offset;
+          circle.style.transition = "stroke-dashoffset 1s ease";
+        }, 100);
+        document.getElementById("scoreLabel").textContent = pct + "%";
+
+        // Section scores
+        let secHTML = "";
+        let qIdx = 0;
+        const sectionResults = [];
+        SECTIONS.forEach((sec, si) => {
+          let correct = 0;
+          for (let i = 0; i < sec.count; i++) {
+            if (results[qIdx + i]) correct++;
+          }
+          sectionResults.push({
+            name: sec.name,
+            icon: sec.icon,
+            correct,
+            total: sec.count,
+          });
+          const pctSec = Math.round((correct / sec.count) * 100);
+          let badgeClass =
+            pctSec >= 80
+              ? "badge-green"
+              : pctSec >= 50
+                ? "badge-yellow"
+                : "badge-red";
+          secHTML += `<div class="section-score">
+      <span class="label">${sec.icon} ${sec.name}</span>
+      <span class="badge ${badgeClass}">${correct}/${sec.count}</span>
+    </div>`;
+          qIdx += sec.count;
+        });
+        document.getElementById("sectionScores").innerHTML = secHTML;
+
+        // Tips
+        const tips = [];
+        if (sectionResults[0].correct < 4)
+          tips.push(
+            "Review integer and coordinate plane vocabulary — focus on terms like absolute value, origin, quadrant, and opposites.",
+          );
+        if (sectionResults[1].correct < 4)
+          tips.push(
+            "Practice comparing and ordering integers on a number line, and identifying quadrants from ordered pairs.",
+          );
+        if (sectionResults[2].correct < 4)
+          tips.push(
+            "Work through more problems with absolute value calculations, reflections, and distances between points.",
+          );
+        if (sectionResults[3].correct < 4)
+          tips.push(
+            "Solve word problems that use integers in context — temperature changes, depths, and distances on the coordinate plane.",
+          );
+        if (tips.length === 0)
+          tips.push("Great job! Keep reviewing to stay sharp for the test.");
+        document.getElementById("tipsList").innerHTML = tips
+          .map((t) => `<li>${t}</li>`)
+          .join("");
+
+        saveProgress();
+      }
+
+      // ============================================================
+      // EXPORT
+      // ============================================================
+      function exportResults() {
+        const total = results.filter((r) => r === true).length;
+        const pct = Math.round((total / 20) * 100);
+        let text = `UNIT 9 REVIEW — INTEGERS AND COORDINATE PLANE\n`;
+        text += `Student: ${studentName}\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Score: ${total}/20 (${pct}%)\n\n`;
+
+        let qIdx = 0;
+        SECTIONS.forEach((sec) => {
+          let correct = 0;
+          for (let i = 0; i < sec.count; i++) {
+            if (results[qIdx + i]) correct++;
+          }
+          text += `${sec.icon} ${sec.name}: ${correct}/${sec.count}\n`;
+          for (let i = 0; i < sec.count; i++) {
+            const q = questions[qIdx + i];
+            text += `  Q${qIdx + i + 1}: ${results[qIdx + i] ? "✅" : "❌"} ${q.text}\n`;
+            text += `    Your answer: ${answers[qIdx + i] !== null ? (q.options ? q.options[answers[qIdx + i]] : answers[qIdx + i]) : "(skipped)"}\n`;
+            if (!results[qIdx + i]) {
+              text += `    Correct: ${q.options ? q.options[q.answer] : q.acceptedAnswers[0]}\n`;
+            }
+          }
+          text += "\n";
+          qIdx += sec.count;
+        });
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Unit9-Review-${studentName.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      // ============================================================
+      // PERSISTENCE
+      // ============================================================
+      function saveProgress() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            studentName,
+            currentQ,
+            answers,
+            results,
+            answered,
+            attempts,
+            timestamp: Date.now(),
+          }),
+        );
+      }
+
+      function resetReview() {
+        if (!confirm("Start over? Your current results will be cleared."))
+          return;
+        localStorage.removeItem(STORAGE_KEY);
+        answers = new Array(20).fill(null);
+        results = new Array(20).fill(null);
+        answered = new Array(20).fill(false);
+        attempts = new Array(20).fill(0);
+        retryMsg = new Array(20).fill(false);
+        currentQ = 0;
+        document.getElementById("summaryScreen").style.display = "none";
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuestion();
+      }
+
+      // ============================================================
+      // UTIL
+      // ============================================================
+      function esc(str) {
+        const d = document.createElement("div");
+        d.textContent = str;
+        return d.innerHTML;
+      }
+    </script>
+  </body>
+</html>

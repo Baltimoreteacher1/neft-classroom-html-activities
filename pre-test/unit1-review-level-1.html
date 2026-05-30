@@ -1,0 +1,1402 @@
+<!doctype html>
+<html lang="en" data-nt-level="1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 1 Review: Number System — Level 1 (Support)</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --navy: #17324d;
+        --teal: #0d9488;
+        --bg: #f8fafc;
+        --white: #ffffff;
+        --ink: #24323f;
+        --muted: #7a8a9e;
+        --line: #dde3ea;
+        --success: #2d8a6e;
+        --success-bg: #e6f5ee;
+        --error: #c0392b;
+        --error-bg: #fceaea;
+        --warn: #d97706;
+        --warn-bg: #fef3c7;
+        --radius: 12px;
+        --shadow: 0 2px 12px rgba(23, 50, 77, 0.08);
+        --font: "Segoe UI", "system-ui", -apple-system, sans-serif;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      input,
+      select {
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      /* ── Screens ── */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      /* ── Login ── */
+      .login-wrap {
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 60px 24px;
+      }
+      .hero-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 48px 36px;
+        text-align: center;
+      }
+      .hero-emoji {
+        font-size: 4rem;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .hero-sub {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .login-form {
+        display: grid;
+        grid-template-columns: 1fr 120px;
+        gap: 12px;
+        max-width: 400px;
+        margin: 0 auto 24px;
+        text-align: left;
+      }
+      .login-form label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .field {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+        width: 100%;
+      }
+      .field:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .start-btn {
+        display: block;
+        margin: 0 auto;
+        padding: 14px 48px;
+        background: var(--teal);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        font-weight: 800;
+        transition: opacity 0.2s;
+        letter-spacing: 0.02em;
+      }
+      .start-btn:hover {
+        opacity: 0.9;
+      }
+      .start-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .resume-banner {
+        display: none;
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+      }
+      .resume-banner.show {
+        display: flex;
+      }
+      .resume-banner button {
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .resume-banner .clear-btn {
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      /* ── App Header ── */
+      .app-header {
+        background: var(--navy);
+        color: white;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        flex-wrap: wrap;
+      }
+      .app-header .title-text {
+        font-size: 0.95rem;
+        font-weight: 800;
+      }
+      .app-header .progress-text {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .app-header .score-text {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-left: auto;
+      }
+      .progress-track {
+        flex: 1;
+        min-width: 100px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--teal);
+        border-radius: 4px;
+        transition: width 0.3s;
+      }
+
+      /* ── Quiz Content ── */
+      .quiz-wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+      .section-header {
+        background: var(--navy);
+        color: white;
+        padding: 16px 24px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        margin-top: 24px;
+      }
+      .section-header h2 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-bottom: 2px;
+      }
+      .section-header p {
+        font-size: 0.82rem;
+        opacity: 0.7;
+      }
+      .question-card {
+        background: var(--white);
+        border-radius: 0 0 var(--radius) var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-bottom: 16px;
+        border-top: 1px solid var(--line);
+      }
+      .question-card.first {
+        border-radius: 0;
+        border-top: none;
+      }
+      .question-card.last {
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+      .question-card.only {
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+      .q-number {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--teal);
+        margin-bottom: 8px;
+      }
+      .q-text {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .mc-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .mc-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--ink);
+        transition: all 0.15s;
+      }
+      .mc-btn:hover:not(.locked) {
+        border-color: var(--teal);
+        background: rgba(13, 148, 136, 0.04);
+      }
+      .mc-btn.selected {
+        border-color: var(--teal);
+        background: rgba(13, 148, 136, 0.08);
+      }
+      .mc-btn.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .mc-btn.wrong {
+        border-color: var(--error);
+        background: var(--error-bg);
+        color: var(--error);
+      }
+      .mc-btn.locked {
+        cursor: default;
+      }
+      .mc-btn.reveal-correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+
+      .fill-input {
+        padding: 10px 14px;
+        border: 2px solid var(--line);
+        border-radius: 8px;
+        font-size: 1rem;
+        width: 180px;
+        transition: border-color 0.2s;
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .fill-input.correct {
+        border-color: var(--success);
+        background: var(--success-bg);
+      }
+      .fill-input.wrong {
+        border-color: var(--error);
+        background: var(--error-bg);
+      }
+      .fill-input:disabled {
+        opacity: 0.8;
+      }
+      .fill-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .check-btn {
+        padding: 8px 20px;
+        background: var(--teal);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        transition: opacity 0.2s;
+      }
+      .check-btn:hover {
+        opacity: 0.9;
+      }
+      .check-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .feedback {
+        display: none;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        margin-top: 12px;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: var(--success-bg);
+        border: 2px solid var(--success);
+        color: var(--success);
+      }
+      .feedback.no {
+        background: var(--error-bg);
+        border: 2px solid var(--error);
+        color: var(--error);
+      }
+
+      .section-nav {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 24px;
+      }
+      .nav-btn {
+        padding: 12px 28px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: opacity 0.2s;
+      }
+      .nav-btn.primary {
+        background: var(--teal);
+        color: white;
+      }
+      .nav-btn.secondary {
+        background: var(--navy);
+        color: white;
+      }
+      .nav-btn:hover {
+        opacity: 0.9;
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      /* ── Results ── */
+      .results-wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+      }
+      .results-hero {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 36px;
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .results-emoji {
+        font-size: 3.5rem;
+        margin-bottom: 8px;
+      }
+      .results-score {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .results-label {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .results-name {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+
+      .section-result {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px 24px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .section-icon {
+        font-size: 1.5rem;
+      }
+      .section-info {
+        flex: 1;
+      }
+      .section-info h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .section-info p {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .section-score-badge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 0.9rem;
+      }
+      .badge-green {
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .badge-yellow {
+        background: var(--warn-bg);
+        color: var(--warn);
+      }
+      .badge-red {
+        background: var(--error-bg);
+        color: var(--error);
+      }
+
+      .study-tips {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-top: 24px;
+      }
+      .study-tips h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 12px;
+      }
+      .tip-item {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.9rem;
+      }
+      .tip-item:last-child {
+        border-bottom: none;
+      }
+      .tip-topic {
+        font-weight: 700;
+        color: var(--error);
+      }
+
+      .results-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+      .copy-toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--navy);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        display: none;
+        z-index: 200;
+      }
+      .copy-toast.show {
+        display: block;
+        animation: fadeToast 2s forwards;
+      }
+      @keyframes fadeToast {
+        0%,
+        70% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* ── Footer ── */
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .footer strong {
+        color: var(--navy);
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 600px) {
+        .login-form {
+          grid-template-columns: 1fr;
+        }
+        .hero-card {
+          padding: 32px 20px;
+        }
+        .quiz-wrap {
+          padding: 16px 12px 60px;
+        }
+        .question-card {
+          padding: 18px;
+        }
+        .app-header {
+          padding: 8px 16px;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════════ LOGIN SCREEN ═══════════ -->
+    <div id="login-screen" class="screen active">
+      <div class="login-wrap">
+        <div class="hero-card">
+          <div class="hero-emoji">🚀</div>
+          <h1 class="hero-title">Unit 1 Review: Number System</h1>
+          <p class="hero-sub">
+            6.NS.2 &middot; 6.NS.3 &middot; 6.NS.4 &mdash; 20 Questions in 4
+            Sections
+          </p>
+
+          <div id="resume-banner" class="resume-banner">
+            <div style="flex: 1">
+              <strong>Welcome back!</strong> You have saved progress.
+            </div>
+            <button onclick="resumeSession()">Resume</button>
+            <button class="clear-btn" onclick="clearSaved()">Start Over</button>
+          </div>
+
+          <div class="login-form">
+            <label>Your Name</label>
+            <label>Period</label>
+            <input
+              id="inp-name"
+              class="field"
+              type="text"
+              placeholder="First Last"
+              autocomplete="off"
+            />
+            <select id="inp-period" class="field">
+              <option value="">--</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8</option>
+            </select>
+          </div>
+          <button class="start-btn" onclick="startReview()">
+            Begin Review
+          </button>
+        </div>
+      </div>
+      <div class="footer">
+        Neft Teacher &middot; Grade 6 &middot; Reveal Math
+      </div>
+    </div>
+
+    <!-- ═══════════ QUIZ SCREEN ═══════════ -->
+    <div id="quiz-screen" class="screen">
+      <div class="app-header">
+        <span class="title-text">🚀 Unit 1 Review</span>
+        <span class="progress-text" id="progress-label">0 / 20</span>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+        <span class="score-text" id="score-label">Score: 0</span>
+      </div>
+      <div class="quiz-wrap" id="quiz-content"></div>
+      <div class="footer">
+        Neft Teacher &middot; Grade 6 &middot; Reveal Math
+      </div>
+    </div>
+
+    <!-- ═══════════ RESULTS SCREEN ═══════════ -->
+    <div id="results-screen" class="screen">
+      <div class="results-wrap" id="results-content"></div>
+      <div class="footer">
+        Neft Teacher &middot; Grade 6 &middot; Reveal Math
+      </div>
+    </div>
+
+    <div class="copy-toast" id="copy-toast">Results copied to clipboard!</div>
+
+    <script>
+      /* ══════════════════════════════════════════
+       DATA — 20 problems, 4 sections
+       ══════════════════════════════════════════ */
+      const SECTIONS = [
+        {
+          id: "vocab",
+          title: "Section 1: Vocabulary",
+          desc: "Match each term to its definition",
+          icon: "📖",
+          questions: [
+            {
+              id: 1,
+              type: "mc",
+              text: "A whole number greater than 1 that has exactly two factors: 1 and itself.",
+              options: [
+                "Factor",
+                "Prime number",
+                "Multiple",
+                "Composite number",
+              ],
+              answer: 1,
+              explain:
+                "A prime number has exactly two factors: 1 and itself. Examples: 2, 3, 5, 7, 11.",
+            },
+            {
+              id: 2,
+              type: "mc",
+              text: "The product of a number and any whole number.",
+              options: ["Divisor", "Quotient", "Multiple", "Factor"],
+              answer: 2,
+              explain:
+                "A multiple is the product of a number and any whole number. For example, multiples of 4 are 4, 8, 12, 16, ...",
+            },
+            {
+              id: 3,
+              type: "mc",
+              text: "The greatest factor that two or more numbers share.",
+              options: ["LCM", "GCF", "Prime factorization", "Quotient"],
+              answer: 1,
+              explain:
+                "The Greatest Common Factor (GCF) is the largest factor shared by two or more numbers.",
+            },
+            {
+              id: 4,
+              type: "mc",
+              text: "A whole number greater than 1 that has more than two factors.",
+              options: [
+                "Prime number",
+                "Dividend",
+                "Composite number",
+                "Decimal",
+              ],
+              answer: 2,
+              explain:
+                "A composite number has more than two factors. For example, 12 has factors 1, 2, 3, 4, 6, and 12.",
+            },
+            {
+              id: 5,
+              type: "mc",
+              text: "The number being divided in a division problem.",
+              options: ["Divisor", "Quotient", "Remainder", "Dividend"],
+              answer: 3,
+              explain:
+                "The dividend is the number being divided. In 48 ÷ 6 = 8, the dividend is 48.",
+            },
+          ],
+        },
+        {
+          id: "quick",
+          title: "Section 2: Quick Check",
+          desc: "Find the correct answer",
+          icon: "⚡",
+          questions: [
+            {
+              id: 6,
+              type: "mc",
+              text: "What is the GCF of 24 and 36?",
+              options: ["6", "8", "12", "18"],
+              answer: 2,
+              explain:
+                "Factors of 24: 1, 2, 3, 4, 6, 8, 12, 24. Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36. The greatest common factor is 12.",
+            },
+            {
+              id: 7,
+              type: "mc",
+              text: "What is the LCM of 6 and 8?",
+              options: ["14", "24", "48", "2"],
+              answer: 1,
+              explain:
+                "Multiples of 6: 6, 12, 18, 24, 30... Multiples of 8: 8, 16, 24, 32... The least common multiple is 24.",
+            },
+            {
+              id: 8,
+              type: "mc",
+              text: "Which shows the prime factorization of 60?",
+              options: ["2 × 3 × 10", "2² × 3 × 5", "2 × 30", "4 × 15"],
+              answer: 1,
+              explain:
+                "60 = 2 × 30 = 2 × 2 × 15 = 2 × 2 × 3 × 5 = 2² × 3 × 5. All factors must be prime.",
+            },
+            {
+              id: 9,
+              type: "mc",
+              text: "What is 4.56 + 3.8?",
+              options: ["7.36", "8.36", "8.94", "7.94"],
+              answer: 1,
+              explain:
+                "Line up decimals: 4.56 + 3.80 = 8.36. Remember to align the decimal points before adding.",
+            },
+            {
+              id: 10,
+              type: "mc",
+              text: "What is 12.5 × 0.4?",
+              options: ["50", "0.5", "5.0", "5.5"],
+              answer: 2,
+              explain:
+                "12.5 × 0.4: Multiply 125 × 4 = 500, then place 2 decimal places → 5.00 = 5.0.",
+            },
+          ],
+        },
+        {
+          id: "practice",
+          title: "Section 3: Practice",
+          desc: "Type your answer in the box",
+          icon: "✏️",
+          questions: [
+            {
+              id: 11,
+              type: "fill",
+              text: "Divide: 1,458 ÷ 6 = ?",
+              answer: "243",
+              accept: ["243"],
+              explain:
+                "6 × 243 = 1,458. Work: 6 into 14 = 2 R2, 6 into 25 = 4 R1, 6 into 18 = 3.",
+            },
+            {
+              id: 12,
+              type: "fill",
+              text: "Subtract: 20.03 − 8.47 = ?",
+              answer: "11.56",
+              accept: ["11.56"],
+              explain:
+                "Line up decimals: 20.03 − 8.47. Borrow as needed: 11.56.",
+            },
+            {
+              id: 13,
+              type: "fill",
+              text: "Multiply: 3.14 × 6 = ?",
+              answer: "18.84",
+              accept: ["18.84"],
+              explain: "314 × 6 = 1,884. Place 2 decimal places → 18.84.",
+            },
+            {
+              id: 14,
+              type: "fill",
+              text: "Divide: 9.36 ÷ 0.4 = ?",
+              answer: "23.4",
+              accept: ["23.4", "23.40"],
+              explain: "Move decimal 1 place in both: 93.6 ÷ 4 = 23.4.",
+            },
+            {
+              id: 15,
+              type: "fill",
+              text: "What is the GCF of 18 and 45?",
+              answer: "9",
+              accept: ["9"],
+              explain:
+                "Factors of 18: 1, 2, 3, 6, 9, 18. Factors of 45: 1, 3, 5, 9, 15, 45. GCF = 9.",
+            },
+          ],
+        },
+        {
+          id: "challenge",
+          title: "Section 4: Challenge",
+          desc: "Solve each word problem",
+          icon: "🏆",
+          questions: [
+            {
+              id: 16,
+              type: "mc",
+              text: "Mia has 36 red beads and 48 blue beads. She wants to make identical bags with no beads left over. What is the greatest number of bags she can make?",
+              options: ["6", "8", "12", "24"],
+              answer: 2,
+              explain:
+                "Find the GCF of 36 and 48. Factors of 36: 1,2,3,4,6,9,12,18,36. Factors of 48: 1,2,3,4,6,8,12,16,24,48. GCF = 12. She can make 12 bags (3 red + 4 blue each).",
+            },
+            {
+              id: 17,
+              type: "mc",
+              text: "Jamal runs every 4 days and swims every 6 days. If he did both today, in how many days will he do both again on the same day?",
+              options: ["10", "12", "24", "2"],
+              answer: 1,
+              explain:
+                "Find the LCM of 4 and 6. Multiples of 4: 4, 8, 12... Multiples of 6: 6, 12... LCM = 12 days.",
+            },
+            {
+              id: 18,
+              type: "mc",
+              text: "A store sells ribbon for $2.75 per meter. Kenji buys 3.2 meters. How much does he pay?",
+              options: ["$8.25", "$8.80", "$9.00", "$5.95"],
+              answer: 1,
+              explain:
+                "$2.75 × 3.2: 275 × 32 = 8,800. Place 3 decimal places → $8.800 = $8.80.",
+            },
+            {
+              id: 19,
+              type: "mc",
+              text: "A 15.6-kilometer trail is split equally among 4 hikers. How many kilometers does each hiker walk?",
+              options: ["3.6 km", "4.9 km", "3.9 km", "3.12 km"],
+              answer: 2,
+              explain: "15.6 ÷ 4 = 3.9. Each hiker walks 3.9 kilometers.",
+            },
+            {
+              id: 20,
+              type: "mc",
+              text: "Two buses leave the station at the same time. Bus A returns every 15 minutes and Bus B every 20 minutes. After how many minutes will both buses be at the station together again?",
+              options: ["30", "35", "60", "45"],
+              answer: 2,
+              explain:
+                "Find the LCM of 15 and 20. 15 = 3 × 5, 20 = 2² × 5. LCM = 2² × 3 × 5 = 60 minutes.",
+            },
+          ],
+        },
+      ];
+
+      /* ── State ── */
+      const STORAGE_KEY = "unit1Review_v1_L1";
+      let state = {
+        name: "",
+        period: "",
+        currentSection: 0,
+        answers: {},
+        attempts: {},
+        score: 0,
+        completed: false,
+      };
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+      function loadState() {
+        try {
+          const s = localStorage.getItem(STORAGE_KEY);
+          if (s) return JSON.parse(s);
+        } catch (e) {}
+        return null;
+      }
+
+      /* ── Init ── */
+      window.addEventListener("DOMContentLoaded", () => {
+        const saved = loadState();
+        if (saved && saved.name) {
+          document.getElementById("resume-banner").classList.add("show");
+        }
+      });
+
+      function resumeSession() {
+        const saved = loadState();
+        if (saved) {
+          state = saved;
+          showScreen("quiz-screen");
+          renderSection();
+        }
+      }
+      function clearSaved() {
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById("resume-banner").classList.remove("show");
+      }
+
+      function startReview() {
+        const name = document.getElementById("inp-name").value.trim();
+        const period = document.getElementById("inp-period").value;
+        if (!name) {
+          alert("Please enter your name.");
+          return;
+        }
+        if (!period) {
+          alert("Please select your period.");
+          return;
+        }
+        state = {
+          name,
+          period,
+          currentSection: 0,
+          answers: {},
+          score: 0,
+          completed: false,
+        };
+        saveState();
+        showScreen("quiz-screen");
+        renderSection();
+      }
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      /* ── Helpers ── */
+      function escHtml(s) {
+        const d = document.createElement("div");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+      function totalAnswered() {
+        return Object.keys(state.answers).length;
+      }
+      function recalcScore() {
+        let s = 0;
+        for (const [qid, ans] of Object.entries(state.answers)) {
+          if (ans.correct) s++;
+        }
+        state.score = s;
+      }
+
+      /* ── Progress bar ── */
+      function updateProgress() {
+        const answered = totalAnswered();
+        document.getElementById("progress-label").textContent =
+          answered + " / 20";
+        document.getElementById("progress-fill").style.width =
+          (answered / 20) * 100 + "%";
+        document.getElementById("score-label").textContent =
+          "Score: " + state.score;
+      }
+
+      /* ── Render a section ── */
+      function renderSection() {
+        const sec = SECTIONS[state.currentSection];
+        const wrap = document.getElementById("quiz-content");
+        let html = `<div class="section-header"><span style="display:inline-block;background:rgba(255,255,255,0.18);color:#fff;font-size:0.7rem;font-weight:800;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;margin-bottom:6px;">Level 1 · Support</span><h2>${sec.icon} ${escHtml(sec.title)}</h2><p>${escHtml(sec.desc)}</p></div>`;
+
+        sec.questions.forEach((q, qi) => {
+          const cardClass =
+            qi === 0 ? "first" : qi === sec.questions.length - 1 ? "last" : "";
+          const saved = state.answers[q.id];
+          html += `<div class="question-card ${cardClass}" id="qcard-${q.id}">`;
+          html += `<div class="q-number">Question ${q.id} of 20</div>`;
+          html += `<div class="q-text">${escHtml(q.text)}</div>`;
+
+          if (q.type === "mc") {
+            html += `<div class="mc-options" id="opts-${q.id}">`;
+            q.options.forEach((opt, oi) => {
+              let cls = "mc-btn";
+              if (saved) {
+                cls += " locked";
+                if (oi === saved.selected)
+                  cls += saved.correct ? " correct" : " wrong";
+                if (!saved.correct && oi === q.answer) cls += " reveal-correct";
+              }
+              html += `<button class="${cls}" data-qid="${q.id}" data-idx="${oi}" ${saved ? "disabled" : ""}>${escHtml(opt)}</button>`;
+            });
+            html += `</div>`;
+          } else {
+            const val = saved ? saved.value : "";
+            const inputCls = saved ? (saved.correct ? "correct" : "wrong") : "";
+            html += `<div class="fill-row">`;
+            html += `<input class="fill-input ${inputCls}" id="fill-${q.id}" type="text" value="${escHtml(val)}" placeholder="Type answer" ${saved ? "disabled" : ""} />`;
+            html += `<button class="check-btn" id="chk-${q.id}" onclick="checkFill(${q.id})" ${saved ? "disabled" : ""}>Check</button>`;
+            html += `</div>`;
+          }
+
+          html += `<div class="feedback ${saved ? (saved.correct ? "show ok" : "show no") : ""}" id="fb-${q.id}">${saved ? feedbackHtml(q, saved.correct) : ""}</div>`;
+          html += `</div>`;
+        });
+
+        // Nav buttons
+        html += `<div class="section-nav">`;
+        html += `<button class="nav-btn secondary" onclick="prevSection()" ${state.currentSection === 0 ? "disabled" : ""}>&larr; Previous Section</button>`;
+        if (state.currentSection < SECTIONS.length - 1) {
+          html += `<button class="nav-btn primary" onclick="nextSection()">Next Section &rarr;</button>`;
+        } else {
+          html += `<button class="nav-btn primary" onclick="finishReview()">Finish Review 🏁</button>`;
+        }
+        html += `</div>`;
+
+        wrap.innerHTML = html;
+        updateProgress();
+
+        // Attach MC listeners
+        wrap.querySelectorAll(".mc-btn:not(.locked)").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const qid = parseInt(btn.dataset.qid);
+            const idx = parseInt(btn.dataset.idx);
+            answerMC(qid, idx);
+          });
+        });
+      }
+
+      function feedbackHtml(q, correct) {
+        if (correct)
+          return `<strong>✅ Correct!</strong> ${escHtml(q.explain)}`;
+        return `<strong>❌ Incorrect.</strong> ${escHtml(q.explain)}`;
+      }
+
+      /* ── Answer handlers (Level 1: one retry before lock) ── */
+      function answerMC(qid, idx) {
+        if (state.answers[qid]) return;
+        const q = findQuestion(qid);
+        const correct = idx === q.answer;
+        const priorWrong = (state.attempts && state.attempts[qid]) || 0;
+
+        // First wrong attempt → allow one retry, do not lock.
+        if (!correct && priorWrong < 1) {
+          if (!state.attempts) state.attempts = {};
+          state.attempts[qid] = priorWrong + 1;
+          saveState();
+          const opts = document.getElementById("opts-" + qid);
+          opts.querySelectorAll(".mc-btn").forEach((btn, oi) => {
+            btn.classList.remove("wrong");
+            if (oi === idx) btn.classList.add("wrong");
+          });
+          const fb = document.getElementById("fb-" + qid);
+          fb.className = "feedback show no";
+          fb.innerHTML = "<strong>Not quite — try again.</strong>";
+          return;
+        }
+
+        // Correct, or second wrong attempt → lock and record.
+        state.answers[qid] = { selected: idx, correct, value: q.options[idx] };
+        if (correct) state.score++;
+        saveState();
+
+        // Update UI
+        const opts = document.getElementById("opts-" + qid);
+        opts.querySelectorAll(".mc-btn").forEach((btn, oi) => {
+          btn.classList.add("locked");
+          btn.classList.remove("wrong");
+          btn.disabled = true;
+          if (oi === idx) btn.classList.add(correct ? "correct" : "wrong");
+          if (!correct && oi === q.answer) btn.classList.add("reveal-correct");
+        });
+        const fb = document.getElementById("fb-" + qid);
+        fb.className = "feedback show " + (correct ? "ok" : "no");
+        fb.innerHTML = feedbackHtml(q, correct);
+        updateProgress();
+      }
+
+      function checkFill(qid) {
+        const q = findQuestion(qid);
+        const inp = document.getElementById("fill-" + qid);
+        const val = inp.value.trim();
+        if (!val) {
+          alert("Please type an answer.");
+          return;
+        }
+        const correct = q.accept.includes(val);
+        const priorWrong = (state.attempts && state.attempts[qid]) || 0;
+
+        // First wrong attempt → allow one retry, do not lock.
+        if (!correct && priorWrong < 1) {
+          if (!state.attempts) state.attempts = {};
+          state.attempts[qid] = priorWrong + 1;
+          saveState();
+          inp.classList.remove("correct");
+          inp.classList.add("wrong");
+          const fb = document.getElementById("fb-" + qid);
+          fb.className = "feedback show no";
+          fb.innerHTML = "<strong>Not quite — try again.</strong>";
+          return;
+        }
+
+        // Correct, or second wrong attempt → lock and record.
+        state.answers[qid] = { value: val, correct };
+        if (correct) state.score++;
+        saveState();
+
+        inp.disabled = true;
+        inp.classList.remove("wrong", "correct");
+        inp.classList.add(correct ? "correct" : "wrong");
+        document.getElementById("chk-" + qid).disabled = true;
+        const fb = document.getElementById("fb-" + qid);
+        fb.className = "feedback show " + (correct ? "ok" : "no");
+        fb.innerHTML = feedbackHtml(q, correct);
+        updateProgress();
+      }
+
+      function findQuestion(qid) {
+        for (const sec of SECTIONS) {
+          for (const q of sec.questions) {
+            if (q.id === qid) return q;
+          }
+        }
+        return null;
+      }
+
+      /* ── Section navigation ── */
+      function nextSection() {
+        if (state.currentSection < SECTIONS.length - 1) {
+          state.currentSection++;
+          saveState();
+          renderSection();
+          window.scrollTo(0, 0);
+        }
+      }
+      function prevSection() {
+        if (state.currentSection > 0) {
+          state.currentSection--;
+          saveState();
+          renderSection();
+          window.scrollTo(0, 0);
+        }
+      }
+
+      function finishReview() {
+        const unanswered = 20 - totalAnswered();
+        if (unanswered > 0) {
+          if (
+            !confirm(
+              `You have ${unanswered} unanswered question(s). Finish anyway?`,
+            )
+          )
+            return;
+        }
+        recalcScore();
+        state.completed = true;
+        saveState();
+        showScreen("results-screen");
+        renderResults();
+      }
+
+      /* ══════════════════════════════════════
+       RESULTS
+       ══════════════════════════════════════ */
+      function renderResults() {
+        const wrap = document.getElementById("results-content");
+        const pct = Math.round((state.score / 20) * 100);
+        const emoji = pct >= 80 ? "🌟" : pct >= 60 ? "👍" : "📚";
+
+        let html = `<div class="results-hero">
+        <div class="results-emoji">${emoji}</div>
+        <div class="results-score">${pct}%</div>
+        <div class="results-label">${state.score} out of 20 correct</div>
+        <div class="results-name">${escHtml(state.name)} &middot; Period ${escHtml(state.period)}</div>
+      </div>`;
+
+        // Section breakdown
+        const sectionScores = [];
+        SECTIONS.forEach((sec) => {
+          let correct = 0,
+            total = sec.questions.length;
+          sec.questions.forEach((q) => {
+            if (state.answers[q.id] && state.answers[q.id].correct) correct++;
+          });
+          const spct = Math.round((correct / total) * 100);
+          sectionScores.push({
+            id: sec.id,
+            title: sec.title,
+            icon: sec.icon,
+            correct,
+            total,
+            pct: spct,
+          });
+          const badgeClass =
+            spct >= 80
+              ? "badge-green"
+              : spct >= 60
+                ? "badge-yellow"
+                : "badge-red";
+          html += `<div class="section-result">
+          <div class="section-icon">${sec.icon}</div>
+          <div class="section-info"><h3>${escHtml(sec.title)}</h3><p>${correct} / ${total} correct</p></div>
+          <span class="section-score-badge ${badgeClass}">${spct}%</span>
+        </div>`;
+        });
+
+        // Study tips
+        html += `<div class="study-tips"><h3>📝 Study Tips for Missed Topics</h3>`;
+        const missed = [];
+        SECTIONS.forEach((sec) => {
+          sec.questions.forEach((q) => {
+            if (!state.answers[q.id] || !state.answers[q.id].correct) {
+              missed.push(q);
+            }
+          });
+        });
+        if (missed.length === 0) {
+          html += `<div class="tip-item">Amazing work! You got every question correct. You are ready for the test!</div>`;
+        } else {
+          const tipMap = {
+            1: {
+              topic: "Prime Numbers",
+              tip: "Review the difference between prime and composite. A prime has exactly 2 factors.",
+            },
+            2: {
+              topic: "Multiples",
+              tip: "Practice listing multiples: multiply the number by 1, 2, 3, 4...",
+            },
+            3: {
+              topic: "GCF",
+              tip: "List all factors of each number, then find the greatest one they share.",
+            },
+            4: {
+              topic: "Composite Numbers",
+              tip: "A composite number has more than 2 factors. Try factor trees to check.",
+            },
+            5: {
+              topic: "Division Vocabulary",
+              tip: "Remember: dividend ÷ divisor = quotient. The dividend is the number being divided.",
+            },
+            6: {
+              topic: "Finding GCF",
+              tip: "List factors of each number or use prime factorization to find the GCF.",
+            },
+            7: {
+              topic: "Finding LCM",
+              tip: "List multiples of each number until you find the first one they share.",
+            },
+            8: {
+              topic: "Prime Factorization",
+              tip: "Use a factor tree: break numbers into prime factors. All factors in the answer must be prime.",
+            },
+            9: {
+              topic: "Decimal Addition",
+              tip: "Always line up the decimal points before adding. Add zeros as placeholders if needed.",
+            },
+            10: {
+              topic: "Decimal Multiplication",
+              tip: "Multiply as whole numbers, then count total decimal places in both factors.",
+            },
+            11: {
+              topic: "Multi-Digit Division",
+              tip: "Use long division step by step: divide, multiply, subtract, bring down.",
+            },
+            12: {
+              topic: "Decimal Subtraction",
+              tip: "Line up decimal points and borrow across place values carefully.",
+            },
+            13: {
+              topic: "Decimal Multiplication",
+              tip: "Multiply ignoring decimals, then place the decimal point (count places from both factors).",
+            },
+            14: {
+              topic: "Dividing Decimals",
+              tip: "Move the decimal in the divisor to make it a whole number, then move it the same in the dividend.",
+            },
+            15: {
+              topic: "GCF",
+              tip: "Factor both numbers completely and identify the greatest shared factor.",
+            },
+            16: {
+              topic: "GCF Word Problems",
+              tip: "When splitting items into equal groups with none left over, find the GCF.",
+            },
+            17: {
+              topic: "LCM Word Problems",
+              tip: "When events repeat on different cycles, find the LCM to see when they sync.",
+            },
+            18: {
+              topic: "Decimal Multiplication in Context",
+              tip: "Multiply price × quantity carefully, counting decimal places.",
+            },
+            19: {
+              topic: "Decimal Division in Context",
+              tip: "Divide total by number of parts. Move decimals as needed.",
+            },
+            20: {
+              topic: "LCM Word Problems",
+              tip: "Use prime factorization: take the highest power of each prime to find LCM.",
+            },
+          };
+          const seen = new Set();
+          missed.forEach((q) => {
+            const t = tipMap[q.id];
+            if (t && !seen.has(t.topic + t.tip)) {
+              seen.add(t.topic + t.tip);
+              html += `<div class="tip-item"><span class="tip-topic">${escHtml(t.topic)}:</span> ${escHtml(t.tip)}</div>`;
+            }
+          });
+        }
+        html += `</div>`;
+
+        // Actions
+        html += `<div class="results-actions">
+        <button class="nav-btn primary" onclick="copyResults()">📋 Copy Results</button>
+        <button class="nav-btn secondary" onclick="retakeReview()">🔄 Retake Review</button>
+      </div>`;
+
+        wrap.innerHTML = html;
+      }
+
+      /* ── Export ── */
+      function copyResults() {
+        recalcScore();
+        const pct = Math.round((state.score / 20) * 100);
+        let text = `Unit 1 Review: Number System\n`;
+        text += `Student: ${state.name} | Period: ${state.period}\n`;
+        text += `Overall: ${state.score}/20 (${pct}%)\n\n`;
+        SECTIONS.forEach((sec) => {
+          let c = 0;
+          sec.questions.forEach((q) => {
+            if (state.answers[q.id] && state.answers[q.id].correct) c++;
+          });
+          text += `${sec.title}: ${c}/${sec.questions.length}\n`;
+        });
+        text += `\nMissed Questions:\n`;
+        let hasMissed = false;
+        SECTIONS.forEach((sec) => {
+          sec.questions.forEach((q) => {
+            if (!state.answers[q.id] || !state.answers[q.id].correct) {
+              hasMissed = true;
+              const given = state.answers[q.id]
+                ? state.answers[q.id].value
+                : "(no answer)";
+              const correctAns =
+                q.type === "mc" ? q.options[q.answer] : q.answer;
+              text += `  Q${q.id}: ${q.text}\n    Given: ${given} | Correct: ${correctAns}\n`;
+            }
+          });
+        });
+        if (!hasMissed) text += `  None — perfect score!\n`;
+
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const toast = document.getElementById("copy-toast");
+            toast.classList.remove("show");
+            void toast.offsetWidth;
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 2200);
+          })
+          .catch(() => {
+            prompt("Copy the text below:", text);
+          });
+      }
+
+      function retakeReview() {
+        localStorage.removeItem(STORAGE_KEY);
+        state = {
+          name: "",
+          period: "",
+          currentSection: 0,
+          answers: {},
+          score: 0,
+          completed: false,
+        };
+        document.getElementById("resume-banner").classList.remove("show");
+        document.getElementById("inp-name").value = "";
+        document.getElementById("inp-period").value = "";
+        showScreen("login-screen");
+      }
+    </script>
+  </body>
+</html>
