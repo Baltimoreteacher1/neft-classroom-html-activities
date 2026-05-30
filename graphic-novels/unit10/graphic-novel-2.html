@@ -333,6 +333,40 @@
         margin: 8px 0;
         overflow-x: auto;
       }
+      .net {
+        background: #04181f;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+        margin: 8px 0;
+      }
+      .net-row {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin: 4px 0;
+        flex-wrap: wrap;
+      }
+      .net-face {
+        flex: 0 0 auto;
+        min-width: 68px;
+        text-align: center;
+        padding: 8px 6px;
+        background: #0d3a47;
+        border: 1px solid #2b8aa0;
+        border-radius: 6px;
+        color: #cfeffa;
+        font-size: 0.82rem;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+      .formula {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #9ee9ff;
+      }
       .choices {
         display: grid;
         gap: 10px;
@@ -670,9 +704,8 @@
           </p>
           <div class="choices" id="choices1a">
             <button class="choice" data-correct="false">
-              28 ft&sup3;<span class="tree"
-                >wrote 3&frac12; as 4 by rounding &mdash; don&rsquo;t
-                round</span
+              32 ft&sup3;<span class="tree"
+                >rounded 3&frac12; up to 4 &mdash; don&rsquo;t round</span
               >
             </button>
             <button class="choice" data-correct="false">
@@ -696,6 +729,10 @@
             A compact display measures <b>2&frac12; ft</b> &times;
             <b>1&frac12; ft</b> &times; <b>2 ft</b>. Two edges are fractional.
             Find the exact volume.
+            <span class="formula"
+              >Volume = l &times; w &times; h. Multiply the fractions exactly
+              &mdash; do not round.</span
+            >
           </p>
           <div class="choices" id="choices1b">
             <button class="choice" data-correct="true">
@@ -793,11 +830,26 @@
             <p class="prompt">
               Unfold the kelp-forest tank (<b>6 ft &times; 4 ft &times; 3 ft</b
               >) into a net and sum the six face areas to order the glass.
+              <span class="formula"
+                >Surface area = sum of all 6 faces = 2(lw + lh + wh).</span
+              >
             </p>
-            <div class="diagram">
-              +--------+ | 6 x 4 | top +--------+--------+--------+--------+ | 4
-              x 3 | 6 x 3 | 4 x 3 | 6 x 3 | | left | front | right | back |
-              +--------+--------+--------+--------+ | 6 x 4 | bottom +--------+
+            <div
+              class="net"
+              aria-label="Net of the 6 by 4 by 3 tank: top face 6 by 4, a row of left 4 by 3, front 6 by 3, right 4 by 3, back 6 by 3, and bottom face 6 by 4"
+            >
+              <div class="net-row">
+                <span class="net-face">top<br />6 &times; 4</span>
+              </div>
+              <div class="net-row">
+                <span class="net-face">left<br />4 &times; 3</span>
+                <span class="net-face">front<br />6 &times; 3</span>
+                <span class="net-face">right<br />4 &times; 3</span>
+                <span class="net-face">back<br />6 &times; 3</span>
+              </div>
+              <div class="net-row">
+                <span class="net-face">bottom<br />6 &times; 4</span>
+              </div>
             </div>
             <div class="choices" id="choices2a">
               <button class="choice" data-correct="false">
@@ -826,6 +878,10 @@
               The walk-through gallery tank is
               <b>8 ft &times; 3 ft &times; 2 ft</b>. Compute its surface area to
               finish the glass order.
+              <span class="formula"
+                >Surface area = 2(lw + lh + wh), in square feet
+                (ft&sup2;).</span
+              >
             </p>
             <div class="choices" id="choices2b">
               <button class="choice" data-correct="true">
@@ -925,6 +981,10 @@
               The centerpiece tank is <b>7 ft &times; 4 ft &times; 3 ft</b>.
               Final sign-off requires BOTH the water volume and the glass
               surface area on one line. Choose the fully correct certification.
+              <span class="formula"
+                >Volume = l &times; w &times; h (ft&sup3;). Surface area = 2(lw
+                + lh + wh) (ft&sup2;).</span
+              >
             </p>
             <div class="choices" id="choicesF">
               <button class="choice" data-correct="false">

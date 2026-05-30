@@ -196,6 +196,30 @@
         height: 100%;
         object-fit: cover;
       }
+      /* Graceful fallback when panel art is unavailable */
+      .art img.art-missing {
+        display: none;
+      }
+      .art.art-fallback::after {
+        content: attr(data-fallback);
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 16px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-style: italic;
+        background: repeating-linear-gradient(
+          135deg,
+          #051d18,
+          #051d18 12px,
+          #093029 12px,
+          #093029 24px
+        );
+      }
       .scene-head {
         display: flex;
         align-items: baseline;
@@ -1064,6 +1088,23 @@
     <script>
       (function () {
         "use strict";
+
+        /* ---------- Graceful art fallback (panel image unavailable) ---------- */
+        Array.prototype.slice
+          .call(document.querySelectorAll(".art img"))
+          .forEach(function (im) {
+            im.addEventListener("error", function () {
+              im.classList.add("art-missing");
+              var box = im.closest(".art");
+              if (box) {
+                box.classList.add("art-fallback");
+                box.setAttribute(
+                  "data-fallback",
+                  im.getAttribute("alt") || "Illustration",
+                );
+              }
+            });
+          });
 
         /* ---------- Coordinate grid SVG (-8..8) ---------- */
         function gridSVG(points, label) {
