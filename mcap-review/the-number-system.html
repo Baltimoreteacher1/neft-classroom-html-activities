@@ -604,6 +604,29 @@
       }
 
       /* ── Responsive ── */
+      .mc-btn:focus-visible,
+      .check-btn:focus-visible,
+      .nav-btn:focus-visible,
+      .start-btn:focus-visible,
+      .field:focus-visible {
+        outline: 3px solid var(--navy);
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        .score-ring .ring-fg {
+          transition: none !important;
+        }
+      }
+
       @media (max-width: 600px) {
         .login-form {
           grid-template-columns: 1fr;
@@ -629,7 +652,7 @@
     <div id="login-screen" class="screen active">
       <div class="login-wrap">
         <div class="hero-card">
-          <div class="hero-emoji">🔢</div>
+          <div class="hero-emoji" aria-hidden="true">🔢</div>
           <h1 class="hero-title">MCAP Review — The Number System</h1>
           <p class="hero-sub">
             6.NS.A &middot; 6.NS.B &middot; 6.NS.C &mdash; 20 Questions in 4
@@ -646,8 +669,8 @@
           </div>
 
           <div class="login-form">
-            <label>Your Name</label>
-            <label>Period</label>
+            <label for="inp-name">Your Name</label>
+            <label for="inp-period">Period</label>
             <input
               id="inp-name"
               class="field"
@@ -681,9 +704,19 @@
     <!-- ═══════════ QUIZ SCREEN ═══════════ -->
     <div id="quiz-screen" class="screen">
       <div class="app-header">
-        <span class="title-text">🔢 The Number System</span>
+        <span class="title-text"
+          ><span aria-hidden="true">🔢</span> The Number System</span
+        >
         <span class="progress-text" id="progress-label">0 / 20</span>
-        <div class="progress-track">
+        <div
+          class="progress-track"
+          id="progress-track"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-label="Questions answered"
+        >
           <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
         </div>
         <span class="score-text" id="score-label">Score: 0</span>
@@ -1056,8 +1089,16 @@
         const answered = totalAnswered();
         document.getElementById("progress-label").textContent =
           answered + " / " + TOTAL_Q;
-        document.getElementById("progress-fill").style.width =
-          (answered / TOTAL_Q) * 100 + "%";
+        const progPct = Math.round((answered / TOTAL_Q) * 100);
+        document.getElementById("progress-fill").style.width = progPct + "%";
+        const progTrack = document.getElementById("progress-track");
+        if (progTrack) {
+          progTrack.setAttribute("aria-valuenow", progPct);
+          progTrack.setAttribute(
+            "aria-label",
+            answered + " of " + TOTAL_Q + " questions answered",
+          );
+        }
         document.getElementById("score-label").textContent =
           "Score: " + state.score;
       }
@@ -1098,7 +1139,7 @@
             html += `</div>`;
           }
 
-          html += `<div class="feedback ${saved ? (saved.correct ? "show ok" : "show no") : ""}" id="fb-${q.id}">${saved ? feedbackHtml(q, saved.correct) : ""}</div>`;
+          html += `<div class="feedback ${saved ? (saved.correct ? "show ok" : "show no") : ""}" id="fb-${q.id}" role="status" aria-live="polite">${saved ? feedbackHtml(q, saved.correct) : ""}</div>`;
           html += `</div>`;
         });
 
@@ -1108,7 +1149,7 @@
         if (state.currentSection < SECTIONS.length - 1) {
           html += `<button class="nav-btn primary" onclick="nextSection()">Next Section &rarr;</button>`;
         } else {
-          html += `<button class="nav-btn primary" onclick="finishReview()">Finish Review 🏁</button>`;
+          html += `<button class="nav-btn primary" onclick="finishReview()">Finish Review <span aria-hidden="true">🏁</span></button>`;
         }
         html += `</div>`;
 
@@ -1127,8 +1168,8 @@
 
       function feedbackHtml(q, correct) {
         if (correct)
-          return `<strong>✅ Correct!</strong> ${escHtml(q.explain)}`;
-        return `<strong>❌ Incorrect.</strong> ${escHtml(q.explain)}`;
+          return `<strong><span aria-hidden="true">✅</span> Correct!</strong> ${escHtml(q.explain)}`;
+        return `<strong><span aria-hidden="true">❌</span> Incorrect.</strong> ${escHtml(q.explain)}`;
       }
 
       /* ── Answer handlers ── */
@@ -1257,7 +1298,7 @@
             <div class="ring-frac">${state.score} / ${TOTAL_Q}</div>
           </div>
         </div>
-        <div class="results-emoji">${emoji}</div>
+        <div class="results-emoji" aria-hidden="true">${emoji}</div>
         <div class="results-label">${state.score} out of ${TOTAL_Q} correct</div>
         <div class="results-name">${escHtml(state.name)} &middot; Period ${escHtml(state.period)} &middot; Maryland MCAP · 6.NS</div>
       </div>`;

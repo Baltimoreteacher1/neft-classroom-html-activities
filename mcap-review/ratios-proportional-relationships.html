@@ -444,6 +444,16 @@
         margin-top: 20px;
         flex-wrap: wrap;
       }
+      .option:focus-visible,
+      .check-btn:focus-visible,
+      .login-btn:focus-visible,
+      .export-btn:focus-visible,
+      .fill-input:focus-visible,
+      .login-input:focus-visible {
+        outline: 3px solid var(--primary);
+        outline-offset: 2px;
+      }
+
       @media (max-width: 600px) {
         .container {
           padding: 12px;
@@ -455,13 +465,24 @@
           padding: 16px;
         }
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <!-- LOGIN -->
       <div id="loginScreen" class="card login-screen">
-        <div class="emoji">🦀</div>
+        <div class="emoji" aria-hidden="true">🦀</div>
         <span class="mcap-note">Maryland MCAP · Grade 6 · 6.RP.A</span>
         <h1>MCAP Review: Ratios &amp; Proportional Relationships</h1>
         <p class="subtitle">
@@ -475,6 +496,7 @@
           id="nameInput"
           class="login-input"
           placeholder="Your Name"
+          aria-label="Your name"
           maxlength="40"
           autocomplete="off"
         />
@@ -494,9 +516,20 @@
         <div style="text-align: center">
           <span class="mcap-note">Maryland MCAP · Grade 6 · 6.RP.A</span>
         </div>
-        <h1>🦀 Ratios &amp; Proportional Relationships</h1>
+        <h1>
+          <span aria-hidden="true">🦀</span> Ratios &amp; Proportional
+          Relationships
+        </h1>
         <p class="subtitle" id="studentLabel"></p>
-        <div class="progress-bar">
+        <div
+          class="progress-bar"
+          id="progressBar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-label="Questions answered"
+        >
           <div class="progress-fill" id="progressFill" style="width: 0%"></div>
         </div>
         <p class="progress-text" id="progressText">0 answered</p>
@@ -518,7 +551,7 @@
         <div style="text-align: center">
           <span class="mcap-note">Maryland MCAP · Grade 6 · 6.RP.A</span>
         </div>
-        <h1>🦀 Practice Complete!</h1>
+        <h1><span aria-hidden="true">🦀</span> Practice Complete!</h1>
         <p class="subtitle" id="summaryLabel"></p>
         <div class="card" id="summaryCard"></div>
         <div class="nav-btns">
@@ -829,14 +862,14 @@
             if (q.type === "mc") {
               html += `<div class="options" id="opts-${q.id}">`;
               q.options.forEach((opt, i) => {
-                html += `<div class="option" id="opt-${q.id}-${i}" onclick="selectMC(${q.id},${i})"><span class="radio"><span class="radio-dot"></span></span>${opt}</div>`;
+                html += `<div class="option" id="opt-${q.id}-${i}" role="button" tabindex="0" onclick="selectMC(${q.id},${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMC(${q.id},${i});}"><span class="radio" aria-hidden="true"><span class="radio-dot"></span></span>${opt}</div>`;
               });
               html += `</div>`;
             } else {
               html += `<input type="text" class="fill-input" id="fill-${q.id}" placeholder="Type your answer..." autocomplete="off" onkeydown="if(event.key==='Enter')checkFill(${q.id})">`;
               html += `<br><button class="check-btn" id="checkbtn-${q.id}" onclick="checkFill(${q.id})">Check</button>`;
             }
-            html += `<div class="feedback" id="fb-${q.id}"></div>`;
+            html += `<div class="feedback" id="fb-${q.id}" role="status" aria-live="polite"></div>`;
             html += `</div>`;
           });
         });
@@ -851,6 +884,8 @@
         const opts = document.querySelectorAll(`#opts-${qid} .option`);
         opts.forEach((o, i) => {
           o.classList.add("disabled");
+          o.setAttribute("tabindex", "-1");
+          o.setAttribute("aria-disabled", "true");
           if (i === q.answer) o.classList.add("correct-answer");
           if (i === idx && !isCorrect) o.classList.add("wrong-answer");
           if (i === idx) o.classList.add("selected");
@@ -890,7 +925,7 @@
       function showFeedback(qid, isCorrect, explanation) {
         const fb = document.getElementById(`fb-${qid}`);
         fb.className = `feedback show ${isCorrect ? "correct" : "incorrect"}`;
-        fb.innerHTML = `<strong>${isCorrect ? "✅ Correct!" : "❌ Incorrect."}</strong> ${explanation}`;
+        fb.innerHTML = `<strong><span aria-hidden="true">${isCorrect ? "✅" : "❌"}</span> ${isCorrect ? "Correct!" : "Incorrect."}</strong> ${explanation}`;
         const card = document.getElementById(`qcard-${qid}`);
         if (questions.find((x) => x.id === qid).type === "mc")
           card.classList.add(
@@ -900,8 +935,16 @@
 
       function updateProgress() {
         totalAnswered = Object.keys(answers).length;
-        document.getElementById("progressFill").style.width =
-          `${(totalAnswered / TOTAL_Q) * 100}%`;
+        const progPct = Math.round((totalAnswered / TOTAL_Q) * 100);
+        document.getElementById("progressFill").style.width = `${progPct}%`;
+        const progBar = document.getElementById("progressBar");
+        if (progBar) {
+          progBar.setAttribute("aria-valuenow", progPct);
+          progBar.setAttribute(
+            "aria-label",
+            `${totalAnswered} of ${TOTAL_Q} questions answered`,
+          );
+        }
         document.getElementById("progressText").textContent =
           `${totalAnswered} of ${TOTAL_Q} answered`;
         document.getElementById("finishBtn").style.display =

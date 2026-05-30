@@ -414,6 +414,26 @@
         margin-top: 40px;
       }
 
+      .mc-option:focus-visible,
+      .btn:focus-visible,
+      .fill-input:focus-visible,
+      .login-card input:focus-visible,
+      .login-card select:focus-visible {
+        outline: 3px solid var(--primary, #4338ca);
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+
       @media print {
         .screen {
           display: block !important;
@@ -435,7 +455,7 @@
     <!-- LOGIN -->
     <div id="loginScreen" class="screen active">
       <div class="login-card">
-        <div class="emoji-hero">📐</div>
+        <div class="emoji-hero" aria-hidden="true">📐</div>
         <span class="mcap-badge">Maryland MCAP · Grade 6 · 6.EE</span>
         <h1>MCAP Review: Expressions &amp; Equations</h1>
         <p class="subtitle">
@@ -493,7 +513,15 @@
         <h2 id="sectionTitle" style="font-size: 18px"></h2>
         <span id="qCount" style="font-size: 14px; color: var(--muted)"></span>
       </div>
-      <div class="progress-bar">
+      <div
+        class="progress-bar"
+        id="progressBar"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        aria-label="Quiz progress"
+      >
         <div class="progress-fill" id="progressFill"></div>
       </div>
       <p class="progress-text" id="progressText"></p>
@@ -503,7 +531,11 @@
     <!-- RESULTS -->
     <div id="resultsScreen" class="screen">
       <div class="results-card" style="text-align: center">
-        <div class="emoji-hero" style="font-size: 48px; margin-bottom: 8px">
+        <div
+          class="emoji-hero"
+          style="font-size: 48px; margin-bottom: 8px"
+          aria-hidden="true"
+        >
           📐
         </div>
         <h2>MCAP Review Complete!</h2>
@@ -845,6 +877,14 @@
           `Question ${gi + 1} of ${totalQuestions()}`;
         const pct = (gi / totalQuestions()) * 100;
         document.getElementById("progressFill").style.width = pct + "%";
+        const progBar = document.getElementById("progressBar");
+        if (progBar) {
+          progBar.setAttribute("aria-valuenow", Math.round(pct));
+          progBar.setAttribute(
+            "aria-label",
+            `Question ${gi + 1} of ${totalQuestions()}`,
+          );
+        }
         document.getElementById("progressText").textContent =
           `${gi} of ${totalQuestions()} completed`;
 
@@ -864,8 +904,8 @@
         if (q.type === "mc") {
           html += `<div class="mc-options" id="mcOptions">`;
           q.choices.forEach((c, i) => {
-            html += `<div class="mc-option" data-idx="${i}" onclick="selectMC(${i})">`;
-            html += `<div class="mc-dot"></div><span>${c}</span></div>`;
+            html += `<div class="mc-option" data-idx="${i}" role="button" tabindex="0" onclick="selectMC(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMC(${i});}">`;
+            html += `<div class="mc-dot" aria-hidden="true"></div><span>${c}</span></div>`;
           });
           html += `</div>`;
         } else if (q.type === "fill") {
@@ -873,7 +913,7 @@
           html += `<span class="fill-unit">${q.unit || ""}</span></div>`;
         }
 
-        html += `<div class="feedback" id="feedback"></div>`;
+        html += `<div class="feedback" id="feedback" role="status" aria-live="polite"></div>`;
         html += `<div class="q-nav">`;
         if (gi > 0)
           html += `<button class="btn btn-outline btn-sm" onclick="prevQuestion()">Back</button>`;
@@ -938,6 +978,8 @@
             if (oi === q.answer) o.classList.add("correct");
             else if (oi === idx && !correct) o.classList.add("incorrect");
             o.style.pointerEvents = "none";
+            o.setAttribute("tabindex", "-1");
+            o.setAttribute("aria-disabled", "true");
           });
         } else if (q.type === "fill") {
           const input = document.getElementById("fillInput");
@@ -957,7 +999,10 @@
 
         const fb = document.getElementById("feedback");
         fb.className = "feedback " + (correct ? "correct" : "incorrect");
-        fb.innerHTML = (correct ? "✓ Correct! " : "✗ Incorrect. ") + q.explain;
+        fb.innerHTML =
+          `<span aria-hidden="true">${correct ? "✓" : "✗"}</span> ` +
+          (correct ? "Correct! " : "Incorrect. ") +
+          q.explain;
 
         locked[gi] = true;
         answers = answers.filter(
@@ -993,6 +1038,8 @@
             if (oi === choiceIdx && !prev.correct) o.classList.add("incorrect");
             if (oi === choiceIdx) o.classList.add("selected");
             o.style.pointerEvents = "none";
+            o.setAttribute("tabindex", "-1");
+            o.setAttribute("aria-disabled", "true");
           });
         } else if (q.type === "fill") {
           const input = document.getElementById("fillInput");
@@ -1069,7 +1116,7 @@
         const circ = 2 * Math.PI * r;
         const dash = (pct / 100) * circ;
         document.getElementById("scoreRing").innerHTML =
-          `<svg width="150" height="150" viewBox="0 0 150 150">` +
+          `<svg width="150" height="150" viewBox="0 0 150 150" aria-hidden="true" focusable="false">` +
           `<circle cx="75" cy="75" r="${r}" fill="none" stroke="#e5e7eb" stroke-width="12"></circle>` +
           `<circle cx="75" cy="75" r="${r}" fill="none" stroke="${ringColor}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${dash} ${circ}"></circle>` +
           `</svg>` +

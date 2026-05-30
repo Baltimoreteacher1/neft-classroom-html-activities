@@ -337,6 +337,14 @@
         margin-top: 16px;
       }
 
+      .option-btn:focus-visible,
+      .btn:focus-visible,
+      .fill-input:focus-visible,
+      .login-screen input:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+
       @media (max-width: 600px) {
         .container {
           padding: 12px;
@@ -348,13 +356,24 @@
           font-size: 1rem;
         }
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container" id="app">
       <!-- LOGIN -->
       <div class="login-screen" id="loginScreen">
-        <div class="emoji-hero">🚀</div>
+        <div class="emoji-hero" aria-hidden="true">🚀</div>
         <h1>Grade 7 Preview</h1>
         <h2 style="color: var(--accent); margin-bottom: 12px">
           A Summer Sneak Peek
@@ -371,12 +390,13 @@
           type="text"
           id="nameInput"
           placeholder="Enter your name"
+          aria-label="Enter your name"
           maxlength="30"
           autocomplete="off"
         />
         <br />
         <button class="btn btn-primary" onclick="startReview()">
-          Let's Take a Peek 🚀
+          Let's Take a Peek <span aria-hidden="true">🚀</span>
         </button>
       </div>
 
@@ -392,10 +412,18 @@
           <h2 id="sectionTitle" style="font-size: 1.1rem"></h2>
           <span id="qCounter" style="font-size: 0.9rem; color: #6b7280"></span>
         </div>
-        <div class="progress-bar-wrap">
+        <div
+          class="progress-bar-wrap"
+          id="progressBar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-label="Quiz progress"
+        >
           <div
             class="progress-bar-fill"
-            id="progressBar"
+            id="progressBarFill"
             style="width: 0%"
           ></div>
         </div>
@@ -413,7 +441,7 @@
       <!-- SUMMARY -->
       <div id="summaryScreen" class="summary-screen">
         <div style="text-align: center">
-          <div class="emoji-hero">🌟</div>
+          <div class="emoji-hero" aria-hidden="true">🌟</div>
           <h1>Preview Complete!</h1>
           <p id="summaryName" style="font-size: 1.1rem; color: #6b7280"></p>
           <p style="color: #6b7280; margin-top: 4px">
@@ -706,8 +734,14 @@
           `${SECTION_EMOJIS[sIdx]} ${SECTIONS[sIdx]}`;
         document.getElementById("qCounter").textContent =
           `Question ${currentQ + 1} of ${TOTAL}`;
-        document.getElementById("progressBar").style.width =
-          `${((currentQ + 1) / TOTAL) * 100}%`;
+        const progPct = Math.round(((currentQ + 1) / TOTAL) * 100);
+        document.getElementById("progressBarFill").style.width = `${progPct}%`;
+        const progBar = document.getElementById("progressBar");
+        progBar.setAttribute("aria-valuenow", progPct);
+        progBar.setAttribute(
+          "aria-label",
+          `Question ${currentQ + 1} of ${TOTAL}`,
+        );
 
         let html = "";
 
@@ -764,7 +798,7 @@
         // Feedback
         if (graded[currentQ]) {
           const ok = isCorrect(currentQ);
-          html += `<div class="feedback ${ok ? "correct" : "wrong"}">${ok ? "✅ You got it!" : "💡 Not quite — here's how it works:"} ${q.explain}</div>`;
+          html += `<div class="feedback ${ok ? "correct" : "wrong"}" role="status" aria-live="polite"><span aria-hidden="true">${ok ? "✅" : "💡"}</span> ${ok ? "You got it!" : "Not quite — here's how it works:"} ${q.explain}</div>`;
         }
 
         html += `</div></div>`;

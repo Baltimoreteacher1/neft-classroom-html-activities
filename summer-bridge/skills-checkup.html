@@ -336,6 +336,14 @@
       .fraction .num {
         border-bottom: 1.5px solid currentColor;
       }
+      .option-btn:focus-visible,
+      .btn:focus-visible,
+      .login-box input:focus-visible,
+      #fillInput:focus-visible {
+        outline: 3px solid var(--primary);
+        outline-offset: 2px;
+      }
+
       @media (max-width: 480px) {
         .container {
           padding: 12px;
@@ -347,6 +355,20 @@
           font-size: 1rem;
         }
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        .score-ring .fg {
+          transition: none !important;
+        }
+      }
     </style>
   </head>
   <body>
@@ -354,10 +376,11 @@
     <div id="loginScreen" class="screen active">
       <div class="container">
         <div class="card login-box">
-          <div class="emoji">🎒</div>
+          <div class="emoji" aria-hidden="true">🎒</div>
           <h1>Grade 6 Skills Checkup</h1>
           <p style="color: var(--text-light); margin: 4px 0 16px">
-            End-of-Year Review &mdash; Show what you've got! 🌞
+            End-of-Year Review &mdash; Show what you've got!
+            <span aria-hidden="true">🌞</span>
           </p>
           <p
             style="
@@ -373,6 +396,7 @@
             type="text"
             id="studentName"
             placeholder="Enter your name"
+            aria-label="Enter your name"
             autocomplete="off"
           />
           <button class="btn btn-primary" onclick="startReview()">
@@ -399,7 +423,15 @@
             style="color: var(--text-light); font-size: 0.85rem"
           ></span>
         </div>
-        <div class="progress-bar">
+        <div
+          class="progress-bar"
+          id="progressBar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-label="Quiz progress"
+        >
           <div class="progress-fill" id="progressFill"></div>
         </div>
         <div class="card" id="questionCard"></div>
@@ -418,13 +450,13 @@
     <div id="summaryScreen" class="screen">
       <div class="container">
         <div class="card" style="text-align: center">
-          <h2>🎉 Checkup Complete!</h2>
+          <h2><span aria-hidden="true">🎉</span> Checkup Complete!</h2>
           <p
             id="summaryName"
             style="color: var(--text-light); margin-bottom: 16px"
           ></p>
           <div class="score-ring" style="position: relative">
-            <svg viewBox="0 0 120 120">
+            <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
               <circle class="bg" cx="60" cy="60" r="50" />
               <circle class="fg" id="scoreArc" cx="60" cy="60" r="50" />
             </svg>
@@ -790,8 +822,13 @@
         document.getElementById("sectionTitle").innerHTML =
           `<span class="section-badge ${q.badge}">${q.section}</span>`;
         document.getElementById("qCount").textContent = `${i + 1} / ${TOTAL}`;
-        document.getElementById("progressFill").style.width =
-          ((i + 1) / TOTAL) * 100 + "%";
+        const progPct = Math.round(((i + 1) / TOTAL) * 100);
+        document.getElementById("progressFill").style.width = progPct + "%";
+        const progBar = document.getElementById("progressBar");
+        if (progBar) {
+          progBar.setAttribute("aria-valuenow", progPct);
+          progBar.setAttribute("aria-label", `Question ${i + 1} of ${TOTAL}`);
+        }
 
         const card = document.getElementById("questionCard");
         let html = `<div class="q-number">Question ${i + 1}</div><div class="q-text">${q.text}</div>`;
@@ -823,7 +860,7 @@
         /* feedback */
         if (state.answers[i] !== null) {
           const ok = state.correct[i];
-          html += `<div class="feedback-box ${ok ? "feedback-correct" : "feedback-incorrect"}">${ok ? "✓ Nice work!" : "Not quite — here's how it works:"} ${q.explain}</div>`;
+          html += `<div class="feedback-box ${ok ? "feedback-correct" : "feedback-incorrect"}" role="status" aria-live="polite">${ok ? '<span aria-hidden="true">✓</span> Nice work!' : "Not quite — here's how it works:"} ${q.explain}</div>`;
         }
 
         card.innerHTML = html;

@@ -358,14 +358,53 @@
           display: block;
         }
       }
+
+      /* ── Accessibility: visible keyboard focus ── */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 2px;
+      }
+      .sb-item:focus-visible,
+      .sb-group-label:focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: -2px;
+        color: white;
+      }
+
+      /* ── Respect reduced-motion preference ── */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        .card:hover {
+          transform: none;
+        }
+        .ch-btn:hover {
+          transform: none;
+        }
+      }
     </style>
   </head>
   <body>
-    <button class="mobile-toggle" id="mobile-toggle">
-      <span class="hamburger">&#9776;</span> Neft Hub
+    <button
+      class="mobile-toggle"
+      id="mobile-toggle"
+      aria-label="Toggle navigation menu"
+      aria-controls="sidebar"
+      aria-expanded="false"
+    >
+      <span class="hamburger" aria-hidden="true">&#9776;</span> Neft Hub
     </button>
     <div class="hub">
-      <nav class="sidebar" id="sidebar">
+      <nav class="sidebar" id="sidebar" aria-label="Activity sections">
         <div class="sb-brand">
           <h1>Neft Hub</h1>
           <p>208 Classroom Activities</p>
@@ -373,67 +412,70 @@
 
         <div class="sb-group">
           <div class="sb-group-label">
-            Math Curriculum <span class="chevron">&#9660;</span>
+            Math Curriculum
+            <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
             <a class="sb-item active" data-panel="lessons"
-              ><span class="sb-emoji">📐</span> Lessons
+              ><span class="sb-emoji" aria-hidden="true">📐</span> Lessons
               <span class="sb-count">64</span></a
             >
             <a class="sb-item" data-panel="games"
-              ><span class="sb-emoji">🎮</span> Games
+              ><span class="sb-emoji" aria-hidden="true">🎮</span> Games
               <span class="sb-count">33</span></a
             >
             <a class="sb-item" data-panel="pre-test"
-              ><span class="sb-emoji">📝</span> Pre-Test Reviews
-              <span class="sb-count">10</span></a
+              ><span class="sb-emoji" aria-hidden="true">📝</span> Pre-Test
+              Reviews <span class="sb-count">10</span></a
             >
             <a class="sb-item" data-panel="post-test"
-              ><span class="sb-emoji">🚀</span> Post-Test Activities
-              <span class="sb-count">10</span></a
+              ><span class="sb-emoji" aria-hidden="true">🚀</span> Post-Test
+              Activities <span class="sb-count">10</span></a
             >
             <a class="sb-item" data-panel="supplemental"
-              ><span class="sb-emoji">📖</span> Supplemental Resources
-              <span class="sb-count">10</span></a
+              ><span class="sb-emoji" aria-hidden="true">📖</span> Supplemental
+              Resources <span class="sb-count">10</span></a
             >
           </div>
         </div>
 
         <div class="sb-group">
           <div class="sb-group-label">
-            Reading & Writing <span class="chevron">&#9660;</span>
+            Reading & Writing
+            <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
             <a class="sb-item" data-panel="esol"
-              ><span class="sb-emoji">🌍</span> Reading & Language
-              <span class="sb-count">9</span></a
+              ><span class="sb-emoji" aria-hidden="true">🌍</span> Reading &
+              Language <span class="sb-count">9</span></a
             >
             <a class="sb-item" data-panel="blood-river"
-              ><span class="sb-emoji">📚</span> Blood on the River
-              <span class="sb-count">27</span></a
+              ><span class="sb-emoji" aria-hidden="true">📚</span> Blood on the
+              River <span class="sb-count">27</span></a
             >
           </div>
         </div>
 
         <div class="sb-group">
           <div class="sb-group-label">
-            WIDA ACCESS Prep <span class="chevron">&#9660;</span>
+            WIDA ACCESS Prep
+            <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
             <a class="sb-item" data-panel="wida-speaking"
-              ><span class="sb-emoji">🗣️</span> Speaking
+              ><span class="sb-emoji" aria-hidden="true">🗣️</span> Speaking
               <span class="sb-count">3</span></a
             >
             <a class="sb-item" data-panel="wida-listening"
-              ><span class="sb-emoji">🎧</span> Listening
+              ><span class="sb-emoji" aria-hidden="true">🎧</span> Listening
               <span class="sb-count">3</span></a
             >
             <a class="sb-item" data-panel="wida-reading"
-              ><span class="sb-emoji">📖</span> Reading
+              ><span class="sb-emoji" aria-hidden="true">📖</span> Reading
               <span class="sb-count">3</span></a
             >
             <a class="sb-item" data-panel="wida-writing"
-              ><span class="sb-emoji">✍️</span> Writing
+              ><span class="sb-emoji" aria-hidden="true">✍️</span> Writing
               <span class="sb-count">3</span></a
             >
           </div>
@@ -441,31 +483,33 @@
 
         <div class="sb-group">
           <div class="sb-group-label">
-            Family & Personal <span class="chevron">&#9660;</span>
+            Family & Personal
+            <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
             <a class="sb-item" data-panel="bar-mitzvah"
-              ><span class="sb-emoji">✡️</span> Noam Bar Mitzvah
-              <span class="sb-count">3</span></a
+              ><span class="sb-emoji" aria-hidden="true">✡️</span> Noam Bar
+              Mitzvah <span class="sb-count">3</span></a
             >
             <a class="sb-item" data-panel="family"
-              ><span class="sb-emoji">🏠</span> Personal & Family
-              <span class="sb-count">5</span></a
+              ><span class="sb-emoji" aria-hidden="true">🏠</span> Personal &
+              Family <span class="sb-count">5</span></a
             >
           </div>
         </div>
 
         <div class="sb-group">
           <div class="sb-group-label">
-            Projects & Tools <span class="chevron">&#9660;</span>
+            Projects & Tools
+            <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
             <a class="sb-item" data-panel="projects"
-              ><span class="sb-emoji">🔧</span> Special Projects
-              <span class="sb-count">34</span></a
+              ><span class="sb-emoji" aria-hidden="true">🔧</span> Special
+              Projects <span class="sb-count">34</span></a
             >
             <a class="sb-item" data-panel="tools"
-              ><span class="sb-emoji">📊</span> Teacher Tools
+              ><span class="sb-emoji" aria-hidden="true">📊</span> Teacher Tools
               <span class="sb-count">7</span></a
             >
           </div>
@@ -2925,41 +2969,93 @@
     <script>
       // Sidebar navigation
       document.querySelectorAll(".sb-item").forEach((item) => {
-        item.addEventListener("click", () => {
-          document
-            .querySelectorAll(".sb-item")
-            .forEach((i) => i.classList.remove("active"));
+        // Make these div-like <a> (no href) keyboard-operable buttons.
+        if (!item.hasAttribute("role")) item.setAttribute("role", "button");
+        if (!item.hasAttribute("tabindex")) item.setAttribute("tabindex", "0");
+        if (item.classList.contains("active"))
+          item.setAttribute("aria-current", "page");
+
+        function activate() {
+          document.querySelectorAll(".sb-item").forEach((i) => {
+            i.classList.remove("active");
+            i.removeAttribute("aria-current");
+          });
           document
             .querySelectorAll(".panel")
             .forEach((p) => p.classList.remove("active"));
           item.classList.add("active");
+          item.setAttribute("aria-current", "page");
           document
             .getElementById("panel-" + item.dataset.panel)
             .classList.add("active");
           // Close mobile sidebar
-          document.getElementById("sidebar").classList.remove("open");
+          const sb = document.getElementById("sidebar");
+          sb.classList.remove("open");
           document.getElementById("overlay").style.display = "none";
+          const mt = document.getElementById("mobile-toggle");
+          if (mt) mt.setAttribute("aria-expanded", "false");
           window.scrollTo(0, 0);
+        }
+
+        item.addEventListener("click", activate);
+        item.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            activate();
+          }
         });
       });
 
       // Group collapse/expand
       document.querySelectorAll(".sb-group-label").forEach((label) => {
-        label.addEventListener("click", () => {
-          label.parentElement.classList.toggle("collapsed");
+        const group = label.parentElement;
+        if (!label.hasAttribute("role")) label.setAttribute("role", "button");
+        if (!label.hasAttribute("tabindex"))
+          label.setAttribute("tabindex", "0");
+        label.setAttribute(
+          "aria-expanded",
+          group.classList.contains("collapsed") ? "false" : "true",
+        );
+
+        function toggle() {
+          group.classList.toggle("collapsed");
+          label.setAttribute(
+            "aria-expanded",
+            group.classList.contains("collapsed") ? "false" : "true",
+          );
+        }
+
+        label.addEventListener("click", toggle);
+        label.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
+          }
         });
+      });
+
+      // Give chapter buttons a descriptive accessible name.
+      document.querySelectorAll(".chapter-grid .ch-btn").forEach((btn) => {
+        const n = btn.textContent.trim();
+        if (n && !btn.hasAttribute("aria-label"))
+          btn.setAttribute("aria-label", "Chapter " + n);
       });
 
       // Mobile hamburger
       document.getElementById("mobile-toggle").addEventListener("click", () => {
         const sb = document.getElementById("sidebar");
         const ov = document.getElementById("overlay");
+        const mt = document.getElementById("mobile-toggle");
         sb.classList.toggle("open");
-        ov.style.display = sb.classList.contains("open") ? "block" : "none";
+        const open = sb.classList.contains("open");
+        ov.style.display = open ? "block" : "none";
+        if (mt) mt.setAttribute("aria-expanded", open ? "true" : "false");
       });
       document.getElementById("overlay").addEventListener("click", () => {
         document.getElementById("sidebar").classList.remove("open");
         document.getElementById("overlay").style.display = "none";
+        const mt = document.getElementById("mobile-toggle");
+        if (mt) mt.setAttribute("aria-expanded", "false");
       });
 
       // Hub search — filter cards across ALL panels
