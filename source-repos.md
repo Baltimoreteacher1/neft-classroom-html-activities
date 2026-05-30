@@ -40,6 +40,7 @@ This file maps classroom activity source repository names into the organized sta
 ## Statistics and Data
 | Source repository name | Target folder |
 | --- | --- |
+| `Statsofmylife` | `/statistics-data/stats-of-my-life/` |
 | `Mean-Median-Mode-Game` | `/statistics-data/mean-median-mode-game/` |
 | `Mean-Median-ModeGalleryWalk` | `/statistics-data/mean-median-modegallerywalk/` |
 | `meanmedianmodesoccerandbracelets` | `/statistics-data/meanmedianmodesoccerandbracelets/` |
