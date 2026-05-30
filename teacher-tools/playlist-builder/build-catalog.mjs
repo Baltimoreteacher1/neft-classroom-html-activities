@@ -181,8 +181,9 @@ for (const f of safeFiles("post-test", ".html")) {
   const um = stem.match(/unit(\d+)/i);
   let title = cleanTitle(titleTag(`post-test/${f}`));
   if (!title) title = humanize(stem);
-  if (/level-1$/i.test(stem)) title += " (Level 1)";
-  else if (/level-2$/i.test(stem)) title += " (Level 2)";
+  if (/level-1$/i.test(stem) && !/level\s*1/i.test(title)) title += " (Level 1)";
+  else if (/level-2$/i.test(stem) && !/level\s*2/i.test(title))
+    title += " (Level 2)";
   pushUnique(items, seen, {
     id: `posttest-${stem}`,
     title,
@@ -190,6 +191,26 @@ for (const f of safeFiles("post-test", ".html")) {
     unit: um ? um[1] : undefined,
     href: `/post-test/${f}`,
     category: "Post-Tests",
+  });
+}
+
+// 3b) PRE-TESTS — pre-test/*.html (base + Level 1/Level 2 variants) -----------
+for (const f of safeFiles("pre-test", ".html")) {
+  if (f === "index.html") continue;
+  const stem = f.replace(/\.html$/, "");
+  const um = stem.match(/unit(\d+)/i);
+  let title = cleanTitle(titleTag(`pre-test/${f}`));
+  if (!title) title = humanize(stem);
+  if (/level-1$/i.test(stem) && !/level\s*1/i.test(title)) title += " (Level 1)";
+  else if (/level-2$/i.test(stem) && !/level\s*2/i.test(title))
+    title += " (Level 2)";
+  pushUnique(items, seen, {
+    id: `pretest-${stem}`,
+    title,
+    type: "Pre-Test",
+    unit: um ? um[1] : undefined,
+    href: `/pre-test/${f}`,
+    category: "Review",
   });
 }
 
