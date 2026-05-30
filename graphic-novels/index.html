@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neft Teacher · Math Graphic Novels</title>
+    <style>
+      :root {
+        --bg: #0a1228;
+        --bg2: #0f1c3d;
+        --ink: #f4f7ff;
+        --muted: #9fb0d6;
+        --accent: #ff8a3d;
+        --accent2: #3da5ff;
+        --card: #13234d;
+        --line: #27406f;
+        --ok: #39d98a;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: radial-gradient(
+          1200px 700px at 70% -10%,
+          #1b2e63 0%,
+          var(--bg) 60%
+        );
+        color: var(--ink);
+        font-family: var(--font);
+        min-height: 100%;
+      }
+      body {
+        padding: clamp(16px, 4vw, 48px);
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      header {
+        text-align: center;
+        margin-bottom: clamp(20px, 4vw, 40px);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        margin-bottom: 14px;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        line-height: 1.1;
+        margin-bottom: 10px;
+      }
+      h1 .star {
+        color: var(--accent);
+      }
+      .sub {
+        color: var(--muted);
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+        max-width: 640px;
+        margin: 0 auto;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+        margin-top: 32px;
+      }
+      .card {
+        background: linear-gradient(180deg, var(--card), #0e1c40);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.7);
+      }
+      .card-art {
+        position: relative;
+        aspect-ratio: 16/9;
+        background: #0b1530;
+        overflow: hidden;
+      }
+      .card-art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .card-art .tag {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(10, 18, 40, 0.85);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 5px 10px;
+        border-radius: 8px;
+      }
+      .card-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+      }
+      .card-body h2 {
+        font-size: 1.3rem;
+      }
+      .card-body p {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .vocab {
+        font-size: 0.82rem;
+        color: #c5d2f0;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+        margin-top: 4px;
+      }
+      .vocab b {
+        color: var(--accent2);
+      }
+      .btns {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: auto;
+        padding-top: 14px;
+      }
+      .btn {
+        flex: 1 1 140px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 6px;
+        text-decoration: none;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 12px 14px;
+        border: 2px solid transparent;
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+        font-size: 1rem;
+      }
+      .btn:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .btn1 {
+        background: linear-gradient(135deg, #ff8a3d, #ff6a3d);
+        color: #1a0d02;
+      }
+      .btn2 {
+        background: linear-gradient(135deg, #3da5ff, #5d7bff);
+        color: #02112a;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.6);
+      }
+      .btn small {
+        display: block;
+        font-weight: 500;
+        font-size: 0.72rem;
+        opacity: 0.85;
+      }
+      .soon {
+        opacity: 0.55;
+      }
+      .soon .card-art {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <span class="badge">Neft Teacher · Grade 6 Math</span>
+        <h1>Math Graphic Novels <span class="star">&#128640;</span></h1>
+        <p class="sub">
+          Play through interactive math missions. Read the story, make the math
+          choices, and complete the mission. Pick the version that fits you
+          best.
+        </p>
+      </header>
+
+      <main class="grid">
+        <!-- UNIT 1 CARD -->
+        <article class="card">
+          <div class="card-art">
+            <img
+              src="_art/unit1/cover.png"
+              alt="A young space cadet on a station bridge surrounded by holographic factor trees"
+            />
+            <span class="tag">Unit 1</span>
+          </div>
+          <div class="card-body">
+            <h2>Prime Station: The Factor Code</h2>
+            <p>
+              Restore a damaged space station using prime factorization and the
+              Greatest Common Factor.
+            </p>
+            <div class="vocab">
+              <b>Covers:</b> Lesson 1-1 Prime Factorization &middot; Lesson 1-2
+              Greatest Common Factor (GCF)
+            </div>
+            <div class="btns">
+              <a class="btn btn1" href="unit1/graphic-novel-1.html"
+                >Graphic Novel #1<small>Support</small></a
+              >
+              <a class="btn btn2" href="unit1/graphic-novel-2.html"
+                >Graphic Novel #2<small>Enrichment</small></a
+              >
+            </div>
+          </div>
+        </article>
+
+        <!-- FUTURE UNIT PLACEHOLDER (template for future cards) -->
+        <article class="card soon" aria-hidden="true">
+          <div class="card-art">&#10024;</div>
+          <div class="card-body">
+            <h2>More units coming soon</h2>
+            <p>
+              New graphic novel missions are added here as each unit is
+              released.
+            </p>
+          </div>
+        </article>
+      </main>
+
+      <footer>
+        Neft Teacher &mdash; Grade 6 Math &middot; Interactive Graphic Novels
+      </footer>
+    </div>
+  </body>
+</html>
