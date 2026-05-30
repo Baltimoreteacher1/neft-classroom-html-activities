@@ -608,6 +608,33 @@
       body.level-1 .hint-btn {
         display: inline-block;
       }
+      body.level-0 .hint-btn {
+        display: inline-block;
+        animation: l0pulse 1.6s ease-in-out infinite;
+      }
+      .level0-tag {
+        display: none;
+        margin-left: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #9a3412;
+        background: #fff7ed;
+        border: 1px solid #fdba74;
+        border-radius: 6px;
+        padding: 3px 8px;
+      }
+      body.level-0 .level0-tag {
+        display: inline-block;
+      }
+      @keyframes l0pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 rgba(253, 186, 116, 0);
+        }
+        50% {
+          box-shadow: 0 0 10px rgba(253, 186, 116, 0.7);
+        }
+      }
       .hint-btn:hover {
         background: rgba(14, 138, 125, 0.2);
       }
@@ -1038,11 +1065,13 @@
       <div class="level-bar">
         <span class="level-label">Difficulty</span>
         <div class="level-toggle">
+          <button class="level-btn" data-level="0">Level 0 (Guided)</button>
           <button class="level-btn active" data-level="1">
             Level 1 (Hints)
           </button>
           <button class="level-btn" data-level="2">Level 2 (No Hints)</button>
         </div>
+        <span class="level0-tag">🟠 Guided: hints stay on</span>
       </div>
       <button class="start-btn" id="startBtn">Launch Mission</button>
     </div>
@@ -1453,7 +1482,10 @@
               b.classList.remove("active");
             });
             btn.classList.add("active");
-            document.body.className = "level-" + btn.dataset.level;
+            document.body.className =
+              btn.dataset.level === "0"
+                ? "level-0 level-1"
+                : "level-" + btn.dataset.level;
           });
         });
 

@@ -152,6 +152,18 @@
         border-color: rgba(255, 255, 255, 0.3);
         color: #ccc;
       }
+      body.lvl0 .hint-scroll-btn {
+        animation: l0pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes l0pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 rgba(253, 186, 116, 0);
+        }
+        50% {
+          box-shadow: 0 0 12px rgba(253, 186, 116, 0.8);
+        }
+      }
       .level-hint {
         font-size: 12px;
         display: block;
@@ -847,6 +859,10 @@
         victory!
       </p>
       <div class="start-level-toggle">
+        <button class="level-btn" data-level="0">
+          Level 0
+          <span class="level-hint">Guided &middot; hints always on</span>
+        </button>
         <button class="level-btn active" data-level="1">
           Level 1
           <span class="level-hint">Hint scrolls available</span>
@@ -1397,7 +1413,7 @@
             html += '<div class="boss-step-label">' + step.label + "</div>";
             html += '<div class="boss-step-text">' + step.text + "</div>";
 
-            if (level === 1) {
+            if (level <= 1) {
               html +=
                 '<button class="hint-scroll-btn" data-hint="boss-hint-' +
                 si +
@@ -1466,7 +1482,7 @@
             html += '<div class="eq-box">' + q.eq + "</div>";
           }
 
-          if (level === 1) {
+          if (level <= 1) {
             html +=
               '<button class="hint-scroll-btn" data-hint="' +
               idPrefix +
@@ -1807,6 +1823,7 @@
               .forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
             level = parseInt(btn.dataset.level);
+            document.body.classList.toggle("lvl0", level === 0);
           });
         });
 
