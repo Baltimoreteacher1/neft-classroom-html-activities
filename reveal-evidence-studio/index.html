@@ -469,8 +469,12 @@
             <div class="model-stage">
               <div class="svg-frame" id="modelFrame" aria-live="polite"></div>
               <div>
-                <h3 class="section-title">What to Look For</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <h3 class="section-title">What to Look For</h3>
+                  <button class="action-btn" type="button" onclick="speakPrompts()" style="background:none; border:none; cursor:pointer; font-size:1.1rem; padding:0 4px; margin-left:auto;" title="Speak prompts aloud">🔊 Listen</button>
+                </div>
                 <ul class="notice-list" id="modelPrompts"></ul>
+                <div id="modelControls" class="no-print" style="margin-top:16px; border-top:1.5px dashed var(--studio-line); padding-top:16px;"></div>
               </div>
             </div>
           </article>
@@ -531,6 +535,9 @@
                 <button class="action primary" type="button" id="saveDraft">
                   Save Draft
                 </button>
+                <button class="action" style="background:#2b579a; color:white; border-color:#2b579a;" type="button" id="downloadDocx">
+                  Download Blueprint
+                </button>
                 <button class="action" type="button" id="copyCard">
                   Copy Card
                 </button>
@@ -553,6 +560,41 @@
       (function () {
         "use strict";
 
+        // 1. CONFIGURATION
+        var CONFIG = {
+          theme: 'navy-teal',
+          debug: true
+        };
+
+        // 2. CONFIG VALIDATION
+        function validateConfig() {
+          console.log("=== Validating Evidence Studio Config ===");
+          if (typeof CONFIG !== 'object' || CONFIG === null) {
+            console.error("Config validation failed: CONFIG object is missing or null.");
+            return false;
+          }
+          console.log("Evidence Studio Config: VALID");
+          return true;
+        }
+
+        // 3. DIAGNOSTICS SELF-TEST
+        function selfTest() {
+          console.log("=== Running Evidence Studio Diagnostics ===");
+          try {
+            var checkIds = ['lessonSelect', 'lessonTitle', 'lessonMeta', 'modelKind', 'modelFrame', 'modelPrompts', 'claim', 'evidence', 'reasoning', 'reflection', 'downloadDocx', 'modelControls'];
+            checkIds.forEach(function (id) {
+              if (!document.getElementById(id)) {
+                throw new Error("Self-Test Failed: DOM node #" + id + " missing.");
+              }
+            });
+            console.log("Evidence Studio Self-Test: 100% PASS");
+            return true;
+          } catch (e) {
+            console.error("Evidence Studio Self-Test Error: ", e.message);
+            return false;
+          }
+        }
+
         var STORAGE_PREFIX = "revealEvidenceStudio:";
         var FALLBACK_MODEL = {
           kind: "comparison",
@@ -570,7 +612,13 @@
           clusters: [],
           lesson: null,
           unit: null,
-          cluster: null
+          cluster: null,
+          // Custom interactive values
+          val1: 18,
+          val2: 24,
+          val3: 5,
+          val4: 2,
+          val5: 75
         };
 
         var els = {
@@ -580,6 +628,7 @@
           modelKind: document.getElementById("modelKind"),
           modelFrame: document.getElementById("modelFrame"),
           modelPrompts: document.getElementById("modelPrompts"),
+          modelControls: document.getElementById("modelControls"),
           form: document.getElementById("studioForm"),
           studentName: document.getElementById("studentName"),
           claim: document.getElementById("claim"),
@@ -587,6 +636,7 @@
           reasoning: document.getElementById("reasoning"),
           reflection: document.getElementById("reflection"),
           saveDraft: document.getElementById("saveDraft"),
+          downloadDocx: document.getElementById("downloadDocx"),
           copyCard: document.getElementById("copyCard"),
           printCard: document.getElementById("printCard"),
           clearDraft: document.getElementById("clearDraft"),
@@ -815,27 +865,244 @@
           var cluster = state.cluster;
           var info = modelInfo(cluster, lesson);
 
+          var bigIdeaHtml = cluster ? `
+            <div class="meta-item" style="grid-column: 1 / -1; background:#f0fdfa; border-color:#ccfbf1;">
+              <span class="meta-label" style="color:var(--studio-green)">Big Idea <button class="action-btn" type="button" onclick="speakBigIdea()" style="background:none; border:none; cursor:pointer; font-size:1rem; padding:0 4px;" title="Listen to Big Idea">🔊 Listen</button></span>
+              <span class="meta-value" style="font-weight:600; color:#115e59;">${escapeHtml(cluster.bigIdea)}</span>
+            </div>
+          ` : '';
+
           els.lessonTitle.textContent = lessonLabel(lesson);
           els.lessonMeta.innerHTML =
             metaItem("Unit", unitLabel(unit, lesson)) +
             metaItem("Standard", getStandard(lesson, cluster)) +
-            metaItem("Cluster", getClusterName(lesson, cluster));
+            metaItem("Cluster", getClusterName(lesson, cluster)) +
+            bigIdeaHtml;
+            
           els.modelKind.textContent = info.label;
           els.modelFrame.innerHTML = renderSvg(info.kind);
+          
           els.modelPrompts.innerHTML = info.prompts
             .map(function (prompt) {
               return "<li>" + escapeHtml(prompt) + "</li>";
             })
             .join("");
+            
+          renderModelControls(info.kind);
+        }
+
+        window.speakBigIdea = function() {
+          if (!window.speechSynthesis || !state.cluster) return;
+          window.speechSynthesis.cancel();
+          var u = new SpeechSynthesisUtterance(state.cluster.bigIdea);
+          u.lang = "en-US";
+          u.rate = 0.92;
+          window.speechSynthesis.speak(u);
+        };
+
+        window.speakPrompts = function() {
+          if (!window.speechSynthesis || !state.cluster) return;
+          window.speechSynthesis.cancel();
+          var promptsText = state.cluster.prompts.join(". ");
+          var u = new SpeechSynthesisUtterance(promptsText);
+          u.lang = "en-US";
+          u.rate = 0.92;
+          window.speechSynthesis.speak(u);
+        };
+
+        function renderModelControls(kind) {
+          var cleanKind = normalizeId(kind);
+          var html = "";
+          if (cleanKind === 'factor') {
+            html = `
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                  <label for="ctrl-val1" style="font-size:0.85rem;">Value A</label>
+                  <input type="number" id="ctrl-val1" value="${state.val1 || 18}" min="2" max="100" style="min-height:36px; padding:6px 8px;">
+                </div>
+                <div>
+                  <label for="ctrl-val2" style="font-size:0.85rem;">Value B</label>
+                  <input type="number" id="ctrl-val2" value="${state.val2 || 24}" min="2" max="100" style="min-height:36px; padding:6px 8px;">
+                </div>
+              </div>
+            `;
+          } else if (cleanKind === 'decimal') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Tenths: <span id="lbl-val1">${state.val1 || 4}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 4}" min="0" max="9" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:8px;">Hundredths: <span id="lbl-val2">${state.val2 || 5}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 5}" min="0" max="9" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'division') {
+            html = `
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                  <label for="ctrl-val1" style="font-size:0.85rem;">Dividend</label>
+                  <input type="number" id="ctrl-val1" value="${state.val1 || 120}" min="10" max="999" style="min-height:36px; padding:6px 8px;">
+                </div>
+                <div>
+                  <label for="ctrl-val2" style="font-size:0.85rem;">Divisor</label>
+                  <input type="number" id="ctrl-val2" value="${state.val2 || 12}" min="2" max="99" style="min-height:36px; padding:6px 8px;">
+                </div>
+              </div>
+            `;
+          } else if (cleanKind === 'fraction') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Numerator: <span id="lbl-val1">${state.val1 || 3}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 3}" min="1" max="12" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:8px;">Denominator: <span id="lbl-val2">${state.val2 || 8}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 8}" min="1" max="12" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'ratio') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Term A: <span id="lbl-val1">${state.val1 || 3}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 3}" min="1" max="6" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Term B: <span id="lbl-val2">${state.val2 || 2}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 2}" min="1" max="6" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Scale Factor: <span id="lbl-val3">${state.val3 || 2}</span></label>
+                <input type="range" id="ctrl-val3" value="${state.val3 || 2}" min="1" max="4" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'percent') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Percent: <span id="lbl-val5">${state.val5 || 75}%</span></label>
+                <input type="range" id="ctrl-val5" value="${state.val5 || 75}" min="0" max="100" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'finance') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Principal ($): <span id="lbl-val1">${state.val1 || 100}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 100}" min="10" max="500" step="10" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Rate (%): <span id="lbl-val2">${state.val2 || 5}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 5}" min="1" max="15" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'area') {
+            var selectedTri = state.val4 === 'triangle' ? 'selected' : '';
+            var selectedPara = state.val4 === 'parallelogram' ? 'selected' : '';
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Shape Type</label>
+                <select id="ctrl-val4" style="min-height:36px; padding:6px 8px; font-size:0.85rem; margin-bottom:8px;">
+                  <option value="triangle" ${selectedTri}>Triangle</option>
+                  <option value="parallelogram" ${selectedPara}>Parallelogram</option>
+                </select>
+                <label style="font-size:0.85rem;">Base: <span id="lbl-val1">${state.val1 || 18}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 18}" min="5" max="30" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Height: <span id="lbl-val2">${state.val2 || 8}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 8}" min="4" max="20" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'expression') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Variable x: <span id="lbl-val1">${state.val1 || 3}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 3}" min="1" max="10" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'equation') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Constant: <span id="lbl-val2">${state.val2 || 5}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 5}" min="0" max="15" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'inequality') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Boundary value: <span id="lbl-val1">${state.val1 || 3}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 3}" min="1" max="5" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'data') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Interactive Dot Plot Builder</label>
+                <p style="font-size:0.78rem; color:var(--studio-muted); margin:4px 0 8px;">Displays student statistical scores spread visually.</p>
+              </div>
+            `;
+          } else if (cleanKind === 'coordinate') {
+            html = `
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div>
+                  <label style="font-size:0.85rem;">Point X: <span id="lbl-val1">${state.val1 || 5}</span></label>
+                  <input type="range" id="ctrl-val1" value="${state.val1 || 5}" min="0" max="10" style="width:100%;">
+                </div>
+                <div>
+                  <label style="font-size:0.85rem;">Point Y: <span id="lbl-val2">${state.val2 || 5}</span></label>
+                  <input type="range" id="ctrl-val2" value="${state.val2 || 5}" min="0" max="10" style="width:100%;">
+                </div>
+              </div>
+            `;
+          } else if (cleanKind === 'volume') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Width: <span id="lbl-val1">${state.val1 || 4}</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 4}" min="1" max="6" style="width:100%;">
+                <label style="font-size:0.85rem; margin-top:6px;">Height: <span id="lbl-val2">${state.val2 || 3}</span></label>
+                <input type="range" id="ctrl-val2" value="${state.val2 || 3}" min="1" max="5" style="width:100%;">
+              </div>
+            `;
+          } else if (cleanKind === 'surface') {
+            html = `
+              <div>
+                <label style="font-size:0.85rem;">Folding Angle: <span id="lbl-val1">${state.val1 || 45}&deg;</span></label>
+                <input type="range" id="ctrl-val1" value="${state.val1 || 45}" min="0" max="90" style="width:100%;">
+              </div>
+            `;
+          }
+          els.modelControls.innerHTML = html;
+
+          ['ctrl-val1', 'ctrl-val2', 'ctrl-val3', 'ctrl-val4', 'ctrl-val5'].forEach(function(id, idx) {
+            var el = document.getElementById(id);
+            if (el) {
+              var evType = el.tagName === 'SELECT' ? 'change' : 'input';
+              el.addEventListener(evType, function() {
+                var val = el.tagName === 'SELECT' ? el.value : Number(el.value);
+                state['val' + (idx + 1)] = val;
+                
+                var lbl = document.getElementById('lbl-val' + (idx + 1));
+                if (lbl) lbl.textContent = val + (id === 'ctrl-val5' ? '%' : (id === 'ctrl-val1' && cleanKind === 'surface' ? '°' : ''));
+                
+                var info = modelInfo(state.cluster, state.lesson);
+                els.modelFrame.innerHTML = renderSvg(info.kind);
+              });
+            }
+          });
+        }
+
+        function getPrimeFactors(num) {
+          var factors = [];
+          var d = 2;
+          var temp = num;
+          while (temp > 1) {
+            while (temp % d === 0) {
+              factors.push(d);
+              temp /= d;
+            }
+            d++;
+            if (d * d > temp) {
+              if (temp > 1) factors.push(temp);
+              break;
+            }
+          }
+          return factors;
         }
 
         function renderSvg(kind) {
           var cleanKind = normalizeId(kind);
-          if (cleanKind.indexOf("number") !== -1 || cleanKind.indexOf("line") !== -1) {
+          if (cleanKind.indexOf("number") !== -1 || cleanKind.indexOf("line") !== -1 || cleanKind === "inequality") {
             return numberLineSvg();
           }
-          if (cleanKind.indexOf("area") !== -1 || cleanKind.indexOf("array") !== -1) {
-            return areaSvg();
+          if (cleanKind.indexOf("area") !== -1 || cleanKind.indexOf("array") !== -1 || cleanKind === "fraction" || cleanKind === "percent") {
+            return areaSvg(cleanKind);
           }
           if (cleanKind.indexOf("coordinate") !== -1 || cleanKind.indexOf("graph") !== -1) {
             return coordinateSvg();
@@ -846,8 +1113,14 @@
           if (cleanKind.indexOf("data") !== -1 || cleanKind.indexOf("plot") !== -1) {
             return dataSvg();
           }
-          if (cleanKind.indexOf("geometry") !== -1 || cleanKind.indexOf("shape") !== -1) {
+          if (cleanKind.indexOf("geometry") !== -1 || cleanKind.indexOf("shape") !== -1 || cleanKind === "area") {
             return geometrySvg();
+          }
+          if (cleanKind === "factor") {
+            return factorSvg();
+          }
+          if (cleanKind === "finance") {
+            return financeSvg();
           }
           return comparisonSvg();
         }
@@ -863,13 +1136,98 @@
           );
         }
 
+        function factorSvg() {
+          var valA = state.val1 || 18;
+          var valB = state.val2 || 24;
+          var primesA = getPrimeFactors(valA);
+          var primesB = getPrimeFactors(valB);
+          
+          var intersection = [];
+          var tempB = primesB.slice();
+          primesA.forEach(function(p) {
+            var idx = tempB.indexOf(p);
+            if (idx !== -1) {
+              intersection.push(p);
+              tempB.splice(idx, 1);
+            }
+          });
+          
+          var onlyA = primesA.slice();
+          intersection.forEach(function(p) {
+            var idx = onlyA.indexOf(p);
+            if (idx !== -1) onlyA.splice(idx, 1);
+          });
+          var onlyB = tempB;
+          
+          var circles = `
+            <circle cx="200" cy="160" r="100" fill="rgba(36,94,168,0.15)" stroke="#245ea8" stroke-width="4"/>
+            <circle cx="320" cy="160" r="100" fill="rgba(25,118,92,0.15)" stroke="#19765c" stroke-width="4"/>
+            <text x="130" y="80" font-size="20" font-weight="800" fill="#245ea8">A: ${valA}</text>
+            <text x="390" y="80" font-size="20" font-weight="800" fill="#19765c">B: ${valB}</text>
+          `;
+          
+          var bubbles = "";
+          onlyA.forEach(function(p, i) {
+            bubbles += `<circle cx="160" cy="${110 + i * 40}" r="16" fill="#245ea8"/><text x="160" y="${117 + i * 40}" text-anchor="middle" font-size="16" font-weight="900" fill="#ffffff">${p}</text>`;
+          });
+          onlyB.forEach(function(p, i) {
+            bubbles += `<circle cx="360" cy="${110 + i * 40}" r="16" fill="#19765c"/><text x="360" y="${117 + i * 40}" text-anchor="middle" font-size="16" font-weight="900" fill="#ffffff">${p}</text>`;
+          });
+          intersection.forEach(function(p, i) {
+            bubbles += `<circle cx="260" cy="${110 + i * 40}" r="16" fill="#d97706"/><text x="260" y="${117 + i * 40}" text-anchor="middle" font-size="16" font-weight="900" fill="#ffffff">${p}</text>`;
+          });
+          
+          var gcf = intersection.reduce(function(a,b){return a*b;}, 1);
+          var lcm = (valA * valB) / gcf;
+          
+          return svgShell(
+            "GCF and LCM Venn Diagram",
+            circles + bubbles + `
+              <text x="260" y="280" text-anchor="middle" font-size="18" font-weight="800" fill="#17212f">GCF = ${gcf}  |  LCM = ${lcm}</text>
+            `
+          );
+        }
+
+        function financeSvg() {
+          var principal = state.val1 || 100;
+          var rate = state.val2 || 5;
+          var years = 3;
+          var interest = (principal * rate * years) / 100;
+          var total = principal + interest;
+          
+          var pHeight = (principal / 500) * 180;
+          var iHeight = (interest / 500) * 180;
+          
+          return svgShell(
+            "Financial simple interest bar graph",
+            `
+              <line x1="80" y1="240" x2="440" y2="240" stroke="#23364d" stroke-width="4"/>
+              <rect x="150" y="${240 - pHeight}" width="80" height="${pHeight}" fill="#245ea8" rx="4"/>
+              <rect x="290" y="${240 - (pHeight + iHeight)}" width="80" height="${pHeight + iHeight}" fill="#19765c" rx="4"/>
+              <rect x="290" y="${240 - (pHeight + iHeight)}" width="80" height="${iHeight}" fill="#d97706" rx="4"/>
+              <text x="190" y="265" text-anchor="middle" font-size="16" font-weight="800" fill="#245ea8">Principal: $${principal}</text>
+              <text x="330" y="265" text-anchor="middle" font-size="16" font-weight="800" fill="#19765c">Total: $${total}</text>
+              <text x="330" y="285" text-anchor="middle" font-size="14" font-weight="700" fill="#d97706">(Interest: $${interest})</text>
+              <text x="260" y="45" text-anchor="middle" font-size="20" font-weight="900" fill="#17212f">3-Year Simple Interest Accumulator</text>
+            `
+          );
+        }
+
         function numberLineSvg() {
+          var val = state.val1 || 3;
+          var dotPx = 64 + val * 78;
+          var lineShade = `
+            <line x1="${dotPx}" y1="172" x2="450" y2="172" stroke="#19765c" stroke-width="8" stroke-linecap="round"/>
+            <path d="M440 162 L454 172 L440 182" fill="none" stroke="#19765c" stroke-width="6" stroke-linejoin="round"/>
+          `;
           return svgShell(
             "Number line model",
             '<line x1="64" y1="172" x2="456" y2="172" stroke="#23364d" stroke-width="5" stroke-linecap="round"/>' +
               '<path d="M448 160 L464 172 L448 184" fill="none" stroke="#23364d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
-              [64, 142, 220, 298, 376, 454]
-                .map(function (x, index) {
+              lineShade + 
+              [0, 1, 2, 3, 4, 5]
+                .map(function (index) {
+                  var x = 64 + index * 78;
                   return (
                     '<g><line x1="' +
                     x +
@@ -883,23 +1241,68 @@
                   );
                 })
                 .join("") +
-              '<path d="M142 140 C180 88 260 88 298 140" fill="none" stroke="#245ea8" stroke-width="6"/>' +
-              '<path d="M298 140 C328 104 350 104 376 140" fill="none" stroke="#19765c" stroke-width="6"/>' +
-              '<text x="220" y="82" text-anchor="middle" font-size="20" font-weight="800" fill="#245ea8">first jump</text>' +
-              '<text x="342" y="100" text-anchor="middle" font-size="20" font-weight="800" fill="#19765c">next jump</text>'
+              `<circle cx="${dotPx}" cy="172" r="12" fill="#19765c" stroke="#ffffff" stroke-width="3"/>` +
+              `<text x="260" y="80" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">Inequality: x &ge; ${val}</text>`
           );
         }
 
-        function areaSvg() {
+        function areaSvg(cleanKind) {
           var cells = "";
-          for (var row = 0; row < 4; row += 1) {
-            for (var col = 0; col < 6; col += 1) {
+          var cols = 8;
+          var rows = 4;
+          
+          if (cleanKind === 'percent') {
+            var activePercent = state.val5 || 75;
+            for (var row = 0; row < 10; row += 1) {
+              for (var col = 0; col < 10; col += 1) {
+                var cellNum = row * 10 + col;
+                var shaded = cellNum < activePercent;
+                cells +=
+                  '<rect x="' +
+                  (110 + col * 28) +
+                  '" y="' +
+                  (40 + row * 22) +
+                  '" width="28" height="22" fill="' +
+                  (shaded ? "var(--studio-green)" : "#ffffff") +
+                  '" stroke="#24516f" stroke-width="1.5" style="transition: fill 0.15s ease;"/>';
+              }
+            }
+            return svgShell(
+              "Hundred grid percentage visualizer",
+              cells +
+                `<text x="260" y="295" text-anchor="middle" font-size="20" font-weight="900" fill="#17212f">Percent shaded: ${activePercent}%</text>`
+            );
+          }
+          
+          if (cleanKind === 'fraction') {
+            var num = state.val1 || 3;
+            var den = state.val2 || 8;
+            for (var col = 0; col < den; col += 1) {
+              var shaded = col < num;
               cells +=
                 '<rect x="' +
-                (94 + col * 52) +
+                (80 + col * (360 / den)) +
                 '" y="' +
-                (62 + row * 46) +
-                '" width="52" height="46" fill="' +
+                (80) +
+                '" width="' + (360 / den) + '" height="120" fill="' +
+                (shaded ? "var(--studio-blue)" : "#ffffff") +
+                '" stroke="#24516f" stroke-width="3"/>';
+            }
+            return svgShell(
+              "Fraction area model resizer",
+              cells +
+                `<text x="260" y="260" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">Fraction: ${num} / ${den}</text>`
+            );
+          }
+
+          for (var row = 0; row < rows; row += 1) {
+            for (var col = 0; col < cols; col += 1) {
+              cells +=
+                '<rect x="' +
+                (94 + col * 42) +
+                '" y="' +
+                (62 + row * 38) +
+                '" width="42" height="38" fill="' +
                 (row < 2 ? "#dcecff" : "#e8f6ef") +
                 '" stroke="#24516f" stroke-width="2"/>';
             }
@@ -908,41 +1311,59 @@
             "Area or array model",
             cells +
               '<text x="250" y="272" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">rows x columns</text>' +
-              '<path d="M94 42 H406" stroke="#245ea8" stroke-width="5" stroke-linecap="round"/>' +
-              '<path d="M74 62 V246" stroke="#19765c" stroke-width="5" stroke-linecap="round"/>'
+              '<path d="M94 42 H430" stroke="#245ea8" stroke-width="5" stroke-linecap="round"/>' +
+              '<path d="M74 62 V214" stroke="#19765c" stroke-width="5" stroke-linecap="round"/>'
           );
         }
 
         function coordinateSvg() {
+          var gridLines = "";
+          for (var i = 0; i <= 10; i++) {
+            var pos = 60 + i * 20;
+            gridLines += `<line x1="${pos}" y1="40" x2="${pos}" y2="240" stroke="#cbd5e1" stroke-width="0.8"/>`;
+            gridLines += `<line x1="60" y1="${pos}" x2="260" y2="${pos}" stroke="#cbd5e1" stroke-width="0.8"/>`;
+          }
+          
+          var pX = state.val1 || 5;
+          var pY = state.val2 || 5;
+          var cx = 60 + pX * 20;
+          var cy = 240 - pY * 20;
+          
           return svgShell(
-            "Coordinate graph model",
-            '<line x1="84" y1="252" x2="456" y2="252" stroke="#23364d" stroke-width="5"/>' +
-              '<line x1="84" y1="252" x2="84" y2="50" stroke="#23364d" stroke-width="5"/>' +
-              '<path d="M448 240 L464 252 L448 264" fill="none" stroke="#23364d" stroke-width="5" stroke-linejoin="round"/>' +
-              '<path d="M72 58 L84 42 L96 58" fill="none" stroke="#23364d" stroke-width="5" stroke-linejoin="round"/>' +
-              '<path d="M110 226 L170 194 L230 164 L290 132 L350 104 L420 72" fill="none" stroke="#245ea8" stroke-width="6"/>' +
-              [110, 170, 230, 290, 350, 420]
-                .map(function (x, i) {
-                  var y = [226, 194, 164, 132, 104, 72][i];
-                  return '<circle cx="' + x + '" cy="' + y + '" r="8" fill="#19765c"/>';
-                })
-                .join("") +
-              '<text x="438" y="286" text-anchor="end" font-size="20" font-weight="800" fill="#17212f">x</text>' +
-              '<text x="52" y="68" text-anchor="middle" font-size="20" font-weight="800" fill="#17212f">y</text>'
+            "Coordinate plane plotter",
+            `
+              <g>${gridLines}</g>
+              <line x1="60" y1="240" x2="280" y2="240" stroke="#23364d" stroke-width="4"/>
+              <line x1="60" y1="40" x2="60" y2="240" stroke="#23364d" stroke-width="4"/>
+              <line x1="${cx}" y1="240" x2="${cx}" y2="${cy}" stroke="#245ea8" stroke-width="2" stroke-dasharray="4 4"/>
+              <line x1="60" y1="${cy}" x2="${cx}" y2="${cy}" stroke="#245ea8" stroke-width="2" stroke-dasharray="4 4"/>
+              <circle cx="${cx}" cy="${cy}" r="8" fill="#19765c"/>
+              <text x="${cx + 12}" y="${cy - 12}" font-size="18" font-weight="900" fill="#19765c">P(${pX}, ${pY})</text>
+              <text x="260" y="280" text-anchor="middle" font-size="20" font-weight="900" fill="#17212f">Coordinate Plotter</text>
+            `
           );
         }
 
         function ratioSvg() {
+          var termA = state.val1 || 3;
+          var termB = state.val2 || 2;
+          var scale = state.val3 || 2;
+          
+          var blocks = "";
+          for (var i = 0; i < termA * scale; i++) {
+            blocks += `<rect x="${60 + i * (380 / (termA * scale))}" y="78" width="${(380 / (termA * scale)) - 4}" height="48" fill="#dcecff" stroke="#24516f" stroke-width="2.5"/>`;
+          }
+          for (var i = 0; i < termB * scale; i++) {
+            blocks += `<rect x="${60 + i * (380 / (termB * scale))}" y="160" width="${(380 / (termB * scale)) - 4}" height="48" fill="#e8f6ef" stroke="#24516f" stroke-width="2.5"/>`;
+          }
+          
           return svgShell(
             "Ratio tape diagram model",
-            '<rect x="82" y="78" width="118" height="58" fill="#dcecff" stroke="#24516f" stroke-width="3"/>' +
-              '<rect x="200" y="78" width="118" height="58" fill="#dcecff" stroke="#24516f" stroke-width="3"/>' +
-              '<rect x="318" y="78" width="118" height="58" fill="#dcecff" stroke="#24516f" stroke-width="3"/>' +
-              '<rect x="82" y="184" width="118" height="58" fill="#e8f6ef" stroke="#24516f" stroke-width="3"/>' +
-              '<rect x="200" y="184" width="118" height="58" fill="#e8f6ef" stroke="#24516f" stroke-width="3"/>' +
-              '<text x="54" y="116" text-anchor="middle" font-size="20" font-weight="900" fill="#245ea8">A</text>' +
-              '<text x="54" y="222" text-anchor="middle" font-size="20" font-weight="900" fill="#19765c">B</text>' +
-              '<text x="260" y="290" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">3 parts : 2 parts</text>'
+            blocks + `
+              <text x="35" y="110" text-anchor="middle" font-size="20" font-weight="900" fill="#245ea8">A</text>
+              <text x="35" y="192" text-anchor="middle" font-size="20" font-weight="900" fill="#19765c">B</text>
+              <text x="260" y="270" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">Equivalent scaled: ${termA * scale} : ${termB * scale}  (scale: ${scale}x)</text>
+            `
           );
         }
 
@@ -966,18 +1387,33 @@
                 })
                 .join("") +
               '<circle cx="134" cy="220" r="8" fill="#245ea8"/><circle cx="178" cy="220" r="8" fill="#245ea8"/><circle cx="178" cy="196" r="8" fill="#245ea8"/><circle cx="222" cy="220" r="8" fill="#245ea8"/><circle cx="222" cy="196" r="8" fill="#245ea8"/><circle cx="222" cy="172" r="8" fill="#245ea8"/><circle cx="266" cy="220" r="8" fill="#19765c"/><circle cx="354" cy="220" r="8" fill="#b26a00"/><circle cx="398" cy="220" r="8" fill="#b26a00"/>' +
-              '<text x="258" y="76" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">center, spread, and shape</text>'
+              '<text x="258" y="76" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">statistical analysis visualizer</text>'
           );
         }
 
         function geometrySvg() {
+          var base = state.val1 || 18;
+          var height = state.val2 || 8;
+          var shape = state.val4 || 'triangle';
+          
+          var bPx = 100 + base * 8;
+          var hPx = height * 10;
+          
+          var polygon = "";
+          if (shape === 'parallelogram') {
+            polygon = `<polygon points="100,220 ${bPx},220 ${bPx + 60},${220 - hPx} ${160},${220 - hPx}" fill="#dcecff" stroke="#24516f" stroke-width="5" stroke-linejoin="round"/>`;
+          } else {
+            polygon = `<polygon points="100,220 220,${220 - hPx} ${bPx},220" fill="#dcecff" stroke="#24516f" stroke-width="5" stroke-linejoin="round"/>`;
+          }
+          
           return svgShell(
-            "Geometry model",
-            '<polygon points="112,238 220,72 408,238" fill="#dcecff" stroke="#24516f" stroke-width="5" stroke-linejoin="round"/>' +
-              '<line x1="220" y1="72" x2="220" y2="238" stroke="#19765c" stroke-width="5" stroke-dasharray="10 8"/>' +
-              '<rect x="220" y="218" width="20" height="20" fill="none" stroke="#19765c" stroke-width="4"/>' +
-              '<text x="252" y="160" font-size="21" font-weight="900" fill="#19765c">height</text>' +
-              '<text x="260" y="278" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">base</text>'
+            "Geometry resizable model",
+            polygon + `
+              <line x1="220" y1="${220 - hPx}" x2="220" y2="220" stroke="#19765c" stroke-width="5" stroke-dasharray="10 8"/>
+              <rect x="220" y="200" width="20" height="20" fill="none" stroke="#19765c" stroke-width="4"/>
+              <text x="252" y="${210 - hPx/2}" font-size="20" font-weight="900" fill="#19765c">h: ${height}</text>
+              <text x="260" y="270" text-anchor="middle" font-size="22" font-weight="900" fill="#17212f">base: ${base}</text>
+            `
           );
         }
 
@@ -1106,6 +1542,116 @@
           }
         }
 
+        function downloadWordBlueprint() {
+          if (!state.lesson) {
+            setStatus("Please select a lesson first.");
+            return;
+          }
+          var data = formData();
+          if (!data.claim || !data.evidence || !data.reasoning) {
+            setStatus("Please fill in Claim, Evidence, and Reasoning before downloading.");
+            return;
+          }
+
+          var docHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+            '<head>' +
+              '<meta charset="utf-8">' +
+              '<title>Reveal Math CER Lesson Blueprint</title>' +
+              '<style>' +
+                'body { font-family: "Calibri", "Arial", sans-serif; line-height: 1.5; color: #17212f; margin: 1in; }' +
+                'h1 { color: #245ea8; font-size: 22pt; border-bottom: 3px solid #245ea8; padding-bottom: 6px; font-family: "Georgia", serif; margin-bottom: 5pt; }' +
+                '.eyebrow { color: #5c6878; font-size: 9pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12pt; }' +
+                'h2 { color: #17212f; font-size: 14pt; margin-top: 18pt; border-bottom: 1px solid #d8e1ec; padding-bottom: 3px; }' +
+                '.metadata { font-size: 11pt; margin-bottom: 20pt; background-color: #f4f7fb; padding: 12px; border: 1px solid #d8e1ec; border-radius: 6px; }' +
+                '.meta-table { width: 100%; border-collapse: collapse; margin-top: 6px; }' +
+                '.meta-table td { padding: 4px 8px; vertical-align: top; font-size: 10.5pt; }' +
+                '.section-title { font-weight: bold; font-size: 12pt; color: #245ea8; margin-top: 16pt; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }' +
+                '.box { border: 1px solid #d8e1ec; padding: 14px; margin-bottom: 15px; background-color: #ffffff; border-radius: 6px; }' +
+                '.box-title { font-weight: bold; font-size: 11pt; color: #17212f; margin-bottom: 6px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 3px; }' +
+                '.box-content { font-size: 11pt; color: #23364d; white-space: pre-wrap; }' +
+                '.big-idea-box { background-color: #f0fdfa; border: 1px solid #ccfbf1; padding: 12px; border-radius: 6px; color: #115e59; font-size: 10.5pt; margin-bottom: 15px; }' +
+                '.footer { text-align: center; font-size: 9pt; color: #5c6878; margin-top: 40pt; border-top: 1px solid #d8e1ec; padding-top: 12px; }' +
+              '</style>' +
+            '</head>' +
+            '<body>' +
+              '<div class="eyebrow">Reveal Math Grade 6 • Student Lesson Blueprint</div>' +
+              '<h1>Mathematical CER Evidence Studio</h1>' +
+              
+              '<div class="metadata">' +
+                '<table class="meta-table">' +
+                  '<tr>' +
+                    '<td style="width: 20%;"><strong>Student Name:</strong></td>' +
+                    '<td style="width: 30%;">' + escapeHtml(data.studentName || "Not Provided") + '</td>' +
+                    '<td style="width: 20%;"><strong>Date Created:</strong></td>' +
+                    '<td style="width: 30%;">' + new Date().toLocaleDateString() + '</td>' +
+                  '</tr>' +
+                  '<tr>' +
+                    '<td><strong>Lesson:</strong></td>' +
+                    '<td>' + escapeHtml(lessonLabel(state.lesson || {})) + '</td>' +
+                    '<td><strong>Standard:</strong></td>' +
+                    '<td>' + escapeHtml(getStandard(state.lesson, state.cluster)) + '</td>' +
+                  '</tr>' +
+                  '<tr>' +
+                    '<td><strong>Unit:</strong></td>' +
+                    '<td>' + escapeHtml(unitLabel(state.unit, state.lesson)) + '</td>' +
+                    '<td><strong>Cluster:</strong></td>' +
+                    '<td>' + escapeHtml(getClusterName(state.lesson, state.cluster)) + '</td>' +
+                  '</tr>' +
+                '</table>' +
+              '</div>' +
+
+              (state.cluster && state.cluster.bigIdea ? (
+              '<div class="big-idea-box">' +
+                '<strong>Big Idea of Focus:</strong><br>' +
+                escapeHtml(state.cluster.bigIdea) +
+              '</div>'
+              ) : '') +
+
+              '<div class="section-title">Claim-Evidence-Reasoning Blueprint</div>' +
+
+              '<div class="box">' +
+                '<div class="box-title">1. Claim</div>' +
+                '<div class="box-content">' + escapeHtml(data.claim) + '</div>' +
+              '</div>' +
+
+              '<div class="box">' +
+                '<div class="box-title">2. Evidence (Mathematical Observations)</div>' +
+                '<div class="box-content">' + escapeHtml(data.evidence) + '</div>' +
+              '</div>' +
+
+              '<div class="box">' +
+                '<div class="box-title">3. Reasoning (Mathematical Justification)</div>' +
+                '<div class="box-content">' + escapeHtml(data.reasoning) + '</div>' +
+              '</div>' +
+
+              (data.reflection ? (
+              '<div class="box">' +
+                '<div class="box-title">4. Student Reflection</div>' +
+                '<div class="box-content">' + escapeHtml(data.reflection) + '</div>' +
+              '</div>'
+              ) : '') +
+
+              '<div class="footer">' +
+                '<p>Generated dynamically by EduWonderLab Reveal Math Evidence Studio. All student progress processed completely offline in compliance with student data privacy standards.</p>' +
+              '</div>' +
+            '</body>' +
+            '</html>';
+
+          var blob = new Blob(['\ufeff' + docHtml], {
+            type: 'application/msword'
+          });
+          
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = "Math_CER_Blueprint_" + normalizeId(lessonNumber(state.lesson)) + "_" + new Date().toISOString().slice(0,10) + ".doc";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          setStatus("Lesson blueprint document generated successfully!");
+        }
+
         function setStatus(message) {
           els.status.textContent = message;
           if (message) {
@@ -1136,6 +1682,7 @@
           els.saveDraft.addEventListener("click", function () {
             saveDraft(true);
           });
+          els.downloadDocx.addEventListener("click", downloadWordBlueprint);
           els.copyCard.addEventListener("click", copyCard);
           els.printCard.addEventListener("click", function () {
             saveDraft(false);

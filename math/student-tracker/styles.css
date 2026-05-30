@@ -396,19 +396,49 @@ table.roster th:focus {
   width: 100%;
   height: auto;
   max-width: 540px;
+  background: #fdfefe;
+  border: 1px solid var(--st-line);
+  border-radius: 8px;
+  padding: 8px;
 }
 .spark-line {
   fill: none;
   stroke: var(--st-accent);
-  stroke-width: 2;
+  stroke-width: 3;
 }
 .spark-dot {
-  fill: var(--st-accent);
+  transition: r 0.2s ease, stroke-width 0.2s ease;
+}
+.spark-point-group:hover .spark-dot {
+  r: 8;
+  stroke-width: 2.5;
 }
 .spark-ref {
   stroke: #94a3b8;
   stroke-dasharray: 4 3;
   stroke-width: 1;
+}
+
+/* Radar & Standards Grid Layout */
+.standards-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 280px;
+  gap: 24px;
+  align-items: center;
+}
+.radar-svg {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+}
+@media (max-width: 800px) {
+  .standards-grid {
+    grid-template-columns: 1fr;
+  }
+  .radar-svg {
+    max-width: 280px;
+    margin: 0 auto;
+  }
 }
 
 /* Detail */
