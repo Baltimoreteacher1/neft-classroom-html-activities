@@ -84,7 +84,14 @@
   const DB_NAME = "noam-school";
   const STORE = "kv";
   const STATE_KEY = "state";
-  const LEGACY_KEY = "noam-school-v10";
+  // Older localStorage builds, newest first — used once to migrate prior data
+  // (the previous /noam-school/ app saved under noam-school-v9, etc.).
+  const LEGACY_KEYS = [
+    "noam-school-v10",
+    "noam-school-v9",
+    "noam-school-v8",
+    "noam-school-v7",
+  ];
 
   const idb = {
     db: null,
@@ -341,9 +348,11 @@
             : "med",
       status: ["todo", "doing", "done"].includes(a.status)
         ? a.status
-        : a.status === "Turned In"
+        : a.status === "Turned In" || a.status === "Done"
           ? "done"
-          : "todo",
+          : ["Started", "Almost Done", "In Progress"].includes(a.status)
+            ? "doing"
+            : "todo",
       estimateMin: Number(a.estimateMin) || 0,
       steps: Array.isArray(a.steps)
         ? a.steps.map((st) => ({
@@ -2112,14 +2121,17 @@ Due May 31"></textarea>
     } catch {}
 
     if (!stored) {
-      // one-time migration from the older localStorage-only build
-      try {
-        const legacy = JSON.parse(localStorage.getItem(LEGACY_KEY) || "null");
-        if (legacy) {
-          stored = legacy;
-          toast("Brought your old data over 👍");
-        }
-      } catch {}
+      // one-time migration from an older localStorage-only build (newest first)
+      for (const key of LEGACY_KEYS) {
+        try {
+          const legacy = JSON.parse(localStorage.getItem(key) || "null");
+          if (legacy && (Array.isArray(legacy.assignments) || legacy.classes)) {
+            stored = legacy;
+            toast("Brought your old data over 👍");
+            break;
+          }
+        } catch {}
+      }
     }
     state = normalize(stored);
     // Don't push local state to the cloud until after the first pull, so a stale
