@@ -78,6 +78,36 @@
         letter-spacing: 0.06em;
       }
 
+      /* ── Sidebar menu filter ── */
+      .sb-nav-search {
+        padding: 8px 16px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .sb-nav-search input {
+        width: 100%;
+        min-height: 40px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.07);
+        color: #fff;
+        font-size: 0.85rem;
+        box-sizing: border-box;
+      }
+      .sb-nav-search input::placeholder {
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .sb-nav-search input:focus-visible {
+        outline: 2px solid var(--teal, #2dd4bf);
+        outline-offset: 1px;
+      }
+      .sb-item.nav-filter-hide {
+        display: none;
+      }
+      .sb-group.nav-filter-hide {
+        display: none;
+      }
+
       /* ── Sidebar groups ── */
       .sb-group {
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -85,22 +115,34 @@
       .sb-group-label {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 12px 20px;
-        font-size: 0.7rem;
+        gap: 8px;
+        min-height: 44px;
+        padding: 10px 20px;
+        font-size: 0.72rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: rgba(255, 255, 255, 0.45);
+        letter-spacing: 0.07em;
+        color: rgba(255, 255, 255, 0.55);
         cursor: pointer;
         user-select: none;
       }
       .sb-group-label:hover {
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .sb-group-label:focus-visible {
+        outline: 2px solid var(--teal, #2dd4bf);
+        outline-offset: -2px;
+        border-radius: 6px;
+      }
+      .sb-group-icon {
+        font-size: 1rem;
+        line-height: 1;
       }
       .sb-group-label .chevron {
+        margin-left: auto;
         transition: transform 0.2s;
         font-size: 0.6rem;
+        opacity: 0.7;
       }
       .sb-group.collapsed .chevron {
         transform: rotate(-90deg);
@@ -316,6 +358,16 @@
           transform: translateX(-100%);
           transition: transform 0.25s;
         }
+        /* Comfortable touch targets on phones (>=44px). */
+        .sb-item {
+          min-height: 44px;
+        }
+        .sb-group-label {
+          min-height: 48px;
+        }
+        .sb-nav-search input {
+          min-height: 44px;
+        }
         .sidebar.open {
           transform: translateX(0);
         }
@@ -410,9 +462,20 @@
           <p>208 Classroom Activities</p>
         </div>
 
+        <div class="sb-nav-search">
+          <input
+            type="search"
+            id="sbNavSearch"
+            placeholder="Filter menu…"
+            aria-label="Filter navigation menu"
+            autocomplete="off"
+          />
+        </div>
+
         <div class="sb-group">
           <div class="sb-group-label">
-            Math Curriculum
+            <span class="sb-group-icon" aria-hidden="true">📐</span> Math
+            Curriculum
             <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
@@ -439,9 +502,10 @@
           </div>
         </div>
 
-        <div class="sb-group">
+        <div class="sb-group collapsed">
           <div class="sb-group-label">
-            Reading & Writing
+            <span class="sb-group-icon" aria-hidden="true">📖</span> Reading &
+            Language
             <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
@@ -456,9 +520,10 @@
           </div>
         </div>
 
-        <div class="sb-group">
+        <div class="sb-group collapsed">
           <div class="sb-group-label">
-            WIDA ACCESS Prep
+            <span class="sb-group-icon" aria-hidden="true">🌐</span> WIDA ACCESS
+            Prep
             <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
@@ -481,26 +546,24 @@
           </div>
         </div>
 
-        <div class="sb-group">
+        <div class="sb-group collapsed">
           <div class="sb-group-label">
-            Family & Personal
+            <span class="sb-group-icon" aria-hidden="true">🛠️</span> Teacher
+            Tools
             <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
-            <a class="sb-item" data-panel="bar-mitzvah"
-              ><span class="sb-emoji" aria-hidden="true">✡️</span> Noam Bar
-              Mitzvah <span class="sb-count">3</span></a
-            >
-            <a class="sb-item" data-panel="family"
-              ><span class="sb-emoji" aria-hidden="true">🏠</span> Personal &
-              Family <span class="sb-count">5</span></a
+            <a class="sb-item" data-panel="tools"
+              ><span class="sb-emoji" aria-hidden="true">📊</span> Teacher Tools
+              <span class="sb-count">7</span></a
             >
           </div>
         </div>
 
-        <div class="sb-group">
+        <div class="sb-group collapsed">
           <div class="sb-group-label">
-            Projects & Tools
+            <span class="sb-group-icon" aria-hidden="true">✨</span> Projects &
+            More
             <span class="chevron" aria-hidden="true">&#9660;</span>
           </div>
           <div class="sb-items">
@@ -508,9 +571,13 @@
               ><span class="sb-emoji" aria-hidden="true">🔧</span> Special
               Projects <span class="sb-count">34</span></a
             >
-            <a class="sb-item" data-panel="tools"
-              ><span class="sb-emoji" aria-hidden="true">📊</span> Teacher Tools
-              <span class="sb-count">7</span></a
+            <a class="sb-item" data-panel="family"
+              ><span class="sb-emoji" aria-hidden="true">🏠</span> Personal &
+              Family <span class="sb-count">5</span></a
+            >
+            <a class="sb-item" data-panel="bar-mitzvah"
+              ><span class="sb-emoji" aria-hidden="true">✡️</span> Noam Bar
+              Mitzvah <span class="sb-count">3</span></a
             >
           </div>
         </div>
@@ -724,7 +791,9 @@
                 <div>
                   <div class="title">3D Games &amp; Expedition Hub</div>
                   <div class="meta">
-                    Launch premium 3D virtual math environments, unit ratios, baking fractions, integer submarine escapes, and the grand World Architect geometry expedition.
+                    Launch premium 3D virtual math environments, unit ratios,
+                    baking fractions, integer submarine escapes, and the grand
+                    World Architect geometry expedition.
                   </div>
                 </div>
                 <span class="arrow">&rarr;</span></a
@@ -1452,15 +1521,27 @@
           <div class="unit-group">
             <div class="unit-label">Unit Games</div>
             <div class="cards">
-              <a href="./games/3d/" class="card" style="border: 2px solid #1fa6a2; background: #eefaf8; box-shadow: 0 4px 15px rgba(31, 166, 162, 0.1);"
-                ><div class="icon" style="background: #12355b; color: #fff;">🌍</div>
+              <a
+                href="./games/3d/"
+                class="card"
+                style="
+                  border: 2px solid #1fa6a2;
+                  background: #eefaf8;
+                  box-shadow: 0 4px 15px rgba(31, 166, 162, 0.1);
+                "
+                ><div class="icon" style="background: #12355b; color: #fff">
+                  🌍
+                </div>
                 <div>
-                  <div class="title" style="font-weight: 800; color: #12355b;">3D Games &amp; Expedition Hub</div>
-                  <div class="meta" style="color: #1fa6a2;">
-                    Explore all 10 virtual WebGL unit games alongside the grand World Architect Math Project geometry expedition.
+                  <div class="title" style="font-weight: 800; color: #12355b">
+                    3D Games &amp; Expedition Hub
+                  </div>
+                  <div class="meta" style="color: #1fa6a2">
+                    Explore all 10 virtual WebGL unit games alongside the grand
+                    World Architect Math Project geometry expedition.
                   </div>
                 </div>
-                <span class="arrow" style="color: #12355b;">&rarr;</span></a
+                <span class="arrow" style="color: #12355b">&rarr;</span></a
               >
               <a href="./games/3d/unit-1/" class="card"
                 ><div class="icon u1">🎮</div>
@@ -3199,6 +3280,13 @@
             .forEach((p) => p.classList.remove("active"));
           item.classList.add("active");
           item.setAttribute("aria-current", "page");
+          // Keep the active item's group expanded so the highlight is visible.
+          const grp = item.closest(".sb-group");
+          if (grp && grp.classList.contains("collapsed")) {
+            grp.classList.remove("collapsed");
+            const lbl = grp.querySelector(".sb-group-label");
+            if (lbl) lbl.setAttribute("aria-expanded", "true");
+          }
           document
             .getElementById("panel-" + item.dataset.panel)
             .classList.add("active");
@@ -3247,6 +3335,59 @@
           }
         });
       });
+
+      // Sidebar menu filter — filters sb-items by label; auto-expands groups
+      // with matches and remembers each group's collapsed state to restore it.
+      (function () {
+        const nav = document.getElementById("sbNavSearch");
+        if (!nav) return;
+        const groups = document.querySelectorAll(".sb-group");
+        nav.addEventListener("input", () => {
+          const q = nav.value.trim().toLowerCase();
+          groups.forEach((grp) => {
+            const label = grp.querySelector(".sb-group-label");
+            const labelHit =
+              !!q && label && label.textContent.toLowerCase().includes(q);
+            let any = false;
+            grp.querySelectorAll(".sb-item").forEach((it) => {
+              // If the group label matches, keep all its items visible.
+              const hit =
+                !q || labelHit || it.textContent.toLowerCase().includes(q);
+              it.classList.toggle("nav-filter-hide", !hit);
+              if (hit) any = true;
+            });
+            const groupHit = any || labelHit;
+            grp.classList.toggle("nav-filter-hide", !!q && !groupHit);
+            if (q) {
+              // While filtering: stash original state once, then expand matches.
+              if (grp.dataset.savedCollapsed === undefined)
+                grp.dataset.savedCollapsed = grp.classList.contains("collapsed")
+                  ? "1"
+                  : "0";
+              grp.classList.remove("collapsed");
+              if (label) label.setAttribute("aria-expanded", "true");
+            } else {
+              // Cleared: restore original collapsed state.
+              if (grp.dataset.savedCollapsed !== undefined) {
+                const wasCollapsed = grp.dataset.savedCollapsed === "1";
+                grp.classList.toggle("collapsed", wasCollapsed);
+                if (label)
+                  label.setAttribute(
+                    "aria-expanded",
+                    wasCollapsed ? "false" : "true",
+                  );
+                delete grp.dataset.savedCollapsed;
+              }
+            }
+          });
+        });
+        nav.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            nav.value = "";
+            nav.dispatchEvent(new Event("input"));
+          }
+        });
+      })();
 
       // Give chapter buttons a descriptive accessible name.
       document.querySelectorAll(".chapter-grid .ch-btn").forEach((btn) => {
