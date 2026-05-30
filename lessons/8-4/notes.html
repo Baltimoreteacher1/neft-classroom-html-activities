@@ -60,6 +60,7 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
 .ak-list{padding-left:22px;}
 .ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
@@ -81,13 +82,54 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
 .enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
 .sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
 @media print{
-  @page{size:letter;margin:0.75in;}
-  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
-  .topbar,.print-btn,.no-print{display:none !important;}
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Appropriate Measures · Standard 6.SP.5d";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
   .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
   .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
-  .answer-key h2,.vocab-term{color:#000;}
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
   header.packet{border-bottom:2px solid #000;}
@@ -98,15 +140,31 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
-  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
   .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  footer.packet{display:none;}
 }
 </style>
 </head>
 <body>
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Notes Packet</span>
-  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="8-4-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/8-4-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/8-4-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
 </div>
 <main class="sheet">
   <header class="packet">
@@ -124,51 +182,51 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/mean.svg" alt="Illustration of Mean: The sum of all values divided by the number of values (average)" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/mean.svg" alt="Illustration of Mean: The average. Add all the numbers, then divide by how many there are." onerror="this.style.display='none'" />
     <p class="vocab-caption">Mean of 10, 20, 30 = (10+20+30) ÷ 3 = 20</p>
   </div>
   <h3 class="vocab-term">Mean</h3>
-  <p class="vocab-def">The sum of all values divided by the number of values (average)</p>
+  <p class="vocab-def">The average. Add all the numbers, then divide by how many there are.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/median.svg" alt="Illustration of Median: The middle value when data is ordered from least to greatest" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/median.svg" alt="Illustration of Median: The middle number when you put them in order." onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 5, 8, 12, 15, 20 → median is 12 (the 3rd of 5 values)</p>
   </div>
   <h3 class="vocab-term">Median</h3>
-  <p class="vocab-def">The middle value when data is ordered from least to greatest</p>
+  <p class="vocab-def">The middle number when you put them in order.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/box-plot.svg" alt="Illustration of Outlier: A value that is much greater or less than most other values in a data set" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/box-plot.svg" alt="Illustration of Outlier: A number that is much bigger or smaller than the rest." onerror="this.style.display='none'" />
     <p class="vocab-caption">Data: 12, 14, 13, 15, 45 → 45 is far from the cluster, so it is an outlier</p>
   </div>
   <h3 class="vocab-term">Outlier</h3>
-  <p class="vocab-def">A value that is much greater or less than most other values in a data set</p>
+  <p class="vocab-def">A number that is much bigger or smaller than the rest.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Skewed: When data bunches toward one end with a tail stretching to the other" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Skewed: When most data sits on one side with a tail on the other." onerror="this.style.display='none'" />
     <p class="vocab-caption">Scores: 5, 6, 7, 8, 8, 35 → most scores are low, but 35 creates a tail to the right (skewed right)</p>
   </div>
   <h3 class="vocab-term">Skewed</h3>
-  <p class="vocab-def">When data bunches toward one end with a tail stretching to the other</p>
+  <p class="vocab-def">When most data sits on one side with a tail on the other.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Data distribution: The shape and spread of a data set" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
     <p class="vocab-caption">Symmetric = even on both sides. Skewed = bunched on one side with a tail</p>
   </div>
   <h3 class="vocab-term">Data distribution</h3>
-  <p class="vocab-def">The shape and spread of a data set</p>
+  <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the values in a data set are" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." onerror="this.style.display='none'" />
     <p class="vocab-caption">88, 90, 89, 91 (low variability) vs. 50, 70, 95, 100 (high variability)</p>
   </div>
   <h3 class="vocab-term">Variability</h3>
-  <p class="vocab-def">How spread out the values in a data set are</p>
+  <p class="vocab-def">How spread out the numbers are.</p>
 </div>
   </div>
 </section>
@@ -205,6 +263,77 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="ex-answer"><strong>Answer:</strong> A. Median (7) — the outlier 50 inflates the mean</p>
 </div>
 </section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">I can explain my choice using the words mean, median, outlier, and skewed.</p>
+  <div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> Mean is the average. Add all the numbers, then divide by how many there are.<span class="twr-es">Media es el promedio. Suma todos los números y divide entre cuántos hay.</span></p>
+    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about mean. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre media. Usa un sujeto y un verbo.</span></p>
+    <div class="writeline"></div><div class="writeline"></div>
+  </div>
+  <div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> Mean matters in math<span class="twr-es">Media importa en matemáticas</span></p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    <div class="twr-exp-row">
+      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Mean matters in math because ___.</span><span class="twr-es">Media importa en matemáticas porque ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Mean matters in math, but ___.</span><span class="twr-es">Media importa en matemáticas, pero ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Mean matters in math, so ___.</span><span class="twr-es">Media importa en matemáticas, entonces ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    <div class="twr-type-row">
+      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell one true fact about mean.<span class="twr-es">Di un hecho verdadero sobre mean.</span></p>
+        <p class="twr-frame"><span class="twr-en">Mean ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Ask a question about mean.<span class="twr-es">Haz una pregunta sobre mean.</span></p>
+        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Show excitement about mean.<span class="twr-es">Muestra entusiasmo sobre mean.</span></p>
+        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell a partner what to do with mean.<span class="twr-es">Dile a un compañero qué hacer con mean.</span></p>
+        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">I chose the ___ because ___.</span><span class="twr-es">Elegí la ___ porque ___.</span></p><p class="twr-frame"><span class="twr-en">It fits the data because ___.</span><span class="twr-es">Encaja con los datos porque ___.</span></p><p class="twr-frame"><span class="twr-en">An average can mislead when ___.</span><span class="twr-es">Un promedio puede engañar cuando ___.</span></p></div>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
   <section class="section tryit-section">
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
@@ -234,8 +363,9 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </section>
   <section class="answer-key">
-  <h2>Answer Key</h2>
+  <h2>Answer Key &amp; Teacher Guide</h2>
   <ol class="ak-list"><li><strong>Try It 1:</strong> A. Median, because the .110 outlier pulls the mean down <span class="ak-why">— The .110 is an outlier that pulls the mean down to .260. The median (.2875) better represents typical performance because it isn't affected by the extreme value.</span></li><li><strong>Try It 2:</strong> </li><li><strong>Exit Ticket:</strong> A. Median, because 72 is an outlier <span class="ak-why">— The value 72 is an outlier. The mean (25.5) is pulled high by 72 and doesn't represent the typical values. The median (16.5) is a better measure of center.</span></li></ol>
+  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Mean is the average. Add all the numbers, then divide by how many there are.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-4 · Standard 6.SP.5d</footer>
 </main>

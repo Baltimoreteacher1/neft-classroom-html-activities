@@ -19,6 +19,7 @@ export { renderNetFolder } from "./net-folder.js";
 export { renderCoordinatePlane } from "./coordinate-plane.js";
 export { renderRemediation } from "./remediation-panel.js";
 export { renderShape3D } from "./shape-3d.js";
+export { renderTwrWriting } from "./twr-writing.js";
 export {
   openExplorer,
   exploreLabel,

@@ -5,6 +5,7 @@ import {
   resolveVocabImage,
   vocabImageAlt,
 } from "../engine/core/vocab-images.js";
+import { deriveTWR } from "../engine/core/twr.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -274,7 +275,7 @@ function reflectSection(reflect = {}) {
 </section>`;
 }
 
-function answerKeySection(practice = {}, reflect = {}) {
+function answerKeySection(practice = {}, reflect = {}, config = null) {
   const rows = [];
   let n = 1;
   // Try It picks mirrored from tryItSection logic.
@@ -306,16 +307,122 @@ function answerKeySection(practice = {}, reflect = {}) {
       }</li>`
     );
   }
-  if (!rows.length) return "";
+  const twrRows = config ? twrAnswerKey(config) : "";
+  if (!rows.length && !twrRows) return "";
   return `<section class="answer-key">
-  <h2>Answer Key</h2>
+  <h2>Answer Key &amp; Teacher Guide</h2>
   <ol class="ak-list">${rows.join("")}</ol>
+  ${
+    twrRows
+      ? `<h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list">${twrRows}</ul>`
+      : ""
+  }
 </section>`;
+}
+
+/* ---------- The Writing Revolution (TWR) ---------- */
+
+// A bilingual frame line: bold English, italic Spanish under it.
+function frameLine(en, es) {
+  return `<p class="twr-frame"><span class="twr-en">${esc(en)}</span>${
+    es ? `<span class="twr-es">${esc(es)}</span>` : ""
+  }</p>`;
+}
+
+function twrSection(config) {
+  const twr = deriveTWR(config);
+
+  // 1. Kernel sentence
+  const kernel = `<div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> ${esc(twr.kernel.en)}${
+      twr.kernel.es ? `<span class="twr-es">${esc(twr.kernel.es)}</span>` : ""
+    }</p>
+    ${frameLine(twr.kernel.promptEn, twr.kernel.promptEs)}
+    ${blankLines(2)}
+  </div>`;
+
+  // 2. Sentence expansion (because / but / so)
+  const expRows = twr.expansion.conjunctions
+    .map(
+      (c) => `<div class="twr-exp-row">
+      <span class="twr-conj">${esc(c.word)}<span class="twr-conj-es">${esc(c.wordEs)}</span></span>
+      <div class="twr-exp-lines">
+        ${frameLine(c.frameEn, c.frameEs)}
+        ${blankLines(1)}
+      </div>
+    </div>`,
+    )
+    .join("");
+  const expansion = `<div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> ${esc(twr.expansion.kernelEn)}${
+      twr.expansion.kernelEs
+        ? `<span class="twr-es">${esc(twr.expansion.kernelEs)}</span>`
+        : ""
+    }</p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    ${expRows}
+  </div>`;
+
+  // 3. Sentence types
+  const typeRows = twr.sentenceTypes
+    .map(
+      (t) => `<div class="twr-type-row">
+      <span class="twr-type-name">${esc(t.type)}<span class="twr-conj-es">${esc(t.typeEs)}</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">${esc(t.hintEn)}${
+          t.hintEs ? `<span class="twr-es">${esc(t.hintEs)}</span>` : ""
+        }</p>
+        ${frameLine(t.frameEn, t.frameEs)}
+        ${blankLines(1)}
+      </div>
+    </div>`,
+    )
+    .join("");
+  const types = `<div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    ${typeRows}
+  </div>`;
+
+  // 4. Explain your reasoning
+  const stemHtml = twr.reasoningStems
+    .map((s) => frameLine(s.en, s.es))
+    .join("");
+  const reasoning = `<div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems">${stemHtml}</div>
+    ${blankLines(3)}
+  </div>`;
+
+  return `<section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">${
+    twr.languageObjective
+      ? esc(twr.languageObjective)
+      : "Build strong math sentences. Write, then say each sentence out loud."
+  }</p>
+  ${kernel}
+  ${expansion}
+  ${types}
+  ${reasoning}
+</section>`;
+}
+
+function twrAnswerKey(config) {
+  const twr = deriveTWR(config);
+  const items = [
+    `<li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: ${esc(twr.kernel.en)}</li>`,
+    `<li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li>`,
+    `<li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li>`,
+  ];
+  return items.join("");
 }
 
 /* ---------- page assembly ---------- */
 
-function styles() {
+function styles(printTitle = "") {
+  const safeTitle = String(printTitle).replace(/["\\]/g, "");
   return `<style>
 :root{
   --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
@@ -372,6 +479,7 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
 .ak-list{padding-left:22px;}
 .ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
@@ -393,13 +501,54 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
 .enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
 .sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
 @media print{
-  @page{size:letter;margin:0.75in;}
-  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
-  .topbar,.print-btn,.no-print{display:none !important;}
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"${safeTitle}";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
   .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
   .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
-  .answer-key h2,.vocab-term{color:#000;}
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
   header.packet{border-bottom:2px solid #000;}
@@ -410,8 +559,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
-  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
   .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  footer.packet{display:none;}
 }
 </style>`;
 }
@@ -428,6 +582,7 @@ function missionBanner(cfg) {
 
 function buildPacket(id, cfg, isFlagship) {
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
+  const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
   const flagBadge = isFlagship
     ? `<span class="flagship-badge">Flagship</span>`
@@ -438,12 +593,23 @@ function buildPacket(id, cfg, isFlagship) {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${esc(cfg.title)} — Notes Packet</title>
-${styles()}
+${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 </head>
 <body>
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Notes Packet</span>
-  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="${esc(id)}-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/${esc(id)}-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/${esc(id)}-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
 </div>
 <main class="sheet">
   <header class="packet">
@@ -458,9 +624,10 @@ ${styles()}
   ${vocabSection(cfg.vocabulary)}
   ${notesSection(cfg.launch, cfg.explore)}
   ${examplesSection(cfg.practice)}
+  ${twrSection(cfg)}
   ${tryItSection(cfg.practice)}
   ${reflectSection(cfg.reflect)}
-  ${answerKeySection(cfg.practice, cfg.reflect)}
+  ${answerKeySection(cfg.practice, cfg.reflect, cfg)}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
 </main>
 </body>
@@ -526,7 +693,7 @@ a:hover{text-decoration:underline;}
 <body>
 <div class="wrap">
   <h1>Notes Packets</h1>
-  <p>Printable, leveled guided-notes sheets for all ${lessons.length} Grade 6 math lessons (${coreTotal} core + ${flagshipTotal} flagship). Each sheet includes a <strong>Key Vocabulary — Level 1 support</strong> section (visual-first) and a <strong>Level 2 enrichment</strong> stretch challenge.</p>
+  <p>Printable, leveled guided-notes sheets for all ${lessons.length} Grade 6 math lessons (${coreTotal} core + ${flagshipTotal} flagship). Each sheet includes a <strong>Key Vocabulary — Level 1 support</strong> section (visual-first), a <strong>Write About the Math</strong> writing block built on <em>The Writing Revolution</em> (kernel sentences, sentence expansion, sentence types, and reasoning stems), and a <strong>Level 2 enrichment</strong> stretch challenge. Every packet downloads as <strong>HTML, PDF, or Word (DOCX)</strong> and prints with a branded header, footer, page numbers, and answer key.</p>
   <p class="legend"><span class="tag tag-core">Core</span> standard lesson &nbsp; <span class="tag tag-flagship">Flagship</span> mission-based lesson</p>
   ${groups}
 </div>

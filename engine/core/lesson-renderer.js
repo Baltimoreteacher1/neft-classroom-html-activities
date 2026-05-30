@@ -22,6 +22,7 @@ import {
   renderNetFolder,
   renderCoordinatePlane,
   renderRemediation,
+  renderTwrWriting,
 } from "../components/index.js";
 import {
   renderActivityChooser,
@@ -844,6 +845,13 @@ function renderConnectPhase(el, state, ctx, config) {
   // Turn & Talk primes the written response below. Non-graded; does not gate
   // the Connect submit, so phase completion/scoring are unaffected.
   renderTurnAndTalk(el, resolveTurnTalk("connect", config), state, 4);
+
+  // The Writing Revolution (TWR) writing step. Auto-derived from config; shows
+  // on every lesson. Formative only — persisted but never gates phase scoring.
+  renderTwrWriting(el, config, {
+    getResponse: (key) => state.getResponse(4, key),
+    saveResponse: (key, val) => state.saveResponse(4, key, val),
+  });
 
   // Editable response box (core-owned), mirroring Launch/Reflect persistence.
   const minLength = 25;

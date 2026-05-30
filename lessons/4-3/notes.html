@@ -60,6 +60,7 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
 .ak-list{padding-left:22px;}
 .ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
@@ -81,13 +82,54 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
 .enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
 .sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
 @media print{
-  @page{size:letter;margin:0.75in;}
-  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
-  .topbar,.print-btn,.no-print{display:none !important;}
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Percents Greater Than 100% and Less Than 1% · Standard 6.RP.3c";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
   .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
   .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
-  .answer-key h2,.vocab-term{color:#000;}
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
   header.packet{border-bottom:2px solid #000;}
@@ -98,15 +140,31 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
-  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
   .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  footer.packet{display:none;}
 }
 </style>
 </head>
 <body>
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Notes Packet</span>
-  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="4-3-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/4-3-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/4-3-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
 </div>
 <main class="sheet">
   <header class="packet">
@@ -124,43 +182,43 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/percent.svg" alt="Illustration of Percent: A ratio that compares a number to 100" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/percent.svg" alt="Illustration of Percent: A way to compare a number to 100, shown with the % sign." onerror="this.style.display='none'" />
     <p class="vocab-caption">45% means 45 out of 100</p>
   </div>
   <h3 class="vocab-term">Percent</h3>
-  <p class="vocab-def">A ratio that compares a number to 100</p>
+  <p class="vocab-def">A way to compare a number to 100, shown with the % sign.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/percent.svg" alt="Illustration of Greater than 100%: A percent that represents more than the whole" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/percent.svg" alt="Illustration of Greater than 100%: A percent bigger than 100%, more than the whole thing." onerror="this.style.display='none'" />
     <p class="vocab-caption">150% means 1.5 times the whole</p>
   </div>
   <h3 class="vocab-term">Greater than 100%</h3>
-  <p class="vocab-def">A percent that represents more than the whole</p>
+  <p class="vocab-def">A percent bigger than 100%, more than the whole thing.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/percent.svg" alt="Illustration of Less than 1%: A percent that represents a very small part of the whole" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/percent.svg" alt="Illustration of Less than 1%: A percent smaller than 1%, a very tiny part." onerror="this.style.display='none'" />
     <p class="vocab-caption">0.5% of 1,000 = only 5 items — a tiny sliver</p>
   </div>
   <h3 class="vocab-term">Less than 1%</h3>
-  <p class="vocab-def">A percent that represents a very small part of the whole</p>
+  <p class="vocab-def">A percent smaller than 1%, a very tiny part.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/fraction.svg" alt="Illustration of Equivalent: Having the same value in a different form" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/fraction.svg" alt="Illustration of Equivalent: Having the same value, just written a different way." onerror="this.style.display='none'" />
     <p class="vocab-caption">150% = 1.5 = 3/2</p>
   </div>
   <h3 class="vocab-term">Equivalent</h3>
-  <p class="vocab-def">Having the same value in a different form</p>
+  <p class="vocab-def">Having the same value, just written a different way.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/fraction.svg" alt="Illustration of Mixed number: A number made of a whole number and a fraction, used to represent percents greater than 100%" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/fraction.svg" alt="Illustration of Mixed number: A whole number plus a fraction, like 1 1/2." onerror="this.style.display='none'" />
     <p class="vocab-caption">150% = 1 and 1/2 = 1.5</p>
   </div>
   <h3 class="vocab-term">Mixed number</h3>
-  <p class="vocab-def">A number made of a whole number and a fraction, used to represent percents greater than 100%</p>
+  <p class="vocab-def">A whole number plus a fraction, like 1 1/2.</p>
 </div>
   </div>
 </section>
@@ -197,6 +255,77 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="ex-answer"><strong>Answer:</strong> A. 0.005</p>
 </div>
 </section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">I can explain my reasoning using the words percent, greater than 100%, less than 1%, and equivalent.</p>
+  <div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> Percent is a way to compare a number to 100, shown with the % sign.<span class="twr-es">Porcentaje es una manera de comparar un número con 100, con el signo %.</span></p>
+    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about percent. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre porcentaje. Usa un sujeto y un verbo.</span></p>
+    <div class="writeline"></div><div class="writeline"></div>
+  </div>
+  <div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> Percent matters in math<span class="twr-es">Porcentaje importa en matemáticas</span></p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    <div class="twr-exp-row">
+      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Percent matters in math because ___.</span><span class="twr-es">Porcentaje importa en matemáticas porque ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Percent matters in math, but ___.</span><span class="twr-es">Porcentaje importa en matemáticas, pero ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Percent matters in math, so ___.</span><span class="twr-es">Porcentaje importa en matemáticas, entonces ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    <div class="twr-type-row">
+      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell one true fact about percent.<span class="twr-es">Di un hecho verdadero sobre percent.</span></p>
+        <p class="twr-frame"><span class="twr-en">Percent ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Ask a question about percent.<span class="twr-es">Haz una pregunta sobre percent.</span></p>
+        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Show excitement about percent.<span class="twr-es">Muestra entusiasmo sobre percent.</span></p>
+        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell a partner what to do with percent.<span class="twr-es">Dile a un compañero qué hacer con percent.</span></p>
+        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">___% means ___.</span><span class="twr-es">___% significa ___.</span></p><p class="twr-frame"><span class="twr-en">It is more / less than the whole because ___.</span><span class="twr-es">Es más / menos que el todo porque ___.</span></p><p class="twr-frame"><span class="twr-en">I see big percents when ___.</span><span class="twr-es">Veo porcentajes grandes cuando ___.</span></p></div>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
   <section class="section tryit-section">
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
@@ -226,8 +355,9 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </section>
   <section class="answer-key">
-  <h2>Answer Key</h2>
+  <h2>Answer Key &amp; Teacher Guide</h2>
   <ol class="ak-list"><li><strong>Try It 1:</strong> A. 0.75% <span class="ak-why">— 0.75% is less than 1%. All the other choices are greater than 1%.</span></li><li><strong>Try It 2:</strong> C. 0.004 <span class="ak-why">— 0.4% = 0.4 ÷ 100 = 0.004. Move the decimal point two places to the left.</span></li><li><strong>Exit Ticket:</strong> A. It equals 0.0025 as a decimal <span class="ak-why">— 0.25% = 0.25 ÷ 100 = 0.0025. It is much less than 1%, not equal to 1/4.</span></li></ol>
+  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Percent is a way to compare a number to 100, shown with the % sign.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 4-3 · Standard 6.RP.3c</footer>
 </main>

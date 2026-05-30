@@ -82,6 +82,20 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(homework, resolve(destDir, "homework.docx"));
           }
+          // Downloadable notes packets (self-contained HTML, PDF, DOCX) live in
+          // lessons/<id>/downloads/ and are linked from each notes.html.
+          const downloads = resolve(lessonsDir, dir.name, "downloads");
+          if (existsSync(downloads)) {
+            const destDir = resolve(
+              __dirname,
+              "dist",
+              "lessons",
+              dir.name,
+              "downloads",
+            );
+            mkdirSync(destDir, { recursive: true });
+            cpSync(downloads, destDir, { recursive: true });
+          }
         }
       }
     },

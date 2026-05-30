@@ -60,6 +60,7 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
 .ak-list{padding-left:22px;}
 .ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
@@ -81,13 +82,54 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
 .enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
 .sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
 @media print{
-  @page{size:letter;margin:0.75in;}
-  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:12pt;}
-  .topbar,.print-btn,.no-print{display:none !important;}
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Prime Factorization · Standard 6.NS.4";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap{display:none !important;}
   .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
   .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
-  .answer-key h2,.vocab-term{color:#000;}
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
   header.packet{border-bottom:2px solid #000;}
@@ -98,15 +140,31 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .writeline{border-bottom:1px solid #000;}
   .mission{background:#fff;color:#000;border:1px solid #000;}
   .mission-title,.mission-eyebrow{color:#000;}
-  .level-tag,.flagship-badge{background:#fff;color:#000;border:1px solid #000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
   .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  footer.packet{display:none;}
 }
 </style>
 </head>
 <body>
 <div class="topbar no-print">
   <span class="brand">Neft Teacher · Notes Packet</span>
-  <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes.html" download="1-1-notes.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/1-1-notes.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/1-1-notes.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
 </div>
 <main class="sheet">
   <header class="packet">
@@ -124,43 +182,43 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/prime-number.svg" alt="Illustration of Prime number: A whole number greater than 1 that has exactly two factors: 1 and itself" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/prime-number.svg" alt="Illustration of Prime number: A number bigger than 1 that you can only divide by 1 and itself." onerror="this.style.display='none'" />
     <p class="vocab-caption">7 has only two factors: 1 × 7. So 7 is prime.</p>
   </div>
   <h3 class="vocab-term">Prime number</h3>
-  <p class="vocab-def">A whole number greater than 1 that has exactly two factors: 1 and itself</p>
+  <p class="vocab-def">A number bigger than 1 that you can only divide by 1 and itself.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Composite number: A whole number greater than 1 that has more than two factors" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Composite number: A number bigger than 1 that you can divide by more than just 1 and itself." onerror="this.style.display='none'" />
     <p class="vocab-caption">12 = 1 × 12, 2 × 6, 3 × 4 — six factors, so 12 is composite</p>
   </div>
   <h3 class="vocab-term">Composite number</h3>
-  <p class="vocab-def">A whole number greater than 1 that has more than two factors</p>
+  <p class="vocab-def">A number bigger than 1 that you can divide by more than just 1 and itself.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Prime factorization: Writing a number as a product of its prime factors" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together." onerror="this.style.display='none'" />
     <p class="vocab-caption">36 = 2 × 2 × 3 × 3 = 2² × 3²</p>
   </div>
   <h3 class="vocab-term">Prime factorization</h3>
-  <p class="vocab-def">Writing a number as a product of its prime factors</p>
+  <p class="vocab-def">Writing a number as prime numbers multiplied together.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Factor tree: A diagram that breaks a number into its prime factors step by step" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Factor tree: A picture that splits a number into its prime numbers, step by step." onerror="this.style.display='none'" />
     <p class="vocab-caption">24 → 4 × 6 → (2 × 2) × (2 × 3) → 2 × 2 × 2 × 3</p>
   </div>
   <h3 class="vocab-term">Factor tree</h3>
-  <p class="vocab-def">A diagram that breaks a number into its prime factors step by step</p>
+  <p class="vocab-def">A picture that splits a number into its prime numbers, step by step.</p>
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/exponent.svg" alt="Illustration of Exponent: A small number that shows how many times a base is multiplied by itself" onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/exponent.svg" alt="Illustration of Exponent: A small number that tells how many times to multiply a number by itself." onerror="this.style.display='none'" />
     <p class="vocab-caption">2³ means 2 × 2 × 2 = 8</p>
   </div>
   <h3 class="vocab-term">Exponent</h3>
-  <p class="vocab-def">A small number that shows how many times a base is multiplied by itself</p>
+  <p class="vocab-def">A small number that tells how many times to multiply a number by itself.</p>
 </div>
   </div>
 </section>
@@ -197,6 +255,77 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="ex-answer"><strong>Answer:</strong> A. 2 × 3 × 3</p>
 </div>
 </section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
+  <p class="level-note">I can explain how I broke a number down using the words prime number, composite number, factor, and exponent.</p>
+  <div class="twr-block">
+    <h3>1. Kernel Sentence <span class="twr-tag">subject + verb</span></h3>
+    <p class="twr-model"><span class="twr-label">Model:</span> Prime factorization is writing a number as prime numbers multiplied together.<span class="twr-es">Factorización prima es escribir un número como números primos multiplicados.</span></p>
+    <p class="twr-frame"><span class="twr-en">Write a kernel sentence about prime factorization. Use a subject and a verb.</span><span class="twr-es">Escribe una oración base sobre factorización prima. Usa un sujeto y un verbo.</span></p>
+    <div class="writeline"></div><div class="writeline"></div>
+  </div>
+  <div class="twr-block">
+    <h3>2. Sentence Expansion <span class="twr-tag">because · but · so</span></h3>
+    <p class="twr-model"><span class="twr-label">Kernel:</span> Prime factorization matters in math<span class="twr-es">Factorización prima importa en matemáticas</span></p>
+    <p class="muted">Expand the kernel three ways. Add a reason, a contrast, and a result.</p>
+    <div class="twr-exp-row">
+      <span class="twr-conj">because<span class="twr-conj-es">porque</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Prime factorization matters in math because ___.</span><span class="twr-es">Factorización prima importa en matemáticas porque ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">but<span class="twr-conj-es">pero</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Prime factorization matters in math, but ___.</span><span class="twr-es">Factorización prima importa en matemáticas, pero ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-exp-row">
+      <span class="twr-conj">so<span class="twr-conj-es">entonces</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-frame"><span class="twr-en">Prime factorization matters in math, so ___.</span><span class="twr-es">Factorización prima importa en matemáticas, entonces ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>3. Sentence Types <span class="twr-tag">4 ways to write a math idea</span></h3>
+    <div class="twr-type-row">
+      <span class="twr-type-name">Statement<span class="twr-conj-es">Afirmación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell one true fact about prime factorization.<span class="twr-es">Di un hecho verdadero sobre prime factorization.</span></p>
+        <p class="twr-frame"><span class="twr-en">Prime factorization ___.</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Question<span class="twr-conj-es">Pregunta</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Ask a question about prime factorization.<span class="twr-es">Haz una pregunta sobre prime factorization.</span></p>
+        <p class="twr-frame"><span class="twr-en">How does ___ ?</span><span class="twr-es">¿Cómo ___ ?</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Exclamation<span class="twr-conj-es">Exclamación</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Show excitement about prime factorization.<span class="twr-es">Muestra entusiasmo sobre prime factorization.</span></p>
+        <p class="twr-frame"><span class="twr-en">Wow, ___ !</span><span class="twr-es">¡Guau, ___ !</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div><div class="twr-type-row">
+      <span class="twr-type-name">Command<span class="twr-conj-es">Mandato</span></span>
+      <div class="twr-exp-lines">
+        <p class="twr-hint">Tell a partner what to do with prime factorization.<span class="twr-es">Dile a un compañero qué hacer con prime factorization.</span></p>
+        <p class="twr-frame"><span class="twr-en">First, ___ .</span><span class="twr-es">Primero, ___ .</span></p>
+        <div class="writeline"></div>
+      </div>
+    </div>
+  </div>
+  <div class="twr-block">
+    <h3>4. Explain Your Reasoning <span class="twr-tag">use a sentence starter</span></h3>
+    <div class="twr-stems"><p class="twr-frame"><span class="twr-en">I broke ___ into ___ because ___.</span><span class="twr-es">Separé ___ en ___ porque ___.</span></p><p class="twr-frame"><span class="twr-en">A prime number is ___.</span><span class="twr-es">Un número primo es ___.</span></p><p class="twr-frame"><span class="twr-en">This helps in real life when ___.</span><span class="twr-es">Esto ayuda en la vida real cuando ___.</span></p></div>
+    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  </div>
+</section>
   <section class="section tryit-section">
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
@@ -226,8 +355,9 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="work-space"><span class="ws-label">Your answer:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </section>
   <section class="answer-key">
-  <h2>Answer Key</h2>
+  <h2>Answer Key &amp; Teacher Guide</h2>
   <ol class="ak-list"><li><strong>Try It 1:</strong> A. 27 <span class="ak-why">— 27 = 3 × 9 = 3 × 3 × 3, so it has more than two factors. 23, 29, and 31 are all prime.</span></li><li><strong>Try It 2:</strong> A. Both get the same prime factorization: 2 × 2 × 3 × 5 <span class="ak-why">— The Fundamental Theorem of Arithmetic says every composite number has exactly one prime factorization. No matter how you start the factor tree, you always end with 2 × 2 × 3 × 5.</span></li><li><strong>Exit Ticket:</strong> A. 2 × 2 × 2 × 5 <span class="ak-why">— 40 = 2 × 20 = 2 × 2 × 10 = 2 × 2 × 2 × 5. All factors (2, 2, 2, 5) are prime.</span></li></ol>
+  <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Prime factorization is writing a number as prime numbers multiplied together.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 1-1 · Standard 6.NS.4</footer>
 </main>
