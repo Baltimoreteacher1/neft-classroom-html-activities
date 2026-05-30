@@ -37,6 +37,7 @@ This file maps classroom activity source repository names into the organized sta
 | `Grade6Area5.1-2Language` | `/unit-5/grade6area5-1-2language/` |
 | `ParallelogramandRhombusGame` | `/unit-5/parallelogramandrhombusgame/` |
 | `SurfaceAreaReview` | `/surface-area-review/` |
+| `GeometryPrep` | `/geometry-prep/` |
 
 ## Statistics and Data
 | Source repository name | Target folder |
