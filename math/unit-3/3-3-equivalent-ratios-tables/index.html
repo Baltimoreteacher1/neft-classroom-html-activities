@@ -634,7 +634,27 @@
 .vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
 .vso-dot.active{background:#6366F1;transform:scale(1.25)}
 .vso-dot.seen{background:#A5B4FC}
-</style>
+
+      /* ===== Level 0 (most-supported tier) ===== */
+      .level0-support { display:none; }
+      body.level-0 .level0-support {
+        display:block; max-width:860px; margin:14px auto 0; padding:14px 16px;
+        background:#fff7ed; border:1px solid #fdba74; border-radius:12px;
+        font-size:14px; color:#7c2d12; line-height:1.5;
+      }
+      body.level-0 .level0-support h3 { margin:0 0 8px; font-size:15px; color:#9a3412; }
+      body.level-0 .level0-support ul { margin:6px 0 0; padding-left:20px; }
+      body.level-0 .level0-support .l0-frames { margin-top:8px; font-style:italic; }
+      .read-aloud-btn {
+        border:1px solid #fdba74; background:#fff; color:#9a3412; border-radius:8px;
+        padding:6px 12px; font-size:13px; font-weight:700; cursor:pointer; margin-left:8px;
+      }
+      .read-aloud-btn:hover { background:#ffedd5; }
+      body:not(.level-0) .read-aloud-btn { display:none; }
+      body.level-0 [class*="hint"] { display:block !important; }
+      body.level-0.reading p, body.level-0.reading li, body.level-0.reading label { cursor:help; }
+
+    </style>
 <div id="vocabSlideshowOverlay">
 <div class="vso-card">
   <div class="vso-progress" id="vsoProgress">Word 1 of 3</div>
@@ -707,13 +727,26 @@ vsoRender();
     <div class="level-bar">
       <span class="level-label">Level</span>
       <div class="level-toggle">
+        <button class="level-btn" data-level="0">Level 0</button>
         <button class="level-btn active" data-level="1">Level 1</button>
         <button class="level-btn" data-level="2">Level 2</button>
+        <button id="readAloudBtn" class="read-aloud-btn" type="button">🔊 Read aloud</button>
       </div>
       <span class="level-desc" id="levelDesc"
         >Guided practice with vocabulary support</span
       >
     </div>
+
+    
+      <div class="level0-support" role="note" aria-label="Level 0 extra support">
+        <h3>🟠 Level 0 — Extra Support</h3>
+        <ul>
+          <li><strong>Watch first:</strong> the worked example and hints are already shown for you.</li>
+          <li><strong>One at a time:</strong> answer one question, check it, then go on.</li>
+          <li><strong>Read aloud:</strong> press 🔊 Read aloud, then click any sentence to hear it.</li>
+        </ul>
+        <div class="l0-frames"><strong>Sentence starters:</strong> “First, I…” · “The answer is… because…” · “I know this because…”</div>
+      </div>
 
     <div class="progress-bar">
       <div class="progress-track">
@@ -1194,6 +1227,7 @@ vsoRender();
         const levelBtns = document.querySelectorAll(".level-btn");
         const levelDesc = document.getElementById("levelDesc");
         const descs = {
+          0: "Step-by-step support with read-aloud and worked examples",
           1: "Guided practice with vocabulary support",
           2: "Grade-level practice with explanations",
         };
@@ -1201,7 +1235,7 @@ vsoRender();
           btn.addEventListener("click", () => {
             levelBtns.forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
-            document.body.className = "level-" + btn.dataset.level;
+            document.body.className = (btn.dataset.level === "0") ? "level-0 level-1" : "level-" + btn.dataset.level;
             levelDesc.textContent = descs[btn.dataset.level];
           });
         });
@@ -1355,6 +1389,27 @@ vsoRender();
 
         updateProgress();
       })();
-    </script>
+    
+        // ===== Level 0 read-aloud (click any text to hear it) =====
+        (function(){
+          var raBtn = document.getElementById("readAloudBtn");
+          if(!raBtn) return;
+          var on = false;
+          function speak(t){ try{ window.speechSynthesis.cancel();
+            var u=new SpeechSynthesisUtterance(t); u.rate=0.9; window.speechSynthesis.speak(u);}catch(e){} }
+          raBtn.addEventListener("click", function(){
+            on=!on; document.body.classList.toggle("reading", on);
+            raBtn.textContent = on ? "🔊 Tap text to hear" : "🔊 Read aloud";
+            if(!on){ try{window.speechSynthesis.cancel();}catch(e){} }
+          });
+          document.addEventListener("click", function(e){
+            if(!on || !document.body.classList.contains("level-0")) return;
+            if(e.target.closest(".level-bar")) return;
+            var el = e.target.closest("p,li,h1,h2,h3,label,.question,.prompt,.q-text,.scaffold,.sentence-frame");
+            if(el && el.textContent.trim()){ speak(el.textContent.trim()); }
+          }, true);
+        })();
+
+      </script>
   </body>
 </html>
