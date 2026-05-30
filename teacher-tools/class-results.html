@@ -273,6 +273,179 @@
         font-size: 0.85rem;
         color: var(--muted);
       }
+
+      /* ── Analytics layer ── */
+      .analytics {
+        margin: 22px 0 8px;
+      }
+      .analytics .panel {
+        padding: clamp(16px, 2.4vw, 24px);
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .tab {
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--teal-dark);
+        padding: 10px 16px;
+        min-height: 44px;
+      }
+      .tab[aria-selected="true"] {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal-dark);
+      }
+      .tab:focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 2px;
+      }
+      .a-section-title {
+        font-size: 1.05rem;
+        font-weight: 850;
+        margin: 0 0 4px;
+      }
+      .a-section-sub {
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .mastery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .m-card {
+        border: 1px solid var(--line);
+        border-left-width: 6px;
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: #fff;
+      }
+      .m-card.strong {
+        border-left-color: var(--teal);
+      }
+      .m-card.developing {
+        border-left-color: var(--gold);
+      }
+      .m-card.reteach {
+        border-left-color: var(--coral);
+      }
+      .m-card .m-std {
+        font-weight: 850;
+        font-size: 1.02rem;
+      }
+      .m-card .m-avg {
+        font-size: 1.7rem;
+        font-weight: 850;
+        line-height: 1.1;
+        margin: 4px 0 2px;
+      }
+      .m-card.strong .m-avg {
+        color: var(--teal-dark);
+      }
+      .m-card.developing .m-avg {
+        color: var(--gold);
+      }
+      .m-card.reteach .m-avg {
+        color: var(--coral);
+      }
+      .m-card .m-meta {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .band-pill {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 850;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        padding: 3px 9px;
+        margin-top: 6px;
+      }
+      .band-pill.strong {
+        background: var(--sage);
+        color: var(--teal-dark);
+        border: 1px solid var(--teal);
+      }
+      .band-pill.developing {
+        background: #fdf6e8;
+        color: var(--gold);
+        border: 1px solid var(--gold);
+      }
+      .band-pill.reteach {
+        background: #fdeee6;
+        color: var(--coral);
+        border: 1px solid var(--coral);
+      }
+      .reteach-box {
+        background: #fdeee6;
+        border: 1px solid var(--coral);
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-top: 16px;
+      }
+      .reteach-box h3 {
+        margin: 0 0 8px;
+        font-size: 0.95rem;
+        color: var(--coral);
+      }
+      .reteach-box ul {
+        margin: 0;
+        padding-left: 18px;
+        font-size: 0.9rem;
+      }
+      .reteach-box li {
+        margin-bottom: 4px;
+      }
+      .reteach-box.ok {
+        background: var(--sage);
+        border-color: var(--teal);
+      }
+      .reteach-box.ok h3 {
+        color: var(--teal-dark);
+      }
+      .a-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      .a-table th,
+      .a-table td {
+        text-align: left;
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .a-table th {
+        font-weight: 850;
+        color: var(--ink);
+        background: var(--sage);
+      }
+      .a-table td.num {
+        font-weight: 800;
+      }
+      .low-tags {
+        color: var(--coral);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .a-empty {
+        color: var(--muted);
+        padding: 18px 4px;
+      }
+      @media (max-width: 520px) {
+        .a-wrap {
+          overflow-x: auto;
+        }
+      }
     </style>
   </head>
   <body>
@@ -315,6 +488,85 @@
           </div>
         </div>
       </header>
+
+      <section class="analytics" aria-labelledby="analyticsHeading">
+        <div class="panel">
+          <h2 id="analyticsHeading" class="a-section-title">Class Analytics</h2>
+          <p class="a-section-sub">
+            Live mastery view computed from logged results. Counts one "Overall"
+            row per finished activity.
+          </p>
+          <div class="tabs" role="tablist" aria-label="Analytics views">
+            <button
+              class="tab"
+              id="tab-mastery"
+              role="tab"
+              aria-selected="true"
+              aria-controls="panel-mastery"
+              type="button"
+            >
+              Standard mastery
+            </button>
+            <button
+              class="tab"
+              id="tab-students"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-students"
+              tabindex="-1"
+              type="button"
+            >
+              Per-student
+            </button>
+            <button
+              class="tab"
+              id="tab-types"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-types"
+              tabindex="-1"
+              type="button"
+            >
+              By assessment type
+            </button>
+          </div>
+
+          <div
+            id="panel-mastery"
+            role="tabpanel"
+            aria-labelledby="tab-mastery"
+            tabindex="0"
+          >
+            <div class="mastery-grid" id="masteryGrid"></div>
+            <div id="reteachBox"></div>
+          </div>
+
+          <div
+            id="panel-students"
+            role="tabpanel"
+            aria-labelledby="tab-students"
+            tabindex="0"
+            hidden
+          >
+            <div class="a-wrap" id="studentRollup"></div>
+          </div>
+
+          <div
+            id="panel-types"
+            role="tabpanel"
+            aria-labelledby="tab-types"
+            tabindex="0"
+            hidden
+          >
+            <div class="a-wrap" id="typeBreakdown"></div>
+          </div>
+
+          <div class="a-empty" id="analyticsEmpty" hidden>
+            No results logged yet — analytics will appear here once students
+            finish an activity.
+          </div>
+        </div>
+      </section>
 
       <div class="toolbar">
         <input
@@ -528,6 +780,7 @@
             : "All logged attempts (" + all.length + " rows)";
 
         updateStats(all);
+        renderAnalytics(all);
         document.getElementById("exportBtn").disabled = all.length === 0;
         document.getElementById("clearBtn").disabled = all.length === 0;
       }
@@ -573,6 +826,279 @@
           }[c];
         });
       }
+
+      // ── Analytics layer ──
+      // Mastery bands.
+      var STRONG_MIN = 85;
+      var DEVELOPING_MIN = 70; // < this = needs reteach
+
+      function bandFor(pct) {
+        if (pct >= STRONG_MIN) return "strong";
+        if (pct >= DEVELOPING_MIN) return "developing";
+        return "reteach";
+      }
+
+      // Classify an Overall row into an assessment type.
+      function assessmentType(r) {
+        var a = r["Assessment"] || "";
+        if (isGraphicNovel(r)) return "Graphic novel";
+        if (/pre-?test|pretest/i.test(a)) return "Pre-test";
+        if (/post-?test|posttest/i.test(a)) return "Post-test";
+        return "Other";
+      }
+
+      // Only "Overall" rows are scored attempts; section rows are folded into
+      // their Overall, so we count Overall rows to avoid double-counting.
+      function overallRows(all) {
+        return all.filter(function (r) {
+          return r["Skill"] === "Overall";
+        });
+      }
+
+      function numPct(r) {
+        var p = parseFloat(r["Percent"]);
+        return isNaN(p) ? null : p;
+      }
+
+      function renderAnalytics(all) {
+        var overall = overallRows(all);
+        var hasData = overall.length > 0;
+        document.getElementById("analyticsEmpty").hidden = hasData;
+        renderMastery(overall);
+        renderStudents(overall);
+        renderTypes(overall);
+      }
+
+      // 1 + 2: Per-standard mastery + reteach flags.
+      function renderMastery(overall) {
+        var grid = document.getElementById("masteryGrid");
+        var box = document.getElementById("reteachBox");
+        grid.innerHTML = "";
+        box.innerHTML = "";
+        var byStd = {};
+        overall.forEach(function (r) {
+          var std = (r["Standard"] || "").trim();
+          if (!std) return;
+          var p = numPct(r);
+          if (p == null) return;
+          (byStd[std] = byStd[std] || { sum: 0, n: 0 }).sum += p;
+          byStd[std].n++;
+        });
+        var stds = Object.keys(byStd);
+        if (!stds.length) {
+          grid.innerHTML =
+            '<p class="a-empty">No standard-tagged results yet.</p>';
+          return;
+        }
+        var rows = stds.map(function (std) {
+          var avg = Math.round(byStd[std].sum / byStd[std].n);
+          return { std: std, avg: avg, n: byStd[std].n, band: bandFor(avg) };
+        });
+        // Worst first so trouble standards are obvious.
+        rows.sort(function (a, b) {
+          return a.avg - b.avg;
+        });
+        var labels = {
+          strong: "Strong",
+          developing: "Developing",
+          reteach: "Needs reteach",
+        };
+        rows.forEach(function (row) {
+          var card = document.createElement("div");
+          card.className = "m-card " + row.band;
+          card.innerHTML =
+            '<div class="m-std">' +
+            escapeHtml(row.std) +
+            "</div>" +
+            '<div class="m-avg">' +
+            row.avg +
+            "%</div>" +
+            '<div class="m-meta">' +
+            row.n +
+            (row.n === 1 ? " attempt" : " attempts") +
+            "</div>" +
+            '<span class="band-pill ' +
+            row.band +
+            '">' +
+            labels[row.band] +
+            "</span>";
+          grid.appendChild(card);
+        });
+
+        var low = rows.filter(function (r) {
+          return r.band === "reteach";
+        });
+        if (low.length) {
+          box.className = "reteach-box";
+          var html =
+            "<h3>Reteach — " +
+            low.length +
+            (low.length === 1 ? " standard" : " standards") +
+            " below " +
+            DEVELOPING_MIN +
+            "%</h3><ul>";
+          low.forEach(function (r) {
+            html +=
+              "<li><strong>" +
+              escapeHtml(r.std) +
+              "</strong> — " +
+              r.avg +
+              "% class average (" +
+              r.n +
+              (r.n === 1 ? " attempt" : " attempts") +
+              ")</li>";
+          });
+          html += "</ul>";
+          box.innerHTML = html;
+        } else {
+          box.className = "reteach-box ok";
+          box.innerHTML =
+            '<h3>No reteach flags</h3><p style="margin:0;font-size:.9rem">Every standard with data is at or above ' +
+            DEVELOPING_MIN +
+            "% class average.</p>";
+        }
+      }
+
+      // 3: Per-student rollup.
+      function renderStudents(overall) {
+        var wrap = document.getElementById("studentRollup");
+        wrap.innerHTML = "";
+        var byStu = {};
+        overall.forEach(function (r) {
+          var s = (r["Student Name"] || "").trim();
+          if (!s) return;
+          var p = numPct(r);
+          if (p == null) return;
+          var rec = (byStu[s] = byStu[s] || { sum: 0, n: 0, stds: {} });
+          rec.sum += p;
+          rec.n++;
+          var std = (r["Standard"] || "").trim();
+          if (std) {
+            var sd = (rec.stds[std] = rec.stds[std] || { sum: 0, n: 0 });
+            sd.sum += p;
+            sd.n++;
+          }
+        });
+        var names = Object.keys(byStu);
+        if (!names.length) {
+          wrap.innerHTML = '<p class="a-empty">No student results yet.</p>';
+          return;
+        }
+        names.sort();
+        var html =
+          '<table class="a-table"><thead><tr>' +
+          "<th>Student</th><th>Overall %</th><th>Attempts</th><th>Low standards (&lt;" +
+          DEVELOPING_MIN +
+          "%)</th></tr></thead><tbody>";
+        names.forEach(function (name) {
+          var rec = byStu[name];
+          var avg = Math.round(rec.sum / rec.n);
+          var lows = Object.keys(rec.stds)
+            .filter(function (std) {
+              return rec.stds[std].sum / rec.stds[std].n < DEVELOPING_MIN;
+            })
+            .sort();
+          html +=
+            "<tr><td>" +
+            escapeHtml(name) +
+            '</td><td class="num" style="color:var(--' +
+            (bandFor(avg) === "reteach"
+              ? "coral"
+              : bandFor(avg) === "developing"
+                ? "gold"
+                : "teal-dark") +
+            ')">' +
+            avg +
+            "%</td><td>" +
+            rec.n +
+            "</td><td>" +
+            (lows.length
+              ? '<span class="low-tags">' +
+                lows.map(escapeHtml).join(", ") +
+                "</span>"
+              : "—") +
+            "</td></tr>";
+        });
+        html += "</tbody></table>";
+        wrap.innerHTML = html;
+      }
+
+      // 4: Breakdown by assessment type.
+      function renderTypes(overall) {
+        var wrap = document.getElementById("typeBreakdown");
+        wrap.innerHTML = "";
+        var byType = {};
+        overall.forEach(function (r) {
+          var t = assessmentType(r);
+          var rec = (byType[t] = byType[t] || { sum: 0, n: 0, scored: 0 });
+          rec.n++;
+          var p = numPct(r);
+          if (p != null) {
+            rec.sum += p;
+            rec.scored++;
+          }
+        });
+        var types = Object.keys(byType);
+        if (!types.length) {
+          wrap.innerHTML = '<p class="a-empty">No results yet.</p>';
+          return;
+        }
+        var order = ["Pre-test", "Post-test", "Graphic novel", "Other"];
+        types.sort(function (a, b) {
+          return order.indexOf(a) - order.indexOf(b);
+        });
+        var html =
+          '<table class="a-table"><thead><tr>' +
+          "<th>Assessment type</th><th>Completions</th><th>Avg %</th></tr></thead><tbody>";
+        types.forEach(function (t) {
+          var rec = byType[t];
+          var avg = rec.scored ? Math.round(rec.sum / rec.scored) + "%" : "—";
+          html +=
+            "<tr><td>" +
+            escapeHtml(t) +
+            '</td><td class="num">' +
+            rec.n +
+            '</td><td class="num">' +
+            avg +
+            "</td></tr>";
+        });
+        html += "</tbody></table>";
+        wrap.innerHTML = html;
+      }
+
+      // Tab switching (roving tabindex + arrow keys).
+      (function setupTabs() {
+        var tabs = Array.prototype.slice.call(
+          document.querySelectorAll('.tabs [role="tab"]'),
+        );
+        function select(tab) {
+          tabs.forEach(function (t) {
+            var on = t === tab;
+            t.setAttribute("aria-selected", on ? "true" : "false");
+            t.tabIndex = on ? 0 : -1;
+            document.getElementById(t.getAttribute("aria-controls")).hidden =
+              !on;
+          });
+        }
+        tabs.forEach(function (tab, i) {
+          tab.addEventListener("click", function () {
+            select(tab);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var idx = null;
+            if (e.key === "ArrowRight") idx = (i + 1) % tabs.length;
+            else if (e.key === "ArrowLeft")
+              idx = (i - 1 + tabs.length) % tabs.length;
+            else if (e.key === "Home") idx = 0;
+            else if (e.key === "End") idx = tabs.length - 1;
+            if (idx != null) {
+              e.preventDefault();
+              select(tabs[idx]);
+              tabs[idx].focus();
+            }
+          });
+        });
+      })();
 
       // ── Controls ──
       document.getElementById("search").addEventListener("input", function (e) {
