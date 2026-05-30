@@ -415,6 +415,9 @@
           <button class="btn btn-primary" onclick="exportResults()">
             Export Results 📄
           </button>
+          <button class="btn btn-primary" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher) 📊
+          </button>
           <button class="btn btn-accent" onclick="resetReview()">
             Try Again 🔄
           </button>
@@ -426,6 +429,7 @@
       Neft Teacher &bull; Grade 6 &bull; Unit 8 Pre-Test Review
     </div>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       const STORAGE_KEY = "unit8Review_v1_L1";
       const SECTIONS = ["Vocabulary", "Quick Check", "Practice", "Challenge"];
@@ -941,6 +945,30 @@
         a.href = URL.createObjectURL(blob);
         a.download = `Unit8_Review_${playerName.replace(/\s+/g, "_")}.txt`;
         a.click();
+      }
+
+      // ===== TEACHER CSV (shared NTResults module) =====
+      function downloadResultsCSV() {
+        // Reuse the same tallies the summary computes.
+        const sections = [];
+        let total = 0;
+        for (let s = 0; s < 4; s++) {
+          let correct = 0;
+          for (let i = s * 5; i < s * 5 + 5; i++) {
+            if (graded[i] && isCorrect(i)) correct++;
+          }
+          sections.push({ name: SECTIONS[s], correct: correct, total: 5 });
+          total += correct;
+        }
+        NTResults.finish({
+          student: playerName,
+          assessment: "Unit 8 Review",
+          standard: "6.SP",
+          level: "1",
+          sections: sections,
+          correct: total,
+          total: 20,
+        });
       }
 
       function resetReview() {

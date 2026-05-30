@@ -501,6 +501,9 @@
           <button class="export-btn" onclick="exportResults()">
             Export Results
           </button>
+          <button class="export-btn" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
           <button class="restart-btn" onclick="restartReview()">Restart</button>
         </div>
       </div>
@@ -508,6 +511,7 @@
       <div class="footer">Neft Teacher &bull; Unit 3 Ratios Review</div>
     </div>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       const STORAGE_KEY = "unit3Review_v1_L1";
       let studentName = "";
@@ -998,6 +1002,27 @@
         a.href = URL.createObjectURL(blob);
         a.download = `Unit3_Review_${studentName.replace(/\s+/g, "_")}.txt`;
         a.click();
+      }
+
+      function downloadResultsCSV() {
+        const sections = ["Vocabulary", "Quick Check", "Practice", "Challenge"];
+        let totalCorrect = 0,
+          totalQ = 0;
+        const secData = sections.map((s) => {
+          const sc = getScore(s);
+          totalCorrect += sc.correct;
+          totalQ += sc.total;
+          return { name: s, correct: sc.correct, total: sc.total };
+        });
+        NTResults.finish({
+          student: studentName,
+          assessment: "Unit 3 Review",
+          standard: "6.RP",
+          level: "1",
+          sections: secData,
+          correct: totalCorrect,
+          total: totalQ,
+        });
       }
 
       function restartReview() {

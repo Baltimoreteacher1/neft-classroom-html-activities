@@ -526,6 +526,9 @@
           <button class="btn btn-primary" onclick="exportResults()">
             Export Results
           </button>
+          <button class="btn btn-primary" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
           <button class="btn btn-accent" onclick="resetReview()">
             Retake Review
           </button>
@@ -535,6 +538,7 @@
 
     <div class="footer">Neft Teacher &middot; Grade 6 Math Review</div>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       // ============================================================
       // DATA
@@ -737,6 +741,8 @@
       // Level 2: shuffled display order of MC options per question.
       // optionOrder[q] = array of ORIGINAL option indices in display order.
       let optionOrder = new Array(20).fill(null);
+      let lastSectionResults = []; // captured on summary for CSV export
+      let lastTotalCorrect = 0;
 
       function getOptionOrder(idx) {
         if (optionOrder[idx]) return optionOrder[idx];
@@ -1049,12 +1055,44 @@
         revealHTML += `</div>`;
         document.getElementById("reviewReveal").innerHTML = revealHTML;
 
+        // Capture tallies for the teacher CSV export.
+        lastSectionResults = sectionResults;
+        lastTotalCorrect = total;
+
         saveProgress();
       }
 
       // ============================================================
       // EXPORT
       // ============================================================
+      // Teacher-importable CSV (neft-data-studio schema) via shared module.
+      function downloadResultsCSV() {
+        if (typeof NTResults === "undefined") return;
+        const total =
+          lastTotalCorrect || results.filter((r) => r === true).length;
+        const sections = (
+          lastSectionResults.length
+            ? lastSectionResults
+            : SECTIONS.map((sec, si) => {
+                let correct = 0;
+                let qIdx = 0;
+                for (let i = 0; i < si; i++) qIdx += SECTIONS[i].count;
+                for (let i = 0; i < sec.count; i++)
+                  if (results[qIdx + i]) correct++;
+                return { name: sec.name, correct, total: sec.count };
+              })
+        ).map((s) => ({ name: s.name, correct: s.correct, total: s.total }));
+        NTResults.finish({
+          student: studentName,
+          assessment: "Unit 9 Review",
+          standard: "6.NS.6",
+          level: "2",
+          sections,
+          correct: total,
+          total: 20,
+        });
+      }
+
       function exportResults() {
         const total = results.filter((r) => r === true).length;
         const pct = Math.round((total / 20) * 100);

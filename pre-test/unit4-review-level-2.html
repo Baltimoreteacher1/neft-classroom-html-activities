@@ -502,6 +502,9 @@
           <button class="export-btn" onclick="exportResults()">
             Export Results
           </button>
+          <button class="export-btn" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
           <button class="restart-btn" onclick="restartReview()">Restart</button>
         </div>
       </div>
@@ -511,6 +514,7 @@
       </div>
     </div>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       const STORAGE_KEY = "unit4Review_v1_L2";
       let studentName = "";
@@ -949,6 +953,33 @@
 
         document.getElementById("summaryCard").innerHTML = html;
         saveProgress();
+      }
+
+      function downloadResultsCSV() {
+        const sectionNames = [
+          "Vocabulary",
+          "Quick Check",
+          "Practice",
+          "Challenge",
+        ];
+        let totalCorrect = 0,
+          totalQ = 0;
+        const sections = sectionNames.map((s) => {
+          const sc = getScore(s);
+          totalCorrect += sc.correct;
+          totalQ += sc.total;
+          return { name: s, correct: sc.correct, total: sc.total };
+        });
+        if (typeof NTResults === "undefined") return;
+        NTResults.finish({
+          student: studentName,
+          assessment: "Unit 4 Review",
+          standard: "6.RP.3",
+          level: "2",
+          sections: sections,
+          correct: totalCorrect,
+          total: totalQ,
+        });
       }
 
       function exportResults() {

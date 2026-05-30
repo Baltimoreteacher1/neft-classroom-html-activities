@@ -544,6 +544,9 @@
         <button class="btn btn-primary" onclick="exportResults()">
           Export Results
         </button>
+        <button class="btn btn-primary" onclick="downloadResultsCSV()">
+          Download Results (CSV for teacher)
+        </button>
         <button class="btn btn-outline" onclick="retakeReview()">
           Retake Review
         </button>
@@ -554,6 +557,7 @@
       Neft Teacher &mdash; Grade 6 Unit 6 Expressions Review
     </footer>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       const STORAGE_KEY = "unit6Review_v1_L2";
 
@@ -779,6 +783,7 @@
       // Level 2: cached shuffled option order per global question (MC only).
       // mcOrder[gi] = array of original choice indices in display order.
       let mcOrder = [];
+      let lastResults = null;
 
       // Fisher–Yates shuffle of an array of indices [0..n-1].
       function shuffledIndices(n) {
@@ -1104,7 +1109,31 @@
           tips = `<div class="tip-box" style="border-left-color:var(--success);background:var(--success-bg)"><h3 style="color:var(--success)">Great job!</h3><ul style="color:var(--text)"><li>You scored 80% or above in all sections.</li><li>Keep practicing with order of operations and the distributive property!</li></ul></div>`;
         }
         document.getElementById("studyTips").innerHTML = tips;
+        lastResults = {
+          sections: sectionResults.map((s) => ({
+            name: s.name,
+            correct: s.correct,
+            total: s.total,
+          })),
+          correct: correctCount,
+          total: total,
+        };
         saveResults();
+      }
+
+      // CSV EXPORT (teacher-importable, via shared NTResults module)
+      function downloadResultsCSV() {
+        if (!lastResults || typeof NTResults === "undefined") return;
+        NTResults.finish({
+          student: student.name,
+          assessment: "Unit 6 Review",
+          standard: "6.EE",
+          level: "2",
+          class: student.period,
+          sections: lastResults.sections,
+          correct: lastResults.correct,
+          total: lastResults.total,
+        });
       }
 
       // REVIEW ALL

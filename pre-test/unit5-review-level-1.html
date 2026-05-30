@@ -554,6 +554,9 @@
         <button class="btn btn-primary" onclick="exportResults()">
           Export Results
         </button>
+        <button class="btn btn-primary" onclick="downloadResultsCSV()">
+          Download Results (CSV for teacher)
+        </button>
         <button class="btn btn-outline" onclick="retakeReview()">
           Retake Review
         </button>
@@ -564,6 +567,7 @@
       Neft Teacher &mdash; Grade 6 Unit 5 Area Review
     </footer>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       // ═══════════════════════════════════════
       // DATA — 20 PROBLEMS, 4 SECTIONS
@@ -1284,6 +1288,31 @@
         a.download = `Unit5-Review-${student.name.replace(/\s+/g, "-")}.txt`;
         a.click();
         URL.revokeObjectURL(a.href);
+      }
+
+      // ═══════════════════════════════════════
+      // TEACHER CSV EXPORT (shared module)
+      // ═══════════════════════════════════════
+      function downloadResultsCSV() {
+        const total = totalQuestions();
+        const correctCount = answers.filter((a) => a.correct).length;
+        const sectionData = sections.map((sec, si) => {
+          const secAns = answers.filter((a) => a.section === si);
+          return {
+            name: sec.name,
+            correct: secAns.filter((a) => a.correct).length,
+            total: sec.questions.length,
+          };
+        });
+        NTResults.finish({
+          student: student.name,
+          assessment: "Unit 5 Review",
+          standard: "6.G.1",
+          level: "1",
+          sections: sectionData,
+          correct: correctCount,
+          total: total,
+        });
       }
 
       // ═══════════════════════════════════════

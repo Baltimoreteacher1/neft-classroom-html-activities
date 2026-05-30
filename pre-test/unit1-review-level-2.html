@@ -650,6 +650,7 @@
 
     <div class="copy-toast" id="copy-toast">Results copied to clipboard!</div>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       /* ══════════════════════════════════════════
        DATA — 20 problems, 4 sections
@@ -878,6 +879,7 @@
 
       /* ── State ── */
       const STORAGE_KEY = "unit1Review_v1_L2";
+      let lastSectionScores = [];
       let state = {
         name: "",
         period: "",
@@ -1174,6 +1176,7 @@
 
         // Section breakdown
         const sectionScores = [];
+        lastSectionScores = sectionScores;
         SECTIONS.forEach((sec) => {
           let correct = 0,
             total = sec.questions.length;
@@ -1311,6 +1314,7 @@
         // Actions
         html += `<div class="results-actions">
         <button class="nav-btn primary" onclick="copyResults()">📋 Copy Results</button>
+        <button class="nav-btn primary" onclick="downloadResultsCSV()">📄 Download Results (CSV for teacher)</button>
         <button class="nav-btn secondary" onclick="retakeReview()">🔄 Retake Review</button>
       </div>`;
 
@@ -1360,6 +1364,30 @@
           .catch(() => {
             prompt("Copy the text below:", text);
           });
+      }
+
+      /* ── Teacher CSV export (neft-data-studio schema) ── */
+      function downloadResultsCSV() {
+        recalcScore();
+        if (typeof NTResults === "undefined" || !NTResults.finish) {
+          alert("Results tool not loaded. Please refresh and try again.");
+          return;
+        }
+        // Reuse the exact per-section tallies the summary already computed.
+        const sections = lastSectionScores.map((s) => ({
+          name: s.title,
+          correct: s.correct,
+          total: s.total,
+        }));
+        NTResults.finish({
+          student: state.name,
+          assessment: "Unit 1 Review",
+          standard: "6.NS.4",
+          level: "2",
+          sections: sections,
+          correct: state.score,
+          total: 20,
+        });
       }
 
       function retakeReview() {

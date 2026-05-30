@@ -516,6 +516,9 @@
           <button class="btn btn-primary" onclick="exportResults()">
             Export Results
           </button>
+          <button class="btn btn-primary" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
           <button class="btn btn-accent" onclick="resetReview()">
             Retake Review
           </button>
@@ -525,6 +528,7 @@
 
     <div class="footer">Neft Teacher &middot; Grade 6 Math Review</div>
 
+    <script src="/teacher-tools/nt-results.js"></script>
     <script>
       // ============================================================
       // DATA
@@ -1048,6 +1052,31 @@
         a.href = URL.createObjectURL(blob);
         a.download = `Unit10-Review-${studentName.replace(/\s+/g, "_")}.txt`;
         a.click();
+      }
+
+      function downloadResultsCSV() {
+        // Reuse the same per-section tally the summary screen computes.
+        const sections = [];
+        let qIdx = 0;
+        let totalCorrect = 0;
+        SECTIONS.forEach((sec) => {
+          let correct = 0;
+          for (let i = 0; i < sec.count; i++) {
+            if (results[qIdx + i]) correct++;
+          }
+          sections.push({ name: sec.name, correct, total: sec.count });
+          totalCorrect += correct;
+          qIdx += sec.count;
+        });
+        NTResults.finish({
+          student: studentName,
+          assessment: "Unit 10 Review",
+          standard: "6.G.2",
+          level: "1",
+          sections,
+          correct: totalCorrect,
+          total: 20,
+        });
       }
 
       // ============================================================
