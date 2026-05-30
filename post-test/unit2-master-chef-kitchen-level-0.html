@@ -1,0 +1,2103 @@
+<!doctype html>
+<html lang="en" data-nt-level="1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>
+      Master Chef Kitchen — Multiplying &amp; Dividing Fractions — Level 0
+      (Support) | Neft Teacher
+    </title>
+    <style>
+      /* ════════════════════════════════════════════
+         MASTER CHEF KITCHEN — warm, kid-friendly theme
+         Palette: cream paper, tomato red, sunflower,
+         basil green, deep ink text (all WCAG-AA on
+         their backgrounds).
+      ════════════════════════════════════════════ */
+      :root {
+        --paper: #fff8ec; /* page background (warm cream) */
+        --card: #ffffff; /* card surface */
+        --ink: #2a2118; /* main text — 12:1 on cream */
+        --ink-soft: #5a4a36; /* secondary text — 6.5:1 */
+        --tomato: #c2371d; /* primary accent (AA on white) */
+        --tomato-dark: #9c2a14;
+        --sun: #f2a900; /* sunflower / highlight */
+        --sun-deep: #b97800; /* readable amber text */
+        --basil: #2f7d4f; /* success green (AA on white) */
+        --basil-soft: #e4f3e9;
+        --berry: #7a3ea8; /* hints accent */
+        --line: #e7d9c0; /* warm border */
+        --line-strong: #d2be9b;
+        --shadow: 0 6px 22px rgba(80, 50, 20, 0.14);
+        --radius: 16px;
+        --font:
+          ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-family: var(--font);
+        color: var(--ink);
+        font-size: 112.5%;
+      }
+      body {
+        background: var(--paper);
+        line-height: 1.6;
+        min-height: 100vh;
+        padding-bottom: 40px;
+      }
+      img,
+      svg {
+        max-width: 100%;
+      }
+
+      a {
+        color: var(--tomato-dark);
+      }
+      :focus-visible {
+        outline: 3px solid var(--berry);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+
+      /* ── Top banner ── */
+      .topbar {
+        background: linear-gradient(100deg, var(--tomato), var(--sun-deep));
+        color: #fff;
+        padding: 18px 20px;
+        text-align: center;
+      }
+      .topbar h1 {
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        line-height: 1.15;
+      }
+      .topbar p {
+        font-size: 1rem;
+        opacity: 0.95;
+        margin-top: 4px;
+      }
+      .level-pill {
+        display: inline-block;
+        background: #fff;
+        color: var(--tomato-dark);
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 3px 14px;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+      }
+
+      .shell {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+
+      /* ── Progress + tabs ── */
+      .progress-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--paper);
+        padding: 12px 0 8px;
+        border-bottom: 2px solid var(--line);
+      }
+      .progress-track {
+        height: 12px;
+        background: #f0e3cd;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid var(--line-strong);
+      }
+      .progress-fill {
+        height: 100%;
+        width: 20%;
+        background: linear-gradient(90deg, var(--basil), var(--sun));
+        border-radius: 999px;
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--ink-soft);
+        margin-top: 6px;
+        text-align: center;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+        justify-content: center;
+      }
+      .tab-btn {
+        border: 2px solid var(--line-strong);
+        background: var(--card);
+        color: var(--ink-soft);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 7px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .tab-btn[aria-selected="true"] {
+        background: var(--tomato);
+        color: #fff;
+        border-color: var(--tomato);
+      }
+      .tab-btn.done::after {
+        content: " ✓";
+        color: var(--basil);
+        font-weight: 900;
+      }
+      .tab-btn[aria-selected="true"].done::after {
+        color: #fff;
+      }
+
+      /* ── Panels (one tab at a time) ── */
+      .panel {
+        display: none;
+        padding: 18px 0 8px;
+      }
+      .panel.active {
+        display: block;
+        animation: pop 0.35s ease;
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .panel h2 {
+        font-size: 1.5rem;
+        color: var(--tomato-dark);
+        margin-bottom: 4px;
+      }
+      .panel > .lead {
+        color: var(--ink-soft);
+        font-size: 1.02rem;
+        margin-bottom: 14px;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: var(--card);
+        border: 2px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 18px;
+        box-shadow: var(--shadow);
+      }
+      .card h3 {
+        color: var(--tomato-dark);
+        font-size: 1.18rem;
+        margin-bottom: 8px;
+      }
+      .step-num {
+        display: inline-grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        background: var(--tomato);
+        color: #fff;
+        border-radius: 50%;
+        font-weight: 800;
+        font-size: 0.95rem;
+        margin-right: 8px;
+        flex: none;
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .card-head h3 {
+        margin: 0;
+      }
+
+      /* ── Direction box (plain language) ── */
+      .how {
+        background: var(--basil-soft);
+        border-left: 5px solid var(--basil);
+        border-radius: 0 12px 12px 0;
+        padding: 12px 14px;
+        margin: 12px 0;
+        font-size: 0.98rem;
+      }
+      .how b {
+        color: var(--basil);
+      }
+
+      /* ── Example box ── */
+      .example {
+        background: #fff4d6;
+        border: 1px dashed var(--sun-deep);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin: 12px 0;
+        font-size: 0.98rem;
+      }
+      .example b {
+        color: var(--sun-deep);
+      }
+      .fr {
+        white-space: nowrap;
+        font-weight: 700;
+      }
+
+      /* ── Word bank ── */
+      .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        background: #f6ecd8;
+        border: 1px dashed var(--line-strong);
+        border-radius: 12px;
+        padding: 12px;
+        margin: 12px 0;
+      }
+      .word-bank .wb-title {
+        width: 100%;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ink-soft);
+      }
+      .chip {
+        background: #fff;
+        border: 1.5px solid var(--line-strong);
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--ink);
+      }
+
+      /* ── Tables ── */
+      .grid {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.96rem;
+      }
+      .grid th {
+        background: #fde9c8;
+        color: var(--ink);
+        text-align: left;
+        padding: 10px;
+        border: 1px solid var(--line-strong);
+        font-size: 0.9rem;
+      }
+      .grid td {
+        padding: 8px;
+        border: 1px solid var(--line);
+        vertical-align: middle;
+      }
+      .grid tr:nth-child(even) td {
+        background: #fffaf0;
+      }
+
+      /* ── Inputs ── */
+      label {
+        display: block;
+        font-weight: 700;
+        margin: 12px 0 5px;
+      }
+      input[type="text"],
+      input[type="date"],
+      select,
+      textarea {
+        width: 100%;
+        font: inherit;
+        color: var(--ink);
+        background: #fffdf7;
+        border: 2px solid var(--line-strong);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        color: #9c8c72;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--tomato);
+        background: #fff;
+        outline: 3px solid rgba(194, 55, 29, 0.18);
+        outline-offset: 0;
+      }
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .grid input {
+        padding: 8px;
+      }
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 620px) {
+        .field-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Hint ── */
+      .hint-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f0e6fb;
+        color: var(--berry);
+        border: 1.5px solid var(--berry);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+        margin-top: 12px;
+      }
+      .hint-body {
+        display: none;
+        margin-top: 8px;
+        padding: 12px 14px;
+        background: #f7f0ff;
+        border-left: 5px solid var(--berry);
+        border-radius: 0 12px 12px 0;
+        font-size: 0.96rem;
+      }
+      .hint-body.open {
+        display: block;
+      }
+
+      /* ── Buttons ── */
+      .nav-row {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        margin: 22px 0 8px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition:
+          transform 0.12s,
+          box-shadow 0.12s;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+      .btn-primary {
+        background: var(--tomato);
+        color: #fff;
+      }
+      .btn-sun {
+        background: var(--sun);
+        color: var(--ink);
+      }
+      .btn-ghost {
+        background: #fff;
+        color: var(--ink);
+        border: 2px solid var(--line-strong);
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* ── Differentiation callouts ── */
+      .scaffold,
+      .enrich {
+        display: none;
+        border-radius: 12px;
+        padding: 14px;
+        margin: 12px 0;
+      }
+      .scaffold {
+        background: #e6f4ec;
+        border: 1.5px solid var(--basil);
+      }
+      .enrich {
+        background: #fff4d6;
+        border: 1.5px solid var(--sun-deep);
+      }
+      html[data-nt-level="1"] .scaffold {
+        display: block;
+      }
+      html[data-nt-level="2"] .enrich {
+        display: block;
+      }
+      .scaffold b,
+      .enrich b {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      /* ── Reference strips ── */
+      .strip-row {
+        display: flex;
+        gap: 4px;
+        margin: 6px 0;
+        flex-wrap: wrap;
+      }
+      .strip-cell {
+        flex: 1;
+        min-width: 40px;
+        text-align: center;
+        color: #fff;
+        font-weight: 800;
+        padding: 8px 4px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+      }
+
+      /* ── Tip / glossary ── */
+      .tip {
+        border-bottom: 2px dotted var(--basil);
+        cursor: help;
+      }
+
+      /* ── Results ── */
+      .result-box {
+        background: #fff;
+        border: 2px solid var(--basil);
+        border-radius: var(--radius);
+        padding: 20px;
+        text-align: center;
+      }
+      .donut-label {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--tomato-dark);
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .stat {
+        background: #fffaf0;
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .stat .v {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--tomato-dark);
+      }
+      .stat .l {
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        font-weight: 700;
+      }
+      @media (max-width: 540px) {
+        .stat-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Help FAB ── */
+      .fab {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 80;
+        background: var(--berry);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+      }
+      .help-panel {
+        position: fixed;
+        right: 16px;
+        bottom: 72px;
+        z-index: 81;
+        width: min(330px, calc(100vw - 32px));
+        max-height: 70vh;
+        overflow: auto;
+        background: #fff;
+        color: var(--ink);
+        border: 2px solid var(--berry);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+        display: none;
+      }
+      .help-panel[data-open="true"] {
+        display: block;
+      }
+      .help-panel h3 {
+        color: var(--tomato-dark);
+        margin-bottom: 6px;
+      }
+      .help-panel ul {
+        padding-left: 18px;
+        margin: 8px 0;
+      }
+      .help-panel li {
+        margin: 6px 0;
+      }
+      .help-panel .close {
+        float: right;
+        border: none;
+        background: #f0e6fb;
+        color: var(--berry);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        padding: 4px 10px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+        html {
+          scroll-behavior: auto;
+        }
+      }
+      @media print {
+        .progress-wrap,
+        .tabs,
+        .nav-row,
+        .fab,
+        .help-panel,
+        .hint-btn {
+          display: none !important;
+        }
+        .panel {
+          display: block !important;
+          page-break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+        .card {
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+<div class="l0-extra-support" role="note">
+  🟠 <b>Level 0 — Most Support.</b> This is the most-supported version.
+  Press <button id="readAloudBtn" class="l0-readaloud" type="button">🔊 Read aloud</button>
+  then tap any text to hear it. Go slowly and use every hint — that is okay here.
+</div>
+<style>
+.l0-extra-support{max-width:900px;margin:10px auto;padding:12px 16px;background:#fff7ed;border:1px solid #fdba74;border-radius:12px;color:#7c2d12;font-size:15px;line-height:1.5;font-family:system-ui,-apple-system,sans-serif;box-sizing:border-box}
+.l0-readaloud{border:1px solid #fdba74;background:#fff;color:#9a3412;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;font-size:14px}
+.l0-readaloud:hover{background:#ffedd5}
+body.l0-reading *{cursor:help}
+</style>
+<script>
+(function(){var b=document.getElementById("readAloudBtn");if(!b)return;var on=false;
+function speak(t){try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.rate=0.9;window.speechSynthesis.speak(u);}catch(e){}}
+b.addEventListener("click",function(){on=!on;document.body.classList.toggle("l0-reading",on);b.textContent=on?"🔊 Tap text to hear":"🔊 Read aloud";if(!on){try{window.speechSynthesis.cancel();}catch(e){}}});
+document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(".l0-extra-support"))return;var el=e.target.closest("p,li,h1,h2,h3,h4,label,td,.q-text,.question");if(el){var t=el.textContent.trim();if(t&&t.length<400)speak(t);}},true);})();
+</script>
+
+    <!-- ════ Banner ════ -->
+    <header class="topbar">
+      <span class="level-pill" id="levelPill">Level 0 · Extra Support</span>
+      <h1>👩‍🍳 Master Chef Kitchen</h1>
+      <p>Multiplying &amp; Dividing Fractions • Unit 2</p>
+    </header>
+
+    <div class="shell">
+      <!-- ════ Progress + tabs ════ -->
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-label" id="progressLabel">Step 1 of 5</div>
+        <div class="tabs" role="tablist" aria-label="Activity steps">
+          <button
+            class="tab-btn"
+            role="tab"
+            id="tab1"
+            aria-selected="true"
+            aria-controls="panel1"
+            onclick="goTo(1)"
+          >
+            1 · Start
+          </button>
+          <button
+            class="tab-btn"
+            role="tab"
+            id="tab2"
+            aria-selected="false"
+            aria-controls="panel2"
+            onclick="goTo(2)"
+          >
+            2 · Learn
+          </button>
+          <button
+            class="tab-btn"
+            role="tab"
+            id="tab3"
+            aria-selected="false"
+            aria-controls="panel3"
+            onclick="goTo(3)"
+          >
+            3 · Multiply
+          </button>
+          <button
+            class="tab-btn"
+            role="tab"
+            id="tab4"
+            aria-selected="false"
+            aria-controls="panel4"
+            onclick="goTo(4)"
+          >
+            4 · Divide
+          </button>
+          <button
+            class="tab-btn"
+            role="tab"
+            id="tab5"
+            aria-selected="false"
+            aria-controls="panel5"
+            onclick="goTo(5)"
+          >
+            5 · Finish
+          </button>
+        </div>
+      </div>
+
+      <!-- ════════════ STEP 1: START ════════════ -->
+      <section
+        class="panel active"
+        id="panel1"
+        role="tabpanel"
+        aria-labelledby="tab1"
+        tabindex="-1"
+      >
+        <h2>Step 1 — Welcome to the Kitchen</h2>
+        <p class="lead">
+          You are the new head chef at <strong>Le Fraction Bistro</strong>.
+          Every recipe uses fractions. Finish all 5 steps to earn your Chef
+          Certificate!
+        </p>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="step-num">1</span>
+            <h3>Sign in, Chef</h3>
+          </div>
+          <p>Type your name so we can put it on your certificate.</p>
+          <div class="field-row">
+            <div>
+              <label for="studentName">Your name</label>
+              <input
+                type="text"
+                id="studentName"
+                placeholder="Type your name"
+                autocomplete="off"
+              />
+            </div>
+            <div>
+              <label for="classPeriod">Class period</label>
+              <select id="classPeriod">
+                <option value="">Pick one…</option>
+                <option>Period 1</option>
+                <option>Period 2</option>
+                <option>Period 3</option>
+                <option>Period 4</option>
+                <option>Period 5</option>
+                <option>Period 6</option>
+                <option>Period 7</option>
+                <option>Period 8</option>
+              </select>
+            </div>
+            <div>
+              <label for="activityDate">Date</label>
+              <input type="date" id="activityDate" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="step-num">★</span>
+            <h3>What you will do</h3>
+          </div>
+          <ul style="padding-left: 20px">
+            <li>
+              <strong>Multiply</strong> fractions to grow a recipe bigger.
+            </li>
+            <li>
+              <strong>Divide</strong> fractions to split food into servings.
+            </li>
+            <li>
+              Change <strong>mixed numbers</strong> into
+              <strong>improper fractions</strong>.
+            </li>
+            <li>Solve real cooking word problems.</li>
+          </ul>
+          <div class="scaffold" role="note">
+            <b>🪜 You can do this!</b>
+            Go one small step at a time. Use the green "How to do it" boxes, the
+            yellow examples, and the 💡 Hint buttons whenever you need them.
+          </div>
+          <div class="enrich" role="note">
+            <b>🌟 Push yourself</b>
+            After each table, answer the "Explain your thinking" prompt and try
+            the ⭐ Challenge boxes with bigger numbers.
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <span></span>
+          <button class="btn btn-sun" onclick="goTo(2)">Start cooking →</button>
+        </div>
+      </section>
+
+      <!-- ════════════ STEP 2: LEARN ════════════ -->
+      <section
+        class="panel"
+        id="panel2"
+        role="tabpanel"
+        aria-labelledby="tab2"
+        tabindex="-1"
+      >
+        <h2>Step 2 — Pantry Lab (Learn the Moves)</h2>
+        <p class="lead">
+          Read these three quick tools. You will use them in every step.
+        </p>
+
+        <div class="card">
+          <h3>Tool 1 · Multiply fractions</h3>
+          <div class="how">
+            <b>How to do it:</b> Multiply the top numbers. Multiply the bottom
+            numbers. Then simplify.
+          </div>
+          <div class="example">
+            <b>Example:</b> <span class="fr">2/3 × 3/4</span> =
+            <span class="fr">(2×3)/(3×4)</span> = <span class="fr">6/12</span> =
+            <span class="fr">1/2</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Tool 2 · Divide fractions — "Keep, Change, Flip"</h3>
+          <div class="how">
+            <b>How to do it:</b> <b>Keep</b> the first fraction. <b>Change</b> ÷
+            into ×. <b>Flip</b> the second fraction (its reciprocal). Then
+            multiply.
+          </div>
+          <div class="example">
+            <b>Example:</b> <span class="fr">3/4 ÷ 1/2</span> =
+            <span class="fr">3/4 × 2/1</span> = <span class="fr">6/4</span> =
+            <span class="fr">1 1/2</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Tool 3 · Mixed number → improper fraction</h3>
+          <div class="how">
+            <b>How to do it:</b> Multiply the whole number by the bottom. Add
+            the top. Keep the same bottom.
+          </div>
+          <div class="example">
+            <b>Example:</b> <span class="fr">2 1/3</span> =
+            <span class="fr">(2×3 + 1)/3</span> = <span class="fr">7/3</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Fraction strips (a picture to help)</h3>
+          <p style="margin-bottom: 6px">
+            One whole can be split into equal parts:
+          </p>
+          <div class="strip-row">
+            <div class="strip-cell" style="background: #c2371d">1 whole</div>
+          </div>
+          <div class="strip-row">
+            <div class="strip-cell" style="background: #b97800">1/2</div>
+            <div class="strip-cell" style="background: #b97800">1/2</div>
+          </div>
+          <div class="strip-row">
+            <div class="strip-cell" style="background: #2f7d4f">1/3</div>
+            <div class="strip-cell" style="background: #2f7d4f">1/3</div>
+            <div class="strip-cell" style="background: #2f7d4f">1/3</div>
+          </div>
+          <div class="strip-row">
+            <div class="strip-cell" style="background: #7a3ea8">1/4</div>
+            <div class="strip-cell" style="background: #7a3ea8">1/4</div>
+            <div class="strip-cell" style="background: #7a3ea8">1/4</div>
+            <div class="strip-cell" style="background: #7a3ea8">1/4</div>
+          </div>
+        </div>
+
+        <!-- TASK 2.1 -->
+        <div class="card" data-task="t2-1">
+          <div class="card-head">
+            <span class="step-num">2.1</span>
+            <h3>Warm-up: Change to improper fractions</h3>
+          </div>
+          <p>
+            Each cup below shows a <strong>mixed number</strong> of cups. Change
+            each one into an <strong>improper fraction</strong> so we can scale
+            the recipe.
+          </p>
+          <div class="example">
+            <b>Example:</b> <span class="fr">2 1/2</span> →
+            <span class="fr">(2×2 + 1)/2</span> = <span class="fr">5/2</span>
+          </div>
+          <table class="grid">
+            <thead>
+              <tr>
+                <th>Ingredient</th>
+                <th>Mixed number</th>
+                <th>Your improper fraction</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>🌾 Flour</td>
+                <td>2 1/2 cups</td>
+                <td>
+                  <input
+                    type="text"
+                    id="imp1"
+                    placeholder="?/?"
+                    aria-label="Flour improper fraction"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🍯 Sugar</td>
+                <td>1 3/4 cups</td>
+                <td>
+                  <input
+                    type="text"
+                    id="imp2"
+                    placeholder="?/?"
+                    aria-label="Sugar improper fraction"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🥛 Milk</td>
+                <td>3 2/3 cups</td>
+                <td>
+                  <input
+                    type="text"
+                    id="imp3"
+                    placeholder="?/?"
+                    aria-label="Milk improper fraction"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🧈 Butter</td>
+                <td>1 1/8 cups</td>
+                <td>
+                  <input
+                    type="text"
+                    id="imp4"
+                    placeholder="?/?"
+                    aria-label="Butter improper fraction"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button
+            class="hint-btn"
+            aria-expanded="false"
+            onclick="toggleHint(this, 'h21')"
+          >
+            💡 Hint
+          </button>
+          <div class="hint-body" id="h21">
+            For 2 1/2: 2 × 2 = 4, then 4 + 1 = 5. Bottom stays 2, so the answer
+            is <span class="fr">5/2</span>. Do the same for the others.
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
+          <button class="btn btn-sun" onclick="goTo(3)">
+            Next: Multiply →
+          </button>
+        </div>
+      </section>
+
+      <!-- ════════════ STEP 3: MULTIPLY ════════════ -->
+      <section
+        class="panel"
+        id="panel3"
+        role="tabpanel"
+        aria-labelledby="tab3"
+        tabindex="-1"
+      >
+        <h2>Step 3 — Multiply to Scale Recipes</h2>
+        <p class="lead">
+          Multiplying makes a recipe a different size. Use Tool 1 from Step 2.
+        </p>
+
+        <!-- TASK 3.1 -->
+        <div class="card" data-task="t3-1">
+          <div class="card-head">
+            <span class="step-num">3.1</span>
+            <h3>Half-batch cake</h3>
+          </div>
+          <p>
+            A customer wants <strong>half</strong> of our cake recipe. Multiply
+            each amount by <span class="fr">1/2</span>. Then simplify if you
+            can.
+          </p>
+          <div class="how">
+            <b>How to do it:</b> top × top, bottom × bottom. Example:
+            <span class="fr">3/4 × 1/2</span> = <span class="fr">3/8</span>.
+          </div>
+          <table class="grid">
+            <thead>
+              <tr>
+                <th>Ingredient</th>
+                <th>Full recipe</th>
+                <th>× 1/2 =</th>
+                <th>Simplified</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>🌾 Flour</td>
+                <td>3/4 cup</td>
+                <td>
+                  <input
+                    type="text"
+                    id="mult1"
+                    placeholder="3/4 × 1/2 = ?"
+                    aria-label="Flour times one half"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="simp1"
+                    placeholder="?"
+                    aria-label="Flour simplified"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🍫 Cocoa</td>
+                <td>2/3 cup</td>
+                <td>
+                  <input
+                    type="text"
+                    id="mult2"
+                    placeholder="2/3 × 1/2 = ?"
+                    aria-label="Cocoa times one half"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="simp2"
+                    placeholder="?"
+                    aria-label="Cocoa simplified"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🧈 Butter</td>
+                <td>5/8 cup</td>
+                <td>
+                  <input
+                    type="text"
+                    id="mult3"
+                    placeholder="5/8 × 1/2 = ?"
+                    aria-label="Butter times one half"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="simp3"
+                    placeholder="?"
+                    aria-label="Butter simplified"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🥛 Cream</td>
+                <td>4/5 cup</td>
+                <td>
+                  <input
+                    type="text"
+                    id="mult4"
+                    placeholder="4/5 × 1/2 = ?"
+                    aria-label="Cream times one half"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="simp4"
+                    placeholder="?"
+                    aria-label="Cream simplified"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="word-bank">
+            <span class="wb-title">Sentence starter</span>
+            <span class="chip">To multiply fractions, I…</span>
+            <span class="chip">multiply the tops</span>
+            <span class="chip">multiply the bottoms</span>
+            <span class="chip">then simplify</span>
+          </div>
+          <label for="multExplain"
+            >Explain in your own words: How do you multiply two
+            fractions?</label
+          >
+          <textarea
+            id="multExplain"
+            placeholder="To multiply fractions, I…"
+          ></textarea>
+          <button
+            class="hint-btn"
+            aria-expanded="false"
+            onclick="toggleHint(this, 'h31')"
+          >
+            💡 Hint
+          </button>
+          <div class="hint-body" id="h31">
+            For <span class="fr">3/4 × 1/2</span>: top = 3×1 = 3, bottom = 4×2 =
+            8. So the answer is <span class="fr">3/8</span>.
+          </div>
+          <div class="enrich" role="note">
+            <b>⭐ Challenge: Triple batch</b>
+            A banquet needs 3 times the recipe. Multiply each amount by 3 and
+            write any improper answer as a mixed number.
+            <label for="chal1">3/4 cup flour × 3 =</label>
+            <input
+              type="text"
+              id="chal1"
+              placeholder="answer as a mixed number"
+            />
+            <label for="chal2">2/3 cup cocoa × 3 =</label>
+            <input
+              type="text"
+              id="chal2"
+              placeholder="answer as a mixed number or whole number"
+            />
+          </div>
+        </div>
+
+        <!-- TASK 3.2 -->
+        <div class="card" data-task="t3-2">
+          <div class="card-head">
+            <span class="step-num">3.2</span>
+            <h3>Party-size pasta</h3>
+          </div>
+          <p>
+            The Garden Pasta serves 4. A party of 6 is coming. Multiply each
+            amount by <span class="fr">6/4</span> (which is the same as
+            <span class="fr">3/2</span>).
+          </p>
+          <table class="grid">
+            <thead>
+              <tr>
+                <th>Ingredient</th>
+                <th>Serves 4</th>
+                <th>× 3/2 =</th>
+                <th>Simplified</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>🍝 Pasta</td>
+                <td>2/3 lb</td>
+                <td>
+                  <input
+                    type="text"
+                    id="scale1"
+                    placeholder="2/3 × 3/2 = ?"
+                    aria-label="Pasta scaled"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="scaleSimp1"
+                    placeholder="?"
+                    aria-label="Pasta simplified"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🧄 Garlic</td>
+                <td>3/4 tbsp</td>
+                <td>
+                  <input
+                    type="text"
+                    id="scale2"
+                    placeholder="3/4 × 3/2 = ?"
+                    aria-label="Garlic scaled"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="scaleSimp2"
+                    placeholder="?"
+                    aria-label="Garlic simplified"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🫒 Olive oil</td>
+                <td>1/3 cup</td>
+                <td>
+                  <input
+                    type="text"
+                    id="scale3"
+                    placeholder="1/3 × 3/2 = ?"
+                    aria-label="Oil scaled"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="scaleSimp3"
+                    placeholder="?"
+                    aria-label="Oil simplified"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🧀 Cheese</td>
+                <td>5/8 cup</td>
+                <td>
+                  <input
+                    type="text"
+                    id="scale4"
+                    placeholder="5/8 × 3/2 = ?"
+                    aria-label="Cheese scaled"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="scaleSimp4"
+                    placeholder="?"
+                    aria-label="Cheese simplified"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button
+            class="hint-btn"
+            aria-expanded="false"
+            onclick="toggleHint(this, 'h32')"
+          >
+            💡 Hint
+          </button>
+          <div class="hint-body" id="h32">
+            For <span class="fr">2/3 × 3/2</span>: top = 2×3 = 6, bottom = 3×2 =
+            6, so <span class="fr">6/6 = 1</span>. One pound of pasta!
+          </div>
+        </div>
+
+        <!-- TASK 3.3 -->
+        <div class="card" data-task="t3-3">
+          <div class="card-head">
+            <span class="step-num">3.3</span>
+            <h3>Design your own dish</h3>
+          </div>
+          <p>
+            Make up a recipe with at least <strong>5 ingredients</strong> that
+            use fractions. Then double it (multiply each amount by 2) for a
+            bigger group.
+          </p>
+          <label for="dishName">Dish name</label>
+          <input
+            type="text"
+            id="dishName"
+            placeholder="e.g., Chef's Supreme Pasta"
+          />
+          <label for="dishIngredients"
+            >Ingredients (5 or more, one per line, with a fraction
+            amount)</label
+          >
+          <textarea
+            id="dishIngredients"
+            placeholder="3/4 cup flour&#10;1/2 cup sugar&#10;2/3 tsp vanilla&#10;…"
+            style="min-height: 120px"
+          ></textarea>
+          <label for="dishScaled"
+            >Doubled amounts (multiply each by 2, show your work)</label
+          >
+          <textarea
+            id="dishScaled"
+            placeholder="3/4 × 2 = 6/4 = 1 1/2 cups flour&#10;…"
+            style="min-height: 120px"
+          ></textarea>
+          <div class="enrich" role="note">
+            <b>⭐ Challenge: Explain your reasoning</b>
+            <label for="dishExplain"
+              >In 2–3 sentences, explain why multiplying by 2 doubles each
+              ingredient.</label
+            >
+            <textarea
+              id="dishExplain"
+              placeholder="Multiplying by 2 doubles each amount because…"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn btn-ghost" onclick="goTo(2)">← Back</button>
+          <button class="btn btn-sun" onclick="goTo(4)">Next: Divide →</button>
+        </div>
+      </section>
+
+      <!-- ════════════ STEP 4: DIVIDE ════════════ -->
+      <section
+        class="panel"
+        id="panel4"
+        role="tabpanel"
+        aria-labelledby="tab4"
+        tabindex="-1"
+      >
+        <h2>Step 4 — Divide into Servings</h2>
+        <p class="lead">
+          Dividing tells you how many servings fit in the food you have. Use
+          Tool 2: <strong>Keep, Change, Flip</strong>.
+        </p>
+
+        <!-- TASK 4.1 -->
+        <div class="card" data-task="t4-1">
+          <div class="card-head">
+            <span class="step-num">4.1</span>
+            <h3>How many servings?</h3>
+          </div>
+          <p>
+            Divide the total amount by the amount in one serving. First write
+            the division. Then find the number of servings.
+          </p>
+          <div class="example">
+            <b>Example:</b> <span class="fr">3/4 ÷ 1/4</span> =
+            <span class="fr">3/4 × 4/1</span> = <span class="fr">12/4</span> =
+            <span class="fr">3</span> servings.
+          </div>
+          <table class="grid">
+            <thead>
+              <tr>
+                <th>Food</th>
+                <th>Total</th>
+                <th>Per serving</th>
+                <th>Division</th>
+                <th>Servings</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>🎂 Batter</td>
+                <td>3/4 cup</td>
+                <td>1/8 cup</td>
+                <td>
+                  <input
+                    type="text"
+                    id="div1exp"
+                    placeholder="3/4 ÷ 1/8"
+                    aria-label="Batter division"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="div1ans"
+                    placeholder="?"
+                    aria-label="Batter servings"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🍕 Dough</td>
+                <td>2/3 lb</td>
+                <td>1/6 lb</td>
+                <td>
+                  <input
+                    type="text"
+                    id="div2exp"
+                    placeholder="2/3 ÷ 1/6"
+                    aria-label="Dough division"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="div2ans"
+                    placeholder="?"
+                    aria-label="Dough servings"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🧃 Juice</td>
+                <td>5/6 gal</td>
+                <td>1/3 gal</td>
+                <td>
+                  <input
+                    type="text"
+                    id="div3exp"
+                    placeholder="5/6 ÷ 1/3"
+                    aria-label="Juice division"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="div3ans"
+                    placeholder="?"
+                    aria-label="Juice servings"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>🍰 Frosting</td>
+                <td>7/8 cup</td>
+                <td>1/4 cup</td>
+                <td>
+                  <input
+                    type="text"
+                    id="div4exp"
+                    placeholder="7/8 ÷ 1/4"
+                    aria-label="Frosting division"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    id="div4ans"
+                    placeholder="?"
+                    aria-label="Frosting servings"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="word-bank">
+            <span class="wb-title">Word bank</span>
+            <span class="chip">keep</span
+            ><span class="chip">change ÷ to ×</span>
+            <span class="chip">flip</span><span class="chip">reciprocal</span
+            ><span class="chip">multiply</span>
+          </div>
+          <label for="kcfExplain"
+            >Explain: What does "Keep, Change, Flip" mean?</label
+          >
+          <textarea
+            id="kcfExplain"
+            placeholder="Keep the first fraction, change ÷ to ×, then flip…"
+          ></textarea>
+          <button
+            class="hint-btn"
+            aria-expanded="false"
+            onclick="toggleHint(this, 'h41')"
+          >
+            💡 Hint
+          </button>
+          <div class="hint-body" id="h41">
+            For <span class="fr">3/4 ÷ 1/8</span>: Keep
+            <span class="fr">3/4</span>, change to ×, flip
+            <span class="fr">1/8</span> to <span class="fr">8/1</span>. Then
+            <span class="fr">3/4 × 8/1 = 24/4 = 6</span> servings.
+          </div>
+        </div>
+
+        <!-- TASK 4.2 -->
+        <div class="card" data-task="t4-2">
+          <div class="card-head">
+            <span class="step-num">4.2</span>
+            <h3>Word problems</h3>
+          </div>
+
+          <p>
+            <strong>Problem 1.</strong> The kitchen has
+            <span class="fr">3 1/2</span> pounds of chicken. Each serving uses
+            <span class="fr">2/3</span> pound. How many full servings can the
+            chef make?
+          </p>
+          <div class="scaffold" role="note">
+            <b>🪜 Steps</b>
+            1) Change <span class="fr">3 1/2</span> to
+            <span class="fr">7/2</span>. 2) Keep, Change, Flip:
+            <span class="fr">7/2 ÷ 2/3 = 7/2 × 3/2</span>. 3) Multiply, then
+            count whole servings.
+          </div>
+          <label for="wp1expr">Division expression:</label>
+          <input type="text" id="wp1expr" placeholder="3 1/2 ÷ 2/3" />
+          <label for="wp1work">Show your work:</label>
+          <textarea
+            id="wp1work"
+            placeholder="Step 1: change 3 1/2 to 7/2…"
+          ></textarea>
+          <label for="wp1ans">Answer (full servings):</label>
+          <input type="text" id="wp1ans" placeholder="? servings" />
+
+          <p style="margin-top: 18px">
+            <strong>Problem 2.</strong> A recipe needs
+            <span class="fr">2/3</span> cup of oil. The chef only has a
+            <span class="fr">1/4</span>-cup scoop. How many scoops are needed?
+          </p>
+          <label for="wp2expr">Division expression:</label>
+          <input type="text" id="wp2expr" placeholder="2/3 ÷ 1/4" />
+          <label for="wp2work">Show your work:</label>
+          <textarea id="wp2work" placeholder="Keep, Change, Flip…"></textarea>
+          <label for="wp2ans">Answer:</label>
+          <input type="text" id="wp2ans" placeholder="? scoops" />
+
+          <p style="margin-top: 18px">
+            <strong>Problem 3.</strong> The bakery uses
+            <span class="fr">5/6</span> of a flour bag each day. They have
+            <span class="fr">4 1/6</span> bags. How many full days will the
+            flour last?
+          </p>
+          <label for="wp3expr">Division expression:</label>
+          <input type="text" id="wp3expr" placeholder="4 1/6 ÷ 5/6" />
+          <label for="wp3work">Show your work:</label>
+          <textarea
+            id="wp3work"
+            placeholder="Change 4 1/6 to an improper fraction, then Keep-Change-Flip…"
+          ></textarea>
+          <label for="wp3ans">Answer:</label>
+          <input type="text" id="wp3ans" placeholder="? days" />
+
+          <button
+            class="hint-btn"
+            aria-expanded="false"
+            onclick="toggleHint(this, 'h42')"
+          >
+            💡 Hint
+          </button>
+          <div class="hint-body" id="h42">
+            "How many ___ fit in ___?" means <strong>divide</strong>. Always
+            change mixed numbers to improper fractions first.
+          </div>
+        </div>
+
+        <!-- TASK 4.3 -->
+        <div class="card" data-task="t4-3">
+          <div class="card-head">
+            <span class="step-num">4.3</span>
+            <h3>Write your own kitchen problem</h3>
+          </div>
+          <p>
+            Write your own short word problem that uses
+            <strong>dividing</strong> fractions. Then solve it.
+          </p>
+          <label for="ownProblem">Your problem:</label>
+          <textarea
+            id="ownProblem"
+            placeholder="A chef has __ of __. Each serving uses __. How many servings…?"
+          ></textarea>
+          <label for="ownSolution">Your solution (show your work):</label>
+          <textarea
+            id="ownSolution"
+            placeholder="Step 1: …&#10;Step 2: …&#10;Answer: …"
+          ></textarea>
+          <div class="enrich" role="note">
+            <b>⭐ Challenge: Teach it</b>
+            <label for="teachIt"
+              >Write how you would explain "Keep, Change, Flip" to a classmate
+              who is stuck.</label
+            >
+            <textarea
+              id="teachIt"
+              placeholder="First I would tell them…"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn btn-ghost" onclick="goTo(3)">← Back</button>
+          <button class="btn btn-sun" onclick="goTo(5)">Next: Finish →</button>
+        </div>
+      </section>
+
+      <!-- ════════════ STEP 5: FINISH ════════════ -->
+      <section
+        class="panel"
+        id="panel5"
+        role="tabpanel"
+        aria-labelledby="tab5"
+        tabindex="-1"
+      >
+        <h2>Step 5 — Chef's Table (Reflect &amp; Finish)</h2>
+        <p class="lead">Rate yourself, reflect, and earn your certificate.</p>
+
+        <div class="card">
+          <h3>Rate yourself</h3>
+          <p style="color: var(--ink-soft); margin-bottom: 8px">
+            Be honest — this helps your teacher help you.
+          </p>
+          <table class="grid">
+            <thead>
+              <tr>
+                <th>Skill</th>
+                <th>1 · Just starting</th>
+                <th>2 · Getting there</th>
+                <th>3 · I can do it</th>
+                <th>4 · I can teach it</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Multiplying fractions</strong></td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric1" value="1" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric1" value="2" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric1" value="3" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric1" value="4" />
+                  </label>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Dividing fractions</strong></td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric2" value="1" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric2" value="2" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric2" value="3" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric2" value="4" />
+                  </label>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Mixed numbers</strong></td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric3" value="1" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric3" value="2" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric3" value="3" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric3" value="4" />
+                  </label>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Word problems</strong></td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric4" value="1" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric4" value="2" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric4" value="3" />
+                  </label>
+                </td>
+                <td>
+                  <label style="margin: 0; font-weight: 400"
+                    ><input type="radio" name="rubric4" value="4" />
+                  </label>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Chef's reflection</h3>
+          <label for="reflect1"
+            >What was the hardest part of working with fractions? How did you
+            get through it?</label
+          >
+          <textarea
+            id="reflect1"
+            placeholder="The hardest part was…"
+          ></textarea>
+          <label for="reflect2"
+            >Explain the difference between multiplying and dividing fractions.
+            When would you use each?</label
+          >
+          <textarea
+            id="reflect2"
+            placeholder="When you multiply… When you divide…"
+          ></textarea>
+          <label for="reflect3"
+            >Give 2 real-life times fraction skills are useful outside of math
+            class.</label
+          >
+          <textarea
+            id="reflect3"
+            placeholder="Fractions are useful when…"
+          ></textarea>
+        </div>
+
+        <div class="card">
+          <h3>Your kitchen report</h3>
+          <div class="result-box" id="resultBox">
+            <p style="color: var(--ink-soft)">
+              Click the button to see how much you finished.
+            </p>
+          </div>
+          <div class="nav-row" style="justify-content: center">
+            <button class="btn btn-primary" onclick="generateReport()">
+              📋 Show my report
+            </button>
+            <button class="btn btn-primary" onclick="ntDownloadResultsCSV()">
+              &#128202; Download Results (CSV for teacher)
+            </button>
+            <button class="btn btn-ghost" onclick="downloadReport()">
+              ⬇ Download
+            </button>
+            <button class="btn btn-ghost" onclick="window.print()">
+              🖨 Print
+            </button>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn btn-ghost" onclick="goTo(4)">← Back</button>
+          <span></span>
+        </div>
+      </section>
+    </div>
+
+    <!-- ════ Help panel ════ -->
+    <button
+      class="fab"
+      id="helpFab"
+      aria-expanded="false"
+      aria-controls="helpPanel"
+      onclick="toggleHelp()"
+    >
+      🛟 Help
+    </button>
+    <div
+      class="help-panel"
+      id="helpPanel"
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="helpTitle"
+      data-open="false"
+    >
+      <button class="close" aria-label="Close help" onclick="toggleHelp()">
+        ✕
+      </button>
+      <h3 id="helpTitle">Quick help</h3>
+      <h4>Words to know</h4>
+      <ul>
+        <li>
+          <strong>Numerator</strong> — the top number (how many parts you have).
+        </li>
+        <li>
+          <strong>Denominator</strong> — the bottom number (how many equal parts
+          make a whole).
+        </li>
+        <li>
+          <strong>Reciprocal</strong> — a flipped fraction. The reciprocal of
+          3/4 is 4/3.
+        </li>
+        <li>
+          <strong>Simplify</strong> — make a fraction smaller by dividing top
+          and bottom by the same number.
+        </li>
+      </ul>
+      <h4>Learn more</h4>
+      <ul>
+        <li>
+          <a
+            href="https://www.khanacademy.org/math/cc-fifth-grade-math/multiply-fractions"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Khan Academy: Multiply Fractions</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.khanacademy.org/math/arithmetic/fraction-arithmetic/arith-review-dividing-fractions"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Khan Academy: Divide Fractions</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.mathsisfun.com/fractions_division.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Math is Fun: Dividing Fractions</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <script>
+      "use strict";
+      var TOTAL = 5;
+      var current = 1;
+      var KEY = "neft_chef_kitchen_v3";
+
+      function goTo(n) {
+        if (n < 1 || n > TOTAL) return;
+        current = n;
+        for (var i = 1; i <= TOTAL; i++) {
+          var panel = document.getElementById("panel" + i);
+          var tab = document.getElementById("tab" + i);
+          var on = i === n;
+          panel.classList.toggle("active", on);
+          tab.setAttribute("aria-selected", on ? "true" : "false");
+        }
+        document.getElementById("progressFill").style.width =
+          Math.round((n / TOTAL) * 100) + "%";
+        document.getElementById("progressLabel").textContent =
+          "Step " + n + " of " + TOTAL;
+        var p = document.getElementById("panel" + n);
+        if (p) p.focus();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        save();
+      }
+
+      function toggleHint(btn, id) {
+        var body = document.getElementById(id);
+        if (!body) return;
+        var open = body.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      }
+
+      function toggleHelp() {
+        var panel = document.getElementById("helpPanel");
+        var fab = document.getElementById("helpFab");
+        var open = panel.getAttribute("data-open") !== "true";
+        panel.setAttribute("data-open", open ? "true" : "false");
+        fab.setAttribute("aria-expanded", open ? "true" : "false");
+        if (open) {
+          var f = panel.querySelector("a,button");
+          if (f) f.focus();
+        }
+      }
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          var panel = document.getElementById("helpPanel");
+          if (panel.getAttribute("data-open") === "true") toggleHelp();
+        }
+      });
+
+      // ── progress accounting for tab "done" ticks ──
+      function refreshDone() {
+        for (var i = 1; i <= TOTAL; i++) {
+          var panel = document.getElementById("panel" + i);
+          var tab = document.getElementById("tab" + i);
+          if (!panel || !tab) continue;
+          var fields = panel.querySelectorAll(
+            "input[type=text], textarea, select, input[type=radio]:checked",
+          );
+          var filled = 0;
+          panel
+            .querySelectorAll("input[type=text], textarea, select")
+            .forEach(function (el) {
+              if (el.value && el.value.trim()) filled++;
+            });
+          if (panel.querySelector("input[type=radio]:checked")) filled++;
+          tab.classList.toggle("done", filled >= 2);
+        }
+      }
+
+      // ── report ──
+      function countFields() {
+        var total = 0,
+          filled = 0;
+        document
+          .querySelectorAll("input[type=text], textarea, select")
+          .forEach(function (el) {
+            total++;
+            if (el.value && el.value.trim()) filled++;
+          });
+        var rubric = 0;
+        ["rubric1", "rubric2", "rubric3", "rubric4"].forEach(function (r) {
+          var c = document.querySelector('input[name="' + r + '"]:checked');
+          if (c) rubric += parseInt(c.value, 10);
+        });
+        return { total: total, filled: filled, rubric: rubric };
+      }
+
+      function generateReport() {
+        var c = countFields();
+        var pct = c.total ? Math.round((c.filled / c.total) * 100) : 0;
+        var rank =
+          pct >= 90
+            ? "Master Chef 👩‍🍳"
+            : pct >= 70
+              ? "Sous Chef"
+              : pct >= 50
+                ? "Line Cook"
+                : "Prep Cook";
+        var name = document.getElementById("studentName").value || "Chef";
+        document.getElementById("resultBox").innerHTML =
+          '<div class="donut-label">' +
+          pct +
+          "% complete</div>" +
+          '<p style="font-weight:800;color:var(--basil);">' +
+          name +
+          " — rank: " +
+          rank +
+          "</p>" +
+          '<div class="stat-grid">' +
+          '<div class="stat"><div class="v">' +
+          c.filled +
+          "/" +
+          c.total +
+          '</div><div class="l">Boxes filled</div></div>' +
+          '<div class="stat"><div class="v">' +
+          c.rubric +
+          '/16</div><div class="l">Self-rating</div></div>' +
+          '<div class="stat"><div class="v">' +
+          pct +
+          '%</div><div class="l">Finished</div></div>' +
+          "</div>";
+      }
+
+      function downloadReport() {
+        var name = document.getElementById("studentName").value || "Chef";
+        var text =
+          "MASTER CHEF KITCHEN — Multiplying & Dividing Fractions\nChef: " +
+          name +
+          "\n" +
+          "=".repeat(48) +
+          "\n\n";
+        document
+          .querySelectorAll(".card[data-task], .card")
+          .forEach(function (card) {
+            var h = card.querySelector("h3");
+            var heading = h ? h.textContent.trim() : "";
+            var lines = "";
+            card
+              .querySelectorAll("input[type=text], textarea")
+              .forEach(function (el) {
+                if (el.value && el.value.trim()) {
+                  var lab =
+                    (el.closest("td")
+                      ? ""
+                      : el.previousElementSibling &&
+                          el.previousElementSibling.tagName === "LABEL"
+                        ? el.previousElementSibling.textContent.trim() + ": "
+                        : "") ||
+                    (el.getAttribute("aria-label") || el.id) + ": ";
+                  lines += lab + el.value.trim() + "\n";
+                }
+              });
+            if (lines) text += "--- " + heading + " ---\n" + lines + "\n";
+          });
+        var blob = new Blob([text], { type: "text/plain" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download =
+          "Master_Chef_Kitchen_" + name.replace(/\s+/g, "_") + ".txt";
+        a.click();
+      }
+
+      // ── save / load ──
+      function save() {
+        try {
+          var data = { step: current, fields: {}, radios: {} };
+          document
+            .querySelectorAll(
+              "input[type=text], textarea, select, input[type=date]",
+            )
+            .forEach(function (el) {
+              if (el.id) data.fields[el.id] = el.value;
+            });
+          document
+            .querySelectorAll("input[type=radio]:checked")
+            .forEach(function (el) {
+              data.radios[el.name] = el.value;
+            });
+          localStorage.setItem(KEY, JSON.stringify(data));
+        } catch (e) {}
+      }
+      function load() {
+        try {
+          var raw = localStorage.getItem(KEY);
+          if (!raw) return;
+          var data = JSON.parse(raw);
+          if (data.fields)
+            Object.keys(data.fields).forEach(function (id) {
+              var el = document.getElementById(id);
+              if (el) el.value = data.fields[id];
+            });
+          if (data.radios)
+            Object.keys(data.radios).forEach(function (name) {
+              var el = document.querySelector(
+                'input[name="' + name + '"][value="' + data.radios[name] + '"]',
+              );
+              if (el) el.checked = true;
+            });
+          if (data.step) goTo(data.step);
+        } catch (e) {}
+      }
+
+      document.addEventListener("input", function () {
+        clearTimeout(window._t);
+        window._t = setTimeout(function () {
+          save();
+          refreshDone();
+        }, 400);
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        var d = document.getElementById("activityDate");
+        if (d && !d.value) d.value = new Date().toISOString().split("T")[0];
+        load();
+        refreshDone();
+      });
+    </script>
+  
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script>
+      /* nt-results wiring — reuses this game's real completion + self-rating tallies. */
+      function ntResultsTally() {
+        var sel = document.querySelectorAll(
+          '.form-input, .form-textarea, .form-select, input[type=text], textarea, select'
+        );
+        var total = 0, filled = 0, seen = {};
+        sel.forEach(function (el) {
+          if (seen[el]) return; seen[el] = 1;
+          var id = el.id || '';
+          if (/^calc/i.test(id)) return;            // skip calculator helper fields
+          if (/^rubric/i.test(el.name || '')) return;
+          if (el.type === 'radio' || el.type === 'checkbox') return;
+          total++;
+          if (el.value && String(el.value).trim()) filled++;
+        });
+        // Self-rating: radios named rubric* OR selected rubric-cells.
+        var rubric = 0, rubricMax = 0;
+        var radios = {};
+        document.querySelectorAll('input[name^=rubric]').forEach(function (r) {
+          radios[r.name] = Math.max(radios[r.name] || 0, parseInt(r.value, 10) || 0);
+        });
+        var radioNames = Object.keys(radios);
+        if (radioNames.length) {
+          radioNames.forEach(function (n) {
+            rubricMax += radios[n];
+            var c = document.querySelector('input[name="' + n + '"]:checked');
+            if (c) rubric += parseInt(c.value, 10) || 0;
+          });
+        } else {
+          var groups = {};
+          document.querySelectorAll('.rubric-cell').forEach(function (cell) {
+            var m = /selectRubric\(\s*['\"]([^'\"]+)['\"]\s*,\s*(\d+)/.exec(
+              cell.getAttribute('onclick') || ''
+            );
+            if (!m) return;
+            var key = m[1], val = parseInt(m[2], 10) || 0;
+            groups[key] = Math.max(groups[key] || 0, val);
+            if (cell.classList.contains('selected')) {
+              cell._sel = val;
+            }
+          });
+          Object.keys(groups).forEach(function (k) { rubricMax += groups[k]; });
+          document.querySelectorAll('.rubric-cell.selected').forEach(function (cell) {
+            var m = /,\s*(\d+)\s*,/.exec(cell.getAttribute('onclick') || '');
+            if (m) rubric += parseInt(m[1], 10) || 0;
+          });
+        }
+        return { filled: filled, total: total, rubric: rubric, rubricMax: rubricMax };
+      }
+      function ntDownloadResultsCSV() {
+        var nameEl = document.getElementById('studentName');
+        var student = (nameEl && nameEl.value && nameEl.value.trim()) || 'Student';
+        var t = ntResultsTally();
+        var sections = [
+          { name: 'Completion', correct: t.filled, total: t.total }
+        ];
+        if (t.rubricMax > 0)
+          sections.push({ name: 'Self-rating', correct: t.rubric, total: t.rubricMax });
+        NTResults.finish({
+          student: student,
+          assessment: 'Unit 2 Post-Test: Master Chef Kitchen',
+          standard: '6.NS.1',
+        level: '1',
+          sections: sections,
+          correct: t.filled,
+          total: t.total,
+        });
+      }
+    </script>
+</body>
+</html>

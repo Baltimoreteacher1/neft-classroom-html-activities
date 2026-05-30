@@ -1,0 +1,1143 @@
+<!doctype html>
+<html lang="en" data-nt-level="1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      📦 Unit 10 Review: Volume and Surface Area — Level 0 (Most Support)
+    </title>
+    <style>
+      :root {
+        --primary: #0369a1;
+        --primary-dark: #075985;
+        --bg: #f0f9ff;
+        --text: #1e3a5f;
+        --text-light: #4a6a8a;
+        --accent: #f97066;
+        --accent-light: #fed7d5;
+        --correct: #2e7d32;
+        --correct-bg: #e8f5e9;
+        --incorrect: #c62828;
+        --incorrect-bg: #ffebee;
+        --card-bg: #ffffff;
+        --border: #7dd3fc;
+        --shadow: rgba(3, 105, 161, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: white;
+        text-align: center;
+        padding: 20px;
+        box-shadow: 0 3px 10px var(--shadow);
+      }
+      .header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 4px;
+      }
+      .header p {
+        font-size: 0.95rem;
+        opacity: 0.9;
+      }
+
+      .container {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* LOGIN */
+      .login-screen {
+        text-align: center;
+        padding: 40px 20px;
+      }
+      .login-screen h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .login-screen p {
+        color: var(--text-light);
+        margin-bottom: 24px;
+      }
+      .login-screen input {
+        display: block;
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto 16px;
+        padding: 12px 16px;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        font-size: 1rem;
+        background: var(--card-bg);
+        color: var(--text);
+      }
+      .login-screen input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 32px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--shadow);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+      .btn-accent {
+        background: var(--accent);
+        color: white;
+      }
+      .btn-sm {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+      }
+
+      /* PROGRESS BAR */
+      .progress-wrap {
+        background: #dbeafe;
+        border-radius: 20px;
+        height: 12px;
+        margin: 16px 0;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        border-radius: 20px;
+        transition: width 0.4s ease;
+      }
+      .progress-text {
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 8px;
+      }
+
+      /* SECTION BANNER */
+      .section-banner {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: white;
+        padding: 14px 20px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        text-align: center;
+      }
+      .section-banner h3 {
+        font-size: 1.15rem;
+      }
+      .section-banner p {
+        font-size: 0.85rem;
+        opacity: 0.9;
+      }
+
+      /* QUESTION CARD */
+      .question-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px var(--shadow);
+        border-left: 5px solid var(--primary);
+      }
+      .q-number {
+        font-size: 0.8rem;
+        color: var(--primary);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+
+      /* MC OPTIONS */
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .option-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        border: 2px solid #dbeafe;
+        border-radius: 10px;
+        background: var(--bg);
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        color: var(--text);
+      }
+      .option-btn:hover:not(.locked) {
+        border-color: var(--primary);
+        background: #e0f2fe;
+      }
+      .option-btn.selected {
+        border-color: var(--primary);
+        background: #bfdbfe;
+        font-weight: 600;
+      }
+      .option-btn.correct-answer {
+        border-color: var(--correct);
+        background: var(--correct-bg);
+      }
+      .option-btn.wrong-answer {
+        border-color: var(--incorrect);
+        background: var(--incorrect-bg);
+      }
+      .option-btn.locked {
+        cursor: default;
+      }
+
+      /* FILL-IN */
+      .fill-input {
+        width: 100%;
+        max-width: 280px;
+        padding: 10px 14px;
+        border: 2px solid #dbeafe;
+        border-radius: 10px;
+        font-size: 1rem;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .fill-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .fill-input.correct-input {
+        border-color: var(--correct);
+        background: var(--correct-bg);
+      }
+      .fill-input.wrong-input {
+        border-color: var(--incorrect);
+        background: var(--incorrect-bg);
+      }
+
+      .submit-row {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      /* FEEDBACK */
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        display: none;
+      }
+      .feedback.correct {
+        background: var(--correct-bg);
+        color: var(--correct);
+        display: block;
+      }
+      .feedback.incorrect {
+        background: var(--incorrect-bg);
+        color: var(--incorrect);
+        display: block;
+      }
+      .feedback strong {
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      /* NAV */
+      .nav-row {
+        display: flex;
+        justify-content: center;
+        margin-top: 16px;
+      }
+
+      /* SUMMARY */
+      .summary-screen {
+        display: none;
+      }
+      .score-ring {
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 20px;
+        position: relative;
+      }
+      .score-ring svg {
+        transform: rotate(-90deg);
+      }
+      .score-ring .score-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .section-score {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 4px var(--shadow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .section-score .label {
+        font-weight: 600;
+      }
+      .section-score .badge {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: white;
+      }
+      .badge-green {
+        background: var(--correct);
+      }
+      .badge-yellow {
+        background: #e68a00;
+      }
+      .badge-red {
+        background: var(--incorrect);
+      }
+
+      .tips-box {
+        background: #eff6ff;
+        border: 2px solid #bfdbfe;
+        border-radius: 12px;
+        padding: 18px;
+        margin: 20px 0;
+      }
+      .tips-box h4 {
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+      }
+      .tips-box ul {
+        padding-left: 20px;
+      }
+      .tips-box li {
+        margin-bottom: 6px;
+        color: var(--text-light);
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.8rem;
+        color: var(--text-light);
+        border-top: 1px solid #bfdbfe;
+        margin-top: 30px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .hint-text {
+        font-size: 0.88rem;
+        color: var(--text-light);
+        font-style: italic;
+        margin-bottom: 10px;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 14px;
+        }
+        .header h1 {
+          font-size: 1.3rem;
+        }
+        .question-card {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+<div class="l0-extra-support" role="note">
+  🟠 <b>Level 0 — Most Support.</b> This is the most-supported version.
+  Press <button id="readAloudBtn" class="l0-readaloud" type="button">🔊 Read aloud</button>
+  then tap any text to hear it. Go slowly and use every hint — that is okay here.
+</div>
+<style>
+.l0-extra-support{max-width:900px;margin:10px auto;padding:12px 16px;background:#fff7ed;border:1px solid #fdba74;border-radius:12px;color:#7c2d12;font-size:15px;line-height:1.5;font-family:system-ui,-apple-system,sans-serif;box-sizing:border-box}
+.l0-readaloud{border:1px solid #fdba74;background:#fff;color:#9a3412;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;font-size:14px}
+.l0-readaloud:hover{background:#ffedd5}
+body.l0-reading *{cursor:help}
+</style>
+<script>
+(function(){var b=document.getElementById("readAloudBtn");if(!b)return;var on=false;
+function speak(t){try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.rate=0.9;window.speechSynthesis.speak(u);}catch(e){}}
+b.addEventListener("click",function(){on=!on;document.body.classList.toggle("l0-reading",on);b.textContent=on?"🔊 Tap text to hear":"🔊 Read aloud";if(!on){try{window.speechSynthesis.cancel();}catch(e){}}});
+document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(".l0-extra-support"))return;var el=e.target.closest("p,li,h1,h2,h3,h4,label,td,.q-text,.question");if(el){var t=el.textContent.trim();if(t&&t.length<400)speak(t);}},true);})();
+</script>
+
+    <div class="header">
+      <h1>📦 Unit 10 Review: Volume and Surface Area</h1>
+      <p>Grade 6 &middot; Standards 6.G.2 &amp; 6.G.4</p>
+    </div>
+
+    <div class="container" id="app">
+      <!-- LOGIN -->
+      <div id="loginScreen" class="login-screen">
+        <h2>📦 Welcome, Builder!</h2>
+        <p>Enter your name to begin your review of volume and surface area.</p>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Your name"
+          maxlength="30"
+          autocomplete="off"
+        />
+        <br />
+        <button class="btn btn-primary" onclick="startReview()">
+          Start Review
+        </button>
+        <div
+          id="resumeMsg"
+          class="hidden"
+          style="margin-top: 16px; color: var(--text-light); font-size: 0.9rem"
+        ></div>
+      </div>
+
+      <!-- QUIZ -->
+      <div id="quizScreen" class="hidden">
+        <div style="text-align: center; margin-bottom: 10px">
+          <span
+            style="
+              display: inline-block;
+              padding: 4px 14px;
+              border-radius: 20px;
+              background: #e0f2fe;
+              border: 1px solid #7dd3fc;
+              color: #075985;
+              font-size: 0.8rem;
+              font-weight: 700;
+              letter-spacing: 0.3px;
+            "
+            >Level 0 · Extra Support</span
+          >
+        </div>
+        <div class="progress-text" id="progressText">Question 1 of 20</div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progressBar" style="width: 5%"></div>
+        </div>
+        <div id="sectionBanner"></div>
+        <div id="questionArea"></div>
+        <div class="nav-row">
+          <button
+            class="btn btn-primary"
+            id="nextBtn"
+            onclick="nextQuestion()"
+            style="display: none"
+          >
+            Next &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="summaryScreen" class="summary-screen">
+        <h2 style="text-align: center; margin-bottom: 4px">Review Complete!</h2>
+        <p
+          style="
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 16px;
+          "
+          id="summaryName"
+        ></p>
+        <div class="score-ring">
+          <svg width="140" height="140">
+            <circle
+              cx="70"
+              cy="70"
+              r="60"
+              fill="none"
+              stroke="#DBEAFE"
+              stroke-width="12"
+            />
+            <circle
+              cx="70"
+              cy="70"
+              r="60"
+              fill="none"
+              stroke="var(--accent)"
+              stroke-width="12"
+              stroke-dasharray="377"
+              stroke-dashoffset="377"
+              stroke-linecap="round"
+              id="scoreCircle"
+            />
+          </svg>
+          <div class="score-label" id="scoreLabel">0%</div>
+        </div>
+        <div id="sectionScores"></div>
+        <div id="tipsBox" class="tips-box">
+          <h4>📖 Study Tips</h4>
+          <ul id="tipsList"></ul>
+        </div>
+        <div
+          style="
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <button class="btn btn-primary" onclick="exportResults()">
+            Export Results
+          </button>
+          <button class="btn btn-primary" onclick="downloadResultsCSV()">
+            Download Results (CSV for teacher)
+          </button>
+          <button class="btn btn-accent" onclick="resetReview()">
+            Retake Review
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Neft Teacher &middot; Grade 6 Math Review</div>
+
+    <script src="/teacher-tools/nt-results.js"></script>
+    <script>
+      // ============================================================
+      // DATA
+      // ============================================================
+      const STORAGE_KEY = "unit10Review_v1_L1";
+      const SECTIONS = [
+        { name: "Vocabulary", icon: "📖", count: 5, type: "mc" },
+        { name: "Quick Check", icon: "⚡", count: 5, type: "mc" },
+        { name: "Practice", icon: "✏️", count: 5, type: "fill" },
+        { name: "Challenge", icon: "🏆", count: 5, type: "mc" },
+      ];
+
+      const questions = [
+        // ===== SECTION 1: VOCABULARY (MC) =====
+        {
+          section: 0,
+          text: "Volume measures the amount of:",
+          options: [
+            "Space covering the outside of a 3D figure",
+            "Space inside a 3D figure",
+            "Length around a flat shape",
+            "Flat space inside a 2D shape",
+          ],
+          answer: 1,
+          explanation:
+            "Volume measures the space inside a three-dimensional figure, expressed in cubic units.",
+        },
+        {
+          section: 0,
+          text: "A net is best described as:",
+          options: [
+            "A 3D model of a prism",
+            "A flat pattern that folds into a 3D shape",
+            "The outline of a circle",
+            "A tool for measuring volume",
+          ],
+          answer: 1,
+          explanation:
+            "A net is a two-dimensional pattern of faces that can be folded to form a three-dimensional shape.",
+        },
+        {
+          section: 0,
+          text: "Surface area is measured in:",
+          options: ["Linear units", "Cubic units", "Square units", "No units"],
+          answer: 2,
+          explanation:
+            "Surface area measures the total area of all faces, so it is expressed in square units (e.g., cm²).",
+        },
+        {
+          section: 0,
+          text: "A rectangular prism has how many faces?",
+          options: ["4", "5", "6", "8"],
+          answer: 2,
+          explanation:
+            "A rectangular prism has 6 faces: top, bottom, front, back, left, and right.",
+        },
+        {
+          section: 0,
+          text: "Which formula gives the volume of a rectangular prism?",
+          options: [
+            "V = length + width + height",
+            "V = length × width × height",
+            "V = 2(lw + lh + wh)",
+            "V = length × width",
+          ],
+          answer: 1,
+          explanation:
+            "Volume of a rectangular prism = length × width × height (V = lwh).",
+        },
+
+        // ===== SECTION 2: QUICK CHECK (MC) =====
+        {
+          section: 1,
+          text: "A rectangular prism is 5 cm long, 3 cm wide, and 4 cm tall. What is its volume?",
+          options: ["12 cm³", "47 cm³", "60 cm³", "94 cm³"],
+          answer: 2,
+          explanation: "V = 5 × 3 × 4 = 60 cm³.",
+        },
+        {
+          section: 1,
+          text: "A cube has edges of 6 in. What is its surface area?",
+          options: ["36 in²", "72 in²", "216 in²", "144 in²"],
+          answer: 2,
+          explanation:
+            "A cube has 6 identical square faces. SA = 6 × (6 × 6) = 6 × 36 = 216 in².",
+        },
+        {
+          section: 1,
+          text: "A triangular prism has a triangular face with base 8 m and height 3 m, and the prism is 10 m long. What is its volume?",
+          options: ["120 m³", "240 m³", "80 m³", "60 m³"],
+          answer: 0,
+          explanation:
+            "Volume = area of triangular base × length = (½ × 8 × 3) × 10 = 12 × 10 = 120 m³.",
+        },
+        {
+          section: 1,
+          text: "A rectangular prism has dimensions 4 ft × 2 ft × 3 ft. What is its surface area?",
+          options: ["24 ft²", "48 ft²", "52 ft²", "26 ft²"],
+          answer: 2,
+          explanation:
+            "SA = 2(lw + lh + wh) = 2(4×2 + 4×3 + 2×3) = 2(8 + 12 + 6) = 2(26) = 52 ft².",
+        },
+        {
+          section: 1,
+          text: "A rectangular prism has edges of ½ ft, ½ ft, and ½ ft. What is its volume?",
+          options: ["1½ ft³", "¼ ft³", "⅛ ft³", "¾ ft³"],
+          answer: 2,
+          explanation: "V = ½ × ½ × ½ = ⅛ ft³.",
+        },
+
+        // ===== SECTION 3: PRACTICE (FILL-IN) =====
+        {
+          section: 2,
+          text: "A box is 10 cm × 4 cm × 3 cm. What is its volume in cm³?",
+          acceptedAnswers: ["120"],
+          explanation: "V = 10 × 4 × 3 = 120 cm³.",
+        },
+        {
+          section: 2,
+          text: "A rectangular prism is 7 in × 5 in × 2 in. What is its surface area in in²?",
+          acceptedAnswers: ["118"],
+          explanation:
+            "SA = 2(7×5 + 7×2 + 5×2) = 2(35 + 14 + 10) = 2(59) = 118 in².",
+        },
+        {
+          section: 2,
+          text: "A rectangular prism has a volume of 96 cm³. Its length is 8 cm and width is 4 cm. What is its height in cm?",
+          acceptedAnswers: ["3"],
+          explanation: "V = lwh → 96 = 8 × 4 × h → 96 = 32h → h = 3 cm.",
+        },
+        {
+          section: 2,
+          text: "A rectangular prism has edges of 1½ ft, 2 ft, and 4 ft. What is its volume in ft³?",
+          acceptedAnswers: ["12"],
+          explanation: "V = 1.5 × 2 × 4 = 12 ft³.",
+        },
+        {
+          section: 2,
+          text: "A square pyramid has a base with side length 6 m and 4 triangular faces each with base 6 m and slant height 5 m. What is its total surface area in m²?",
+          acceptedAnswers: ["96"],
+          explanation:
+            "Base area = 6 × 6 = 36 m². Each triangular face = ½ × 6 × 5 = 15 m². Four triangles = 4 × 15 = 60 m². Total SA = 36 + 60 = 96 m².",
+        },
+
+        // ===== SECTION 4: CHALLENGE (MC word problems) =====
+        {
+          section: 3,
+          text: "A fish tank is 24 in long, 12 in wide, and 16 in tall. How many cubic inches of water can it hold?",
+          options: ["4,608 in³", "2,304 in³", "1,152 in³", "3,072 in³"],
+          answer: 0,
+          explanation: "V = 24 × 12 × 16 = 4,608 in³.",
+        },
+        {
+          section: 3,
+          text: "Maria wants to wrap a gift box that is 12 in × 8 in × 5 in. How much wrapping paper does she need (minimum surface area)?",
+          options: ["392 in²", "480 in²", "296 in²", "592 in²"],
+          answer: 0,
+          explanation:
+            "SA = 2(12×8 + 12×5 + 8×5) = 2(96 + 60 + 40) = 2(196) = 392 in².",
+        },
+        {
+          section: 3,
+          text: "A sandbox is 6 ft long, 4 ft wide, and ¾ ft deep. How many cubic feet of sand are needed to fill it?",
+          options: ["24 ft³", "18 ft³", "10 ft³", "16½ ft³"],
+          answer: 1,
+          explanation: "V = 6 × 4 × ¾ = 6 × 3 = 18 ft³.",
+        },
+        {
+          section: 3,
+          text: "A company ships products in boxes shaped like rectangular prisms (10 cm × 10 cm × 10 cm). They pack 3 boxes in a row. What is the total volume of the 3 boxes?",
+          options: ["1,000 cm³", "3,000 cm³", "300 cm³", "2,700 cm³"],
+          answer: 1,
+          explanation:
+            "Volume of one box = 10 × 10 × 10 = 1,000 cm³. Three boxes = 3 × 1,000 = 3,000 cm³.",
+        },
+        {
+          section: 3,
+          text: "A tent is shaped like a triangular prism. The triangular face has a base of 8 ft and a height of 6 ft. The tent is 10 ft long. The two rectangular sides are each 10 ft × 5 ft, and the rectangular floor is 10 ft × 8 ft. What is the total surface area of the tent (including the floor)?",
+          options: ["228 ft²", "248 ft²", "196 ft²", "180 ft²"],
+          answer: 0,
+          explanation:
+            "Two triangular faces = 2 × (½ × 8 × 6) = 2 × 24 = 48 ft². Two rectangular sides = 2 × (10 × 5) = 100 ft². Rectangular floor = 10 × 8 = 80 ft². Total SA = 48 + 100 + 80 = 228 ft².",
+        },
+      ];
+
+      // ============================================================
+      // STATE
+      // ============================================================
+      let studentName = "";
+      let currentQ = 0;
+      let answers = new Array(20).fill(null);
+      let results = new Array(20).fill(null);
+      let answered = new Array(20).fill(false);
+      // Level 0: track whether a first wrong attempt has been used (one retry).
+      let retryUsed = new Array(20).fill(false);
+      // Transient flag: show the "try again" prompt after a first wrong attempt.
+      let showRetryMsg = false;
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      window.addEventListener("DOMContentLoaded", () => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            const d = JSON.parse(saved);
+            if (d.answers && d.studentName) {
+              document.getElementById("resumeMsg").classList.remove("hidden");
+              document.getElementById("resumeMsg").innerHTML =
+                `Welcome back, <strong>${esc(d.studentName)}</strong>! Your previous progress will be restored.`;
+              document.getElementById("nameInput").value = d.studentName;
+            }
+          } catch (e) {}
+        }
+      });
+
+      function startReview() {
+        const name = document.getElementById("nameInput").value.trim();
+        if (!name) {
+          document.getElementById("nameInput").focus();
+          return;
+        }
+        studentName = name;
+
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            const d = JSON.parse(saved);
+            if (d.studentName === studentName && d.answers) {
+              answers = d.answers;
+              results = d.results;
+              answered = d.answered;
+              retryUsed = d.retryUsed || new Array(20).fill(false);
+              currentQ = d.currentQ || 0;
+              if (answered.every((a) => a)) {
+                showSummary();
+                return;
+              }
+            }
+          } catch (e) {}
+        }
+
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuestion();
+      }
+
+      // ============================================================
+      // RENDER
+      // ============================================================
+      function getSectionForQ(idx) {
+        let count = 0;
+        for (let i = 0; i < SECTIONS.length; i++) {
+          count += SECTIONS[i].count;
+          if (idx < count) return i;
+        }
+        return SECTIONS.length - 1;
+      }
+
+      function renderQuestion() {
+        const q = questions[currentQ];
+        const secIdx = getSectionForQ(currentQ);
+        const sec = SECTIONS[secIdx];
+
+        document.getElementById("progressText").textContent =
+          `Question ${currentQ + 1} of 20`;
+        document.getElementById("progressBar").style.width =
+          ((currentQ + 1) / 20) * 100 + "%";
+
+        let firstOfSection = 0;
+        for (let i = 0; i < secIdx; i++) firstOfSection += SECTIONS[i].count;
+        const banner = document.getElementById("sectionBanner");
+        if (currentQ === firstOfSection) {
+          banner.innerHTML = `<div class="section-banner"><h3>${sec.icon} Section ${secIdx + 1}: ${sec.name}</h3><p>${sec.count} questions &middot; ${sec.type === "mc" ? "Multiple Choice" : "Fill-in Answer"}</p></div>`;
+        } else {
+          banner.innerHTML = "";
+        }
+
+        const area = document.getElementById("questionArea");
+        let html = `<div class="question-card">
+    <div class="q-number">${sec.icon} ${sec.name} &mdash; Question ${currentQ + 1}</div>
+    <div class="q-text">${esc(q.text)}</div>`;
+
+        if (sec.type === "mc" || q.options) {
+          html += `<div class="options">`;
+          const letters = ["A", "B", "C", "D"];
+          q.options.forEach((opt, i) => {
+            let cls = "option-btn";
+            if (answered[currentQ]) {
+              cls += " locked";
+              if (i === q.answer) cls += " correct-answer";
+              else if (answers[currentQ] === i && i !== q.answer)
+                cls += " wrong-answer";
+            } else if (answers[currentQ] === i) {
+              cls += " selected";
+            }
+            html += `<button class="${cls}" onclick="selectOption(${i})" ${answered[currentQ] ? "disabled" : ""}>${letters[i]}. ${esc(opt)}</button>`;
+          });
+          html += `</div>`;
+          if (!answered[currentQ]) {
+            html += `<div class="submit-row"><button class="btn btn-accent btn-sm" onclick="submitMC()">Check Answer</button></div>`;
+          }
+        } else {
+          let inputCls = "fill-input";
+          if (answered[currentQ]) {
+            inputCls += results[currentQ] ? " correct-input" : " wrong-input";
+          }
+          html += `<p class="hint-text">Enter a number only (no units).</p>`;
+          html += `<input type="text" class="${inputCls}" id="fillInput" placeholder="Your answer" value="${answers[currentQ] !== null ? esc(String(answers[currentQ])) : ""}" ${answered[currentQ] ? "disabled" : ""} autocomplete="off">`;
+          if (!answered[currentQ]) {
+            html += `<div class="submit-row"><button class="btn btn-accent btn-sm" onclick="submitFill()">Check Answer</button></div>`;
+          }
+        }
+
+        if (answered[currentQ]) {
+          const isCorrect = results[currentQ];
+          html += `<div class="feedback ${isCorrect ? "correct" : "incorrect"}">
+      <strong>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</strong>
+      ${esc(q.explanation)}
+    </div>`;
+        } else if (showRetryMsg) {
+          // Level 0: first wrong attempt — prompt one retry, no explanation yet.
+          html += `<div class="feedback incorrect">
+      <strong>Not quite — try again</strong>
+      Take another look and pick your best answer.
+    </div>`;
+        }
+
+        html += `</div>`;
+        area.innerHTML = html;
+
+        const nextBtn = document.getElementById("nextBtn");
+        nextBtn.style.display = answered[currentQ] ? "inline-block" : "none";
+        nextBtn.textContent = currentQ === 19 ? "View Results" : "Next →";
+
+        if (!answered[currentQ] && (sec.type === "fill" || !q.options)) {
+          setTimeout(() => {
+            const fi = document.getElementById("fillInput");
+            if (fi) fi.focus();
+          }, 100);
+        }
+      }
+
+      // ============================================================
+      // INTERACTIONS
+      // ============================================================
+      function selectOption(idx) {
+        if (answered[currentQ]) return;
+        answers[currentQ] = idx;
+        showRetryMsg = false;
+        renderQuestion();
+      }
+
+      function submitMC() {
+        if (answers[currentQ] === null) return;
+        const q = questions[currentQ];
+        const isCorrect = answers[currentQ] === q.answer;
+        // Level 0: on a first wrong attempt, allow one retry before locking.
+        if (!isCorrect && !retryUsed[currentQ]) {
+          retryUsed[currentQ] = true;
+          showRetryMsg = true;
+          saveProgress();
+          renderQuestion();
+          return;
+        }
+        results[currentQ] = isCorrect;
+        answered[currentQ] = true;
+        showRetryMsg = false;
+        saveProgress();
+        renderQuestion();
+      }
+
+      function submitFill() {
+        const input = document.getElementById("fillInput");
+        if (!input) return;
+        const val = input.value.trim();
+        if (!val) {
+          input.focus();
+          return;
+        }
+        answers[currentQ] = val;
+        const q = questions[currentQ];
+        const normalized = val.toLowerCase().replace(/\s+/g, " ");
+        const isCorrect = q.acceptedAnswers.some(
+          (a) => a.toLowerCase().replace(/\s+/g, " ") === normalized,
+        );
+        // Level 0: on a first wrong attempt, allow one retry before locking.
+        if (!isCorrect && !retryUsed[currentQ]) {
+          retryUsed[currentQ] = true;
+          showRetryMsg = true;
+          saveProgress();
+          renderQuestion();
+          return;
+        }
+        results[currentQ] = isCorrect;
+        answered[currentQ] = true;
+        showRetryMsg = false;
+        saveProgress();
+        renderQuestion();
+      }
+
+      function nextQuestion() {
+        if (currentQ === 19) {
+          showSummary();
+          return;
+        }
+        currentQ++;
+        showRetryMsg = false;
+        saveProgress();
+        renderQuestion();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // ============================================================
+      // SUMMARY
+      // ============================================================
+      function showSummary() {
+        document.getElementById("quizScreen").classList.add("hidden");
+        document.getElementById("summaryScreen").style.display = "block";
+        document.getElementById("summaryName").textContent = studentName;
+
+        const total = results.filter((r) => r === true).length;
+        const pct = Math.round((total / 20) * 100);
+
+        const circle = document.getElementById("scoreCircle");
+        const circumference = 2 * Math.PI * 60;
+        const offset = circumference - (pct / 100) * circumference;
+        setTimeout(() => {
+          circle.style.strokeDashoffset = offset;
+          circle.style.transition = "stroke-dashoffset 1s ease";
+        }, 100);
+        document.getElementById("scoreLabel").textContent = pct + "%";
+
+        let secHTML = "";
+        let qIdx = 0;
+        const sectionResults = [];
+        SECTIONS.forEach((sec, si) => {
+          let correct = 0;
+          for (let i = 0; i < sec.count; i++) {
+            if (results[qIdx + i]) correct++;
+          }
+          sectionResults.push({
+            name: sec.name,
+            icon: sec.icon,
+            correct,
+            total: sec.count,
+          });
+          const pctSec = Math.round((correct / sec.count) * 100);
+          let badgeClass =
+            pctSec >= 80
+              ? "badge-green"
+              : pctSec >= 50
+                ? "badge-yellow"
+                : "badge-red";
+          secHTML += `<div class="section-score">
+      <span class="label">${sec.icon} ${sec.name}</span>
+      <span class="badge ${badgeClass}">${correct}/${sec.count}</span>
+    </div>`;
+          qIdx += sec.count;
+        });
+        document.getElementById("sectionScores").innerHTML = secHTML;
+
+        const tips = [];
+        if (sectionResults[0].correct < 4)
+          tips.push(
+            "Review key vocabulary: volume, surface area, net, face, edge, and the formulas for rectangular prisms.",
+          );
+        if (sectionResults[1].correct < 4)
+          tips.push(
+            "Practice calculating volume (V = lwh) and surface area (SA = 2(lw + lh + wh)) with whole-number dimensions.",
+          );
+        if (sectionResults[2].correct < 4)
+          tips.push(
+            "Work through fill-in problems — practice finding missing dimensions, fractional-edge volumes, and pyramid surface area.",
+          );
+        if (sectionResults[3].correct < 4)
+          tips.push(
+            "Solve real-world word problems involving volume and surface area — focus on reading carefully and choosing the right formula.",
+          );
+        if (tips.length === 0)
+          tips.push("Great job! Keep reviewing to stay sharp for the test.");
+        document.getElementById("tipsList").innerHTML = tips
+          .map((t) => `<li>${t}</li>`)
+          .join("");
+
+        saveProgress();
+      }
+
+      // ============================================================
+      // EXPORT
+      // ============================================================
+      function exportResults() {
+        const total = results.filter((r) => r === true).length;
+        const pct = Math.round((total / 20) * 100);
+        let text = `UNIT 10 REVIEW — VOLUME AND SURFACE AREA\n`;
+        text += `Student: ${studentName}\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Score: ${total}/20 (${pct}%)\n\n`;
+
+        let qIdx = 0;
+        SECTIONS.forEach((sec) => {
+          let correct = 0;
+          for (let i = 0; i < sec.count; i++) {
+            if (results[qIdx + i]) correct++;
+          }
+          text += `${sec.icon} ${sec.name}: ${correct}/${sec.count}\n`;
+          for (let i = 0; i < sec.count; i++) {
+            const q = questions[qIdx + i];
+            text += `  Q${qIdx + i + 1}: ${results[qIdx + i] ? "✅" : "❌"} ${q.text}\n`;
+            text += `    Your answer: ${answers[qIdx + i] !== null ? (q.options ? q.options[answers[qIdx + i]] : answers[qIdx + i]) : "(skipped)"}\n`;
+            if (!results[qIdx + i]) {
+              text += `    Correct: ${q.options ? q.options[q.answer] : q.acceptedAnswers[0]}\n`;
+            }
+          }
+          text += "\n";
+          qIdx += sec.count;
+        });
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Unit10-Review-${studentName.replace(/\s+/g, "_")}.txt`;
+        a.click();
+      }
+
+      function downloadResultsCSV() {
+        // Reuse the same per-section tally the summary screen computes.
+        const sections = [];
+        let qIdx = 0;
+        let totalCorrect = 0;
+        SECTIONS.forEach((sec) => {
+          let correct = 0;
+          for (let i = 0; i < sec.count; i++) {
+            if (results[qIdx + i]) correct++;
+          }
+          sections.push({ name: sec.name, correct, total: sec.count });
+          totalCorrect += correct;
+          qIdx += sec.count;
+        });
+        NTResults.finish({
+          student: studentName,
+          assessment: "Unit 10 Review",
+          standard: "6.G.2",
+          level: "1",
+          sections,
+          correct: totalCorrect,
+          total: 20,
+        });
+      }
+
+      // ============================================================
+      // PERSISTENCE
+      // ============================================================
+      function saveProgress() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            studentName,
+            currentQ,
+            answers,
+            results,
+            answered,
+            retryUsed,
+            timestamp: Date.now(),
+          }),
+        );
+      }
+
+      function resetReview() {
+        if (!confirm("Start over? Your current results will be cleared."))
+          return;
+        localStorage.removeItem(STORAGE_KEY);
+        answers = new Array(20).fill(null);
+        results = new Array(20).fill(null);
+        answered = new Array(20).fill(false);
+        retryUsed = new Array(20).fill(false);
+        showRetryMsg = false;
+        currentQ = 0;
+        document.getElementById("summaryScreen").style.display = "none";
+        document.getElementById("quizScreen").classList.remove("hidden");
+        renderQuestion();
+      }
+
+      // ============================================================
+      // UTIL
+      // ============================================================
+      function esc(str) {
+        const d = document.createElement("div");
+        d.textContent = str;
+        return d.innerHTML;
+      }
+    </script>
+  </body>
+</html>
