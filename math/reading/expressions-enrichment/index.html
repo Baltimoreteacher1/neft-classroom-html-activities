@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reading + Math: Building the Score Engine (Enrichment) | Neft Teacher</title>
+    <meta name="description" content="Enrichment reading lesson with the distributive property, evaluating expressions with exponents, and combining like terms woven into a game-design story. 6.EE.1-4." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root { --navy:#1e1b4b; --purple:#6d4ac4; --purple-l:#efeafc; --blue:#1a6fb5; --teal:#0e8a7d; --teal-l:#e4f5f3; --gold:#d4952a; --gold-l:#fdf3e0; --coral:#c45a3c; --coral-l:#fdeee9; --green:#2d874b; --green-l:#e6f4eb; --ink:#1a2633; --muted:#5e6e7e; --line:#e2e7ec; --bg:#f7f9fb; --font:"Segoe UI",system-ui,-apple-system,sans-serif; }
+      * { box-sizing:border-box; }
+      body { margin:0; font-family:var(--font); color:var(--ink); background:var(--bg); line-height:1.7; font-size:18px; }
+      .wrap { max-width:760px; margin:0 auto; padding:0 20px 70px; }
+      .phero { background:linear-gradient(135deg,#1e1b4b,#6d4ac4); color:#fff; padding:34px 22px 28px; text-align:center; }
+      .phero .deco { font-size:50px; }
+      .phero h1 { margin:8px 0 6px; font-size:clamp(24px,5vw,34px); }
+      .phero p { margin:0 auto; max-width:560px; color:rgba(255,255,255,.9); font-size:17px; }
+      .tags { margin-top:14px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+      .tag { background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); border-radius:50px; padding:5px 13px; font-size:13px; font-weight:700; }
+      .tag.gold { background:var(--gold); border-color:var(--gold); color:#2a1c00; }
+      .breadcrumb { font-size:13px; padding:14px 0 0; color:var(--muted); }
+      .breadcrumb a { color:var(--blue); text-decoration:none; font-weight:600; }
+      .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin:18px 0 6px; }
+      .toolbtn { background:var(--navy); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-weight:700; font-size:14px; cursor:pointer; font-family:inherit; }
+      .toolbtn.alt { background:var(--purple); }
+      .card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:22px 22px; margin:18px 0; box-shadow:0 3px 14px rgba(15,43,60,.07); }
+      .card h2 { margin:0 0 6px; font-size:21px; }
+      .lvl-note { font-size:13px; font-weight:700; color:var(--purple); text-transform:uppercase; letter-spacing:.04em; }
+      .story p { margin:0 0 14px; }
+      .story .mathline { background:var(--purple-l); border-left:4px solid var(--purple); padding:10px 14px; border-radius:8px; font-weight:600; }
+      .q { background:var(--teal-l); border:1px solid #bfe6e0; border-radius:12px; padding:16px 18px; margin:18px 0; }
+      .q .qlabel { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--teal); }
+      .q p.qtext { font-weight:700; margin:4px 0 12px; }
+      .opt { display:block; width:100%; text-align:left; padding:11px 14px; border:2px solid var(--line); border-radius:10px; background:#fff; font-family:inherit; font-size:16px; cursor:pointer; margin:7px 0; }
+      .opt:hover { border-color:var(--purple); }
+      .opt.right { border-color:var(--green); background:var(--green-l); }
+      .opt.wrong { border-color:var(--coral); background:var(--coral-l); }
+      .solve label { display:block; font-weight:700; font-size:15px; margin:6px 0; }
+      .solve input { width:160px; padding:10px 12px; border:2px solid var(--line); border-radius:10px; font-size:16px; font-family:inherit; }
+      .checkbtn { background:var(--purple); color:#fff; border:none; border-radius:10px; padding:10px 18px; font-weight:800; cursor:pointer; font-family:inherit; margin-left:8px; }
+      .fb { margin-top:10px; font-weight:700; min-height:22px; }
+      .fb.ok { color:var(--green); } .fb.no { color:var(--coral); }
+      .prompt-card { background:var(--gold-l); border-radius:10px; padding:12px 16px; margin:10px 0; font-size:15px; }
+      .prompt-card b { color:var(--navy); }
+      textarea { width:100%; min-height:100px; padding:12px; border:2px solid var(--line); border-radius:10px; font-family:inherit; font-size:16px; resize:vertical; }
+      table.rubric { width:100%; border-collapse:collapse; font-size:14px; margin-top:8px; }
+      table.rubric th, table.rubric td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+      table.rubric th { background:var(--navy); color:#fff; }
+      details.akey summary { cursor:pointer; font-weight:800; color:var(--purple); }
+      details.akey { background:#fff; border:1px dashed var(--purple); border-radius:12px; padding:14px 18px; margin:18px 0; }
+      .footer { text-align:center; color:var(--muted); font-size:14px; margin-top:30px; }
+      @media print { .toolbtn,.checkbtn { display:none !important; } body{ background:#fff; font-size:15px; } .phero{ color:#000; background:#fff; } .card{ box-shadow:none; break-inside:avoid; } details.akey{ display:none; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🕹️</div>
+      <h1>Building the Score Engine</h1>
+      <p>Dev intern Leo writes the scoring code. The distributive property, exponents, and like terms keep the formulas correct and efficient.</p>
+      <div class="tags">
+        <span class="tag gold">Enrichment Reading + Math</span>
+        <span class="tag">Distributive Property, Exponents, Like Terms</span>
+        <span class="tag">6.EE.1–4</span>
+        <span class="tag">Challenge Level</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> / <a href="/math/reading/">Reading + Math</a> / Building the Score Engine (Enrichment)
+      </nav>
+
+      <div class="toolbar" aria-label="Tools">
+        <button class="toolbtn alt" type="button" id="readBtn">🔊 Read aloud</button>
+        <button class="toolbtn" type="button" onclick="window.print()">🖨️ Print</button>
+        <button class="toolbtn" type="button" id="docBtn">⬇️ Download as DOC</button>
+      </div>
+
+      <div id="doc-content">
+        <section class="card story">
+          <span class="lvl-note">Part 1 — Exponents in the Formula</span>
+          <p>Leo's combo bonus uses an exponent: <b>2³ + 4</b>. "Exponents come first in the order of operations," he reminded himself, "before adding."</p>
+          <p class="mathline">2³ + 4 = (2 × 2 × 2) + 4 = 8 + 4 = <b>12</b>.</p>
+
+          <div class="q" aria-label="Comprehension question 1">
+            <span class="qlabel">Analyze — Q1</span>
+            <p class="qtext">Why does Leo compute 2³ before adding 4?</p>
+            <button class="opt" type="button" onclick="mc(this,'q1',true)">The order of operations does exponents before addition.</button>
+            <button class="opt" type="button" onclick="mc(this,'q1',false)">Because 4 is smaller than 8.</button>
+            <button class="opt" type="button" onclick="mc(this,'q1',false)">It does not matter what order he uses.</button>
+            <div class="fb" id="fb-q1" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="q solve" aria-label="Solve it 1">
+            <span class="qlabel">Solve It — #1</span>
+            <p class="qtext">Evaluate <b>3² + 5</b>.</p>
+            <label for="s1">Answer:</label>
+            <input type="text" id="s1" inputmode="numeric" placeholder="number" autocomplete="off" />
+            <button class="checkbtn" type="button" onclick="checkText('s1','14','fb-s1','14. 3² = 9; 9 + 5 = 14.')">Check</button>
+            <div class="fb" id="fb-s1" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card story">
+          <span class="lvl-note">Part 2 — The Distributive Property</span>
+          <p>A multiplier rule read <b>3(x + 4)</b>. Leo used the <b>distributive property</b> to rewrite it as an equivalent expression — multiply the 3 by <em>each</em> term inside.</p>
+          <p class="mathline">3(x + 4) = 3·x + 3·4 = <b>3x + 12</b>. (Check: at x = 5, both give 27.)</p>
+
+          <div class="q solve" aria-label="Solve it 2">
+            <span class="qlabel">Solve It — #2</span>
+            <p class="qtext">Use the distributive property to expand <b>4(n + 2)</b>. (Write it like 4n+8, no spaces.)</p>
+            <label for="s2">4(n + 2) =</label>
+            <input type="text" id="s2" placeholder="e.g. 4n+8" autocomplete="off" />
+            <button class="checkbtn" type="button" onclick="checkText('s2','4n+8','fb-s2','4n + 8. Multiply 4 by each term: 4·n + 4·2 = 4n + 8.')">Check</button>
+            <div class="fb" id="fb-s2" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="q" aria-label="Comprehension question 2">
+            <span class="qlabel">Analyze — Q2</span>
+            <p class="qtext">Why are 3(x + 4) and 3x + 12 called <em>equivalent</em> expressions?</p>
+            <button class="opt" type="button" onclick="mc(this,'q2',true)">They give the same value for every value of x.</button>
+            <button class="opt" type="button" onclick="mc(this,'q2',false)">They look the same when written.</button>
+            <button class="opt" type="button" onclick="mc(this,'q2',false)">They only match when x = 0.</button>
+            <div class="fb" id="fb-q2" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card story">
+          <span class="lvl-note">Part 3 — Evaluating with a Variable</span>
+          <p>A power score used the expression <b>2x² + 1</b>. Leo evaluated it at x = 3, being careful to square <em>before</em> multiplying.</p>
+          <p class="mathline">2x² + 1 at x = 3: first 3² = 9, then 2·9 = 18, then 18 + 1 = <b>19</b>.</p>
+
+          <div class="q solve" aria-label="Solve it 3">
+            <span class="qlabel">Solve It — #3</span>
+            <p class="qtext">Evaluate <b>3x²</b> when x = 2.</p>
+            <label for="s3">Answer:</label>
+            <input type="text" id="s3" inputmode="numeric" placeholder="number" autocomplete="off" />
+            <button class="checkbtn" type="button" onclick="checkText('s3','12','fb-s3','12. x² = 2² = 4, then 3 × 4 = 12.')">Check</button>
+            <div class="fb" id="fb-s3" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card story">
+          <span class="lvl-note">Part 4 — Combining Like Terms</span>
+          <p>Leo found two score parts: <b>2x + 3x</b>. "These are <b>like terms</b> — same variable — so I can combine them into one," he said. A simpler expression runs faster.</p>
+          <p class="mathline">2x + 3x = <b>5x</b>. (At x = 4, that is 5 × 4 = 20.)</p>
+
+          <div class="q solve" aria-label="Solve it 4">
+            <span class="qlabel">Solve It — #4</span>
+            <p class="qtext">Evaluate the score expression <b>5x + 2</b> when x = 6.</p>
+            <label for="s4">Answer:</label>
+            <input type="text" id="s4" inputmode="numeric" placeholder="number" autocomplete="off" />
+            <button class="checkbtn" type="button" onclick="checkText('s4','32','fb-s4','32. 5 × 6 = 30, then 30 + 2 = 32.')">Check</button>
+            <div class="fb" id="fb-s4" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="q" aria-label="Comprehension question 3">
+            <span class="qlabel">Analyze — Q3</span>
+            <p class="qtext">Why can Leo combine 2x and 3x but not 2x and 3?</p>
+            <button class="opt" type="button" onclick="mc(this,'q3',true)">2x and 3x are like terms (same variable); 3 has no variable, so it is unlike.</button>
+            <button class="opt" type="button" onclick="mc(this,'q3',false)">Because 2x and 3x are both even.</button>
+            <button class="opt" type="button" onclick="mc(this,'q3',false)">You can combine any two terms you want.</button>
+            <div class="fb" id="fb-q3" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <span class="lvl-note">After You Read — Analytical Writing</span>
+          <h2>Make a Mathematical Argument</h2>
+          <div class="prompt-card">
+            <b>Prompt A — Prove equivalence.</b> Show that 3(x + 4) and 3x + 12 are equivalent by evaluating both at two different x-values. Explain what "equivalent" means using your results.
+          </div>
+          <div class="prompt-card">
+            <b>Prompt B — Explain efficiency.</b> Explain why combining like terms (2x + 3x = 5x) makes an expression simpler, and why the order of operations is essential when an exponent is involved. Use an example from the story.
+          </div>
+          <p style="font-size:14px;color:var(--muted);margin:6px 0 4px;">Optional academic frame: "Because ______, the expressions are ______; this matters because ______."</p>
+          <label for="writing" style="font-weight:700;font-size:15px;">Write your argument here:</label>
+          <textarea id="writing" placeholder="State your claim, then support it with numbers from the story..."></textarea>
+        </section>
+
+        <section class="card">
+          <span class="lvl-note">Challenge Extension</span>
+          <h2>Think Further</h2>
+          <p style="font-size:16px;">Leo writes <b>2(x + 3) + 4x</b>. Expand and combine like terms into a single simplified expression, then evaluate it at x = 5. Explain each step. (Try it, then check with your teacher.)</p>
+        </section>
+
+        <section class="card">
+          <span class="lvl-note">How You Are Scored</span>
+          <h2>Rubric</h2>
+          <table class="rubric">
+            <tr><th>Category</th><th>4 — Advanced</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+            <tr><td>Comprehension &amp; inference</td><td>All analysis questions correct; explains equivalence &amp; like terms</td><td>2 of 3 correct</td><td>1 correct</td></tr>
+            <tr><td>Multi-step math</td><td>All 4 Solve-It answers correct (exponent+order, distributive, evaluate x², evaluate)</td><td>3 correct</td><td>2 correct</td></tr>
+            <tr><td>Mathematical argument</td><td>Proves/explains with specific values; clear reasoning</td><td>Claim with some evidence</td><td>Little evidence</td></tr>
+          </table>
+        </section>
+      </div><!-- /doc-content -->
+
+      <details class="akey">
+        <summary>🔑 Teacher Answer Key (click to expand)</summary>
+        <ol>
+          <li>Q1 — <b>Order of operations does exponents before addition.</b></li>
+          <li>Solve It #1 — <b>14</b> (3² + 5).</li>
+          <li>Solve It #2 — <b>4n + 8</b> (distributive).</li>
+          <li>Q2 — <b>They give the same value for every value of x.</b></li>
+          <li>Solve It #3 — <b>12</b> (3·2²).</li>
+          <li>Solve It #4 — <b>32</b> (5·6 + 2).</li>
+          <li>Q3 — <b>2x and 3x are like terms; 3 has no variable.</b></li>
+          <li>Extension — 2(x+3) + 4x = 2x + 6 + 4x = <b>6x + 6</b>; at x = 5, 6·5 + 6 = <b>36</b>.</li>
+        </ol>
+        <p style="font-size:14px;color:var(--muted);">Grading accepts 4n+8 with or without spaces; numeric answers in common formats.</p>
+      </details>
+
+      <p class="footer">Neft Teacher · Reading + Math (Enrichment) · Expressions · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      function normalize(raw){ return String(raw).trim().toLowerCase().replace(/\s+/g,"").replace(/(points?)$/,"").replace(/·|\*/g,""); }
+      function checkText(id, correct, fbId, why){
+        var raw=document.getElementById(id).value, fb=document.getElementById(fbId);
+        if(raw.trim()===""){ fb.textContent="⚠ Please type an answer first."; fb.className="fb no"; return; }
+        var s=normalize(raw), c=normalize(correct), ns=parseFloat(s), nc=parseFloat(c), ok;
+        if(/[a-z]/.test(c)){ ok = (s===c); }
+        else { ok = (!isNaN(ns)&&!isNaN(nc)) ? Math.abs(ns-nc)<1e-9 : (s===c); }
+        fb.textContent = ok ? ("✓ Correct! "+why) : ("✗ Not yet — re-read that part and try again. Hint: "+why);
+        fb.className = "fb " + (ok?"ok":"no");
+      }
+      function mc(btn, key, correct){
+        var parent=btn.closest(".q");
+        Array.prototype.forEach.call(parent.querySelectorAll(".opt"),function(b){ b.classList.remove("right","wrong"); });
+        var fb=document.getElementById("fb-"+key);
+        if(correct){ btn.classList.add("right"); fb.textContent="✓ Correct!"; fb.className="fb ok"; }
+        else { btn.classList.add("wrong"); fb.textContent="✗ Not quite — find the evidence in the story and try again."; fb.className="fb no"; }
+      }
+      (function(){
+        var btn=document.getElementById("readBtn");
+        if(!("speechSynthesis" in window)){ btn.disabled=true; btn.textContent="🔊 (not supported)"; return; }
+        var speaking=false;
+        btn.addEventListener("click",function(){
+          if(speaking){ speechSynthesis.cancel(); speaking=false; btn.textContent="🔊 Read aloud"; return; }
+          var text=[].slice.call(document.querySelectorAll(".story p")).map(function(n){return n.textContent;}).join(". ");
+          var u=new SpeechSynthesisUtterance(text); u.lang="en-US"; u.rate=0.95;
+          u.onend=function(){ speaking=false; btn.textContent="🔊 Read aloud"; };
+          speechSynthesis.cancel(); speechSynthesis.speak(u); speaking=true; btn.textContent="⏹ Stop reading";
+        });
+      })();
+      document.getElementById("docBtn").addEventListener("click",function(){
+        var clone=document.getElementById("doc-content").cloneNode(true);
+        var writeVal=document.getElementById("writing").value || "________________________________________";
+        Array.prototype.forEach.call(clone.querySelectorAll("textarea"),function(t){ var p=document.createElement("p"); p.textContent=writeVal; t.parentNode.replaceChild(p,t); });
+        Array.prototype.forEach.call(clone.querySelectorAll("input"),function(i){ var s=document.createElement("span"); s.textContent="________________"; i.parentNode.replaceChild(s,i); });
+        Array.prototype.forEach.call(clone.querySelectorAll(".fb"),function(n){ n.parentNode.removeChild(n); });
+        Array.prototype.forEach.call(clone.querySelectorAll(".opt"),function(b){ var d=document.createElement("div"); d.textContent="☐ "+b.textContent; b.parentNode.replaceChild(d,b); });
+        Array.prototype.forEach.call(clone.querySelectorAll(".checkbtn, .toolbtn"),function(n){ n.parentNode.removeChild(n); });
+        var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Building the Score Engine (Enrichment)</title></head><body style="font-family:Calibri,Arial,sans-serif;">'
+          +'<h1>Building the Score Engine — Reading + Math (Enrichment)</h1><p><b>Name: ___________________________  Date: ____________</b></p>'
+          +clone.innerHTML+'</body></html>';
+        var blob=new Blob(['﻿',html],{type:"application/msword"});
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement("a"); a.href=url; a.download="Building-the-Score-Engine-Enrichment.doc";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      });
+    </script>
+  </body>
+</html>
