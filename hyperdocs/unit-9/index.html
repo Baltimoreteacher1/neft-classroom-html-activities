@@ -10,18 +10,12 @@
     <script src="/assets/neft-theme.js" defer></script>
     <script src="/assets/nt-activity-kit.js"></script>
     <style>
-      /* Style ONLY with --nt-* variables */
+      /* ── Base ── */
       body {
         margin: 0;
         background: var(--nt-bg);
         color: var(--nt-text);
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Arial,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         font-size: 19px;
         line-height: 1.6;
       }
@@ -30,6 +24,8 @@
         margin: 0 auto;
         padding: 24px 18px 80px;
       }
+
+      /* ── Hero ── */
       header.hero {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -60,6 +56,8 @@
         padding: 4px 12px;
         border-radius: 999px;
       }
+
+      /* ── Cards ── */
       section.card {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -86,10 +84,63 @@
         margin: 16px 0 6px;
         color: var(--nt-text);
       }
-      p,
-      li {
-        color: var(--nt-text);
+      p, li { color: var(--nt-text); }
+
+      /* ── Learning Target box ── */
+      .learning-target {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 0 0 20px;
       }
+      .learning-target h2 {
+        font-size: 20px;
+        margin: 0 0 10px;
+        color: var(--nt-accent);
+      }
+      .lt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 18px;
+        margin-top: 10px;
+        font-size: 17px;
+      }
+      .lt-grid div { display: flex; gap: 6px; }
+      .lt-icon { font-style: normal; }
+      @media (max-width: 540px) { .lt-grid { grid-template-columns: 1fr; } }
+
+      /* ── Teacher Notes ── */
+      details.teacher-notes {
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        margin: 0 0 20px;
+        background: var(--nt-surface);
+      }
+      details.teacher-notes summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 15px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--nt-accent);
+        padding: 14px 18px;
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-notes summary::-webkit-details-marker { display: none; }
+      details.teacher-notes summary::before { content: "▶ "; }
+      details.teacher-notes[open] summary::before { content: "▼ "; }
+      .tn-body {
+        padding: 4px 18px 18px;
+        font-size: 17px;
+        border-top: 2px dashed var(--nt-border);
+      }
+      .tn-body h3 { font-size: 17px; margin: 14px 0 4px; color: var(--nt-accent); }
+      .tn-body ul { margin: 4px 0 0 18px; }
+      .tn-body li { margin-bottom: 4px; }
+
+      /* ── Utility ── */
       .do-this {
         background: var(--nt-bg);
         border-left: 6px solid var(--nt-accent);
@@ -98,14 +149,8 @@
         margin: 12px 0;
         font-weight: 600;
       }
-      .links {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .links li {
-        margin: 0 0 10px;
-      }
+      .links { list-style: none; padding: 0; margin: 12px 0 0; }
+      .links li { margin: 0 0 10px; }
       .links a {
         display: block;
         padding: 14px 16px;
@@ -116,33 +161,16 @@
         text-decoration: none;
         font-weight: 700;
       }
-      .links a:hover {
-        border-color: var(--nt-accent);
-      }
-      .links a:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      .links .sub {
-        display: block;
-        font-weight: 500;
-        font-size: 16px;
-        color: var(--nt-muted);
-        margin-top: 2px;
-      }
-      .vocab {
-        display: grid;
-        gap: 10px;
-        margin: 12px 0 0;
-      }
-      .vocab dt {
-        font-weight: 800;
-        color: var(--nt-accent);
-        font-size: 18px;
-      }
-      .vocab dd {
-        margin: 2px 0 8px;
-      }
+      .links a:hover { border-color: var(--nt-accent); }
+      .links a:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
+      .links .sub { display: block; font-weight: 500; font-size: 16px; color: var(--nt-muted); margin-top: 2px; }
+
+      /* ── Vocab ── */
+      .vocab { display: grid; gap: 10px; margin: 12px 0 0; }
+      .vocab dt { font-weight: 800; color: var(--nt-accent); font-size: 18px; }
+      .vocab dd { margin: 2px 0 8px; }
+
+      /* ── Coordinate figure ── */
       .example {
         background: var(--nt-bg);
         border: 2px dashed var(--nt-border);
@@ -159,24 +187,16 @@
         border: 2px solid var(--nt-border);
         border-radius: 12px;
       }
+
+      /* ── Apply questions ── */
       .q {
         margin: 18px 0 0;
         padding: 16px 0 0;
         border-top: 2px solid var(--nt-border);
       }
-      .q:first-child {
-        border-top: 0;
-        padding-top: 0;
-      }
-      .q .qnum {
-        font-weight: 800;
-        color: var(--nt-accent);
-      }
-      .q label {
-        display: block;
-        font-weight: 600;
-        margin: 6px 0;
-      }
+      .q:first-child { border-top: 0; padding-top: 0; }
+      .q .qnum { font-weight: 800; color: var(--nt-accent); }
+      .q label { display: block; font-weight: 600; margin: 6px 0; }
       input[type="text"] {
         font-size: 19px;
         padding: 10px 12px;
@@ -193,21 +213,9 @@
         outline-offset: 1px;
         border-color: var(--nt-accent);
       }
-      .choices {
-        list-style: none;
-        padding: 0;
-        margin: 6px 0 0;
-      }
-      .choices li {
-        margin: 4px 0;
-      }
-      .choices label {
-        font-weight: 500;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        cursor: pointer;
-      }
+      .choices { list-style: none; padding: 0; margin: 6px 0 0; }
+      .choices li { margin: 4px 0; }
+      .choices label { font-weight: 500; display: flex; gap: 10px; align-items: center; cursor: pointer; }
       textarea {
         font-size: 18px;
         width: 100%;
@@ -225,6 +233,53 @@
         outline-offset: 1px;
         border-color: var(--nt-accent);
       }
+
+      /* ── Self-check ── */
+      .selfcheck-item {
+        margin: 0 0 18px;
+        padding: 14px 16px;
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+      }
+      .selfcheck-item p { margin: 0 0 10px; font-weight: 600; }
+      .sc-choices { list-style: none; padding: 0; margin: 0 0 10px; }
+      .sc-choices li { margin: 4px 0; }
+      .sc-choices label { display: flex; gap: 8px; align-items: center; cursor: pointer; font-weight: 500; }
+      .sc-btn {
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 9px 20px;
+      }
+      .sc-btn:hover { filter: brightness(1.06); }
+      .sc-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
+      .sc-feedback {
+        margin-top: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 17px;
+        display: none;
+      }
+      .sc-feedback.correct {
+        background: #d4edda;
+        color: #1a5e2b;
+        border: 2px solid #68c083;
+        display: block;
+      }
+      .sc-feedback.wrong {
+        background: #fde8e8;
+        color: #7a1a1a;
+        border: 2px solid #e07b7b;
+        display: block;
+      }
+
+      /* ── NTKit submit button ── */
       .btn-primary {
         font-size: 20px;
         font-weight: 800;
@@ -236,13 +291,71 @@
         padding: 14px 26px;
         margin-top: 8px;
       }
-      .btn-primary:hover {
-        filter: brightness(1.05);
+      .btn-primary:hover { filter: brightness(1.05); }
+      .btn-primary:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
+
+      /* ── Rubric ── */
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 17px;
       }
-      .btn-primary:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
+      .rubric-table th {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 800;
       }
+      .rubric-table td {
+        border: 2px solid var(--nt-border);
+        padding: 9px 12px;
+        vertical-align: top;
+      }
+      .rubric-table tr:nth-child(even) td { background: var(--nt-bg); }
+
+      /* ── Answer Key ── */
+      details.answer-key {
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        margin: 20px 0 0;
+        background: var(--nt-surface);
+      }
+      details.answer-key summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 15px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--nt-accent);
+        padding: 14px 18px;
+        list-style: none;
+        user-select: none;
+      }
+      details.answer-key summary::-webkit-details-marker { display: none; }
+      details.answer-key summary::before { content: "▶ "; }
+      details.answer-key[open] summary::before { content: "▼ "; }
+      .ak-body {
+        padding: 4px 18px 18px;
+        font-size: 17px;
+        border-top: 2px dashed var(--nt-border);
+      }
+      .ak-body ol { margin: 10px 0 0 18px; }
+      .ak-body li { margin-bottom: 8px; }
+
+      /* ── Reflect deliverable ── */
+      .deliverable-box {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin: 14px 0 6px;
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      /* ── Accessibility ── */
       .skip {
         position: absolute;
         left: -9999px;
@@ -254,9 +367,33 @@
         background: var(--nt-accent);
         color: var(--nt-bg);
       }
-      .hint {
-        color: var(--nt-muted);
-        font-size: 16px;
+      .hint { color: var(--nt-muted); font-size: 16px; }
+
+      /* ── Print ── */
+      @media print {
+        body { font-size: 14px; background: #fff; color: #000; }
+        .wrap { max-width: 100%; padding: 0; }
+        section.card, header.hero, .learning-target {
+          border: 1px solid #999;
+          border-radius: 0;
+          margin-bottom: 14px;
+          break-inside: avoid;
+        }
+        details.teacher-notes, details.answer-key { display: block; }
+        details.teacher-notes summary::before, details.answer-key summary::before { content: ""; }
+        .tn-body, .ak-body { display: block !important; }
+        .btn-primary, .sc-btn { display: none; }
+        input[type="text"], textarea { border: 1px solid #999; }
+        a { color: #000; text-decoration: underline; }
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 600px) {
+        h1 { font-size: 26px; }
+        h2 { font-size: 21px; }
+        .btn-primary { width: 100%; }
+        input[type="text"] { max-width: 100%; }
+        .rubric-table { font-size: 15px; }
       }
     </style>
   </head>
@@ -264,6 +401,8 @@
     <p style="font:14px system-ui;padding:10px 16px;"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
     <a class="skip" href="#apply">Skip to the activity</a>
     <div class="wrap">
+
+      <!-- ═══ HERO ═══ -->
       <header class="hero">
         <p class="eyebrow">Neft Teacher · Grade 6 HyperDoc</p>
         <h1>Unit 9 — The Coordinate Plane</h1>
@@ -275,7 +414,64 @@
         </p>
       </header>
 
-      <!-- NTKit identity bar + Save buttons + results -->
+      <!-- ═══ LEARNING TARGET ═══ -->
+      <div class="learning-target" role="region" aria-label="Learning Target">
+        <h2>Learning Target</h2>
+        <ul style="margin:0 0 8px 18px;">
+          <li><strong>I can</strong> plot and name ordered pairs in all four quadrants of the coordinate plane.</li>
+          <li><strong>I can</strong> reflect a point over the x-axis or y-axis and write the new coordinates.</li>
+          <li><strong>I can</strong> find the distance between two points that share the same x- or y-coordinate.</li>
+          <li><strong>I can</strong> use coordinates to identify vertices of polygons on the coordinate plane.</li>
+        </ul>
+        <div class="lt-grid">
+          <div><span class="lt-icon">📋</span><span><strong>Standard:</strong> CCSS 6.NS.C.6 &amp; 6.G.A.3</span></div>
+          <div><span class="lt-icon">⏱</span><span><strong>Estimated time:</strong> 50 – 60 minutes</span></div>
+          <div><span class="lt-icon">📦</span><span><strong>Materials:</strong> This page, pencil (optional graph paper)</span></div>
+          <div><span class="lt-icon">🎯</span><span><strong>Unit:</strong> Number Sense &amp; Geometry — Unit 9</span></div>
+        </div>
+      </div>
+
+      <!-- ═══ TEACHER NOTES (hidden from students) ═══ -->
+      <details class="teacher-notes">
+        <summary>Teacher Notes — Pacing, Grouping &amp; Differentiation</summary>
+        <div class="tn-body">
+          <h3>Pacing Guide</h3>
+          <ul>
+            <li><strong>Engage (5 min)</strong> — Hook discussion; no writing required yet.</li>
+            <li><strong>Explore (10–15 min)</strong> — Students open game/hub in new tabs; circulate and ask "Which quadrant is your character in?"</li>
+            <li><strong>Explain (10 min)</strong> — Class reads together; cold-call vocab and SVG diagram.</li>
+            <li><strong>Apply (15–20 min)</strong> — Self-check items first (independent), then NTKit graded set; pair-share before submit.</li>
+            <li><strong>Reflect (5–8 min)</strong> — Students type responses; collect PDF or DOC at end of class.</li>
+          </ul>
+          <h3>Grouping Suggestions</h3>
+          <ul>
+            <li>Apply Self-Check: individual, then turn-and-talk after each item.</li>
+            <li>NTKit graded form: individual; partners may discuss after submit.</li>
+            <li>Reflect: individual only.</li>
+          </ul>
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>Provide a printed four-quadrant grid and counters to physically plot points.</li>
+            <li>Allow calculator for fraction / negative arithmetic if needed.</li>
+            <li>Pre-teach quadrant sign rules with a mnemonic: "+ + I, − + II, − − III, + − IV".</li>
+            <li>Reduce Apply to Q1–Q4 and offer Q5–Q6 as extension.</li>
+          </ul>
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Ask students to create a polygon with at least 5 vertices across 3 quadrants, list its vertices, and compute the perimeter.</li>
+            <li>Pose: "If A(a, b) reflects over the y-axis to A', what are A's coordinates? Justify algebraically."</li>
+          </ul>
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Display a labeled coordinate plane anchor chart with translations for key terms (origin, axis, quadrant, reflect).</li>
+            <li>Sentence frames: "The point ___ is in Quadrant ___ because the x-value is ___ and the y-value is ___."</li>
+            <li>Pair newcomers with a bilingual partner during Explore.</li>
+            <li>Allow labeled diagrams as evidence in Reflect instead of prose.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ═══ NTKit identity bar ═══ -->
       <section class="card">
         <p class="step-label">Your Name</p>
         <h2>Sign in to save your work</h2>
@@ -286,7 +482,7 @@
         <div id="ntkit"></div>
       </section>
 
-      <!-- ENGAGE -->
+      <!-- ═══ ENGAGE ═══ -->
       <section class="card">
         <p class="step-label">Step 1 · Engage</p>
         <h2>Chart the Star Map</h2>
@@ -301,36 +497,34 @@
         </div>
       </section>
 
-      <!-- EXPLORE -->
+      <!-- ═══ EXPLORE ═══ -->
       <section class="card">
         <p class="step-label">Step 2 · Explore</p>
         <h2>Play and explore</h2>
         <p>Open these in a new tab. Explore first, then come back to finish.</p>
         <ul class="links">
           <li>
-            <a href="/games/3d/unit-9/" target="_blank" rel="noopener"
-              >Play the 3D Game: Coordinate Quest
-              <span class="sub"
-                >Plot points and explore all four quadrants.</span
-              ></a
-            >
+            <a href="/games/3d/unit-9/" target="_blank" rel="noopener">
+              Play the 3D Game: Coordinate Quest
+              <span class="sub">Plot points and explore all four quadrants.</span>
+            </a>
           </li>
           <li>
-            <a href="/math/" target="_blank" rel="noopener"
-              >Math Hub
-              <span class="sub">More Unit 9 practice and tools.</span></a
-            >
+            <a href="/math/" target="_blank" rel="noopener">
+              Math Hub
+              <span class="sub">More Unit 9 practice and tools.</span>
+            </a>
           </li>
           <li>
-            <a href="/novels/" target="_blank" rel="noopener"
-              >Graphic Novels
-              <span class="sub">Read the Unit 9 math story.</span></a
-            >
+            <a href="/novels/" target="_blank" rel="noopener">
+              Graphic Novels
+              <span class="sub">Read the Unit 9 math story.</span>
+            </a>
           </li>
         </ul>
       </section>
 
-      <!-- EXPLAIN -->
+      <!-- ═══ EXPLAIN ═══ -->
       <section class="card">
         <p class="step-label">Step 3 · Explain</p>
         <h2>How the coordinate plane works</h2>
@@ -341,66 +535,51 @@
 
         <dl class="vocab">
           <dt>x-axis</dt>
-          <dd>
-            The line that goes left and right. The <strong>x</strong> number is
-            first.
-          </dd>
+          <dd>The line that goes left and right. The <strong>x</strong> number is first.</dd>
           <dt>y-axis</dt>
-          <dd>
-            The line that goes up and down. The <strong>y</strong> number is
-            second.
-          </dd>
+          <dd>The line that goes up and down. The <strong>y</strong> number is second.</dd>
           <dt>ordered pair (x, y)</dt>
-          <dd>
-            Two numbers that name one point. Go right/left first, then up/down.
-          </dd>
+          <dd>Two numbers that name one point. Go right/left first, then up/down.</dd>
           <dt>quadrant</dt>
-          <dd>
-            One of the 4 corners of the plane. They are named I, II, III, IV.
-          </dd>
+          <dd>One of the 4 corners of the plane. Named I (top-right), II (top-left), III (bottom-left), IV (bottom-right).</dd>
           <dt>reflect</dt>
-          <dd>
-            To flip a point over an axis to the other side, like a mirror.
-          </dd>
+          <dd>To flip a point over an axis — like a mirror. Reflecting over the x-axis flips the y sign; over the y-axis flips the x sign.</dd>
         </dl>
 
         <svg
           class="grid-fig"
-          viewBox="0 0 200 200"
+          viewBox="0 0 220 220"
           role="img"
-          aria-label="A coordinate grid with point A at 3 comma 2 in the top right quadrant."
+          aria-label="Coordinate plane with quadrant labels I through IV. Point A is at (3, 2) in Quadrant I."
         >
-          <rect x="0" y="0" width="200" height="200" fill="var(--nt-bg)" />
-          <g stroke="var(--nt-border)" stroke-width="1">
-            <line x1="20" y1="0" x2="20" y2="200" />
-            <line x1="60" y1="0" x2="60" y2="200" />
-            <line x1="140" y1="0" x2="140" y2="200" />
-            <line x1="180" y1="0" x2="180" y2="200" />
-            <line x1="0" y1="20" x2="200" y2="20" />
-            <line x1="0" y1="60" x2="200" y2="60" />
-            <line x1="0" y1="140" x2="200" y2="140" />
-            <line x1="0" y1="180" x2="200" y2="180" />
+          <rect x="0" y="0" width="220" height="220" fill="var(--nt-bg)" />
+          <!-- grid lines -->
+          <g stroke="var(--nt-border)" stroke-width="0.8">
+            <line x1="20" y1="0" x2="20" y2="220"/>
+            <line x1="60" y1="0" x2="60" y2="220"/>
+            <line x1="100" y1="0" x2="100" y2="220"/>
+            <line x1="140" y1="0" x2="140" y2="220"/>
+            <line x1="180" y1="0" x2="180" y2="220"/>
+            <line x1="0" y1="20" x2="220" y2="20"/>
+            <line x1="0" y1="60" x2="220" y2="60"/>
+            <line x1="0" y1="100" x2="220" y2="100"/>
+            <line x1="0" y1="140" x2="220" y2="140"/>
+            <line x1="0" y1="180" x2="220" y2="180"/>
           </g>
-          <line
-            x1="0"
-            y1="100"
-            x2="200"
-            y2="100"
-            stroke="var(--nt-text)"
-            stroke-width="2"
-          />
-          <line
-            x1="100"
-            y1="0"
-            x2="100"
-            y2="200"
-            stroke="var(--nt-text)"
-            stroke-width="2"
-          />
-          <circle cx="160" cy="60" r="6" fill="var(--nt-accent)" />
-          <text x="166" y="54" font-size="13" fill="var(--nt-text)">
-            A (3, 2)
-          </text>
+          <!-- axes -->
+          <line x1="0" y1="110" x2="220" y2="110" stroke="var(--nt-text)" stroke-width="2.5"/>
+          <line x1="110" y1="0" x2="110" y2="220" stroke="var(--nt-text)" stroke-width="2.5"/>
+          <!-- quadrant labels -->
+          <text x="155" y="55" font-size="13" fill="var(--nt-muted)" font-weight="700">I</text>
+          <text x="58" y="55" font-size="13" fill="var(--nt-muted)" font-weight="700">II</text>
+          <text x="54" y="170" font-size="13" fill="var(--nt-muted)" font-weight="700">III</text>
+          <text x="152" y="170" font-size="13" fill="var(--nt-muted)" font-weight="700">IV</text>
+          <!-- axis labels -->
+          <text x="200" y="107" font-size="12" fill="var(--nt-text)">x</text>
+          <text x="113" y="12" font-size="12" fill="var(--nt-text)">y</text>
+          <!-- Point A at (3, 2) — each unit = 20px, origin at (110, 110) -->
+          <circle cx="170" cy="70" r="6" fill="var(--nt-accent)"/>
+          <text x="176" y="64" font-size="13" fill="var(--nt-text)">A (3, 2)</text>
         </svg>
 
         <div class="example">
@@ -411,155 +590,199 @@
             <strong>2 up</strong> (y = 2). Mark the point. Because x and y are
             both positive, A is in <strong>Quadrant I</strong>.
           </p>
+          <p>
+            To <strong>reflect A over the x-axis</strong>: keep x the same, flip y to negative.
+            A(3, 2) → A'(3, −2). That new point is in <strong>Quadrant IV</strong>.
+          </p>
+          <p>
+            <strong>Distance example:</strong> Points (1, 4) and (6, 4) share the same y-value.
+            Distance = |6 − 1| = <strong>5 units</strong>.
+          </p>
         </div>
       </section>
 
-      <!-- APPLY -->
+      <!-- ═══ APPLY ═══ -->
       <section class="card" id="apply">
         <p class="step-label">Step 4 · Apply</p>
         <h2>Show what you know</h2>
+
+        <!-- ── Self-Check (instant feedback) ── -->
+        <h3 style="margin-top:0;">Quick Self-Check — try these first!</h3>
+        <p class="hint">Choose an answer, then press Check to see instant feedback.</p>
+
+        <!-- SC 1 -->
+        <div class="selfcheck-item">
+          <p><strong>SC 1.</strong> The point (−4, 7) is in which quadrant?</p>
+          <ul class="sc-choices" role="radiogroup" aria-label="SC 1 choices">
+            <li><label><input type="radio" name="sc1" value="I" /> Quadrant I (x positive, y positive)</label></li>
+            <li><label><input type="radio" name="sc1" value="II" /> Quadrant II (x negative, y positive)</label></li>
+            <li><label><input type="radio" name="sc1" value="III" /> Quadrant III (x negative, y negative)</label></li>
+            <li><label><input type="radio" name="sc1" value="IV" /> Quadrant IV (x positive, y negative)</label></li>
+          </ul>
+          <button type="button" class="sc-btn" data-sc="sc1" data-correct="II">Check</button>
+          <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- SC 2 -->
+        <div class="selfcheck-item">
+          <p><strong>SC 2.</strong> Reflect the point (−3, 5) over the <strong>y-axis</strong>. What is the new point?</p>
+          <ul class="sc-choices" role="radiogroup" aria-label="SC 2 choices">
+            <li><label><input type="radio" name="sc2" value="A" /> (3, 5)</label></li>
+            <li><label><input type="radio" name="sc2" value="B" /> (−3, −5)</label></li>
+            <li><label><input type="radio" name="sc2" value="C" /> (3, −5)</label></li>
+            <li><label><input type="radio" name="sc2" value="D" /> (−3, 5)</label></li>
+          </ul>
+          <button type="button" class="sc-btn" data-sc="sc2" data-correct="A">Check</button>
+          <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- SC 3 -->
+        <div class="selfcheck-item">
+          <p><strong>SC 3.</strong> Points P(2, −3) and Q(2, 4) are on the same vertical line. How many units apart are they?</p>
+          <ul class="sc-choices" role="radiogroup" aria-label="SC 3 choices">
+            <li><label><input type="radio" name="sc3" value="1" /> 1 unit</label></li>
+            <li><label><input type="radio" name="sc3" value="7" /> 7 units</label></li>
+            <li><label><input type="radio" name="sc3" value="3" /> 3 units</label></li>
+            <li><label><input type="radio" name="sc3" value="4" /> 4 units</label></li>
+          </ul>
+          <button type="button" class="sc-btn" data-sc="sc3" data-correct="7">Check</button>
+          <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- ── NTKit graded questions ── -->
+        <h3>Graded Practice — submit with NTKit</h3>
         <p class="hint">
           Answer every question. Type ordered pairs like
           <strong>(3, 2)</strong>. Then press Check My Answers.
         </p>
         <form id="apply-form">
           <div class="q">
-            <p>
-              <span class="qnum">1.</span> What is the name of the point (0, 0)
-              where the two axes cross?
-            </p>
+            <p><span class="qnum">1.</span> What is the name of the point (0, 0) where the two axes cross?</p>
             <label for="q1" class="hint">Type one word.</label>
-            <input
-              type="text"
-              id="q1"
-              name="q1"
-              autocomplete="off"
-              placeholder="one word"
-            />
+            <input type="text" id="q1" name="q1" autocomplete="off" placeholder="one word" />
           </div>
 
           <div class="q">
-            <p>
-              <span class="qnum">2.</span> Start at the origin. Move 4 to the
-              <strong>right</strong> and 1 <strong>up</strong>. Write the
-              ordered pair.
-            </p>
+            <p><span class="qnum">2.</span> Start at the origin. Move 4 to the <strong>right</strong> and 1 <strong>up</strong>. Write the ordered pair.</p>
             <label for="q2" class="hint">Write it as (x, y).</label>
-            <input
-              type="text"
-              id="q2"
-              name="q2"
-              autocomplete="off"
-              placeholder="(x, y)"
-            />
+            <input type="text" id="q2" name="q2" autocomplete="off" placeholder="(x, y)" />
           </div>
 
           <div class="q">
-            <p>
-              <span class="qnum">3.</span> The point (2, 3) has both numbers
-              positive. Which quadrant is it in?
-            </p>
+            <p><span class="qnum">3.</span> The point (2, 3) has both numbers positive. Which quadrant is it in?</p>
             <ul class="choices">
-              <li>
-                <label
-                  ><input type="radio" name="q3" value="Quadrant I" /> Quadrant
-                  I</label
-                >
-              </li>
-              <li>
-                <label
-                  ><input type="radio" name="q3" value="Quadrant II" /> Quadrant
-                  II</label
-                >
-              </li>
-              <li>
-                <label
-                  ><input type="radio" name="q3" value="Quadrant III" />
-                  Quadrant III</label
-                >
-              </li>
-              <li>
-                <label
-                  ><input type="radio" name="q3" value="Quadrant IV" /> Quadrant
-                  IV</label
-                >
-              </li>
+              <li><label><input type="radio" name="q3" value="Quadrant I" /> Quadrant I</label></li>
+              <li><label><input type="radio" name="q3" value="Quadrant II" /> Quadrant II</label></li>
+              <li><label><input type="radio" name="q3" value="Quadrant III" /> Quadrant III</label></li>
+              <li><label><input type="radio" name="q3" value="Quadrant IV" /> Quadrant IV</label></li>
             </ul>
           </div>
 
           <div class="q">
-            <p>
-              <span class="qnum">4.</span> Reflect the point (5, 2) over the
-              <strong>x-axis</strong>. What is the new point?
-            </p>
+            <p><span class="qnum">4.</span> Reflect the point (5, 2) over the <strong>x-axis</strong>. What is the new point?</p>
             <label for="q4" class="hint">Flip the y number to negative.</label>
-            <input
-              type="text"
-              id="q4"
-              name="q4"
-              autocomplete="off"
-              placeholder="(x, y)"
-            />
+            <input type="text" id="q4" name="q4" autocomplete="off" placeholder="(x, y)" />
           </div>
 
           <div class="q">
-            <p>
-              <span class="qnum">5.</span> A rectangle has corners at (1, 1),
-              (1, 4), and (6, 1). What is the 4th corner?
-            </p>
+            <p><span class="qnum">5.</span> A rectangle has corners at (1, 1), (1, 4), and (6, 1). What is the 4th corner?</p>
             <label for="q5" class="hint">It lines up with the others.</label>
-            <input
-              type="text"
-              id="q5"
-              name="q5"
-              autocomplete="off"
-              placeholder="(x, y)"
-            />
+            <input type="text" id="q5" name="q5" autocomplete="off" placeholder="(x, y)" />
           </div>
 
           <div class="q">
-            <p>
-              <span class="qnum">6.</span> Point (1, 1) and point (6, 1) are on
-              the same horizontal line. How many units apart are they?
-            </p>
+            <p><span class="qnum">6.</span> Point (1, 1) and point (6, 1) are on the same horizontal line. How many units apart are they?</p>
             <label for="q6" class="hint">Type a number.</label>
-            <input
-              type="text"
-              id="q6"
-              name="q6"
-              autocomplete="off"
-              placeholder="number"
-            />
+            <input type="text" id="q6" name="q6" autocomplete="off" placeholder="number" />
           </div>
 
           <button type="submit" class="btn-primary">Check My Answers</button>
         </form>
+
+        <!-- ── Answer Key (teacher-only) ── -->
+        <details class="answer-key">
+          <summary>Teacher Answer Key</summary>
+          <div class="ak-body">
+            <p><strong>Self-Check answers:</strong></p>
+            <ol>
+              <li><strong>SC 1:</strong> Quadrant II — x is negative (−4), y is positive (7). Rule: (−, +) → QII.</li>
+              <li><strong>SC 2:</strong> (3, 5) — reflecting over the y-axis flips the x sign: (−3, 5) → (3, 5).</li>
+              <li><strong>SC 3:</strong> 7 units — |4 − (−3)| = |4 + 3| = 7. Same x-coordinate means vertical distance.</li>
+            </ol>
+            <p><strong>Graded practice answers:</strong></p>
+            <ol>
+              <li><strong>Q1:</strong> origin</li>
+              <li><strong>Q2:</strong> (4, 1)</li>
+              <li><strong>Q3:</strong> Quadrant I (both x and y positive)</li>
+              <li><strong>Q4:</strong> (5, −2) — reflection over x-axis keeps x, negates y</li>
+              <li><strong>Q5:</strong> (6, 4) — the fourth corner that completes the rectangle</li>
+              <li><strong>Q6:</strong> 5 units — |6 − 1| = 5</li>
+            </ol>
+          </div>
+        </details>
       </section>
 
-      <!-- REFLECT -->
+      <!-- ═══ RUBRIC ═══ -->
+      <section class="card" aria-label="Scoring Rubric">
+        <p class="step-label">Rubric</p>
+        <h2>How your work is scored</h2>
+        <table class="rubric-table">
+          <thead>
+            <tr>
+              <th scope="col">Level</th>
+              <th scope="col">Score</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Mastery</strong></td>
+              <td>5 – 6 / 6</td>
+              <td>All or nearly all graded questions correct. Self-check completed. Reflect responses explain reasoning with coordinate vocabulary (quadrant, ordered pair, reflect, axis).</td>
+            </tr>
+            <tr>
+              <td><strong>Proficient</strong></td>
+              <td>4 / 6</td>
+              <td>Most graded questions correct. Minor errors in reflection or distance. Reflect responses address both prompts with at least one vocab term.</td>
+            </tr>
+            <tr>
+              <td><strong>Developing</strong></td>
+              <td>2 – 3 / 6</td>
+              <td>Several questions incorrect; may confuse quadrant signs or x/y order. Reflect responses are short or missing vocab. Needs targeted reteach on signs and plotting steps.</td>
+            </tr>
+            <tr>
+              <td><strong>Beginning</strong></td>
+              <td>0 – 1 / 6</td>
+              <td>Most questions blank or incorrect. Reflect not attempted. Student needs one-on-one re-teaching of ordered pairs and the four-quadrant plane before attempting independently.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ═══ REFLECT ═══ -->
       <section class="card">
         <p class="step-label">Step 5 · Reflect</p>
         <h2>Think and write</h2>
-        <p class="hint">
-          Your answers are saved in your HyperDoc when you press Save as PDF or
-          Save as DOC.
+        <p>
+          Use complete sentences. Try to use at least one math word from the
+          Explain section (quadrant, origin, ordered pair, reflect, axis).
         </p>
-        <div class="q">
-          <label for="r1"
-            ><strong>1.</strong> In your own words, how do you plot the point
-            (x, y)? Say what you do first and second.</label
-          >
-          <textarea id="r1" name="r1"></textarea>
+        <div class="deliverable-box">
+          <strong>Deliverable:</strong> Type your responses below, then save your finished HyperDoc as a
+          <strong>PDF or DOC</strong> using the Save buttons at the top. Submit the saved file to your
+          teacher's Google Drive folder or turn it in as directed.
         </div>
         <div class="q">
-          <label for="r2"
-            ><strong>2.</strong> What was the trickiest part of Unit 9 for you?
-            How did you figure it out?</label
-          >
-          <textarea id="r2" name="r2"></textarea>
+          <label for="r1"><strong>1.</strong> In your own words, how do you plot the point (x, y)? Say what you do first and second.</label>
+          <textarea id="r1" name="r1" aria-required="true" placeholder="Write 2–3 sentences..."></textarea>
+        </div>
+        <div class="q">
+          <label for="r2"><strong>2.</strong> What was the trickiest part of Unit 9 for you? How did you figure it out?</label>
+          <textarea id="r2" name="r2" aria-required="true" placeholder="Write 2–3 sentences..."></textarea>
         </div>
       </section>
-    </div>
+
+    </div><!-- /.wrap -->
 
     <script>
       (function () {
@@ -570,92 +793,142 @@
             document.addEventListener("DOMContentLoaded", fn);
           }
         }
-        ready(function () {
-          if (!window.NTKit) {
-            console.error("NTKit not loaded");
-            return;
-          }
-          NTKit.mount("#ntkit");
 
+        ready(function () {
+          /* ── NTKit ── */
+          if (window.NTKit) {
+            NTKit.mount("#ntkit");
+          } else {
+            console.error("NTKit not loaded");
+          }
+
+          /* ── Self-check feedback ── */
+          var SC_EXPLANATIONS = {
+            sc1: {
+              correct: "Correct! (−4, 7) has a negative x and positive y, placing it in Quadrant II.",
+              wrong: "Not quite. Quadrant II has negative x and positive y. Here x = −4 (negative) and y = 7 (positive), so the answer is Quadrant II."
+            },
+            sc2: {
+              correct: "Correct! Reflecting over the y-axis flips the x-sign: (−3, 5) becomes (3, 5).",
+              wrong: "Not quite. Reflecting over the y-axis keeps y the same and flips the sign of x. So (−3, 5) → (3, 5)."
+            },
+            sc3: {
+              correct: "Correct! Both points share x = 2, so distance = |4 − (−3)| = 7 units.",
+              wrong: "Not quite. When two points share the same x-value, subtract the y-values: |4 − (−3)| = 7 units."
+            }
+          };
+
+          var scButtons = document.querySelectorAll(".sc-btn");
+          for (var i = 0; i < scButtons.length; i++) {
+            scButtons[i].addEventListener("click", function (e) {
+              var btn = e.currentTarget;
+              var scName = btn.getAttribute("data-sc");
+              var correctVal = btn.getAttribute("data-correct");
+              var radios = document.querySelectorAll('input[name="' + scName + '"]');
+              var chosen = "";
+              for (var j = 0; j < radios.length; j++) {
+                if (radios[j].checked) { chosen = radios[j].value; break; }
+              }
+              var fb = document.getElementById(scName + "-fb");
+              if (!fb) return;
+              var exp = SC_EXPLANATIONS[scName] || {};
+              if (chosen === "") {
+                fb.className = "sc-feedback wrong";
+                fb.textContent = "Please choose an answer first.";
+              } else if (chosen === correctVal) {
+                fb.className = "sc-feedback correct";
+                fb.textContent = "✓ " + (exp.correct || "Correct!");
+              } else {
+                fb.className = "sc-feedback wrong";
+                fb.textContent = "✗ " + (exp.wrong || "Try again.");
+              }
+            });
+          }
+
+          /* ── NTKit graded form ── */
           var norm = function (s) {
             return String(s == null ? "" : s)
               .toLowerCase()
-              .replace(/\s+/g, "") // remove spaces
-              .replace(/[()]/g, "") // remove parentheses
+              .replace(/\s+/g, "")
+              .replace(/[()]/g, "")
               .trim();
           };
 
           var form = document.getElementById("apply-form");
-          form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            var f = function (n) {
-              var el = form.elements[n];
-              if (!el) return "";
-              if (el.length && el[0] && el[0].type === "radio") {
-                for (var i = 0; i < el.length; i++)
-                  if (el[i].checked) return el[i].value;
-                return "";
+          if (form) {
+            form.addEventListener("submit", function (e) {
+              e.preventDefault();
+              var f = function (n) {
+                var el = form.elements[n];
+                if (!el) return "";
+                if (el.length && el[0] && el[0].type === "radio") {
+                  for (var i = 0; i < el.length; i++) {
+                    if (el[i].checked) return el[i].value;
+                  }
+                  return "";
+                }
+                return el.value || "";
+              };
+
+              var items = [
+                {
+                  prompt: "1. Name the point (0, 0) where the axes cross.",
+                  studentAnswer: norm(f("q1")),
+                  correctAnswer: "origin",
+                  points: 1,
+                  skill: "6.NS.C.6 origin"
+                },
+                {
+                  prompt: "2. Move 4 right and 1 up from the origin. Ordered pair?",
+                  studentAnswer: norm(f("q2")),
+                  correctAnswer: norm("(4, 1)"),
+                  points: 1,
+                  skill: "6.NS.C.6 plot point"
+                },
+                {
+                  prompt: "3. Which quadrant holds (2, 3)?",
+                  studentAnswer: f("q3"),
+                  correctAnswer: "Quadrant I",
+                  points: 1,
+                  skill: "6.NS.C.6 quadrants"
+                },
+                {
+                  prompt: "4. Reflect (5, 2) over the x-axis.",
+                  studentAnswer: norm(f("q4")),
+                  correctAnswer: norm("(5, -2)"),
+                  points: 1,
+                  skill: "6.NS.C.6 reflection"
+                },
+                {
+                  prompt: "5. 4th corner of rectangle (1,1)(1,4)(6,1).",
+                  studentAnswer: norm(f("q5")),
+                  correctAnswer: norm("(6, 4)"),
+                  points: 1,
+                  skill: "6.G.A.3 polygon vertices"
+                },
+                {
+                  prompt: "6. Distance between (1, 1) and (6, 1).",
+                  studentAnswer: norm(f("q6")),
+                  correctAnswer: "5",
+                  points: 1,
+                  skill: "6.G.A.3 distance"
+                }
+              ];
+
+              if (window.NTKit) {
+                NTKit.grade({
+                  activityId: "hyperdoc-unit-9",
+                  activityTitle: "Unit 9 HyperDoc — The Coordinate Plane",
+                  standard: "6.NS.C.6 & 6.G.A.3",
+                  items: items
+                });
+                var res = document.getElementById("ntkit-results");
+                if (res && res.scrollIntoView) {
+                  res.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
               }
-              return el.value || "";
-            };
-
-            var items = [
-              {
-                prompt: "1. Name the point (0, 0) where the axes cross.",
-                studentAnswer: f("q1"),
-                correctAnswer: "origin",
-                points: 1,
-                skill: "6.NS.C.6 origin",
-              },
-              {
-                prompt:
-                  "2. Move 4 right and 1 up from the origin. Ordered pair?",
-                studentAnswer: norm(f("q2")),
-                correctAnswer: norm("(4, 1)"),
-                points: 1,
-                skill: "6.NS.C.6 plot point",
-              },
-              {
-                prompt: "3. Which quadrant holds (2, 3)?",
-                studentAnswer: f("q3"),
-                correctAnswer: "Quadrant I",
-                points: 1,
-                skill: "6.NS.C.6 quadrants",
-              },
-              {
-                prompt: "4. Reflect (5, 2) over the x-axis.",
-                studentAnswer: norm(f("q4")),
-                correctAnswer: norm("(5, -2)"),
-                points: 1,
-                skill: "6.NS.C.6 reflection",
-              },
-              {
-                prompt: "5. 4th corner of rectangle (1,1)(1,4)(6,1).",
-                studentAnswer: norm(f("q5")),
-                correctAnswer: norm("(6, 4)"),
-                points: 1,
-                skill: "6.G.A.3 polygon vertices",
-              },
-              {
-                prompt: "6. Distance between (1, 1) and (6, 1).",
-                studentAnswer: norm(f("q6")),
-                correctAnswer: "5",
-                points: 1,
-                skill: "6.G.A.3 distance",
-              },
-            ];
-
-            NTKit.grade({
-              activityId: "hyperdoc-unit-9",
-              activityTitle: "Unit 9 HyperDoc — The Coordinate Plane",
-              standard: "6.NS.C.6 & 6.G.A.3",
-              items: items,
             });
-
-            var res = document.getElementById("ntkit-results");
-            if (res && res.scrollIntoView)
-              res.scrollIntoView({ behavior: "smooth", block: "start" });
-          });
+          }
         });
       })();
     </script>

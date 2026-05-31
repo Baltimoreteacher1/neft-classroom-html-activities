@@ -14,16 +14,10 @@
     <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      /* Style ONLY with --nt-* variables */
+      /* ── Base ── */
       body {
         margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Arial,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         background: var(--nt-bg);
         color: var(--nt-text);
         font-size: 19px;
@@ -34,6 +28,8 @@
         margin: 0 auto;
         padding: 24px 20px 80px;
       }
+
+      /* ── Hero header ── */
       header.hero {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -51,32 +47,14 @@
         font-size: 16px;
         letter-spacing: 0.3px;
       }
-      h1 {
-        font-size: 34px;
-        line-height: 1.2;
-        margin: 14px 0 6px;
-      }
-      h2 {
-        font-size: 26px;
-        margin: 0 0 12px;
-        border-bottom: 3px solid var(--nt-accent);
-        padding-bottom: 6px;
-      }
-      h3 {
-        font-size: 21px;
-        margin: 18px 0 6px;
-      }
-      p,
-      li {
-        font-size: 19px;
-      }
-      .lead {
-        font-size: 21px;
-        color: var(--nt-text);
-      }
-      .muted {
-        color: var(--nt-muted);
-      }
+      h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; }
+      h2 { font-size: 26px; margin: 0 0 12px; border-bottom: 3px solid var(--nt-accent); padding-bottom: 6px; }
+      h3 { font-size: 21px; margin: 18px 0 6px; }
+      p, li { font-size: 19px; }
+      .lead { font-size: 21px; color: var(--nt-text); }
+      .muted { color: var(--nt-muted); }
+
+      /* ── Cards ── */
       section.card {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -84,29 +62,84 @@
         padding: 22px 24px;
         margin-bottom: 24px;
       }
-      ol.steps {
-        padding-left: 22px;
+
+      /* ── Learning Target box ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 3px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
       }
-      ol.steps > li {
-        margin-bottom: 14px;
-      }
-      .resources a {
+      .learning-target h2 {
         color: var(--nt-accent);
-        font-weight: 700;
-        text-decoration: underline;
+        font-size: 22px;
+        margin: 0 0 12px;
+        border-bottom: none;
+        padding-bottom: 0;
       }
+      .learning-target ul { margin: 0 0 10px; padding-left: 22px; }
+      .learning-target li { margin-bottom: 4px; }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .lt-chip {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      /* ── Teacher notes ── */
+      .teacher-notes {
+        background: #fff8e1;
+        border: 2px dashed #f59e0b;
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-bottom: 24px;
+      }
+      .teacher-notes h2 {
+        font-size: 22px;
+        color: #92400e;
+        margin: 0 0 10px;
+        border-bottom: 2px dashed #f59e0b;
+        padding-bottom: 6px;
+      }
+      .teacher-notes h3 { font-size: 18px; margin: 14px 0 4px; color: #78350f; }
+      .teacher-notes p, .teacher-notes li { font-size: 17px; }
+      .teacher-label {
+        display: inline-block;
+        background: #f59e0b;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        margin-bottom: 8px;
+      }
+
+      /* ── Steps ── */
+      ol.steps { padding-left: 22px; }
+      ol.steps > li { margin-bottom: 14px; }
+
+      /* ── Resources ── */
+      .resources a { color: var(--nt-accent); font-weight: 700; text-decoration: underline; }
       .resources a:focus-visible,
       a:focus-visible,
       input:focus-visible,
       select:focus-visible,
-      button:focus-visible {
+      button:focus-visible,
+      textarea:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
       }
-      ul.res-list {
-        list-style: none;
-        padding-left: 0;
-      }
+      ul.res-list { list-style: none; padding-left: 0; }
       ul.res-list li {
         padding: 12px 14px;
         border: 2px solid var(--nt-border);
@@ -114,11 +147,13 @@
         margin-bottom: 10px;
         background: var(--nt-bg);
       }
+
+      /* ── Rubric ── */
       table.rubric {
         width: 100%;
         border-collapse: collapse;
         margin-top: 10px;
-        font-size: 18px;
+        font-size: 17px;
       }
       table.rubric th,
       table.rubric td {
@@ -127,10 +162,10 @@
         text-align: left;
         vertical-align: top;
       }
-      table.rubric th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-      }
+      table.rubric th { background: var(--nt-accent); color: var(--nt-bg); }
+      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
+
+      /* ── Tip / example ── */
       .tip {
         background: var(--nt-bg);
         border-left: 6px solid var(--nt-accent);
@@ -138,42 +173,84 @@
         border-radius: 8px;
         margin: 14px 0;
       }
-      .vocab {
-        display: grid;
-        gap: 10px;
-      }
+      .vocab { display: grid; gap: 10px; }
       .vocab .word {
         background: var(--nt-bg);
         border: 2px solid var(--nt-border);
         border-radius: 10px;
         padding: 12px 16px;
       }
-      .vocab .word b {
-        color: var(--nt-accent);
-      }
+      .vocab .word b { color: var(--nt-accent); }
       .example {
         background: var(--nt-bg);
         border: 2px dashed var(--nt-border);
         border-radius: 10px;
         padding: 12px 16px;
         font-size: 20px;
+        margin: 10px 0;
       }
-      /* Quiz */
-      .q {
-        margin-bottom: 22px;
+
+      /* ── Self-check (interactive) ── */
+      .sc-item {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 18px;
       }
-      .q label.qprompt {
-        display: block;
+      .sc-item .sc-prompt {
         font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 20px;
+        font-size: 19px;
+        margin: 0 0 10px;
       }
-      .q .hint {
+      .sc-item .sc-hint {
         color: var(--nt-muted);
         font-size: 16px;
+        margin-bottom: 10px;
         display: block;
-        margin-bottom: 8px;
       }
+      .sc-item input[type="text"],
+      .sc-item select {
+        font-size: 19px;
+        padding: 10px 12px;
+        width: 100%;
+        max-width: 320px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .sc-btn {
+        display: inline-block;
+        margin-top: 10px;
+        font-size: 17px;
+        font-weight: 700;
+        padding: 10px 22px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .sc-btn:hover { filter: brightness(1.08); }
+      .sc-feedback {
+        margin-top: 10px;
+        font-size: 17px;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 8px;
+        display: none;
+      }
+      .sc-feedback.correct { background: #d1fae5; color: #065f46; border: 2px solid #10b981; }
+      .sc-feedback.wrong   { background: #fee2e2; color: #7f1d1d; border: 2px solid #ef4444; }
+
+      /* ── Select-based self-check ── */
+      .sc-select-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; }
+
+      /* ── Final quiz ── */
+      .q { margin-bottom: 22px; }
+      .q label.qprompt { display: block; font-weight: 700; margin-bottom: 8px; font-size: 20px; }
+      .q .hint { color: var(--nt-muted); font-size: 16px; display: block; margin-bottom: 8px; }
       .q input[type="text"],
       .q select {
         font-size: 19px;
@@ -196,66 +273,178 @@
         cursor: pointer;
         margin-top: 8px;
       }
-      .check-btn:hover {
-        filter: brightness(1.08);
+      .check-btn:hover { filter: brightness(1.08); }
+
+      /* ── Reflection ── */
+      .reflection-box textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 18px;
+        font-family: inherit;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        resize: vertical;
       }
-      .engine {
-        font-size: 30px;
+      .deliverable-box {
+        background: var(--nt-bg);
+        border: 3px solid var(--nt-accent);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-top: 18px;
+      }
+      .deliverable-box strong { color: var(--nt-accent); }
+
+      /* ── Answer key details ── */
+      details.answer-key {
+        background: #f0fdf4;
+        border: 2px dashed #16a34a;
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-top: 20px;
+      }
+      details.answer-key summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 18px;
+        color: #15803d;
+        list-style: none;
+      }
+      details.answer-key summary::marker,
+      details.answer-key summary::-webkit-details-marker { display: none; }
+      details.answer-key summary::before { content: "▶ "; }
+      details.answer-key[open] summary::before { content: "▼ "; }
+      details.answer-key .ak-body { margin-top: 14px; }
+      details.answer-key table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 17px;
+      }
+      details.answer-key table th,
+      details.answer-key table td {
+        border: 1px solid #86efac;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      details.answer-key table th { background: #bbf7d0; color: #14532d; }
+
+      /* ── Misc ── */
+      .engine { font-size: 30px; }
+
+      /* ── Print ── */
+      @media print {
+        .teacher-notes,
+        .teacher-notes * { display: none !important; }
+        details.answer-key { display: none !important; }
+        .sc-btn { display: none !important; }
+        .check-btn { display: none !important; }
+        section.card,
+        .learning-target {
+          break-inside: avoid;
+          border: 1px solid #ccc;
+          box-shadow: none;
+        }
+        body { font-size: 14px; }
+        .wrap { padding: 0; }
+        a { color: #000; text-decoration: none; }
+      }
+
+      /* ── Mobile ── */
+      @media (max-width: 600px) {
+        h1 { font-size: 26px; }
+        h2 { font-size: 22px; }
+        .lt-meta { flex-direction: column; }
+        table.rubric { font-size: 14px; }
+        table.rubric th, table.rubric td { padding: 7px 8px; }
       }
     </style>
   </head>
   <body class="nt-theme-aware">
     <div class="wrap">
       <p style="font:14px system-ui;padding:10px 0;"><a href="/webquests/">← All WebQuests</a> · <a href="/math/">Math Hub</a></p>
+
       <header class="hero">
         <span class="badge">WebQuest · Unit 6 · CCSS 6.EE.A.1–4</span>
         <h1><span class="engine">⚙️</span> The Expression Engine WebQuest</h1>
-        <p class="lead">
-          Expressions — feed the blocks into the machine and build math!
-        </p>
+        <p class="lead">Expressions — feed the blocks into the machine and build math!</p>
       </header>
+
+      <!-- ══ LEARNING TARGET ══ -->
+      <div class="learning-target" role="region" aria-label="Learning Target">
+        <h2>🎯 Learning Target</h2>
+        <ul>
+          <li><strong>I can</strong> write and evaluate whole-number exponents (6.EE.A.1).</li>
+          <li><strong>I can</strong> write an expression that matches a word phrase, using variables (6.EE.A.2).</li>
+          <li><strong>I can</strong> evaluate an expression by substituting a given value and using order of operations (6.EE.A.2c).</li>
+          <li><strong>I can</strong> apply the distributive property and identify equivalent expressions (6.EE.A.3–4).</li>
+        </ul>
+        <div class="lt-meta">
+          <span class="lt-chip">📌 Standard: CCSS 6.EE.A.1–4</span>
+          <span class="lt-chip">⏱ Estimated time: 45–60 min</span>
+          <span class="lt-chip">📎 Materials: pencil, scratch paper, calculator (optional)</span>
+        </div>
+      </div>
+
+      <!-- ══ TEACHER NOTES ══ (hidden in print) ══ -->
+      <div class="teacher-notes" role="region" aria-label="Teacher Notes">
+        <span class="teacher-label">TEACHER ONLY — Does not print</span>
+        <h2>Teacher Notes</h2>
+
+        <h3>Pacing</h3>
+        <p>45 min class: Steps 1–3 (~15 min) → Self-Check (~10 min) → Steps 4–6 + Final Quiz (~20 min). 60 min class: add a think-pair-share after Step 4 (words to expressions) and a whole-group debrief of the distributive property before the quiz.</p>
+
+        <h3>Grouping</h3>
+        <p>Pairs work well for Steps 1–5 (one student reads the word phrase, the other writes the expression). The final quiz should be completed individually to assess individual mastery.</p>
+
+        <h3>Differentiation — Support</h3>
+        <ul>
+          <li>Provide an operation key card: "more than → +", "less than → −", "times/product → ×", "quotient → ÷".</li>
+          <li>Allow students to use a number line or multiplication chart during evaluation tasks.</li>
+          <li>Break multi-step evaluation into a table: (1) substitute, (2) simplify inside parentheses, (3) compute.</li>
+        </ul>
+
+        <h3>Differentiation — Challenge</h3>
+        <ul>
+          <li>Ask students to write their own word problem that results in the expression 3(x + 4).</li>
+          <li>Pose: "Are 2(x + 3) and 2x + 6 always equal? Show with three different values of x."</li>
+          <li>Extend to two-variable expressions: evaluate 2x + y when x = 3 and y = 5.</li>
+        </ul>
+
+        <h3>ESOL / Language Supports</h3>
+        <ul>
+          <li>Post a bilingual operation word wall: "sum / suma", "product / producto", "evaluate / evaluar".</li>
+          <li>Use sentence frames: "The expression is ___ because the word ___ means ___."</li>
+          <li>Allow students to write the expression before reading the word phrase aloud.</li>
+        </ul>
+      </div>
 
       <!-- Student identity bar + Save PDF/DOC + results panel -->
       <div id="ntkit"></div>
 
-      <!-- INTRODUCTION -->
+      <!-- ══ INTRODUCTION ══ -->
       <section class="card">
         <h2>1. Introduction</h2>
-        <p>
-          Welcome to the <strong>Expression Engine</strong>! ⚙️ This machine
-          turns numbers, letters, and signs into <strong>expressions</strong>.
-        </p>
-        <p>
-          An <strong>expression</strong> is a math phrase like <em>3 + x</em> or
-          <em>2 · n</em>. It has no equal sign. A <strong>variable</strong> is a
-          letter that stands for a number, like <em>x</em> or <em>n</em>.
-        </p>
-        <p>
-          In this WebQuest, you will read, write, and build expressions to run
-          the engine.
-        </p>
+        <p>Welcome to the <strong>Expression Engine</strong>! ⚙️ This machine turns numbers, letters, and signs into <strong>expressions</strong>.</p>
+        <p>An <strong>expression</strong> is a math phrase like <em>3 + x</em> or <em>2 · n</em>. It has no equal sign. A <strong>variable</strong> is a letter that stands for a number, like <em>x</em> or <em>n</em>. An <strong>exponent</strong> tells how many times to multiply a number by itself: 4³ means 4 · 4 · 4.</p>
+        <p>In this WebQuest, you will read, write, evaluate, and simplify expressions to run the engine.</p>
       </section>
 
-      <!-- TASK -->
+      <!-- ══ TASK ══ -->
       <section class="card">
         <h2>2. Task</h2>
         <p>By the end, you will be able to:</p>
         <ul>
-          <li>Write <strong>exponents</strong> (like 4³ = 4·4·4).</li>
-          <li>
-            Turn words into an <strong>expression</strong> (like "5 more than n"
-            = n + 5).
-          </li>
-          <li>
-            <strong>Evaluate</strong> an expression by plugging in a number.
-          </li>
-          <li>
-            Spot <strong>equivalent expressions</strong> (two that are equal).
-          </li>
+          <li>Write and evaluate <strong>exponents</strong> (like 4³ = 4·4·4 = 64).</li>
+          <li>Turn words into an <strong>expression</strong> (like "5 more than n" = n + 5).</li>
+          <li><strong>Evaluate</strong> an expression by substituting a value and using order of operations.</li>
+          <li>Apply the <strong>distributive property</strong> (like 3(x + 2) = 3x + 6).</li>
+          <li>Spot <strong>equivalent expressions</strong> (two expressions that are always equal).</li>
         </ul>
       </section>
 
-      <!-- PROCESS -->
+      <!-- ══ PROCESS ══ -->
       <section class="card">
         <h2>3. Process</h2>
         <p class="muted">Do the steps in order. Read each one carefully.</p>
@@ -264,96 +453,114 @@
           <li>
             <h3>Step 1 — Learn the words</h3>
             <div class="vocab">
-              <div class="word">
-                <b>Variable</b> — a letter for an unknown number. Example:
-                <em>x</em>.
-              </div>
-              <div class="word">
-                <b>Coefficient</b> — the number multiplied by a variable. In
-                <em>5x</em>, the 5 is the coefficient.
-              </div>
-              <div class="word">
-                <b>Exponent</b> — tells how many times to multiply a number by
-                itself. In <em>4³</em>, the 3 is the exponent.
-              </div>
-              <div class="word">
-                <b>Evaluate</b> — put a number in for the variable and find the
-                value.
-              </div>
+              <div class="word"><b>Variable</b> — a letter for an unknown number. Example: <em>x</em>.</div>
+              <div class="word"><b>Coefficient</b> — the number multiplied by a variable. In <em>5x</em>, the coefficient is 5.</div>
+              <div class="word"><b>Exponent</b> — tells how many times to multiply a number by itself. In <em>4³</em>, the exponent is 3: 4 · 4 · 4 = 64.</div>
+              <div class="word"><b>Evaluate</b> — substitute a number in for the variable, then simplify using order of operations.</div>
+              <div class="word"><b>Equivalent expressions</b> — two expressions that give the same value for any number you substitute.</div>
             </div>
           </li>
           <li>
             <h3>Step 2 — Play the 3D game</h3>
-            <p>
-              Open the <strong>Expression Engine</strong> 3D game. Feed blocks
-              into the machine to build expressions.
-            </p>
+            <p>Open the <strong>Expression Engine</strong> 3D game. Feed blocks into the machine to build expressions.</p>
           </li>
           <li>
             <h3>Step 3 — Read exponents</h3>
-            <p>
-              <em>4³</em> means <strong>4 · 4 · 4 = 64</strong>. The exponent 3
-              counts how many 4s you multiply.
-            </p>
+            <p><em>4³</em> means <strong>4 · 4 · 4 = 64</strong>. The exponent 3 counts how many 4s you multiply.</p>
             <div class="example">5² = 5 · 5 = <strong>25</strong></div>
+            <div class="example">2⁴ = 2 · 2 · 2 · 2 = <strong>16</strong></div>
           </li>
           <li>
             <h3>Step 4 — Words to expression</h3>
-            <p>
-              "3 more than n" becomes <strong>n + 3</strong>. "Twice a number x"
-              becomes <strong>2x</strong>.
-            </p>
+            <p>"3 more than n" → <strong>n + 3</strong>. &nbsp;&nbsp; "Twice a number x" → <strong>2x</strong>. &nbsp;&nbsp; "5 less than a number p" → <strong>p − 5</strong>.</p>
           </li>
           <li>
-            <h3>Step 5 — Evaluate</h3>
-            <p>
-              Evaluate <em>2x + 1</em> when <em>x = 4</em>: 2·4 + 1 =
-              <strong>9</strong>.
-            </p>
+            <h3>Step 5 — Evaluate using order of operations</h3>
+            <p>Evaluate <em>2x + 1</em> when <em>x = 4</em>: substitute first, then compute: 2 · 4 + 1 = 8 + 1 = <strong>9</strong>.</p>
           </li>
           <li>
-            <h3>Step 6 — Show what you know</h3>
-            <p>
-              Type your name in the bar above, finish the quiz, then
-              <strong>Save as PDF</strong> or <strong>DOC</strong> to turn it
-              in.
-            </p>
+            <h3>Step 6 — Distributive property</h3>
+            <p>Multiply the outside number by each term inside the parentheses: 3(x + 2) = 3·x + 3·2 = <strong>3x + 6</strong>.</p>
+          </li>
+          <li>
+            <h3>Step 7 — Show what you know</h3>
+            <p>Complete the Self-Check below, then type your name in the bar above, finish the final quiz, and <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.</p>
           </li>
         </ol>
         <div class="tip">
-          💡 <strong>Tip:</strong> <em>5x</em> means 5 <strong>times</strong> x.
-          A number next to a letter always means multiply.
+          💡 <strong>Tip:</strong> <em>5x</em> means 5 <strong>times</strong> x. A number written next to a letter always means multiply.
         </div>
       </section>
 
-      <!-- RESOURCES -->
+      <!-- ══ RESOURCES ══ -->
       <section class="card resources">
         <h2>4. Resources</h2>
         <p>Use these to help you:</p>
         <ul class="res-list">
-          <li>
-            🎮
-            <a href="/games/3d/unit-6/">Unit 6 — Expression Engine 3D Game</a>
-            — build expressions in the machine.
-          </li>
-          <li>
-            📘 <a href="/math/">Math Lessons Hub</a> — review expressions and
-            exponents.
-          </li>
-          <li>
-            📖 <a href="/graphic-novels/unit-6/">Unit 6 Graphic Novel</a> — the
-            expressions story.
-          </li>
-          <li>
-            📝 <a href="/math/unit-6/">Unit 6 Practice Activities</a> — extra
-            practice.
-          </li>
+          <li>🎮 <a href="/games/3d/unit-6/">Unit 6 — Expression Engine 3D Game</a> — build expressions in the machine.</li>
+          <li>📘 <a href="/math/">Math Lessons Hub</a> — review expressions and exponents.</li>
+          <li>📖 <a href="/graphic-novels/unit-6/">Unit 6 Graphic Novel</a> — the expressions story.</li>
+          <li>📝 <a href="/math/unit-6/">Unit 6 Practice Activities</a> — extra practice.</li>
         </ul>
       </section>
 
-      <!-- EVALUATION -->
+      <!-- ══ SELF-CHECK (Interactive) ══ -->
+      <section class="card" aria-label="Self-Check">
+        <h2>5. Self-Check — Try It Yourself</h2>
+        <p class="muted">Answer each question, then press <strong>Check</strong> to see if you are right. Read the explanation before moving on.</p>
+
+        <!-- SC1 — Exponent value -->
+        <div class="sc-item">
+          <p class="sc-prompt">SC1. What is the value of 3³?</p>
+          <span class="sc-hint">Multiply: 3 · 3 · 3. Type the number.</span>
+          <input type="text" id="sc1" inputmode="numeric" autocomplete="off" placeholder="value" aria-label="Self-check 1 answer" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC('sc1','27','Correct! 3 · 3 · 3 = 27. The exponent 3 means multiply three 3s together.','Not quite. 3³ = 3 · 3 · 3. First 3 · 3 = 9, then 9 · 3 = 27.')">Check</button>
+          <div class="sc-feedback" id="sc1-fb" role="alert"></div>
+        </div>
+
+        <!-- SC2 — Words to expression -->
+        <div class="sc-item">
+          <p class="sc-prompt">SC2. Write an expression for "8 less than a number y".</p>
+          <span class="sc-hint">Type exactly: y - 8 (use a space around the minus sign)</span>
+          <input type="text" id="sc2" autocomplete="off" placeholder="expression" aria-label="Self-check 2 answer" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC2()">Check</button>
+          <div class="sc-feedback" id="sc2-fb" role="alert"></div>
+        </div>
+
+        <!-- SC3 — Evaluate with order of operations -->
+        <div class="sc-item">
+          <p class="sc-prompt">SC3. Evaluate 4x + 3 when x = 5. What is the value?</p>
+          <span class="sc-hint">Substitute first: 4 · 5 + 3. Then simplify. Type the number.</span>
+          <input type="text" id="sc3" inputmode="numeric" autocomplete="off" placeholder="value" aria-label="Self-check 3 answer" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC('sc3','23','Correct! 4 · 5 = 20, then 20 + 3 = 23. Always multiply before adding (order of operations).','Not quite. Substitute x = 5: 4 · 5 + 3 = 20 + 3 = 23.')">Check</button>
+          <div class="sc-feedback" id="sc3-fb" role="alert"></div>
+        </div>
+
+        <!-- SC4 — Distributive property (multiple choice) -->
+        <div class="sc-item">
+          <p class="sc-prompt">SC4. Which expression equals 2(x + 5) after applying the distributive property?</p>
+          <span class="sc-hint">Multiply 2 by each term inside the parentheses.</span>
+          <div class="sc-select-row">
+            <select id="sc4" aria-label="Self-check 4 answer">
+              <option value="">— Choose —</option>
+              <option value="2x+10">2x + 10</option>
+              <option value="2x+5">2x + 5</option>
+              <option value="x+10">x + 10</option>
+              <option value="2x+7">2x + 7</option>
+            </select>
+          </div>
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSCSelect('sc4','2x+10','Correct! 2 · x = 2x and 2 · 5 = 10, so 2(x+5) = 2x + 10.','Not quite. Distribute the 2: 2·x + 2·5 = 2x + 10.')">Check</button>
+          <div class="sc-feedback" id="sc4-fb" role="alert"></div>
+        </div>
+      </section>
+
+      <!-- ══ EVALUATION (RUBRIC) ══ -->
       <section class="card">
-        <h2>5. Evaluation (Rubric)</h2>
+        <h2>6. Evaluation (Rubric)</h2>
         <table class="rubric">
           <thead>
             <tr>
@@ -366,133 +573,96 @@
           </thead>
           <tbody>
             <tr>
-              <td><strong>Exponents</strong></td>
-              <td>Reads and finds exponents correctly every time.</td>
-              <td>Finds exponents correctly most times.</td>
-              <td>Finds some exponents correctly.</td>
-              <td>Needs help with exponents.</td>
+              <td><strong>Exponents (6.EE.A.1)</strong></td>
+              <td>Writes and evaluates any whole-number exponent correctly and explains the meaning.</td>
+              <td>Correctly evaluates exponents with no errors.</td>
+              <td>Evaluates simple exponents; struggles with larger powers.</td>
+              <td>Needs support to interpret exponent notation.</td>
             </tr>
             <tr>
-              <td><strong>Writing expressions</strong></td>
-              <td>Turns words into expressions with no errors.</td>
-              <td>Writes expressions with few errors.</td>
-              <td>Writes some expressions correctly.</td>
-              <td>Needs help writing expressions.</td>
+              <td><strong>Writing expressions (6.EE.A.2)</strong></td>
+              <td>Translates any word phrase into a correct expression, including multi-step.</td>
+              <td>Translates most word phrases correctly.</td>
+              <td>Translates simple phrases with occasional errors.</td>
+              <td>Needs help translating words to symbols.</td>
             </tr>
             <tr>
-              <td><strong>Evaluating</strong></td>
-              <td>Plugs in numbers fast and correctly.</td>
-              <td>Evaluates correctly.</td>
-              <td>Evaluates with help.</td>
-              <td>Evaluating not yet.</td>
+              <td><strong>Evaluating (6.EE.A.2c)</strong></td>
+              <td>Substitutes and applies order of operations perfectly every time.</td>
+              <td>Evaluates expressions correctly.</td>
+              <td>Evaluates with minor order-of-operations errors.</td>
+              <td>Struggles to substitute and simplify.</td>
             </tr>
             <tr>
-              <td><strong>Quiz score</strong></td>
-              <td>90–100%</td>
-              <td>75–89%</td>
-              <td>50–74%</td>
-              <td>Below 50%</td>
+              <td><strong>Distributive property &amp; equivalent expressions (6.EE.A.3–4)</strong></td>
+              <td>Applies distribution and identifies equivalent expressions fluently.</td>
+              <td>Applies the distributive property correctly.</td>
+              <td>Applies distribution with prompting.</td>
+              <td>Has not yet applied the distributive property.</td>
             </tr>
           </tbody>
         </table>
       </section>
 
-      <!-- CONCLUSION -->
+      <!-- ══ CONCLUSION ══ -->
       <section class="card">
-        <h2>6. Conclusion</h2>
-        <p>
-          Great work, engineer! You can now read
-          <strong>exponents</strong>, write <strong>expressions</strong> from
-          words, <strong>evaluate</strong> them, and spot
-          <strong>equivalent expressions</strong>. These same skills power
-          algebra, formulas, and coding. Finish the quick check below to show
-          what you learned.
-        </p>
+        <h2>7. Conclusion</h2>
+        <p>Great work, engineer! You can now read <strong>exponents</strong>, write <strong>expressions</strong> from words, <strong>evaluate</strong> them using order of operations, apply the <strong>distributive property</strong>, and spot <strong>equivalent expressions</strong>. These skills power algebra, formulas, and coding. Complete the reflection and final quiz below to show what you learned.</p>
       </section>
 
-      <!-- CHECK YOUR UNDERSTANDING -->
+      <!-- ══ REFLECTION ══ -->
+      <section class="card reflection-box">
+        <h2>8. Reflection</h2>
+        <p>Answer these two questions in your own words before you submit.</p>
+
+        <p><strong>1. Which skill was most challenging — exponents, writing expressions, evaluating, or the distributive property? Explain why.</strong></p>
+        <textarea id="reflect1" rows="3" placeholder="Write your answer here…" aria-label="Reflection question 1"></textarea>
+
+        <p style="margin-top:16px;"><strong>2. Describe one real-life situation where you would use an expression with a variable.</strong></p>
+        <textarea id="reflect2" rows="3" placeholder="Write your answer here…" aria-label="Reflection question 2"></textarea>
+
+        <div class="deliverable-box">
+          <strong>Deliverable:</strong> When you finish the quiz below, press <strong>Save as PDF</strong> or <strong>Save as DOC</strong> in the panel at the top of the page, then submit the file to your teacher. Your file should include your name, all quiz answers, and your reflection.
+        </div>
+      </section>
+
+      <!-- ══ CHECK YOUR UNDERSTANDING (graded) ══ -->
       <section class="card">
-        <h2>7. Check Your Understanding</h2>
-        <p class="muted">
-          Answer all 6. Then press <strong>Check My Answers</strong>. Use
-          numbers only when asked.
-        </p>
+        <h2>9. Check Your Understanding</h2>
+        <p class="muted">Answer all 6. Then press <strong>Check My Answers</strong>. Use numbers only when asked.</p>
 
         <div class="q">
-          <label class="qprompt" for="q1"
-            >Q1. Write <em>4 · 4 · 4</em> using an exponent. (Type like
-            4^3)</label
-          >
+          <label class="qprompt" for="q1">Q1. Write <em>4 · 4 · 4</em> using an exponent. (Type like 4^3)</label>
           <span class="hint">Example answer style: 2^5</span>
-          <input
-            type="text"
-            id="q1"
-            autocomplete="off"
-            placeholder="base^exponent"
-          />
+          <input type="text" id="q1" autocomplete="off" placeholder="base^exponent" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q2"
-            >Q2. What is the value of <em>5²</em>? (5 · 5) Type the number
-            only.</label
-          >
+          <label class="qprompt" for="q2">Q2. What is the value of <em>5²</em>? (5 · 5) Type the number only.</label>
           <span class="hint">Example answer style: 16</span>
-          <input
-            type="text"
-            id="q2"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="value"
-          />
+          <input type="text" id="q2" inputmode="numeric" autocomplete="off" placeholder="value" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q3"
-            >Q3. Write an expression for "3 more than a number n".</label
-          >
+          <label class="qprompt" for="q3">Q3. Write an expression for "3 more than a number n".</label>
           <span class="hint">Example answer style: n + 5</span>
-          <input
-            type="text"
-            id="q3"
-            autocomplete="off"
-            placeholder="expression"
-          />
+          <input type="text" id="q3" autocomplete="off" placeholder="expression" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q4"
-            >Q4. In the expression <em>7x</em>, what is the coefficient?</label
-          >
+          <label class="qprompt" for="q4">Q4. In the expression <em>7x</em>, what is the coefficient?</label>
           <span class="hint">Example answer style: 4</span>
-          <input
-            type="text"
-            id="q4"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="coefficient"
-          />
+          <input type="text" id="q4" inputmode="numeric" autocomplete="off" placeholder="coefficient" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q5"
-            >Q5. Evaluate <em>2x + 1</em> when <em>x = 4</em>. Type the number
-            only.</label
-          >
-          <span class="hint">Example answer style: 11</span>
-          <input
-            type="text"
-            id="q5"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="value"
-          />
+          <label class="qprompt" for="q5">Q5. Evaluate <em>2x + 1</em> when <em>x = 4</em>. Type the number only.</label>
+          <span class="hint">Substitute x = 4, then simplify. Example answer style: 11</span>
+          <input type="text" id="q5" inputmode="numeric" autocomplete="off" placeholder="value" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q6"
-            >Q6. Which expression is equal to <em>x + x + x</em>?</label
-          >
+          <label class="qprompt" for="q6">Q6. Which expression is equal to <em>x + x + x</em>?</label>
           <select id="q6">
             <option value="">— Choose one —</option>
             <option value="3x">3x</option>
@@ -502,82 +672,142 @@
           </select>
         </div>
 
-        <button type="button" class="check-btn" id="checkBtn">
-          Check My Answers ✅
-        </button>
-        <p class="muted" style="margin-top: 14px">
-          Your score and a ✓/✗ for each question will appear in the panel at the
-          top. Then use <strong>Save as PDF</strong> or
-          <strong>Save as DOC</strong> to turn it in.
-        </p>
+        <button type="button" class="check-btn" id="checkBtn">Check My Answers ✅</button>
+        <p class="muted" style="margin-top: 14px">Your score and a ✓/✗ for each question will appear in the panel at the top. Then use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to turn it in.</p>
       </section>
-    </div>
+
+      <!-- ══ ANSWER KEY (teacher only) ══ -->
+      <details class="answer-key" aria-label="Teacher Answer Key">
+        <summary>Teacher Answer Key (click to expand)</summary>
+        <div class="ak-body">
+          <p><em>Share with students only after submission. Keep collapsed during student work time.</em></p>
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Correct Answer</th>
+                <th>Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>SC1</td><td>27</td><td>3³ = 3 · 3 · 3 = 27</td></tr>
+              <tr><td>SC2</td><td>y - 8</td><td>"less than" → subtract from the variable</td></tr>
+              <tr><td>SC3</td><td>23</td><td>4(5) + 3 = 20 + 3 = 23</td></tr>
+              <tr><td>SC4</td><td>2x + 10</td><td>2 · x + 2 · 5 = 2x + 10 (distributive property)</td></tr>
+              <tr><td>Q1</td><td>4^3</td><td>Three factors of 4 → exponent 3</td></tr>
+              <tr><td>Q2</td><td>25</td><td>5² = 5 · 5 = 25</td></tr>
+              <tr><td>Q3</td><td>n + 3</td><td>"more than" means add</td></tr>
+              <tr><td>Q4</td><td>7</td><td>The number in front of x is the coefficient</td></tr>
+              <tr><td>Q5</td><td>9</td><td>2(4) + 1 = 8 + 1 = 9</td></tr>
+              <tr><td>Q6</td><td>3x</td><td>x + x + x = 3 groups of x = 3x (combining like terms)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+    </div><!-- /.wrap -->
 
     <script>
       NTKit.mount("#ntkit");
 
-      function val(id) {
-        var n = document.getElementById(id);
-        return n ? n.value : "";
+      /* ── Self-Check: numeric / text match ── */
+      function checkSC(inputId, correct, okMsg, wrongMsg) {
+        var inp = document.getElementById(inputId);
+        var fb  = document.getElementById(inputId + "-fb");
+        if (!inp || !fb) return;
+        var answer = inp.value.trim().replace(/\s/g, "");
+        var isRight = (answer === correct);
+        fb.textContent = isRight ? ("✓ " + okMsg) : ("✗ " + wrongMsg);
+        fb.className = "sc-feedback " + (isRight ? "correct" : "wrong");
+        fb.style.display = "block";
+        inp.setAttribute("aria-invalid", isRight ? "false" : "true");
       }
 
-      document
-        .getElementById("checkBtn")
-        .addEventListener("click", function () {
-          NTKit.grade({
-            activityId: "webquest-unit-6",
-            activityTitle:
-              "WebQuest · Unit 6 — Expressions (Expression Engine)",
-            standard: "6.EE.A.1-4",
-            items: [
-              {
-                prompt: "Q1. Write 4 · 4 · 4 using an exponent.",
-                studentAnswer: val("q1"),
-                correctAnswer: "4^3",
-                points: 1,
-                skill: "Exponents",
-              },
-              {
-                prompt: "Q2. Value of 5² (5 · 5).",
-                studentAnswer: val("q2"),
-                correctAnswer: "25",
-                points: 1,
-                skill: "Exponents",
-              },
-              {
-                prompt: 'Q3. Expression for "3 more than a number n".',
-                studentAnswer: val("q3"),
-                correctAnswer: "n + 3",
-                points: 1,
-                skill: "Writing expressions",
-              },
-              {
-                prompt: "Q4. Coefficient in 7x.",
-                studentAnswer: val("q4"),
-                correctAnswer: "7",
-                points: 1,
-                skill: "Reading expressions",
-              },
-              {
-                prompt: "Q5. Evaluate 2x + 1 when x = 4.",
-                studentAnswer: val("q5"),
-                correctAnswer: "9",
-                points: 1,
-                skill: "Evaluating",
-              },
-              {
-                prompt: "Q6. Expression equal to x + x + x.",
-                studentAnswer: val("q6"),
-                correctAnswer: "3x",
-                points: 1,
-                skill: "Equivalent expressions",
-              },
-            ],
-          });
-          var panel = document.getElementById("ntkit");
-          if (panel && panel.scrollIntoView)
-            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      /* ── Self-Check SC2: accepts y-8 or y - 8 ── */
+      function checkSC2() {
+        var inp = document.getElementById("sc2");
+        var fb  = document.getElementById("sc2-fb");
+        if (!inp || !fb) return;
+        var raw = inp.value.trim().toLowerCase().replace(/\s/g, "");
+        var ok  = (raw === "y-8");
+        fb.textContent = ok
+          ? "✓ Correct! y − 8 means start with y and subtract 8. 'Less than' always means subtract."
+          : "✗ Not quite. 'Less than a number y' → start with y and subtract 8 → y − 8.";
+        fb.className = "sc-feedback " + (ok ? "correct" : "wrong");
+        fb.style.display = "block";
+        inp.setAttribute("aria-invalid", ok ? "false" : "true");
+      }
+
+      /* ── Self-Check: select-based ── */
+      function checkSCSelect(selectId, correct, okMsg, wrongMsg) {
+        var sel = document.getElementById(selectId);
+        var fb  = document.getElementById(selectId + "-fb");
+        if (!sel || !fb) return;
+        var isRight = (sel.value === correct);
+        fb.textContent = isRight ? ("✓ " + okMsg) : ("✗ " + wrongMsg);
+        fb.className = "sc-feedback " + (isRight ? "correct" : "wrong");
+        fb.style.display = "block";
+      }
+
+      /* ── Final quiz ── */
+      function val(id) {
+        var n = document.getElementById(id);
+        return n ? n.value.trim() : "";
+      }
+
+      document.getElementById("checkBtn").addEventListener("click", function () {
+        NTKit.grade({
+          activityId: "webquest-unit-6",
+          activityTitle: "WebQuest · Unit 6 — Expressions (Expression Engine)",
+          standard: "6.EE.A.1-4",
+          items: [
+            {
+              prompt: "Q1. Write 4 · 4 · 4 using an exponent.",
+              studentAnswer: val("q1"),
+              correctAnswer: "4^3",
+              points: 1,
+              skill: "Exponents"
+            },
+            {
+              prompt: "Q2. Value of 5² (5 · 5).",
+              studentAnswer: val("q2"),
+              correctAnswer: "25",
+              points: 1,
+              skill: "Exponents"
+            },
+            {
+              prompt: "Q3. Expression for \"3 more than a number n\".",
+              studentAnswer: val("q3"),
+              correctAnswer: "n + 3",
+              points: 1,
+              skill: "Writing expressions"
+            },
+            {
+              prompt: "Q4. Coefficient in 7x.",
+              studentAnswer: val("q4"),
+              correctAnswer: "7",
+              points: 1,
+              skill: "Reading expressions"
+            },
+            {
+              prompt: "Q5. Evaluate 2x + 1 when x = 4.",
+              studentAnswer: val("q5"),
+              correctAnswer: "9",
+              points: 1,
+              skill: "Evaluating"
+            },
+            {
+              prompt: "Q6. Expression equal to x + x + x.",
+              studentAnswer: val("q6"),
+              correctAnswer: "3x",
+              points: 1,
+              skill: "Equivalent expressions"
+            }
+          ]
         });
+        var panel = document.getElementById("ntkit");
+        if (panel && panel.scrollIntoView) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     </script>
   </body>
 </html>

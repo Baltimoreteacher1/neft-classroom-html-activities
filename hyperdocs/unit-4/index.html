@@ -4,82 +4,127 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Unit 4 HyperDoc — GCF, LCM, Decimals &amp; the Distributive Property
-      (6.NS.B.2-4)
+      Unit 4 HyperDoc — GCF, LCM, Decimals &amp; the Distributive Property (6.NS.B.2–4) | Neft Teacher
     </title>
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
     <script src="/assets/neft-theme.js" defer></script>
     <style>
-      /* Style ONLY with --nt-* variables */
-      * {
-        box-sizing: border-box;
-      }
+      /* ── Base ── */
+      *, *::before, *::after { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background: var(--nt-bg);
-        color: var(--nt-text);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         font-size: 19px;
         line-height: 1.6;
+        background: var(--nt-bg);
+        color: var(--nt-text);
       }
-      .wrap {
-        max-width: 880px;
-        margin: 0 auto;
-        padding: 24px 18px 80px;
+      .wrap { max-width: 880px; margin: 0 auto; padding: 24px 18px 80px; }
+
+      /* ── Skip link ── */
+      .skip {
+        position: absolute; left: -999px; top: 0;
+        background: var(--nt-accent); color: var(--nt-bg);
+        padding: 10px 14px; border-radius: 8px; font-weight: 700;
+        text-decoration: none;
       }
+      .skip:focus { left: 8px; top: 8px; z-index: 50; }
+
+      /* ── Top nav ── */
+      .top-nav { font-size: 14px; padding: 10px 16px; }
+      .top-nav a { color: var(--nt-accent); }
+
+      /* ── Hero ── */
       header.hero {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
         border-radius: 16px;
         padding: 26px 24px;
-        margin-bottom: 22px;
+        margin-bottom: 20px;
       }
-      header.hero h1 {
-        margin: 0 0 6px;
-        font-size: 30px;
-        color: var(--nt-text);
-      }
+      header.hero h1 { margin: 0 0 6px; font-size: 30px; line-height: 1.2; color: var(--nt-text); }
+      header.hero p.sub { margin: 0; color: var(--nt-muted); font-size: 17px; }
+
+      /* ── Badge / pill ── */
       .pill {
         display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 999px;
-        font-size: 15px;
-        margin-bottom: 10px;
+        background: var(--nt-accent); color: var(--nt-bg);
+        font-weight: 700; padding: 4px 12px;
+        border-radius: 999px; font-size: 15px; margin-bottom: 10px;
       }
-      .theme-note {
-        color: var(--nt-muted);
-        margin: 4px 0 0;
-      }
-      section.card {
+
+      /* ── Cards ── */
+      section.card, div.card {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
         border-radius: 16px;
-        padding: 22px 22px;
-        margin: 0 0 22px;
+        padding: 22px;
+        margin-bottom: 22px;
       }
-      section.card h2 {
-        margin: 0 0 4px;
+      section.card h2, div.card h2 {
+        margin: 0 0 12px;
         font-size: 23px;
         color: var(--nt-text);
       }
+
+      /* ── Step label ── */
       .step-label {
         display: inline-block;
         color: var(--nt-accent);
         font-weight: 800;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        font-size: 14px;
-        margin-bottom: 8px;
+        font-size: 13px;
+        margin-bottom: 6px;
       }
+
+      /* ── Learning Target box ── */
+      .learning-target {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 22px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: var(--nt-accent);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .learning-target ul { margin: 0 0 10px 0; padding-left: 20px; }
+      .learning-target li { margin: 4px 0; font-size: 17px; }
+      .lt-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 15px; color: var(--nt-muted); margin-top: 10px; }
+      .lt-meta span::before { content: "• "; }
+
+      /* ── Teacher Notes (collapsible) ── */
+      .teacher-notes {
+        background: #fff8e1;
+        border: 2px solid #f9a825;
+        border-radius: 12px;
+        margin-bottom: 22px;
+      }
+      .teacher-notes summary {
+        padding: 14px 18px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 17px;
+        color: #5d4037;
+        list-style: none;
+        display: flex; align-items: center; gap: 8px;
+      }
+      .teacher-notes summary::-webkit-details-marker { display: none; }
+      .teacher-notes summary::before { content: "▶"; font-size: 13px; transition: transform 0.2s; }
+      .teacher-notes[open] summary::before { transform: rotate(90deg); }
+      .teacher-notes-body { padding: 0 18px 16px; }
+      .teacher-notes-body h3 { margin: 12px 0 4px; font-size: 16px; color: #5d4037; }
+      .teacher-notes-body p, .teacher-notes-body ul { font-size: 16px; margin: 4px 0; color: #4a3728; }
+      .teacher-notes-body ul { padding-left: 20px; }
+      .teacher-notes-body li { margin: 3px 0; }
+
+      /* ── Do-it callout ── */
       .do-it {
         background: var(--nt-bg);
         border-left: 6px solid var(--nt-accent);
@@ -88,6 +133,8 @@
         margin: 12px 0;
         font-weight: 600;
       }
+
+      /* ── Explore links ── */
       .links a {
         display: block;
         background: var(--nt-bg);
@@ -99,32 +146,16 @@
         text-decoration: none;
         font-weight: 600;
       }
-      .links a:hover,
-      .links a:focus {
-        border-color: var(--nt-accent);
-        outline: none;
-      }
-      .links a:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      .links .sub {
-        display: block;
-        color: var(--nt-muted);
-        font-weight: 400;
-        font-size: 16px;
-      }
-      .vocab {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .vocab li {
-        margin: 8px 0;
-      }
-      .vocab b {
-        color: var(--nt-accent);
-      }
+      .links a:hover, .links a:focus { border-color: var(--nt-accent); outline: none; }
+      .links a:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
+      .links .sub { display: block; color: var(--nt-muted); font-weight: 400; font-size: 16px; }
+
+      /* ── Vocab list ── */
+      .vocab { list-style: none; padding: 0; margin: 12px 0 0; }
+      .vocab li { margin: 8px 0; font-size: 17px; }
+      .vocab b { color: var(--nt-accent); }
+
+      /* ── Worked examples ── */
       .worked {
         background: var(--nt-bg);
         border: 2px dashed var(--nt-border);
@@ -132,100 +163,213 @@
         padding: 14px 16px;
         margin: 12px 0;
       }
-      .worked code {
-        font-size: 18px;
-        font-weight: 700;
-      }
-      .q {
-        margin: 18px 0;
-      }
-      .q label {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-      .q .hint {
-        color: var(--nt-muted);
-        font-weight: 400;
-        font-size: 16px;
-      }
-      input[type="text"],
-      textarea {
+      .worked code { font-size: 18px; font-weight: 700; }
+
+      /* ── Questions ── */
+      .q { margin: 18px 0; }
+      .q label { display: block; font-weight: 700; margin-bottom: 8px; }
+      .q .hint { color: var(--nt-muted); font-weight: 400; font-size: 16px; }
+
+      /* ── Inputs ── */
+      input[type="text"], textarea {
         width: 100%;
-        font-size: 18px;
-        padding: 11px 13px;
+        font-size: 18px; padding: 11px 13px;
         border: 2px solid var(--nt-border);
         border-radius: 8px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
+        background: var(--nt-bg); color: var(--nt-text);
         font-family: inherit;
       }
-      input[type="text"]:focus,
-      textarea:focus {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 1px;
+      input[type="text"]:focus, textarea:focus {
+        outline: 3px solid var(--nt-focus); outline-offset: 1px;
         border-color: var(--nt-accent);
       }
-      textarea {
-        min-height: 90px;
-        resize: vertical;
+      textarea { min-height: 90px; resize: vertical; }
+
+      /* ── Self-check items ── */
+      .sc-item {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin: 14px 0;
       }
-      .check-btn {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: none;
-        border-radius: 10px;
-        padding: 14px 26px;
-        font-size: 19px;
-        font-weight: 800;
+      .sc-item p.sc-q { margin: 0 0 10px; font-weight: 700; font-size: 17px; }
+      .sc-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+      .sc-options label {
+        display: flex; align-items: center; gap: 6px;
+        background: var(--nt-surface); border: 2px solid var(--nt-border);
+        border-radius: 8px; padding: 8px 12px; cursor: pointer;
+        font-size: 16px; font-weight: 400;
+      }
+      .sc-options input[type="radio"] { width: auto; margin: 0; }
+      .sc-options label:has(input:checked) { border-color: var(--nt-accent); background: var(--nt-bg); }
+      .sc-feedback {
+        display: none; margin-top: 6px; padding: 8px 12px;
+        border-radius: 8px; font-size: 16px; font-weight: 600;
+      }
+      .sc-feedback.correct { background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
+      .sc-feedback.wrong   { background: #fce4ec; color: #b71c1c; border: 2px solid #ef9a9a; }
+      .sc-check-btn {
+        background: var(--nt-accent); color: var(--nt-bg);
+        border: none; border-radius: 8px;
+        padding: 8px 18px; font-size: 16px; font-weight: 700;
         cursor: pointer;
-        margin-top: 8px;
       }
-      .check-btn:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 3px;
+      .sc-check-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
+
+      /* ── Main check button ── */
+      .check-btn {
+        background: var(--nt-accent); color: var(--nt-bg);
+        border: none; border-radius: 10px;
+        padding: 14px 26px; font-size: 19px; font-weight: 800;
+        cursor: pointer; margin-top: 8px;
       }
-      #ntkit {
-        margin-top: 8px;
+      .check-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
+      .check-btn:hover { filter: brightness(1.08); }
+
+      /* ── Rubric ── */
+      table.rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 16px; }
+      table.rubric th, table.rubric td {
+        border: 1px solid var(--nt-border); padding: 10px 12px; text-align: left; vertical-align: top;
       }
-      .skip {
-        position: absolute;
-        left: -999px;
+      table.rubric th { background: var(--nt-accent); color: var(--nt-bg); font-weight: 700; }
+      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
+
+      /* ── Answer key ── */
+      .answer-key {
+        background: #f3e5f5;
+        border: 2px solid #ab47bc;
+        border-radius: 12px;
+        margin-top: 22px;
       }
-      .skip:focus {
-        left: 8px;
-        top: 8px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        padding: 8px 12px;
-        border-radius: 8px;
-        z-index: 5;
+      .answer-key summary {
+        padding: 14px 18px; cursor: pointer;
+        font-weight: 700; font-size: 17px; color: #6a1b9a;
+        list-style: none; display: flex; align-items: center; gap: 8px;
+      }
+      .answer-key summary::-webkit-details-marker { display: none; }
+      .answer-key summary::before { content: "▶"; font-size: 13px; transition: transform 0.2s; }
+      .answer-key[open] summary::before { transform: rotate(90deg); }
+      .answer-key-body { padding: 0 18px 16px; font-size: 16px; color: #4a148c; }
+      .answer-key-body ol { padding-left: 20px; margin: 8px 0; }
+      .answer-key-body li { margin: 6px 0; }
+
+      /* ── Reflect deliverable ── */
+      .reflect-deliverable {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+      .reflect-deliverable strong { color: var(--nt-accent); }
+
+      /* ── NTKit area ── */
+      #ntkit { margin-top: 8px; }
+
+      /* ── Print ── */
+      @media print {
+        .top-nav, .teacher-notes, .answer-key { display: none !important; }
+        .skip { display: none; }
+        body { font-size: 14px; background: #fff; color: #000; }
+        .wrap { padding: 0; max-width: 100%; }
+        section.card, div.card, .learning-target {
+          border: 1px solid #ccc; border-radius: 6px;
+          break-inside: avoid; page-break-inside: avoid;
+        }
+        .links a { border: 1px solid #999; }
+        .check-btn, .sc-check-btn { display: none; }
+        input[type="text"], textarea { border: 1px solid #999; }
+        @page { margin: 1.5cm; }
+      }
+
+      /* ── Mobile ── */
+      @media (max-width: 600px) {
+        body { font-size: 17px; }
+        header.hero h1 { font-size: 24px; }
+        .sc-options { flex-direction: column; }
+        .lt-meta { flex-direction: column; gap: 4px; }
+        table.rubric { font-size: 14px; }
+        table.rubric th, table.rubric td { padding: 7px 8px; }
       }
     </style>
   </head>
   <body class="nt-theme-aware">
-    <p style="font:14px system-ui;padding:10px 16px;"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
-    <a class="skip" href="#apply">Skip to the practice questions</a>
+    <p class="top-nav"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
+    <a class="skip" href="#engage">Skip to content</a>
+
     <div class="wrap">
+      <!-- HERO -->
       <header class="hero">
         <span class="pill">Unit 4 · 6.NS.B.2–4</span>
-        <h1>
-          Factory Line: GCF, LCM, Decimals &amp; the Distributive Property
-        </h1>
-        <p class="theme-note">
-          Work on the Factory Line. Package the order by finding factors,
-          multiples, and clean decimal answers.
-        </p>
+        <h1>Factory Line: GCF, LCM, Decimals &amp; the Distributive Property</h1>
+        <p class="sub">Work on the Factory Line. Package the order by finding factors, multiples, and clean decimal answers.</p>
       </header>
 
+      <!-- NTKit bar -->
+      <div id="ntkit"></div>
+
+      <!-- LEARNING TARGET -->
+      <div class="learning-target" role="region" aria-label="Learning Target">
+        <h2>Learning Target</h2>
+        <ul>
+          <li>I can find the <strong>Greatest Common Factor (GCF)</strong> of two whole numbers.</li>
+          <li>I can find the <strong>Least Common Multiple (LCM)</strong> of two whole numbers.</li>
+          <li>I can add, subtract, and multiply <strong>decimals</strong> with accuracy.</li>
+          <li>I can use the <strong>Distributive Property</strong> to rewrite and solve multiplication expressions.</li>
+        </ul>
+        <div class="lt-meta">
+          <span><strong>Standard:</strong> CCSS 6.NS.B.2–4</span>
+          <span><strong>Estimated time:</strong> 45–55 minutes</span>
+          <span><strong>Materials:</strong> This page, pencil or scratch paper, calculator (optional for check)</span>
+          <span><strong>Branding:</strong> Neft Teacher</span>
+        </div>
+      </div>
+
+      <!-- TEACHER NOTES -->
+      <details class="teacher-notes" aria-label="Teacher Notes — not for students">
+        <summary>🍎 Teacher Notes (click to open)</summary>
+        <div class="teacher-notes-body">
+          <h3>Pacing</h3>
+          <p>Suggested flow: Engage 5 min → Explore 10 min (game/hub) → Explain 12 min → Apply 15 min → Reflect 5 min. Total ≈ 47–55 min.</p>
+          <h3>Grouping</h3>
+          <ul>
+            <li><strong>Whole class:</strong> Engage — pose the factory problem, take quick guesses before revealing GCF.</li>
+            <li><strong>Pairs or small groups:</strong> Explore links; students can compare what they noticed in the 3D game.</li>
+            <li><strong>Individual:</strong> Explain reading, Apply self-check and graded practice, Reflect writing.</li>
+          </ul>
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>Provide a factor rainbow or T-chart graphic organizer for listing factors (GCF).</li>
+            <li>Allow a hundreds chart for students who struggle with skip-counting (LCM).</li>
+            <li>For decimal operations, use graph paper to help students line up place values.</li>
+            <li>Pair during the Self-Check; encourage think-aloud before selecting an answer.</li>
+          </ul>
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Ask students to find GCF and LCM for three numbers simultaneously (e.g., 12, 18, 24).</li>
+            <li>Extension: use the Distributive Property to multiply a two-digit decimal (e.g., 3 × 4.7).</li>
+            <li>Have students write a real-world problem that requires LCM (e.g., scheduling repeating events).</li>
+          </ul>
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Vocabulary list (Explain section) uses plain language — reference it explicitly during whole-class instruction.</li>
+            <li>GCF vs. LCM: use a memory anchor — "G is for Greatest, so we find the BIG shared factor; L is for Least, so we find the SMALL shared multiple."</li>
+            <li>Sentence frames for Reflect: "I use GCF when ___ because ___." / "The hardest part was ___, and it helped me to ___."</li>
+            <li>Allow bilingual dictionaries; translate key terms (factor, multiple, decimal) as needed.</li>
+          </ul>
+        </div>
+      </details>
+
       <!-- ENGAGE -->
-      <section class="card" aria-labelledby="engage-h">
+      <section class="card" id="engage" aria-labelledby="engage-h">
         <span class="step-label">1 · Engage</span>
         <h2 id="engage-h">A real factory problem</h2>
         <p>
-          A factory packs <b>24 red parts</b> and <b>36 blue parts</b>. The boss
-          wants <b>equal boxes</b> with no parts left over. Each box must have
-          the same number of red and the same number of blue.
+          A factory packs <strong>24 red parts</strong> and <strong>36 blue parts</strong>. The boss
+          wants <strong>equal boxes</strong> with no parts left over. Each box must have the same number
+          of red and the same number of blue.
         </p>
         <div class="do-it">
           Think: What is the largest number of boxes you can make? You will
@@ -234,82 +378,55 @@
       </section>
 
       <!-- EXPLORE -->
-      <section class="card" aria-labelledby="explore-h">
+      <section class="card" id="explore" aria-labelledby="explore-h">
         <span class="step-label">2 · Explore</span>
         <h2 id="explore-h">Open the tools, then come back</h2>
-        <p>
-          Click each link. Play, read, then return to this page to learn and
-          practice.
-        </p>
+        <p>Click each link. Play, read, then return to this page to learn and practice.</p>
         <nav class="links" aria-label="Unit 4 resources">
-          <a href="/games/3d/unit-4/"
-            >Unit 4 3D Game — Factory Line: Package the Order
-            <span class="sub"
-              >Practice factors, multiples, and decimals while you pack
-              boxes.</span
-            ></a
-          >
-          <a href="/math/"
-            >Math Hub
-            <span class="sub"
-              >All units, tools, and lessons in one place.</span
-            ></a
-          >
-          <a href="/novels/"
-            >Math Graphic Novels
-            <span class="sub">Read the story that matches this unit.</span></a
-          >
+          <a href="/games/3d/unit-4/" target="_blank" rel="noopener noreferrer">Unit 4 3D Game — Factory Line: Package the Order
+            <span class="sub">Practice factors, multiples, and decimals while you pack boxes.</span>
+          </a>
+          <a href="/math/" target="_blank" rel="noopener noreferrer">Math Hub
+            <span class="sub">All units, tools, and lessons in one place.</span>
+          </a>
+          <a href="/novels/" target="_blank" rel="noopener noreferrer">Math Graphic Novels
+            <span class="sub">Read the story that matches this unit.</span>
+          </a>
         </nav>
       </section>
 
       <!-- EXPLAIN -->
-      <section class="card" aria-labelledby="explain-h">
+      <section class="card" id="explain" aria-labelledby="explain-h">
         <span class="step-label">3 · Explain</span>
         <h2 id="explain-h">Words you need + worked examples</h2>
-        <ul class="vocab">
-          <li>
-            <b>Factor</b> — a number that divides another with no remainder. (1,
-            2, 3, 4, 6, 12 are factors of 12.)
-          </li>
-          <li>
-            <b>GCF (Greatest Common Factor)</b> — the largest factor two numbers
-            share.
-          </li>
-          <li>
-            <b>Multiple</b> — what you get when you skip-count a number. (5, 10,
-            15, 20 are multiples of 5.)
-          </li>
-          <li>
-            <b>LCM (Least Common Multiple)</b> — the smallest multiple two
-            numbers share.
-          </li>
-          <li>
-            <b>Distributive Property</b> — split one factor, then add: a(b + c)
-            = ab + ac.
-          </li>
+        <ul class="vocab" aria-label="Vocabulary">
+          <li><b>Factor</b> — a number that divides another with no remainder. (1, 2, 3, 4, 6, 12 are factors of 12.)</li>
+          <li><b>GCF (Greatest Common Factor)</b> — the largest factor two numbers share.</li>
+          <li><b>Multiple</b> — what you get when you skip-count a number. (5, 10, 15, 20 are multiples of 5.)</li>
+          <li><b>LCM (Least Common Multiple)</b> — the smallest multiple two numbers share.</li>
+          <li><b>Distributive Property</b> — split one factor, then add: a(b + c) = ab + ac.</li>
         </ul>
 
-        <div class="worked">
-          <p><b>GCF of 24 and 36</b></p>
+        <div class="worked" role="note" aria-label="Worked example: GCF">
+          <p><strong>GCF of 24 and 36</strong></p>
           <p>
-            Factors of 24: 1, 2, 3, 4, 6, 8, <b>12</b>, 24<br />
-            Factors of 36: 1, 2, 3, 4, 6, 9, <b>12</b>, 18, 36<br />
-            Biggest shared factor → <code>GCF = 12</code>. So the boss can make
-            12 equal boxes.
+            Factors of 24: 1, 2, 3, 4, 6, 8, <strong>12</strong>, 24<br />
+            Factors of 36: 1, 2, 3, 4, 6, 9, <strong>12</strong>, 18, 36<br />
+            Biggest shared factor → <code>GCF = 12</code>. So the boss can make 12 equal boxes.
           </p>
         </div>
 
-        <div class="worked">
-          <p><b>LCM of 4 and 6</b></p>
+        <div class="worked" role="note" aria-label="Worked example: LCM">
+          <p><strong>LCM of 4 and 6</strong></p>
           <p>
-            Multiples of 4: 4, 8, <b>12</b>, 16…<br />
-            Multiples of 6: 6, <b>12</b>, 18…<br />
+            Multiples of 4: 4, 8, <strong>12</strong>, 16…<br />
+            Multiples of 6: 6, <strong>12</strong>, 18…<br />
             Smallest shared multiple → <code>LCM = 12</code>.
           </p>
         </div>
 
-        <div class="worked">
-          <p><b>Decimals + Distributive Property</b></p>
+        <div class="worked" role="note" aria-label="Worked example: Decimals and Distributive Property">
+          <p><strong>Decimals + Distributive Property</strong></p>
           <p>
             Add: line up the dots → <code>1.40 + 0.75 = 2.15</code><br />
             Multiply: <code>0.4 × 0.3 = 0.12</code> (count 2 decimal places)<br />
@@ -322,145 +439,271 @@
       <section class="card" id="apply" aria-labelledby="apply-h">
         <span class="step-label">4 · Apply</span>
         <h2 id="apply-h">Practice — type your answers, then check</h2>
-        <p class="hint">
-          Type a number for each one. Then press <b>Check my answers</b>.
-        </p>
+
+        <!-- ── Self-check (instant feedback) ── -->
+        <div style="margin-bottom:20px;" aria-label="Self-check questions">
+          <p style="font-weight:700;font-size:18px;margin:0 0 6px;">Quick Self-Check — pick the best answer, then press Check.</p>
+          <p style="color:var(--nt-muted);font-size:16px;margin:0 0 14px;">You will get instant feedback for each question.</p>
+
+          <!-- SC Q1 -->
+          <div class="sc-item" id="sc1">
+            <p class="sc-q">SC-1. What is the GCF of 18 and 24?</p>
+            <div class="sc-options" role="radiogroup" aria-label="SC-1 options">
+              <label><input type="radio" name="sc1" value="a" /> A) 3</label>
+              <label><input type="radio" name="sc1" value="b" /> B) 6</label>
+              <label><input type="radio" name="sc1" value="c" /> C) 9</label>
+              <label><input type="radio" name="sc1" value="d" /> D) 12</label>
+            </div>
+            <button class="sc-check-btn" type="button" onclick="checkSC('sc1','b','Correct! Factors of 18: 1,2,3,6,9,18. Factors of 24: 1,2,3,4,6,8,12,24. The biggest shared factor is 6.','Not quite. List all factors of each number, then find the largest one they share. Factors of 18 and 24 both include 6 — that is the GCF.')">Check</button>
+            <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- SC Q2 -->
+          <div class="sc-item" id="sc2">
+            <p class="sc-q">SC-2. What is the LCM of 3 and 5?</p>
+            <div class="sc-options" role="radiogroup" aria-label="SC-2 options">
+              <label><input type="radio" name="sc2" value="a" /> A) 8</label>
+              <label><input type="radio" name="sc2" value="b" /> B) 15</label>
+              <label><input type="radio" name="sc2" value="c" /> C) 3</label>
+              <label><input type="radio" name="sc2" value="d" /> D) 30</label>
+            </div>
+            <button class="sc-check-btn" type="button" onclick="checkSC('sc2','b','Correct! Multiples of 3: 3,6,9,12,15… Multiples of 5: 5,10,15… The smallest shared multiple is 15.','Not quite. List multiples of each number until you find a match. Multiples of 3 and 5 first meet at 15 — that is the LCM.')">Check</button>
+            <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- SC Q3 -->
+          <div class="sc-item" id="sc3">
+            <p class="sc-q">SC-3. Subtract: 5.30 − 2.85 = ?</p>
+            <div class="sc-options" role="radiogroup" aria-label="SC-3 options">
+              <label><input type="radio" name="sc3" value="a" /> A) 3.55</label>
+              <label><input type="radio" name="sc3" value="b" /> B) 2.45</label>
+              <label><input type="radio" name="sc3" value="c" /> C) 2.55</label>
+              <label><input type="radio" name="sc3" value="d" /> D) 3.45</label>
+            </div>
+            <button class="sc-check-btn" type="button" onclick="checkSC('sc3','b','Correct! 5.30 − 2.85 = 2.45. Line up the decimal points and subtract carefully, regrouping as needed.','Not quite. Line up the decimals: 5.30 − 2.85. Regroup: 10 − 5 = 5 (hundredths), 2 − 8 needs regrouping → 2.45.')">Check</button>
+            <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- SC Q4 -->
+          <div class="sc-item" id="sc4">
+            <p class="sc-q">SC-4. Use the Distributive Property: 4 × 53 = 4 × (50 + 3). What is the answer?</p>
+            <div class="sc-options" role="radiogroup" aria-label="SC-4 options">
+              <label><input type="radio" name="sc4" value="a" /> A) 200</label>
+              <label><input type="radio" name="sc4" value="b" /> B) 53</label>
+              <label><input type="radio" name="sc4" value="c" /> C) 212</label>
+              <label><input type="radio" name="sc4" value="d" /> D) 57</label>
+            </div>
+            <button class="sc-check-btn" type="button" onclick="checkSC('sc4','c','Correct! 4×50 = 200 and 4×3 = 12. Then 200 + 12 = 212.','Not quite. Multiply each part: 4×50 = 200 and 4×3 = 12. Then add the results: 200 + 12 = 212.')">Check</button>
+            <div class="sc-feedback" id="sc4-fb" role="alert" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- ── NTKit graded questions ── -->
+        <p style="font-weight:700;font-size:18px;margin:14px 0 6px;">Graded Practice — type a number for each one, then press Check.</p>
+        <p style="color:var(--nt-muted);font-size:16px;margin:0 0 14px;">These questions are scored and saved to your report.</p>
 
         <div class="q">
-          <label for="q1"
-            >1. Find the <b>GCF</b> of 24 and 36.
-            <span class="hint">Largest factor they share.</span></label
-          >
+          <label for="q1">1. Find the <strong>GCF</strong> of 24 and 36.
+            <span class="hint">Largest factor they share.</span></label>
           <input type="text" id="q1" inputmode="numeric" autocomplete="off" />
         </div>
-
         <div class="q">
-          <label for="q2"
-            >2. Find the <b>LCM</b> of 4 and 6.
-            <span class="hint">Smallest multiple they share.</span></label
-          >
+          <label for="q2">2. Find the <strong>LCM</strong> of 4 and 6.
+            <span class="hint">Smallest multiple they share.</span></label>
           <input type="text" id="q2" inputmode="numeric" autocomplete="off" />
         </div>
-
         <div class="q">
-          <label for="q3"
-            >3. Add the decimals: <b>1.4 + 0.75</b>.
-            <span class="hint">Line up the dots first.</span></label
-          >
+          <label for="q3">3. Add the decimals: <strong>1.4 + 0.75</strong>.
+            <span class="hint">Line up the dots first.</span></label>
           <input type="text" id="q3" inputmode="decimal" autocomplete="off" />
         </div>
-
         <div class="q">
-          <label for="q4"
-            >4. Multiply the decimals: <b>0.4 × 0.3</b>.
-            <span class="hint">Count the decimal places.</span></label
-          >
+          <label for="q4">4. Multiply the decimals: <strong>0.4 × 0.3</strong>.
+            <span class="hint">Count the decimal places.</span></label>
           <input type="text" id="q4" inputmode="decimal" autocomplete="off" />
         </div>
-
         <div class="q">
-          <label for="q5"
-            >5. Use the <b>Distributive Property</b>: <b>6 × 47 = 6(40 + 7)</b>.
-            What is the answer?
-            <span class="hint">Multiply each part, then add.</span></label
-          >
+          <label for="q5">5. Use the <strong>Distributive Property</strong>: <strong>6 × 47 = 6(40 + 7)</strong>. What is the answer?
+            <span class="hint">Multiply each part, then add.</span></label>
           <input type="text" id="q5" inputmode="numeric" autocomplete="off" />
         </div>
 
-        <button type="button" class="check-btn" id="checkBtn">
-          Check my answers
-        </button>
+        <button type="button" class="check-btn" id="checkBtn">Check my answers</button>
+      </section>
 
-        <!-- NTKit identity bar, export buttons, and results render here -->
-        <div id="ntkit"></div>
+      <!-- RUBRIC -->
+      <section class="card" id="rubric" aria-labelledby="rubric-h">
+        <h2 id="rubric-h" style="display:flex;align-items:center;gap:10px;"><span class="step-label" style="font-size:13px;margin:0;">Rubric</span> How Your Work Is Scored</h2>
+        <table class="rubric" aria-label="Scoring rubric">
+          <thead>
+            <tr>
+              <th scope="col">Level</th>
+              <th scope="col">Score</th>
+              <th scope="col">What it looks like</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>4 — Expert</strong></td>
+              <td>5 / 5 graded + clear reflection</td>
+              <td>All answers correct with accurate GCF, LCM, decimals, and Distributive Property work; reflection clearly explains the difference between GCF and LCM with a specific example.</td>
+            </tr>
+            <tr>
+              <td><strong>3 — Proficient</strong></td>
+              <td>4 / 5 graded + adequate reflection</td>
+              <td>Most answers correct; minor computational error; reflection shows understanding of when to use GCF vs. LCM.</td>
+            </tr>
+            <tr>
+              <td><strong>2 — Developing</strong></td>
+              <td>2–3 / 5 graded + partial reflection</td>
+              <td>Some correct answers; confuses GCF and LCM or makes repeated decimal errors; reflection is brief.</td>
+            </tr>
+            <tr>
+              <td><strong>1 — Beginning</strong></td>
+              <td>0–1 / 5 graded</td>
+              <td>Answers mostly missing or incorrect; little evidence of understanding factors, multiples, or decimal computation.</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <!-- REFLECT -->
-      <section class="card" aria-labelledby="reflect-h">
+      <section class="card" id="reflect" aria-labelledby="reflect-h">
         <span class="step-label">5 · Reflect</span>
         <h2 id="reflect-h">Write your thinking</h2>
-        <div class="q">
-          <label for="r1"
-            >A) How do you know when to use <b>GCF</b> instead of <b>LCM</b>?
-            Use your own words.</label
-          >
-          <textarea id="r1"></textarea>
-        </div>
-        <div class="q">
-          <label for="r2"
-            >B) Which part was hardest for you, and what helped you understand
-            it?</label
-          >
-          <textarea id="r2"></textarea>
-        </div>
-        <p class="hint">
-          Your written answers are saved into your PDF and DOC when you press
-          <b>Save as PDF</b> or <b>Save as DOC</b> above.
+        <p style="font-size:17px;margin:0 0 12px;">
+          Think carefully before you write. Use math vocabulary from the Explain section.
+          Write in complete sentences.
         </p>
+        <div class="q">
+          <label for="r1">A. How do you know when to use <strong>GCF</strong> instead of <strong>LCM</strong>?
+            Use your own words.
+            <span class="hint">(Sentence starter: "I use GCF when ___ because ___. I use LCM when ___ because ___.")</span>
+          </label>
+          <textarea id="r1" aria-required="true"></textarea>
+        </div>
+        <div class="q">
+          <label for="r2">B. Which part was hardest for you — GCF, LCM, decimals, or the Distributive Property?
+            What helped you understand it?
+            <span class="hint">(Sentence starter: "The hardest part was ___, and what helped me was ___.")</span>
+          </label>
+          <textarea id="r2" aria-required="true"></textarea>
+        </div>
+        <div class="reflect-deliverable" role="note">
+          <strong>Deliverable:</strong> When both text boxes are filled in, press
+          <strong>Save as PDF</strong> or <strong>Save as DOC</strong> at the top to submit
+          your completed HyperDoc. Your teacher will see your answers, your score, and
+          your reflection.
+        </div>
       </section>
+
+      <!-- ANSWER KEY (teacher-only) -->
+      <details class="answer-key" aria-label="Teacher Answer Key">
+        <summary>🔑 Answer Key — Teacher Only</summary>
+        <div class="answer-key-body">
+          <p><strong>Graded Practice:</strong></p>
+          <ol>
+            <li>GCF of 24 and 36 = <strong>12</strong> (shared factors: 1,2,3,4,6,12)</li>
+            <li>LCM of 4 and 6 = <strong>12</strong> (4,8,12… and 6,12…)</li>
+            <li>1.4 + 0.75 = <strong>2.15</strong> (align: 1.40 + 0.75)</li>
+            <li>0.4 × 0.3 = <strong>0.12</strong> (4×3=12; 2 decimal places → 0.12)</li>
+            <li>6 × 47 = 6(40+7) = 240+42 = <strong>282</strong></li>
+          </ol>
+          <p><strong>Self-Check:</strong> SC-1 = B (6) · SC-2 = B (15) · SC-3 = B (2.45) · SC-4 = C (212)</p>
+          <p><strong>Reflect sample answers:</strong></p>
+          <ul>
+            <li>A. "I use GCF when I need to split things into the largest equal groups. I use LCM when I need to find when two things will line up at the same time."</li>
+            <li>B. "The hardest part was decimals. It helped me to always line up the decimal points before adding."</li>
+          </ul>
+        </div>
+      </details>
     </div>
 
     <script src="/assets/nt-activity-kit.js"></script>
     <script>
       (function () {
-        NTKit.mount("#ntkit");
+        /* ── Self-check helper ── */
+        function checkSC(itemId, correctVal, correctMsg, wrongMsg) {
+          var radios = document.querySelectorAll('input[name="' + itemId + '"]');
+          var selected = null;
+          for (var i = 0; i < radios.length; i++) {
+            if (radios[i].checked) { selected = radios[i].value; break; }
+          }
+          var fb = document.getElementById(itemId + '-fb');
+          if (!fb) return;
+          if (!selected) {
+            fb.textContent = 'Please choose an answer first.';
+            fb.className = 'sc-feedback wrong';
+            fb.style.display = 'block';
+            return;
+          }
+          if (selected === correctVal) {
+            fb.textContent = '✓ ' + correctMsg;
+            fb.className = 'sc-feedback correct';
+          } else {
+            fb.textContent = '✗ ' + wrongMsg;
+            fb.className = 'sc-feedback wrong';
+          }
+          fb.style.display = 'block';
+        }
+        window.checkSC = checkSC;
+
+        /* ── NTKit graded section ── */
+        if (typeof NTKit === 'undefined') return;
+        NTKit.mount('#ntkit');
 
         function val(id) {
           var n = document.getElementById(id);
-          return n ? n.value : "";
+          return n ? n.value : '';
         }
 
-        document
-          .getElementById("checkBtn")
-          .addEventListener("click", function () {
-            NTKit.grade({
-              activityId: "hyperdoc-unit-4",
-              activityTitle:
-                "Unit 4 · Factory Line — GCF, LCM, Decimals & Distributive Property",
-              standard: "6.NS.B.2-4",
-              items: [
-                {
-                  prompt: "GCF of 24 and 36",
-                  studentAnswer: val("q1"),
-                  correctAnswer: "12",
-                  points: 1,
-                  skill: "GCF",
-                },
-                {
-                  prompt: "LCM of 4 and 6",
-                  studentAnswer: val("q2"),
-                  correctAnswer: "12",
-                  points: 1,
-                  skill: "LCM",
-                },
-                {
-                  prompt: "1.4 + 0.75",
-                  studentAnswer: val("q3"),
-                  correctAnswer: "2.15",
-                  points: 1,
-                  skill: "Decimal addition",
-                },
-                {
-                  prompt: "0.4 × 0.3",
-                  studentAnswer: val("q4"),
-                  correctAnswer: "0.12",
-                  points: 1,
-                  skill: "Decimal multiplication",
-                },
-                {
-                  prompt: "6 × 47 using the Distributive Property",
-                  studentAnswer: val("q5"),
-                  correctAnswer: "282",
-                  points: 1,
-                  skill: "Distributive Property",
-                },
-              ],
-            });
-            var res = document.getElementById("ntkit-results");
-            if (res && res.scrollIntoView)
-              res.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById('checkBtn').addEventListener('click', function () {
+          NTKit.grade({
+            activityId: 'hyperdoc-unit-4',
+            activityTitle: 'Unit 4 · Factory Line — GCF, LCM, Decimals & Distributive Property',
+            standard: '6.NS.B.2-4',
+            items: [
+              {
+                prompt: 'GCF of 24 and 36',
+                studentAnswer: val('q1'),
+                correctAnswer: '12',
+                points: 1,
+                skill: 'GCF'
+              },
+              {
+                prompt: 'LCM of 4 and 6',
+                studentAnswer: val('q2'),
+                correctAnswer: '12',
+                points: 1,
+                skill: 'LCM'
+              },
+              {
+                prompt: '1.4 + 0.75',
+                studentAnswer: val('q3'),
+                correctAnswer: '2.15',
+                points: 1,
+                skill: 'Decimal addition'
+              },
+              {
+                prompt: '0.4 × 0.3',
+                studentAnswer: val('q4'),
+                correctAnswer: '0.12',
+                points: 1,
+                skill: 'Decimal multiplication'
+              },
+              {
+                prompt: '6 × 47 using the Distributive Property',
+                studentAnswer: val('q5'),
+                correctAnswer: '282',
+                points: 1,
+                skill: 'Distributive Property'
+              }
+            ]
           });
-      })();
+          var res = document.getElementById('ntkit-results');
+          if (res && res.scrollIntoView) res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }());
     </script>
   </body>
 </html>

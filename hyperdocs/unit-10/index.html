@@ -8,15 +8,11 @@
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
     <script src="/assets/neft-theme.js" defer></script>
+    <script src="/assets/nt-activity-kit.js"></script>
     <style>
-      /* Style ONLY with --nt-* variables */
+      /* ── Base ── */
       body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         background: var(--nt-bg);
         color: var(--nt-text);
         margin: 0;
@@ -28,12 +24,14 @@
         margin: 0 auto;
         padding: 24px 20px 80px;
       }
+
+      /* ── Hero ── */
       header.hero {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
         border-radius: 16px;
         padding: 24px 26px;
-        margin-bottom: 28px;
+        margin-bottom: 22px;
       }
       .badge {
         display: inline-block;
@@ -49,20 +47,49 @@
         font-size: 34px;
         margin: 12px 0 6px;
         line-height: 1.2;
+        color: var(--nt-text);
       }
       h2 {
         font-size: 26px;
         margin: 0 0 10px;
+        color: var(--nt-text);
       }
       h3 {
         font-size: 21px;
         margin: 18px 0 6px;
+        color: var(--nt-text);
       }
       .lead {
         color: var(--nt-muted);
         font-size: 20px;
         margin: 6px 0 0;
       }
+      p { margin: 10px 0; }
+
+      /* ── Learning Target ── */
+      .learning-target {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 0 0 20px;
+      }
+      .learning-target h2 {
+        font-size: 20px;
+        margin: 0 0 10px;
+        color: var(--nt-accent);
+      }
+      .lt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 18px;
+        margin-top: 10px;
+        font-size: 17px;
+      }
+      .lt-grid div { display: flex; gap: 6px; }
+      @media (max-width: 540px) { .lt-grid { grid-template-columns: 1fr; } }
+
+      /* ── Cards ── */
       section.card {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -83,9 +110,47 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
-      p {
-        margin: 10px 0;
+      .step-label {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--nt-accent);
+        margin: 0 0 4px;
       }
+
+      /* ── Teacher Notes ── */
+      details.teacher-notes {
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        margin: 0 0 20px;
+        background: var(--nt-surface);
+      }
+      details.teacher-notes summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 15px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--nt-accent);
+        padding: 14px 18px;
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-notes summary::-webkit-details-marker { display: none; }
+      details.teacher-notes summary::before { content: "▶ "; }
+      details.teacher-notes[open] summary::before { content: "▼ "; }
+      .tn-body {
+        padding: 4px 18px 18px;
+        font-size: 17px;
+        border-top: 2px dashed var(--nt-border);
+      }
+      .tn-body h3 { font-size: 17px; margin: 14px 0 4px; color: var(--nt-accent); }
+      .tn-body ul { margin: 4px 0 0 18px; }
+      .tn-body li { margin-bottom: 4px; }
+
+      /* ── Do This ── */
       .do-this {
         background: var(--nt-bg);
         border-left: 6px solid var(--nt-accent);
@@ -94,6 +159,8 @@
         margin: 14px 0;
         font-weight: 600;
       }
+
+      /* ── Link buttons ── */
       a.link-btn {
         display: inline-block;
         background: var(--nt-accent);
@@ -105,16 +172,11 @@
         margin: 6px 8px 6px 0;
         border: 2px solid var(--nt-accent);
       }
-      a.link-btn:hover {
-        filter: brightness(1.08);
-      }
-      a.link-btn:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 3px;
-      }
-      a {
-        color: var(--nt-accent);
-      }
+      a.link-btn:hover { filter: brightness(1.08); }
+      a.link-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
+      a { color: var(--nt-accent); }
+
+      /* ── Formula / Table ── */
       .formula {
         background: var(--nt-bg);
         border: 2px dashed var(--nt-border);
@@ -137,18 +199,75 @@
         padding: 10px 14px;
         margin-bottom: 8px;
       }
-      .vocab b {
-        color: var(--nt-accent);
-      }
+      .vocab b { color: var(--nt-accent); }
       table.ex {
         border-collapse: collapse;
         margin: 12px 0;
+        width: 100%;
       }
       table.ex td {
         border: 2px solid var(--nt-border);
         padding: 8px 16px;
         font-size: 19px;
       }
+
+      /* ── Fraction display ── */
+      .frac {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        vertical-align: middle;
+        font-size: 0.9em;
+        line-height: 1.1;
+      }
+      .frac span { border-top: 2px solid var(--nt-text); padding-top: 2px; }
+
+      /* ── Self-check ── */
+      .selfcheck-item {
+        margin: 0 0 18px;
+        padding: 14px 16px;
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+      }
+      .selfcheck-item p { margin: 0 0 10px; font-weight: 600; }
+      .sc-choices { list-style: none; padding: 0; margin: 0 0 10px; }
+      .sc-choices li { margin: 4px 0; }
+      .sc-choices label { display: flex; gap: 8px; align-items: center; cursor: pointer; font-weight: 500; }
+      .sc-btn {
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 9px 20px;
+      }
+      .sc-btn:hover { filter: brightness(1.06); }
+      .sc-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
+      .sc-feedback {
+        margin-top: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 17px;
+        display: none;
+      }
+      .sc-feedback.correct {
+        background: #d4edda;
+        color: #1a5e2b;
+        border: 2px solid #68c083;
+        display: block;
+      }
+      .sc-feedback.wrong {
+        background: #fde8e8;
+        color: #7a1a1a;
+        border: 2px solid #e07b7b;
+        display: block;
+      }
+
+      /* ── Apply questions ── */
       .q {
         margin: 22px 0;
       }
@@ -174,9 +293,8 @@
         background: var(--nt-bg);
         color: var(--nt-text);
       }
-      input[type="text"]:focus,
-      textarea:focus,
-      button:focus-visible {
+      input[type="text"]:focus-visible,
+      textarea:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
         border-color: var(--nt-accent);
@@ -196,9 +314,71 @@
         cursor: pointer;
         margin-top: 8px;
       }
-      .check-btn:hover {
-        filter: brightness(1.08);
+      .check-btn:hover { filter: brightness(1.08); }
+      .check-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
+
+      /* ── Answer Key ── */
+      details.answer-key {
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        margin: 20px 0 0;
+        background: var(--nt-surface);
       }
+      details.answer-key summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 15px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--nt-accent);
+        padding: 14px 18px;
+        list-style: none;
+        user-select: none;
+      }
+      details.answer-key summary::-webkit-details-marker { display: none; }
+      details.answer-key summary::before { content: "▶ "; }
+      details.answer-key[open] summary::before { content: "▼ "; }
+      .ak-body {
+        padding: 4px 18px 18px;
+        font-size: 17px;
+        border-top: 2px dashed var(--nt-border);
+      }
+      .ak-body ol { margin: 10px 0 0 18px; }
+      .ak-body li { margin-bottom: 8px; }
+
+      /* ── Rubric ── */
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 17px;
+      }
+      .rubric-table th {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 800;
+      }
+      .rubric-table td {
+        border: 2px solid var(--nt-border);
+        padding: 9px 12px;
+        vertical-align: top;
+      }
+      .rubric-table tr:nth-child(even) td { background: var(--nt-bg); }
+
+      /* ── Reflect deliverable ── */
+      .deliverable-box {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin: 14px 0 6px;
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      /* ── Accessibility ── */
       .skip {
         position: absolute;
         left: -9999px;
@@ -207,6 +387,37 @@
         position: static;
         display: inline-block;
         padding: 8px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+      }
+      .hint { color: var(--nt-muted); font-size: 16px; }
+
+      /* ── Print ── */
+      @media print {
+        body { font-size: 14px; background: #fff; color: #000; }
+        .wrap { max-width: 100%; padding: 0; }
+        section.card, header.hero, .learning-target {
+          border: 1px solid #999;
+          border-radius: 0;
+          margin-bottom: 14px;
+          break-inside: avoid;
+        }
+        details.teacher-notes, details.answer-key { display: block; }
+        details.teacher-notes summary::before, details.answer-key summary::before { content: ""; }
+        .tn-body, .ak-body { display: block !important; }
+        .check-btn, .sc-btn { display: none; }
+        input[type="text"], textarea { border: 1px solid #999; }
+        a { color: #000; text-decoration: underline; }
+        a.link-btn { background: #fff; color: #000; border: 1px solid #000; }
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 600px) {
+        h1 { font-size: 26px; }
+        h2 { font-size: 21px; }
+        .check-btn { width: 100%; }
+        .rubric-table { font-size: 15px; }
+        table.ex td { padding: 6px 10px; font-size: 17px; }
       }
     </style>
   </head>
@@ -214,25 +425,83 @@
     <p style="font:14px system-ui;padding:10px 16px;"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
     <a href="#engage" class="skip">Skip to start</a>
     <div class="wrap">
+
+      <!-- ═══ HERO ═══ -->
       <header class="hero">
         <span class="badge">Unit 10 · CCSS 6.G.A.2</span>
         <h1>Volume Vault: Volume of Prisms</h1>
         <p class="lead">
           Find how much space fits inside a box. You will pack unit cubes, use a
-          formula, and solve real problems.
+          formula, and solve real problems — including prisms with fractional edge lengths.
         </p>
       </header>
 
-      <!-- Name + Save buttons + results panel -->
+      <!-- ═══ LEARNING TARGET ═══ -->
+      <div class="learning-target" role="region" aria-label="Learning Target">
+        <h2>Learning Target</h2>
+        <ul style="margin:0 0 8px 18px;">
+          <li><strong>I can</strong> find the volume of a right rectangular prism using V = l × w × h.</li>
+          <li><strong>I can</strong> use unit cubes to understand volume and show that V = B × h.</li>
+          <li><strong>I can</strong> solve volume problems when the edge lengths are fractions or mixed numbers.</li>
+          <li><strong>I can</strong> apply volume to real-world situations and explain my reasoning.</li>
+        </ul>
+        <div class="lt-grid">
+          <div><span>📋</span><span><strong>Standard:</strong> CCSS 6.G.A.2</span></div>
+          <div><span>⏱</span><span><strong>Estimated time:</strong> 50 – 60 minutes</span></div>
+          <div><span>📦</span><span><strong>Materials:</strong> This page, calculator (optional)</span></div>
+          <div><span>🎯</span><span><strong>Unit:</strong> Geometry — Unit 10</span></div>
+        </div>
+      </div>
+
+      <!-- ═══ TEACHER NOTES ═══ -->
+      <details class="teacher-notes">
+        <summary>Teacher Notes — Pacing, Grouping &amp; Differentiation</summary>
+        <div class="tn-body">
+          <h3>Pacing Guide</h3>
+          <ul>
+            <li><strong>Engage (5 min)</strong> — Think-Pair-Share: "How many unit cubes fill the box?" No writing yet.</li>
+            <li><strong>Explore (10–15 min)</strong> — Students open the 3D Volume Vault game in a new tab; circulate and prompt: "What happens to volume when you double the height?"</li>
+            <li><strong>Explain (10 min)</strong> — Class reads vocab and formula together; teacher models the fractional-edge worked example on a whiteboard.</li>
+            <li><strong>Apply (15–20 min)</strong> — Self-check items first (individual), then NTKit graded set; encourage showing arithmetic work on scratch paper.</li>
+            <li><strong>Reflect (5–8 min)</strong> — Individual typed responses; collect PDF or DOC.</li>
+          </ul>
+          <h3>Grouping Suggestions</h3>
+          <ul>
+            <li>Self-Check: individual, then compare answers with a partner after all three are done.</li>
+            <li>NTKit graded questions: individual work; discuss after submission.</li>
+            <li>Reflect: individual only.</li>
+          </ul>
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>Provide physical or virtual unit cube manipulatives for Q1 and Q3.</li>
+            <li>Allow calculators for all fractional-edge questions.</li>
+            <li>Offer a formula reference card: V = l × w × h and V = B × h.</li>
+            <li>Reduce Apply to Q1–Q4 and offer Q5–Q6 (fractional edges) as challenge.</li>
+          </ul>
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Ask: "A prism has volume 60 cm³ and base area 12 cm². What is the height? Write an equation."</li>
+            <li>Extend: "Design a box with volume exactly 1/2 ft³ using fractional dimensions. Show your work."</li>
+          </ul>
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Display anchor chart with labeled 3D prism diagram showing l, w, h in the student's home language.</li>
+            <li>Sentence frame: "The volume is ___ cm³ because I multiplied ___ × ___ × ___."</li>
+            <li>Pair newcomers with bilingual partners during Explore game.</li>
+            <li>Allow labeled diagrams as evidence in the Reflect instead of prose.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ═══ NTKit identity bar ═══ -->
       <section class="card">
-        <h2>Step 1: Type your name</h2>
-        <p class="hint" style="color: var(--nt-muted)">
-          Type your name first. You need it to save your work.
-        </p>
+        <p class="step-label">Your Name</p>
+        <h2>Sign in to save your work</h2>
+        <p class="hint">Type your name first. You need it to save your work.</p>
         <div id="ntkit"></div>
       </section>
 
-      <!-- ENGAGE -->
+      <!-- ═══ ENGAGE ═══ -->
       <section class="card" id="engage">
         <span class="step-tag">Engage</span>
         <h2>How much fits inside?</h2>
@@ -241,60 +510,44 @@
           You want to know how many small cubes fill it all the way up.
         </p>
         <p>
-          <b>Think:</b> If the box is 4 cubes long, 3 cubes wide, and 2 cubes
-          tall, how many cubes fit inside? That number is the <b>volume</b>.
+          <strong>Think:</strong> If the box is 4 cubes long, 3 cubes wide, and 2 cubes
+          tall, how many cubes fit inside? That number is the <strong>volume</strong>.
         </p>
+        <div class="do-this">
+          Discuss with a partner: Would a box that is 2 × 6 × 2 hold more, less, or the same amount as the 4 × 3 × 2 box? Why?
+        </div>
       </section>
 
-      <!-- EXPLORE -->
+      <!-- ═══ EXPLORE ═══ -->
       <section class="card">
         <span class="step-tag">Explore</span>
         <h2>Play and explore</h2>
         <p>Open these to see volume in action. Come back here after.</p>
-        <a
-          class="link-btn"
-          href="/games/3d/unit-10/"
-          target="_blank"
-          rel="noopener"
-          >Play: Volume Vault (3D game)</a
-        >
-        <a class="link-btn" href="/" target="_blank" rel="noopener">Math Hub</a>
-        <a class="link-btn" href="/novels/" target="_blank" rel="noopener"
-          >Math Graphic Novels</a
-        >
+        <a class="link-btn" href="/games/3d/unit-10/" target="_blank" rel="noopener">Play: Volume Vault (3D game)</a>
+        <a class="link-btn" href="/math/" target="_blank" rel="noopener">Math Hub</a>
+        <a class="link-btn" href="/novels/" target="_blank" rel="noopener">Math Graphic Novels</a>
         <div class="do-this">
-          Do this: In the game, pack the prism with unit cubes. Watch the cubes
-          add up to the volume.
+          Do this: In the game, pack the prism with unit cubes. Watch the cubes add up to the volume. Try a prism with a fractional side length — what changes?
         </div>
       </section>
 
-      <!-- EXPLAIN -->
+      <!-- ═══ EXPLAIN ═══ -->
       <section class="card">
         <span class="step-tag">Explain</span>
         <h2>What is volume?</h2>
         <p>
-          <b>Volume</b> is the amount of space inside a 3D solid. We measure it
-          in <b>cubic units</b> (like cm³ or in³). Each unit is one small cube.
+          <strong>Volume</strong> is the amount of space inside a 3D solid. We measure it
+          in <strong>cubic units</strong> (like cm³ or in³). Each unit is one small cube.
         </p>
 
         <h3>Key words</h3>
         <ul class="vocab">
-          <li>
-            <b>Prism</b> — a solid with two flat, matching ends (a box is a
-            rectangular prism).
-          </li>
+          <li><b>Prism</b> — a solid with two flat, matching ends (a box is a rectangular prism).</li>
           <li><b>Volume</b> — how much space fits inside. Counted in cubes.</li>
-          <li>
-            <b>Unit cube</b> — one cube that is 1 unit long on every side.
-          </li>
-          <li>
-            <b>Cubic unit</b> — the label for volume, like cm³ (say "cubic
-            centimeters").
-          </li>
-          <li>
-            <b>Length (l), Width (w), Height (h)</b> — the three sides you
-            multiply.
-          </li>
+          <li><b>Unit cube</b> — one cube that is 1 unit long on every side (1 × 1 × 1 = 1 cubic unit).</li>
+          <li><b>Cubic unit</b> — the label for volume, like cm³ (say "cubic centimeters").</li>
+          <li><b>Length (l), Width (w), Height (h)</b> — the three edge lengths you multiply.</li>
+          <li><b>Base area (B)</b> — the area of one flat end: B = l × w.</li>
         </ul>
 
         <h3>The formula</h3>
@@ -302,15 +555,12 @@
           Volume = length × width × height<br />V = l × w × h
         </div>
         <p>
-          You can also write it as <b>V = B × h</b>, where <b>B</b> is the area
-          of the base.
+          You can also write it as <strong>V = B × h</strong>, where <strong>B</strong> is the area
+          of the base (B = l × w).
         </p>
 
-        <h3>Worked example</h3>
-        <p>
-          A box is <b>5 cm</b> long, <b>3 cm</b> wide, and <b>2 cm</b> tall.
-          Find the volume.
-        </p>
+        <h3>Worked example — whole numbers</h3>
+        <p>A box is <strong>5 cm</strong> long, <strong>3 cm</strong> wide, and <strong>2 cm</strong> tall. Find the volume.</p>
         <table class="ex">
           <tr>
             <td>Step 1: Multiply length × width</td>
@@ -322,198 +572,377 @@
           </tr>
           <tr>
             <td>Answer</td>
-            <td><b>30 cm³</b></td>
+            <td><strong>30 cm³</strong></td>
           </tr>
         </table>
-        <p>So 30 unit cubes fit inside the box.</p>
+
+        <h3>Worked example — fractional edge lengths (6.G.A.2)</h3>
+        <p>
+          A box is <strong>1½ ft</strong> long, <strong>⅔ ft</strong> wide, and <strong>2 ft</strong> tall.
+          Find the volume. (Convert mixed numbers to fractions first.)
+        </p>
+        <table class="ex">
+          <tr>
+            <td>Convert 1½ to fraction</td>
+            <td>1½ = 3/2</td>
+          </tr>
+          <tr>
+            <td>Multiply l × w</td>
+            <td>3/2 × 2/3 = 6/6 = 1</td>
+          </tr>
+          <tr>
+            <td>Multiply by height</td>
+            <td>1 × 2 = 2</td>
+          </tr>
+          <tr>
+            <td>Answer</td>
+            <td><strong>2 ft³</strong></td>
+          </tr>
+        </table>
+        <p>
+          <strong>Key idea:</strong> The formula V = l × w × h still works when edges are fractions.
+          Multiply the fractions just like any fraction multiplication.
+        </p>
       </section>
 
-      <!-- APPLY -->
-      <section class="card">
+      <!-- ═══ APPLY ═══ -->
+      <section class="card" id="apply">
         <span class="step-tag">Apply</span>
-        <h2>Your turn — solve 5 problems</h2>
-        <p class="hint" style="color: var(--nt-muted)">
-          Type each answer. Write only the number (no units). Then press Check
-          My Work.
+        <h2>Your turn — solve the problems</h2>
+
+        <!-- ── Self-Check ── -->
+        <h3 style="margin-top:0;">Quick Self-Check — try these first!</h3>
+        <p class="hint">Choose an answer, then press Check to see instant feedback.</p>
+
+        <!-- SC 1 -->
+        <div class="selfcheck-item">
+          <p><strong>SC 1.</strong> A box is 3 m long, 4 m wide, and 5 m tall. What is its volume?</p>
+          <ul class="sc-choices" role="radiogroup" aria-label="SC 1 choices">
+            <li><label><input type="radio" name="sc1" value="12" /> 12 m³</label></li>
+            <li><label><input type="radio" name="sc1" value="60" /> 60 m³</label></li>
+            <li><label><input type="radio" name="sc1" value="35" /> 35 m³</label></li>
+            <li><label><input type="radio" name="sc1" value="47" /> 47 m³</label></li>
+          </ul>
+          <button type="button" class="sc-btn" data-sc="sc1" data-correct="60">Check</button>
+          <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- SC 2 -->
+        <div class="selfcheck-item">
+          <p><strong>SC 2.</strong> The base area of a prism is 8 cm² and the height is 6 cm. What is the volume?</p>
+          <ul class="sc-choices" role="radiogroup" aria-label="SC 2 choices">
+            <li><label><input type="radio" name="sc2" value="14" /> 14 cm³</label></li>
+            <li><label><input type="radio" name="sc2" value="48" /> 48 cm³</label></li>
+            <li><label><input type="radio" name="sc2" value="28" /> 28 cm³</label></li>
+            <li><label><input type="radio" name="sc2" value="36" /> 36 cm³</label></li>
+          </ul>
+          <button type="button" class="sc-btn" data-sc="sc2" data-correct="48">Check</button>
+          <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- SC 3 — fractional edges -->
+        <div class="selfcheck-item">
+          <p>
+            <strong>SC 3.</strong> A prism has edges ½ in × ½ in × 4 in.
+            What is its volume?
+          </p>
+          <ul class="sc-choices" role="radiogroup" aria-label="SC 3 choices">
+            <li><label><input type="radio" name="sc3" value="1" /> 1 in³</label></li>
+            <li><label><input type="radio" name="sc3" value="2" /> 2 in³</label></li>
+            <li><label><input type="radio" name="sc3" value="5" /> 5 in³</label></li>
+            <li><label><input type="radio" name="sc3" value="4" /> 4 in³</label></li>
+          </ul>
+          <button type="button" class="sc-btn" data-sc="sc3" data-correct="1">Check</button>
+          <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- ── NTKit graded ── -->
+        <h3>Graded Practice — submit with NTKit</h3>
+        <p class="hint">
+          Type each answer. Write only the number (no units). Then press Check My Work.
         </p>
 
         <div class="q">
-          <label for="q1"
-            >1. A box is 2 cm long, 3 cm wide, and 4 cm tall. What is the
-            volume?
-            <span class="hint"
-              >Use V = l × w × h. Type the number of cubic cm.</span
-            ></label
-          >
-          <input
-            type="text"
-            id="q1"
-            inputmode="numeric"
-            autocomplete="off"
-            aria-label="Question 1 answer"
-          />
+          <label for="q1">
+            1. A box is 2 cm long, 3 cm wide, and 4 cm tall. What is the volume?
+            <span class="hint">Use V = l × w × h. Type the number of cubic cm.</span>
+          </label>
+          <input type="text" id="q1" inputmode="numeric" autocomplete="off" aria-label="Question 1 answer" />
         </div>
 
         <div class="q">
-          <label for="q2"
-            >2. A cube has all sides 5 in long. What is the volume?
-            <span class="hint"
-              >5 × 5 × 5. Type the number of cubic inches.</span
-            ></label
-          >
-          <input
-            type="text"
-            id="q2"
-            inputmode="numeric"
-            autocomplete="off"
-            aria-label="Question 2 answer"
-          />
+          <label for="q2">
+            2. A cube has all sides 5 in long. What is the volume?
+            <span class="hint">5 × 5 × 5. Type the number of cubic inches.</span>
+          </label>
+          <input type="text" id="q2" inputmode="numeric" autocomplete="off" aria-label="Question 2 answer" />
         </div>
 
         <div class="q">
-          <label for="q3"
-            >3. A prism is packed with unit cubes: 6 long, 2 wide, 3 tall. How
-            many cubes fit?
-            <span class="hint">Multiply all three numbers.</span></label
-          >
-          <input
-            type="text"
-            id="q3"
-            inputmode="numeric"
-            autocomplete="off"
-            aria-label="Question 3 answer"
-          />
+          <label for="q3">
+            3. A prism is packed with unit cubes: 6 long, 2 wide, 3 tall. How many cubes fit?
+            <span class="hint">Multiply all three numbers.</span>
+          </label>
+          <input type="text" id="q3" inputmode="numeric" autocomplete="off" aria-label="Question 3 answer" />
         </div>
 
         <div class="q">
-          <label for="q4"
-            >4. A fish tank is 10 cm long, 4 cm wide, and 5 cm tall. What is the
-            volume?
-            <span class="hint">Type the number of cubic cm.</span></label
-          >
-          <input
-            type="text"
-            id="q4"
-            inputmode="numeric"
-            autocomplete="off"
-            aria-label="Question 4 answer"
-          />
+          <label for="q4">
+            4. A fish tank is 10 cm long, 4 cm wide, and 5 cm tall. What is the volume?
+            <span class="hint">Type the number of cubic cm.</span>
+          </label>
+          <input type="text" id="q4" inputmode="numeric" autocomplete="off" aria-label="Question 4 answer" />
         </div>
 
         <div class="q">
-          <label for="q5"
-            >5. The base area of a box is 12 cm². The height is 3 cm. What is
-            the volume?
-            <span class="hint"
-              >Use V = B × h. Type the number of cubic cm.</span
-            ></label
-          >
-          <input
-            type="text"
-            id="q5"
-            inputmode="numeric"
-            autocomplete="off"
-            aria-label="Question 5 answer"
-          />
+          <label for="q5">
+            5. The base area of a box is 12 cm². The height is 3 cm. What is the volume?
+            <span class="hint">Use V = B × h. Type the number of cubic cm.</span>
+          </label>
+          <input type="text" id="q5" inputmode="numeric" autocomplete="off" aria-label="Question 5 answer" />
         </div>
 
-        <button type="button" class="check-btn" id="checkBtn">
-          Check My Work
-        </button>
+        <div class="q">
+          <label for="q6">
+            6. A prism is ¾ ft long, ¾ ft wide, and 4 ft tall. What is the volume?
+            <span class="hint">¾ × ¾ × 4. Write the decimal: 2.25</span>
+          </label>
+          <input type="text" id="q6" inputmode="decimal" autocomplete="off" aria-label="Question 6 answer" />
+        </div>
+
+        <button type="button" class="check-btn" id="checkBtn">Check My Work</button>
+
+        <!-- ── Answer Key ── -->
+        <details class="answer-key">
+          <summary>Teacher Answer Key</summary>
+          <div class="ak-body">
+            <p><strong>Self-Check answers:</strong></p>
+            <ol>
+              <li><strong>SC 1:</strong> 60 m³ — V = 3 × 4 × 5 = 60. Multiplying all three edges gives volume.</li>
+              <li><strong>SC 2:</strong> 48 cm³ — V = B × h = 8 × 6 = 48. Base area replaces l × w.</li>
+              <li><strong>SC 3:</strong> 1 in³ — V = ½ × ½ × 4 = ¼ × 4 = 1. Fractional edges multiply normally.</li>
+            </ol>
+            <p><strong>Graded practice answers:</strong></p>
+            <ol>
+              <li><strong>Q1:</strong> 24 — 2 × 3 × 4 = 24 cm³</li>
+              <li><strong>Q2:</strong> 125 — 5 × 5 × 5 = 125 in³</li>
+              <li><strong>Q3:</strong> 36 — 6 × 2 × 3 = 36 unit cubes</li>
+              <li><strong>Q4:</strong> 200 — 10 × 4 × 5 = 200 cm³</li>
+              <li><strong>Q5:</strong> 36 — B × h = 12 × 3 = 36 cm³</li>
+              <li><strong>Q6:</strong> 2.25 — ¾ × ¾ × 4 = 9/16 × 4 = 36/16 = 9/4 = 2.25 ft³</li>
+            </ol>
+            <p><em>Note on Q6: Accept "9/4" or "2.25" or "2 1/4".</em></p>
+          </div>
+        </details>
       </section>
 
-      <!-- REFLECT -->
+      <!-- ═══ RUBRIC ═══ -->
+      <section class="card" aria-label="Scoring Rubric">
+        <p class="step-label">Rubric</p>
+        <h2>How your work is scored</h2>
+        <table class="rubric-table">
+          <thead>
+            <tr>
+              <th scope="col">Level</th>
+              <th scope="col">Score</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Mastery</strong></td>
+              <td>5 – 6 / 6</td>
+              <td>All or nearly all graded questions correct, including the fractional-edge problem (Q6). Self-check completed. Reflect responses explain V = l × w × h in own words and connect to a real context.</td>
+            </tr>
+            <tr>
+              <td><strong>Proficient</strong></td>
+              <td>4 / 6</td>
+              <td>Most whole-number volume questions correct. Minor errors in Q5 (V = B × h) or Q6 (fractional edges). Reflect addresses both prompts with volume vocabulary (volume, cubic unit, prism).</td>
+            </tr>
+            <tr>
+              <td><strong>Developing</strong></td>
+              <td>2 – 3 / 6</td>
+              <td>Frequently adds instead of multiplies, or multiplies only two of three dimensions. Reflect responses are short or missing key terms. Needs targeted reteach with unit-cube models.</td>
+            </tr>
+            <tr>
+              <td><strong>Beginning</strong></td>
+              <td>0 – 1 / 6</td>
+              <td>Most questions blank or incorrect. Cannot apply V = l × w × h independently. Reflect not attempted. Requires one-on-one re-teaching of the volume formula before independent work.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ═══ REFLECT ═══ -->
       <section class="card">
         <span class="step-tag">Reflect</span>
         <h2>Think about your learning</h2>
-        <div class="q">
-          <label for="r1"
-            >A) In your own words, how do you find the volume of a box?</label
-          >
-          <textarea id="r1" aria-label="Reflection A"></textarea>
-        </div>
-        <div class="q">
-          <label for="r2"
-            >B) Where in real life would you need to find volume? Give one
-            example.</label
-          >
-          <textarea id="r2" aria-label="Reflection B"></textarea>
-        </div>
-        <p class="hint" style="color: var(--nt-muted)">
-          Your reflection is saved in your PDF and DOC. Use the Save buttons at
-          the top after you check your work.
+        <p>
+          Use complete sentences. Try to use at least one math word from the
+          Explain section (volume, cubic unit, prism, base area, formula).
         </p>
+        <div class="deliverable-box">
+          <strong>Deliverable:</strong> Type your responses below, then save your finished HyperDoc as a
+          <strong>PDF or DOC</strong> using the Save buttons at the top. Submit the saved file to your
+          teacher's Google Drive folder or as directed by your teacher.
+        </div>
+        <div class="q">
+          <label for="r1">A) In your own words, how do you find the volume of a box? Explain each step.</label>
+          <textarea id="r1" aria-label="Reflection A" aria-required="true" placeholder="Write 2–3 sentences explaining the steps..."></textarea>
+        </div>
+        <div class="q">
+          <label for="r2">B) Where in real life would you need to find volume? Give one specific example and explain why volume matters there.</label>
+          <textarea id="r2" aria-label="Reflection B" aria-required="true" placeholder="Write 2–3 sentences with a real example..."></textarea>
+        </div>
       </section>
-    </div>
 
-    <script src="/assets/nt-activity-kit.js"></script>
+    </div><!-- /.wrap -->
+
     <script>
-      NTKit.mount("#ntkit");
+      (function () {
+        function ready(fn) {
+          if (document.readyState !== "loading") {
+            fn();
+          } else {
+            document.addEventListener("DOMContentLoaded", fn);
+          }
+        }
 
-      function val(id) {
-        var e = document.getElementById(id);
-        return e ? e.value : "";
-      }
+        ready(function () {
+          /* ── NTKit ── */
+          if (window.NTKit) {
+            NTKit.mount("#ntkit");
+          } else {
+            console.error("NTKit not loaded");
+          }
 
-      document
-        .getElementById("checkBtn")
-        .addEventListener("click", function () {
-          NTKit.grade({
-            activityId: "hyperdoc-unit-10",
-            activityTitle: "Unit 10 · Volume of Prisms — HyperDoc",
-            standard: "6.G.A.2",
-            items: [
-              {
-                prompt: "Box 2×3×4 cm. Volume?",
-                studentAnswer: val("q1"),
-                correctAnswer: "24",
-                points: 1,
-                skill: "Volume of a prism (l×w×h)",
-              },
-              {
-                prompt: "Cube with side 5 in. Volume?",
-                studentAnswer: val("q2"),
-                correctAnswer: "125",
-                points: 1,
-                skill: "Volume of a cube",
-              },
-              {
-                prompt: "Unit cubes packed 6×2×3. How many?",
-                studentAnswer: val("q3"),
-                correctAnswer: "36",
-                points: 1,
-                skill: "Packing unit cubes",
-              },
-              {
-                prompt: "Tank 10×4×5 cm. Volume?",
-                studentAnswer: val("q4"),
-                correctAnswer: "200",
-                points: 1,
-                skill: "Volume of a prism (l×w×h)",
-              },
-              {
-                prompt: "Base area 12 cm², height 3 cm. Volume?",
-                studentAnswer: val("q5"),
-                correctAnswer: "36",
-                points: 1,
-                skill: "Volume using V = B×h",
-              },
-            ],
-            reflections: [
-              {
-                prompt: "How do you find the volume of a box?",
-                response: val("r1"),
-              },
-              {
-                prompt: "Where in real life would you need volume?",
-                response: val("r2"),
-              },
-            ],
-          });
-          var panel = document.getElementById("ntkit-results");
-          if (panel)
-            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+          /* ── Self-check feedback ── */
+          var SC_EXPLANATIONS = {
+            sc1: {
+              correct: "Correct! V = 3 × 4 × 5 = 60 m³. Multiply all three edge lengths together.",
+              wrong: "Not quite. Use V = l × w × h: 3 × 4 × 5 = 60 m³. Multiply all three numbers — don't just add them."
+            },
+            sc2: {
+              correct: "Correct! V = B × h = 8 × 6 = 48 cm³. Base area replaces l × w in the formula.",
+              wrong: "Not quite. Use V = B × h: 8 × 6 = 48 cm³. Multiply the base area by the height."
+            },
+            sc3: {
+              correct: "Correct! V = ½ × ½ × 4 = ¼ × 4 = 1 in³. Fractions multiply just like whole numbers.",
+              wrong: "Not quite. V = ½ × ½ × 4. First: ½ × ½ = ¼. Then: ¼ × 4 = 1 in³."
+            }
+          };
+
+          var scButtons = document.querySelectorAll(".sc-btn");
+          for (var i = 0; i < scButtons.length; i++) {
+            scButtons[i].addEventListener("click", function (e) {
+              var btn = e.currentTarget;
+              var scName = btn.getAttribute("data-sc");
+              var correctVal = btn.getAttribute("data-correct");
+              var radios = document.querySelectorAll('input[name="' + scName + '"]');
+              var chosen = "";
+              for (var j = 0; j < radios.length; j++) {
+                if (radios[j].checked) { chosen = radios[j].value; break; }
+              }
+              var fb = document.getElementById(scName + "-fb");
+              if (!fb) return;
+              var exp = SC_EXPLANATIONS[scName] || {};
+              if (chosen === "") {
+                fb.className = "sc-feedback wrong";
+                fb.textContent = "Please choose an answer first.";
+              } else if (chosen === correctVal) {
+                fb.className = "sc-feedback correct";
+                fb.textContent = "✓ " + (exp.correct || "Correct!");
+              } else {
+                fb.className = "sc-feedback wrong";
+                fb.textContent = "✗ " + (exp.wrong || "Try again.");
+              }
+            });
+          }
+
+          /* ── NTKit graded ── */
+          function val(id) {
+            var e = document.getElementById(id);
+            return e ? e.value.trim() : "";
+          }
+
+          /* Accept 9/4, 2.25, or 2 1/4 for Q6 */
+          function normVol(s) {
+            var v = s.replace(/\s+/g, "").toLowerCase();
+            if (v === "9/4" || v === "21/4" || v === "2and1/4") return "2.25";
+            var n = parseFloat(v);
+            if (!isNaN(n)) return String(Math.round(n * 100) / 100);
+            return v;
+          }
+
+          var checkBtn = document.getElementById("checkBtn");
+          if (checkBtn) {
+            checkBtn.addEventListener("click", function () {
+              if (!window.NTKit) return;
+              NTKit.grade({
+                activityId: "hyperdoc-unit-10",
+                activityTitle: "Unit 10 · Volume of Prisms — HyperDoc",
+                standard: "6.G.A.2",
+                items: [
+                  {
+                    prompt: "Box 2×3×4 cm. Volume?",
+                    studentAnswer: val("q1"),
+                    correctAnswer: "24",
+                    points: 1,
+                    skill: "Volume of a prism (l×w×h)"
+                  },
+                  {
+                    prompt: "Cube with side 5 in. Volume?",
+                    studentAnswer: val("q2"),
+                    correctAnswer: "125",
+                    points: 1,
+                    skill: "Volume of a cube"
+                  },
+                  {
+                    prompt: "Unit cubes packed 6×2×3. How many?",
+                    studentAnswer: val("q3"),
+                    correctAnswer: "36",
+                    points: 1,
+                    skill: "Packing unit cubes"
+                  },
+                  {
+                    prompt: "Tank 10×4×5 cm. Volume?",
+                    studentAnswer: val("q4"),
+                    correctAnswer: "200",
+                    points: 1,
+                    skill: "Volume of a prism (l×w×h)"
+                  },
+                  {
+                    prompt: "Base area 12 cm², height 3 cm. Volume?",
+                    studentAnswer: val("q5"),
+                    correctAnswer: "36",
+                    points: 1,
+                    skill: "Volume using V = B×h"
+                  },
+                  {
+                    prompt: "¾ ft × ¾ ft × 4 ft. Volume?",
+                    studentAnswer: normVol(val("q6")),
+                    correctAnswer: "2.25",
+                    points: 1,
+                    skill: "Volume with fractional edge lengths (6.G.A.2)"
+                  }
+                ],
+                reflections: [
+                  {
+                    prompt: "How do you find the volume of a box?",
+                    response: val("r1")
+                  },
+                  {
+                    prompt: "Where in real life would you need volume?",
+                    response: val("r2")
+                  }
+                ]
+              });
+              var panel = document.getElementById("ntkit-results");
+              if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+          }
         });
+      })();
     </script>
   </body>
 </html>

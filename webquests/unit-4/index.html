@@ -16,17 +16,11 @@
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
 
     <style>
-      /* Style ONLY with the --nt-* variables (no hard-coded colors). */
+      /* ── Base ── */
       body {
         background: var(--nt-bg);
         color: var(--nt-text);
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Arial,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         font-size: 19px;
         line-height: 1.65;
         margin: 0;
@@ -38,6 +32,7 @@
         padding: 1rem 1.25rem;
       }
 
+      /* ── Hero ── */
       header.hero {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -57,33 +52,16 @@
         padding: 0.2rem 0.85rem;
         margin-bottom: 0.75rem;
       }
-      h1 {
-        font-size: 2.2rem;
-        line-height: 1.2;
-        margin: 0.2rem 0 0.5rem;
-      }
-      h2 {
-        font-size: 1.7rem;
-        margin: 2rem 0 0.6rem;
-        padding-bottom: 0.35rem;
-        border-bottom: 3px solid var(--nt-accent);
-      }
-      h3 {
-        font-size: 1.25rem;
-        margin: 1.2rem 0 0.4rem;
-      }
-      p,
-      li {
-        font-size: 1.05rem;
-      }
-      .lead {
-        font-size: 1.2rem;
-        color: var(--nt-text);
-      }
-      .muted {
-        color: var(--nt-muted);
-      }
 
+      /* ── Typography ── */
+      h1 { font-size: 2.2rem; line-height: 1.2; margin: 0.2rem 0 0.5rem; }
+      h2 { font-size: 1.7rem; margin: 2rem 0 0.6rem; padding-bottom: 0.35rem; border-bottom: 3px solid var(--nt-accent); }
+      h3 { font-size: 1.25rem; margin: 1.2rem 0 0.4rem; }
+      p, li { font-size: 1.05rem; }
+      .lead { font-size: 1.2rem; color: var(--nt-text); }
+      .muted { color: var(--nt-muted); }
+
+      /* ── Cards ── */
       section.card {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -91,18 +69,68 @@
         padding: 1.25rem 1.5rem;
         margin: 1rem 0;
       }
-      a {
+      a { color: var(--nt-accent); font-weight: 600; }
+      a:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; border-radius: 4px; }
+
+      /* ── Learning Target box ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 1.1rem 1.4rem;
+        margin: 1rem 0;
+      }
+      .learning-target h2 {
+        border-bottom: none;
+        margin: 0 0 0.6rem;
+        font-size: 1.3rem;
         color: var(--nt-accent);
-        font-weight: 600;
       }
+      .learning-target ul { margin: 0.4rem 0 0.8rem 1.2rem; }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem 1.4rem;
+        font-size: 0.98rem;
+        color: var(--nt-muted);
+        margin-top: 0.6rem;
+      }
+      .lt-meta span { white-space: nowrap; }
 
-      ol.process {
-        padding-left: 1.4rem;
+      /* ── Teacher Notes ── */
+      .teacher-notes {
+        background: var(--nt-surface);
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        padding: 1.1rem 1.4rem;
+        margin: 1rem 0;
       }
-      ol.process > li {
-        margin-bottom: 0.9rem;
+      .teacher-notes h2 {
+        border-bottom: none;
+        margin: 0 0 0.5rem;
+        font-size: 1.2rem;
+        color: var(--nt-muted);
       }
+      .teacher-notes h3 { font-size: 1rem; margin: 0.9rem 0 0.25rem; color: var(--nt-muted); }
+      .teacher-notes p, .teacher-notes li { font-size: 0.97rem; color: var(--nt-muted); }
+      @media print { .teacher-notes { border-style: solid; } }
 
+      /* ── Vocab list ── */
+      .vocab { list-style: none; padding-left: 0; }
+      .vocab li {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 0.6rem 0.85rem;
+        margin: 0.5rem 0;
+      }
+      .vocab b { color: var(--nt-accent); }
+
+      /* ── Process list ── */
+      ol.process { padding-left: 1.4rem; }
+      ol.process > li { margin-bottom: 0.9rem; }
+
+      /* ── Resources ── */
       .resources a {
         display: block;
         background: var(--nt-bg);
@@ -112,27 +140,17 @@
         margin: 0.55rem 0;
         text-decoration: none;
       }
-      .resources a:hover {
-        border-color: var(--nt-accent);
-      }
-      .resources .what {
-        display: block;
-        color: var(--nt-muted);
-        font-weight: 400;
-        font-size: 0.98rem;
-      }
+      .resources a:hover { border-color: var(--nt-accent); }
+      .resources .what { display: block; color: var(--nt-muted); font-weight: 400; font-size: 0.98rem; }
 
+      /* ── Rubric ── */
       table.rubric {
         width: 100%;
         border-collapse: collapse;
         margin: 0.75rem 0;
         font-size: 1rem;
       }
-      table.rubric caption {
-        text-align: left;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
+      table.rubric caption { text-align: left; font-weight: 700; margin-bottom: 0.5rem; }
       table.rubric th,
       table.rubric td {
         border: 1px solid var(--nt-border);
@@ -140,20 +158,79 @@
         text-align: left;
         vertical-align: top;
       }
-      table.rubric thead th {
-        background: var(--nt-bg);
-      }
+      table.rubric thead th { background: var(--nt-bg); font-weight: 700; }
+      table.rubric tbody tr:nth-child(even) { background: var(--nt-bg); }
 
-      .quiz label {
+      /* ── Self-Check Quiz ── */
+      .self-check { margin: 1rem 0; }
+      .sc-item {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 1rem 1.15rem;
+        margin: 0.85rem 0;
+      }
+      .sc-item label {
         display: block;
         font-weight: 700;
-        margin: 1.1rem 0 0.35rem;
+        margin-bottom: 0.45rem;
+        font-size: 1.05rem;
       }
-      .quiz .hint {
+      .sc-item .hint {
+        display: block;
         font-weight: 400;
         color: var(--nt-muted);
-        font-size: 0.98rem;
+        font-size: 0.95rem;
+        margin-bottom: 0.55rem;
       }
+      .sc-item input[type="text"],
+      .sc-item select {
+        width: 100%;
+        max-width: 320px;
+        font-size: 1.05rem;
+        padding: 0.5rem 0.65rem;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .sc-item input:focus,
+      .sc-item select:focus {
+        outline: 3px solid var(--nt-accent);
+        outline-offset: 2px;
+      }
+      .sc-feedback {
+        margin-top: 0.5rem;
+        font-size: 0.97rem;
+        font-weight: 600;
+        min-height: 1.4em;
+        border-radius: 6px;
+        padding: 0.3rem 0.6rem;
+        display: none;
+      }
+      .sc-feedback.correct { background: #d4edda; color: #155724; display: block; }
+      .sc-feedback.incorrect { background: #f8d7da; color: #721c24; display: block; }
+      @media (prefers-color-scheme: dark) {
+        .sc-feedback.correct { background: #1a3a24; color: #75d8a0; }
+        .sc-feedback.incorrect { background: #3a1a1d; color: #f5a0a7; }
+      }
+      .sc-check-btn {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--nt-bg);
+        background: var(--nt-accent);
+        border: 2px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 0.55rem 1.3rem;
+        margin-top: 0.6rem;
+        cursor: pointer;
+      }
+      .sc-check-btn:hover { filter: brightness(1.08); }
+      .sc-check-btn:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; }
+
+      /* ── NTKit Quiz ── */
+      .quiz label { display: block; font-weight: 700; margin: 1.1rem 0 0.35rem; }
+      .quiz .hint { font-weight: 400; color: var(--nt-muted); font-size: 0.98rem; }
       .quiz input[type="text"],
       .quiz select {
         width: 100%;
@@ -165,6 +242,10 @@
         background: var(--nt-bg);
         color: var(--nt-text);
       }
+      .quiz input:focus,
+      .quiz select:focus { outline: 3px solid var(--nt-accent); outline-offset: 2px; }
+
+      /* ── Buttons ── */
       .btn {
         font-size: 1.15rem;
         font-weight: 700;
@@ -176,9 +257,10 @@
         margin-top: 1.4rem;
         cursor: pointer;
       }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; }
+
+      /* ── Tip box ── */
       .tip {
         background: var(--nt-bg);
         border-left: 5px solid var(--nt-accent);
@@ -186,19 +268,61 @@
         padding: 0.6rem 0.9rem;
         margin: 0.8rem 0;
       }
-      .vocab {
-        list-style: none;
-        padding-left: 0;
-      }
-      .vocab li {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
+
+      /* ── Reflection ── */
+      .reflection textarea {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 1rem;
+        padding: 0.65rem 0.8rem;
+        border: 2px solid var(--nt-border);
         border-radius: 10px;
-        padding: 0.6rem 0.85rem;
-        margin: 0.5rem 0;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        min-height: 110px;
+        resize: vertical;
+        font-family: inherit;
       }
-      .vocab b {
-        color: var(--nt-accent);
+      .reflection textarea:focus { outline: 3px solid var(--nt-accent); outline-offset: 2px; }
+
+      /* ── Answer Key (details) ── */
+      details.answer-key {
+        background: var(--nt-surface);
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        padding: 1rem 1.4rem;
+        margin: 1rem 0;
+      }
+      details.answer-key summary {
+        font-weight: 700;
+        font-size: 1.05rem;
+        cursor: pointer;
+        color: var(--nt-muted);
+        padding: 0.2rem 0;
+      }
+      details.answer-key summary:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; border-radius: 4px; }
+      details.answer-key p, details.answer-key li { font-size: 0.97rem; color: var(--nt-muted); }
+      details.answer-key strong { color: var(--nt-text); }
+
+      /* ── Mobile ── */
+      @media (max-width: 600px) {
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.25rem; }
+        table.rubric { font-size: 0.85rem; }
+        table.rubric th, table.rubric td { padding: 0.4rem 0.45rem; }
+        .lt-meta { gap: 0.4rem 0.8rem; }
+      }
+
+      /* ── Print ── */
+      @media print {
+        body { font-size: 14px; padding: 0; }
+        .wrap { max-width: 100%; padding: 0.5rem; }
+        header.hero, section.card, .learning-target, .teacher-notes { border-radius: 0; box-shadow: none; }
+        .btn, .sc-check-btn { display: none; }
+        a { color: inherit; text-decoration: underline; }
+        details.answer-key { display: block; }
+        details.answer-key[open] { border: 1px solid #999; }
+        .sc-feedback { display: none !important; }
       }
     </style>
   </head>
@@ -211,9 +335,7 @@
 
       <header class="hero">
         <span class="badge">WebQuest · Unit 4</span>
-        <h1>
-          Factory Line: GCF, LCM, Decimals &amp; the Distributive Property
-        </h1>
+        <h1>Factory Line: GCF, LCM, Decimals &amp; the Distributive Property</h1>
         <p class="lead">Standard 6.NS.B.2-4 · Grade 6 Math</p>
         <p class="muted">
           You are the line manager at the Factory Line packing plant. Use
@@ -222,6 +344,59 @@
         </p>
       </header>
 
+      <!-- LEARNING TARGET -->
+      <section class="learning-target" aria-label="Learning Target">
+        <h2>Learning Target</h2>
+        <ul>
+          <li>I can find the <strong>greatest common factor (GCF)</strong> of two whole numbers and use it to rewrite sums with the distributive property (6.NS.B.4).</li>
+          <li>I can find the <strong>least common multiple (LCM)</strong> of two whole numbers to solve real-world problems (6.NS.B.4).</li>
+          <li>I can <strong>add, subtract, multiply, and divide multi-digit decimals</strong> fluently (6.NS.B.2–3).</li>
+        </ul>
+        <div class="lt-meta">
+          <span><strong>Standards:</strong> 6.NS.B.2, 6.NS.B.3, 6.NS.B.4</span>
+          <span><strong>Estimated Time:</strong> 50–60 minutes</span>
+          <span><strong>Materials:</strong> This page, pencil/paper for factor lists, calculator (optional for decimals)</span>
+          <span><strong>Product:</strong> Factory Line Report (4 answers with work shown) + saved quiz PDF/DOC</span>
+        </div>
+      </section>
+
+      <!-- TEACHER NOTES -->
+      <section class="teacher-notes" aria-label="Teacher Notes">
+        <h2>Teacher Notes <span style="font-weight:400;font-size:0.9rem;">(not printed in student view)</span></h2>
+
+        <h3>Pacing</h3>
+        <p>Key Words + Introduction: ~8 min | Process / game phase: ~20 min | Report writing: ~12 min | Self-Check: ~8 min | Quiz + Reflection: ~10 min. For classes new to the distributive property with GCF, add 5–8 minutes to the Process phase and do a live example together before students work independently.</p>
+
+        <h3>Grouping</h3>
+        <p>Works well individually or in pairs. Pairs should both write their own reports. For small groups (3–4), assign each student one concept (GCF, LCM, distributive property, decimals) to become the "expert" and teach the others.</p>
+
+        <h3>Differentiation — Support</h3>
+        <ul>
+          <li>Provide a blank factor-pair T-chart for students to list factors of each number side-by-side to find GCF visually.</li>
+          <li>Provide a hundreds/times chart or allow calculator use for decimal multiplication.</li>
+          <li>Pre-highlight the Key Words section and have students read it aloud before starting.</li>
+          <li>Reduce the report to 2 items (GCF + decimal) for students working below grade level.</li>
+        </ul>
+
+        <h3>Differentiation — Challenge</h3>
+        <ul>
+          <li>Challenge: "Write an expression using the distributive property with the GCF of 30 and 45, then verify it equals the original sum."</li>
+          <li>Ask: "A factory restocks two machines at different intervals. Machine A restocks every 8 days; Machine B every 12 days. If they both restock today, when is the next time they restock on the same day?" (LCM = 24)</li>
+          <li>Have students create their own real-world GCF or LCM word problem, solve it, and write the answer key.</li>
+        </ul>
+
+        <h3>ESOL / Language Supports</h3>
+        <ul>
+          <li>Key sentence frames: "The GCF of ___ and ___ is ___ because ___." | "The LCM of ___ and ___ is ___ because ___." | "I rewrote ___ + ___ as ___ × ( ___ + ___ )."</li>
+          <li>The Key Words section (section 2) uses plain definitions with numeric examples — review it together before assigning the process.</li>
+          <li>Post a decimal-alignment visual (place value chart) at the front of the room.</li>
+          <li>Allow home-language computation notes alongside English explanations.</li>
+        </ul>
+
+        <h3>Assessment Notes</h3>
+        <p>The Self-Check section gives instant formative feedback on GCF, LCM, and distributive property. The NTKit quiz covers all four skills and can be saved as PDF/DOC. Use the rubric (section 7) to score the written Factory Line Report.</p>
+      </section>
+
       <!-- INTRODUCTION -->
       <section class="card">
         <h2>1. Introduction</h2>
@@ -229,11 +404,8 @@
           Welcome to the <strong>Factory Line</strong>! A packing plant must put
           items into boxes the smart way. You will think like a line manager and
           ask:
-          <em
-            >What is the biggest equal group I can make? When will two machines
-            finish at the same time? What is the total cost in dollars and
-            cents?</em
-          >
+          <em>What is the biggest equal group I can make? When will two machines
+          finish at the same time? What is the total cost in dollars and cents?</em>
         </p>
         <p>
           In this WebQuest you will use the
@@ -248,32 +420,14 @@
       <!-- KEY WORDS / VOCAB -->
       <section class="card">
         <h2>2. Key Words</h2>
-        <p class="muted">Read these first. You will use them all WebQuest.</p>
+        <p class="muted">Read these first. You will use them throughout the WebQuest.</p>
         <ul class="vocab">
-          <li>
-            <b>Factor</b> — a number that divides another number with no
-            leftover. Factors of 12: 1, 2, 3, 4, 6, 12.
-          </li>
-          <li>
-            <b>Greatest Common Factor (GCF)</b> — the biggest factor that two
-            numbers share. GCF of 12 and 18 = 6.
-          </li>
-          <li>
-            <b>Multiple</b> — a number you get by counting by another number.
-            Multiples of 4: 4, 8, 12, 16…
-          </li>
-          <li>
-            <b>Least Common Multiple (LCM)</b> — the smallest multiple that two
-            numbers share. LCM of 4 and 6 = 12.
-          </li>
-          <li>
-            <b>Distributive Property</b> — split a sum, then multiply each part.
-            Example: 6 + 9 = 3 × (2 + 3).
-          </li>
-          <li>
-            <b>Decimal</b> — a number with a point, like 4.75. Line up the
-            decimal points when you add or subtract.
-          </li>
+          <li><b>Factor</b> — a number that divides another number with no leftover. Factors of 12: 1, 2, 3, 4, 6, 12.</li>
+          <li><b>Greatest Common Factor (GCF)</b> — the biggest factor that two numbers share. GCF of 12 and 18 = 6.</li>
+          <li><b>Multiple</b> — a number you get by counting by another number. Multiples of 4: 4, 8, 12, 16…</li>
+          <li><b>Least Common Multiple (LCM)</b> — the smallest multiple that two numbers share. LCM of 4 and 6 = 12.</li>
+          <li><b>Distributive Property</b> — pull out the GCF, then write the sum as a product. Example: 12 + 18 = 6 &times; (2 + 3).</li>
+          <li><b>Decimal</b> — a number with a point, like 4.75. Line up the decimal points when you add or subtract.</li>
         </ul>
       </section>
 
@@ -285,27 +439,19 @@
           <strong>Factory Line Report</strong> that shows:
         </p>
         <ul>
-          <li>
-            One <strong>GCF</strong> you found (the biggest equal group of two
-            item amounts).
-          </li>
-          <li>
-            One <strong>LCM</strong> you found (when two machines line up
-            again).
-          </li>
-          <li>
-            One <strong>distributive property</strong> rewrite using the GCF
-            (example: 12 + 18 = 6 × (2 + 3)).
-          </li>
-          <li>
-            One <strong>decimal total</strong> (add or multiply money amounts).
-          </li>
+          <li>One <strong>GCF</strong> you found (the biggest equal group of two item amounts).</li>
+          <li>One <strong>LCM</strong> you found (when two machines line up again).</li>
+          <li>One <strong>distributive property</strong> rewrite using the GCF (example: 12 + 18 = 6 &times; (2 + 3)).</li>
+          <li>One <strong>decimal total</strong> (add or multiply money amounts).</li>
         </ul>
         <p>
-          Then you will finish the
-          <strong>Check Your Understanding</strong> quiz and save it with your
+          Then you will complete the <strong>Self-Check</strong> questions and the
+          <strong>Check Your Understanding</strong> quiz, and save it with your
           name as a PDF or DOC.
         </p>
+        <div class="tip">
+          <strong>Deliverable:</strong> Written Factory Line Report (4 answers with work shown) + saved quiz PDF/DOC with your name.
+        </div>
       </section>
 
       <!-- PROCESS -->
@@ -320,19 +466,18 @@
           </li>
           <li>
             <strong>Find an LCM.</strong> Count by each number until you hit the
-            same number. Example: 4 → 4,8,12; 6 → 6,12. First match =
-            <strong>12</strong>. This tells you when two machines finish
-            together.
+            same number. Example: 4 &rarr; 4,8,12; 6 &rarr; 6,12. First match =
+            <strong>12</strong>. This tells you when two machines finish together.
           </li>
           <li>
             <strong>Use the distributive property.</strong> Pull out the GCF.
-            Example: 12 + 18. The GCF is 6, so 12 + 18 = 6 × (2 + 3) =
+            Example: 12 + 18. The GCF is 6, so 12 + 18 = 6 &times; (2 + 3) =
             <strong>30</strong>.
           </li>
           <li>
             <strong>Do decimal money math.</strong> Line up the decimal points
             to add or subtract. To multiply, multiply like whole numbers, then
-            count decimal places. Example: 3 boxes × $4.25 =
+            count decimal places. Example: 3 boxes &times; $4.25 =
             <strong>$12.75</strong>.
           </li>
           <li>
@@ -342,7 +487,11 @@
           </li>
           <li>
             <strong>Write your report.</strong> Write your four answers from the
-            Task section.
+            Task section. Show your work for each.
+          </li>
+          <li>
+            <strong>Self-Check your knowledge.</strong> Try the three practice
+            questions below — get instant feedback before the real quiz.
           </li>
           <li>
             <strong>Take the quiz.</strong> Type your name in the top bar,
@@ -361,79 +510,100 @@
       <section class="card resources">
         <h2>5. Resources</h2>
         <p class="muted">Use these on-site links to learn and practice:</p>
-        <a href="/games/3d/unit-4/"
-          >Unit 4 — Factory Line (3D Game)<span class="what"
-            >Pack the order using GCF, LCM, the distributive property &amp;
-            decimal totals.</span
-          ></a
-        >
-        <a href="/math/"
-          >Math Curriculum Hub<span class="what"
-            >All lessons, tools, and units in one place.</span
-          ></a
-        >
-        <a href="/graphic-novels/unit-4/"
-          >Unit 4 Graphic Novel<span class="what"
-            >Read the number-system story with pictures and ESOL support.</span
-          ></a
-        >
-        <a href="/games/3d/unit-4/#vocab"
-          >Unit 4 Vocabulary<span class="what"
-            >Words: factor, GCF, multiple, LCM, decimal, with pictures and easy
-            meanings.</span
-          ></a
-        >
+        <a href="/games/3d/unit-4/">Unit 4 — Factory Line (3D Game)<span class="what">Pack the order using GCF, LCM, the distributive property &amp; decimal totals.</span></a>
+        <a href="/math/">Math Curriculum Hub<span class="what">All lessons, tools, and units in one place.</span></a>
+        <a href="/graphic-novels/unit-4/">Unit 4 Graphic Novel<span class="what">Read the number-system story with pictures and ESOL support.</span></a>
+        <a href="/games/3d/unit-4/#vocab">Unit 4 Vocabulary<span class="what">Words: factor, GCF, multiple, LCM, decimal, with pictures and easy meanings.</span></a>
       </section>
 
-      <!-- EVALUATION -->
+      <!-- SELF-CHECK -->
       <section class="card">
-        <h2>6. Evaluation — How You Are Graded</h2>
+        <h2>6. Self-Check — Try These First!</h2>
+        <p class="muted">Answer each question, then click <strong>Check</strong> to see if you are right. You get instant feedback and a hint. These do not count toward your final grade.</p>
+
+        <div class="self-check" role="group" aria-label="Self-check practice questions">
+
+          <!-- SC Q1 -->
+          <div class="sc-item">
+            <label for="sc1">1. What is the GCF of 24 and 36?</label>
+            <span class="hint" id="sc1-hint">List factors of each number. Find the biggest one they share. Type a number only.</span>
+            <input type="text" id="sc1" inputmode="numeric" autocomplete="off" aria-describedby="sc1-hint" aria-label="Answer for self-check question 1" />
+            <button type="button" class="sc-check-btn" data-target="sc1" data-answer="12" data-explanation="Factors of 24: 1,2,3,4,6,8,12,24. Factors of 36: 1,2,3,4,6,9,12,18,36. Biggest shared = 12.">Check</button>
+            <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- SC Q2 -->
+          <div class="sc-item">
+            <label for="sc2">2. What is the LCM of 3 and 5?</label>
+            <span class="hint" id="sc2-hint">Skip-count by 3 and by 5 until you hit the same number. Type a number only.</span>
+            <input type="text" id="sc2" inputmode="numeric" autocomplete="off" aria-describedby="sc2-hint" aria-label="Answer for self-check question 2" />
+            <button type="button" class="sc-check-btn" data-target="sc2" data-answer="15" data-explanation="Multiples of 3: 3,6,9,12,15. Multiples of 5: 5,10,15. First match = 15.">Check</button>
+            <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- SC Q3 -->
+          <div class="sc-item">
+            <label for="sc3">3. Use the distributive property: 20 + 30 = 10 &times; ( __ ). What number goes in the blank?</label>
+            <span class="hint" id="sc3-hint">GCF of 20 and 30 is 10. Divide: 20 ÷ 10 = 2, 30 ÷ 10 = 3. What is 2 + 3? Type a number only.</span>
+            <select id="sc3" aria-describedby="sc3-hint" aria-label="Answer for self-check question 3">
+              <option value="">-- choose --</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+            </select>
+            <button type="button" class="sc-check-btn" data-target="sc3" data-answer="5" data-explanation="20 ÷ 10 = 2 and 30 ÷ 10 = 3. So 20 + 30 = 10 × (2 + 3) = 10 × 5 = 50. The blank is 5.">Check</button>
+            <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
+          </div>
+
+        </div><!-- /.self-check -->
+      </section>
+
+      <!-- EVALUATION / RUBRIC -->
+      <section class="card">
+        <h2>7. Evaluation — How You Are Graded</h2>
         <table class="rubric">
-          <caption>
-            Factory Line Rubric
-          </caption>
+          <caption>Factory Line Rubric — 4 Levels</caption>
           <thead>
             <tr>
-              <th>Skill</th>
-              <th>4 — Manager</th>
-              <th>3 — On Track</th>
-              <th>2 — Slow Line</th>
-              <th>1 — Restart</th>
+              <th scope="col">Skill</th>
+              <th scope="col">4 — Manager</th>
+              <th scope="col">3 — On Track</th>
+              <th scope="col">2 — Slow Line</th>
+              <th scope="col">1 — Restart</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>GCF</td>
-              <td>Finds correct GCF and lists the shared factors.</td>
-              <td>Finds correct GCF.</td>
-              <td>Tries, small error.</td>
-              <td>Not shown.</td>
+              <td><strong>GCF</strong></td>
+              <td>Correct GCF with factor lists for both numbers shown; biggest shared factor identified.</td>
+              <td>Correct GCF; factor list for one number shown.</td>
+              <td>Attempted; minor error (found a common factor but not the greatest).</td>
+              <td>Not attempted or GCF concept missing.</td>
             </tr>
             <tr>
-              <td>LCM</td>
-              <td>Finds correct LCM and shows the skip-counting.</td>
-              <td>Finds correct LCM.</td>
-              <td>Tries, small error.</td>
-              <td>Not shown.</td>
+              <td><strong>LCM</strong></td>
+              <td>Correct LCM with skip-counting or multiples list for both numbers shown.</td>
+              <td>Correct LCM; one list of multiples shown.</td>
+              <td>Attempted; minor error (found a common multiple but not the least).</td>
+              <td>Not attempted or LCM concept missing.</td>
             </tr>
             <tr>
-              <td>Distributive Property</td>
-              <td>Rewrites a sum as GCF × (sum) correctly.</td>
-              <td>Rewrites the sum correctly.</td>
-              <td>Tries, small error.</td>
-              <td>Not shown.</td>
+              <td><strong>Distributive Property</strong></td>
+              <td>Correctly rewrites sum as GCF &times; (a + b) with GCF identified and both quotients shown.</td>
+              <td>Correct rewrite; GCF identified.</td>
+              <td>Attempted; error in one quotient or GCF choice.</td>
+              <td>Not attempted or property misapplied.</td>
             </tr>
             <tr>
-              <td>Decimal Operations</td>
-              <td>
-                Adds, subtracts, multiplies, or divides decimals correctly.
-              </td>
-              <td>One small decimal error.</td>
-              <td>Tries, place-value error.</td>
-              <td>Not shown.</td>
+              <td><strong>Decimal Operations</strong></td>
+              <td>Correct decimal answer; decimal points aligned or place values tracked; label included.</td>
+              <td>Correct decimal answer; minor label missing.</td>
+              <td>Attempted; one place-value or alignment error.</td>
+              <td>Not attempted or decimal point misplaced throughout.</td>
             </tr>
             <tr>
-              <td>Quiz Score</td>
+              <td><strong>Quiz Score</strong></td>
               <td>6 of 6 correct.</td>
               <td>4–5 of 6 correct.</td>
               <td>3 of 6 correct.</td>
@@ -443,62 +613,43 @@
         </table>
       </section>
 
-      <!-- CHECK YOUR UNDERSTANDING -->
+      <!-- CHECK YOUR UNDERSTANDING (NTKit graded) -->
       <section class="card quiz">
-        <h2>7. Check Your Understanding</h2>
+        <h2>8. Check Your Understanding</h2>
         <p class="muted">
           Type your name in the bar at the top first. Answer all 6. Then click
           <strong>Check My Answers</strong>.
         </p>
 
-        <label for="q1"
-          >1. What is the greatest common factor (GCF) of 12 and 18?
-          <span class="hint"
-            >Biggest factor they share. Type a number only.</span
-          ></label
-        >
-        <input type="text" id="q1" inputmode="numeric" autocomplete="off" />
+        <label for="q1">1. What is the greatest common factor (GCF) of 12 and 18?
+          <span class="hint">Biggest factor they share. Type a number only.</span>
+        </label>
+        <input type="text" id="q1" inputmode="numeric" autocomplete="off" aria-label="Quiz question 1 answer" />
 
-        <label for="q2"
-          >2. What is the least common multiple (LCM) of 4 and 6?
-          <span class="hint"
-            >Skip-count each until they match. Type a number only.</span
-          ></label
-        >
-        <input type="text" id="q2" inputmode="numeric" autocomplete="off" />
+        <label for="q2">2. What is the least common multiple (LCM) of 4 and 6?
+          <span class="hint">Skip-count each until they match. Type a number only.</span>
+        </label>
+        <input type="text" id="q2" inputmode="numeric" autocomplete="off" aria-label="Quiz question 2 answer" />
 
-        <label for="q3"
-          >3. Use the distributive property: 24 + 36 = 12 × ( __ )
-          <span class="hint"
-            >GCF is 12. 24 ÷ 12 = 2, 36 ÷ 12 = 3. What is 2 + 3? Type a number
-            only.</span
-          ></label
-        >
-        <input type="text" id="q3" inputmode="numeric" autocomplete="off" />
+        <label for="q3">3. Use the distributive property: 24 + 36 = 12 &times; ( __ )
+          <span class="hint">GCF is 12. 24 &divide; 12 = 2, 36 &divide; 12 = 3. What is 2 + 3? Type a number only.</span>
+        </label>
+        <input type="text" id="q3" inputmode="numeric" autocomplete="off" aria-label="Quiz question 3 answer" />
 
-        <label for="q4"
-          >4. A box costs $4.25. How much do 3 boxes cost?
-          <span class="hint">Multiply: 3 × 4.25. Type like 12.75</span></label
-        >
-        <input type="text" id="q4" inputmode="decimal" autocomplete="off" />
+        <label for="q4">4. A box costs $4.25. How much do 3 boxes cost?
+          <span class="hint">Multiply: 3 &times; 4.25. Type like 12.75</span>
+        </label>
+        <input type="text" id="q4" inputmode="decimal" autocomplete="off" aria-label="Quiz question 4 answer" />
 
-        <label for="q5"
-          >5. You pay with $20.00 for items that cost $13.40. How much change?
-          <span class="hint"
-            >Subtract: 20.00 − 13.40. Line up the points. Type like 6.60</span
-          ></label
-        >
-        <input type="text" id="q5" inputmode="decimal" autocomplete="off" />
+        <label for="q5">5. You pay with $20.00 for items that cost $13.40. How much change?
+          <span class="hint">Subtract: 20.00 &minus; 13.40. Line up the points. Type like 6.60</span>
+        </label>
+        <input type="text" id="q5" inputmode="decimal" autocomplete="off" aria-label="Quiz question 5 answer" />
 
-        <label for="q6"
-          >6. A label maker can pack apples in equal rows. You have 12 red and
-          18 green apples. What is the largest number of apples in one equal
-          group?
-          <span class="hint"
-            >This is the GCF of 12 and 18. Type a number only.</span
-          ></label
-        >
-        <select id="q6">
+        <label for="q6">6. A packing line has 12 red items and 18 green items. What is the largest equal-group size with no leftovers?
+          <span class="hint">This is the GCF of 12 and 18. Choose the answer.</span>
+        </label>
+        <select id="q6" aria-label="Quiz question 6 answer">
           <option value="">-- choose --</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -506,9 +657,7 @@
           <option value="9">9</option>
         </select>
 
-        <button type="button" class="btn" id="checkBtn">
-          Check My Answers
-        </button>
+        <button type="button" class="btn" id="checkBtn">Check My Answers</button>
         <p class="muted" style="margin-top: 1rem">
           Your score and results appear in the panel at the top. Use
           <strong>Save as PDF</strong> or <strong>Save as DOC</strong> there to
@@ -516,9 +665,24 @@
         </p>
       </section>
 
+      <!-- REFLECTION -->
+      <section class="card reflection">
+        <h2>9. Reflection</h2>
+        <p>Think about what you learned in this WebQuest. Write 2–3 sentences to answer:</p>
+        <ul>
+          <li>How does finding the GCF help a packing line manager (or anyone splitting things into equal groups) in real life?</li>
+          <li>What was the hardest concept — GCF, LCM, the distributive property, or decimals? What strategy helped you the most?</li>
+        </ul>
+        <label for="reflectionBox" style="font-weight:700;">Your reflection (write here):</label>
+        <textarea id="reflectionBox" rows="5" aria-label="Student reflection response" placeholder="Write your reflection here..."></textarea>
+        <div class="tip" style="margin-top:0.8rem;">
+          <strong>Deliverable reminder:</strong> Submit your Factory Line Report (4 answers with work shown) AND save this quiz page as a PDF or DOC with your name before turning in.
+        </div>
+      </section>
+
       <!-- CONCLUSION -->
       <section class="card">
-        <h2>8. Conclusion</h2>
+        <h2>10. Conclusion</h2>
         <p>
           Great work, line manager! You used the <strong>GCF</strong> and
           <strong>LCM</strong>, the <strong>distributive property</strong>, and
@@ -531,74 +695,126 @@
           Next shift: keep practicing in the Factory Line game to pack faster
           with zero mistakes.
         </p>
+        <p style="font-size:0.88rem;color:var(--nt-muted);margin-top:1rem;">Neft Teacher · Grade 6 Math · Unit 4 · 6.NS.B.2-4</p>
       </section>
-    </div>
+
+      <!-- ANSWER KEY (teacher-only, inside <details>) -->
+      <details class="answer-key">
+        <summary>&#128274; Teacher Answer Key — click to expand (do not share with students)</summary>
+
+        <h3 style="margin-top:1rem;font-size:1.05rem;color:var(--nt-text);">Self-Check Answers</h3>
+        <ol>
+          <li><strong>SC Q1:</strong> <strong>12</strong>. (Factors of 24: 1,2,3,4,6,8,12,24. Factors of 36: 1,2,3,4,6,9,12,18,36. GCF = 12.)</li>
+          <li><strong>SC Q2:</strong> <strong>15</strong>. (Multiples of 3: 3,6,9,12,15. Multiples of 5: 5,10,15. LCM = 15.)</li>
+          <li><strong>SC Q3:</strong> <strong>5</strong>. (20 ÷ 10 = 2; 30 ÷ 10 = 3; 2 + 3 = 5. So 20 + 30 = 10 × 5 = 50. ✓)</li>
+        </ol>
+
+        <h3 style="font-size:1.05rem;color:var(--nt-text);">Quiz Answers</h3>
+        <ol>
+          <li><strong>Q1:</strong> <strong>6</strong>. (Factors of 12: 1,2,3,4,6,12. Factors of 18: 1,2,3,6,9,18. GCF = 6.)</li>
+          <li><strong>Q2:</strong> <strong>12</strong>. (Multiples of 4: 4,8,12. Multiples of 6: 6,12. LCM = 12.)</li>
+          <li><strong>Q3:</strong> <strong>5</strong>. (24 ÷ 12 = 2; 36 ÷ 12 = 3; 2 + 3 = 5. So 24 + 36 = 12 × 5 = 60. ✓)</li>
+          <li><strong>Q4:</strong> <strong>12.75</strong>. (3 × 4.25 = 12.75)</li>
+          <li><strong>Q5:</strong> <strong>6.60</strong>. (20.00 − 13.40 = 6.60)</li>
+          <li><strong>Q6:</strong> <strong>6</strong>. (GCF of 12 and 18 = 6.)</li>
+        </ol>
+
+        <h3 style="font-size:1.05rem;color:var(--nt-text);">Sample Factory Line Report (strong response)</h3>
+        <ul>
+          <li><strong>GCF:</strong> "Factors of 12: 1,2,3,4,6,12. Factors of 18: 1,2,3,6,9,18. GCF = 6. I can pack 6 items per group with no leftovers."</li>
+          <li><strong>LCM:</strong> "Multiples of 4: 4,8,12. Multiples of 6: 6,12. LCM = 12. The two machines will finish at the same time every 12 minutes."</li>
+          <li><strong>Distributive Property:</strong> "12 + 18 = 6 × (2 + 3) = 6 × 5 = 30. I pulled out the GCF (6) and divided each part."</li>
+          <li><strong>Decimal Total:</strong> "3 × $4.25. I multiplied 3 × 425 = 1275, then placed the decimal point 2 places from the right: $12.75."</li>
+        </ul>
+
+        <h3 style="font-size:1.05rem;color:var(--nt-text);">Sample Reflection (strong response)</h3>
+        <p>"Finding the GCF helps a packing manager split items into equal groups with no leftovers — like dividing 12 red and 18 green apples into bags of 6. The hardest part was the distributive property because I had to remember to divide both numbers by the GCF. Writing out the factor lists step-by-step helped me the most."</p>
+      </details>
+
+    </div><!-- /.wrap -->
 
     <!-- Activity kit -->
     <script src="/assets/nt-activity-kit.js"></script>
     <script>
       NTKit.mount("#ntkit");
 
+      /* ── Self-Check Logic ── */
+      (function () {
+        var btns = document.querySelectorAll(".sc-check-btn");
+        btns.forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var targetId = btn.getAttribute("data-target");
+            var correct  = btn.getAttribute("data-answer");
+            var explain  = btn.getAttribute("data-explanation");
+            var el       = document.getElementById(targetId);
+            var fb       = document.getElementById(targetId + "-fb");
+            if (!el || !fb) { return; }
+            var raw = (el.tagName === "SELECT") ? el.value : (el.value || "").trim();
+            var student = raw.replace(/\s/g, "").toLowerCase();
+            var isCorrect = (student === String(correct).toLowerCase());
+            fb.className = "sc-feedback " + (isCorrect ? "correct" : "incorrect");
+            fb.innerHTML = (isCorrect ? "&#10003; Correct! " : "&#10007; Not quite. ") + explain;
+          });
+        });
+      }());
+
+      /* ── NTKit graded quiz ── */
       function val(id) {
         return (document.getElementById(id).value || "").trim();
       }
 
-      document
-        .getElementById("checkBtn")
-        .addEventListener("click", function () {
-          NTKit.grade({
-            activityId: "webquest-unit-4",
-            activityTitle: "Unit 4 · Factory Line — WebQuest Check",
-            standard: "6.NS.B.2-4",
-            items: [
-              {
-                prompt: "GCF of 12 and 18",
-                studentAnswer: val("q1"),
-                correctAnswer: "6",
-                points: 1,
-                skill: "GCF",
-              },
-              {
-                prompt: "LCM of 4 and 6",
-                studentAnswer: val("q2"),
-                correctAnswer: "12",
-                points: 1,
-                skill: "LCM",
-              },
-              {
-                prompt: "24 + 36 = 12 × ( ? )",
-                studentAnswer: val("q3"),
-                correctAnswer: "5",
-                points: 1,
-                skill: "Distributive Property",
-              },
-              {
-                prompt: "3 boxes × $4.25 = ?",
-                studentAnswer: val("q4"),
-                correctAnswer: "12.75",
-                points: 1,
-                skill: "Decimal Operations",
-              },
-              {
-                prompt: "$20.00 − $13.40 = ? (change)",
-                studentAnswer: val("q5"),
-                correctAnswer: "6.60",
-                points: 1,
-                skill: "Decimal Operations",
-              },
-              {
-                prompt: "Largest equal group from 12 and 18 apples (GCF)",
-                studentAnswer: val("q6"),
-                correctAnswer: "6",
-                points: 1,
-                skill: "GCF",
-              },
-            ],
-          });
-          document
-            .getElementById("ntkit")
-            .scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("checkBtn").addEventListener("click", function () {
+        NTKit.grade({
+          activityId: "webquest-unit-4",
+          activityTitle: "Unit 4 · Factory Line — WebQuest Check",
+          standard: "6.NS.B.2-4",
+          items: [
+            {
+              prompt: "GCF of 12 and 18",
+              studentAnswer: val("q1"),
+              correctAnswer: "6",
+              points: 1,
+              skill: "GCF"
+            },
+            {
+              prompt: "LCM of 4 and 6",
+              studentAnswer: val("q2"),
+              correctAnswer: "12",
+              points: 1,
+              skill: "LCM"
+            },
+            {
+              prompt: "24 + 36 = 12 × ( ? )",
+              studentAnswer: val("q3"),
+              correctAnswer: "5",
+              points: 1,
+              skill: "Distributive Property"
+            },
+            {
+              prompt: "3 boxes × $4.25 = ?",
+              studentAnswer: val("q4"),
+              correctAnswer: "12.75",
+              points: 1,
+              skill: "Decimal Operations"
+            },
+            {
+              prompt: "$20.00 − $13.40 = ? (change)",
+              studentAnswer: val("q5"),
+              correctAnswer: "6.60",
+              points: 1,
+              skill: "Decimal Operations"
+            },
+            {
+              prompt: "Largest equal group from 12 and 18 items (GCF)",
+              studentAnswer: val("q6"),
+              correctAnswer: "6",
+              points: 1,
+              skill: "GCF"
+            }
+          ]
         });
+        document.getElementById("ntkit").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     </script>
   </body>
 </html>

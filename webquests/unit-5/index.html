@@ -14,16 +14,10 @@
     <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      /* Style ONLY with --nt-* variables */
+      /* ── Base ── */
       body {
         margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Arial,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         background: var(--nt-bg);
         color: var(--nt-text);
         font-size: 19px;
@@ -34,6 +28,8 @@
         margin: 0 auto;
         padding: 24px 20px 80px;
       }
+
+      /* ── Hero header ── */
       header.hero {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -51,32 +47,14 @@
         font-size: 16px;
         letter-spacing: 0.3px;
       }
-      h1 {
-        font-size: 34px;
-        line-height: 1.2;
-        margin: 14px 0 6px;
-      }
-      h2 {
-        font-size: 26px;
-        margin: 0 0 12px;
-        border-bottom: 3px solid var(--nt-accent);
-        padding-bottom: 6px;
-      }
-      h3 {
-        font-size: 21px;
-        margin: 18px 0 6px;
-      }
-      p,
-      li {
-        font-size: 19px;
-      }
-      .lead {
-        font-size: 21px;
-        color: var(--nt-text);
-      }
-      .muted {
-        color: var(--nt-muted);
-      }
+      h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; }
+      h2 { font-size: 26px; margin: 0 0 12px; border-bottom: 3px solid var(--nt-accent); padding-bottom: 6px; }
+      h3 { font-size: 21px; margin: 18px 0 6px; }
+      p, li { font-size: 19px; }
+      .lead { font-size: 21px; color: var(--nt-text); }
+      .muted { color: var(--nt-muted); }
+
+      /* ── Cards ── */
       section.card {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -84,29 +62,84 @@
         padding: 22px 24px;
         margin-bottom: 24px;
       }
-      ol.steps {
-        padding-left: 22px;
+
+      /* ── Learning Target box ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 3px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
       }
-      ol.steps > li {
-        margin-bottom: 14px;
-      }
-      .resources a {
+      .learning-target h2 {
         color: var(--nt-accent);
-        font-weight: 700;
-        text-decoration: underline;
+        font-size: 22px;
+        margin: 0 0 12px;
+        border-bottom: none;
+        padding-bottom: 0;
       }
+      .learning-target ul { margin: 0 0 10px; padding-left: 22px; }
+      .learning-target li { margin-bottom: 4px; }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .lt-chip {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      /* ── Teacher notes ── */
+      .teacher-notes {
+        background: #fff8e1;
+        border: 2px dashed #f59e0b;
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-bottom: 24px;
+      }
+      .teacher-notes h2 {
+        font-size: 22px;
+        color: #92400e;
+        margin: 0 0 10px;
+        border-bottom: 2px dashed #f59e0b;
+        padding-bottom: 6px;
+      }
+      .teacher-notes h3 { font-size: 18px; margin: 14px 0 4px; color: #78350f; }
+      .teacher-notes p, .teacher-notes li { font-size: 17px; }
+      .teacher-label {
+        display: inline-block;
+        background: #f59e0b;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        margin-bottom: 8px;
+      }
+
+      /* ── Steps ── */
+      ol.steps { padding-left: 22px; }
+      ol.steps > li { margin-bottom: 14px; }
+
+      /* ── Resources ── */
+      .resources a { color: var(--nt-accent); font-weight: 700; text-decoration: underline; }
       .resources a:focus-visible,
       a:focus-visible,
       input:focus-visible,
       select:focus-visible,
-      button:focus-visible {
+      button:focus-visible,
+      textarea:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
       }
-      ul.res-list {
-        list-style: none;
-        padding-left: 0;
-      }
+      ul.res-list { list-style: none; padding-left: 0; }
       ul.res-list li {
         padding: 12px 14px;
         border: 2px solid var(--nt-border);
@@ -114,11 +147,13 @@
         margin-bottom: 10px;
         background: var(--nt-bg);
       }
+
+      /* ── Rubric ── */
       table.rubric {
         width: 100%;
         border-collapse: collapse;
         margin-top: 10px;
-        font-size: 18px;
+        font-size: 17px;
       }
       table.rubric th,
       table.rubric td {
@@ -127,10 +162,10 @@
         text-align: left;
         vertical-align: top;
       }
-      table.rubric th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-      }
+      table.rubric th { background: var(--nt-accent); color: var(--nt-bg); }
+      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
+
+      /* ── Tip / formula ── */
       .tip {
         background: var(--nt-bg);
         border-left: 6px solid var(--nt-accent);
@@ -146,25 +181,66 @@
         font-size: 20px;
         margin: 10px 0;
       }
-      .formula strong {
-        font-size: 22px;
+      .formula strong { font-size: 22px; }
+
+      /* ── Self-check (interactive) ── */
+      .sc-item {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 18px;
       }
-      /* Quiz */
-      .q {
-        margin-bottom: 22px;
-      }
-      .q label.qprompt {
-        display: block;
+      .sc-item .sc-prompt {
         font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 20px;
+        font-size: 19px;
+        margin: 0 0 10px;
       }
-      .q .hint {
+      .sc-item .sc-hint {
         color: var(--nt-muted);
         font-size: 16px;
+        margin-bottom: 10px;
         display: block;
-        margin-bottom: 8px;
       }
+      .sc-item input[type="text"],
+      .sc-item select {
+        font-size: 19px;
+        padding: 10px 12px;
+        width: 100%;
+        max-width: 320px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .sc-btn {
+        display: inline-block;
+        margin-top: 10px;
+        font-size: 17px;
+        font-weight: 700;
+        padding: 10px 22px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .sc-btn:hover { filter: brightness(1.08); }
+      .sc-feedback {
+        margin-top: 10px;
+        font-size: 17px;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 8px;
+        display: none;
+      }
+      .sc-feedback.correct { background: #d1fae5; color: #065f46; border: 2px solid #10b981; }
+      .sc-feedback.wrong   { background: #fee2e2; color: #7f1d1d; border: 2px solid #ef4444; }
+
+      /* ── Final quiz ── */
+      .q { margin-bottom: 22px; }
+      .q label.qprompt { display: block; font-weight: 700; margin-bottom: 8px; font-size: 20px; }
+      .q .hint { color: var(--nt-muted); font-size: 16px; display: block; margin-bottom: 8px; }
       .q input[type="text"],
       .q select {
         font-size: 19px;
@@ -187,145 +263,271 @@
         cursor: pointer;
         margin-top: 8px;
       }
-      .check-btn:hover {
-        filter: brightness(1.08);
+      .check-btn:hover { filter: brightness(1.08); }
+
+      /* ── Reflection ── */
+      .reflection-box textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 18px;
+        font-family: inherit;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        resize: vertical;
       }
-      .architect {
-        font-size: 30px;
+      .deliverable-box {
+        background: var(--nt-bg);
+        border: 3px solid var(--nt-accent);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-top: 18px;
+      }
+      .deliverable-box strong { color: var(--nt-accent); }
+
+      /* ── Answer key details ── */
+      details.answer-key {
+        background: #f0fdf4;
+        border: 2px dashed #16a34a;
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-top: 20px;
+      }
+      details.answer-key summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 18px;
+        color: #15803d;
+        list-style: none;
+      }
+      details.answer-key summary::marker,
+      details.answer-key summary::-webkit-details-marker { display: none; }
+      details.answer-key summary::before { content: "▶ "; }
+      details.answer-key[open] summary::before { content: "▼ "; }
+      details.answer-key .ak-body { margin-top: 14px; }
+      details.answer-key table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 17px;
+      }
+      details.answer-key table th,
+      details.answer-key table td {
+        border: 1px solid #86efac;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      details.answer-key table th { background: #bbf7d0; color: #14532d; }
+
+      /* ── Misc ── */
+      .architect { font-size: 30px; }
+
+      /* ── Print ── */
+      @media print {
+        .teacher-notes,
+        .teacher-notes * { display: none !important; }
+        details.answer-key { display: none !important; }
+        .sc-btn { display: none !important; }
+        .check-btn { display: none !important; }
+        section.card,
+        .learning-target {
+          break-inside: avoid;
+          border: 1px solid #ccc;
+          box-shadow: none;
+        }
+        body { font-size: 14px; }
+        .wrap { padding: 0; }
+        a { color: #000; text-decoration: none; }
+      }
+
+      /* ── Mobile ── */
+      @media (max-width: 600px) {
+        h1 { font-size: 26px; }
+        h2 { font-size: 22px; }
+        .lt-meta { flex-direction: column; }
+        table.rubric { font-size: 14px; }
+        table.rubric th, table.rubric td { padding: 7px 8px; }
       }
     </style>
   </head>
   <body class="nt-theme-aware">
     <div class="wrap">
       <p style="font:14px system-ui;padding:10px 0;"><a href="/webquests/">← All WebQuests</a> · <a href="/math/">Math Hub</a></p>
+
       <header class="hero">
         <span class="badge">WebQuest · Unit 5 · CCSS 6.G.A.1</span>
         <h1><span class="architect">📐</span> The Area Architect WebQuest</h1>
-        <p class="lead">
-          Area of Polygons — measure, build, and prove every shape!
-        </p>
+        <p class="lead">Area of Polygons — measure, build, and prove every shape!</p>
       </header>
+
+      <!-- ══ LEARNING TARGET ══ -->
+      <div class="learning-target" role="region" aria-label="Learning Target">
+        <h2>🎯 Learning Target</h2>
+        <ul>
+          <li><strong>I can</strong> find the area of a parallelogram using <em>A = b × h</em>.</li>
+          <li><strong>I can</strong> find the area of a triangle using <em>A = ½ × b × h</em>.</li>
+          <li><strong>I can</strong> find the area of a trapezoid using <em>A = ½ × (b₁ + b₂) × h</em>.</li>
+          <li><strong>I can</strong> find the area of a composite figure by splitting it into simpler shapes and adding the parts.</li>
+        </ul>
+        <div class="lt-meta">
+          <span class="lt-chip">📌 Standard: CCSS 6.G.A.1</span>
+          <span class="lt-chip">⏱ Estimated time: 45–60 min</span>
+          <span class="lt-chip">📎 Materials: pencil, graph paper (optional), calculator (optional)</span>
+        </div>
+      </div>
+
+      <!-- ══ TEACHER NOTES ══ (hidden in print) ══ -->
+      <div class="teacher-notes" role="region" aria-label="Teacher Notes">
+        <span class="teacher-label">TEACHER ONLY — Does not print</span>
+        <h2>Teacher Notes</h2>
+
+        <h3>Pacing</h3>
+        <p>45 min class: Steps 1–3 (~15 min) → Self-Check (~10 min) → Steps 4–5 + Final Quiz (~20 min). 60 min class: add pair-share after each formula step and debrief the composite figure with the whole group.</p>
+
+        <h3>Grouping</h3>
+        <p>Best used in pairs for Steps 1–4 so students can talk through the cutting strategy for composite figures. Step 5 (final quiz) should be completed individually.</p>
+
+        <h3>Differentiation — Support</h3>
+        <ul>
+          <li>Pre-cut graph-paper shapes so students can physically lay unit squares inside each polygon.</li>
+          <li>Provide a formula card students can keep visible during the quiz.</li>
+          <li>Allow students to draw the shape and label base and height before calculating.</li>
+        </ul>
+
+        <h3>Differentiation — Challenge</h3>
+        <ul>
+          <li>Ask students to derive the triangle formula from a rectangle (fold/cut proof).</li>
+          <li>Pose: "Can two different-shaped triangles have the same area? Show an example."</li>
+          <li>Extend to irregular polygons with more than two composite pieces.</li>
+        </ul>
+
+        <h3>ESOL / Language Supports</h3>
+        <ul>
+          <li>Post a visual word wall: <em>base, height, parallelogram, trapezoid, composite</em> with labeled diagrams.</li>
+          <li>Use sentence frames: "The area is ___ because I used the formula ___."</li>
+          <li>Allow native-language scratch work; assess the math, not the language.</li>
+        </ul>
+      </div>
 
       <!-- Student identity bar + Save PDF/DOC + results panel -->
       <div id="ntkit"></div>
 
-      <!-- INTRODUCTION -->
+      <!-- ══ INTRODUCTION ══ -->
       <section class="card">
         <h2>1. Introduction</h2>
-        <p>
-          Welcome, <strong>Area Architect</strong>! 🏗️ A new park needs floor
-          plans, and you are the math behind the build.
-        </p>
-        <p>
-          <strong>Area</strong> is the number of unit squares that fit inside a
-          flat shape. We measure it in <strong>square units</strong> (like cm²
-          or ft²). In this WebQuest you will find the area of
-          <strong>rectangles</strong>, <strong>triangles</strong>, and
-          <strong>composite figures</strong> (shapes made of smaller shapes).
-        </p>
+        <p>Welcome, <strong>Area Architect</strong>! 🏗️ A new park needs floor plans, and you are the math behind the build.</p>
+        <p><strong>Area</strong> is the number of unit squares that fit inside a flat shape. We measure it in <strong>square units</strong> (like cm² or ft²). In this WebQuest you will find the area of <strong>parallelograms</strong>, <strong>triangles</strong>, <strong>trapezoids</strong>, and <strong>composite figures</strong> (shapes made of smaller shapes).</p>
       </section>
 
-      <!-- TASK -->
+      <!-- ══ TASK ══ -->
       <section class="card">
         <h2>2. Task</h2>
         <p>By the end, you will be able to:</p>
         <ul>
-          <li>
-            Find the area of a <strong>rectangle</strong> (length × width).
-          </li>
-          <li>
-            Find the area of a <strong>triangle</strong> (½ × base × height).
-          </li>
-          <li>
-            Find the area of a <strong>composite figure</strong> by adding
-            parts.
-          </li>
-          <li>
-            Solve a real floor-plan problem and finish the short quiz below.
-          </li>
+          <li>Find the area of a <strong>parallelogram</strong> (base × height).</li>
+          <li>Find the area of a <strong>triangle</strong> (½ × base × height).</li>
+          <li>Find the area of a <strong>trapezoid</strong> (½ × (b₁ + b₂) × height).</li>
+          <li>Find the area of a <strong>composite figure</strong> by splitting it into simpler shapes and adding the parts.</li>
+          <li>Solve a real floor-plan problem and finish the self-check and quiz below.</li>
         </ul>
       </section>
 
-      <!-- PROCESS -->
+      <!-- ══ PROCESS ══ -->
       <section class="card">
         <h2>3. Process</h2>
         <p class="muted">Do the steps in order. Read each one carefully.</p>
         <ol class="steps">
           <li>
             <h3>Step 1 — Learn the words</h3>
-            <p>
-              <strong>Area</strong> = space inside a flat shape.
-              <strong>Base</strong> and <strong>height</strong> must meet at a
-              right angle (a square corner).
-            </p>
+            <p><strong>Area</strong> = space inside a flat shape. <strong>Base</strong> and <strong>height</strong> must meet at a right angle (a square corner). For a parallelogram the height is the perpendicular distance between the two bases — not the slanted side.</p>
           </li>
           <li>
             <h3>Step 2 — Learn the formulas</h3>
-            <div class="formula">
-              Rectangle: <strong>Area = length × width</strong>
-            </div>
-            <div class="formula">
-              Triangle: <strong>Area = ½ × base × height</strong>
-            </div>
-            <div class="formula">
-              Composite:
-              <strong>cut it into rectangles &amp; triangles, then add</strong>
-            </div>
+            <div class="formula">Parallelogram: <strong>A = b × h</strong></div>
+            <div class="formula">Triangle: <strong>A = ½ × b × h</strong></div>
+            <div class="formula">Trapezoid: <strong>A = ½ × (b₁ + b₂) × h</strong></div>
+            <div class="formula">Composite: <strong>split into known shapes, find each area, then add</strong></div>
           </li>
           <li>
             <h3>Step 3 — Play the 3D game</h3>
-            <p>
-              Open the Area Architect 3D game. Build blocks to match the gold
-              target area. Watch how length × width fills the shape.
-            </p>
+            <p>Open the Area Architect 3D game. Build blocks to match the gold target area. Watch how base × height fills the parallelogram.</p>
           </li>
           <li>
             <h3>Step 4 — Try a composite figure</h3>
-            <p>
-              An L-shaped room splits into two rectangles. Find each area, then
-              <strong>add them together</strong>.
-            </p>
+            <p>An L-shaped room splits into two rectangles (rectangles are special parallelograms). Find each area, then <strong>add them together</strong>.</p>
           </li>
           <li>
             <h3>Step 5 — Show what you know</h3>
-            <p>
-              Type your name in the bar above, finish the quiz, then
-              <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.
-            </p>
+            <p>Complete the Self-Check below, then type your name in the bar above, finish the final quiz, and <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.</p>
           </li>
         </ol>
         <div class="tip">
-          💡 <strong>Tip:</strong> A triangle is exactly <em>half</em> of a
-          rectangle with the same base and height. That is why we multiply by ½.
+          💡 <strong>Tip:</strong> A triangle is exactly <em>half</em> of a parallelogram with the same base and height. That is why we multiply by ½.
         </div>
       </section>
 
-      <!-- RESOURCES -->
+      <!-- ══ RESOURCES ══ -->
       <section class="card resources">
         <h2>4. Resources</h2>
         <p>Use these to help you:</p>
         <ul class="res-list">
-          <li>
-            🎮 <a href="/games/3d/unit-5/">Unit 5 — Area Architect 3D Game</a> —
-            build shapes to a target area.
-          </li>
-          <li>
-            📘 <a href="/math/">Math Lessons Hub</a> — review area of polygons.
-          </li>
-          <li>
-            📖 <a href="/graphic-novels/unit-5/">Unit 5 Graphic Novel</a> — the
-            area story.
-          </li>
-          <li>
-            📝 <a href="/math/unit-5/">Unit 5 Practice Activities</a> — extra
-            practice.
-          </li>
+          <li>🎮 <a href="/games/3d/unit-5/">Unit 5 — Area Architect 3D Game</a> — build shapes to a target area.</li>
+          <li>📘 <a href="/math/">Math Lessons Hub</a> — review area of polygons.</li>
+          <li>📖 <a href="/graphic-novels/unit-5/">Unit 5 Graphic Novel</a> — the area story.</li>
+          <li>📝 <a href="/math/unit-5/">Unit 5 Practice Activities</a> — extra practice.</li>
         </ul>
       </section>
 
-      <!-- EVALUATION -->
+      <!-- ══ SELF-CHECK (Interactive) ══ -->
+      <section class="card" aria-label="Self-Check">
+        <h2>5. Self-Check — Try It Yourself</h2>
+        <p class="muted">Answer each question, then press <strong>Check</strong> to see if you are right. Read the explanation before moving on.</p>
+
+        <!-- SC1 -->
+        <div class="sc-item">
+          <p class="sc-prompt">SC1. A parallelogram has a base of 7 cm and a height of 4 cm. What is its area?</p>
+          <span class="sc-hint">Use A = b × h. Type a number.</span>
+          <input type="text" id="sc1" inputmode="numeric" autocomplete="off" placeholder="area in cm²" aria-label="Self-check 1 answer" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC('sc1','28','Correct! 7 × 4 = 28 cm². The height is the perpendicular distance, not the slant side.','Not quite. Multiply base × height: 7 × 4 = 28.')">Check</button>
+          <div class="sc-feedback" id="sc1-fb" role="alert"></div>
+        </div>
+
+        <!-- SC2 -->
+        <div class="sc-item">
+          <p class="sc-prompt">SC2. A triangle has a base of 10 m and a height of 6 m. What is its area?</p>
+          <span class="sc-hint">Use A = ½ × b × h. Type a number.</span>
+          <input type="text" id="sc2" inputmode="numeric" autocomplete="off" placeholder="area in m²" aria-label="Self-check 2 answer" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC('sc2','30','Correct! ½ × 10 × 6 = 30 m². The triangle is half the parallelogram with the same base and height.','Not quite. Use ½ × b × h: ½ × 10 × 6 = 30.')">Check</button>
+          <div class="sc-feedback" id="sc2-fb" role="alert"></div>
+        </div>
+
+        <!-- SC3 -->
+        <div class="sc-item">
+          <p class="sc-prompt">SC3. A trapezoid has bases of 5 ft and 9 ft and a height of 4 ft. What is its area?</p>
+          <span class="sc-hint">Use A = ½ × (b₁ + b₂) × h. Type a number.</span>
+          <input type="text" id="sc3" inputmode="numeric" autocomplete="off" placeholder="area in ft²" aria-label="Self-check 3 answer" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC('sc3','28','Correct! ½ × (5 + 9) × 4 = ½ × 14 × 4 = 28 ft². You add the two bases first, then multiply.','Not quite. First add the bases: 5 + 9 = 14. Then: ½ × 14 × 4 = 28.')">Check</button>
+          <div class="sc-feedback" id="sc3-fb" role="alert"></div>
+        </div>
+
+        <!-- SC4 -->
+        <div class="sc-item">
+          <p class="sc-prompt">SC4. An L-shaped floor is made of two rectangles: one is 6 m × 3 m and the other is 4 m × 2 m. What is the total area?</p>
+          <span class="sc-hint">Find each rectangle's area, then add. Type a number.</span>
+          <input type="text" id="sc4" inputmode="numeric" autocomplete="off" placeholder="total m²" aria-label="Self-check 4 answer" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC('sc4','26','Correct! 6×3 = 18 and 4×2 = 8, so 18 + 8 = 26 m². This is the composite figure strategy.','Not quite. 6×3 = 18 and 4×2 = 8. Add them: 18 + 8 = 26.')">Check</button>
+          <div class="sc-feedback" id="sc4-fb" role="alert"></div>
+        </div>
+      </section>
+
+      <!-- ══ EVALUATION (RUBRIC) ══ -->
       <section class="card">
-        <h2>5. Evaluation (Rubric)</h2>
+        <h2>6. Evaluation (Rubric)</h2>
         <table class="rubric">
           <thead>
             <tr>
@@ -338,125 +540,90 @@
           </thead>
           <tbody>
             <tr>
-              <td><strong>Rectangle area</strong></td>
-              <td>Finds rectangle area correctly every time.</td>
-              <td>Finds rectangle area correctly most times.</td>
-              <td>Finds some rectangle areas correctly.</td>
-              <td>Needs help finding rectangle area.</td>
+              <td><strong>Parallelogram &amp; rectangle area</strong></td>
+              <td>Applies A = b × h correctly every time, including slanted sides.</td>
+              <td>Applies A = b × h correctly most of the time.</td>
+              <td>Uses the formula with occasional errors.</td>
+              <td>Needs support to use the formula.</td>
             </tr>
             <tr>
               <td><strong>Triangle area</strong></td>
-              <td>Uses ½ × base × height fast and correctly.</td>
+              <td>Uses A = ½bh quickly and correctly every time.</td>
               <td>Uses the triangle formula correctly.</td>
-              <td>Uses the triangle formula with help.</td>
-              <td>Triangle area not yet found.</td>
+              <td>Uses the formula with help or minor errors.</td>
+              <td>Triangle area formula not yet mastered.</td>
+            </tr>
+            <tr>
+              <td><strong>Trapezoid area</strong></td>
+              <td>Identifies both bases and height, applies formula correctly every time.</td>
+              <td>Applies the trapezoid formula correctly.</td>
+              <td>Applies the formula with prompting.</td>
+              <td>Has difficulty identifying the two bases.</td>
             </tr>
             <tr>
               <td><strong>Composite figures</strong></td>
-              <td>Splits and adds parts with no errors.</td>
+              <td>Splits any composite figure and adds parts with no errors.</td>
               <td>Splits and adds parts with few errors.</td>
-              <td>Finds some parts correctly.</td>
-              <td>Cannot split the shape yet.</td>
-            </tr>
-            <tr>
-              <td><strong>Quiz score</strong></td>
-              <td>90–100%</td>
-              <td>75–89%</td>
-              <td>50–74%</td>
-              <td>Below 50%</td>
+              <td>Finds some parts correctly with guidance.</td>
+              <td>Cannot yet split the shape independently.</td>
             </tr>
           </tbody>
         </table>
       </section>
 
-      <!-- CONCLUSION -->
+      <!-- ══ CONCLUSION ══ -->
       <section class="card">
-        <h2>6. Conclusion</h2>
-        <p>
-          Great work, Area Architect! You can now find the area of
-          <strong>rectangles</strong>, <strong>triangles</strong>, and
-          <strong>composite figures</strong>. These same skills help you plan
-          rooms, gardens, sports fields, and floor plans. Finish the quick check
-          below to show what you learned.
-        </p>
+        <h2>7. Conclusion</h2>
+        <p>Great work, Area Architect! You can now find the area of <strong>parallelograms</strong>, <strong>triangles</strong>, <strong>trapezoids</strong>, and <strong>composite figures</strong>. These same skills help you plan rooms, gardens, sports fields, and floor plans. Complete the reflection and final quiz below to show what you learned.</p>
       </section>
 
-      <!-- CHECK YOUR UNDERSTANDING -->
+      <!-- ══ REFLECTION ══ -->
+      <section class="card reflection-box">
+        <h2>8. Reflection</h2>
+        <p>Answer these two questions in your own words before you submit.</p>
+
+        <p><strong>1. Which shape was hardest for you — parallelogram, triangle, or trapezoid? Why?</strong></p>
+        <textarea id="reflect1" rows="3" placeholder="Write your answer here…" aria-label="Reflection question 1"></textarea>
+
+        <p style="margin-top:16px;"><strong>2. Describe one real-life situation where you would need to calculate area.</strong></p>
+        <textarea id="reflect2" rows="3" placeholder="Write your answer here…" aria-label="Reflection question 2"></textarea>
+
+        <div class="deliverable-box">
+          <strong>Deliverable:</strong> When you finish the quiz below, press <strong>Save as PDF</strong> or <strong>Save as DOC</strong> in the panel at the top of the page, then submit the file to your teacher. Your file should include your name, all quiz answers, and your reflection.
+        </div>
+      </section>
+
+      <!-- ══ CHECK YOUR UNDERSTANDING (graded) ══ -->
       <section class="card">
-        <h2>7. Check Your Understanding</h2>
-        <p class="muted">
-          Answer all 6. Then press <strong>Check My Answers</strong>. Type
-          numbers only when asked.
-        </p>
+        <h2>9. Check Your Understanding</h2>
+        <p class="muted">Answer all 6. Then press <strong>Check My Answers</strong>. Type numbers only when asked.</p>
 
         <div class="q">
-          <label class="qprompt" for="q1"
-            >Q1. A rectangle is 8 cm long and 5 cm wide. What is its area in
-            square cm?</label
-          >
-          <span class="hint"
-            >Use Area = length × width. Example answer: 12</span
-          >
-          <input
-            type="text"
-            id="q1"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="area in cm²"
-          />
+          <label class="qprompt" for="q1">Q1. A parallelogram has a base of 8 cm and a height of 5 cm. What is its area in square cm?</label>
+          <span class="hint">Use A = b × h. Example answer: 12</span>
+          <input type="text" id="q1" inputmode="numeric" autocomplete="off" placeholder="area in cm²" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q2"
-            >Q2. A triangle has a base of 10 cm and a height of 4 cm. What is
-            its area in square cm?</label
-          >
-          <span class="hint"
-            >Use Area = ½ × base × height. Example answer: 6</span
-          >
-          <input
-            type="text"
-            id="q2"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="area in cm²"
-          />
+          <label class="qprompt" for="q2">Q2. A triangle has a base of 10 cm and a height of 4 cm. What is its area in square cm?</label>
+          <span class="hint">Use A = ½ × b × h. Example answer: 6</span>
+          <input type="text" id="q2" inputmode="numeric" autocomplete="off" placeholder="area in cm²" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q3"
-            >Q3. A square garden has sides of 6 ft. What is its area in square
-            ft?</label
-          >
-          <span class="hint">A square is a rectangle. Example answer: 25</span>
-          <input
-            type="text"
-            id="q3"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="area in ft²"
-          />
+          <label class="qprompt" for="q3">Q3. A square garden has sides of 6 ft. What is its area in square ft?</label>
+          <span class="hint">A square is a special parallelogram. Example answer: 25</span>
+          <input type="text" id="q3" inputmode="numeric" autocomplete="off" placeholder="area in ft²" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q4"
-            >Q4. An L-shaped room is made of two rectangles. One is 12 m², the
-            other is 8 m². What is the total area?</label
-          >
+          <label class="qprompt" for="q4">Q4. An L-shaped room is made of two rectangles. One is 12 m², the other is 8 m². What is the total area?</label>
           <span class="hint">Add the parts. Example answer: 30</span>
-          <input
-            type="text"
-            id="q4"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="total m²"
-          />
+          <input type="text" id="q4" inputmode="numeric" autocomplete="off" placeholder="total m²" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q5"
-            >Q5. Which unit do we use to measure area?</label
-          >
+          <label class="qprompt" for="q5">Q5. Which unit do we use to measure area?</label>
           <select id="q5">
             <option value="">— Choose one —</option>
             <option value="square units">square units</option>
@@ -467,96 +634,121 @@
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q6"
-            >Q6. A triangle has a base of 9 in and a height of 6 in. What is its
-            area in square in?</label
-          >
-          <span class="hint">Use ½ × base × height. Example answer: 24</span>
-          <input
-            type="text"
-            id="q6"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="area in in²"
-          />
+          <label class="qprompt" for="q6">Q6. A trapezoid has bases of 6 in and 10 in and a height of 4 in. What is its area in square inches?</label>
+          <span class="hint">Use A = ½ × (b₁ + b₂) × h. Example answer: 24</span>
+          <input type="text" id="q6" inputmode="numeric" autocomplete="off" placeholder="area in in²" />
         </div>
 
-        <button type="button" class="check-btn" id="checkBtn">
-          Check My Answers ✅
-        </button>
-        <p class="muted" style="margin-top: 14px">
-          Your score and a ✓/✗ for each question will appear in the panel at the
-          top. Then use <strong>Save as PDF</strong> or
-          <strong>Save as DOC</strong> to turn it in.
-        </p>
+        <button type="button" class="check-btn" id="checkBtn">Check My Answers ✅</button>
+        <p class="muted" style="margin-top: 14px">Your score and a ✓/✗ for each question will appear in the panel at the top. Then use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to turn it in.</p>
       </section>
-    </div>
+
+      <!-- ══ ANSWER KEY (teacher only) ══ -->
+      <details class="answer-key" aria-label="Teacher Answer Key">
+        <summary>Teacher Answer Key (click to expand)</summary>
+        <div class="ak-body">
+          <p><em>Share with students only after submission. Keep collapsed during student work time.</em></p>
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Correct Answer</th>
+                <th>Formula / Work</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>SC1</td><td>28 cm²</td><td>b × h = 7 × 4 = 28</td></tr>
+              <tr><td>SC2</td><td>30 m²</td><td>½ × 10 × 6 = 30</td></tr>
+              <tr><td>SC3</td><td>28 ft²</td><td>½ × (5+9) × 4 = ½ × 14 × 4 = 28</td></tr>
+              <tr><td>SC4</td><td>26 m²</td><td>6×3 + 4×2 = 18 + 8 = 26</td></tr>
+              <tr><td>Q1</td><td>40 cm²</td><td>8 × 5 = 40</td></tr>
+              <tr><td>Q2</td><td>20 cm²</td><td>½ × 10 × 4 = 20</td></tr>
+              <tr><td>Q3</td><td>36 ft²</td><td>6 × 6 = 36</td></tr>
+              <tr><td>Q4</td><td>20 m²</td><td>12 + 8 = 20</td></tr>
+              <tr><td>Q5</td><td>square units</td><td>Area is always in square units</td></tr>
+              <tr><td>Q6</td><td>32 in²</td><td>½ × (6+10) × 4 = ½ × 16 × 4 = 32</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+    </div><!-- /.wrap -->
 
     <script>
       NTKit.mount("#ntkit");
 
-      function val(id) {
-        var n = document.getElementById(id);
-        return n ? n.value : "";
+      /* ── Self-Check logic ── */
+      function checkSC(inputId, correct, okMsg, wrongMsg) {
+        var inp = document.getElementById(inputId);
+        var fb  = document.getElementById(inputId + "-fb");
+        if (!inp || !fb) return;
+        var answer = inp.value.trim().replace(/\s/g, "");
+        var isRight = (answer === correct);
+        fb.textContent = isRight ? ("✓ " + okMsg) : ("✗ " + wrongMsg);
+        fb.className = "sc-feedback " + (isRight ? "correct" : "wrong");
+        fb.style.display = "block";
+        inp.setAttribute("aria-invalid", isRight ? "false" : "true");
       }
 
-      document
-        .getElementById("checkBtn")
-        .addEventListener("click", function () {
-          NTKit.grade({
-            activityId: "webquest-unit-5",
-            activityTitle:
-              "WebQuest · Unit 5 — Area of Polygons (Area Architect)",
-            standard: "6.G.A.1",
-            items: [
-              {
-                prompt: "Q1. Rectangle 8 cm × 5 cm. Area = ?",
-                studentAnswer: val("q1"),
-                correctAnswer: "40",
-                points: 1,
-                skill: "Rectangle area",
-              },
-              {
-                prompt: "Q2. Triangle base 10 cm, height 4 cm. Area = ?",
-                studentAnswer: val("q2"),
-                correctAnswer: "20",
-                points: 1,
-                skill: "Triangle area",
-              },
-              {
-                prompt: "Q3. Square garden side 6 ft. Area = ?",
-                studentAnswer: val("q3"),
-                correctAnswer: "36",
-                points: 1,
-                skill: "Rectangle area",
-              },
-              {
-                prompt: "Q4. L-shape: 12 m² + 8 m² = ?",
-                studentAnswer: val("q4"),
-                correctAnswer: "20",
-                points: 1,
-                skill: "Composite figures",
-              },
-              {
-                prompt: "Q5. Unit used to measure area?",
-                studentAnswer: val("q5"),
-                correctAnswer: "square units",
-                points: 1,
-                skill: "Area vocabulary",
-              },
-              {
-                prompt: "Q6. Triangle base 9 in, height 6 in. Area = ?",
-                studentAnswer: val("q6"),
-                correctAnswer: "27",
-                points: 1,
-                skill: "Triangle area",
-              },
-            ],
-          });
-          var panel = document.getElementById("ntkit");
-          if (panel && panel.scrollIntoView)
-            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      /* ── Final quiz ── */
+      function val(id) {
+        var n = document.getElementById(id);
+        return n ? n.value.trim() : "";
+      }
+
+      document.getElementById("checkBtn").addEventListener("click", function () {
+        NTKit.grade({
+          activityId: "webquest-unit-5",
+          activityTitle: "WebQuest · Unit 5 — Area of Polygons (Area Architect)",
+          standard: "6.G.A.1",
+          items: [
+            {
+              prompt: "Q1. Parallelogram base 8 cm, height 5 cm. Area = ?",
+              studentAnswer: val("q1"),
+              correctAnswer: "40",
+              points: 1,
+              skill: "Parallelogram area"
+            },
+            {
+              prompt: "Q2. Triangle base 10 cm, height 4 cm. Area = ?",
+              studentAnswer: val("q2"),
+              correctAnswer: "20",
+              points: 1,
+              skill: "Triangle area"
+            },
+            {
+              prompt: "Q3. Square garden side 6 ft. Area = ?",
+              studentAnswer: val("q3"),
+              correctAnswer: "36",
+              points: 1,
+              skill: "Parallelogram area"
+            },
+            {
+              prompt: "Q4. L-shape: 12 m² + 8 m² = ?",
+              studentAnswer: val("q4"),
+              correctAnswer: "20",
+              points: 1,
+              skill: "Composite figures"
+            },
+            {
+              prompt: "Q5. Unit used to measure area?",
+              studentAnswer: val("q5"),
+              correctAnswer: "square units",
+              points: 1,
+              skill: "Area vocabulary"
+            },
+            {
+              prompt: "Q6. Trapezoid bases 6 in and 10 in, height 4 in. Area = ?",
+              studentAnswer: val("q6"),
+              correctAnswer: "32",
+              points: 1,
+              skill: "Trapezoid area"
+            }
+          ]
         });
+        var panel = document.getElementById("ntkit");
+        if (panel && panel.scrollIntoView) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     </script>
   </body>
 </html>
