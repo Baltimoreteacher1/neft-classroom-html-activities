@@ -64,7 +64,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -74,15 +75,16 @@
       id="game"
       role="application"
       tabindex="0"
-      aria-label="Ratio Rally — Tune the Rates to Win. Interactive 3D math game."
+      aria-label="Ratio Rally — neon speedway. Tune unit rates, equivalent ratios, percent and conversions to launch your car. Interactive 3D math game."
       aria-describedby="e3d-intro"
     ></div>
     <div class="e3d-boot-title">Ratio Rally — Tune the Rates to Win</div>
     <p class="e3d-intro" id="e3d-intro">
-      Set the dial to the right unit rate, percent, or conversion (arrow keys /
-      WASD or tap), then lock it in (Space / tap) to launch your car. On
-      comparison rounds, steer left/right to the best unit price. The live rate
-      readout updates as you tune.
+      Dial the right unit rate, equivalent ratio, percent, or conversion with
+      Up/Down (Left/Right for bigger steps) or the on-screen pad, then lock it
+      in with Space or the ● button to launch your car. On comparison rounds,
+      steer Left/Right (or tap a lane) to the best price per liter. Press Enter
+      to hear a hint. The 3D problem card and live dial always show the math.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -100,7 +102,9 @@
 
       try {
         // Omit `level` to show the Level 1 / Level 2 selector first.
-        mountGame(document.getElementById("game"), unit3RatioRally, {});
+        mountGame(document.getElementById("game"), unit3RatioRally, {
+          sceneOpts: { background: 0x0c1a33, cameraPos: [0, 8.5, 15] },
+        });
       } catch (err) {
         console.error("Failed to mount Unit 3 game:", err);
         document.getElementById("fallback").style.display = "flex";

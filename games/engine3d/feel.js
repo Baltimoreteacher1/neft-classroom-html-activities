@@ -17,6 +17,55 @@ export function createFeel(ctx2 = {}) {
   const audioCache = new Map();
   let audioEnabled = true;
 
+  // ---- Procedural WebAudio SFX (no asset files) ----------------------------
+  let actx = null;
+  function ac() {
+    if (actx) return actx;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      actx = AC ? new AC() : null;
+    } catch {
+      actx = null;
+    }
+    return actx;
+  }
+  // Named voices: simple oscillator envelopes that read as game feedback.
+  const VOICES = {
+    pop: { type: "triangle", f0: 520, f1: 720, dur: 0.12, gain: 0.18 },
+    add: { type: "sine", f0: 440, f1: 660, dur: 0.1, gain: 0.16 },
+    remove: { type: "sine", f0: 380, f1: 240, dur: 0.12, gain: 0.16 },
+    correct: { type: "triangle", f0: 660, f1: 990, dur: 0.22, gain: 0.22 },
+    win: { type: "triangle", f0: 523, f1: 1046, dur: 0.4, gain: 0.24 },
+    wrong: { type: "sawtooth", f0: 220, f1: 130, dur: 0.26, gain: 0.16 },
+    select: { type: "square", f0: 300, f1: 300, dur: 0.05, gain: 0.1 },
+  };
+  function playVoice(name) {
+    if (!audioEnabled) return;
+    const ctxA = ac();
+    if (!ctxA) return;
+    if (ctxA.state === "suspended") ctxA.resume().catch(() => {});
+    const v = VOICES[name] || VOICES.pop;
+    const t = ctxA.currentTime;
+    const osc = ctxA.createOscillator();
+    const g = ctxA.createGain();
+    osc.type = v.type;
+    osc.frequency.setValueAtTime(v.f0, t);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(1, v.f1), t + v.dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(v.gain, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + v.dur);
+    osc.connect(g).connect(ctxA.destination);
+    osc.start(t);
+    osc.stop(t + v.dur + 0.02);
+  }
+  // A short ascending arpeggio for level/round completion.
+  function playFanfare() {
+    if (!audioEnabled) return;
+    [0, 90, 180, 300].forEach((ms, i) =>
+      setTimeout(() => playVoice(i === 3 ? "win" : "correct"), ms),
+    );
+  }
+
   if (onFrame) onFrame(update);
 
   function update(dt) {
@@ -168,6 +217,17 @@ export function createFeel(ctx2 = {}) {
       } catch {
         /* autoplay blocked / unavailable */
       }
+    },
+
+    /**
+     * Procedural sound effect — no asset files needed.
+     * names: pop | add | remove | correct | win | wrong | select | fanfare
+     * Optional caption routes to the screen-reader announcer.
+     */
+    sfx(name, caption) {
+      if (caption && announce) announce(caption);
+      if (name === "fanfare") playFanfare();
+      else playVoice(name);
     },
 
     setAudioEnabled(on) {

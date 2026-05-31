@@ -1,33 +1,45 @@
 import { createGrid } from "/games/engine3d/grid.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+
+/**
+ * Unit 9 — Coordinate Quest.
+ * Standards: 6.NS.C.6 (rational numbers / ordered pairs on the coordinate
+ * plane, all four quadrants), 6.NS.C.8 (reflections + distance on the plane),
+ * 6.G.A.3 (distance between points sharing a row/column).
+ *
+ * Theme: a glowing star-map observatory. Students pilot a holographic beacon
+ * across the coordinate plane to plot ordered pairs, mirror points across an
+ * axis, and step out distances.
+ */
 
 const COLORS = {
-  cursor: 0x1fa6a2,
-  target: 0xf2c15b,
-  plotted: 0x4f8fd0,
-  reflection: 0x8b6fc4,
-  distance: 0xe09b4a,
-  ghostOk: 0x1fa6a2,
-  ghostBad: 0xb64e2f,
+  beacon: 0x35e0d6, // hero cursor (cyan)
+  target: 0xffd166, // goal ring (amber)
+  plotted: 0x5aa9ff, // confirmed point (blue)
+  reflection: 0xb98bff, // reflection image (violet)
+  distance: 0xff9f5a, // distance endpoint (orange)
+  axis: 0xdce8ff,
+  card: "rgba(10,20,40,0.92)",
 };
 
-// Level config. The grid is GRID x GRID cells; coordinates are centered so the
-// origin (0,0) sits at the middle vertex. Coordinate value c maps to vertex
-// index c + HALF.
+// Each level lists 6–8 rounds. Level 1 = one quadrant + scaffolds; Level 2 =
+// four quadrants with reflections and distances (multi-step enrichment).
 function makeLevel(level) {
   if (level === 1) {
     return {
-      grid: 10, // coords 0..10 on each axis after centering => we restrict to Q1
+      grid: 10, // coords 0..5 used (Quadrant I only after centering)
       minCoord: 0,
       maxCoord: 5,
       hints: true,
-      showLabels: true,
       tasks: [
         { kind: "plot", x: 3, y: 2 },
         { kind: "plot", x: 0, y: 4 }, // on the y-axis
         { kind: "plot", x: 5, y: 0 }, // on the x-axis
         { kind: "identify", x: 2, y: 5 },
         { kind: "plot", x: 4, y: 3 },
+        { kind: "identify", x: 1, y: 1 },
+        { kind: "plot", x: 2, y: 4 },
       ],
     };
   }
@@ -36,14 +48,15 @@ function makeLevel(level) {
     minCoord: -6,
     maxCoord: 6,
     hints: false,
-    showLabels: false,
     tasks: [
       { kind: "plot", x: -4, y: 3 },
       { kind: "plot", x: -3, y: -5 },
-      { kind: "reflect", x: 4, y: 2, axis: "x" }, // reflect across x-axis -> (4,-2)
-      { kind: "reflect", x: -2, y: 5, axis: "y" }, // reflect across y-axis -> (2,5)
-      { kind: "distance", a: { x: -5, y: 3 }, b: { x: 4, y: 3 } }, // same row, |4-(-5)|=9
-      { kind: "distance", a: { x: -2, y: -4 }, b: { x: -2, y: 5 } }, // same col, |5-(-4)|=9
+      { kind: "plot", x: 5, y: -2 },
+      { kind: "reflect", x: 4, y: 2, axis: "x" }, // -> (4,-2)
+      { kind: "reflect", x: -2, y: 5, axis: "y" }, // -> (2,5)
+      { kind: "distance", a: { x: -5, y: 3 }, b: { x: 4, y: 3 } }, // |4-(-5)|=9
+      { kind: "distance", a: { x: -2, y: -4 }, b: { x: -2, y: 5 } }, // |5-(-4)|=9
+      { kind: "distance", a: { x: 1, y: -3 }, b: { x: 6, y: -3 } }, // |6-1|=5
     ],
   };
 }
@@ -80,16 +93,16 @@ export default {
       emoji: "🧭",
     },
     {
-      term: "x-axis",
-      definition:
-        "The line that goes left and right. Numbers right of center are positive.",
-      emoji: "↔️",
-    },
-    {
       term: "Reflection",
       definition:
-        "A mirror flip of a point over an axis. Flipping over the x-axis changes the sign of y.",
+        "A mirror flip of a point over an axis. Flipping over the x-axis keeps x and changes the sign of y.",
       emoji: "🪞",
+    },
+    {
+      term: "Distance",
+      definition:
+        "How far apart two points are. On the same row or column, subtract and take the absolute value.",
+      emoji: "📏",
     },
   ],
 
@@ -97,6 +110,7 @@ export default {
     const {
       scene,
       camera,
+      renderer, // destructured per engine contract (used by feel.syncCamera path)
       input,
       hud,
       feel,
@@ -105,7 +119,9 @@ export default {
       THREE,
       level,
       onScore,
+      onFrame,
     } = ctx;
+    void renderer;
 
     const cfg = makeLevel(level);
     const N = cfg.grid;
@@ -130,24 +146,53 @@ export default {
     const timers = [];
     const labels = [];
     const persistentMarkers = [];
+    const unbinders = [];
     const later = (fn, ms) => {
       const id = setTimeout(fn, ms);
       timers.push(id);
       return id;
     };
 
-    // ---- Axis emphasis (darker lines along x=0 and y=0) ----
-    const axisMat = new THREE.LineBasicMaterial({ color: 0xdce8ff });
+    // ---- Stage: a rounded shadow-catching platform under the plane ----
+    const stageGeo = new RoundedBoxGeometry(N + 2.4, 0.6, N + 2.4, 4, 0.35);
+    const stageMat = new THREE.MeshStandardMaterial({
+      color: 0x0c1b30,
+      roughness: 0.85,
+      metalness: 0.15,
+    });
+    const stage = new THREE.Mesh(stageGeo, stageMat);
+    stage.position.y = -0.35;
+    stage.receiveShadow = true;
+    scene.add(stage);
+    disposables.push(stageGeo, stageMat);
+
+    // ---- Axis emphasis (bright lines along x=0 and y=0) ----
+    const axisMat = new THREE.LineBasicMaterial({ color: COLORS.axis });
     disposables.push(axisMat);
     function addAxisLine(from, to) {
       const g = new THREE.BufferGeometry().setFromPoints([from, to]);
       const line = new THREE.Line(g, axisMat);
-      line.position.y = 0.02;
+      line.position.y = 0.03;
       grid.group.add(line);
       disposables.push(g);
     }
     addAxisLine(coordToWorld(cfg.minCoord, 0), coordToWorld(cfg.maxCoord, 0));
     addAxisLine(coordToWorld(0, cfg.minCoord), coordToWorld(0, cfg.maxCoord));
+
+    // ---- Origin marker (small glowing rounded cube) ----
+    const originGeo = new RoundedBoxGeometry(0.3, 0.3, 0.3, 3, 0.08);
+    const originMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      emissive: 0x88aaff,
+      emissiveIntensity: 0.6,
+      roughness: 0.4,
+    });
+    const originCube = new THREE.Mesh(originGeo, originMat);
+    const wOrigin = coordToWorld(0, 0);
+    originCube.position.set(wOrigin.x, 0.18, wOrigin.z);
+    originCube.castShadow = true;
+    scene.add(originCube);
+    disposables.push(originGeo, originMat);
 
     // ---- Axis tick labels ----
     function addTickLabels() {
@@ -177,34 +222,49 @@ export default {
     }
     addTickLabels();
 
-    // ---- Cursor (sits on a vertex / lattice point) ----
-    const cursor = { x: 0, y: 0 };
-    const cursorMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.22, 16, 12),
-      new THREE.MeshStandardMaterial({
-        color: COLORS.cursor,
-        emissive: COLORS.cursor,
-        emissiveIntensity: 0.4,
-      }),
-    );
-    disposables.push(cursorMesh.geometry, cursorMesh.material);
-    scene.add(cursorMesh);
+    // ---- Floating 3D problem card (always shows the math question) ----
+    const card = makeLabel("", {
+      scale: 0.92,
+      fontSize: 56,
+      color: "#ffffff",
+      background: COLORS.card,
+    });
+    card.position.set(0, N * 0.62, -N * 0.5);
+    scene.add(card);
+    labels.push(card);
+    function setCard(text) {
+      updateLabel(card, text);
+    }
 
-    // ---- Target marker (a ring on the goal vertex) ----
-    const targetRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.34, 0.07, 10, 24),
-      new THREE.MeshStandardMaterial({
-        color: COLORS.target,
-        emissive: COLORS.target,
-        emissiveIntensity: 0.5,
-      }),
-    );
+    // ---- Beacon: hero cursor on a lattice point ----
+    const beaconGeo = new RoundedBoxGeometry(0.42, 0.42, 0.42, 4, 0.12);
+    const beaconMat = new THREE.MeshStandardMaterial({
+      color: COLORS.beacon,
+      emissive: COLORS.beacon,
+      emissiveIntensity: 0.65,
+      roughness: 0.3,
+      metalness: 0.25,
+    });
+    const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+    beacon.castShadow = true;
+    disposables.push(beaconGeo, beaconMat);
+    scene.add(beacon);
+
+    // ---- Target ring (goal vertex) ----
+    const ringGeo = new THREE.TorusGeometry(0.36, 0.07, 12, 28);
+    const ringMat = new THREE.MeshStandardMaterial({
+      color: COLORS.target,
+      emissive: COLORS.target,
+      emissiveIntensity: 0.7,
+      roughness: 0.35,
+    });
+    const targetRing = new THREE.Mesh(ringGeo, ringMat);
     targetRing.rotation.x = -Math.PI / 2;
     targetRing.visible = false;
-    disposables.push(targetRing.geometry, targetRing.material);
+    disposables.push(ringGeo, ringMat);
     scene.add(targetRing);
 
-    const markerGeo = new THREE.SphereGeometry(0.2, 16, 12);
+    const markerGeo = new THREE.SphereGeometry(0.2, 18, 14);
     disposables.push(markerGeo);
 
     function placeMarker(x, y, color) {
@@ -213,11 +273,20 @@ export default {
         new THREE.MeshStandardMaterial({
           color,
           emissive: color,
-          emissiveIntensity: 0.35,
+          emissiveIntensity: 0.45,
+          roughness: 0.35,
         }),
       );
       const w = coordToWorld(x, y);
-      m.position.set(w.x, 0.2, w.z);
+      m.position.set(w.x, 0.22, w.z);
+      m.castShadow = true;
+      m.scale.set(0.01, 0.01, 0.01);
+      feel.tween({
+        from: 0.01,
+        to: 1,
+        duration: 0.35,
+        onUpdate: (v) => m.scale.set(v, v, v),
+      });
       scene.add(m);
       persistentMarkers.push(m);
       return m;
@@ -226,7 +295,7 @@ export default {
     function addPointLabel(x, y, color) {
       const lbl = makeLabel(`(${x}, ${y})`, { scale: 0.55, color });
       const w = coordToWorld(x, y);
-      lbl.position.set(w.x, 0.9, w.z);
+      lbl.position.set(w.x, 0.92, w.z);
       scene.add(lbl);
       persistentMarkers.push(lbl);
       return lbl;
@@ -236,12 +305,10 @@ export default {
     let taskIndex = 0;
     let task = null;
     let solved = false;
-    let streak = 0; // consecutive correct
+    let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
-    let unbindFrame = null;
-    let unbindPress = null;
-    let unbindTap = null;
+    const cursor = { x: 0, y: 0 };
 
     function clearMarkers() {
       while (persistentMarkers.length) {
@@ -255,20 +322,33 @@ export default {
       }
     }
 
-    function setCursor(x, y) {
+    function beaconWorldY() {
+      return 0.45;
+    }
+
+    function setCursor(x, y, animate) {
       cursor.x = Math.max(cfg.minCoord, Math.min(cfg.maxCoord, x));
       cursor.y = Math.max(cfg.minCoord, Math.min(cfg.maxCoord, y));
       const w = coordToWorld(cursor.x, cursor.y);
-      cursorMesh.position.set(w.x, 0.25, w.z);
+      if (animate && !feel.reducedMotion) {
+        const sx = beacon.position.x;
+        const sz = beacon.position.z;
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.16,
+          onUpdate: (t) => {
+            beacon.position.set(
+              sx + (w.x - sx) * t,
+              beaconWorldY(),
+              sz + (w.z - sz) * t,
+            );
+          },
+        });
+      } else {
+        beacon.position.set(w.x, beaconWorldY(), w.z);
+      }
       updateHud();
-    }
-
-    // Objective line carries the live cursor coordinates so students always see
-    // where (x, y) they are as they navigate.
-    function updateHud() {
-      hud.setObjective(
-        `${objectiveText()}  •  Cursor: (${cursor.x}, ${cursor.y})`,
-      );
     }
 
     function objectiveText() {
@@ -276,12 +356,19 @@ export default {
       if (task.kind === "plot")
         return `Plot the ordered pair (${task.x}, ${task.y}).`;
       if (task.kind === "identify")
-        return `Move to the ringed point and name its coordinates.`;
+        return "Move to the ringed point and name its coordinates.";
       if (task.kind === "reflect")
         return `Reflect (${task.x}, ${task.y}) across the ${task.axis}-axis. Plot the image.`;
       if (task.kind === "distance")
         return `Find the distance from (${task.a.x}, ${task.a.y}) to (${task.b.x}, ${task.b.y}). Step onto the second point.`;
       return "";
+    }
+
+    function updateHud() {
+      hud.setObjective(
+        `${objectiveText()}  •  Beacon: (${cursor.x}, ${cursor.y})`,
+      );
+      setCard(`${objectiveText()}\n  →  at (${cursor.x}, ${cursor.y})`);
     }
 
     function reflectTarget(t) {
@@ -293,9 +380,7 @@ export default {
       solved = false;
       task = cfg.tasks[taskIndex];
       targetRing.visible = false;
-      // Persistent "Step X of Y" for the whole task.
-      if (typeof hud.setProgress === "function")
-        hud.setProgress(taskIndex, cfg.tasks.length);
+      hud.setProgress(taskIndex, cfg.tasks.length);
       setCursor(0, 0);
 
       if (task.kind === "plot") {
@@ -312,14 +397,13 @@ export default {
         const w = coordToWorld(task.x, task.y);
         targetRing.position.set(w.x, 0.1, w.z);
         announce(
-          `Task ${taskIndex + 1}. Move the cursor onto the ringed point, then place to name its coordinates.`,
+          `Task ${taskIndex + 1}. Move the beacon onto the ringed point, then place to name its coordinates.`,
         );
       } else if (task.kind === "reflect") {
-        // Show the original point as a fixed marker.
         placeMarker(task.x, task.y, COLORS.plotted);
         addPointLabel(task.x, task.y, "#9fc4f0");
         announce(
-          `Task ${taskIndex + 1}. The point ${task.x}, ${task.y} is shown. Reflect it across the ${task.axis}-axis and plot the new point.`,
+          `Task ${taskIndex + 1}. The point ${task.x}, ${task.y} is shown. Reflect it across the ${task.axis}-axis and plot the image.`,
         );
       } else if (task.kind === "distance") {
         placeMarker(task.a.x, task.a.y, COLORS.plotted);
@@ -330,9 +414,11 @@ export default {
         const along =
           task.a.y === task.b.y ? "row (same y)" : "column (same x)";
         announce(
-          `Task ${taskIndex + 1}. These two points share a ${along}. Step the cursor from the first point to the second to measure the distance.`,
+          `Task ${taskIndex + 1}. These two points share a ${along}. Step the beacon from the first point to the second to measure the distance.`,
         );
       }
+      feel.sfx("select", `Task ${taskIndex + 1} of ${cfg.tasks.length}.`);
+      caption(objectiveText());
       updateHud();
       if (cfg.hints && task.kind === "plot") {
         later(
@@ -354,42 +440,75 @@ export default {
       solvedCount += 1;
       streak += 1;
       if (streak > bestStreak) bestStreak = streak;
-      if (typeof hud.setStreak === "function") hud.setStreak(streak);
+      hud.setStreak(streak);
       onScore(points, { task: taskIndex + 1, kind: task.kind });
-      feel.shake(0.28);
-      feel.burst(
-        { x: cursorMesh.position.x, y: 0.8, z: cursorMesh.position.z },
-        { color: COLORS.target, count: 28, spread: 3 },
-      );
+      const burstPos = { x: beacon.position.x, y: 0.8, z: beacon.position.z };
+      feel.burst(burstPos, { color: COLORS.target, count: 30, spread: 3 });
+      feel.shake(0.26, 0.3);
+      feel.sfx("correct", sayit);
       const okMsg = `${msg} +${points}`;
-      if (typeof hud.feedback === "function")
-        hud.feedback(true, okMsg, { duration: 2400 });
-      else hud.message(okMsg, { tone: "ok", duration: 2400 });
-      announce(sayit);
+      hud.feedback(true, okMsg, { duration: 2400 });
+      // celebratory pop on the beacon
+      feel.tween({
+        from: 1,
+        to: 1.5,
+        duration: 0.18,
+        onUpdate: (v) => beacon.scale.set(v, v, v),
+        onComplete: () => beacon.scale.set(1, 1, 1),
+      });
+
       later(() => {
         clearMarkers();
         if (taskIndex < cfg.tasks.length - 1) {
           taskIndex += 1;
           startTask();
         } else {
-          hud.setObjective(
-            `Quest complete — ${solvedCount} of ${cfg.tasks.length} points mapped, best streak ${bestStreak}. You mapped the whole plane!`,
-          );
-          hud.message("All tasks complete!", { tone: "ok", duration: 0 });
-          announce(
-            `All tasks complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great work, coordinate explorer.`,
-          );
+          finish();
         }
       }, 2600);
     }
 
+    function finish() {
+      hud.setProgress(cfg.tasks.length, cfg.tasks.length);
+      hud.setObjective(
+        `Quest complete — ${solvedCount} of ${cfg.tasks.length} points mapped, best streak ${bestStreak}. You charted the whole plane!`,
+      );
+      setCard(
+        `Quest complete!\n${solvedCount}/${cfg.tasks.length} points • streak ${bestStreak}`,
+      );
+      hud.message("All tasks complete!", { tone: "ok", duration: 0 });
+      feel.sfx(
+        "fanfare",
+        `All tasks complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great work, star pilot.`,
+      );
+      // confetti from above the origin
+      const wo = coordToWorld(0, 0);
+      feel.burst(
+        { x: wo.x, y: 3, z: wo.z },
+        { color: COLORS.beacon, count: 60, spread: 6, life: 1.4 },
+      );
+      feel.shake(0.32, 0.5);
+    }
+
     function reject(msg) {
       streak = 0;
-      if (typeof hud.setStreak === "function") hud.setStreak(0);
-      if (typeof hud.feedback === "function") hud.feedback(false, msg);
-      else hud.message(msg, { tone: "warn", duration: 2000 });
-      feel.shake(0.14);
-      announce(msg);
+      hud.setStreak(0);
+      hud.feedback(false, msg);
+      feel.shake(0.14, 0.25);
+      feel.sfx("wrong", msg);
+    }
+
+    function drawDistanceBar(a, b) {
+      const wa = coordToWorld(a.x, a.y);
+      const wb = coordToWorld(b.x, b.y);
+      const g = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(wa.x, 0.16, wa.z),
+        new THREE.Vector3(wb.x, 0.16, wb.z),
+      ]);
+      const m = new THREE.LineBasicMaterial({ color: COLORS.distance });
+      const line = new THREE.Line(g, m);
+      scene.add(line);
+      persistentMarkers.push(line);
     }
 
     function attempt() {
@@ -402,7 +521,7 @@ export default {
           win(
             20,
             `Plotted (${task.x}, ${task.y}) in ${quadrantName(task.x, task.y)}.`,
-            `Correct. You plotted the ordered pair ${task.x}, ${task.y}, which is on ${quadrantName(task.x, task.y)}.`,
+            `Correct. You plotted the ordered pair ${task.x}, ${task.y}, on ${quadrantName(task.x, task.y)}.`,
           );
         } else {
           reject(
@@ -486,24 +605,13 @@ export default {
       }
     }
 
-    function drawDistanceBar(a, b) {
-      const wa = coordToWorld(a.x, a.y);
-      const wb = coordToWorld(b.x, b.y);
-      const g = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(wa.x, 0.15, wa.z),
-        new THREE.Vector3(wb.x, 0.15, wb.z),
-      ]);
-      const m = new THREE.LineBasicMaterial({ color: COLORS.distance });
-      const line = new THREE.Line(g, m);
-      scene.add(line);
-      persistentMarkers.push(line);
-    }
-
     // ---- Movement ----
     function move(dx, dy) {
-      setCursor(cursor.x + dx, cursor.y + dy);
+      const before = `${cursor.x},${cursor.y}`;
+      setCursor(cursor.x + dx, cursor.y + dy, true);
+      if (`${cursor.x},${cursor.y}` !== before) feel.sfx("pop");
       announce(
-        `Cursor at ${cursor.x}, ${cursor.y}. ${quadrantName(cursor.x, cursor.y)}.`,
+        `Beacon at ${cursor.x}, ${cursor.y}. ${quadrantName(cursor.x, cursor.y)}.`,
       );
     }
 
@@ -518,42 +626,71 @@ export default {
 
     return {
       start() {
-        camera.position.set(0, N * 1.25, N * 1.15);
+        // Animated camera intro: sweep from a high wide angle into framing.
+        const target = new THREE.Vector3(0, N * 1.25, N * 1.15);
+        if (feel.reducedMotion) {
+          camera.position.copy(target);
+        } else {
+          const startPos = new THREE.Vector3(N * 1.6, N * 2.0, N * 1.9);
+          camera.position.copy(startPos);
+          feel.tween({
+            from: 0,
+            to: 1,
+            duration: 1.1,
+            onUpdate: (t) => {
+              camera.position.lerpVectors(startPos, target, t);
+              camera.lookAt(0, 0, 0);
+            },
+            onComplete: () => feel.syncCamera(),
+          });
+        }
         camera.lookAt(0, 0, 0);
         feel.syncCamera();
 
         startTask();
 
-        unbindPress = input.onPress((name) => {
-          if (name === "up") move(0, 1);
-          else if (name === "down") move(0, -1);
-          else if (name === "left") move(-1, 0);
-          else if (name === "right") move(1, 0);
-          else if (name === "action" || name === "confirm") attempt();
-        });
+        unbinders.push(
+          input.onPress((name) => {
+            if (name === "up") move(0, 1);
+            else if (name === "down") move(0, -1);
+            else if (name === "left") move(-1, 0);
+            else if (name === "right") move(1, 0);
+            else if (name === "action" || name === "confirm") attempt();
+          }),
+        );
 
-        unbindTap = input.onTap(() => {
-          if (solved) return;
-          const c = pointerToCoord();
-          if (!c) return;
-          setCursor(c.x, c.y);
-          announce(`Cursor at ${c.x}, ${c.y}.`);
-          attempt();
-        });
+        unbinders.push(
+          input.onTap(() => {
+            if (solved) return;
+            const c = pointerToCoord();
+            if (!c) return;
+            setCursor(c.x, c.y, true);
+            feel.sfx("pop");
+            announce(`Beacon at ${c.x}, ${c.y}.`);
+            attempt();
+          }),
+        );
 
         if (!feel.reducedMotion) {
-          unbindFrame = ctx.onFrame((dt, t) => {
-            const s = 1 + Math.sin(t * 4) * 0.12;
-            cursorMesh.scale.set(s, s, s);
-            if (targetRing.visible) targetRing.rotation.z = t * 1.5;
-          });
+          unbinders.push(
+            onFrame((dt, t) => {
+              const s = 1 + Math.sin(t * 4) * 0.07;
+              if (Math.abs(beacon.scale.x - 1) < 0.5) beacon.scale.set(s, s, s);
+              beacon.rotation.y = t * 0.8;
+              originCube.rotation.y = t * 0.5;
+              if (targetRing.visible) {
+                targetRing.rotation.z = t * 1.5;
+                const r = 1 + Math.sin(t * 5) * 0.06;
+                targetRing.scale.set(r, r, 1);
+              }
+            }),
+          );
         }
       },
 
       dispose() {
-        if (unbindPress) unbindPress();
-        if (unbindTap) unbindTap();
-        if (unbindFrame) unbindFrame();
+        unbinders.forEach((u) => u && u());
+        unbinders.length = 0;
         timers.forEach(clearTimeout);
         timers.length = 0;
         clearMarkers();
@@ -564,6 +701,11 @@ export default {
           }
         });
         disposables.forEach((d) => d.dispose && d.dispose());
+        scene.remove(stage);
+        scene.remove(originCube);
+        scene.remove(beacon);
+        scene.remove(targetRing);
+        scene.remove(card);
         grid.dispose();
       },
     };

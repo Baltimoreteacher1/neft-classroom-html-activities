@@ -62,7 +62,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -72,14 +73,15 @@
       id="game"
       role="application"
       tabindex="0"
-      aria-label="Architect — Build to the Target Area. Interactive 3D math game."
+      aria-label="Area Architect — build structures to the target area. Interactive 3D math game for area of rectangles, composite figures, and right triangles."
       aria-describedby="e3d-intro"
     ></div>
-    <div class="e3d-boot-title">Architect — Build to the Target Area</div>
+    <div class="e3d-boot-title">Area Architect — Build to the Target Area</div>
     <p class="e3d-intro" id="e3d-intro">
-      Move the cursor (arrow keys / WASD or tap), place a corner (Space / tap),
-      then stretch a rectangle to hit the target area. Decompose composite
-      shapes into pieces. The running area updates live.
+      Move the cursor (arrow keys / WASD or tap), set a corner (Space / tap),
+      then stretch a rectangle — or right triangle — to match the target area.
+      Decompose composite figures into pieces. Press Enter to clear a corner or
+      hear the triangle rule. Covered area updates live.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -97,7 +99,9 @@
 
       try {
         // Omit `level` to show the Level 1 / Level 2 selector first.
-        mountGame(document.getElementById("game"), unit5Architect, {});
+        mountGame(document.getElementById("game"), unit5Architect, {
+          sceneOpts: { background: 0x0e2542, cameraPos: [0, 9, 11] },
+        });
       } catch (err) {
         console.error("Failed to mount Unit 5 game:", err);
         document.getElementById("fallback").style.display = "flex";

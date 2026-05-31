@@ -64,7 +64,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -74,15 +75,16 @@
       id="game"
       role="application"
       tabindex="0"
-      aria-label="Coordinate Quest — Map the Plane. Interactive 3D math game."
+      aria-label="Coordinate Quest — Chart the Star Map. Interactive 3D math game about the coordinate plane."
       aria-describedby="e3d-intro"
     ></div>
-    <div class="e3d-boot-title">Coordinate Quest — Map the Plane</div>
+    <div class="e3d-boot-title">Coordinate Quest — Chart the Star Map</div>
     <p class="e3d-intro" id="e3d-intro">
-      Move the point (arrow keys / WASD or tap): right/left changes x, up/down
-      changes y. Place it (Space / tap) to plot an ordered pair, reflect across
-      an axis, or step out the distance between points. Live coordinates show in
-      the HUD.
+      Pilot the glowing beacon (arrow keys / WASD or the on-screen D-pad / tap):
+      right/left changes x, up/down changes y. Place it (Space / Enter / the ●
+      button / tap) to plot an ordered pair, reflect a point across an axis, or
+      step out the distance between two points. Live coordinates show on the
+      problem card and HUD.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -100,7 +102,9 @@
 
       try {
         // Omit `level` to show the Level 1 / Level 2 selector first.
-        mountGame(document.getElementById("game"), unit9CoordinateQuest, {});
+        mountGame(document.getElementById("game"), unit9CoordinateQuest, {
+          sceneOpts: { background: 0x0a1326, cameraPos: [0, 13, 14] },
+        });
       } catch (err) {
         console.error("Failed to mount Unit 9 game:", err);
         document.getElementById("fallback").style.display = "flex";

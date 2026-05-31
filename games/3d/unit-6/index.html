@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>Unit 6 — Expression Machine | Expressions (6.EE.A.1–4)</title>
+    <title>Unit 6 — Expression Engine | Expressions (6.EE.A.1–4)</title>
     <link rel="stylesheet" href="/assets/design-tokens.css" />
     <style>
       html,
@@ -62,7 +62,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -72,15 +73,16 @@
       id="game"
       role="application"
       tabindex="0"
-      aria-label="Expression Machine — Build to the Target. Interactive 3D math game."
+      aria-label="Expression Engine — feed blocks into the machine to build math expressions. Interactive 3D math game."
       aria-describedby="e3d-intro"
     ></div>
-    <div class="e3d-boot-title">Expression Machine — Build to the Target</div>
+    <div class="e3d-boot-title">Expression Engine — Build the Expression</div>
     <p class="e3d-intro" id="e3d-intro">
-      Pick a number, variable (x), or operation block (arrow keys / tap), drop
-      it on the belt (Space / tap), and assemble an expression that hits the
-      target value. Submit with Enter (or the action button). The machine
-      evaluates live using order of operations.
+      Select a number, variable (x), or operation block (← / → or tap), drop it
+      into the engine (Space or tap), and assemble an expression that hits the
+      target value — or is equivalent for every x. Submit with Enter or ↑.
+      Remove the last block with ↓. The engine evaluates live using order of
+      operations.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -94,11 +96,13 @@
 
     <script type="module">
       import { mountGame } from "/games/engine3d/index.js";
-      import unit6ExpressionMachine from "/games/3d/unit-6/game.js";
+      import unit6ExpressionEngine from "/games/3d/unit-6/game.js";
 
       try {
         // Omit `level` to show the Level 1 / Level 2 selector first.
-        mountGame(document.getElementById("game"), unit6ExpressionMachine, {});
+        mountGame(document.getElementById("game"), unit6ExpressionEngine, {
+          sceneOpts: { background: 0x12203a, cameraPos: [0, 6, 7.8] },
+        });
       } catch (err) {
         console.error("Failed to mount Unit 6 game:", err);
         document.getElementById("fallback").style.display = "flex";

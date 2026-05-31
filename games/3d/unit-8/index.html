@@ -62,7 +62,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -72,7 +73,7 @@
       id="game"
       role="application"
       tabindex="0"
-      aria-label="Data Lab — Build the Plot, Read the Measures. Interactive 3D math game."
+      aria-label="Data Lab — Build the Plot, Read the Measures. Interactive 3D statistics game. Use arrow keys or A and D to move, Space or Enter to drop a block and to answer."
       aria-describedby="e3d-intro"
     ></div>
     <div class="e3d-boot-title">
@@ -80,8 +81,9 @@
     </div>
     <p class="e3d-intro" id="e3d-intro">
       Move left/right (arrows / A·D or tap a column), drop a data block (Space /
-      action button) to build the dot plot. Watch Mean, Median, Mode, and Range
-      update live, then choose the right answer to win the round.
+      action button), or ▼ to remove one. Build each dot plot, watch Mean,
+      Median, Mode, Range (and MAD in Level 2) update live, then pick the right
+      glowing pad to win the round.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -99,7 +101,9 @@
 
       try {
         // Omit `level` to show the Level 1 / Level 2 selector first.
-        mountGame(document.getElementById("game"), unit8DataLab, {});
+        mountGame(document.getElementById("game"), unit8DataLab, {
+          sceneOpts: { background: 0x12203a, cameraPos: [0, 6.4, 9.6] },
+        });
       } catch (err) {
         console.error("Failed to mount Unit 8 game:", err);
         document.getElementById("fallback").style.display = "flex";

@@ -62,7 +62,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -72,15 +73,16 @@
       id="game"
       role="application"
       tabindex="0"
-      aria-label="Factory Line — Package the Order. Interactive 3D math game."
+      aria-label="Factory Line — Package the Order. Interactive 3D packing-plant math game for greatest common factor, least common multiple, the distributive property, and decimal operations."
       aria-describedby="e3d-intro"
     ></div>
     <div class="e3d-boot-title">Factory Line — Package the Order</div>
     <p class="e3d-intro" id="e3d-intro">
-      Set the answer with the arrow keys / WASD (up &amp; down) or tap the top
-      vs. bottom of the screen, then confirm with Space (or tap the answer). Use
-      GCF and LCM to pack equal groups, decimal math to hit target weights, and
-      the distributive property to factor each order.
+      Spin up the dial with the Up/Down arrows or WASD (or tap the top vs.
+      bottom of the screen), then ship the order with Space / Enter — or tap the
+      glowing answer card. Set the dial to the GCF or LCM to pack equal groups,
+      hit target weights with decimal math, and use the distributive property to
+      factor each order down the line.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -98,7 +100,9 @@
 
       try {
         // Omit `level` to show the Level 1 / Level 2 selector first.
-        mountGame(document.getElementById("game"), unit4FactoryLine, {});
+        mountGame(document.getElementById("game"), unit4FactoryLine, {
+          sceneOpts: { background: 0x12203a, cameraPos: [0, 6, 11] },
+        });
       } catch (err) {
         console.error("Failed to mount Unit 4 game:", err);
         document.getElementById("fallback").style.display = "flex";

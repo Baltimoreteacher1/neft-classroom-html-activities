@@ -1,13 +1,20 @@
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+
+// ============================================================================
+// Unit 1 — Smoothie Stand  ·  Ratios & Unit Rates (6.RP.A.1–3)
+// Premium rebuild against engine3d/. Theme + math preserved from the original.
+// ============================================================================
+
 const COLORS = {
-  base: 0x12355b,
+  base: 0x123a6b, // counter / scene navy
   blender: 0x2f6aa0,
-  blenderGlass: 0x9ec9ec,
+  blenderGlass: 0xbfe2ff,
   strawberry: 0xe0556b,
   banana: 0xf2c15b,
-  cursor: 0x1fa6a2,
+  teal: 0x1fa6a2,
   ok: 0x4aa978,
   bad: 0xb64e2f,
-  counter: 0x4f8fd0,
+  wood: 0x6b4a2f,
 };
 
 const FRUIT = {
@@ -18,37 +25,39 @@ const FRUIT = {
 function gcd(a, b) {
   a = Math.abs(a);
   b = Math.abs(b);
-  while (b) {
-    [a, b] = [b, a % b];
-  }
+  while (b) [a, b] = [b, a % b];
   return a || 1;
 }
-
 function simplify(a, b) {
   const g = gcd(a, b);
   return [a / g, b / g];
 }
 
-// Build the list of rounds for a level.
+// ---------------------------------------------------------------------------
+// Round sets per level. 6–8 rounds each.
+//   Level 1 (support): hints on, smaller numbers, simple part-to-part ratios.
+//   Level 2 (enrichment): larger / multi-step, scaled recipes + unit-rate work.
+// ---------------------------------------------------------------------------
 function makeLevel(level) {
   if (level === 1) {
     return {
       hints: true,
       rounds: [
-        { kind: "ratio", a: 2, b: 3 },
+        { kind: "ratio", a: 1, b: 1 },
+        { kind: "ratio", a: 2, b: 1 },
         { kind: "ratio", a: 1, b: 2 },
+        { kind: "ratio", a: 2, b: 3 },
         { kind: "ratio", a: 3, b: 2 },
-        { kind: "ratio", a: 2, b: 4 }, // simplifies to 1:2 — exact counts accepted too
+        { kind: "ratio", a: 2, b: 4 }, // equivalent to 1:2
       ],
     };
   }
   return {
     hints: false,
     rounds: [
-      // Scale the recipe up: target shown small, must serve the doubled batch.
       { kind: "ratio", a: 4, b: 6, baseLabel: "2 : 3, doubled" },
       { kind: "ratio", a: 6, b: 4, baseLabel: "3 : 2, doubled" },
-      // Unit-rate rounds: pick the correct number.
+      { kind: "ratio", a: 6, b: 9, baseLabel: "2 : 3, tripled" },
       {
         kind: "rate",
         prompt: "$6 for 3 smoothies. Price per smoothie?",
@@ -59,7 +68,7 @@ function makeLevel(level) {
       },
       {
         kind: "rate",
-        prompt: "12 scoops of fruit make 4 servings. Scoops per serving?",
+        prompt: "12 scoops make 4 servings. Scoops per serving?",
         total: 12,
         count: 4,
         unit: "",
@@ -72,6 +81,14 @@ function makeLevel(level) {
         count: 5,
         unit: "$",
         answer: 2,
+      },
+      {
+        kind: "rate",
+        prompt: "$15 for 5 smoothies. Price per smoothie?",
+        total: 15,
+        count: 5,
+        unit: "$",
+        answer: 3,
       },
     ],
   };
@@ -116,106 +133,150 @@ export default {
     const {
       scene,
       camera,
+      renderer, // FIX: previously used without destructuring → ReferenceError.
       input,
       hud,
       feel,
       announce,
-      caption,
       THREE,
       level,
       onScore,
+      onFrame,
     } = ctx;
 
     const cfg = makeLevel(level);
+    const reduced = feel.reducedMotion;
 
-    // ---- Static scene ----
+    // ---- Disposable registry (geometries/materials/textures) ----
+    const disposables = [];
+    const track = (obj) => {
+      disposables.push(obj);
+      return obj;
+    };
+
+    // ---- Materials ----------------------------------------------------------
+    const std = (color, o = {}) =>
+      track(
+        new THREE.MeshStandardMaterial({
+          color,
+          roughness: o.roughness ?? 0.55,
+          metalness: o.metalness ?? 0.05,
+          emissive: o.emissive ?? 0x000000,
+          emissiveIntensity: o.emissiveIntensity ?? 0,
+        }),
+      );
+
+    // ---- Root group ---------------------------------------------------------
     const group = new THREE.Group();
     scene.add(group);
 
-    const counter = new THREE.Mesh(
-      new THREE.BoxGeometry(14, 0.8, 8),
-      new THREE.MeshStandardMaterial({ color: COLORS.base, roughness: 0.95 }),
+    // Ground / stage — receives shadows.
+    const groundGeo = track(new THREE.CircleGeometry(20, 48));
+    const ground = new THREE.Mesh(
+      groundGeo,
+      std(0x0e2b4f, { roughness: 0.95 }),
     );
-    counter.position.y = -0.4;
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.41;
+    ground.receiveShadow = true;
+    group.add(ground);
+
+    // Counter — rounded hero block, casts + receives shadow.
+    const counterGeo = track(new RoundedBoxGeometry(14, 0.9, 8, 4, 0.25));
+    const counter = new THREE.Mesh(
+      counterGeo,
+      std(COLORS.wood, { roughness: 0.7 }),
+    );
+    counter.position.y = -0.45;
+    counter.castShadow = true;
+    counter.receiveShadow = true;
     group.add(counter);
 
-    // Blender: glassy cylinder where scoops stack.
+    // Back board / sign accent (emissive → blooms).
+    const boardGeo = track(new RoundedBoxGeometry(8, 2.2, 0.4, 4, 0.2));
+    const board = new THREE.Mesh(
+      boardGeo,
+      std(COLORS.teal, {
+        emissive: COLORS.teal,
+        emissiveIntensity: 0.5,
+        roughness: 0.4,
+      }),
+    );
+    board.position.set(0, 4.6, -3.2);
+    board.castShadow = true;
+    group.add(board);
+
+    // ---- Blender (glass jar + base) -----------------------------------------
     const blenderGroup = new THREE.Group();
     group.add(blenderGroup);
     const jarRadius = 1.5;
-    const jar = new THREE.Mesh(
-      new THREE.CylinderGeometry(jarRadius, jarRadius * 0.82, 4, 24, 1, true),
-      new THREE.MeshStandardMaterial({
+    const jarGeo = track(
+      new THREE.CylinderGeometry(jarRadius, jarRadius * 0.82, 4, 32, 1, true),
+    );
+    const jarMat = track(
+      new THREE.MeshPhysicalMaterial({
         color: COLORS.blenderGlass,
         transparent: true,
-        opacity: 0.22,
-        roughness: 0.1,
-        metalness: 0.1,
+        opacity: 0.26,
+        roughness: 0.05,
+        metalness: 0,
+        transmission: 0.6,
+        thickness: 0.5,
+        clearcoat: 1,
+        clearcoatRoughness: 0.1,
         side: THREE.DoubleSide,
       }),
     );
+    const jar = new THREE.Mesh(jarGeo, jarMat);
     jar.position.y = 2;
     blenderGroup.add(jar);
-    const jarBase = new THREE.Mesh(
-      new THREE.CylinderGeometry(jarRadius * 0.9, jarRadius * 0.9, 0.5, 24),
-      new THREE.MeshStandardMaterial({ color: COLORS.blender, roughness: 0.5 }),
+
+    const jarBaseGeo = track(
+      new THREE.CylinderGeometry(jarRadius * 0.95, jarRadius * 1.05, 0.6, 32),
     );
-    jarBase.position.y = 0.25;
+    const jarBase = new THREE.Mesh(
+      jarBaseGeo,
+      std(COLORS.blender, { roughness: 0.35, metalness: 0.4 }),
+    );
+    jarBase.position.y = 0.3;
+    jarBase.castShadow = true;
     blenderGroup.add(jarBase);
 
-    // Two fruit dispensers flanking the blender (also tap targets).
+    // ---- Fruit dispensers (tap targets) -------------------------------------
     function makeDispenser(fruit, x) {
       const g = new THREE.Group();
-      const bin = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.9, 0.9, 1.4, 16),
-        new THREE.MeshStandardMaterial({ color: fruit.color, roughness: 0.6 }),
-      );
-      bin.position.y = 0.7;
+      const binGeo = track(new RoundedBoxGeometry(1.7, 1.5, 1.7, 4, 0.3));
+      const bin = new THREE.Mesh(binGeo, std(fruit.color, { roughness: 0.55 }));
+      bin.position.y = 0.75;
+      bin.castShadow = true;
       g.add(bin);
+      const domeGeo = track(
+        new THREE.SphereGeometry(1, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2),
+      );
       const dome = new THREE.Mesh(
-        new THREE.SphereGeometry(0.95, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2),
-        new THREE.MeshStandardMaterial({
-          color: fruit.color,
-          roughness: 0.4,
+        domeGeo,
+        std(fruit.color, {
+          roughness: 0.3,
           emissive: fruit.color,
-          emissiveIntensity: 0.15,
+          emissiveIntensity: 0.35,
         }),
       );
-      dome.position.y = 1.4;
+      dome.position.y = 1.5;
+      dome.castShadow = true;
       g.add(dome);
-      g.position.set(x, 0, 3.4);
+      g.position.set(x, 0, 3.2);
       g.userData.fruit = fruit.name;
+      g.traverse((o) => (o.userData.fruit = fruit.name));
       group.add(g);
       return g;
     }
-    const dispenserStrawberry = makeDispenser(FRUIT.strawberry, -4.5);
-    const dispenserBanana = makeDispenser(FRUIT.banana, 4.5);
-    // Tag child meshes so a raycast hit maps back to the dispenser's fruit.
-    dispenserStrawberry.traverse((o) => (o.userData.fruit = "strawberry"));
-    dispenserBanana.traverse((o) => (o.userData.fruit = "banana"));
+    const dispStraw = makeDispenser(FRUIT.strawberry, -4.6);
+    const dispBanana = makeDispenser(FRUIT.banana, 4.6);
 
-    const scoopGeo = new THREE.SphereGeometry(jarRadius * 0.62, 14, 10);
-    const disposables = [scoopGeo];
+    // Shared scoop geometry.
+    const scoopGeo = track(new THREE.SphereGeometry(jarRadius * 0.6, 18, 14));
 
-    // ---- Round state ----
-    const scoops = []; // { mesh, fruit }
-    let counts = { strawberry: 0, banana: 0 };
-    let round = null;
-    let roundIndex = 0;
-    let solved = false;
-
-    // Unit-rate state.
-    let rateGuess = 0;
-    let rateLabel = null;
-
-    const timers = [];
-    const later = (fn, ms) => {
-      const id = setTimeout(fn, ms);
-      timers.push(id);
-      return id;
-    };
-
-    // ---- Floating canvas labels (sprites) ----
+    // ---- 3D problem card (canvas sprite) ------------------------------------
     function roundRect(c, x, y, w, h, r) {
       c.beginPath();
       c.moveTo(x + r, y);
@@ -225,108 +286,162 @@ export default {
       c.arcTo(x, y, x + w, y, r);
       c.closePath();
     }
-    function makeLabel(text, bg = "rgba(18,53,91,0.92)") {
+    function makeCard(lines, accent = "#1fa6a2") {
       const cv = document.createElement("canvas");
-      cv.width = 256;
-      cv.height = 88;
+      cv.width = 512;
+      cv.height = 200;
       const c = cv.getContext("2d");
-      c.fillStyle = bg;
-      roundRect(c, 4, 4, 248, 80, 16);
+      c.fillStyle = "rgba(10,28,52,0.95)";
+      roundRect(c, 6, 6, 500, 188, 26);
       c.fill();
-      c.fillStyle = "#ffffff";
-      c.font = "bold 36px system-ui, sans-serif";
+      c.lineWidth = 6;
+      c.strokeStyle = accent;
+      roundRect(c, 6, 6, 500, 188, 26);
+      c.stroke();
       c.textAlign = "center";
       c.textBaseline = "middle";
-      c.fillText(text, 128, 46);
-      const tex = new THREE.CanvasTexture(cv);
+      const arr = Array.isArray(lines) ? lines : [lines];
+      if (arr.length === 1) {
+        c.fillStyle = "#ffffff";
+        c.font = "bold 64px system-ui, sans-serif";
+        c.fillText(arr[0], 256, 100);
+      } else {
+        c.fillStyle = accent === "#1fa6a2" ? "#bfe2ff" : "#ffe6a0";
+        c.font = "600 32px system-ui, sans-serif";
+        c.fillText(arr[0], 256, 64);
+        c.fillStyle = "#ffffff";
+        c.font = "bold 58px system-ui, sans-serif";
+        c.fillText(arr[1], 256, 134);
+      }
+      const tex = track(new THREE.CanvasTexture(cv));
       tex.minFilter = THREE.LinearFilter;
-      const spr = new THREE.Sprite(
+      const mat = track(
         new THREE.SpriteMaterial({
           map: tex,
           transparent: true,
           depthTest: false,
         }),
       );
-      spr.scale.set(2.6, 0.9, 1);
+      const spr = new THREE.Sprite(mat);
+      spr.scale.set(5.2, 2.0, 1);
+      spr.renderOrder = 10;
       return spr;
     }
-    function disposeLabel(spr) {
+    function disposeCard(spr) {
       if (!spr) return;
       group.remove(spr);
-      spr.material.map.dispose();
+      if (spr.material.map) spr.material.map.dispose();
       spr.material.dispose();
     }
 
+    // The problem card is rebuilt each time text changes.
+    let card = null;
+    function setCard(lines, accent) {
+      disposeCard(card);
+      card = makeCard(lines, accent);
+      card.position.set(0, 5.6, -2.9);
+      group.add(card);
+    }
+
+    // ---- Round state --------------------------------------------------------
+    const scoops = []; // { mesh, fruit }
+    let counts = { strawberry: 0, banana: 0 };
+    let round = null;
+    let roundIndex = 0;
+    let solved = false;
+    let rateGuess = 0;
+
+    const timers = [];
+    const later = (fn, ms) => {
+      const id = setTimeout(fn, ms);
+      timers.push(id);
+      return id;
+    };
+
     function clearRound() {
       scoops.forEach((s) => {
-        group.remove(s.mesh);
+        blenderGroup.remove(s.mesh);
         s.mesh.material.dispose();
       });
       scoops.length = 0;
       counts = { strawberry: 0, banana: 0 };
-      disposeLabel(rateLabel);
-      rateLabel = null;
       rateGuess = 0;
       solved = false;
     }
 
-    // ---- Ratio rounds ----
+    // ---- Ratio rounds -------------------------------------------------------
     function ratioText() {
       return `${counts.strawberry} : ${counts.banana}`;
     }
 
     function addScoop(fruit) {
-      if (solved) return;
+      if (solved || round.kind !== "ratio") return;
       counts[fruit] += 1;
       const mesh = new THREE.Mesh(
         scoopGeo,
-        new THREE.MeshStandardMaterial({
-          color: FRUIT[fruit].color,
-          roughness: 0.5,
+        std(FRUIT[fruit].color, {
+          roughness: 0.4,
           emissive: FRUIT[fruit].color,
-          emissiveIntensity: 0.12,
+          emissiveIntensity: 0.25,
         }),
       );
-      // Stack in fill order so the running mixture is visible.
+      mesh.castShadow = true;
       const idx = scoops.length;
-      mesh.position.set(0, 0.7 + idx * 0.62, 0);
+      const targetY = 0.7 + idx * 0.6;
+      mesh.position.set(0, targetY, 0);
       blenderGroup.add(mesh);
       scoops.push({ mesh, fruit });
-      feel.burst(
-        { x: 0, y: mesh.position.y + 0.5, z: 0 },
-        { color: FRUIT[fruit].color, count: 12 },
-      );
+      // Scale-pop on spawn.
+      if (!reduced) {
+        mesh.scale.setScalar(0.01);
+        feel.tween({
+          from: 0.01,
+          to: 1,
+          duration: 0.28,
+          onUpdate: (v) => mesh.scale.setScalar(v),
+        });
+        feel.burst(
+          { x: 0, y: targetY + 0.4, z: 0 },
+          { color: FRUIT[fruit].color, count: 12, spread: 2.4 },
+        );
+      }
+      feel.sfx("add");
       announce(
         `Added ${FRUIT[fruit].name}. Mixture is ${counts.strawberry} strawberry to ${counts.banana} banana.`,
       );
       updateRatioLive();
     }
 
-    // Keep the visible stack gap-free after a removal.
     function restack() {
-      scoops.forEach((s, i) => s.mesh.position.set(0, 0.7 + i * 0.62, 0));
+      scoops.forEach((s, i) => {
+        const y = 0.7 + i * 0.6;
+        if (reduced) s.mesh.position.y = y;
+        else
+          feel.tween({
+            from: s.mesh.position.y,
+            to: y,
+            duration: 0.18,
+            onUpdate: (v) => (s.mesh.position.y = v),
+          });
+      });
     }
 
-    // Remove the most recent scoop of a given fruit, or the last scoop overall
-    // when no fruit is passed (keeps the Enter/"confirm" shortcut working).
     function removeScoop(fruit) {
-      if (solved || !scoops.length) return;
+      if (solved || round.kind !== "ratio" || !scoops.length) return;
       let idx = -1;
       if (fruit) {
-        for (let i = scoops.length - 1; i >= 0; i--) {
+        for (let i = scoops.length - 1; i >= 0; i--)
           if (scoops[i].fruit === fruit) {
             idx = i;
             break;
           }
-        }
-      } else {
-        idx = scoops.length - 1;
-      }
+      } else idx = scoops.length - 1;
       if (idx < 0) return;
       const [s] = scoops.splice(idx, 1);
       counts[s.fruit] -= 1;
       blenderGroup.remove(s.mesh);
       s.mesh.material.dispose();
+      feel.sfx("remove");
       restack();
       announce(
         `Removed a ${FRUIT[s.fruit].name} scoop. Mixture is ${counts.strawberry} strawberry to ${counts.banana} banana.`,
@@ -335,20 +450,14 @@ export default {
     }
 
     function updateRatioLive() {
-      const target = `${round.a} : ${round.b}`;
       hud.setObjective(
-        `Target ${target} (strawberry : banana) — Mixture ${ratioText()}`,
+        `Order ${round.a} : ${round.b} (strawberry : banana) — your mixture ${ratioText()}. Add scoops, then Serve.`,
       );
     }
 
-    // A mixture matches when it is non-empty and equivalent to the target ratio.
     function ratioMatches() {
       const { strawberry: s, banana: b } = counts;
       if (s === 0 && b === 0) return false;
-      // Equivalent ratio test via cross-multiplication: s/b == a/round.b.
-      // Guard the zero-part cases (a or b could be 0 in other recipes).
-      if (round.a === 0) return s === 0 && b > 0;
-      if (round.b === 0) return b === 0 && s > 0;
       return s * round.b === b * round.a;
     }
 
@@ -356,62 +465,47 @@ export default {
       if (solved) return;
       if (!ratioMatches()) {
         const [ta, tb] = simplify(round.a, round.b);
-        const [ma, mb] =
-          counts.strawberry || counts.banana
-            ? simplify(counts.strawberry, counts.banana)
-            : [counts.strawberry, counts.banana];
-        hud.message(
-          `Not equivalent yet. Your ${ma} : ${mb} must match ${ta} : ${tb}.`,
-          { tone: "warn", duration: 2400 },
-        );
-        feel.shake(0.16);
+        hud.message(`Not equivalent yet. Match ${ta} : ${tb}.`, {
+          tone: "warn",
+          duration: 2400,
+        });
+        feel.sfx("wrong");
+        if (!reduced) feel.shake(0.16);
         announce(
-          `That mixture is not equivalent to the target ratio yet. Keep the same comparison.`,
+          `That mixture is not equivalent to the order yet. Keep the same comparison.`,
         );
         return;
       }
       win();
     }
 
-    // ---- Unit-rate rounds ----
+    // ---- Unit-rate rounds ---------------------------------------------------
+    function rateObjective() {
+      hud.setObjective(
+        `${round.prompt}  Your answer: ${round.unit}${rateGuess}. Use +/− then Serve.`,
+      );
+    }
     function buildRate() {
       rateGuess = 0;
-      hud.setObjective(
-        round.prompt + `  Your answer: ${round.unit}${rateGuess}`,
-      );
-      rateLabel = makeLabel(
-        `${round.unit}${rateGuess}`,
-        "rgba(79,143,208,0.95)",
-      );
-      rateLabel.position.set(0, 4.4, 0);
-      group.add(rateLabel);
+      setCard([round.prompt, `${round.unit}${rateGuess}`], "#4f8fd0");
+      rateObjective();
       announce(
         `Unit rate round. ${round.prompt} Use up and down to change your answer, then serve to lock it in.`,
       );
-      if (cfg.hints) {
+      if (cfg.hints)
         hud.message("Divide the total by the number of servings.", {
           tone: "info",
           duration: 2600,
         });
-      }
     }
-
     function adjustRate(delta) {
-      if (solved) return;
+      if (solved || round.kind !== "rate") return;
       rateGuess = Math.max(0, rateGuess + delta);
-      hud.setObjective(
-        round.prompt + `  Your answer: ${round.unit}${rateGuess}`,
-      );
-      disposeLabel(rateLabel);
-      rateLabel = makeLabel(
-        `${round.unit}${rateGuess}`,
-        "rgba(79,143,208,0.95)",
-      );
-      rateLabel.position.set(0, 4.4, 0);
-      group.add(rateLabel);
+      setCard([round.prompt, `${round.unit}${rateGuess}`], "#4f8fd0");
+      rateObjective();
+      feel.sfx("select");
       announce(`Answer ${round.unit}${rateGuess}.`);
     }
-
     function serveRate() {
       if (solved) return;
       if (rateGuess !== round.answer) {
@@ -419,7 +513,8 @@ export default {
           `${round.unit}${rateGuess} is not the unit rate. Try ${round.total} ÷ ${round.count}.`,
           { tone: "warn", duration: 2400 },
         );
-        feel.shake(0.16);
+        feel.sfx("wrong");
+        if (!reduced) feel.shake(0.16);
         announce(
           `That is not the unit rate. Divide ${round.total} by ${round.count}.`,
         );
@@ -428,22 +523,38 @@ export default {
       win();
     }
 
-    // ---- Win / progression ----
+    // ---- Win / progression --------------------------------------------------
     function win() {
       solved = true;
       const base = round.kind === "rate" ? 25 : 20;
-      const levelBonus = level === 2 ? 10 : 0;
-      const pts = base + levelBonus;
+      const pts = base + (level === 2 ? 10 : 0);
       onScore(pts, {
         round: roundIndex + 1,
         kind: round.kind,
         target: round.kind === "rate" ? round.answer : `${round.a}:${round.b}`,
       });
-      feel.shake(0.3);
-      feel.burst(
-        { x: 0, y: 3.2, z: 0 },
-        { color: COLORS.ok, count: 40, spread: 4 },
-      );
+      feel.sfx("correct");
+      if (!reduced) {
+        feel.shake(0.28);
+        feel.burst(
+          { x: 0, y: 3.4, z: 0 },
+          { color: COLORS.ok, count: 42, spread: 4.5 },
+        );
+        // Celebratory jar pop.
+        feel.tween({
+          from: 1,
+          to: 1.12,
+          duration: 0.18,
+          onUpdate: (v) => blenderGroup.scale.setScalar(v),
+          onComplete: () =>
+            feel.tween({
+              from: 1.12,
+              to: 1,
+              duration: 0.22,
+              onUpdate: (v) => blenderGroup.scale.setScalar(v),
+            }),
+        });
+      }
       if (round.kind === "rate") {
         hud.message(`Correct! ${round.unit}${round.answer} per one. +${pts}`, {
           tone: "ok",
@@ -466,54 +577,72 @@ export default {
           roundIndex += 1;
           startRound();
         } else {
-          hud.setObjective("Stand closed — every customer served. Great work!");
-          hud.message("All orders complete!", { tone: "ok", duration: 0 });
-          announce("All orders complete. Great work at the Smoothie Stand.");
+          finish();
         }
-      }, 2600);
+      }, 2400);
+    }
+
+    function finish() {
+      hud.setObjective("Stand closed — every customer served. Great work!");
+      hud.message("All orders complete! 🎉", { tone: "ok", duration: 0 });
+      setCard(["Smoothie Stand", "All complete! 🎉"], "#4aa978");
+      feel.sfx("fanfare");
+      if (!reduced) {
+        [0, 200, 420].forEach((ms, i) =>
+          later(
+            () =>
+              feel.burst(
+                { x: (i - 1) * 3, y: 4, z: 0 },
+                {
+                  color: [COLORS.strawberry, COLORS.banana, COLORS.teal][i],
+                  count: 50,
+                  spread: 6,
+                },
+              ),
+            ms,
+          ),
+        );
+      }
+      announce("All orders complete. Great work at the Smoothie Stand.");
     }
 
     function startRound() {
       clearRound();
       round = cfg.rounds[roundIndex];
-      // Keep an exact "Step X of Y" visible for the whole round.
       if (typeof hud.setProgress === "function")
         hud.setProgress(roundIndex, cfg.rounds.length);
       renderControls();
+      feel.sfx("pop");
       if (round.kind === "rate") {
         buildRate();
         return;
       }
       const targetTxt =
         round.baseLabel != null
-          ? `${round.a} : ${round.b}  (scale ${round.baseLabel})`
+          ? `${round.a} : ${round.b}  (${round.baseLabel})`
           : `${round.a} : ${round.b}`;
+      setCard(["Order — strawberry : banana", targetTxt], "#1fa6a2");
       updateRatioLive();
       announce(
         `New customer. Order is ${round.a} parts strawberry to ${round.b} parts banana. ` +
           `Add scoops to match the ratio, then serve.`,
       );
-      if (cfg.hints) {
-        hud.message(
-          `Order: ${targetTxt} strawberry : banana. Add scoops to match.`,
-          {
-            tone: "info",
-            duration: 3000,
-          },
-        );
-      }
+      if (cfg.hints)
+        hud.message(`Order: ${targetTxt}. Add scoops to match.`, {
+          tone: "info",
+          duration: 3000,
+        });
     }
 
-    // ---- Input handling ----
+    // ---- Input --------------------------------------------------------------
     function onPress(name) {
+      if (!round) return;
       if (round.kind === "rate") {
         if (name === "up" || name === "right") adjustRate(1);
         else if (name === "down" || name === "left") adjustRate(-1);
-        else if (name === "action") serveRate();
-        else if (name === "confirm") serveRate();
+        else if (name === "action" || name === "confirm") serveRate();
         return;
       }
-      // Ratio round.
       if (name === "left" || name === "up") addScoop("strawberry");
       else if (name === "right" || name === "down") addScoop("banana");
       else if (name === "action") serveRatio();
@@ -521,38 +650,34 @@ export default {
     }
 
     function onTapWorld() {
-      if (solved) return;
+      if (solved || !round) return;
       if (round.kind === "rate") {
-        // Tap right half = increment, left half = decrement (NDC sign is
-        // mount-size independent: x >= 0 means the right half of the canvas).
         adjustRate(input.state.ndc.x >= 0 ? 1 : -1);
         return;
       }
       const hits = input.raycast(
         camera,
-        [dispenserStrawberry, dispenserBanana, jar, jarBase],
+        [dispStraw, dispBanana, jar, jarBase],
         true,
       );
       if (!hits.length) return;
       const fruit = hits[0].object.userData.fruit;
       if (fruit) addScoop(fruit);
-      else serveRatio(); // tapped the blender jar -> serve
+      else serveRatio();
     }
 
     let unbindPress = null;
     let unbindTap = null;
     let unbindFrame = null;
 
-    // ---- On-screen controls (discoverable + touch-friendly) ----
-    // The keyboard already supports add/remove/serve, but tap-only players had
-    // no way to LOWER the scoop count. This bar exposes every action visibly.
+    // ---- On-screen controls -------------------------------------------------
     function injectControlStyles() {
       if (document.getElementById("smoothie-controls-styles")) return;
       const st = document.createElement("style");
       st.id = "smoothie-controls-styles";
       st.textContent = `
         .smoothie-controls{position:absolute;left:0;right:0;bottom:14px;display:flex;
-          gap:8px;justify-content:center;flex-wrap:wrap;padding:0 12px;z-index:5;
+          gap:8px;justify-content:center;flex-wrap:wrap;padding:0 12px;z-index:25;
           pointer-events:none;}
         .smoothie-btn{pointer-events:auto;font:700 1rem/1 system-ui,sans-serif;
           min-width:54px;min-height:48px;padding:10px 14px;border-radius:12px;
@@ -612,9 +737,26 @@ export default {
 
     return {
       start() {
-        camera.position.set(0, 6.5, 11);
+        // Animated camera intro: sweep into framing.
+        const finalPos = new THREE.Vector3(0, 6.5, 12);
         camera.lookAt(0, 2, 0);
-        feel.syncCamera();
+        if (reduced) {
+          camera.position.copy(finalPos);
+          feel.syncCamera();
+        } else {
+          const startPos = new THREE.Vector3(7, 9, 14);
+          camera.position.copy(startPos);
+          feel.tween({
+            from: 0,
+            to: 1,
+            duration: 1.1,
+            onUpdate: (v) => {
+              camera.position.lerpVectors(startPos, finalPos, v);
+              camera.lookAt(0, 2, 0);
+            },
+            onComplete: () => feel.syncCamera(),
+          });
+        }
 
         injectControlStyles();
         controlHost.appendChild(controlBar);
@@ -624,10 +766,12 @@ export default {
         unbindPress = input.onPress(onPress);
         unbindTap = input.onTap(onTapWorld);
 
-        if (!feel.reducedMotion) {
-          unbindFrame = ctx.onFrame((dt, t) => {
-            blenderGroup.rotation.y = Math.sin(t * 0.4) * 0.05;
-            if (rateLabel) rateLabel.position.y = 4.4 + Math.sin(t * 2) * 0.08;
+        // Idle motion (gated on reduced motion).
+        if (!reduced) {
+          unbindFrame = onFrame((dt, t) => {
+            blenderGroup.rotation.y = Math.sin(t * 0.4) * 0.06;
+            board.position.y = 4.6 + Math.sin(t * 1.2) * 0.05;
+            if (card) card.position.y = 5.6 + Math.sin(t * 1.4) * 0.06;
           });
         }
       },
@@ -640,7 +784,11 @@ export default {
           controlBar.parentNode.removeChild(controlBar);
         timers.forEach(clearTimeout);
         timers.length = 0;
-        disposables.forEach((g) => g.dispose());
+        disposeCard(card);
+        scoops.forEach((s) => s.mesh.material.dispose());
+        scoops.length = 0;
+        scene.remove(group);
+        disposables.forEach((d) => d.dispose && d.dispose());
       },
     };
   },

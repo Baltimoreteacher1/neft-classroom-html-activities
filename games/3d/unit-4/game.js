@@ -1,22 +1,31 @@
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
-const COLORS = {
+/* =============================================================================
+ * Unit 4 — Factory Line: Package the Order
+ * Standard: 6.NS.B.2-4 (GCF, LCM, distributive property, decimal operations).
+ * Theme preserved: a glowing automated packing plant. The operator sets the
+ * answer dial; correct orders ship down the line with a particle burst.
+ * Premium rebuild: RoundedBox/PBR crates, emissive+bloom accents, shadowed
+ * stage, animated camera intro + idle, tweened transitions, sfx on every action.
+ * ========================================================================== */
+
+const PALETTE = {
+  stage: 0x16263f,
   belt: 0x1b3a5b,
-  beltEdge: 0x2f6aa0,
-  crate: [0x1fa6a2, 0x4f8fd0, 0xe09b4a, 0x8b6fc4, 0x4aa978, 0xd9795d],
-  box: 0xf2c15b,
-  cursor: 0x1fa6a2,
-  ok: 0x4aa978,
-  bad: 0xb64e2f,
+  beltGlow: 0x2f6aa0,
+  steel: 0x3a4a63,
+  crate: [0x2bc4be, 0x5aa0ec, 0xf2a64a, 0xa385e8, 0x5fd08a, 0xef8268],
+  dial: 0xf2c15b,
+  ok: 0x5fd08a,
+  bad: 0xef6a4a,
 };
 
-// ---- Pure math (kept exact; mirrors the standards 6.NS.B.2-4) ----
+// ---- Pure math (kept exact; mirrors standard 6.NS.B.2-4) --------------------
 function gcf(a, b) {
   a = Math.abs(a);
   b = Math.abs(b);
-  while (b) {
-    [a, b] = [b, a % b];
-  }
+  while (b) [a, b] = [b, a % b];
   return a;
 }
 function lcm(a, b) {
@@ -26,12 +35,11 @@ function lcm(a, b) {
 function round2(n) {
   return Math.round(n * 100) / 100;
 }
-// Format a decimal cleanly (no trailing float noise).
 function fmt(n) {
-  const r = round2(n);
-  return Number.isInteger(r) ? String(r) : String(r);
+  return String(round2(n));
 }
 
+// ---- Round sets: 6 per level. L1 scaffolded/smaller; L2 enrichment/larger ---
 function makeLevel(level) {
   if (level === 1) {
     return {
@@ -45,11 +53,25 @@ function makeLevel(level) {
             "Pack 12 gears and 8 bolts into identical kits with none left over. How many kits?",
         },
         {
+          kind: "gcf",
+          a: 9,
+          b: 6,
+          prompt:
+            "9 red parts and 6 blue parts go into matching kits, nothing left over. How many kits?",
+        },
+        {
           kind: "lcm",
           a: 4,
           b: 6,
           prompt:
-            "Gear trays hold 4, bolt trays hold 6. What is the smallest run length where both finish together?",
+            "Gear trays hold 4, bolt trays hold 6. What is the smallest run where both finish together?",
+        },
+        {
+          kind: "lcm",
+          a: 3,
+          b: 5,
+          prompt:
+            "Press A fires every 3 s, press B every 5 s. When do they first sync?",
         },
         {
           kind: "decimal-sum",
@@ -89,8 +111,7 @@ function makeLevel(level) {
         kind: "distributive",
         a: 36,
         b: 8,
-        prompt:
-          "Factor the order 36 + 8 as factor × (sum). Use the greatest common factor.",
+        prompt: "Factor the order 36 + 8 as factor × (sum). Use the GCF.",
       },
       {
         kind: "distributive",
@@ -105,11 +126,18 @@ function makeLevel(level) {
         prompt:
           "Press A finishes every 8 s, press B every 12 s. When do they sync?",
       },
+      {
+        kind: "gcf",
+        a: 24,
+        b: 36,
+        prompt:
+          "24 motors and 36 cables pack into identical crates, none left over. How many crates?",
+      },
     ],
   };
 }
 
-// Expected answer + how the player adjusts the value for a given round.
+// Expected answer + how the dial moves for a given round.
 function roundSpec(r) {
   switch (r.kind) {
     case "gcf":
@@ -136,7 +164,6 @@ function roundSpec(r) {
         step: r.op === "×" ? 0.1 : 1,
       };
     case "distributive": {
-      // 36 + 8 = g(36/g + 8/g); player chooses the common factor g.
       const g = gcf(r.a, r.b);
       return { answer: g, min: 1, max: Math.min(r.a, r.b), step: 1 };
     }
@@ -180,6 +207,7 @@ export default {
     const {
       scene,
       camera,
+      renderer,
       input,
       hud,
       feel,
@@ -188,73 +216,193 @@ export default {
       THREE,
       level,
       onScore,
+      onFrame,
     } = ctx;
 
     const cfg = makeLevel(level);
+    const reduced = feel.reducedMotion;
 
-    // ---- Scene: a low-poly conveyor belt ----
+    // ---- Scene root ---------------------------------------------------------
     const group = new THREE.Group();
     scene.add(group);
+    const disposables = []; // geometries/materials we own
+    const track = (x) => {
+      disposables.push(x);
+      return x;
+    };
 
-    const beltMat = new THREE.MeshStandardMaterial({
-      color: COLORS.belt,
-      roughness: 0.9,
-    });
-    const belt = new THREE.Mesh(new THREE.BoxGeometry(14, 0.5, 3.4), beltMat);
+    // ---- Shadowed stage floor ----------------------------------------------
+    const floorGeo = track(new THREE.CircleGeometry(16, 48));
+    const floorMat = track(
+      new THREE.MeshStandardMaterial({
+        color: PALETTE.stage,
+        roughness: 0.95,
+        metalness: 0.05,
+      }),
+    );
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -0.55;
+    floor.receiveShadow = true;
+    group.add(floor);
+
+    // ---- Conveyor belt (rounded, PBR) --------------------------------------
+    const beltGeo = track(new RoundedBoxGeometry(14, 0.5, 3.4, 4, 0.18));
+    const beltMat = track(
+      new THREE.MeshStandardMaterial({
+        color: PALETTE.belt,
+        roughness: 0.8,
+        metalness: 0.15,
+      }),
+    );
+    const belt = new THREE.Mesh(beltGeo, beltMat);
     belt.position.y = -0.25;
+    belt.castShadow = true;
+    belt.receiveShadow = true;
     group.add(belt);
 
-    const edgeMat = new THREE.MeshStandardMaterial({
-      color: COLORS.beltEdge,
-      roughness: 0.7,
-    });
-    [-1.8, 1.8].forEach((z) => {
-      const rail = new THREE.Mesh(new THREE.BoxGeometry(14, 0.3, 0.2), edgeMat);
-      rail.position.set(0, 0.05, z);
+    // Emissive guide rails (bloom).
+    const railGeo = track(new RoundedBoxGeometry(14, 0.16, 0.22, 3, 0.07));
+    const railMat = track(
+      new THREE.MeshStandardMaterial({
+        color: PALETTE.beltGlow,
+        roughness: 0.4,
+        metalness: 0.3,
+        emissive: new THREE.Color(PALETTE.beltGlow),
+        emissiveIntensity: 0.85,
+      }),
+    );
+    [-1.75, 1.75].forEach((z) => {
+      const rail = new THREE.Mesh(railGeo, railMat);
+      rail.position.set(0, 0.06, z);
+      rail.castShadow = true;
       group.add(rail);
     });
 
-    // Slow-rolling rollers (visual juice only).
+    // Rolling rollers under the belt (visual juice).
     const rollers = [];
-    const rollerGeo = new THREE.CylinderGeometry(0.22, 0.22, 3.2, 10);
-    const rollerMat = new THREE.MeshStandardMaterial({
-      color: COLORS.beltEdge,
-      roughness: 0.5,
-      metalness: 0.2,
-    });
+    const rollerGeo = track(new THREE.CylinderGeometry(0.22, 0.22, 3.2, 14));
+    const rollerMat = track(
+      new THREE.MeshStandardMaterial({
+        color: PALETTE.steel,
+        roughness: 0.45,
+        metalness: 0.6,
+      }),
+    );
     for (let i = 0; i < 7; i++) {
-      const r = new THREE.Mesh(rollerGeo, rollerMat);
-      r.rotation.x = Math.PI / 2;
-      r.position.set(-6 + i * 2, -0.1, 0);
-      group.add(r);
-      rollers.push(r);
+      const rl = new THREE.Mesh(rollerGeo, rollerMat);
+      rl.rotation.x = Math.PI / 2;
+      rl.position.set(-6 + i * 2, -0.1, 0);
+      rl.castShadow = true;
+      group.add(rl);
+      rollers.push(rl);
     }
 
-    // Light to read the crates.
-    const key = new THREE.PointLight(0xffffff, 0.5, 60);
-    key.position.set(4, 8, 6);
-    group.add(key);
+    // ---- The answer dial: a glowing crate the operator scales --------------
+    const dialGeo = track(new RoundedBoxGeometry(1.2, 1.2, 1.2, 5, 0.22));
+    const dialMat = track(
+      new THREE.MeshStandardMaterial({
+        color: PALETTE.dial,
+        roughness: 0.35,
+        metalness: 0.2,
+        emissive: new THREE.Color(PALETTE.dial),
+        emissiveIntensity: 0.5,
+      }),
+    );
+    const dial = new THREE.Mesh(dialGeo, dialMat);
+    dial.position.set(0, 1.6, 0);
+    dial.castShadow = true;
+    group.add(dial);
 
-    // ---- Live HUD label floating over the belt ----
-    const liveLabel = makeLabel("", { scale: 1.1 });
-    liveLabel.position.set(0, 3.2, 0);
-    group.add(liveLabel);
+    // ---- Floating problem card + answer readout ----------------------------
+    const cardLabel = makeLabel("", { scale: 1.0, fontSize: 70 });
+    cardLabel.position.set(0, 4.1, 0);
+    group.add(cardLabel);
 
-    const cratesGeo = new THREE.BoxGeometry(0.7, 0.7, 0.7);
-    const disposables = [cratesGeo, rollerGeo];
+    const readoutLabel = makeLabel("", {
+      scale: 0.7,
+      fontSize: 64,
+      background: "rgba(15,34,56,0.92)",
+      color: "#ffe6a8",
+    });
+    readoutLabel.position.set(0, 2.95, 0);
+    group.add(readoutLabel);
+
+    // ---- Visual crate grouping (spawned per round) -------------------------
+    const crateGeo = track(new RoundedBoxGeometry(0.62, 0.62, 0.62, 4, 0.12));
     const crateGroup = new THREE.Group();
     group.add(crateGroup);
+    const crateMats = []; // per-round materials to dispose
 
-    // ---- Round state ----
+    function clearCrates() {
+      while (crateGroup.children.length) {
+        crateGroup.children.pop();
+      }
+      crateMats.forEach((m) => m.dispose());
+      crateMats.length = 0;
+    }
+
+    // Lay out `total` crates split into `groups` bundles, centered on the belt.
+    function layoutCrates(total, groups, colorIdx) {
+      clearCrates();
+      total = Math.min(total, 24);
+      if (total <= 0) return;
+      groups = Math.max(1, groups);
+      const color = PALETTE.crate[colorIdx % PALETTE.crate.length];
+      const mat = new THREE.MeshStandardMaterial({
+        color,
+        roughness: 0.55,
+        metalness: 0.1,
+        emissive: new THREE.Color(color),
+        emissiveIntensity: 0.18,
+        transparent: true,
+      });
+      crateMats.push(mat);
+      const perGroup = Math.max(1, Math.round(total / groups));
+      const cw = 0.72;
+      const gap = 0.7;
+      const rowWidth = perGroup * cw;
+      const totalWidth = groups * rowWidth + (groups - 1) * gap;
+      let x = -totalWidth / 2;
+      let placed = 0;
+      for (let g = 0; g < groups && placed < total; g++) {
+        for (let k = 0; k < perGroup && placed < total; k++) {
+          const c = new THREE.Mesh(crateGeo, mat);
+          const px = x + k * cw + cw / 2;
+          c.position.set(px, -0.05, 0);
+          c.castShadow = true;
+          crateGroup.add(c);
+          // scale-pop spawn
+          c.scale.setScalar(reduced ? 1 : 0.01);
+          if (!reduced) {
+            const delay = placed * 22;
+            later(() => {
+              feel.tween({
+                from: 0.01,
+                to: 1,
+                duration: 0.28,
+                onUpdate: (v) => c.scale.setScalar(v),
+              });
+            }, delay);
+          }
+          placed++;
+        }
+        x += rowWidth + gap;
+      }
+    }
+
+    // ---- Round state --------------------------------------------------------
     let roundIndex = 0;
     let round = null;
     let spec = null;
-    let value = 1; // player's current chosen value
-    let solved = false;
-    let streak = 0; // consecutive correct
+    let value = 1;
+    let locked = true; // input gate
+    let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
     let unbindFrame = null;
+    let unbindPress = null;
+    let unbindTap = null;
     const timers = [];
     const later = (fn, ms) => {
       const id = setTimeout(fn, ms);
@@ -262,76 +410,8 @@ export default {
       return id;
     };
 
-    function disposeMesh(m) {
-      m.traverse((o) => {
-        if (o.geometry && o.geometry !== cratesGeo && o.geometry !== rollerGeo)
-          o.geometry.dispose();
-        if (o.material) {
-          if (o.material.map) o.material.map.dispose();
-          o.material.dispose();
-        }
-      });
-    }
-
-    function clearCrates() {
-      while (crateGroup.children.length) {
-        const m = crateGroup.children.pop();
-        disposeMesh(m);
-      }
-    }
-
-    // Build a row of crates grouped into `groups` bundles (visual grouping).
-    function layoutCrates(total, groups, colorIdx) {
-      clearCrates();
-      if (total <= 0) return;
-      groups = Math.max(1, groups);
-      const perGroup = total / groups;
-      const color = COLORS.crate[colorIdx % COLORS.crate.length];
-      const mat = new THREE.MeshStandardMaterial({
-        color,
-        roughness: 0.6,
-        metalness: 0.05,
-      });
-      const gap = 0.95; // between groups
-      const cw = 0.8; // crate spacing
-      // Total width to center the whole run.
-      const groupWidth = (g) => g * cw;
-      let totalWidth = 0;
-      for (let g = 0; g < groups; g++) totalWidth += groupWidth(perGroup) + gap;
-      totalWidth -= gap;
-      let x = -totalWidth / 2;
-      for (let g = 0; g < groups; g++) {
-        const n = Math.round(perGroup);
-        // crate stack for this group
-        for (let k = 0; k < n; k++) {
-          const c = new THREE.Mesh(cratesGeo, mat);
-          c.position.set(x + k * cw + cw / 2, 0.35, 0);
-          crateGroup.add(c);
-        }
-        x += groupWidth(perGroup) + gap;
-      }
-    }
-
-    function startRound() {
-      solved = true; // block input until set up
-      clearCrates();
-      round = cfg.rounds[roundIndex];
-      spec = roundSpec(round);
-      value = spec.min;
-      solved = false;
-
+    function setLevelLabel() {
       hud.setLevel(level === 2 ? "Level 2" : "Level 1");
-      // Persistent "Step X of Y" for the whole round.
-      if (typeof hud.setProgress === "function")
-        hud.setProgress(roundIndex, cfg.rounds.length);
-      announce(`Round ${roundIndex + 1}. ${round.prompt}`);
-      caption(round.prompt);
-      hud.setObjective(round.prompt);
-
-      if (cfg.hints)
-        hud.message(hintFor(round), { tone: "info", duration: 3200 });
-
-      refresh();
     }
 
     function hintFor(r) {
@@ -339,19 +419,19 @@ export default {
         case "gcf":
           return "Find the largest number that divides BOTH amounts evenly.";
         case "lcm":
-          return "Count up the multiples of each until they first match.";
+          return "Count up multiples of each until they first match.";
         case "decimal-sum":
           return (
             "Line up the decimal points, then " +
             (r.op === "+" ? "add." : "subtract.")
           );
         default:
-          return "Use the up/down arrows to set your answer, then confirm.";
+          return "Use Up/Down to set the dial, then Space to ship the order.";
       }
     }
 
-    // Describe the equation the player is currently building.
-    function liveText() {
+    // The equation the operator is currently building.
+    function equationText() {
       switch (round.kind) {
         case "gcf":
           return `GCF(${round.a}, ${round.b}) = ${value}`;
@@ -362,9 +442,8 @@ export default {
           return `${fmt(round.a)} ${round.op} ${fmt(round.b)} = ${fmt(value)}`;
         case "distributive": {
           const g = value;
-          if (g > 0 && round.a % g === 0 && round.b % g === 0) {
+          if (g > 0 && round.a % g === 0 && round.b % g === 0)
             return `${round.a} + ${round.b} = ${g}(${round.a / g} + ${round.b / g})`;
-          }
           return `${round.a} + ${round.b} = ${g}( ? + ? )`;
         }
         default:
@@ -372,13 +451,19 @@ export default {
       }
     }
 
-    function refresh() {
-      updateLabel(liveLabel, liveText());
-      hud.setObjective(`${round.prompt}  —  current: ${currentReadout()}`);
+    function readoutText() {
+      const v =
+        round.kind === "decimal-sum" || round.kind === "decimal-prod"
+          ? fmt(value)
+          : String(value);
+      return `Dial: ${v}`;
+    }
 
-      // Visual grouping for GCF/LCM/distributive rounds.
+    function refresh() {
+      updateLabel(cardLabel, equationText());
+      updateLabel(readoutLabel, readoutText());
+
       if (round.kind === "gcf") {
-        // Split `a` items into `value` equal groups when value divides evenly.
         const divides = value > 0 && round.a % value === 0;
         layoutCrates(round.a, divides ? round.a / value : round.a, 0);
       } else if (round.kind === "lcm") {
@@ -389,56 +474,88 @@ export default {
         );
       } else if (round.kind === "distributive") {
         const g = value;
-        if (g > 0 && round.a % g === 0 && round.b % g === 0) {
+        if (g > 0 && round.a % g === 0 && round.b % g === 0)
           layoutCrates(round.a + round.b, g, 2);
-        } else {
-          clearCrates();
-        }
+        else clearCrates();
       } else {
         clearCrates();
       }
     }
 
-    function currentReadout() {
-      if (round.kind === "decimal-sum" || round.kind === "decimal-prod")
-        return fmt(value);
-      return String(value);
+    function startRound() {
+      locked = true;
+      clearCrates();
+      round = cfg.rounds[roundIndex];
+      spec = roundSpec(round);
+      value = spec.min;
+
+      setLevelLabel();
+      hud.setProgress(roundIndex, cfg.rounds.length);
+      announce(
+        `Order ${roundIndex + 1} of ${cfg.rounds.length}. ${round.prompt}`,
+      );
+      caption(round.prompt);
+      hud.setObjective(round.prompt);
+
+      if (cfg.hints)
+        hud.message(hintFor(round), { tone: "info", duration: 3400 });
+
+      // Pop the dial in.
+      if (!reduced) {
+        dial.scale.setScalar(0.01);
+        feel.tween({
+          from: 0.01,
+          to: 1,
+          duration: 0.4,
+          onUpdate: (v) => dial.scale.setScalar(v),
+          onComplete: () => {
+            locked = false;
+          },
+        });
+      } else {
+        dial.scale.setScalar(1);
+        locked = false;
+      }
+      refresh();
+      feel.sfx("select");
     }
 
     function adjust(dir) {
-      if (solved) return;
+      if (locked) return;
       const next = round2(value + dir * spec.step);
-      value = Math.max(spec.min, Math.min(spec.max, next));
+      const clamped = Math.max(spec.min, Math.min(spec.max, next));
+      if (clamped === value) return;
+      value = clamped;
       refresh();
-      announce(`Set to ${currentReadout()}.`);
+      feel.sfx(dir > 0 ? "add" : "remove");
+      announce(`Dial set to ${readoutText().replace("Dial: ", "")}.`);
     }
 
     function isCorrect() {
-      if (round.kind === "distributive") {
-        // Must equal the GCF so the inner sum is fully factored.
+      if (round.kind === "distributive")
         return (
           value === spec.answer &&
           round.a % value === 0 &&
           round.b % value === 0
         );
-      }
       return round2(value) === round2(spec.answer);
     }
 
     function confirm() {
-      if (solved) return;
+      if (locked) return;
       if (!isCorrect()) {
         const tip =
           round.kind === "distributive" &&
+          value > 0 &&
           round.a % value === 0 &&
           round.b % value === 0
             ? "That factor works, but it is not the GREATEST common factor — pull out more."
-            : "Not quite — adjust and try again.";
+            : "Not quite — adjust the dial and try again.";
         streak = 0;
-        if (typeof hud.setStreak === "function") hud.setStreak(0);
-        if (typeof hud.feedback === "function") hud.feedback(false, tip);
-        else hud.message(tip, { tone: "warn", duration: 2200 });
-        feel.shake(0.16);
+        hud.setStreak(0);
+        hud.feedback(false, tip);
+        feel.sfx("wrong");
+        if (!reduced) feel.shake(0.16);
         announce(tip);
         return;
       }
@@ -446,56 +563,103 @@ export default {
     }
 
     function win() {
-      solved = true;
+      locked = true;
       solvedCount += 1;
       streak += 1;
       if (streak > bestStreak) bestStreak = streak;
-      if (typeof hud.setStreak === "function") hud.setStreak(streak);
-      const base = 20;
-      const levelBonus = level === 2 ? 10 : 0;
-      const pts = base + levelBonus;
+      hud.setStreak(streak);
+
+      const pts = 20 + (level === 2 ? 10 : 0);
       onScore(pts, {
         round: roundIndex + 1,
         kind: round.kind,
         answer: spec.answer,
       });
 
-      feel.shake(0.3);
+      feel.sfx("correct");
       feel.burst(
-        { x: 0, y: 1.2, z: 0 },
-        { color: COLORS.ok, count: 36, spread: 4 },
+        { x: 0, y: 1.6, z: 0 },
+        { color: PALETTE.ok, count: 40, spread: 4.2 },
       );
-      const msg = `Correct! ${liveText()}  +${pts}`;
-      if (typeof hud.feedback === "function") hud.feedback(true, msg);
-      else hud.message(msg, { tone: "ok", duration: 2400 });
-      announce(`Correct. ${liveText()}. You earned ${pts} points.`);
+      if (!reduced) feel.shake(0.28);
 
-      later(() => {
-        if (roundIndex < cfg.rounds.length - 1) {
-          roundIndex += 1;
-          startRound();
-        } else {
-          clearCrates();
-          updateLabel(liveLabel, "Shift complete!");
-          hud.setObjective(
-            `Factory shift complete — ${solvedCount} of ${cfg.rounds.length} orders packaged, best streak ${bestStreak}. Great work, Operator!`,
-          );
-          hud.message("All orders packaged!", { tone: "ok", duration: 0 });
-          announce(
-            `All orders packaged. You completed ${solvedCount} with a best streak of ${bestStreak}. Great work, Operator.`,
-          );
-        }
-      }, 2600);
+      const msg = `Order shipped! ${equationText()}  +${pts}`;
+      hud.feedback(true, msg);
+      announce(`Correct. ${equationText()}. You earned ${pts} points.`);
+
+      // Ship the crates off down the belt.
+      if (!reduced) {
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.7,
+          onUpdate: (p) => {
+            crateGroup.position.x = p * 9;
+            crateGroup.children.forEach((c) => (c.material.opacity = 1 - p));
+          },
+        });
+      }
+
+      later(
+        () => {
+          crateGroup.position.x = 0;
+          if (roundIndex < cfg.rounds.length - 1) {
+            roundIndex += 1;
+            startRound();
+          } else {
+            finish();
+          }
+        },
+        reduced ? 1200 : 1700,
+      );
     }
 
-    let unbindPress = null;
-    let unbindTap = null;
+    function finish() {
+      clearCrates();
+      updateLabel(cardLabel, "SHIFT COMPLETE");
+      updateLabel(readoutLabel, `${solvedCount}/${cfg.rounds.length} shipped`);
+      hud.setProgress(cfg.rounds.length, cfg.rounds.length);
+      hud.setObjective(
+        `Factory shift complete — ${solvedCount} of ${cfg.rounds.length} orders packaged, best streak ${bestStreak}. Great work, Operator!`,
+      );
+      hud.message("All orders packaged! 🏭", { tone: "ok", duration: 0 });
+      feel.sfx("fanfare");
+      feel.burst(
+        { x: 0, y: 1.8, z: 0 },
+        { color: PALETTE.dial, count: 70, spread: 6 },
+      );
+      announce(
+        `All orders packaged. You completed ${solvedCount} with a best streak of ${bestStreak}. Great work, Operator.`,
+      );
+    }
 
     return {
       start() {
-        camera.position.set(0, 6, 9);
-        camera.lookAt(0, 0.5, 0);
-        feel.syncCamera();
+        // Animated camera intro: sweep into framing.
+        const target = new THREE.Vector3(0, 0.8, 0);
+        const finalPos = { x: 0, y: 6, z: 11 };
+        if (!reduced) {
+          camera.position.set(-7, 9, 14);
+          camera.lookAt(target);
+          feel.tween({
+            from: 0,
+            to: 1,
+            duration: 1.1,
+            onUpdate: (p) => {
+              camera.position.set(
+                -7 + (finalPos.x + 7) * p,
+                9 + (finalPos.y - 9) * p,
+                14 + (finalPos.z - 14) * p,
+              );
+              camera.lookAt(target);
+            },
+            onComplete: () => feel.syncCamera(),
+          });
+        } else {
+          camera.position.set(finalPos.x, finalPos.y, finalPos.z);
+          camera.lookAt(target);
+          feel.syncCamera();
+        }
 
         startRound();
 
@@ -505,24 +669,26 @@ export default {
           else if (name === "action" || name === "confirm") confirm();
         });
 
-        // Touch: tap upper half raises the value, lower half lowers it;
-        // a tap on the floating answer confirms.
+        // Touch: tap the dial/upper area raises, lower area lowers; tap the
+        // floating answer card confirms.
         unbindTap = input.onTap(() => {
-          if (solved) return;
-          const hits = input.raycast(camera, [liveLabel], false);
-          if (hits.length) {
+          if (locked) return;
+          const hits = input.raycast(camera, [cardLabel, dial], false);
+          if (hits.length && hits[0].object === cardLabel) {
             confirm();
             return;
           }
-          // ndc.y > 0 is the upper half of the canvas (raise), below lowers.
           const ndcY = input.state.ndc ? input.state.ndc.y : 0;
           adjust(ndcY >= 0 ? 1 : -1);
         });
 
-        if (!feel.reducedMotion) {
-          unbindFrame = ctx.onFrame((dt, t) => {
-            for (const r of rollers) r.rotation.y = t * 1.5;
-            liveLabel.position.y = 3.2 + Math.sin(t * 2) * 0.08;
+        // Idle motion (gated behind reduced-motion).
+        if (!reduced) {
+          unbindFrame = onFrame((dt, t) => {
+            for (const r of rollers) r.rotation.y = t * 1.6;
+            dial.rotation.y = t * 0.6;
+            dial.position.y = 1.6 + Math.sin(t * 2) * 0.06;
+            cardLabel.position.y = 4.1 + Math.sin(t * 1.6) * 0.07;
           });
         }
       },
@@ -534,7 +700,15 @@ export default {
         timers.forEach(clearTimeout);
         timers.length = 0;
         clearCrates();
-        disposables.forEach((g) => g.dispose());
+        scene.remove(group);
+        // Dispose label textures.
+        [cardLabel, readoutLabel].forEach((s) => {
+          if (s.material) {
+            if (s.material.map) s.material.map.dispose();
+            s.material.dispose();
+          }
+        });
+        disposables.forEach((d) => d.dispose && d.dispose());
       },
     };
   },

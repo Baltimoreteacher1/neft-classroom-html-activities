@@ -64,7 +64,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -79,10 +80,11 @@
     ></div>
     <div class="e3d-boot-title">Smoothie Stand — Match the Ratio</div>
     <p class="e3d-intro" id="e3d-intro">
-      Add strawberry (left / A or tap the red bin) and banana (right / D or tap
-      the yellow bin) scoops to match the customer's ratio, then serve (Space or
-      tap the blender). Backspace/Enter removes a scoop. Level 2 adds scaled
-      recipes and unit-rate rounds (use up/down to choose the answer).
+      Add strawberry (Left / A, or tap the red bin) and banana (Right / D, or
+      tap the yellow bin) scoops to match the customer's ratio, then Serve
+      (Space or tap the blender). Enter removes a scoop. On-screen buttons work
+      too. Level 2 adds scaled recipes and unit-rate rounds — use Up/Down or the
+      +/− buttons to choose the answer.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -100,7 +102,9 @@
 
       try {
         // Omit `level` to show the Level 1 / Level 2 selector first.
-        mountGame(document.getElementById("game"), unit1SmoothieStand, {});
+        mountGame(document.getElementById("game"), unit1SmoothieStand, {
+          sceneOpts: { background: 0x123a6b, cameraPos: [0, 6.5, 12] },
+        });
       } catch (err) {
         console.error("Failed to mount Unit 1 game:", err);
         document.getElementById("fallback").style.display = "flex";

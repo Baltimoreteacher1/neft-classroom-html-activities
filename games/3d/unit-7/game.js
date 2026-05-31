@@ -1,15 +1,28 @@
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+
+// ============================================================================
+// Unit 7 — Submarine: Dive the Number Line
+// Standard: 6.NS.C.5–7 (integers, opposites, absolute value, comparing/ordering)
+// Theme: pilot a deep-sea submarine along a vertical number line where 0 is
+// sea level, positives are above the surface, negatives are below.
+// Level 1 = scaffolded (smaller range, hints). Level 2 = enrichment (larger
+// range, multi-step compare/order). 6–8 rounds per level.
+// ============================================================================
+
 const COLORS = {
-  skyDeep: 0x0b3d66,
+  sky: 0x0b3d66,
   water: 0x1f6f9c,
   waterDeep: 0x0a2c4a,
   surface: 0xbfe6ff,
   sub: 0xf2c15b,
   subTrim: 0xd9795d,
+  glass: 0x9fe6ff,
   target: 0x4aa978,
   targetBad: 0xb64e2f,
   tick: 0xbfe6ff,
   tickZero: 0xffffff,
-  marker: 0x8b6fc4,
+  spine: 0x4fb6e0,
 };
 
 const UNIT = 0.62; // world units per integer step on the number line
@@ -17,15 +30,21 @@ const UNIT = 0.62; // world units per integer step on the number line
 function makeLevel(level) {
   if (level === 1) {
     return {
-      min: -5,
-      max: 5,
+      min: -6,
+      max: 6,
       hints: true,
       rounds: [
         { kind: "move", target: 3 },
         { kind: "move", target: -4 },
-        { kind: "opposite", value: 2 }, // go to the opposite of +2
+        { kind: "opposite", value: 2 },
         { kind: "opposite", value: -5 },
-        { kind: "order", values: [-3, 1, 4], pick: "least" },
+        {
+          kind: "absolute",
+          value: -3,
+          context: "A diver is 3 m below sea level.",
+        },
+        { kind: "compare", a: -2, b: 4, pick: "greater" },
+        { kind: "order", values: [-4, 1, 5], pick: "least" },
       ],
     };
   }
@@ -34,23 +53,27 @@ function makeLevel(level) {
     max: 10,
     hints: false,
     rounds: [
-      // Absolute value as distance from the surface (0).
       {
         kind: "absolute",
         value: -7,
-        context: "A diver is 7 m below sea level.",
+        context: "A submarine sits 7 m below sea level.",
       },
       {
         kind: "absolute",
         value: 6,
-        context: "A gull flies 6 m above sea level.",
+        context: "A gull glides 6 m above sea level.",
       },
-      // Compare two integers: move to the one that is greater/less.
+      { kind: "opposite", value: -8 },
       { kind: "compare", a: -8, b: -3, pick: "greater" },
       { kind: "compare", a: 5, b: -9, pick: "less" },
-      // Order several integers; navigate to the requested one.
       { kind: "order", values: [-6, -2, 3, 8], pick: "greatest" },
       { kind: "order", values: [9, -4, -10, 2], pick: "least" },
+      {
+        kind: "absDist",
+        a: -4,
+        b: 0,
+        context: "How far is -4 from sea level?",
+      },
     ],
   };
 }
@@ -93,6 +116,7 @@ export default {
     const {
       scene,
       camera,
+      renderer,
       input,
       hud,
       feel,
@@ -101,17 +125,19 @@ export default {
       THREE,
       level,
       onScore,
+      onFrame,
     } = ctx;
 
     const cfg = makeLevel(level);
     const RANGE_MIN = cfg.min;
     const RANGE_MAX = cfg.max;
+    const reduced = feel.reducedMotion;
 
-    // Integer -> world Y. 0 sits at sea level (y = 0).
     const yFor = (n) => n * UNIT;
 
     const group = new THREE.Group();
     scene.add(group);
+
     const disposables = [];
     const track = (obj) => {
       if (obj.geometry) disposables.push(obj.geometry);
@@ -119,172 +145,239 @@ export default {
       return obj;
     };
 
-    // ---- Water column (low-poly) ----
     const columnHeight = (RANGE_MAX - RANGE_MIN) * UNIT + UNIT * 2;
     const columnTopY = yFor(RANGE_MAX) + UNIT;
     const columnMidY = (yFor(RANGE_MAX) + yFor(RANGE_MIN)) / 2;
 
-    const water = new THREE.Mesh(
-      new THREE.BoxGeometry(3.2, columnHeight, 3.2),
+    // ---- Stage floor (receives shadows) -------------------------------------
+    const floorGeo = new THREE.CircleGeometry(9, 48);
+    const floor = new THREE.Mesh(
+      floorGeo,
       new THREE.MeshStandardMaterial({
+        color: COLORS.waterDeep,
+        roughness: 0.95,
+        metalness: 0.05,
+      }),
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = yFor(RANGE_MIN) - UNIT * 1.4;
+    floor.receiveShadow = true;
+    track(floor);
+    group.add(floor);
+
+    // ---- Water column (PBR glassy volume) -----------------------------------
+    const waterGeo = new RoundedBoxGeometry(3.0, columnHeight, 3.0, 4, 0.25);
+    const water = new THREE.Mesh(
+      waterGeo,
+      new THREE.MeshPhysicalMaterial({
         color: COLORS.water,
         transparent: true,
-        opacity: 0.32,
-        roughness: 0.85,
+        opacity: 0.28,
+        roughness: 0.12,
+        metalness: 0.0,
+        transmission: 0.6,
+        thickness: 1.5,
+        ior: 1.33,
       }),
     );
     water.position.y = columnMidY;
     track(water);
     group.add(water);
 
-    // Surface plane at 0.
+    // Surface slab at 0 — glows so bloom catches it.
+    const surfGeo = new RoundedBoxGeometry(3.4, 0.08, 3.4, 3, 0.04);
     const surface = new THREE.Mesh(
-      new THREE.BoxGeometry(3.6, 0.06, 3.6),
+      surfGeo,
       new THREE.MeshStandardMaterial({
         color: COLORS.surface,
         transparent: true,
-        opacity: 0.5,
+        opacity: 0.6,
+        roughness: 0.2,
         emissive: COLORS.surface,
-        emissiveIntensity: 0.25,
+        emissiveIntensity: 0.5,
       }),
     );
     surface.position.y = 0;
     track(surface);
     group.add(surface);
 
-    // Seabed below the lowest integer.
+    // Seabed block below the lowest integer.
+    const bedGeo = new RoundedBoxGeometry(3.8, 0.5, 3.8, 3, 0.12);
     const bed = new THREE.Mesh(
-      new THREE.BoxGeometry(4, 0.4, 4),
+      bedGeo,
       new THREE.MeshStandardMaterial({ color: COLORS.waterDeep, roughness: 1 }),
     );
     bed.position.y = yFor(RANGE_MIN) - UNIT;
+    bed.receiveShadow = true;
+    bed.castShadow = true;
     track(bed);
     group.add(bed);
 
-    // ---- Number line: vertical spine + ticks + labels ----
+    // ---- Number-line spine + ticks + labels ---------------------------------
+    const spineGeo = new RoundedBoxGeometry(0.07, columnHeight, 0.07, 2, 0.03);
     const spine = new THREE.Mesh(
-      new THREE.BoxGeometry(0.05, columnHeight, 0.05),
-      new THREE.MeshStandardMaterial({ color: COLORS.tick }),
+      spineGeo,
+      new THREE.MeshStandardMaterial({
+        color: COLORS.spine,
+        emissive: COLORS.spine,
+        emissiveIntensity: 0.35,
+        roughness: 0.4,
+        metalness: 0.3,
+      }),
     );
     spine.position.set(-1.5, columnMidY, 0);
     track(spine);
     group.add(spine);
 
-    const tickGeo = new THREE.BoxGeometry(0.5, 0.05, 0.05);
-    disposables.push(tickGeo);
+    const tickGeo = new RoundedBoxGeometry(0.5, 0.06, 0.06, 2, 0.02);
+    const zeroTickGeo = new RoundedBoxGeometry(0.78, 0.08, 0.08, 2, 0.03);
+    disposables.push(tickGeo, zeroTickGeo);
 
-    function makeLabel(text, big) {
-      const cv = document.createElement("canvas");
-      cv.width = 96;
-      cv.height = 64;
-      const c = cv.getContext("2d");
-      c.fillStyle = big ? "#ffffff" : "#bfe6ff";
-      c.font = (big ? "bold 44px " : "bold 36px ") + "system-ui, sans-serif";
-      c.textAlign = "center";
-      c.textBaseline = "middle";
-      c.fillText(text, 48, 34);
-      const tex = new THREE.CanvasTexture(cv);
-      tex.minFilter = THREE.LinearFilter;
-      const spr = new THREE.Sprite(
-        new THREE.SpriteMaterial({
-          map: tex,
-          transparent: true,
-          depthTest: false,
-        }),
-      );
-      spr.scale.set(0.7, 0.46, 1);
-      disposables.push(spr.material, tex);
-      return spr;
-    }
-
+    const lineLabels = [];
     for (let n = RANGE_MIN; n <= RANGE_MAX; n++) {
       const isZero = n === 0;
       const tick = new THREE.Mesh(
-        tickGeo,
+        isZero ? zeroTickGeo : tickGeo,
         new THREE.MeshStandardMaterial({
           color: isZero ? COLORS.tickZero : COLORS.tick,
+          emissive: isZero ? COLORS.tickZero : 0x000000,
+          emissiveIntensity: isZero ? 0.6 : 0,
+          roughness: 0.5,
         }),
       );
       tick.position.set(-1.5, yFor(n), 0);
-      tick.scale.x = isZero ? 1.5 : 1;
+      tick.castShadow = true;
       track(tick);
       group.add(tick);
 
-      const label = makeLabel(String(n), isZero);
-      label.position.set(-2.2, yFor(n), 0);
+      const label = makeLabel(String(n), {
+        THREE,
+        color: isZero ? "#ffffff" : "#bfe6ff",
+        background: null,
+        fontSize: isZero ? 80 : 60,
+        scale: isZero ? 0.5 : 0.4,
+      });
+      label.position.set(-2.35, yFor(n), 0);
+      lineLabels.push(label);
       group.add(label);
     }
 
-    // "Sea level" hint near 0.
-    const seaLabel = makeLabel("0 = sea level", false);
-    seaLabel.scale.set(1.5, 0.42, 1);
-    seaLabel.position.set(0.9, 0.0, 1.7);
+    const seaLabel = makeLabel("0 = sea level", {
+      THREE,
+      color: "#ffffff",
+      background: "rgba(15,34,56,0.7)",
+      fontSize: 46,
+      scale: 0.34,
+    });
+    seaLabel.position.set(1.0, 0.0, 1.8);
     group.add(seaLabel);
 
-    // ---- Submarine ----
+    // ---- Floating 3D problem card (always shows the question) ---------------
+    const cardLabel = makeLabel("...", {
+      THREE,
+      color: "#ffffff",
+      background: "rgba(11,40,66,0.9)",
+      fontSize: 56,
+      scale: 0.62,
+      maxWidth: 1024,
+    });
+    cardLabel.position.set(0, columnTopY + 1.4, 0);
+    group.add(cardLabel);
+
+    // ---- Submarine (rounded, PBR, casts shadow) -----------------------------
     const subGroup = new THREE.Group();
+
     const hull = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.34, 0.7, 4, 10),
+      new THREE.CapsuleGeometry(0.36, 0.78, 6, 14),
       new THREE.MeshStandardMaterial({
         color: COLORS.sub,
-        roughness: 0.5,
-        metalness: 0.15,
+        roughness: 0.35,
+        metalness: 0.45,
       }),
     );
     hull.rotation.z = Math.PI / 2;
+    hull.castShadow = true;
     track(hull);
     subGroup.add(hull);
 
     const tower = new THREE.Mesh(
-      new THREE.BoxGeometry(0.22, 0.26, 0.22),
-      new THREE.MeshStandardMaterial({ color: COLORS.subTrim, roughness: 0.6 }),
+      new RoundedBoxGeometry(0.26, 0.3, 0.26, 3, 0.06),
+      new THREE.MeshStandardMaterial({
+        color: COLORS.subTrim,
+        roughness: 0.5,
+        metalness: 0.3,
+      }),
     );
-    tower.position.y = 0.34;
+    tower.position.y = 0.36;
+    tower.castShadow = true;
     track(tower);
     subGroup.add(tower);
 
-    const window = new THREE.Mesh(
-      new THREE.SphereGeometry(0.14, 10, 8),
+    const fin = new THREE.Mesh(
+      new RoundedBoxGeometry(0.5, 0.18, 0.06, 2, 0.03),
       new THREE.MeshStandardMaterial({
-        color: COLORS.surface,
-        emissive: COLORS.surface,
-        emissiveIntensity: 0.4,
+        color: COLORS.subTrim,
+        roughness: 0.5,
+        metalness: 0.3,
       }),
     );
-    window.position.set(0.5, 0, 0);
-    track(window);
-    subGroup.add(window);
+    fin.position.set(-0.5, 0, 0);
+    fin.castShadow = true;
+    track(fin);
+    subGroup.add(fin);
+
+    // Glowing porthead light — bloom makes it pop.
+    const portMat = new THREE.MeshPhysicalMaterial({
+      color: COLORS.glass,
+      emissive: COLORS.glass,
+      emissiveIntensity: 0.9,
+      roughness: 0.05,
+      metalness: 0,
+      transmission: 0.4,
+      ior: 1.4,
+    });
+    const port = new THREE.Mesh(
+      new THREE.SphereGeometry(0.16, 16, 12),
+      portMat,
+    );
+    port.position.set(0.52, 0, 0);
+    track(port);
+    subGroup.add(port);
 
     subGroup.position.set(0, yFor(0), 0);
+    subGroup.scale.setScalar(0.001); // spawn-pop on start
     group.add(subGroup);
 
-    // ---- Target marker (depth band the sub must reach) ----
-    const markerGeo = new THREE.BoxGeometry(1.1, UNIT * 0.5, 1.1);
+    // ---- Target band the sub must reach -------------------------------------
+    const markerGeo = new RoundedBoxGeometry(1.25, UNIT * 0.55, 1.25, 3, 0.1);
     disposables.push(markerGeo);
-    const marker = new THREE.Mesh(
-      markerGeo,
-      new THREE.MeshStandardMaterial({
-        color: COLORS.target,
-        transparent: true,
-        opacity: 0.35,
-        emissive: COLORS.target,
-        emissiveIntensity: 0.4,
-      }),
-    );
+    const markerMat = new THREE.MeshStandardMaterial({
+      color: COLORS.target,
+      transparent: true,
+      opacity: 0.4,
+      roughness: 0.3,
+      emissive: COLORS.target,
+      emissiveIntensity: 0.7,
+    });
+    const marker = new THREE.Mesh(markerGeo, markerMat);
     track(marker);
     marker.visible = false;
     group.add(marker);
 
-    // ---- Round state ----
-    let pos = 0; // current integer position of the sub
+    // ---- Round state --------------------------------------------------------
+    let pos = 0;
     let round = null;
     let roundIndex = 0;
-    let targetInt = null; // integer the sub must reach (when known)
+    let targetInt = null;
     let solved = false;
-    let streak = 0; // consecutive correct
+    let started = false;
+    let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
     let unbindFrame = null;
+    let unbindPress = null;
+    let unbindTap = null;
+
     const timers = [];
     const later = (fn, ms) => {
       const id = setTimeout(fn, ms);
@@ -300,12 +393,12 @@ export default {
 
     function setSubY(n, animate) {
       const toY = yFor(n);
-      if (animate && !feel.reducedMotion) {
+      if (animate && !reduced) {
         const fromY = subGroup.position.y;
         feel.tween({
           from: 0,
           to: 1,
-          duration: 180,
+          duration: 0.22,
           onUpdate: (t) => {
             subGroup.position.y = fromY + (toY - fromY) * t;
           },
@@ -315,32 +408,41 @@ export default {
       }
     }
 
-    function updateHud() {
-      hud.setLevel(level === 2 ? "Level 2" : "Level 1");
-      const depthTxt =
-        pos === 0
-          ? "Depth 0 m (sea level)"
-          : pos < 0
-            ? `Depth ${Math.abs(pos)} m below`
-            : `Height ${pos} m above`;
-      hud.setObjective(
-        roundObjective() + " — " + depthTxt + ` | position ${pos}`,
-      );
+    function cardText() {
+      if (!round) return "Pilot the submarine";
+      switch (round.kind) {
+        case "move":
+          return `Dive to  ${round.target}`;
+        case "opposite":
+          return `Opposite of ${round.value} = ?`;
+        case "absolute":
+          return `${round.context}`;
+        case "absDist":
+          return `${round.context}`;
+        case "compare":
+          return `${round.pick === "greater" ? "Greater" : "Less"}:  ${round.a}  or  ${round.b} ?`;
+        case "order":
+          return `${round.pick === "greatest" ? "Greatest" : "Least"} of  ${round.values.join("  ")}`;
+        default:
+          return "Pilot the submarine";
+      }
     }
 
     function roundObjective() {
       if (!round) return "Pilot the submarine";
       switch (round.kind) {
         case "move":
-          return `Pilot the submarine to ${round.target} on the number line, then confirm`;
+          return `Pilot the submarine to ${round.target}, then press Space`;
         case "opposite":
-          return `Pilot to the opposite of ${round.value}, then confirm`;
+          return `Pilot to the opposite of ${round.value}, then press Space`;
         case "absolute":
-          return `Pilot to the integer for "${round.context}", then confirm`;
+          return `Pilot to the integer for "${round.context}", then press Space`;
+        case "absDist":
+          return `Pilot to the integer ${round.context.toLowerCase()} then press Space`;
         case "compare":
-          return `Pilot to the ${round.pick} of ${round.a} and ${round.b}, then confirm`;
+          return `Pilot to the ${round.pick} of ${round.a} and ${round.b}, then press Space`;
         case "order":
-          return `Pilot to the ${round.pick} of ${round.values.join(", ")}, then confirm`;
+          return `Pilot to the ${round.pick} of ${round.values.join(", ")}, then press Space`;
         default:
           return "Pilot the submarine";
       }
@@ -353,8 +455,9 @@ export default {
         case "opposite":
           return -r.value;
         case "absolute":
-          // The integer described by the context (the signed value itself).
           return r.value;
+        case "absDist":
+          return r.a; // pilot to the integer; absolute value is the distance
         case "compare":
           return r.pick === "greater" ? Math.max(r.a, r.b) : Math.min(r.a, r.b);
         case "order":
@@ -366,6 +469,16 @@ export default {
       }
     }
 
+    function updateHud() {
+      const depthTxt =
+        pos === 0
+          ? "Depth 0 m (sea level)"
+          : pos < 0
+            ? `Depth ${Math.abs(pos)} m below`
+            : `Height ${pos} m above`;
+      hud.setObjective(`${roundObjective()} — ${depthTxt} | now at ${pos}`);
+    }
+
     function startRound() {
       solved = false;
       round = cfg.rounds[roundIndex];
@@ -373,11 +486,29 @@ export default {
       pos = 0;
       setSubY(0, false);
 
+      // updateLabel sets the sprite scale from the text's canvas aspect.
+      updateLabel(cardLabel, cardText());
+      // Scale-pop the card by tweening its parent-relative scale multiplier
+      // without corrupting the aspect ratio set by updateLabel.
+      if (!reduced) {
+        const base = cardLabel.scale.clone();
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.3,
+          onUpdate: (t) => {
+            const m = 1 + Math.sin(t * Math.PI) * 0.16;
+            cardLabel.scale.set(base.x * m, base.y * m, 1);
+          },
+          onComplete: () => cardLabel.scale.copy(base),
+        });
+      }
+
       marker.position.set(0, yFor(targetInt), 0);
-      marker.material.color.setHex(COLORS.target);
+      markerMat.color.setHex(COLORS.target);
+      markerMat.emissive.setHex(COLORS.target);
       marker.visible = true;
 
-      // Persistent "Step X of Y" for the whole round (both levels have 5 rounds).
       if (typeof hud.setProgress === "function")
         hud.setProgress(roundIndex, cfg.rounds.length);
 
@@ -390,10 +521,11 @@ export default {
           intro = `Round ${roundIndex + 1}. Travel to the opposite of ${round.value}. Opposites are the same distance from 0 on the other side.`;
           break;
         case "absolute":
+        case "absDist":
           intro = `Round ${roundIndex + 1}. ${round.context} Travel to that integer. Its absolute value is the distance from the surface.`;
           break;
         case "compare":
-          intro = `Round ${roundIndex + 1}. Which is ${round.pick}, ${round.a} or ${round.b}? Pilot to it. Remember: higher on the line is greater.`;
+          intro = `Round ${roundIndex + 1}. Which is ${round.pick}, ${round.a} or ${round.b}? Pilot to it. Higher on the line is greater.`;
           break;
         case "order":
           intro = `Round ${roundIndex + 1}. Of ${round.values.join(", ")}, pilot to the ${round.pick}.`;
@@ -402,72 +534,80 @@ export default {
           intro = `Round ${roundIndex + 1}.`;
       }
       announce(intro);
+      caption(cardText());
       updateHud();
+      feel.sfx("select");
 
-      if (cfg.hints) {
-        hud.message(
-          "Use Up/Down (or the d-pad) to move. Press Space when you arrive.",
-          {
-            tone: "info",
-            duration: 2800,
-          },
-        );
-      } else {
-        hud.message(
-          "Up/Down to move. Space to confirm. Enter for a depth read-out.",
-          {
-            tone: "info",
-            duration: 2200,
-          },
-        );
-      }
+      hud.message(
+        cfg.hints
+          ? "Use Up/Down (or the d-pad) to move. Press Space when you arrive. Enter reads your depth."
+          : "Up/Down to move. Space to confirm. Enter for a depth read-out.",
+        { tone: "info", duration: cfg.hints ? 3000 : 2200 },
+      );
     }
 
     function move(dir) {
-      if (solved) return;
+      if (solved || !started) return;
       const next = Math.max(RANGE_MIN, Math.min(RANGE_MAX, pos + dir));
       if (next === pos) {
-        feel.shake(0.08);
+        feel.sfx("wrong");
+        feel.shake(0.08, 0.18);
         return;
       }
       pos = next;
       setSubY(pos, true);
+      feel.sfx(dir > 0 ? "add" : "remove");
       feel.burst(
         { x: 0, y: yFor(pos), z: 0 },
-        { color: COLORS.surface, count: 6, spread: 0.4, size: 0.06, life: 0.4 },
+        {
+          color: COLORS.surface,
+          count: 8,
+          spread: 0.5,
+          size: 0.07,
+          life: 0.45,
+        },
       );
       announce(`Now at ${depthWord(pos)}.`);
       updateHud();
     }
 
     function readOut() {
+      if (!started) return;
       const av = Math.abs(pos);
       const msg = `Position ${pos}. Absolute value ${av}. That is ${av} meter${av === 1 ? "" : "s"} from the surface.`;
       caption(msg);
       announce(msg);
+      feel.sfx("pop");
       hud.message(`|${pos}| = ${av}`, { tone: "info", duration: 1800 });
-      later(() => caption(""), 1800);
+      later(() => caption(cardText()), 1800);
     }
 
     function confirmArrival() {
-      if (solved) return;
+      if (solved || !started) return;
       if (pos !== targetInt) {
-        feel.shake(0.16);
-        marker.material.color.setHex(COLORS.targetBad);
-        later(() => marker.material.color.setHex(COLORS.target), 500);
+        feel.sfx("wrong");
+        feel.shake(0.16, 0.3);
+        markerMat.color.setHex(COLORS.targetBad);
+        markerMat.emissive.setHex(COLORS.targetBad);
+        later(() => {
+          markerMat.color.setHex(COLORS.target);
+          markerMat.emissive.setHex(COLORS.target);
+        }, 500);
         const hint =
           round.kind === "opposite"
-            ? ` The opposite of ${round.value} is on the other side of 0, same distance.`
-            : round.kind === "absolute"
+            ? ` The opposite of ${round.value} is the same distance from 0 on the other side.`
+            : round.kind === "absolute" || round.kind === "absDist"
               ? ` Distance from the surface is |${targetInt}| = ${Math.abs(targetInt)}.`
               : round.kind === "compare"
                 ? ` Higher on the line means greater.`
-                : "";
+                : round.kind === "order"
+                  ? ` Compare them on the line — higher is greater.`
+                  : "";
         const msg = `Not there yet. You are at ${pos}.${cfg.hints ? hint : ""}`;
         streak = 0;
         if (typeof hud.setStreak === "function") hud.setStreak(0);
         if (typeof hud.feedback === "function") hud.feedback(false, msg);
-        else hud.message(msg, { tone: "warn", duration: 2200 });
+        else hud.message(msg, { tone: "warn", duration: 2400 });
         announce(msg);
         return;
       }
@@ -477,9 +617,8 @@ export default {
       streak += 1;
       if (streak > bestStreak) bestStreak = streak;
       if (typeof hud.setStreak === "function") hud.setStreak(streak);
-      const base = 20;
-      const levelBonus = level === 2 ? 10 : 0;
-      const pts = base + levelBonus;
+
+      const pts = (level === 2 ? 30 : 20) + (streak >= 3 ? 10 : 0);
       onScore(pts, {
         round: roundIndex + 1,
         kind: round.kind,
@@ -487,11 +626,23 @@ export default {
         absolute: Math.abs(targetInt),
       });
 
-      feel.shake(0.3);
+      feel.sfx("correct");
+      feel.shake(0.3, 0.35);
       feel.burst(
         { x: 0, y: yFor(targetInt), z: 0 },
-        { color: COLORS.target, count: 32, spread: 1.4 },
+        { color: COLORS.target, count: 36, spread: 1.6 },
       );
+      // Victory scale-pop on the sub.
+      if (!reduced) {
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.35,
+          onUpdate: (t) =>
+            subGroup.scale.setScalar(1 + Math.sin(t * Math.PI) * 0.18),
+          onComplete: () => subGroup.scale.setScalar(1),
+        });
+      }
 
       let why;
       switch (round.kind) {
@@ -499,6 +650,7 @@ export default {
           why = `${targetInt} is the opposite of ${round.value}.`;
           break;
         case "absolute":
+        case "absDist":
           why = `|${targetInt}| = ${Math.abs(targetInt)}, the distance from the surface.`;
           break;
         case "compare":
@@ -521,28 +673,86 @@ export default {
           roundIndex += 1;
           startRound();
         } else {
-          marker.visible = false;
-          hud.setObjective(
-            `All depths reached — ${solvedCount} of ${cfg.rounds.length}, best streak ${bestStreak}. Great piloting, Captain!`,
-          );
-          hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-          announce(
-            `All rounds complete. You reached ${solvedCount} depths with a best streak of ${bestStreak}. Great piloting, Captain.`,
-          );
+          finish();
         }
-      }, 2700);
+      }, 2600);
     }
 
-    let unbindPress = null;
-    let unbindTap = null;
+    function finish() {
+      marker.visible = false;
+      updateLabel(cardLabel, "All depths reached!");
+      hud.setProgress(cfg.rounds.length, cfg.rounds.length);
+      hud.setObjective(
+        `All depths reached — ${solvedCount} of ${cfg.rounds.length}, best streak ${bestStreak}. Great piloting, Captain!`,
+      );
+      hud.message("All rounds complete!", { tone: "ok", duration: 0 });
+      feel.sfx("fanfare");
+      announce(
+        `All rounds complete. You reached ${solvedCount} depths with a best streak of ${bestStreak}. Great piloting, Captain.`,
+      );
+      // Celebration confetti rising from sea level.
+      if (!reduced) {
+        [0, 200, 400].forEach((ms) =>
+          later(
+            () =>
+              feel.burst(
+                { x: 0, y: 0, z: 0 },
+                { color: COLORS.target, count: 40, spread: 3.0, life: 1.4 },
+              ),
+            ms,
+          ),
+        );
+      }
+    }
+
+    // ---- Animated camera intro ----------------------------------------------
+    function cameraIntro(onDone) {
+      const target = new THREE.Vector3(0, columnMidY, 0);
+      const endPos = new THREE.Vector3(4.4, columnMidY + 1.3, 6.6);
+      if (reduced) {
+        camera.position.copy(endPos);
+        camera.lookAt(target);
+        feel.syncCamera();
+        onDone();
+        return;
+      }
+      const startPos = new THREE.Vector3(8.5, columnTopY + 3, 10.5);
+      camera.position.copy(startPos);
+      camera.lookAt(target);
+      feel.tween({
+        from: 0,
+        to: 1,
+        duration: 1.4,
+        onUpdate: (t) => {
+          camera.position.lerpVectors(startPos, endPos, t);
+          camera.lookAt(target);
+        },
+        onComplete: () => {
+          feel.syncCamera();
+          onDone();
+        },
+      });
+    }
 
     return {
       start() {
-        camera.position.set(4.2, columnMidY + 1.2, 6.4);
-        camera.lookAt(0, columnMidY, 0);
-        feel.syncCamera();
-
-        startRound();
+        cameraIntro(() => {
+          started = true;
+          // Spawn-pop the submarine in.
+          if (!reduced) {
+            feel.tween({
+              from: 0,
+              to: 1,
+              duration: 0.4,
+              onUpdate: (t) => subGroup.scale.setScalar(t),
+              onComplete: () => subGroup.scale.setScalar(1),
+            });
+          } else {
+            subGroup.scale.setScalar(1);
+          }
+          feel.sfx("pop");
+          startRound();
+        });
 
         unbindPress = input.onPress((name) => {
           if (name === "up") move(1);
@@ -551,26 +761,30 @@ export default {
           else if (name === "confirm") readOut();
         });
 
-        // Tap/click: tap upper half to rise, lower half to dive; double role via marker tap = confirm.
         unbindTap = input.onTap(() => {
-          if (solved) return;
-          // Raycast the submarine or marker to confirm arrival.
+          if (solved || !started) return;
           const hits = input.raycast(camera, [marker, subGroup], true);
           if (hits.length) {
             confirmArrival();
             return;
           }
-          // Otherwise move toward where the player tapped (screen Y).
           const ny = input.state.ndc ? input.state.ndc.y : 0;
           move(ny >= 0 ? 1 : -1);
         });
 
-        if (!feel.reducedMotion) {
-          unbindFrame = ctx.onFrame((dt, t) => {
-            // Gentle bob + marker pulse.
-            subGroup.position.x = Math.sin(t * 1.5) * 0.04;
-            const s = 1 + Math.sin(t * 3) * 0.08;
+        if (!reduced) {
+          unbindFrame = onFrame((dt, t) => {
+            // Gentle sub bob (only when settled, never overrides a tween).
+            subGroup.position.x = Math.sin(t * 1.4) * 0.05;
+            subGroup.rotation.z = Math.sin(t * 1.1) * 0.04;
+            // Target marker pulse.
+            const s = 1 + Math.sin(t * 3) * 0.1;
             marker.scale.set(s, 1, s);
+            markerMat.emissiveIntensity = 0.5 + Math.sin(t * 3) * 0.25;
+            // Drifting surface shimmer.
+            surface.material.emissiveIntensity = 0.4 + Math.sin(t * 2) * 0.15;
+            // Glowing porthead breathes.
+            portMat.emissiveIntensity = 0.7 + Math.sin(t * 2.5) * 0.3;
           });
         }
       },
@@ -581,7 +795,16 @@ export default {
         if (unbindFrame) unbindFrame();
         timers.forEach(clearTimeout);
         timers.length = 0;
+        scene.remove(group);
         disposables.forEach((d) => d.dispose && d.dispose());
+        // makeLabel sprites: dispose their textures + materials.
+        const sprites = [cardLabel, seaLabel, ...lineLabels];
+        sprites.forEach((sp) => {
+          if (sp.material) {
+            if (sp.material.map) sp.material.map.dispose();
+            sp.material.dispose();
+          }
+        });
       },
     };
   },

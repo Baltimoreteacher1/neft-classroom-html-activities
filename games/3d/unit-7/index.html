@@ -64,7 +64,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -74,16 +75,18 @@
       id="game"
       role="application"
       tabindex="0"
-      aria-label="Submarine — Dive the Number Line. Interactive 3D math game."
+      aria-label="Submarine — Dive the Number Line. Interactive 3D math game. Use Up and Down arrows or W and S to dive and rise, Space to confirm, Enter to read out your depth. On touch screens use the on-screen d-pad and round action button."
       aria-describedby="e3d-intro"
     ></div>
     <div class="e3d-boot-title">Submarine — Dive the Number Line</div>
     <p class="e3d-intro" id="e3d-intro">
-      Pilot the submarine along the vertical number line. Up/Down (or W/S or the
-      d-pad) moves above and below sea level. Space confirms when you reach the
-      target integer; Enter reads out your depth and its absolute value. Find
-      opposites, compare and order integers, and use absolute value as distance
-      from the surface.
+      Pilot the glowing submarine along the vertical number line where 0 is sea
+      level. Up / Down (W / S or the on-screen d-pad) dive below or rise above
+      the surface. Space confirms when you reach the target integer; Enter reads
+      out your depth and its absolute value. Find opposites, compare and order
+      integers, and use absolute value as distance from the surface. Level 1
+      gives hints and a smaller range; Level 2 adds bigger numbers and
+      multi-step ordering.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -101,7 +104,10 @@
 
       try {
         // Omit `level` to show the Level 1 / Level 2 selector first.
-        mountGame(document.getElementById("game"), unit7Submarine, {});
+        // Themed deep-sea palette + framed camera for the number-line column.
+        mountGame(document.getElementById("game"), unit7Submarine, {
+          sceneOpts: { background: 0x0a2c4a, cameraPos: [4.4, 4, 9] },
+        });
       } catch (err) {
         console.error("Failed to mount Unit 7 game:", err);
         document.getElementById("fallback").style.display = "flex";

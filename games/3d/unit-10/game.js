@@ -1,43 +1,59 @@
 import { prismVolume } from "/games/engine3d/geometry-math.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+
+/* ============================================================================
+ * Unit 10 — VOLUME VAULT  (CCSS 6.G.A.2)
+ * Volume of right rectangular prisms, including fractional edge lengths, by
+ * packing them with unit cubes:  V = l × w × h.
+ *
+ * Theme: a glowing gold "vault" you fill with luminous unit cubes.
+ *   Level 1 (support):  whole-number edges, on-screen hints, smaller prisms.
+ *   Level 2 (enrichment): fractional edges (half-units), packing fractional
+ *                         unit cubes, missing-edge division, volume comparison.
+ * ==========================================================================*/
 
 const COLORS = {
-  frame: 0xf2c15b,
-  cube: [0x1fa6a2, 0x4f8fd0, 0xe09b4a, 0x8b6fc4, 0x4aa978, 0xd9795d],
-  cursorOk: 0x1fa6a2,
-  cursorBad: 0xb64e2f,
-  floor: 0x13355b,
+  vault: 0xf2c15b, // gold vault frame / accents
+  vaultGlow: 0xffd97a,
+  cube: [0x35c9c3, 0x5b9cff, 0xffb454, 0xb98cff, 0x53d08a, 0xff7e6b],
+  cursorOk: 0x35c9c3,
+  cursorBad: 0xff7e6b,
+  floor: 0x0c1c33,
+  pad: 0x16335b,
 };
 
-// Round kinds:
-//   "fill"    — fill the prism with unit cubes to reach the target volume.
-//   "missing" — given the volume and two edge lengths, set the missing edge.
-//   "compare" — two prisms shown; pick the one with the greater volume.
+// ---------------------------------------------------------------------------
+// Level design — 6 rounds each. Level 2 is strictly harder (fractions + steps).
+// ---------------------------------------------------------------------------
 function makeLevel(level) {
   if (level === 1) {
     return {
       hints: true,
       rounds: [
+        { kind: "fill", l: 2, w: 2, h: 1 },
+        { kind: "fill", l: 3, w: 2, h: 1 },
         { kind: "fill", l: 3, w: 2, h: 2 },
+        { kind: "missing", l: 3, w: 2, volume: 12, max: 5 },
         { kind: "fill", l: 4, w: 3, h: 2 },
-        { kind: "fill", l: 4, w: 3, h: 3 },
+        { kind: "compare", a: { l: 3, w: 2, h: 2 }, b: { l: 4, w: 2, h: 1 } },
       ],
     };
   }
   return {
     hints: false,
     rounds: [
-      // Fractional edge lengths: dimensions are in units; "frac" sets the
-      // sub-cube count per unit along each axis (denominator). A 1/2-unit cube has
-      // volume 1/8 of a whole unit cube.
+      // frac = sub-cubes per unit along each axis (denominator). frac 2 ⇒
+      // half-unit cubes, each 1/8 of a whole cubic unit.
+      { kind: "fill", l: 2.5, w: 2, h: 1, frac: 2 },
+      { kind: "fill", l: 1.5, w: 1.5, h: 2, frac: 2 },
+      { kind: "missing", l: 3, w: 2, volume: 9, frac: 2, max: 4 },
       { kind: "fill", l: 2.5, w: 2, h: 1.5, frac: 2 },
-      // Missing dimension: V = l*w*h, solve for h. Edge in half-units.
-      { kind: "missing", l: 3, w: 2, volume: 9, axis: "h", frac: 2, max: 4 },
-      // Compare two prisms by volume.
+      { kind: "missing", l: 2.5, w: 2, volume: 7.5, frac: 2, max: 4 },
       {
         kind: "compare",
         a: { l: 4, w: 2, h: 1.5 },
-        b: { l: 3, w: 3, h: 1 },
+        b: { l: 3, w: 2.5, h: 1.5 },
         frac: 2,
       },
     ],
@@ -83,6 +99,7 @@ export default {
     const {
       scene,
       camera,
+      renderer,
       input,
       hud,
       feel,
@@ -94,14 +111,15 @@ export default {
     } = ctx;
 
     const cfg = makeLevel(level);
+    const reduced = feel.reducedMotion;
 
     const group = new THREE.Group();
     scene.add(group);
 
-    // Shared low-poly resources for instancing efficiency.
-    const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
-    const cursorGeo = new THREE.BoxGeometry(1.02, 1.02, 1.02);
-    const disposables = [cubeGeo, cursorGeo];
+    // ---- Shared geometry/material resources (disposed in dispose) ----------
+    const unitCubeGeo = new RoundedBoxGeometry(1, 1, 1, 3, 0.12);
+    const cursorGeo = new RoundedBoxGeometry(1.04, 1.04, 1.04, 2, 0.12);
+    const disposables = [unitCubeGeo, cursorGeo];
 
     const timers = [];
     const later = (fn, ms) => {
@@ -110,50 +128,97 @@ export default {
       return id;
     };
 
-    // ---- Round state ----
+    // ---- Stage: receive-shadow floor + a glowing vault pad -----------------
+    const floorGeo = new THREE.CircleGeometry(22, 64);
+    const floorMat = new THREE.MeshStandardMaterial({
+      color: COLORS.floor,
+      roughness: 0.92,
+      metalness: 0.05,
+    });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -0.001;
+    floor.receiveShadow = true;
+    group.add(floor);
+    disposables.push(floorGeo, floorMat);
+
+    const padGeo = new RoundedBoxGeometry(9, 0.4, 9, 3, 0.25);
+    const padMat = new THREE.MeshStandardMaterial({
+      color: COLORS.pad,
+      roughness: 0.5,
+      metalness: 0.25,
+      emissive: COLORS.vault,
+      emissiveIntensity: 0.06,
+    });
+    const pad = new THREE.Mesh(padGeo, padMat);
+    pad.position.y = -0.2;
+    pad.receiveShadow = true;
+    pad.castShadow = true;
+    group.add(pad);
+    disposables.push(padGeo, padMat);
+
+    // ---- Round state -------------------------------------------------------
     let round = null;
     let roundIndex = 0;
     let solved = false;
-    let streak = 0; // consecutive correct
+    let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
     let unbindFrame = null;
+    let unbindIdle = null;
 
-    // Fill-round geometry (in sub-cube cells).
-    let frac = 1; // cells per unit along an axis
-    let step = 1; // world size of one sub-cube = 1/frac
+    // Fill-round grid state.
+    let frac = 1;
+    let step = 1;
     let nx = 0;
     let ny = 0;
-    let nz = 0; // sub-cube counts along x(l), y(h), z(w)
-    let filled = null; // boolean grid [x][y][z]
+    let nz = 0;
+    let filled = null;
     let cursor = { x: 0, y: 0, z: 0 };
     let placedCount = 0;
     let targetCount = 0;
-    let layerUp = true; // direction of the secondary-button vertical layer move
-    let cubeMesh = null; // InstancedMesh of placed sub-cubes
-    const cursorMesh = new THREE.Mesh(
-      cursorGeo,
-      new THREE.MeshStandardMaterial({
-        color: COLORS.cursorOk,
-        transparent: true,
-        opacity: 0.55,
-        emissive: COLORS.cursorOk,
-        emissiveIntensity: 0.3,
-      }),
-    );
+    let layerUp = true;
+    let cubeMesh = null;
+
+    const cursorMat = new THREE.MeshStandardMaterial({
+      color: COLORS.cursorOk,
+      transparent: true,
+      opacity: 0.5,
+      roughness: 0.3,
+      metalness: 0.1,
+      emissive: COLORS.cursorOk,
+      emissiveIntensity: 0.8,
+    });
+    const cursorMesh = new THREE.Mesh(cursorGeo, cursorMat);
     cursorMesh.visible = false;
+    cursorMesh.castShadow = false;
     group.add(cursorMesh);
 
     const dummy = new THREE.Object3D();
     const frameMeshes = [];
     const labels = [];
 
-    // ---- Missing/compare round state ----
-    let guess = 0; // current value of the missing edge (in units)
+    // ---- Missing / compare state ------------------------------------------
+    let guess = 0;
     let guessStep = 1;
-    let compareChoice = 0; // 0 = A, 1 = B
+    let compareChoice = 0;
     let comparePrisms = [];
 
+    // 3D problem card — always shows the current question above the vault.
+    const problemCard = makeLabel("", {
+      scale: 0.92,
+      fontSize: 60,
+      background: "rgba(12,28,51,0.92)",
+      color: "#ffe6a8",
+    });
+    problemCard.position.set(0, 5.4, 0);
+    group.add(problemCard);
+
+    function setProblemCard(text) {
+      updateLabel(problemCard, text);
+    }
+
+    // ----------------------------------------------------------------------
     function clearGroupExtras() {
       frameMeshes.forEach((m) => {
         group.remove(m);
@@ -175,19 +240,17 @@ export default {
       comparePrisms.forEach((p) => {
         group.remove(p);
         p.traverse((o) => {
-          if (o.geometry && o.geometry !== cubeGeo) o.geometry.dispose();
+          if (o.geometry && o.geometry !== unitCubeGeo) o.geometry.dispose();
           if (o.material) o.material.dispose();
         });
       });
       comparePrisms.length = 0;
     }
 
-    // World extents of the prism, centered on origin, sitting on the floor.
     function prismDims() {
       return { lx: nx * step, ly: ny * step, lz: nz * step };
     }
 
-    // World position of the center of sub-cube (i,j,k).
     function cellCenter(i, j, k) {
       const { lx, ly, lz } = prismDims();
       return new THREE.Vector3(
@@ -197,7 +260,8 @@ export default {
       );
     }
 
-    function buildWireframe(lx, ly, lz, color, cx = 0, cz = 0) {
+    // Glowing gold vault outline (target frame).
+    function buildVaultFrame(lx, ly, lz, cx = 0, cz = 0, color = COLORS.vault) {
       const box = new THREE.BoxGeometry(lx, ly, lz);
       const edges = new THREE.EdgesGeometry(box);
       box.dispose();
@@ -210,7 +274,6 @@ export default {
     }
 
     function fracLabel(value) {
-      // Render fractional unit values as nice strings (e.g. 2.5 -> "2½").
       if (Number.isInteger(value)) return String(value);
       const whole = Math.floor(value);
       const f = value - whole;
@@ -219,7 +282,7 @@ export default {
       return whole ? `${whole}${fr}` : fr;
     }
 
-    // ---------- FILL ROUND ----------
+    // ===================== FILL ROUND =====================================
     function startFillRound() {
       frac = round.frac || 1;
       step = 1 / frac;
@@ -230,9 +293,7 @@ export default {
       filled = [];
       for (let i = 0; i < nx; i++) {
         filled[i] = [];
-        for (let j = 0; j < ny; j++) {
-          filled[i][j] = new Array(nz).fill(false);
-        }
+        for (let j = 0; j < ny; j++) filled[i][j] = new Array(nz).fill(false);
       }
       targetCount = nx * ny * nz;
       placedCount = 0;
@@ -240,19 +301,19 @@ export default {
       layerUp = true;
 
       const { lx, ly, lz } = prismDims();
-
-      // Vault frame (target outline).
-      const frame = buildWireframe(lx, ly, lz, COLORS.frame);
+      const frame = buildVaultFrame(lx, ly, lz);
       group.add(frame);
       frameMeshes.push(frame);
 
-      // Instanced cubes container, sized to capacity.
       const mat = new THREE.MeshStandardMaterial({
-        roughness: 0.55,
-        metalness: 0.05,
+        roughness: 0.32,
+        metalness: 0.15,
+        emissiveIntensity: 0.35,
       });
-      cubeMesh = new THREE.InstancedMesh(cubeGeo, mat, targetCount);
+      cubeMesh = new THREE.InstancedMesh(unitCubeGeo, mat, targetCount);
       cubeMesh.count = 0;
+      cubeMesh.castShadow = true;
+      cubeMesh.receiveShadow = true;
       cubeMesh.instanceColor = new THREE.InstancedBufferAttribute(
         new Float32Array(targetCount * 3),
         3,
@@ -261,14 +322,12 @@ export default {
 
       cursorMesh.visible = true;
       cursorMesh.scale.setScalar(step);
-      cursorGeo.computeBoundingSphere();
 
       const targetVol = prismVolume(round.l, round.w, round.h);
-      const dimStr = `${fracLabel(round.l)} × ${fracLabel(round.w)} × ${fracLabel(
-        round.h,
-      )}`;
-      hud.setObjective(
-        `Fill the vault: V = ${dimStr} = ${fracLabel(targetVol)} cubic units`,
+      setProblemCard(
+        `V = ${fracLabel(round.l)} × ${fracLabel(round.w)} × ${fracLabel(
+          round.h,
+        )} = ${fracLabel(targetVol)} cubic units`,
       );
 
       const cubeWord =
@@ -278,8 +337,8 @@ export default {
               step * step * step,
             )} cubic unit)`;
       announce(
-        `Round ${roundIndex + 1}. Fill the rectangular prism with ${cubeWord}. ` +
-          `The prism is ${fracLabel(round.l)} long, ${fracLabel(
+        `Round ${roundIndex + 1}. Fill the vault with ${cubeWord}. ` +
+          `It is ${fracLabel(round.l)} long, ${fracLabel(
             round.w,
           )} wide, and ${fracLabel(round.h)} tall. ` +
           `Volume equals length times width times height, which is ${fracLabel(
@@ -289,10 +348,11 @@ export default {
 
       if (cfg.hints) {
         hud.message(
-          "Move with arrow keys / WASD (Q and E for up and down). Place a cube with Space or tap.",
-          { tone: "info", duration: 3200 },
+          "Tap or press the action button to drop a cube. Arrow keys / WASD nudge the glowing cursor.",
+          { tone: "info", duration: 3600 },
         );
       }
+      feel.sfx("select");
       refreshCursor();
       updateFillObjective();
     }
@@ -304,7 +364,7 @@ export default {
     function updateFillObjective() {
       const targetVol = prismVolume(round.l, round.w, round.h);
       hud.setObjective(
-        `Volume ${fracLabel(placedVolume())} / ${fracLabel(
+        `Fill the vault: ${fracLabel(placedVolume())} / ${fracLabel(
           targetVol,
         )} cubic units  (${placedCount} / ${targetCount} cubes)`,
       );
@@ -314,12 +374,9 @@ export default {
       const c = cellCenter(cursor.x, cursor.y, cursor.z);
       cursorMesh.position.copy(c);
       const here = filled[cursor.x][cursor.y][cursor.z];
-      cursorMesh.material.color.setHex(
-        here ? COLORS.cursorBad : COLORS.cursorOk,
-      );
-      cursorMesh.material.emissive.setHex(
-        here ? COLORS.cursorBad : COLORS.cursorOk,
-      );
+      const col = here ? COLORS.cursorBad : COLORS.cursorOk;
+      cursorMesh.material.color.setHex(col);
+      cursorMesh.material.emissive.setHex(col);
     }
 
     function placeCube() {
@@ -329,26 +386,42 @@ export default {
           tone: "warn",
           duration: 1400,
         });
-        feel.shake(0.1);
+        feel.sfx("wrong");
+        feel.shake(0.08);
         return;
       }
       filled[cursor.x][cursor.y][cursor.z] = true;
       const idx = placedCount;
       const c = cellCenter(cursor.x, cursor.y, cursor.z);
-      dummy.position.copy(c);
-      dummy.scale.setScalar(step * 0.94);
-      dummy.updateMatrix();
-      cubeMesh.setMatrixAt(idx, dummy.matrix);
-      const col = new THREE.Color(COLORS.cube[idx % COLORS.cube.length]);
+      const colHex = COLORS.cube[idx % COLORS.cube.length];
+
+      // Scale-pop the new cube in.
+      const place = (s) => {
+        dummy.position.copy(c);
+        dummy.scale.setScalar(step * 0.92 * s);
+        dummy.updateMatrix();
+        cubeMesh.setMatrixAt(idx, dummy.matrix);
+        cubeMesh.instanceMatrix.needsUpdate = true;
+      };
+      place(reduced ? 1 : 0.2);
+      const col = new THREE.Color(colHex);
       cubeMesh.setColorAt(idx, col);
       placedCount += 1;
       cubeMesh.count = placedCount;
-      cubeMesh.instanceMatrix.needsUpdate = true;
       if (cubeMesh.instanceColor) cubeMesh.instanceColor.needsUpdate = true;
+      if (!reduced) {
+        feel.tween({
+          from: 0.2,
+          to: 1,
+          duration: 0.22,
+          onUpdate: (v) => place(v),
+        });
+      }
 
+      feel.sfx("add");
       feel.burst(
         { x: c.x, y: c.y + 0.3, z: c.z },
-        { color: COLORS.cube[idx % COLORS.cube.length], count: 8, size: 0.12 },
+        { color: colHex, count: 8, size: 0.12, spread: 1.4 },
       );
       announce(
         `Placed cube ${placedCount}. Volume so far ${fracLabel(
@@ -363,21 +436,17 @@ export default {
 
     // Auto-advance to the next empty cell (row-major: x, then z, then y).
     function advanceCursor() {
-      for (let j = cursor.y; j < ny; j++) {
-        for (let k = j === cursor.y ? cursor.z : 0; k < nz; k++) {
+      for (let j = cursor.y; j < ny; j++)
+        for (let k = j === cursor.y ? cursor.z : 0; k < nz; k++)
           for (
             let i = j === cursor.y && k === cursor.z ? cursor.x + 1 : 0;
             i < nx;
             i++
-          ) {
+          )
             if (!filled[i][j][k]) {
               cursor = { x: i, y: j, z: k };
               return;
             }
-          }
-        }
-      }
-      // Fall back to first empty cell anywhere.
       for (let j = 0; j < ny; j++)
         for (let k = 0; k < nz; k++)
           for (let i = 0; i < nx; i++)
@@ -393,6 +462,7 @@ export default {
       const nzp = Math.max(0, Math.min(nz - 1, cursor.z + dz));
       if (nxp !== cursor.x || nyp !== cursor.y || nzp !== cursor.z) {
         cursor = { x: nxp, y: nyp, z: nzp };
+        feel.sfx("select");
         refreshCursor();
         announce(
           `Cursor at column ${cursor.x + 1}, row ${cursor.z + 1}, layer ${
@@ -414,94 +484,92 @@ export default {
         cubes: targetCount,
         kind: "fill",
       });
-      feel.shake(0.3);
+      feel.sfx("correct");
+      feel.shake(0.28);
       feel.burst(
-        { x: 0, y: 1.5, z: 0 },
-        { color: COLORS.frame, count: 36, spread: 4 },
+        { x: 0, y: 1.6, z: 0 },
+        { color: COLORS.vaultGlow, count: 40, spread: 4 },
       );
       markCorrect(
-        `Vault filled! V = ${fracLabel(round.l)}×${fracLabel(
+        `Vault sealed! V = ${fracLabel(round.l)}×${fracLabel(
           round.w,
         )}×${fracLabel(round.h)} = ${fracLabel(targetVol)} cubic units. +${pts}`,
       );
       announce(
-        `Vault filled. The volume is ${fracLabel(
+        `Vault sealed. The volume is ${fracLabel(
           targetVol,
         )} cubic units. You earned ${pts} points.`,
       );
       nextRoundSoon();
     }
 
-    // ---------- MISSING-DIMENSION ROUND ----------
+    // ===================== MISSING-DIMENSION ROUND =========================
     function startMissingRound() {
       frac = round.frac || 1;
       guessStep = 1 / frac;
-      const known = prismVolume(round.l, round.w, 1); // l*w (area of base)
-      const answer = round.volume / known; // the missing edge length
-      round._answer = answer;
-      guess = guessStep; // start at the smallest step
+      round._answer = round.volume / prismVolume(round.l, round.w, 1);
+      guess = guessStep;
 
-      buildMissingScene();
+      // Glowing base footprint.
+      const base = buildVaultFrame(round.l, 0.04, round.w);
+      base.position.y = 0.02;
+      group.add(base);
+      frameMeshes.push(base);
 
       hud.setObjective(
-        `Find the missing edge: V = ${fracLabel(round.l)} × ${fracLabel(
-          round.w,
-        )} × ? = ${fracLabel(round.volume)} cubic units`,
+        `Find the missing height. Use up / down (or tap action) then press to check.`,
       );
       announce(
-        `Round ${roundIndex + 1}. A rectangular prism has volume ${fracLabel(
+        `Round ${roundIndex + 1}. A vault has volume ${fracLabel(
           round.volume,
         )} cubic units. Its length is ${fracLabel(
           round.l,
         )} and its width is ${fracLabel(round.w)}. ` +
-          `Find the missing height. Use up and down, or the side button, to change it, then place to check.`,
+          `Find the missing height. Use up and down to change it, then place to check.`,
       );
       if (cfg.hints) {
         hud.message("Volume ÷ (length × width) gives the missing edge.", {
           tone: "info",
-          duration: 3000,
+          duration: 3400,
         });
       }
+      feel.sfx("select");
       updateMissingScene();
-    }
-
-    function buildMissingScene() {
-      const lx = round.l;
-      const lz = round.w;
-      // Base footprint outline.
-      const base = buildWireframe(lx, 0.02, lz, COLORS.frame);
-      base.position.y = 0.01;
-      group.add(base);
-      frameMeshes.push(base);
-
-      const lbl = makeLabel("", { scale: 0.7 });
-      lbl.position.set(0, 0.2, 0);
-      group.add(lbl);
-      labels.push(lbl);
     }
 
     function updateMissingScene() {
       const lx = round.l;
       const lz = round.w;
       const ly = guess;
-      // Rebuild the dynamic prism wireframe (keep frameMeshes[0] = base).
+      // Solid translucent prism that grows with the guessed height.
       if (frameMeshes[1]) {
         group.remove(frameMeshes[1]);
         frameMeshes[1].geometry.dispose();
         frameMeshes[1].material.dispose();
       }
-      const prism = buildWireframe(lx, Math.max(ly, 0.001), lz, COLORS.cube[1]);
-      group.add(prism);
-      frameMeshes[1] = prism;
+      const solid = new THREE.Mesh(
+        new RoundedBoxGeometry(lx, Math.max(ly, 0.04), lz, 3, 0.08),
+        new THREE.MeshStandardMaterial({
+          color: COLORS.cube[1],
+          roughness: 0.3,
+          metalness: 0.1,
+          transparent: true,
+          opacity: 0.82,
+          emissive: COLORS.cube[1],
+          emissiveIntensity: 0.25,
+        }),
+      );
+      solid.position.y = Math.max(ly, 0.04) / 2;
+      solid.castShadow = true;
+      group.add(solid);
+      frameMeshes[1] = solid;
 
       const vol = prismVolume(round.l, round.w, guess);
-      updateLabel(
-        labels[0],
-        `${fracLabel(round.l)} × ${fracLabel(round.w)} × ${fracLabel(
-          guess,
-        )} = ${fracLabel(vol)}`,
+      setProblemCard(
+        `${fracLabel(round.l)} × ${fracLabel(round.w)} × ? = ${fracLabel(
+          round.volume,
+        )}`,
       );
-      labels[0].position.y = ly + 0.5;
       hud.setObjective(
         `Height = ${fracLabel(guess)} → V = ${fracLabel(vol)} / ${fracLabel(
           round.volume,
@@ -513,6 +581,7 @@ export default {
       const v = Math.max(guessStep, Math.min(round.max || 6, guess + delta));
       if (v !== guess) {
         guess = Number(v.toFixed(4));
+        feel.sfx("pop");
         updateMissingScene();
         announce(`Height set to ${fracLabel(guess)}.`);
       }
@@ -527,26 +596,28 @@ export default {
             round.volume,
           )}. Adjust the height.`,
         );
-        feel.shake(0.14);
+        feel.sfx("wrong");
+        feel.shake(0.12);
         announce(
           `That gives ${fracLabel(vol)} cubic units. Try a different height.`,
         );
         return;
       }
       solved = true;
-      const pts = 35;
+      const pts = level === 2 ? 35 : 25;
       onScore(pts, {
         round: roundIndex + 1,
         volume: round.volume,
         edge: guess,
         kind: "missing",
       });
-      feel.shake(0.3);
+      feel.sfx("correct");
+      feel.shake(0.28);
       feel.burst(
         { x: 0, y: guess + 0.6, z: 0 },
-        { color: COLORS.frame, count: 32, spread: 3 },
+        { color: COLORS.vaultGlow, count: 34, spread: 3 },
       );
-      markCorrect(`Correct! Missing edge = ${fracLabel(guess)}. +${pts}`);
+      markCorrect(`Correct! Missing height = ${fracLabel(guess)}. +${pts}`);
       announce(
         `Correct. The missing height is ${fracLabel(
           guess,
@@ -555,7 +626,7 @@ export default {
       nextRoundSoon();
     }
 
-    // ---------- COMPARE ROUND ----------
+    // ===================== COMPARE ROUND ==================================
     function startCompareRound() {
       comparePrisms = [];
       const specs = [
@@ -563,27 +634,28 @@ export default {
         { spec: round.b, cx: 3 },
       ];
       specs.forEach(({ spec, cx }, idx) => {
-        const p = buildSolidPrism(spec, COLORS.cube[idx === 0 ? 0 : 2]);
+        const p = buildSolidPrism(spec, COLORS.cube[idx === 0 ? 0 : 3]);
         p.position.x = cx;
         group.add(p);
         comparePrisms.push(p);
         const vol = prismVolume(spec.l, spec.w, spec.h);
         const lbl = makeLabel(
-          `${fracLabel(spec.l)}×${fracLabel(spec.w)}×${fracLabel(
-            spec.h,
-          )} = ${fracLabel(vol)}`,
-          { scale: 0.6 },
+          `${idx === 0 ? "A" : "B"}:  ${fracLabel(spec.l)}×${fracLabel(
+            spec.w,
+          )}×${fracLabel(spec.h)} = ${fracLabel(vol)}`,
+          { scale: 0.6, color: "#ffe6a8" },
         );
-        lbl.position.set(cx, spec.h + 0.6, 0);
+        lbl.position.set(cx, spec.h + 0.8, 0);
         group.add(lbl);
         labels.push(lbl);
       });
       compareChoice = 0;
+      setProblemCard("Which vault holds MORE?  Compute l × w × h for each.");
       hud.setObjective(
-        "Compute each vault's volume (l × w × h) and select the one that holds MORE, then place to confirm.",
+        "Use left / right to pick the larger vault, then press action to confirm.",
       );
       announce(
-        `Round ${roundIndex + 1}. Two prisms. ` +
+        `Round ${roundIndex + 1}. Two vaults. ` +
           `Vault A is ${fracLabel(round.a.l)} by ${fracLabel(
             round.a.w,
           )} by ${fracLabel(round.a.h)}. ` +
@@ -592,6 +664,7 @@ export default {
           )} by ${fracLabel(round.b.h)}. ` +
           `Compute each volume and choose the one with the greater volume.`,
       );
+      feel.sfx("select");
       updateCompareCursor();
     }
 
@@ -601,18 +674,22 @@ export default {
       const ly = spec.h;
       const lz = spec.w;
       const solid = new THREE.Mesh(
-        new THREE.BoxGeometry(lx, ly, lz),
+        new RoundedBoxGeometry(lx, ly, lz, 3, 0.08),
         new THREE.MeshStandardMaterial({
           color,
-          roughness: 0.55,
+          roughness: 0.32,
+          metalness: 0.12,
           transparent: true,
           opacity: 0.9,
+          emissive: color,
+          emissiveIntensity: 0.12,
         }),
       );
       solid.position.y = ly / 2;
+      solid.castShadow = true;
+      solid.receiveShadow = true;
       wrap.add(solid);
-      const frame = buildWireframe(lx, ly, lz, COLORS.frame);
-      wrap.add(frame);
+      wrap.add(buildVaultFrame(lx, ly, lz));
       return wrap;
     }
 
@@ -620,10 +697,11 @@ export default {
       cursorMesh.visible = false;
       comparePrisms.forEach((p, i) => {
         const solid = p.children[0];
+        const on = i === compareChoice;
         solid.material.emissive.setHex(
-          i === compareChoice ? COLORS.frame : 0x000000,
+          on ? COLORS.vault : p.children[0].material.color.getHex(),
         );
-        solid.material.emissiveIntensity = i === compareChoice ? 0.4 : 0;
+        solid.material.emissiveIntensity = on ? 0.7 : 0.12;
       });
       announce(`Selecting vault ${compareChoice === 0 ? "A" : "B"}.`);
     }
@@ -633,11 +711,10 @@ export default {
       const va = prismVolume(round.a.l, round.a.w, round.a.h);
       const vb = prismVolume(round.b.l, round.b.w, round.b.h);
       const correct = va === vb ? -1 : va > vb ? 0 : 1;
-      if (correct === -1) {
-        // Equal volumes — accept either, treat as correct.
-      } else if (compareChoice !== correct) {
-        markWrong("Not the bigger one — compute each l×w×h again.", 2200);
-        feel.shake(0.14);
+      if (correct !== -1 && compareChoice !== correct) {
+        markWrong("Not the bigger one — compute each l×w×h again.", 2400);
+        feel.sfx("wrong");
+        feel.shake(0.12);
         announce(
           `Vault A has ${fracLabel(va)} cubic units and vault B has ${fracLabel(
             vb,
@@ -646,15 +723,16 @@ export default {
         return;
       }
       solved = true;
-      const pts = 35;
+      const pts = level === 2 ? 35 : 25;
       onScore(pts, {
         round: roundIndex + 1,
         kind: "compare",
         volA: va,
         volB: vb,
       });
-      feel.shake(0.3);
-      feel.burst({ x: 0, y: 2, z: 0 }, { color: COLORS.frame, count: 32 });
+      feel.sfx("correct");
+      feel.shake(0.28);
+      feel.burst({ x: 0, y: 2, z: 0 }, { color: COLORS.vaultGlow, count: 34 });
       markCorrect(
         `Correct! A = ${fracLabel(va)}, B = ${fracLabel(vb)} cubic units. +${pts}`,
       );
@@ -666,12 +744,11 @@ export default {
       nextRoundSoon();
     }
 
-    // ---------- Round flow ----------
+    // ===================== Round flow =====================================
     function startRound() {
       clearGroupExtras();
       solved = false;
       round = cfg.rounds[roundIndex];
-      // Persistent "Step X of Y" for the whole round (both levels have 3 rounds).
       if (typeof hud.setProgress === "function")
         hud.setProgress(roundIndex, cfg.rounds.length);
       if (round.kind === "fill") startFillRound();
@@ -679,7 +756,6 @@ export default {
       else if (round.kind === "compare") startCompareRound();
     }
 
-    // Streak + feedback helpers shared by all three round kinds.
     function markCorrect(okMsg) {
       solvedCount += 1;
       streak += 1;
@@ -701,19 +777,45 @@ export default {
         if (roundIndex < cfg.rounds.length - 1) {
           roundIndex += 1;
           startRound();
-        } else {
-          hud.setObjective(
-            `Vault secured — ${solvedCount} of ${cfg.rounds.length} solved, best streak ${bestStreak}. Great work, Vault Keeper!`,
-          );
-          hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-          announce(
-            `All rounds complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great work, Vault Keeper.`,
-          );
-        }
+        } else finishGame();
       }, 2800);
     }
 
-    // ---------- Input wiring ----------
+    function finishGame() {
+      clearGroupExtras();
+      setProblemCard("VAULT SECURED ✦");
+      hud.setObjective(
+        `Vault secured — ${solvedCount} of ${cfg.rounds.length} solved, best streak ${bestStreak}. Great work, Vault Keeper!`,
+      );
+      hud.message("All rounds complete!", { tone: "ok", duration: 0 });
+      feel.sfx("fanfare");
+      feel.shake(0.35);
+      if (!reduced) {
+        for (let i = 0; i < 5; i++) {
+          later(
+            () =>
+              feel.burst(
+                {
+                  x: (Math.random() - 0.5) * 6,
+                  y: 2 + Math.random() * 2,
+                  z: 0,
+                },
+                {
+                  color: COLORS.cube[i % COLORS.cube.length],
+                  count: 30,
+                  spread: 4.5,
+                },
+              ),
+            i * 180,
+          );
+        }
+      }
+      announce(
+        `All rounds complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great work, Vault Keeper.`,
+      );
+    }
+
+    // ===================== Input wiring ===================================
     function onPrimary() {
       if (!round) return;
       if (round.kind === "fill") placeCube();
@@ -734,19 +836,20 @@ export default {
       } else if (round.kind === "compare") {
         if (name === "left") {
           compareChoice = 0;
+          feel.sfx("select");
           updateCompareCursor();
         } else if (name === "right") {
           compareChoice = 1;
+          feel.sfx("select");
           updateCompareCursor();
         }
       }
     }
 
-    // Secondary button: vertical layer move (fill) / help (others).
+    // Secondary (keyboard Enter): vertical layer move in fill, hint elsewhere.
     function onConfirm() {
       if (!round) return;
       if (round.kind === "fill") {
-        // Toggle and move between vertical layers for full 3D reach.
         if (layerUp && cursor.y < ny - 1) moveCursor(0, 1, 0);
         else if (!layerUp && cursor.y > 0) moveCursor(0, -1, 0);
         if (cursor.y === ny - 1) layerUp = false;
@@ -758,7 +861,7 @@ export default {
         announce(
           "Volume equals length times width times height. Divide the volume by length times width to find the missing edge.",
         );
-        later(() => caption(""), 2200);
+        later(() => caption(""), 2400);
       }
     }
 
@@ -767,9 +870,41 @@ export default {
 
     return {
       start() {
-        camera.position.set(6, 7, 9);
-        camera.lookAt(0, 1, 0);
-        feel.syncCamera();
+        // Animated camera intro: sweep into framing, then gentle idle orbit.
+        const target = new THREE.Vector3(0, 1.4, 0);
+        const endPos = new THREE.Vector3(6, 7, 9.5);
+        if (reduced) {
+          camera.position.copy(endPos);
+          camera.lookAt(target);
+          feel.syncCamera();
+        } else {
+          const startPos = new THREE.Vector3(11, 12, 14);
+          camera.position.copy(startPos);
+          camera.lookAt(target);
+          feel.tween({
+            from: 0,
+            to: 1,
+            duration: 1.2,
+            onUpdate: (v) => {
+              camera.position.lerpVectors(startPos, endPos, v);
+              camera.lookAt(target);
+            },
+            onComplete: () => {
+              feel.syncCamera();
+              // Gentle idle orbit around the vault.
+              const baseAngle = Math.atan2(endPos.z, endPos.x);
+              const radius = Math.hypot(endPos.x, endPos.z);
+              unbindIdle = ctx.onFrame((dt, t) => {
+                const a = baseAngle + Math.sin(t * 0.18) * 0.06;
+                camera.position.x = Math.cos(a) * radius;
+                camera.position.z = Math.sin(a) * radius;
+                camera.position.y = endPos.y + Math.sin(t * 0.5) * 0.12;
+                camera.lookAt(target);
+                feel.syncCamera();
+              });
+            },
+          });
+        }
 
         roundIndex = 0;
         startRound();
@@ -788,19 +923,17 @@ export default {
 
         unbindTap = input.onTap(() => {
           if (!round || solved) return;
-          if (round.kind === "fill") {
-            placeCube();
-          } else {
-            onPrimary();
-          }
+          onPrimary();
         });
 
-        if (!feel.reducedMotion) {
+        // Idle cursor pulse (gated behind reduced motion).
+        if (!reduced) {
           unbindFrame = ctx.onFrame((dt, t) => {
             if (cursorMesh.visible) {
-              const s = step * (1 + Math.sin(t * 4) * 0.05);
+              const s = step * (1 + Math.sin(t * 4) * 0.06);
               cursorMesh.scale.setScalar(s);
             }
+            problemCard.position.y = 5.4 + Math.sin(t * 1.1) * 0.06;
           });
         }
       },
@@ -809,10 +942,13 @@ export default {
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();
+        if (unbindIdle) unbindIdle();
         timers.forEach(clearTimeout);
         timers.length = 0;
         clearGroupExtras();
-        if (cursorMesh.material) cursorMesh.material.dispose();
+        if (problemCard.material.map) problemCard.material.map.dispose();
+        problemCard.material.dispose();
+        cursorMat.dispose();
         disposables.forEach((g) => g.dispose());
         scene.remove(group);
       },

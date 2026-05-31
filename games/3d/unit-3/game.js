@@ -1,126 +1,216 @@
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+
+// ============================================================================
+// Unit 3 — RATIO RALLY  (CCSS 6.RP.A.3 / 6.RP.A.2)
+// Theme: a neon speedway pit-lane. Tune unit rates, equivalent ratios, percent
+// boosts, conversions and "best buy" comparisons to launch your car.
+// Premium rebuild: RoundedBox/PBR cars, emissive bloom accents, receive/cast
+// shadows, animated camera intro + idle motion, tweened transitions, particle
+// bursts, and feel.sfx() on every action.
+// ============================================================================
+
 const COLORS = {
-  track: 0x18466f,
+  bg: 0x0c1a33,
+  track: 0x14233f,
+  trackEmissive: 0x1d3a66,
   rail: 0x2f6aa0,
-  car: [0x1fa6a2, 0x4f8fd0, 0xe09b4a, 0x8b6fc4],
+  car: 0x1fa6a2,
+  carEnrich: 0xe09b4a,
+  cabin: 0xdff1ff,
   dialOk: 0x4aa978,
   dialActive: 0xf2c15b,
-  laneBest: 0x4aa978,
-  laneBad: 0xb64e2f,
   finish: 0xf2c15b,
+  laneBest: 0x4aa978,
+  amber: 0xf2c15b,
+  spark: 0xffd56b,
 };
 
-const LANE_W = 2.2;
-const TRACK_LEN = 26;
+const LANE_W = 2.4;
+const TRACK_LEN = 28;
+const LANE_COUNT = 3;
+const laneX = (i) => (i - (LANE_COUNT - 1) / 2) * LANE_W;
 
-// ---- Math problem banks ------------------------------------------------------
-// Each problem returns { type, prompt, answer, unit, build } and optional
-// scaffolds. Answers are exact integers or one-decimal values so the dial can
-// reach them. Math is verified in comments where non-obvious.
+// ---- Math problem banks (6.RP.A.3) ------------------------------------------
+// Every answer is exact; comments verify the arithmetic. Level 1 = scaffolded
+// (hints + a rate table + smaller numbers). Level 2 = enrichment (larger /
+// multi-step, fewer scaffolds). 6+ rounds per level.
 
 function makeLevel(level) {
   if (level === 1) {
     return {
       hints: true,
-      step: 1,
       problems: [
-        // Unit rate: 12 miles in 3 hours -> 4 mph. 12/3 = 4.
+        // 12 miles in 3 hours -> 12 ÷ 3 = 4 mph.
         {
           type: "unitrate",
-          prompt:
-            "Car goes 12 miles in 3 hours. Set the speed (miles per hour).",
+          prompt: "12 miles in 3 hours. Dial the speed in miles per hour.",
           table: [
             ["miles", "hours"],
             ["12", "3"],
           ],
-          help: "Unit rate = distance ÷ time = 12 ÷ 3.",
+          help: "Unit rate = distance ÷ time = 12 ÷ 3 = 4.",
           answer: 4,
           unit: "mph",
           min: 0,
           max: 12,
         },
-        // Unit rate: $10 for 2 toy cars -> $5 each. 10/2 = 5.
+        // $10 for 2 cars -> 10 ÷ 2 = $5 each.
         {
           type: "unitrate",
-          prompt: "$10 buys 2 toy cars. Set the price for 1 car (dollars).",
+          prompt: "$10 buys 2 toy cars. Dial the price for 1 car.",
           table: [
             ["dollars", "cars"],
             ["10", "2"],
           ],
-          help: "Unit rate = dollars ÷ cars = 10 ÷ 2.",
+          help: "Unit rate = dollars ÷ cars = 10 ÷ 2 = 5.",
           answer: 5,
           unit: "$/car",
           min: 0,
           max: 12,
         },
-        // Equivalent rate: 4 mph stays 4 mph; fill miles for 5 hours -> 20.
+        // Equivalent ratio 4:1 -> 4 × 5 = 20 miles in 5 hours.
         {
           type: "equiv",
-          prompt: "At 4 miles per hour, how far in 5 hours? Set the miles.",
+          prompt: "At 4 miles per hour, how far in 5 hours? Dial the miles.",
           table: [
             ["miles", "hours"],
             ["4", "1"],
             ["?", "5"],
           ],
-          help: "Equivalent rate: multiply both by 5. 4 × 5 = 20.",
+          help: "Equivalent ratio: multiply both by 5. 4 × 5 = 20.",
           answer: 20,
           unit: "miles",
           min: 0,
           max: 28,
         },
+        // Equivalent ratio 3:2 -> for 6 laps, fuel = 3 × 3 = 9.
+        {
+          type: "equiv",
+          prompt:
+            "3 liters fuel every 2 laps. How much for 6 laps? Dial liters.",
+          table: [
+            ["liters", "laps"],
+            ["3", "2"],
+            ["?", "6"],
+          ],
+          help: "6 ÷ 2 = 3, so multiply both by 3. 3 × 3 = 9.",
+          answer: 9,
+          unit: "L",
+          min: 0,
+          max: 16,
+        },
+        // Conversion: 2 min = 120 s. 2 × 60.
+        {
+          type: "conversion",
+          prompt: "Pit stop: 2 minutes equals how many seconds? Dial seconds.",
+          table: [
+            ["minutes", "seconds"],
+            ["1", "60"],
+            ["2", "?"],
+          ],
+          help: "1 minute = 60 seconds, so 2 × 60 = 120.",
+          answer: 120,
+          unit: "sec",
+          min: 60,
+          max: 200,
+          coarse: 10,
+        },
+        // Compare: lowest price per liter. A 2.00, B 1.60 (best), C 2.50.
+        {
+          type: "compare",
+          prompt: "Steer to the fuel with the best (lowest) price per liter.",
+          help: "Find each unit rate: dollars ÷ liters. Smallest wins.",
+          lanes: [
+            { label: "$6 / 3 L", dollars: 6, liters: 3 }, // 2.00
+            { label: "$8 / 5 L", dollars: 8, liters: 5 }, // 1.60 best
+            { label: "$5 / 2 L", dollars: 5, liters: 2 }, // 2.50
+          ],
+        },
       ],
     };
   }
+  // ---- Level 2: enrichment (larger / multi-step) ----------------------------
   return {
     hints: false,
-    step: 1,
     problems: [
-      // Percent boost: 20% of 40 = 8. New base speed reads 40 + 8 later.
-      {
-        type: "percent",
-        prompt:
-          "Base speed is 40 mph. A 20% boost adds how many mph? Set the boost.",
-        help: "20% of 40 = 0.20 × 40 = 8.",
-        answer: 8,
-        unit: "mph",
-        min: 0,
-        max: 24,
-      },
-      // Multi-step rate: 150 miles in 3 hours -> 50 mph; then 50 mph for 4 h?
-      // The asked answer is the 4-hour distance: 50 × 4 = 200.
+      // 150 miles in 3 hours -> 50 mph; then 50 × 4 = 200 miles.
       {
         type: "multistep",
         prompt:
-          "150 miles in 3 hours. At that same rate, how far in 4 hours? Set the miles.",
-        help: "First the unit rate: 150 ÷ 3 = 50 mph. Then 50 × 4 = 200.",
+          "150 miles in 3 hours. At that rate, how far in 4 hours? Dial miles.",
+        help: "Unit rate 150 ÷ 3 = 50 mph, then 50 × 4 = 200.",
         answer: 200,
         unit: "miles",
         min: 120,
         max: 280,
         coarse: 10,
       },
-      // Conversion: 2 minutes = 120 seconds. 2 × 60 = 120.
+      // Percent: 20% of 40 = 8.
+      {
+        type: "percent",
+        prompt:
+          "Base speed 40 mph. A 20% boost adds how many mph? Dial the boost.",
+        help: "20% of 40 = 0.20 × 40 = 8.",
+        answer: 8,
+        unit: "mph",
+        min: 0,
+        max: 24,
+      },
+      // Percent: 15% of 80 = 12.
+      {
+        type: "percent",
+        prompt:
+          "A tank holds 80 L. 15% is reserve fuel — how many liters? Dial it.",
+        help: "15% of 80 = 0.15 × 80 = 12.",
+        answer: 12,
+        unit: "L",
+        min: 0,
+        max: 32,
+      },
+      // Equivalent ratio 7:2 scaled: 35 miles in 10 hours -> miles for? Actually
+      // give 7 mi per 2 h; for 10 h, 10 ÷ 2 = 5, 7 × 5 = 35.
+      {
+        type: "multistep",
+        prompt: "7 miles every 2 hours. How far in 10 hours? Dial the miles.",
+        help: "10 ÷ 2 = 5, so multiply both by 5. 7 × 5 = 35.",
+        answer: 35,
+        unit: "miles",
+        min: 0,
+        max: 60,
+        coarse: 1,
+      },
+      // Conversion: 3 minutes 30 s = 210 s. 3×60 + 30.
       {
         type: "conversion",
-        prompt: "Convert the pit time: 2 minutes equals how many seconds?",
-        help: "1 minute = 60 seconds, so 2 × 60 = 120.",
-        answer: 120,
+        prompt: "Lap time 3 min 30 s equals how many seconds? Dial seconds.",
+        help: "3 × 60 = 180, plus 30 = 210.",
+        answer: 210,
         unit: "sec",
-        min: 60,
-        max: 200,
+        min: 120,
+        max: 300,
         coarse: 10,
       },
-      // Comparison shopping: pick the BEST (lowest) unit price.
-      // Lane A: $6 for 3 L -> $2.00/L. Lane B: $8 for 5 L -> $1.60/L (best).
-      // Lane C: $5 for 2 L -> $2.50/L.
+      // Compare: A 1.80, B 1.50 (best), C 1.75.
       {
         type: "compare",
-        prompt: "Pick the fuel with the best (lowest) price per liter.",
-        help: "Find each unit rate: dollars ÷ liters. Smallest wins.",
+        prompt: "Steer to the best (lowest) price per liter.",
+        help: "Compare each unit rate: dollars ÷ liters. Smallest wins.",
         lanes: [
-          { label: "$6 / 3 L", dollars: 6, liters: 3 }, // 2.00
-          { label: "$8 / 5 L", dollars: 8, liters: 5 }, // 1.60 best
-          { label: "$5 / 2 L", dollars: 5, liters: 2 }, // 2.50
+          { label: "$9 / 5 L", dollars: 9, liters: 5 }, // 1.80
+          { label: "$12 / 8 L", dollars: 12, liters: 8 }, // 1.50 best
+          { label: "$7 / 4 L", dollars: 7, liters: 4 }, // 1.75
         ],
+      },
+      // Multi-step percent: $50 part costs, 30% off -> save 15.
+      {
+        type: "percent",
+        prompt: "A $50 part is 30% off. How many dollars do you save? Dial it.",
+        help: "30% of 50 = 0.30 × 50 = 15.",
+        answer: 15,
+        unit: "$",
+        min: 0,
+        max: 40,
       },
     ],
   };
@@ -142,16 +232,16 @@ export default {
       emoji: "⏱️",
     },
     {
-      term: "Percent",
-      definition:
-        "A part out of 100. 20% means 20 out of every 100, or 0.20 of the whole.",
-      emoji: "％",
-    },
-    {
       term: "Equivalent ratio",
       definition:
         "A ratio that names the same comparison, made by multiplying or dividing both numbers.",
       emoji: "🟰",
+    },
+    {
+      term: "Percent",
+      definition:
+        "A part out of 100. 20% means 20 out of every 100, or 0.20 of the whole.",
+      emoji: "％",
     },
     {
       term: "Conversion",
@@ -165,6 +255,7 @@ export default {
     const {
       scene,
       camera,
+      renderer,
       input,
       hud,
       feel,
@@ -176,137 +267,192 @@ export default {
     } = ctx;
 
     const cfg = makeLevel(level);
-    const laneCount = 3;
+    const reduced = feel.reducedMotion;
+    const carColor = level === 2 ? COLORS.carEnrich : COLORS.car;
 
-    // ---- Scene -------------------------------------------------------------
+    // ---- Scene root ---------------------------------------------------------
     const group = new THREE.Group();
     scene.add(group);
 
-    const trackMat = new THREE.MeshStandardMaterial({
+    const disposables = []; // geometries + materials we own
+    const track = (g, m) => {
+      disposables.push(g, m);
+      return new THREE.Mesh(g, m);
+    };
+
+    // ---- Stage / ground (receives shadow) -----------------------------------
+    const groundMat = new THREE.MeshStandardMaterial({
       color: COLORS.track,
-      roughness: 0.95,
+      roughness: 0.92,
+      metalness: 0.05,
+      emissive: COLORS.trackEmissive,
+      emissiveIntensity: 0.12,
     });
+    const ground = track(
+      new RoundedBoxGeometry(
+        LANE_COUNT * LANE_W + 2.4,
+        0.6,
+        TRACK_LEN,
+        4,
+        0.25,
+      ),
+      groundMat,
+    );
+    ground.position.set(0, -0.3, 0);
+    ground.receiveShadow = true;
+    group.add(ground);
+
+    // Glowing lane dividers (emissive -> bloom).
     const railMat = new THREE.MeshStandardMaterial({
       color: COLORS.rail,
-      roughness: 0.8,
+      roughness: 0.5,
+      metalness: 0.3,
+      emissive: COLORS.rail,
+      emissiveIntensity: 0.5,
     });
-    const disposables = [trackMat, railMat];
-
-    const laneX = (i) => (i - (laneCount - 1) / 2) * LANE_W;
-
-    // Road bed.
-    const road = new THREE.Mesh(
-      new THREE.BoxGeometry(laneCount * LANE_W + 1.2, 0.4, TRACK_LEN),
-      trackMat,
-    );
-    road.position.set(0, -0.2, 0);
-    group.add(road);
-
-    // Lane dividers.
-    for (let i = 0; i <= laneCount; i++) {
-      const x = laneX(i) - LANE_W / 2;
-      const rail = new THREE.Mesh(
-        new THREE.BoxGeometry(0.12, 0.18, TRACK_LEN),
-        railMat,
-      );
-      rail.position.set(x, 0.05, 0);
+    disposables.push(railMat);
+    for (let i = 0; i <= LANE_COUNT; i++) {
+      const railGeo = new RoundedBoxGeometry(0.12, 0.16, TRACK_LEN, 2, 0.06);
+      disposables.push(railGeo);
+      const rail = new THREE.Mesh(railGeo, railMat);
+      rail.position.set(laneX(i) - LANE_W / 2, 0.08, 0);
+      rail.castShadow = true;
       group.add(rail);
     }
 
-    // Finish line.
-    const finish = new THREE.Mesh(
-      new THREE.BoxGeometry(laneCount * LANE_W + 1.2, 0.06, 0.8),
-      new THREE.MeshStandardMaterial({
-        color: COLORS.finish,
-        emissive: COLORS.finish,
-        emissiveIntensity: 0.3,
-      }),
+    // Finish line (emissive amber, glows).
+    const finishMat = new THREE.MeshStandardMaterial({
+      color: COLORS.finish,
+      emissive: COLORS.finish,
+      emissiveIntensity: 0.8,
+      roughness: 0.4,
+    });
+    const finish = track(
+      new RoundedBoxGeometry(LANE_COUNT * LANE_W + 2.0, 0.08, 0.7, 2, 0.04),
+      finishMat,
     );
-    finish.position.set(0, 0.06, -TRACK_LEN / 2 + 1);
+    finish.position.set(0, 0.1, -TRACK_LEN / 2 + 1.2);
+    finish.receiveShadow = true;
     group.add(finish);
 
-    // ---- Car ---------------------------------------------------------------
+    // Goal pylons flanking the finish (lathe-style cones for prop variety).
+    const pylonMat = new THREE.MeshStandardMaterial({
+      color: COLORS.amber,
+      emissive: COLORS.amber,
+      emissiveIntensity: 0.4,
+      roughness: 0.5,
+    });
+    disposables.push(pylonMat);
+    [-1, 1].forEach((s) => {
+      const pylGeo = new THREE.ConeGeometry(0.45, 1.4, 18);
+      disposables.push(pylGeo);
+      const pyl = new THREE.Mesh(pylGeo, pylonMat);
+      pyl.position.set(
+        (s * (LANE_COUNT * LANE_W)) / 2 + 0.4,
+        0.7,
+        -TRACK_LEN / 2 + 1.2,
+      );
+      pyl.castShadow = true;
+      group.add(pyl);
+    });
+
+    // ---- Hero car (RoundedBox PBR + emissive accents, casts shadow) ---------
     function buildCar(color) {
       const car = new THREE.Group();
-      const body = new THREE.Mesh(
-        new THREE.BoxGeometry(1.1, 0.5, 2.0),
-        new THREE.MeshStandardMaterial({ color, roughness: 0.5 }),
-      );
-      body.position.y = 0.45;
+      const bodyGeo = new RoundedBoxGeometry(1.2, 0.55, 2.1, 4, 0.18);
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color,
+        roughness: 0.3,
+        metalness: 0.55,
+        emissive: color,
+        emissiveIntensity: 0.18,
+      });
+      disposables.push(bodyGeo, bodyMat);
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.position.y = 0.5;
+      body.castShadow = true;
       car.add(body);
-      const cabin = new THREE.Mesh(
-        new THREE.BoxGeometry(0.8, 0.4, 0.9),
-        new THREE.MeshStandardMaterial({ color: 0xeaf2ff, roughness: 0.4 }),
-      );
-      cabin.position.set(0, 0.85, -0.1);
+
+      // Glass cabin (physical material for a clearcoat-ish look).
+      const cabGeo = new RoundedBoxGeometry(0.85, 0.42, 0.95, 4, 0.14);
+      const cabMat = new THREE.MeshPhysicalMaterial({
+        color: COLORS.cabin,
+        roughness: 0.1,
+        metalness: 0,
+        transmission: 0.4,
+        thickness: 0.5,
+        clearcoat: 1,
+        clearcoatRoughness: 0.1,
+      });
+      disposables.push(cabGeo, cabMat);
+      const cabin = new THREE.Mesh(cabGeo, cabMat);
+      cabin.position.set(0, 0.92, -0.12);
+      cabin.castShadow = true;
       car.add(cabin);
-      const wheelGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.2, 12);
-      const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
+
+      // Glowing underglow strip (emissive -> bloom).
+      const glowGeo = new RoundedBoxGeometry(1.3, 0.08, 2.2, 2, 0.04);
+      const glowMat = new THREE.MeshStandardMaterial({
+        color: COLORS.spark,
+        emissive: COLORS.spark,
+        emissiveIntensity: 0.9,
+        roughness: 0.4,
+      });
+      disposables.push(glowGeo, glowMat);
+      const glow = new THREE.Mesh(glowGeo, glowMat);
+      glow.position.y = 0.18;
+      car.add(glow);
+
+      // Wheels.
+      const wheelGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.22, 16);
+      const wheelMat = new THREE.MeshStandardMaterial({
+        color: 0x14151a,
+        roughness: 0.7,
+        metalness: 0.3,
+      });
+      disposables.push(wheelGeo, wheelMat);
+      const wheels = [];
       [
-        [-0.6, 0.25, 0.7],
-        [0.6, 0.25, 0.7],
-        [-0.6, 0.25, -0.7],
-        [0.6, 0.25, -0.7],
+        [-0.66, 0.3, 0.72],
+        [0.66, 0.3, 0.72],
+        [-0.66, 0.3, -0.72],
+        [0.66, 0.3, -0.72],
       ].forEach(([x, y, z]) => {
         const w = new THREE.Mesh(wheelGeo, wheelMat);
         w.rotation.z = Math.PI / 2;
         w.position.set(x, y, z);
+        w.castShadow = true;
         car.add(w);
+        wheels.push(w);
       });
+      car.userData.wheels = wheels;
       return car;
     }
 
-    const playerCar = buildCar(COLORS.car[0]);
+    const playerCar = buildCar(carColor);
     group.add(playerCar);
 
-    // ---- Floating sprite labels (rate table / lane tags) -------------------
-    function roundRect(c, x, y, w, h, r) {
-      c.beginPath();
-      c.moveTo(x + r, y);
-      c.arcTo(x + w, y, x + w, y + h, r);
-      c.arcTo(x + w, y + h, x, y + h, r);
-      c.arcTo(x, y + h, x, y, r);
-      c.arcTo(x, y, x + w, y, r);
-      c.closePath();
-    }
+    // ---- 3D problem card (always shows the math) ----------------------------
+    const cardSprite = makeLabel("", {
+      fontSize: 56,
+      scale: 1.5,
+      color: "#ffffff",
+      background: "rgba(12,26,51,0.92)",
+      THREE,
+    });
+    cardSprite.position.set(0, 4.6, -TRACK_LEN / 2 + 6);
+    group.add(cardSprite);
 
-    function makeTextSprite(lines, opts = {}) {
-      const pad = 14;
-      const lh = opts.lineHeight || 34;
-      const fs = opts.fontSize || 26;
-      const w = opts.width || 240;
-      const h = pad * 2 + lh * lines.length;
-      const cv = document.createElement("canvas");
-      cv.width = w;
-      cv.height = h;
-      const c = cv.getContext("2d");
-      c.fillStyle = opts.bg || "rgba(18,53,91,0.92)";
-      roundRect(c, 2, 2, w - 4, h - 4, 16);
-      c.fill();
-      if (opts.border) {
-        c.lineWidth = 4;
-        c.strokeStyle = opts.border;
-        c.stroke();
-      }
-      c.fillStyle = opts.color || "#ffffff";
-      c.font = `bold ${fs}px system-ui, sans-serif`;
-      c.textAlign = "center";
-      c.textBaseline = "middle";
-      lines.forEach((ln, i) => {
-        c.fillText(ln, w / 2, pad + lh * (i + 0.5));
-      });
-      const tex = new THREE.CanvasTexture(cv);
-      tex.minFilter = THREE.LinearFilter;
-      const spr = new THREE.Sprite(
-        new THREE.SpriteMaterial({
-          map: tex,
-          transparent: true,
-          depthTest: false,
-        }),
-      );
-      spr.scale.set((w / 160) * 1.6, (h / 160) * 1.6, 1);
-      return spr;
-    }
+    // Live dial / readout sprite below the card.
+    const dialSprite = makeLabel("", {
+      fontSize: 64,
+      scale: 1.3,
+      color: "#0c1a33",
+      background: "rgba(242,193,91,0.96)",
+      THREE,
+    });
+    dialSprite.position.set(0, 3.0, -TRACK_LEN / 2 + 6);
+    group.add(dialSprite);
 
     function disposeSprite(spr) {
       if (!spr) return;
@@ -315,22 +461,36 @@ export default {
       spr.material.dispose();
     }
 
-    // ---- Round state -------------------------------------------------------
+    // ---- Compare-lane tags (canvas sprites) ---------------------------------
+    let laneTags = []; // active compare tags
+    function makeTag(text, highlight) {
+      const spr = makeLabel(text, {
+        fontSize: 40,
+        scale: 0.95,
+        color: highlight ? "#0c1a33" : "#ffffff",
+        background: highlight ? "rgba(242,193,91,0.96)" : "rgba(20,35,63,0.92)",
+        THREE,
+      });
+      return spr;
+    }
+
+    // ---- Round state --------------------------------------------------------
     let problemIndex = 0;
     let problem = null;
-    let dial = 0; // current dialed value (for numeric problems)
-    let laneSel = 0; // current lane (for compare problems)
-    let locked = false; // round solved, animating
-    let streak = 0; // consecutive correct
+    let dial = 0;
+    let laneSel = 0;
+    let locked = false;
+    let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
-    let infoSprites = [];
+    let raceAnim = null; // car launch tween
+    let popAnim = null; // dial scale-pop
+    const total = cfg.problems.length;
+
     const timers = [];
     let unbindPress = null;
     let unbindTap = null;
     let unbindFrame = null;
-
-    let raceAnim = null; // { from, to, t, dur } for player car z
 
     const later = (fn, ms) => {
       const id = setTimeout(fn, ms);
@@ -338,131 +498,132 @@ export default {
       return id;
     };
 
-    function clearInfo() {
-      infoSprites.forEach(disposeSprite);
-      infoSprites = [];
+    const isCompare = () => problem && problem.type === "compare";
+
+    function clearTags() {
+      laneTags.forEach(disposeSprite);
+      laneTags = [];
     }
 
-    function isCompare() {
-      return problem && problem.type === "compare";
-    }
-
-    function stepSize(coarse) {
-      const base = problem.coarse || cfg.step;
-      return coarse ? base : cfg.step;
-    }
-
-    // Live computed readout for the HUD.
+    // ---- HUD + sprite sync --------------------------------------------------
     function readout() {
       if (isCompare()) {
         const ln = problem.lanes[laneSel];
-        const rate = ln.dollars / ln.liters;
-        return `Lane ${laneSel + 1}: ${ln.label} = $${rate.toFixed(2)}/L`;
+        return `Lane ${laneSel + 1}: $${(ln.dollars / ln.liters).toFixed(2)}/L`;
       }
-      return `${problem.unit ? dial + " " + problem.unit : dial}`;
+      return `${dial}${problem.unit ? " " + problem.unit : ""}`;
     }
 
     function updateHud() {
+      const tableHint =
+        problem.table && cfg.hints
+          ? "  (table: " +
+            problem.table.map((r) => r.join(":")).join("  ") +
+            ")"
+          : "";
       if (isCompare()) {
-        hud.setObjective(
-          `Choose the fuel lane with the lowest price per liter, then lock it in. ▶ ${readout()}`,
-        );
+        hud.setObjective(`${problem.prompt} ▶ ${readout()}`);
       } else {
-        hud.setObjective(`${problem.prompt}  ▶ Dial: ${readout()}`);
+        hud.setObjective(`${problem.prompt} ▶ Dial: ${readout()}${tableHint}`);
+      }
+      // Mirror onto the 3D dial sprite + scale-pop.
+      updateLabel(dialSprite, isCompare() ? readout() : readout());
+      if (!reduced) {
+        popAnim = { t: 0, dur: 0.18 };
       }
     }
 
-    // ---- Lane tag sprites for compare rounds -------------------------------
+    function showCard() {
+      updateLabel(cardSprite, problem.prompt);
+    }
+
+    // ---- Compare tags -------------------------------------------------------
     function buildCompareTags() {
       problem.lanes.forEach((ln, i) => {
-        const rate = ln.dollars / ln.liters;
-        const spr = makeTextSprite(
-          [`Lane ${i + 1}`, ln.label, `$${rate.toFixed(2)}/L`],
-          {
-            width: 200,
-            fontSize: 22,
-            lineHeight: 30,
-            border: i === laneSel ? "#f2c15b" : null,
-          },
+        const rate = (ln.dollars / ln.liters).toFixed(2);
+        const spr = makeTag(
+          `Lane ${i + 1}  ${ln.label}  $${rate}/L`,
+          i === laneSel,
         );
-        spr.position.set(laneX(i), 2.2, -TRACK_LEN / 2 + 4);
+        spr.position.set(laneX(i), 2.0, -TRACK_LEN / 2 + 4.5);
         spr.userData.lane = i;
-        spr.userData.rate = rate;
         group.add(spr);
-        infoSprites.push(spr);
+        laneTags.push(spr);
       });
     }
-
     function refreshCompareTags() {
-      // Rebuild borders to show selection.
-      clearInfo();
+      clearTags();
       buildCompareTags();
-      playerCar.position.x = laneX(laneSel);
+      // Slide the car under the chosen lane.
+      if (reduced) playerCar.position.x = laneX(laneSel);
+      else
+        feel.tween({
+          from: playerCar.position.x,
+          to: laneX(laneSel),
+          duration: 0.22,
+          onUpdate: (v) => (playerCar.position.x = v),
+        });
     }
 
-    // ---- Rate-table sprite for numeric rounds ------------------------------
-    function buildTableSprite() {
-      if (!problem.table) return;
-      const lines = problem.table.map((row) => row.join("   |   "));
-      const spr = makeTextSprite(lines, {
-        width: 260,
-        fontSize: 24,
-        lineHeight: 32,
-      });
-      spr.position.set(0, 3.0, -TRACK_LEN / 2 + 5);
-      group.add(spr);
-      infoSprites.push(spr);
-    }
-
-    // ---- Round setup -------------------------------------------------------
+    // ---- Round setup --------------------------------------------------------
     function startRound() {
-      clearInfo();
+      clearTags();
       locked = false;
       raceAnim = null;
       problem = cfg.problems[problemIndex];
-      playerCar.position.set(isCompare() ? laneX(0) : 0, 0, TRACK_LEN / 2 - 2);
+
+      playerCar.position.set(
+        isCompare() ? laneX(0) : 0,
+        0,
+        TRACK_LEN / 2 - 2.5,
+      );
       playerCar.rotation.y = 0;
 
       hud.setLevel(level === 2 ? "Level 2" : "Level 1");
-      // Persistent "Step X of Y" for the whole round.
       if (typeof hud.setProgress === "function")
-        hud.setProgress(problemIndex, cfg.problems.length);
+        hud.setProgress(problemIndex, total);
+
+      showCard();
 
       if (isCompare()) {
         laneSel = 0;
         buildCompareTags();
         announce(
-          `Round ${problemIndex + 1}. ${problem.prompt} Use left and right to choose a lane, then press the action button.`,
+          `Round ${problemIndex + 1} of ${total}. ${problem.prompt} Use left and right to choose a lane, then press the action button.`,
         );
       } else {
         dial = problem.min;
-        buildTableSprite();
         announce(
-          `Round ${problemIndex + 1}. ${problem.prompt} Use up and down to change the dial, then press the action button to lock it in.`,
+          `Round ${problemIndex + 1} of ${total}. ${problem.prompt} Use up and down to change the dial, then press the action button to lock it in.`,
         );
       }
       updateHud();
+      feel.sfx("select");
 
       if (cfg.hints) {
         const tip = isCompare()
           ? "Compare the unit rates — lowest price per liter wins."
           : problem.help || "Set the dial, then lock it in.";
-        hud.message(tip, { tone: "info", duration: 3200 });
+        hud.message(tip, { tone: "info", duration: 3400 });
       }
     }
 
-    // ---- Numeric dial input ------------------------------------------------
+    function stepSize(coarse) {
+      const base = problem.coarse || 1;
+      return coarse ? base : 1;
+    }
+
     function changeDial(delta) {
       if (locked || isCompare()) return;
       const next = Math.max(problem.min, Math.min(problem.max, dial + delta));
       if (next !== dial) {
         dial = next;
         updateHud();
-        announce(`Dial set to ${dial} ${problem.unit || ""}.`.trim() + ".");
+        feel.sfx(delta > 0 ? "add" : "remove");
+        announce(`Dial set to ${dial} ${problem.unit || ""}.`.trim());
       }
     }
 
-    // ---- Lane select input -------------------------------------------------
     function changeLane(delta) {
       if (locked || !isCompare()) return;
       const next = Math.max(
@@ -473,6 +634,7 @@ export default {
         laneSel = next;
         refreshCompareTags();
         updateHud();
+        feel.sfx("select");
         const ln = problem.lanes[laneSel];
         announce(
           `Lane ${laneSel + 1}. ${ln.dollars} dollars for ${ln.liters} liters.`,
@@ -480,15 +642,12 @@ export default {
       }
     }
 
-    // ---- Commit / check ----------------------------------------------------
+    // ---- Commit / check -----------------------------------------------------
     function commit() {
       if (locked) return;
-
-      let correct;
-      let detail;
       if (isCompare()) {
-        let bestIdx = 0;
-        let bestRate = Infinity;
+        let bestIdx = 0,
+          bestRate = Infinity;
         problem.lanes.forEach((ln, i) => {
           const r = ln.dollars / ln.liters;
           if (r < bestRate) {
@@ -496,18 +655,15 @@ export default {
             bestIdx = i;
           }
         });
-        correct = laneSel === bestIdx;
-        detail = "compare";
-        if (!correct) {
+        if (laneSel !== bestIdx) {
           rejectRound(
             `Lane ${laneSel + 1} is not the best. Compare each price per liter.`,
           );
           return;
         }
+        win("compare");
       } else {
-        correct = dial === problem.answer;
-        detail = problem.type;
-        if (!correct) {
+        if (dial !== problem.answer) {
           const hint =
             dial < problem.answer
               ? "Try a higher value."
@@ -515,9 +671,8 @@ export default {
           rejectRound(`Not quite — ${hint}`);
           return;
         }
+        win(problem.type);
       }
-
-      win(detail);
     }
 
     function rejectRound(msg) {
@@ -525,7 +680,8 @@ export default {
       if (typeof hud.setStreak === "function") hud.setStreak(0);
       if (typeof hud.feedback === "function") hud.feedback(false, msg);
       else hud.message(msg, { tone: "warn", duration: 2200 });
-      feel.shake(0.16);
+      feel.sfx("wrong");
+      if (!reduced) feel.shake(0.16);
       announce(msg);
     }
 
@@ -535,9 +691,8 @@ export default {
       streak += 1;
       if (streak > bestStreak) bestStreak = streak;
       if (typeof hud.setStreak === "function") hud.setStreak(streak);
-      const base = 20;
-      const levelBonus = level === 2 ? 10 : 0;
-      const pts = base + levelBonus;
+
+      const pts = 20 + (level === 2 ? 10 : 0);
       onScore(pts, { round: problemIndex + 1, detail });
 
       const summary = isCompare()
@@ -555,49 +710,62 @@ export default {
       );
       caption(problem.help || "");
 
+      feel.sfx("correct");
       feel.burst(
         { x: playerCar.position.x, y: 1.4, z: playerCar.position.z },
-        {
-          color: COLORS.dialActive,
-          count: feel.reducedMotion ? 0 : 32,
-          spread: 4,
-        },
+        { color: COLORS.spark, count: reduced ? 0 : 34, spread: 4.2 },
       );
-      feel.shake(0.28);
+      if (!reduced) feel.shake(0.26);
 
-      // Race the car to the finish line as the reward.
+      // Launch the car to the finish as the reward.
       raceAnim = {
         from: playerCar.position.z,
-        to: -TRACK_LEN / 2 + 1.5,
+        to: -TRACK_LEN / 2 + 2.2,
         t: 0,
-        dur: feel.reducedMotion ? 0.01 : 1.2,
+        dur: reduced ? 0.01 : 1.2,
       };
 
       later(() => {
-        if (problemIndex < cfg.problems.length - 1) {
+        if (problemIndex < total - 1) {
           problemIndex += 1;
           startRound();
         } else {
-          hud.setObjective(
-            `All races won — ${solvedCount} of ${cfg.problems.length} solved, best streak ${bestStreak}. Great tuning, racer!`,
-          );
-          hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-          announce(
-            `All rounds complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great tuning, racer.`,
-          );
+          finishGame();
         }
       }, 2200);
     }
 
-    // ---- Pointer: tap a lane (compare) or tap to lock (numeric) -----------
+    function finishGame() {
+      hud.setObjective(
+        `Checkered flag! ${solvedCount} of ${total} solved — best streak ${bestStreak}. Great tuning, racer!`,
+      );
+      hud.message("🏁 All rounds complete!", { tone: "ok", duration: 0 });
+      updateLabel(cardSprite, "🏁 RACE COMPLETE");
+      updateLabel(dialSprite, `${solvedCount} / ${total}`);
+      feel.sfx("fanfare");
+      if (!reduced) {
+        // Confetti burst over the finish line.
+        feel.burst(
+          { x: 0, y: 2.4, z: -TRACK_LEN / 2 + 2.2 },
+          { color: COLORS.amber, count: 60, spread: 7 },
+        );
+        feel.shake(0.3);
+      }
+      announce(
+        `All rounds complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great tuning, racer.`,
+      );
+    }
+
+    // ---- Tap: pick a lane (compare) or lock in (numeric) --------------------
     function handleTap() {
       if (locked) return;
       if (isCompare()) {
-        const hits = input.raycast(camera, infoSprites, false);
+        const hits = input.raycast(camera, laneTags, false);
         if (hits.length && hits[0].object.userData.lane != null) {
           laneSel = hits[0].object.userData.lane;
           refreshCompareTags();
           updateHud();
+          feel.sfx("select");
         }
         commit();
       } else {
@@ -607,9 +775,31 @@ export default {
 
     return {
       start() {
-        camera.position.set(0, 9, 16);
-        camera.lookAt(0, 0, -2);
-        feel.syncCamera();
+        // Animated camera intro: sweep from a high wide shot into framing.
+        const framePos = { x: 0, y: 8.5, z: 15 };
+        if (reduced) {
+          camera.position.set(framePos.x, framePos.y, framePos.z);
+          camera.lookAt(0, 0, -2);
+          feel.syncCamera();
+        } else {
+          camera.position.set(-6, 16, 24);
+          camera.lookAt(0, 0, -2);
+          const from = camera.position.clone();
+          feel.tween({
+            from: 0,
+            to: 1,
+            duration: 1.3,
+            onUpdate: (p) => {
+              camera.position.set(
+                from.x + (framePos.x - from.x) * p,
+                from.y + (framePos.y - from.y) * p,
+                from.z + (framePos.z - from.z) * p,
+              );
+              camera.lookAt(0, 0, -2);
+            },
+            onComplete: () => feel.syncCamera(),
+          });
+        }
 
         startRound();
 
@@ -627,33 +817,43 @@ export default {
             else if (name === "action") commit();
           }
           if (name === "confirm") {
-            // Read the current help aloud for support.
             const h = problem.help || "Set the dial to the correct value.";
             caption(h);
             announce(h);
-            later(() => caption(""), 2400);
+            feel.sfx("pop");
+            later(() => caption(""), 2600);
           }
         });
 
         unbindTap = input.onTap(handleTap);
 
         unbindFrame = ctx.onFrame((dt, t) => {
-          // Idle bob on the player car when not racing.
+          // Car launch tween.
           if (raceAnim) {
             raceAnim.t = Math.min(1, raceAnim.t + dt / raceAnim.dur);
-            const e = 1 - Math.pow(1 - raceAnim.t, 3); // ease-out
+            const e = 1 - Math.pow(1 - raceAnim.t, 3);
             playerCar.position.z =
               raceAnim.from + (raceAnim.to - raceAnim.from) * e;
+            if (!reduced && playerCar.userData.wheels)
+              playerCar.userData.wheels.forEach(
+                (w) => (w.rotation.x += dt * 14),
+              );
             if (raceAnim.t >= 1) raceAnim = null;
-          } else if (!feel.reducedMotion) {
-            playerCar.position.y = Math.sin(t * 3) * 0.03;
+          } else if (!reduced) {
+            // Gentle idle bob + sway.
+            playerCar.position.y = Math.sin(t * 2.5) * 0.04;
+            playerCar.rotation.z = Math.sin(t * 1.8) * 0.015;
           }
-          // Spin wheels while racing.
-          if (raceAnim && !feel.reducedMotion) {
-            playerCar.children.forEach((c) => {
-              if (c.geometry && c.geometry.type === "CylinderGeometry")
-                c.rotation.x += dt * 8;
-            });
+          // Dial sprite scale-pop on change.
+          if (popAnim) {
+            popAnim.t = Math.min(1, popAnim.t + dt / popAnim.dur);
+            const k = 1 + Math.sin(popAnim.t * Math.PI) * 0.18;
+            dialSprite.scale.set(dialSprite.scale.x, 1.3 * k, 1);
+            if (popAnim.t >= 1) popAnim = null;
+          }
+          // Subtle finish-line emissive pulse.
+          if (!reduced) {
+            finishMat.emissiveIntensity = 0.6 + Math.sin(t * 3) * 0.25;
           }
         });
       },
@@ -664,8 +864,11 @@ export default {
         if (unbindFrame) unbindFrame();
         timers.forEach(clearTimeout);
         timers.length = 0;
-        clearInfo();
-        disposables.forEach((m) => m.dispose());
+        clearTags();
+        disposeSprite(cardSprite);
+        disposeSprite(dialSprite);
+        disposables.forEach((d) => d.dispose && d.dispose());
+        scene.remove(group);
       },
     };
   },

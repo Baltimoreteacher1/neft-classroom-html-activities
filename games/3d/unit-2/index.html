@@ -62,7 +62,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -72,14 +73,16 @@
       id="game"
       role="application"
       tabindex="0"
-      aria-label="Bakery — Fill the Fraction Orders. Interactive 3D math game."
+      aria-label="Fraction Kitchen — fill the bakery's fraction orders. Interactive 3D math game for dividing fractions and building fractions, standard 6.NS.A.1."
       aria-describedby="e3d-intro"
     ></div>
-    <div class="e3d-boot-title">Bakery — Fill the Fraction Orders</div>
+    <div class="e3d-boot-title">Fraction Kitchen — Fill the Orders</div>
     <p class="e3d-intro" id="e3d-intro">
-      Pick a tool (arrow keys / WASD or tap), add slices or scoop servings
-      (Space / tap), and serve the order (Enter / tap the green button). Build
-      fractions and divide to portion. The plate's fraction updates live.
+      Choose a tool with the arrow keys or WASD (or tap it), then add a slice or
+      scoop a serving with Space (or the on-screen ● button). Press Enter — or
+      tap the glowing green SERVE button — to fill the order. Build fractions,
+      combine unlike denominators, and divide cups into unit-fraction servings.
+      The plate's fraction updates live.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -97,7 +100,12 @@
 
       try {
         // Omit `level` to show the Level 1 / Level 2 selector first.
-        mountGame(document.getElementById("game"), unit2Bakery, {});
+        mountGame(document.getElementById("game"), unit2Bakery, {
+          sceneOpts: {
+            background: 0x2a1a3a,
+            cameraPos: [0, 6.5, 12],
+          },
+        });
       } catch (err) {
         console.error("Failed to mount Unit 2 game:", err);
         document.getElementById("fallback").style.display = "flex";

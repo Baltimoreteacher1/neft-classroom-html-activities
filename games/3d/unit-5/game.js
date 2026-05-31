@@ -1,32 +1,68 @@
+// Unit 5 — "Area Architect" (CCSS 6.G.A.1)
+// Build structures whose footprint matches a target area by placing rectangular
+// and right-triangular pieces on a grid. Premium rebuild against engine3d.
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import {
+  rectArea,
+  triangleArea,
+  compositeArea,
+} from "/games/engine3d/geometry-math.js";
+
 const COLORS = {
-  grid: 0x18466f,
-  gridLine: 0x2f6aa0,
+  stage: 0x14304f,
+  stageEdge: 0x1f4a78,
+  gridLine: 0x3c7fbf,
   target: 0xf2c15b,
-  cursor: 0x1fa6a2,
-  piece: [0x1fa6a2, 0x4f8fd0, 0xe09b4a, 0x8b6fc4, 0x4aa978, 0xd9795d],
-  ghostOk: 0x1fa6a2,
-  ghostBad: 0xb64e2f,
+  cursor: 0x35e0d6,
+  piece: [0x35e0d6, 0x5fa0e6, 0xf0a64e, 0x9b7fe0, 0x55c98a, 0xe88a6c],
+  ghostOk: 0x35e0d6,
+  ghostBad: 0xe05a3a,
 };
 
 const CELL = 1;
 
+// ---- Level definitions -----------------------------------------------------
+// Level 1 (support): smaller grid, only rectangles & simple L composites,
+// piece labels + hints, smaller numbers. 6 rounds.
+// Level 2 (enrichment): larger grid, T/L composites + right-triangle round,
+// no labels/hints, larger numbers, multi-step. 6 rounds.
 function makeLevel(level) {
   if (level === 1) {
     return {
       grid: 6,
-      rounds: [
-        { kind: "rect", parts: [{ x: 1, y: 1, w: 4, h: 3 }] },
-        { kind: "rect", parts: [{ x: 0, y: 1, w: 5, h: 4 }] },
-        { kind: "rect", parts: [{ x: 0, y: 1, w: 6, h: 4 }] },
-      ],
       hints: true,
       labelPieces: true,
       allowTriangle: false,
+      rounds: [
+        { kind: "rect", parts: [{ x: 1, y: 1, w: 3, h: 2 }] },
+        { kind: "rect", parts: [{ x: 0, y: 1, w: 4, h: 3 }] },
+        { kind: "rect", parts: [{ x: 0, y: 0, w: 5, h: 3 }] },
+        { kind: "rect", parts: [{ x: 0, y: 1, w: 6, h: 4 }] },
+        {
+          kind: "lshape",
+          parts: [
+            { x: 0, y: 0, w: 4, h: 2 },
+            { x: 0, y: 2, w: 2, h: 2 },
+          ],
+        },
+        {
+          kind: "lshape",
+          parts: [
+            { x: 0, y: 0, w: 5, h: 2 },
+            { x: 0, y: 2, w: 2, h: 3 },
+          ],
+        },
+      ],
     };
   }
   return {
     grid: 8,
+    hints: false,
+    labelPieces: false,
+    allowTriangle: true,
     rounds: [
+      { kind: "rect", parts: [{ x: 0, y: 0, w: 7, h: 5 }] },
       {
         kind: "lshape",
         parts: [
@@ -41,12 +77,18 @@ function makeLevel(level) {
           { x: 2, y: 2, w: 3, h: 4 },
         ],
       },
+      {
+        kind: "ushape",
+        parts: [
+          { x: 0, y: 0, w: 2, h: 5 },
+          { x: 6, y: 0, w: 2, h: 5 },
+          { x: 2, y: 0, w: 4, h: 2 },
+        ],
+      },
       // Right triangle: right-angle at corner (cx,cy); legs run +w and +h.
       { kind: "triangle", cx: 1, cy: 1, w: 6, h: 4 },
+      { kind: "triangle", cx: 0, cy: 0, w: 8, h: 6 },
     ],
-    hints: false,
-    labelPieces: false,
-    allowTriangle: true,
   };
 }
 
@@ -91,12 +133,18 @@ export default {
         "To break a shape into smaller, easier pieces you can measure.",
       emoji: "✂️",
     },
+    {
+      term: "Right triangle",
+      definition: "A triangle with a square corner. Its area is leg × leg ÷ 2.",
+      emoji: "📐",
+    },
   ],
 
   createGame(ctx) {
     const {
       scene,
       camera,
+      renderer,
       input,
       hud,
       feel,
@@ -105,18 +153,18 @@ export default {
       THREE,
       level,
       onScore,
+      onFrame,
     } = ctx;
 
     const cfg = makeLevel(level);
     const N = cfg.grid;
     const half = (N * CELL) / 2;
 
-    // Cell (col,row) center on the XZ plane.
+    // ---- Coordinate helpers --------------------------------------------------
     const cellCenter = (col, row) => ({
       x: -half + (col + 0.5) * CELL,
       z: -half + (row + 0.5) * CELL,
     });
-    // Grid-line vertex (vx,vy) -> world point (corners of cells, 0..N).
     const vertexWorld = (vx, vy) => ({
       x: -half + vx * CELL,
       z: -half + vy * CELL,
@@ -132,16 +180,49 @@ export default {
     const inCell = (col, row) => col >= 0 && col < N && row >= 0 && row < N;
     const inVertex = (vx, vy) => vx >= 0 && vx <= N && vy >= 0 && vy <= N;
 
-    // ---- Static scene ----
+    // ---- Static scene --------------------------------------------------------
     const group = new THREE.Group();
     scene.add(group);
 
-    const floor = new THREE.Mesh(
-      new THREE.BoxGeometry(N * CELL, 0.4, N * CELL),
-      new THREE.MeshStandardMaterial({ color: COLORS.grid, roughness: 0.95 }),
+    const disposables = [];
+    const track = (obj) => {
+      disposables.push(obj);
+      return obj;
+    };
+
+    // Stage / build platform — rounded, PBR, receives shadow.
+    const stageGeo = track(
+      new RoundedBoxGeometry(N * CELL + 1.4, 0.7, N * CELL + 1.4, 4, 0.28),
     );
-    floor.position.y = -0.2;
-    group.add(floor);
+    const stageMat = track(
+      new THREE.MeshStandardMaterial({
+        color: COLORS.stage,
+        roughness: 0.85,
+        metalness: 0.12,
+      }),
+    );
+    const stage = new THREE.Mesh(stageGeo, stageMat);
+    stage.position.y = -0.35;
+    stage.receiveShadow = true;
+    group.add(stage);
+
+    // Inset build deck (slightly raised, glows faintly).
+    const deckGeo = track(
+      new RoundedBoxGeometry(N * CELL + 0.2, 0.18, N * CELL + 0.2, 3, 0.1),
+    );
+    const deckMat = track(
+      new THREE.MeshStandardMaterial({
+        color: COLORS.stageEdge,
+        roughness: 0.7,
+        metalness: 0.2,
+        emissive: COLORS.stageEdge,
+        emissiveIntensity: 0.18,
+      }),
+    );
+    const deck = new THREE.Mesh(deckGeo, deckMat);
+    deck.position.y = 0.0;
+    deck.receiveShadow = true;
+    group.add(deck);
 
     const gridHelper = new THREE.GridHelper(
       N * CELL,
@@ -149,55 +230,70 @@ export default {
       COLORS.gridLine,
       COLORS.gridLine,
     );
-    gridHelper.position.y = 0.01;
-    gridHelper.material.opacity = 0.55;
+    gridHelper.position.y = 0.1;
+    gridHelper.material.opacity = 0.6;
     gridHelper.material.transparent = true;
+    track(gridHelper.material);
+    track(gridHelper.geometry);
     group.add(gridHelper);
 
     const pickPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(N * CELL, N * CELL),
-      new THREE.MeshBasicMaterial({ visible: false }),
+      track(new THREE.PlaneGeometry(N * CELL, N * CELL)),
+      track(new THREE.MeshBasicMaterial({ visible: false })),
     );
     pickPlane.rotation.x = -Math.PI / 2;
+    pickPlane.position.y = 0.1;
     group.add(pickPlane);
 
-    const tileGeo = new THREE.BoxGeometry(CELL * 0.96, 0.5, CELL * 0.96);
-    const disposables = [tileGeo];
-
-    // ---- Target outline ----
+    // ---- Target outline ------------------------------------------------------
     const targetGroup = new THREE.Group();
     group.add(targetGroup);
-    const targetMat = new THREE.MeshStandardMaterial({
-      color: COLORS.target,
-      transparent: true,
-      opacity: 0.3,
-      emissive: COLORS.target,
-      emissiveIntensity: 0.25,
-    });
+    const tileGeo = track(new THREE.BoxGeometry(CELL * 0.94, 0.5, CELL * 0.94));
+    const targetMat = track(
+      new THREE.MeshStandardMaterial({
+        color: COLORS.target,
+        transparent: true,
+        opacity: 0.32,
+        emissive: COLORS.target,
+        emissiveIntensity: 0.45,
+        roughness: 0.5,
+      }),
+    );
 
-    // ---- Cursor + ghost ----
-    const cursor = { col: 0, row: 0 }; // cell index for rect mode, also drives vertex
-    let anchor = null; // {col,row}
+    // ---- Cursor + ghost ------------------------------------------------------
+    const cursor = { col: 0, row: 0 };
+    let anchor = null;
 
-    const cursorMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(CELL, 0.06, CELL),
+    const cursorGeo = track(new RoundedBoxGeometry(CELL, 0.1, CELL, 2, 0.1));
+    const cursorMat = track(
       new THREE.MeshStandardMaterial({
         color: COLORS.cursor,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.9,
+        emissive: COLORS.cursor,
+        emissiveIntensity: 0.6,
+        roughness: 0.4,
       }),
     );
-    cursorMesh.position.y = 0.05;
+    const cursorMesh = new THREE.Mesh(cursorGeo, cursorMat);
+    cursorMesh.position.y = 0.18;
     group.add(cursorMesh);
 
-    const ghostMat = new THREE.MeshStandardMaterial({
-      color: COLORS.ghostOk,
-      transparent: true,
-      opacity: 0.4,
+    // 3D problem card — floats above the stage, always shows the question.
+    const cardLabel = makeLabel("", {
+      THREE,
+      fontSize: 60,
+      scale: 1.3,
+      color: "#ffffff",
+      background: "rgba(13,32,56,0.92)",
     });
-    let ghostMesh = null; // rebuilt per shape
+    cardLabel.position.set(0, N * 0.62 + 1.6, -half - 0.4);
+    cardLabel.renderOrder = 10;
+    group.add(cardLabel);
 
-    // ---- Round state ----
+    let ghostMesh = null;
+
+    // ---- Round state ---------------------------------------------------------
     const placed = [];
     let covered = new Set();
     let target = new Set();
@@ -206,11 +302,12 @@ export default {
     let roundIndex = 0;
     let triangleMode = false;
     let solved = false;
-    let triPlaced = false; // triangle round: has a correct triangle been placed
-    let streak = 0; // consecutive correct placements
+    let triPlaced = false;
+    let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
-    let unbindFrame = null;
+    let introDone = false;
+    const frameUnbinders = [];
     const timers = [];
 
     const later = (fn, ms) => {
@@ -219,46 +316,15 @@ export default {
       return id;
     };
 
-    // ---- Floating area label ----
-    function makeLabel(text) {
-      const cv = document.createElement("canvas");
-      cv.width = 160;
-      cv.height = 72;
-      const c = cv.getContext("2d");
-      c.fillStyle = "rgba(18,53,91,0.92)";
-      roundRect(c, 4, 4, 152, 64, 14);
-      c.fill();
-      c.fillStyle = "#ffffff";
-      c.font = "bold 30px system-ui, sans-serif";
-      c.textAlign = "center";
-      c.textBaseline = "middle";
-      c.fillText(text, 80, 38);
-      const tex = new THREE.CanvasTexture(cv);
-      tex.minFilter = THREE.LinearFilter;
-      const spr = new THREE.Sprite(
-        new THREE.SpriteMaterial({
-          map: tex,
-          transparent: true,
-          depthTest: false,
-        }),
-      );
-      spr.scale.set(1.5, 0.68, 1);
-      return spr;
-    }
-    function roundRect(c, x, y, w, h, r) {
-      c.beginPath();
-      c.moveTo(x + r, y);
-      c.arcTo(x + w, y, x + w, y + h, r);
-      c.arcTo(x + w, y + h, x, y + h, r);
-      c.arcTo(x, y + h, x, y, r);
-      c.arcTo(x, y, x + w, y, r);
-      c.closePath();
-    }
-
     function disposeMesh(m) {
       m.traverse((o) => {
-        if (o.geometry && o.geometry !== tileGeo) o.geometry.dispose();
-        if (o.material) {
+        if (o.geometry && o.geometry !== tileGeo && o.geometry !== cursorGeo)
+          o.geometry.dispose();
+        if (
+          o.material &&
+          o.material !== targetMat &&
+          o.material !== cursorMat
+        ) {
           if (o.material.map) o.material.map.dispose();
           o.material.dispose();
         }
@@ -271,7 +337,7 @@ export default {
         disposeMesh(p.mesh);
         if (p.label) {
           group.remove(p.label);
-          p.label.material.map.dispose();
+          if (p.label.material.map) p.label.material.map.dispose();
           p.label.material.dispose();
         }
       });
@@ -283,6 +349,7 @@ export default {
       if (ghostMesh) {
         group.remove(ghostMesh);
         if (ghostMesh.geometry) ghostMesh.geometry.dispose();
+        ghostMesh.material.dispose();
         ghostMesh = null;
       }
       covered = new Set();
@@ -295,21 +362,29 @@ export default {
       if (r.kind === "rect") return "a rectangle";
       if (r.kind === "lshape") return "an L-shaped composite figure";
       if (r.kind === "tshape") return "a T-shaped composite figure";
+      if (r.kind === "ushape") return "a U-shaped composite figure";
       if (r.kind === "triangle") return "a right triangle";
       return "the shape";
+    }
+
+    // Exact area via geometry-math helpers (not cell counting).
+    function exactTargetArea(r) {
+      if (r.kind === "triangle") return triangleArea(r.w, r.h);
+      return compositeArea(
+        r.parts.map((p) => ({ type: "rect", w: p.w, h: p.h })),
+      );
     }
 
     // Right-triangle vertices (grid-line coords) for the triangle round.
     function triVertices(r) {
       return [
-        { vx: r.cx, vy: r.cy }, // right-angle corner
+        { vx: r.cx, vy: r.cy },
         { vx: r.cx + r.w, vy: r.cy },
         { vx: r.cx, vy: r.cy + r.h },
       ];
     }
 
     function buildTriangleShapeMesh(verts, color, opacity) {
-      // Flat extruded triangle on the XZ plane.
       const shape = new THREE.Shape();
       verts.forEach((v, i) => {
         const w = vertexWorld(v.vx, v.vy);
@@ -319,47 +394,57 @@ export default {
       shape.closePath();
       const geo = new THREE.ExtrudeGeometry(shape, {
         depth: 0.5,
-        bevelEnabled: false,
+        bevelEnabled: true,
+        bevelThickness: 0.05,
+        bevelSize: 0.05,
+        bevelSegments: 1,
       });
-      geo.rotateX(Math.PI / 2); // lay flat, extrude up
+      geo.rotateX(Math.PI / 2);
       const mat = new THREE.MeshStandardMaterial({
         color,
         transparent: opacity < 1,
         opacity,
-        roughness: 0.6,
+        roughness: 0.55,
+        metalness: 0.08,
         emissive: color,
-        emissiveIntensity: opacity < 1 ? 0.2 : 0,
+        emissiveIntensity: opacity < 1 ? 0.4 : 0.15,
       });
       return new THREE.Mesh(geo, mat);
+    }
+
+    // ---- Problem card / objective text --------------------------------------
+    function cardText() {
+      const goal = `Area = ${targetArea} sq units`;
+      if (round.kind === "triangle") {
+        return `Build ${describeRound(round)}\n${goal}  (leg × leg ÷ 2)`;
+      }
+      return `Build ${describeRound(round)}\n${goal}`;
     }
 
     function startRound() {
       clearRound();
       round = cfg.rounds[roundIndex];
       triangleMode = round.kind === "triangle";
+      targetArea = exactTargetArea(round);
 
-      // Persistent "Step X of Y" for the whole round (both levels have 3 rounds).
       if (typeof hud.setProgress === "function")
         hud.setProgress(roundIndex, cfg.rounds.length);
 
       if (round.kind === "triangle") {
-        targetArea = (round.w * round.h) / 2;
         const verts = triVertices(round);
-        const t = buildTriangleShapeMesh(verts, COLORS.target, 0.3);
-        t.position.y = 0.02;
+        const t = buildTriangleShapeMesh(verts, COLORS.target, 0.32);
+        t.position.y = 0.12;
         t.scale.y = 0.12;
         targetGroup.add(t);
-        // Cursor starts at the corner.
         cursor.col = round.cx;
         cursor.row = round.cy;
       } else {
         target = targetCells(round);
-        targetArea = target.size;
         target.forEach((key) => {
           const [col, row] = key.split(",").map(Number);
           const m = new THREE.Mesh(tileGeo, targetMat);
           const cc = cellCenter(col, row);
-          m.position.set(cc.x, 0.02, cc.z);
+          m.position.set(cc.x, 0.12, cc.z);
           m.scale.y = 0.12;
           targetGroup.add(m);
         });
@@ -368,18 +453,21 @@ export default {
         cursor.row = first[1];
       }
 
+      updateLabel(cardLabel, cardText());
+
       const tri = cfg.allowTriangle
-        ? " Press Enter (or the side button) to toggle triangle pieces."
+        ? " Press Enter to read the triangle rule or cancel a corner."
         : "";
       announce(
-        `Round ${roundIndex + 1}. Build ${describeRound(round)} with area ${targetArea} square units.${tri}`,
+        `Round ${roundIndex + 1} of ${cfg.rounds.length}. Build ${describeRound(round)} with area ${targetArea} square units.${tri}`,
       );
+      feel.sfx("select", "New structure to build.");
       updateLive();
       refreshGhost();
       if (cfg.hints) {
-        hud.message("Move the cursor, then place a corner.", {
+        hud.message("Move the cursor, set a corner, then stretch a piece.", {
           tone: "info",
-          duration: 2600,
+          duration: 2800,
         });
       }
     }
@@ -395,13 +483,13 @@ export default {
     function updateLive() {
       const area = liveArea();
       hud.setObjective(
-        `Cover ${describeRound(round)} (area ${targetArea} sq units) by placing pieces. ` +
-          `Covered ${area} of ${targetArea} — ` +
-          (anchor ? "set the far corner." : "place a corner."),
+        `Build ${describeRound(round)} — area ${targetArea} sq units. ` +
+          `Covered ${area} of ${targetArea}. ` +
+          (anchor ? "Set the far corner." : "Place a corner."),
       );
     }
 
-    // ---- Rectangle helpers (cell-based) ----
+    // ---- Rectangle helpers (cell-based) -------------------------------------
     function rectFromCells(a, b) {
       const c0 = Math.min(a.col, b.col);
       const c1 = Math.max(a.col, b.col);
@@ -420,29 +508,38 @@ export default {
       return true;
     }
 
-    // ---- Triangle helpers (vertex-based, right triangle at corner) ----
+    // ---- Triangle helpers ---------------------------------------------------
     function triFromAnchorCursor() {
-      // anchor = right-angle corner vertex; cursor cell -> opposite vertex.
       const a = anchor;
-      const cv = { vx: cursor.col, vy: cursor.row }; // reuse cursor as a vertex index
+      const cv = { vx: cursor.col, vy: cursor.row };
       const w = Math.abs(cv.vx - a.vx);
       const h = Math.abs(cv.vy - a.vy);
-      return { a, cv, w, h, area: (w * h) / 2 };
+      return { a, cv, w, h, area: triangleArea(w, h) };
+    }
+
+    function triangleMatchesTarget(verts) {
+      if (round.kind !== "triangle") return false;
+      const want = triVertices(round);
+      const key = (v) => v.vx + ":" + v.vy;
+      const a = verts.map(key).sort().join("|");
+      const b = want.map(key).sort().join("|");
+      return a === b;
     }
 
     function refreshGhost() {
-      // Cursor marker.
+      // Cursor marker position.
       if (triangleMode) {
         const w = vertexWorld(cursor.col, cursor.row);
-        cursorMesh.position.set(w.x, 0.05, w.z);
+        cursorMesh.position.set(w.x, 0.18, w.z);
       } else {
         const cc = cellCenter(cursor.col, cursor.row);
-        cursorMesh.position.set(cc.x, 0.05, cc.z);
+        cursorMesh.position.set(cc.x, 0.18, cc.z);
       }
 
       if (ghostMesh) {
         group.remove(ghostMesh);
         if (ghostMesh.geometry) ghostMesh.geometry.dispose();
+        ghostMesh.material.dispose();
         ghostMesh = null;
       }
       if (!anchor) return;
@@ -455,40 +552,55 @@ export default {
           { vx: ti.cv.vx, vy: ti.a.vy },
           { vx: ti.a.vx, vy: ti.cv.vy },
         ];
-        const ok = triangleMatchesTarget(verts, ti);
+        const ok = triangleMatchesTarget(verts);
         ghostMesh = buildTriangleShapeMesh(
           verts,
           ok ? COLORS.ghostOk : COLORS.ghostBad,
-          0.42,
+          0.45,
         );
-        ghostMesh.position.y = 0.28;
+        ghostMesh.position.y = 0.38;
         group.add(ghostMesh);
       } else {
         const rc = rectFromCells(anchor, cursor);
         const ok = rectValid(rc);
         const center = cellCenter((rc.c0 + rc.c1) / 2, (rc.r0 + rc.r1) / 2);
         ghostMesh = new THREE.Mesh(
-          new THREE.BoxGeometry(rc.w * CELL * 0.98, 0.5, rc.h * CELL * 0.98),
-          ghostMat.clone(),
+          new THREE.BoxGeometry(rc.w * CELL * 0.96, 0.5, rc.h * CELL * 0.96),
+          new THREE.MeshStandardMaterial({
+            color: ok ? COLORS.ghostOk : COLORS.ghostBad,
+            transparent: true,
+            opacity: 0.45,
+            emissive: ok ? COLORS.ghostOk : COLORS.ghostBad,
+            emissiveIntensity: 0.4,
+          }),
         );
-        ghostMesh.material.color.setHex(ok ? COLORS.ghostOk : COLORS.ghostBad);
-        ghostMesh.position.set(center.x, 0.28, center.z);
+        ghostMesh.position.set(center.x, 0.4, center.z);
         group.add(ghostMesh);
       }
     }
 
-    function triangleMatchesTarget(verts, ti) {
-      if (round.kind !== "triangle") return false;
-      const want = triVertices(round);
-      // Compare unordered vertex sets.
-      const key = (v) => v.vx + ":" + v.vy;
-      const a = verts.map(key).sort().join("|");
-      const b = want.map(key).sort().join("|");
-      return a === b;
-    }
-
     function pieceColor() {
       return COLORS.piece[placed.length % COLORS.piece.length];
+    }
+
+    // Scale-pop a freshly placed mesh in (respects reduced motion via feel).
+    function popIn(mesh, targetY) {
+      mesh.position.y = targetY;
+      if (feel.reducedMotion) {
+        mesh.scale.setScalar(1);
+        return;
+      }
+      mesh.scale.setScalar(0.01);
+      feel.tween({
+        from: 0,
+        to: 1,
+        duration: 0.32,
+        onUpdate: (v) => {
+          const s = 0.3 + v * 0.7;
+          mesh.scale.set(s, 0.4 + v * 0.6, s);
+        },
+        onComplete: () => mesh.scale.set(1, 1, 1),
+      });
     }
 
     function commit() {
@@ -501,23 +613,25 @@ export default {
           { vx: ti.cv.vx, vy: ti.a.vy },
           { vx: ti.a.vx, vy: ti.cv.vy },
         ];
-        if (ti.w === 0 || ti.h === 0 || !triangleMatchesTarget(verts, ti)) {
+        if (ti.w === 0 || ti.h === 0 || !triangleMatchesTarget(verts)) {
           rejectPiece(
-            "That triangle does not match the outline. Match both legs and the corner.",
+            "That triangle does not match the outline. Match both legs and the square corner.",
           );
           return;
         }
         const mesh = buildTriangleShapeMesh(verts, pieceColor(), 1);
-        mesh.position.y = 0.26;
+        mesh.castShadow = true;
+        popIn(mesh, 0.34);
         group.add(mesh);
         const entry = { mesh, area: ti.area };
         if (cfg.labelPieces) entry.label = attachTriLabel(verts, ti);
         placed.push(entry);
         triPlaced = true;
+        feel.sfx("add", `Placed a triangle, area ${ti.area} square units.`);
         announce(
           `Placed a triangle. ${ti.w} times ${ti.h} divided by 2 is ${ti.area} square units.`,
         );
-        burstAt(vertexWorld(ti.a.vx, ti.a.vy));
+        burstAt(vertexWorld(ti.a.vx, ti.a.vy), pieceColor());
         anchor = null;
         refreshGhost();
         updateLive();
@@ -533,21 +647,29 @@ export default {
         return;
       }
       const mesh = buildRectMesh(rc);
+      mesh.castShadow = true;
+      popIn(mesh, 0.4);
       group.add(mesh);
       rc.cells.forEach((k) => covered.add(k));
-      const entry = { mesh, area: rc.w * rc.h };
+      const a = rectArea(rc.w, rc.h);
+      const entry = { mesh, area: a };
       if (cfg.labelPieces) {
         const center = cellCenter((rc.c0 + rc.c1) / 2, (rc.r0 + rc.r1) / 2);
-        const label = makeLabel(`${rc.w}×${rc.h}=${rc.w * rc.h}`);
-        label.position.set(center.x, 1.1, center.z);
+        const label = makeLabel(`${rc.w}×${rc.h}=${a}`, {
+          THREE,
+          fontSize: 52,
+          scale: 0.8,
+        });
+        label.position.set(center.x, 1.2, center.z);
         group.add(label);
         entry.label = label;
       }
       placed.push(entry);
+      feel.sfx("add", `Placed a piece, ${a} square units.`);
       announce(
-        `Placed a piece. ${rc.w} times ${rc.h} is ${rc.w * rc.h} square units. Total area ${covered.size}.`,
+        `Placed a piece. ${rc.w} times ${rc.h} is ${a} square units. Total area ${covered.size}.`,
       );
-      burstAt(cellCenter(cursor.col, cursor.row));
+      burstAt(cellCenter(cursor.col, cursor.row), pieceColor());
       anchor = null;
       refreshGhost();
       updateLive();
@@ -558,36 +680,47 @@ export default {
       const cx = (verts[0].vx + verts[1].vx + verts[2].vx) / 3;
       const cy = (verts[0].vy + verts[1].vy + verts[2].vy) / 3;
       const w = vertexWorld(cx, cy);
-      const label = makeLabel(`${ti.w}×${ti.h}÷2=${ti.area}`);
-      label.position.set(w.x, 1.1, w.z);
+      const label = makeLabel(`${ti.w}×${ti.h}÷2=${ti.area}`, {
+        THREE,
+        fontSize: 52,
+        scale: 0.8,
+      });
+      label.position.set(w.x, 1.2, w.z);
       group.add(label);
       return label;
     }
 
     function buildRectMesh(rc) {
       const center = cellCenter((rc.c0 + rc.c1) / 2, (rc.r0 + rc.r1) / 2);
+      const color = pieceColor();
       const mesh = new THREE.Mesh(
-        new THREE.BoxGeometry(rc.w * CELL * 0.98, 0.5, rc.h * CELL * 0.98),
+        new RoundedBoxGeometry(
+          rc.w * CELL * 0.96,
+          0.5,
+          rc.h * CELL * 0.96,
+          3,
+          0.1,
+        ),
         new THREE.MeshStandardMaterial({
-          color: pieceColor(),
-          roughness: 0.6,
-          metalness: 0.05,
+          color,
+          roughness: 0.5,
+          metalness: 0.15,
+          emissive: color,
+          emissiveIntensity: 0.16,
         }),
       );
-      mesh.position.set(center.x, 0.28, center.z);
+      mesh.position.set(center.x, 0.4, center.z);
       return mesh;
     }
 
-    function burstAt(p) {
-      feel.burst(
-        { x: p.x, y: 0.6, z: p.z },
-        { color: pieceColor(), count: 16 },
-      );
+    function burstAt(p, color) {
+      feel.burst({ x: p.x, y: 0.7, z: p.z }, { color, count: 18, spread: 3.4 });
     }
 
     function rejectPiece(msg) {
       if (typeof hud.feedback === "function") hud.feedback(false, msg);
       else hud.message(msg, { tone: "warn", duration: 2000 });
+      feel.sfx("wrong");
       feel.shake(0.18);
       announce(msg);
       anchor = null;
@@ -623,10 +756,11 @@ export default {
       streak += 1;
       if (streak > bestStreak) bestStreak = streak;
       if (typeof hud.setStreak === "function") hud.setStreak(streak);
+
       const base = 20;
       const levelBonus = level === 2 ? 10 : 0;
       const fewBonus =
-        cfg.allowTriangle && round.kind !== "triangle" && placed.length <= 2
+        round.kind !== "triangle" && round.kind !== "rect" && placed.length <= 2
           ? 10
           : 0;
       const pts = base + levelBonus + fewBonus;
@@ -636,10 +770,12 @@ export default {
         pieces: placed.length,
         detail: round.kind,
       });
-      feel.shake(0.32);
+
+      feel.sfx("correct");
+      feel.shake(0.3);
       feel.burst(
-        { x: 0, y: 1.2, z: 0 },
-        { color: COLORS.target, count: 40, spread: 5 },
+        { x: 0, y: 1.4, z: 0 },
+        { color: COLORS.target, count: 44, spread: 5.5 },
       );
       const bonusMsg = fewBonus ? ` Fewest-pieces bonus +${fewBonus}!` : "";
       const okMsg = `Perfect! Area = ${targetArea} sq units. +${pts}${bonusMsg}`;
@@ -655,20 +791,46 @@ export default {
           roundIndex += 1;
           startRound();
         } else {
-          hud.setObjective(
-            `All structures built — ${solvedCount} of ${cfg.rounds.length} shapes, best streak ${bestStreak}. Great work, Architect!`,
-          );
-          hud.message("All rounds complete!", { tone: "ok", duration: 0 });
-          announce(
-            `All rounds complete. You built ${solvedCount} shapes with a best streak of ${bestStreak}. Great work, Architect.`,
-          );
+          finishGame();
         }
       }, 2600);
     }
 
-    // ---- Input ----
+    function finishGame() {
+      updateLabel(cardLabel, `All structures built!\nGreat work, Architect.`);
+      hud.setObjective(
+        `All structures built — ${solvedCount} of ${cfg.rounds.length} shapes, best streak ${bestStreak}. Great work, Architect!`,
+      );
+      hud.message("All rounds complete!", { tone: "ok", duration: 0 });
+      feel.sfx("fanfare", "All rounds complete!");
+      if (!feel.reducedMotion) {
+        for (let i = 0; i < 6; i++) {
+          later(
+            () =>
+              feel.burst(
+                {
+                  x: (Math.random() - 0.5) * N,
+                  y: 1.6 + Math.random(),
+                  z: (Math.random() - 0.5) * N,
+                },
+                {
+                  color: COLORS.piece[i % COLORS.piece.length],
+                  count: 30,
+                  spread: 5,
+                },
+              ),
+            i * 180,
+          );
+        }
+      }
+      announce(
+        `All rounds complete. You built ${solvedCount} shapes with a best streak of ${bestStreak}. Great work, Architect.`,
+      );
+    }
+
+    // ---- Input ---------------------------------------------------------------
     function maxIndex() {
-      return triangleMode ? N : N - 1; // vertices go 0..N, cells 0..N-1
+      return triangleMode ? N : N - 1;
     }
 
     function moveCursor(dCol, dRow) {
@@ -678,6 +840,7 @@ export default {
       if (nc !== cursor.col || nr !== cursor.row) {
         cursor.col = nc;
         cursor.row = nr;
+        feel.sfx("select");
         refreshGhost();
         if (triangleMode)
           announce(`Cursor at point ${cursor.col}, ${cursor.row}.`);
@@ -689,19 +852,20 @@ export default {
     }
 
     function primaryAction() {
-      if (solved) return;
+      if (solved || !introDone) return;
       if (!anchor) {
         if (triangleMode) {
-          // Anchor must be the right-angle corner vertex.
           if (cursor.col !== round.cx || cursor.row !== round.cy) {
             hud.message("Start at the square corner of the triangle.", {
               tone: "warn",
               duration: 1800,
             });
+            feel.sfx("wrong");
             feel.shake(0.12);
             return;
           }
           anchor = { vx: cursor.col, vy: cursor.row };
+          feel.sfx("pop");
           announce("Corner set. Move to the opposite point, then place again.");
         } else {
           if (!target.has(cursor.col + "," + cursor.row)) {
@@ -709,10 +873,12 @@ export default {
               tone: "warn",
               duration: 1600,
             });
+            feel.sfx("wrong");
             feel.shake(0.12);
             return;
           }
           anchor = { col: cursor.col, row: cursor.row };
+          feel.sfx("pop");
           announce(
             "First corner set. Move to the opposite corner, then place again.",
           );
@@ -724,20 +890,20 @@ export default {
       }
     }
 
-    function toggleTriangle() {
-      // Only meaningful where the round mixes; here triangle rounds are fixed,
-      // but Enter still cancels an in-progress anchor for keyboard users.
+    function secondaryAction() {
       if (anchor) {
         anchor = null;
+        feel.sfx("remove");
         refreshGhost();
         updateLive();
         announce("Corner cleared.");
         return;
       }
       if (round.kind === "triangle") {
-        caption("This round uses triangle pieces. Area = leg × leg ÷ 2.");
+        caption("Triangle rule: area = leg × leg ÷ 2.");
+        feel.sfx("select");
         announce(
-          "This round uses triangle pieces. Area is one leg times the other leg divided by two.",
+          "Triangle rule. Area is one leg times the other leg divided by two.",
         );
         later(() => caption(""), 1800);
       }
@@ -758,12 +924,41 @@ export default {
     let unbindPress = null;
     let unbindTap = null;
 
-    return {
-      start() {
-        camera.position.set(0, N * 1.15, N * 1.15);
+    // ---- Animated camera intro ----------------------------------------------
+    function cameraIntro() {
+      const targetPos = { x: 0, y: N * 1.25, z: N * 1.35 };
+      if (feel.reducedMotion) {
+        camera.position.set(targetPos.x, targetPos.y, targetPos.z);
         camera.lookAt(0, 0, 0);
         feel.syncCamera();
+        introDone = true;
+        return;
+      }
+      const start = { x: -N * 0.9, y: N * 2.1, z: N * 1.9 };
+      camera.position.set(start.x, start.y, start.z);
+      camera.lookAt(0, 0, 0);
+      feel.tween({
+        from: 0,
+        to: 1,
+        duration: 1.5,
+        onUpdate: (v) => {
+          camera.position.set(
+            start.x + (targetPos.x - start.x) * v,
+            start.y + (targetPos.y - start.y) * v,
+            start.z + (targetPos.z - start.z) * v,
+          );
+          camera.lookAt(0, 0, 0);
+        },
+        onComplete: () => {
+          feel.syncCamera();
+          introDone = true;
+        },
+      });
+    }
 
+    return {
+      start() {
+        cameraIntro();
         startRound();
 
         unbindPress = input.onPress((name) => {
@@ -772,11 +967,11 @@ export default {
           else if (name === "left") moveCursor(-1, 0);
           else if (name === "right") moveCursor(1, 0);
           else if (name === "action") primaryAction();
-          else if (name === "confirm") toggleTriangle();
+          else if (name === "confirm") secondaryAction();
         });
 
         unbindTap = input.onTap(() => {
-          if (solved) return;
+          if (solved || !introDone) return;
           const cell = pointerToTarget();
           if (!cell) return;
           cursor.col = cell.col;
@@ -785,21 +980,34 @@ export default {
           primaryAction();
         });
 
+        // Idle motion: gentle cursor pulse + slow card bob (reduced-motion gated).
         if (!feel.reducedMotion) {
-          unbindFrame = ctx.onFrame((dt, t) => {
-            const s = 1 + Math.sin(t * 4) * 0.06;
-            cursorMesh.scale.set(s, 1, s);
-          });
+          frameUnbinders.push(
+            onFrame((dt, t) => {
+              const s = 1 + Math.sin(t * 4) * 0.08;
+              cursorMesh.scale.set(s, 1, s);
+              cardLabel.position.y = N * 0.62 + 1.6 + Math.sin(t * 1.3) * 0.12;
+              if (ghostMesh) {
+                ghostMesh.material.emissiveIntensity =
+                  0.3 + Math.sin(t * 6) * 0.12;
+              }
+            }),
+          );
         }
       },
 
       dispose() {
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
-        if (unbindFrame) unbindFrame();
+        frameUnbinders.forEach((u) => u && u());
+        frameUnbinders.length = 0;
         timers.forEach(clearTimeout);
         timers.length = 0;
-        disposables.forEach((g) => g.dispose());
+        clearRound();
+        if (cardLabel.material.map) cardLabel.material.map.dispose();
+        cardLabel.material.dispose();
+        scene.remove(group);
+        disposables.forEach((d) => d && d.dispose && d.dispose());
       },
     };
   },
