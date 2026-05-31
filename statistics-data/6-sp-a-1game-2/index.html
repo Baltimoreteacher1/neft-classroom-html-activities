@@ -1,37 +1,519 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Placeholder for 6.SP.A.1 Game classroom activity.">
-  <title>6.SP.A.1 Game</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="6.SP.A.1 statistics question classification game for Grade 6.">
+  <title>Stat Question Lab | 6.SP.A.1 Game</title>
   <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #5a667a;
+      --line: #d8dfeb;
+      --panel: #ffffff;
+      --soft: #eef4fb;
+      --blue: #2457c5;
+      --green: #137a4d;
+      --gold: #a16008;
+      --red: #b42318;
+      --shadow: 0 18px 42px rgba(28, 40, 68, 0.14);
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(135deg, rgba(36, 87, 197, 0.10), rgba(19, 122, 77, 0.08)),
+        #f7f9fc;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .game-shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .breadcrumb a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .hero-panel,
+    .lab-card,
+    .coach-card,
+    .stat-card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel {
+      border-radius: 8px;
+      padding: clamp(22px, 4vw, 42px);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    .hero-copy {
+      max-width: 780px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.65;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .stat-card {
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .stat-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.55rem;
+    }
+
+    .play-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.85fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .lab-card,
+    .coach-card {
+      border-radius: 8px;
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    .round-label {
+      color: var(--blue);
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+
+    .question-card {
+      margin: 14px 0 18px;
+      padding: 20px;
+      border-radius: 8px;
+      background: var(--soft);
+      border: 1px solid #ccd7e8;
+      font-size: clamp(1.2rem, 2.6vw, 1.8rem);
+      line-height: 1.35;
+      font-weight: 850;
+    }
+
+    .choice-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(28, 40, 68, 0.16);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.58;
+    }
+
+    .choice {
+      background: #fff;
+      border: 2px solid var(--line);
+      color: var(--ink);
+    }
+
+    .choice.active {
+      border-color: var(--blue);
+      background: #eaf0ff;
+      color: #143f9f;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 850;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 112px;
+      resize: vertical;
+      box-sizing: border-box;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      font: inherit;
+      line-height: 1.5;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    textarea:focus,
+    button:focus-visible {
+      outline: 3px solid rgba(36, 87, 197, 0.28);
+      outline-offset: 2px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .primary {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .secondary {
+      background: #e8edf5;
+      color: var(--ink);
+    }
+
+    .feedback {
+      margin-top: 16px;
+      min-height: 54px;
+      border-radius: 8px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .feedback.good {
+      border-color: rgba(19, 122, 77, 0.35);
+      background: #edf8f2;
+      color: var(--green);
+    }
+
+    .feedback.bad {
+      border-color: rgba(180, 35, 24, 0.28);
+      background: #fff1ef;
+      color: var(--red);
+    }
+
+    .feedback.hint {
+      border-color: rgba(161, 96, 8, 0.28);
+      background: #fff7e8;
+      color: var(--gold);
+    }
+
+    .coach-card h2 {
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+    }
+
+    .coach-card ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 18px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #cfd8e6;
+    }
+
+    .dot.current {
+      background: var(--blue);
+    }
+
+    .dot.done {
+      background: var(--green);
+    }
+
+    footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 820px) {
+      .score-grid,
+      .play-grid,
+      .choice-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <main class="page-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics and Data</a><span>/</span><span>6.SP.A.1 Game</span></nav>
-    <section class="hero compact-hero">
-      <p class="eyebrow">Classroom activity</p>
-      <h1>6.SP.A.1 Game</h1>
-      <p class="hero-copy">This activity is ready to be replaced with the full HTML file.</p>
+  <main class="game-shell">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a><span>/</span><a href="/statistics-data/">Statistics and Data</a><span>/</span><span>Stat Question Lab</span>
+    </nav>
+
+    <section class="hero-panel" aria-labelledby="page-title">
+      <p class="eyebrow">6.SP.A.1 game</p>
+      <h1 id="page-title">Stat Question Lab</h1>
+      <p class="hero-copy">Classify each question, then revise non-statistical questions so they expect variability. Win by giving evidence, not by guessing.</p>
     </section>
 
-    <section class="section-block">
-      <div class="note-panel">
-        <p><strong>Source repo:</strong> 6.SP.A.1Game</p>
-        <p><strong>Target folder:</strong> <span class="path-note">/statistics-data/6-sp-a-1game-2/</span></p>
-      </div>
+    <section class="score-grid" aria-label="Game score">
+      <div class="stat-card"><span>Round</span><strong id="roundStat">1/12</strong></div>
+      <div class="stat-card"><span>Score</span><strong id="scoreStat">0</strong></div>
+      <div class="stat-card"><span>Streak</span><strong id="streakStat">0</strong></div>
+      <div class="stat-card"><span>Accuracy</span><strong id="accuracyStat">0%</strong></div>
     </section>
 
-    <div class="button-row">
-      <a class="primary-button" href="/statistics-data/">Back to collection</a>
-      <a class="secondary-button" href="/">Back to homepage</a>
-    </div>
-    <footer class="site-footer">
-      <span>Mr. Neft's classroom activities</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
-    </footer>
+    <section class="play-grid">
+      <article class="lab-card" aria-labelledby="roundTitle">
+        <div class="round-label" id="roundTitle">Round 1</div>
+        <div class="question-card" id="questionText"></div>
+
+        <div class="choice-row" role="group" aria-label="Classify the question">
+          <button class="choice" id="statisticalBtn" type="button" data-choice="statistical">Statistical</button>
+          <button class="choice" id="notBtn" type="button" data-choice="not">Not statistical</button>
+        </div>
+
+        <label for="rewriteText">If it is not statistical, rewrite it so the answer would vary.</label>
+        <textarea id="rewriteText" placeholder="Example: How many minutes did each student in our class read last night?"></textarea>
+
+        <div class="actions">
+          <button class="primary" id="checkBtn" type="button">Check answer</button>
+          <button class="secondary" id="nextBtn" type="button" disabled>Next round</button>
+          <button class="secondary" id="resetBtn" type="button">Reset game</button>
+        </div>
+
+        <div class="feedback" id="feedback" aria-live="polite">Choose a classification. For a non-statistical question, write a stronger version that would collect a set of data.</div>
+        <div class="dots" id="dots" aria-label="Round progress"></div>
+      </article>
+
+      <aside class="coach-card" aria-labelledby="coachTitle">
+        <h2 id="coachTitle">What Counts?</h2>
+        <ul>
+          <li>A statistical question expects data from a group or repeated measurements.</li>
+          <li>The answers should vary, so a graph or summary measure would make sense.</li>
+          <li>A non-statistical question asks for one fixed fact or one measurement.</li>
+          <li>A strong rewrite names the group and the variable you would measure.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <footer>Stat Question Lab · 6.SP.A.1 · Grade 6 Statistics Game</footer>
   </main>
+
+  <script>
+    const rounds = [
+      { q: "How many minutes did each student in our class read last night?", answer: "statistical", why: "It asks about many students, so the answers will vary.", rewrite: "" },
+      { q: "How tall is the classroom door?", answer: "not", why: "It asks for one measurement, so there is no distribution of data.", rewrite: "What are the heights of classroom doors in our school?" },
+      { q: "What are the ages of the players on the school basketball team?", answer: "statistical", why: "It asks about a group of players, and ages can vary.", rewrite: "" },
+      { q: "How many sides does a hexagon have?", answer: "not", why: "A hexagon always has six sides, so the answer is fixed.", rewrite: "How many sides do the different polygons in our pattern set have?" },
+      { q: "How much time do sixth graders spend on homework each school night?", answer: "statistical", why: "It asks about many sixth graders and a variable amount of time.", rewrite: "" },
+      { q: "How many pets do the students in our grade have?", answer: "statistical", why: "It collects one value from each student, and the values will vary.", rewrite: "" },
+      { q: "What is the price of this one notebook?", answer: "not", why: "It asks for one price, not a distribution.", rewrite: "What are the prices of notebooks at different stores?" },
+      { q: "What are the daily high temperatures in our city this month?", answer: "statistical", why: "It uses repeated measurements across many days, so the values vary.", rewrite: "" },
+      { q: "What is today's lunch entree?", answer: "not", why: "It asks for a single fact for today.", rewrite: "What lunch entrees were served on each school day this month?" },
+      { q: "How many pages are in the books students chose for independent reading?", answer: "statistical", why: "It asks about many books selected by students, and page counts vary.", rewrite: "" },
+      { q: "What is the mass of this marker?", answer: "not", why: "It asks for one measurement of one object.", rewrite: "What are the masses of several markers in our classroom supply bin?" },
+      { q: "How many siblings do students in our class have?", answer: "statistical", why: "It asks the same question of each student, and the responses can vary.", rewrite: "" }
+    ];
+
+    const state = {
+      index: 0,
+      score: 0,
+      streak: 0,
+      attempts: 0,
+      correct: 0,
+      locked: false,
+      choice: "",
+      completed: new Set()
+    };
+
+    const els = {
+      roundStat: document.getElementById("roundStat"),
+      scoreStat: document.getElementById("scoreStat"),
+      streakStat: document.getElementById("streakStat"),
+      accuracyStat: document.getElementById("accuracyStat"),
+      roundTitle: document.getElementById("roundTitle"),
+      questionText: document.getElementById("questionText"),
+      statisticalBtn: document.getElementById("statisticalBtn"),
+      notBtn: document.getElementById("notBtn"),
+      rewriteText: document.getElementById("rewriteText"),
+      checkBtn: document.getElementById("checkBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      feedback: document.getElementById("feedback"),
+      dots: document.getElementById("dots")
+    };
+
+    function looksVariable(text) {
+      return /\b(each|students|people|days|different|class|team|players|several|many|all|families|teachers|books|prices|stores|measurements|months|weeks)\b/i.test(text) && text.trim().length >= 18;
+    }
+
+    function updateStats() {
+      els.roundStat.textContent = `${state.index + 1}/${rounds.length}`;
+      els.scoreStat.textContent = state.score;
+      els.streakStat.textContent = state.streak;
+      els.accuracyStat.textContent = state.attempts ? `${Math.round((state.correct / state.attempts) * 100)}%` : "0%";
+      els.dots.innerHTML = rounds.map((_, i) => {
+        const cls = i === state.index ? "dot current" : state.completed.has(i) ? "dot done" : "dot";
+        return `<span class="${cls}" aria-hidden="true"></span>`;
+      }).join("");
+    }
+
+    function setFeedback(kind, message) {
+      els.feedback.className = `feedback ${kind}`;
+      els.feedback.textContent = message;
+    }
+
+    function renderRound() {
+      const round = rounds[state.index];
+      state.locked = false;
+      state.choice = "";
+      els.roundTitle.textContent = `Round ${state.index + 1}`;
+      els.questionText.textContent = round.q;
+      els.rewriteText.value = "";
+      els.nextBtn.disabled = true;
+      els.checkBtn.disabled = false;
+      els.statisticalBtn.classList.remove("active");
+      els.notBtn.classList.remove("active");
+      setFeedback("", "Choose a classification. For a non-statistical question, write a stronger version that would collect a set of data.");
+      updateStats();
+    }
+
+    function selectChoice(choice) {
+      if (state.locked) return;
+      state.choice = choice;
+      els.statisticalBtn.classList.toggle("active", choice === "statistical");
+      els.notBtn.classList.toggle("active", choice === "not");
+    }
+
+    function checkAnswer() {
+      if (state.locked) return;
+      if (!state.choice) {
+        setFeedback("hint", "Start by deciding whether the question expects a set of different answers.");
+        return;
+      }
+
+      const round = rounds[state.index];
+      state.attempts += 1;
+
+      if (state.choice !== round.answer) {
+        state.streak = 0;
+        setFeedback("bad", `Not yet. ${round.why}`);
+        updateStats();
+        return;
+      }
+
+      if (round.answer === "not" && !looksVariable(els.rewriteText.value)) {
+        state.streak = 0;
+        setFeedback("hint", `Correct classification. Now rewrite it to name a group and a measurement that can vary. Example: ${round.rewrite}`);
+        updateStats();
+        return;
+      }
+
+      state.locked = true;
+      state.correct += 1;
+      state.streak += 1;
+      state.score += round.answer === "not" ? 13 : 10;
+      state.completed.add(state.index);
+      els.nextBtn.disabled = false;
+      els.checkBtn.disabled = true;
+      setFeedback("good", `Correct. ${round.why}${round.answer === "not" ? ` A strong rewrite could be: ${round.rewrite}` : ""}`);
+      updateStats();
+    }
+
+    function nextRound() {
+      if (state.index === rounds.length - 1) {
+        setFeedback("good", `Lab complete. Final score: ${state.score}. You classified questions and revised fixed-fact questions into data questions.`);
+        els.nextBtn.disabled = true;
+        return;
+      }
+      state.index += 1;
+      renderRound();
+    }
+
+    function resetGame() {
+      state.index = 0;
+      state.score = 0;
+      state.streak = 0;
+      state.attempts = 0;
+      state.correct = 0;
+      state.locked = false;
+      state.choice = "";
+      state.completed.clear();
+      renderRound();
+    }
+
+    els.statisticalBtn.addEventListener("click", () => selectChoice("statistical"));
+    els.notBtn.addEventListener("click", () => selectChoice("not"));
+    els.checkBtn.addEventListener("click", checkAnswer);
+    els.nextBtn.addEventListener("click", nextRound);
+    els.resetBtn.addEventListener("click", resetGame);
+
+    renderRound();
+  </script>
   <script src="/assets/app.js" defer></script>
 </body>
 </html>
