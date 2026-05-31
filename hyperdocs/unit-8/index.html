@@ -13,25 +13,52 @@
     <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      /* Style ONLY with --nt-* variables */
+      /* ── Base ── */
       body {
         margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         background: var(--nt-bg);
         color: var(--nt-text);
         font-size: 19px;
         line-height: 1.65;
       }
       .wrap {
-        max-width: 860px;
+        max-width: 880px;
         margin: 0 auto;
         padding: 24px 18px 80px;
       }
+      /* ── Skip link ── */
+      .skip {
+        position: absolute;
+        left: -999px;
+      }
+      .skip:focus {
+        left: 8px;
+        top: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        padding: 8px 14px;
+        border-radius: 8px;
+        z-index: 50;
+        text-decoration: none;
+      }
+      /* ── Breadcrumb ── */
+      .breadcrumb {
+        font-size: 14px;
+        padding: 10px 16px;
+        color: var(--nt-muted);
+      }
+      .breadcrumb a {
+        color: var(--nt-accent);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .breadcrumb a:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+      /* ── Hero ── */
       header.hd {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -52,10 +79,43 @@
         padding: 4px 12px;
         border-radius: 999px;
         font-size: 15px;
+        margin-bottom: 8px;
       }
       .muted {
         color: var(--nt-muted);
       }
+      /* ── Learning Target box ── */
+      .lt-box {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-bottom: 22px;
+      }
+      .lt-box h2 {
+        margin: 0 0 10px;
+        font-size: 20px;
+        color: var(--nt-accent);
+      }
+      .lt-box ul {
+        margin: 0 0 12px 20px;
+        padding: 0;
+        font-size: 18px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+      }
+      /* ── Sections ── */
       section.step {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -76,6 +136,7 @@
         color: var(--nt-accent);
         margin-bottom: 8px;
       }
+      /* ── How / hint box ── */
       .how {
         background: var(--nt-bg);
         border: 2px dashed var(--nt-border);
@@ -84,17 +145,12 @@
         margin: 14px 0;
         font-size: 18px;
       }
-      .how strong {
-        color: var(--nt-accent);
-      }
-      a.nt-link {
-        color: var(--nt-accent);
-        font-weight: 700;
-      }
+      .how strong { color: var(--nt-accent); }
+      /* ── Links grid ── */
       .linkgrid {
         display: grid;
         gap: 12px;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         margin-top: 12px;
       }
       .linkgrid a {
@@ -120,23 +176,7 @@
         color: var(--nt-muted);
         margin-top: 4px;
       }
-      .example {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-top: 14px;
-      }
-      .example table {
-        border-collapse: collapse;
-        margin: 8px 0;
-      }
-      .example td,
-      .example th {
-        border: 1px solid var(--nt-border);
-        padding: 6px 12px;
-        text-align: center;
-      }
+      /* ── Vocab ── */
       .vocab {
         display: grid;
         gap: 10px;
@@ -150,27 +190,40 @@
         padding: 10px 12px;
         font-size: 16px;
       }
-      .vocab b {
-        color: var(--nt-accent);
+      .vocab b { color: var(--nt-accent); }
+      /* ── Worked example ── */
+      .example {
+        background: var(--nt-bg);
+        border-left: 6px solid var(--nt-accent);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-top: 14px;
       }
+      .example table {
+        border-collapse: collapse;
+        margin: 8px 0;
+        width: 100%;
+      }
+      .example td,
+      .example th {
+        border: 1px solid var(--nt-border);
+        padding: 6px 12px;
+        text-align: center;
+      }
+      /* ── Apply questions ── */
       .q {
         margin: 18px 0;
         padding-top: 14px;
         border-top: 1px solid var(--nt-border);
       }
-      .q:first-of-type {
-        border-top: none;
-      }
+      .q:first-of-type { border-top: none; }
       .q label.qlabel {
         display: block;
         font-weight: 700;
         margin-bottom: 8px;
         font-size: 19px;
       }
-      .q .data {
-        font-weight: 700;
-        color: var(--nt-accent);
-      }
+      .q .data { font-weight: 700; color: var(--nt-accent); }
       .choices {
         display: grid;
         gap: 8px;
@@ -191,6 +244,7 @@
         width: 22px;
         height: 22px;
         accent-color: var(--nt-accent);
+        flex-shrink: 0;
       }
       .choices label:focus-within {
         outline: 3px solid var(--nt-focus);
@@ -204,6 +258,7 @@
         background: var(--nt-surface);
         color: var(--nt-text);
         width: 160px;
+        font-family: inherit;
       }
       input[type="text"].num:focus-visible {
         outline: 3px solid var(--nt-focus);
@@ -238,56 +293,237 @@
         cursor: pointer;
         margin-top: 8px;
       }
+      .checkbtn:hover { opacity: 0.88; }
       .checkbtn:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 3px;
       }
-      .skip {
-        position: absolute;
-        left: -999px;
+      /* ── Self-check ── */
+      .sc-item {
+        margin: 14px 0;
+        padding: 14px 16px;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
       }
-      .skip:focus {
-        left: 8px;
-        top: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        padding: 8px 14px;
+      .sc-item label.sc-q {
+        display: block;
+        font-weight: 700;
+        font-size: 19px;
+        margin-bottom: 8px;
+      }
+      .sc-feedback {
+        margin-top: 8px;
+        padding: 8px 12px;
         border-radius: 8px;
-        z-index: 50;
+        font-size: 17px;
+        font-weight: 600;
+        display: none;
+      }
+      .sc-feedback.correct {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        display: block;
+      }
+      .sc-feedback.wrong {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        display: block;
+      }
+      /* ── Rubric ── */
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 17px;
+      }
+      .rubric-table th {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 700;
+      }
+      .rubric-table td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        vertical-align: top;
+      }
+      .rubric-table tr:nth-child(even) td {
+        background: var(--nt-bg);
+      }
+      /* ── Details / Answer Key ── */
+      details {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin: 14px 0;
+      }
+      details summary {
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 17px;
+        color: var(--nt-accent);
+        list-style: none;
+        padding: 2px 0;
+      }
+      details summary::-webkit-details-marker { display: none; }
+      details summary::before { content: "▶ "; font-size: 13px; }
+      details[open] summary::before { content: "▼ "; }
+      details[open] { padding-bottom: 16px; }
+      .ak-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      .ak-table th {
+        background: var(--nt-surface);
+        padding: 8px 10px;
+        text-align: left;
+        border: 1px solid var(--nt-border);
+        font-weight: 700;
+      }
+      .ak-table td {
+        border: 1px solid var(--nt-border);
+        padding: 8px 10px;
+        vertical-align: top;
+      }
+      /* ── Teacher Notes ── */
+      .teacher-notes {
+        background: #fffde7;
+        border: 2px solid #f9a825;
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-bottom: 22px;
+        font-size: 17px;
+      }
+      .teacher-notes h2 {
+        color: #e65100;
+        margin-top: 0;
+        font-size: 20px;
+      }
+      .teacher-notes h3 {
+        color: #bf360c;
+        font-size: 17px;
+        margin: 14px 0 6px;
+      }
+      .teacher-notes ul {
+        margin: 4px 0 8px 18px;
+        padding: 0;
+      }
+      /* ── Print ── */
+      @media print {
+        body { font-size: 14px; background: #fff; color: #000; }
+        .teacher-notes, .breadcrumb { display: none; }
+        section.step, header.hd, .lt-box {
+          border: 1px solid #999;
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .checkbtn { display: none; }
+        .sc-feedback { display: none !important; }
+        a[href]::after { content: " (" attr(href) ")"; font-size: 12px; color: #555; }
+      }
+      /* ── Mobile ── */
+      @media (max-width: 600px) {
+        body { font-size: 17px; }
+        header.hd h1 { font-size: 24px; }
+        section.step h2 { font-size: 20px; }
+        .lt-meta { flex-direction: column; }
+        .rubric-table { font-size: 14px; }
+        .vocab { grid-template-columns: 1fr; }
+        input[type="text"].num { width: 100%; }
       }
     </style>
   </head>
 
   <body class="nt-theme-aware">
-    <a href="#main" class="skip nt-link">Skip to content</a>
+    <a href="#main" class="skip">Skip to main content</a>
+    <p class="breadcrumb"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
     <div class="wrap">
+
+      <!-- HERO -->
       <header class="hd">
         <span class="standard">CCSS 6.SP.A &amp; 6.SP.B</span>
         <h1>Unit 8 HyperDoc — Statistics</h1>
-        <p class="muted">
-          Data Lab: build a plot, then read the mean, median, mode, and range.
-          Follow the 5 steps from top to bottom.
-        </p>
+        <p class="muted">Data Lab: build a plot, then read the mean, median, mode, and range. Follow the 5 steps from top to bottom.</p>
+        <p class="muted" style="margin-top:6px;font-size:14px;"><strong>Neft Teacher</strong> · Grade 6 Mathematics</p>
       </header>
 
+      <!-- LEARNING TARGET -->
+      <div class="lt-box" role="region" aria-label="Learning Target">
+        <h2>Learning Target</h2>
+        <ul>
+          <li><strong>I can</strong> recognize a statistical question and explain why it has variability. <em>(6.SP.A.1)</em></li>
+          <li><strong>I can</strong> find the mean, median, mode, and range of a data set. <em>(6.SP.B.5)</em></li>
+          <li><strong>I can</strong> interpret data displays (dot plots, histograms) and describe shape, center, and spread. <em>(6.SP.A.2, 6.SP.B.4)</em></li>
+          <li><strong>I can</strong> explain when the mean or median better describes a data set. <em>(6.SP.A.3)</em></li>
+        </ul>
+        <div class="lt-meta">
+          <span>📐 Standards: 6.SP.A.1–3 · 6.SP.B.4–5</span>
+          <span>⏱ Estimated time: 55 minutes</span>
+          <span>📦 Materials: pencil, this HyperDoc, optional dot-plot handout</span>
+          <span>👥 Format: individual or pair work</span>
+        </div>
+      </div>
+
+      <!-- TEACHER NOTES -->
+      <div class="teacher-notes" role="region" aria-label="Teacher Notes">
+        <h2>Teacher Notes (not for student display)</h2>
+        <h3>Pacing</h3>
+        <ul>
+          <li><strong>Engage</strong> — 5 min: collect real sleep data from the class (show of hands); chart range on board.</li>
+          <li><strong>Explore</strong> — 10 min: 3D Data Lab game + 3 min debrief on what measure changed most.</li>
+          <li><strong>Explain</strong> — 8 min: work through the table example whole-class; students copy steps.</li>
+          <li><strong>Apply</strong> — 5 min self-check + 15 min graded NTKit questions.</li>
+          <li><strong>Reflect</strong> — 7 min individual writing; collect as PDF deliverable.</li>
+        </ul>
+        <h3>Grouping</h3>
+        <ul>
+          <li>Pair students for Explore; individual for Apply and Reflect.</li>
+          <li>For small groups: have students compare mean vs. median answers before checking.</li>
+        </ul>
+        <h3>Differentiation — Support</h3>
+        <ul>
+          <li>Provide a step-by-step "How to find the mean" reference card.</li>
+          <li>Allow calculator use for mean computation.</li>
+          <li>Reduce Apply to Q1–Q4 for students who need scaffolding.</li>
+        </ul>
+        <h3>Differentiation — Challenge</h3>
+        <ul>
+          <li>Ask: "If you add one very large number to a data set, which measures change? By how much?"</li>
+          <li>Extension: introduce Mean Absolute Deviation (MAD) as a measure of spread.</li>
+          <li>Have students create their own statistical question, collect data from the class, and compute all four measures.</li>
+        </ul>
+        <h3>ESOL / Language Supports</h3>
+        <ul>
+          <li>Post bilingual vocabulary: <em>media/mean, mediana/median, moda/mode, rango/range, pregunta estadística/statistical question</em>.</li>
+          <li>Use the sorted data table as a visual organizer — point to each step.</li>
+          <li>Accept numeric answers without full sentences for emerging English learners.</li>
+          <li>Sentence frames for reflection: "The median is better when … because …"</li>
+        </ul>
+      </div>
+
       <main id="main">
+
         <!-- ENGAGE -->
         <section class="step" aria-labelledby="s1">
           <span class="pill">Step 1 · Engage</span>
           <h2 id="s1">A Question Worth Measuring</h2>
           <p>
-            Your class asks:
-            <strong>"How many hours do we sleep each night?"</strong>
-            Some students sleep 6 hours. Some sleep 10. The answers are
-            <em>different</em> each time. That makes it a
-            <span class="data">statistical question</span> — it has many answers
-            that vary.
+            Your class asks: <strong>"How many hours do we sleep each night?"</strong>
+            Some students sleep 6 hours. Some sleep 10. The answers are <em>different</em> each time.
+            That makes it a <span class="data">statistical question</span> — it has many answers that vary.
           </p>
           <div class="how">
-            <strong>Do this:</strong> Think of one question about your class
-            that would get many <em>different</em> answers. You will write it in
-            Step 5.
+            <strong>Do this:</strong> Think of one question about your class that would get many <em>different</em> answers.
+            You will write it in Step 5.
           </div>
+          <p class="muted" style="margin-top:8px;">Non-statistical example: "How old am I?" — only one answer. Statistical example: "How old are the students in my class?" — many different answers.</p>
         </section>
 
         <!-- EXPLORE -->
@@ -295,8 +531,7 @@
           <span class="pill">Step 2 · Explore</span>
           <h2 id="s2">Play and Explore</h2>
           <div class="how">
-            <strong>Do this:</strong> Open the 3D game in a new tab. Build the
-            plot and find the measures. Then come back here.
+            <strong>Do this:</strong> Open the 3D game in a new tab. Build the plot and find the measures. Then come back here.
           </div>
           <div class="linkgrid">
             <a href="/games/3d/unit-8/" target="_blank" rel="noopener">
@@ -307,61 +542,45 @@
               Math Hub
               <span class="sub">All units and tools</span>
             </a>
-            <a href="/novels/" target="_blank" rel="noopener">
+            <a href="/graphic-novels/" target="_blank" rel="noopener">
               Graphic Novels
               <span class="sub">Read the math story</span>
             </a>
           </div>
+          <p class="muted" style="margin-top:12px;">After playing: which measure (mean, median, mode, range) changed the most when you added a very large value? Remember this for the reflection.</p>
         </section>
 
         <!-- EXPLAIN -->
         <section class="step" aria-labelledby="s3">
           <span class="pill">Step 3 · Explain</span>
           <h2 id="s3">The Words You Need</h2>
-          <div class="vocab">
-            <div>
-              <b>Mean</b> — the average. Add all numbers, then divide by how
-              many.
-            </div>
-            <div>
-              <b>Median</b> — the middle number when sorted small to big.
-            </div>
-            <div><b>Mode</b> — the number that shows up most.</div>
-            <div><b>Range</b> — biggest number minus smallest number.</div>
+          <div class="vocab" role="list">
+            <div role="listitem"><b>Mean</b> — the average. Add all numbers, then divide by how many.</div>
+            <div role="listitem"><b>Median</b> — the middle number when sorted small to big.</div>
+            <div role="listitem"><b>Mode</b> — the number that shows up most.</div>
+            <div role="listitem"><b>Range</b> — biggest number minus smallest number.</div>
+            <div role="listitem"><b>Statistical question</b> — a question with answers that vary (not just one answer).</div>
+            <div role="listitem"><b>Distribution</b> — the shape of data: symmetric (even), skewed (pulled to one side), or clustered.</div>
           </div>
 
           <div class="example">
-            <p>
-              <strong>Worked example.</strong> Hours of sleep: 6, 8, 8, 7, 6
-            </p>
+            <p><strong>Worked example.</strong> Hours of sleep: 6, 8, 8, 7, 6</p>
             <p>First sort them: 6, 6, 7, 8, 8</p>
-            <table>
-              <tr>
-                <th>Measure</th>
-                <th>How</th>
-                <th>Answer</th>
-              </tr>
-              <tr>
-                <td>Mean</td>
-                <td>(6+6+7+8+8) ÷ 5 = 35 ÷ 5</td>
-                <td><b>7</b></td>
-              </tr>
-              <tr>
-                <td>Median</td>
-                <td>middle of 6, 6, <b>7</b>, 8, 8</td>
-                <td><b>7</b></td>
-              </tr>
-              <tr>
-                <td>Mode</td>
-                <td>6 and 8 each appear twice</td>
-                <td><b>6 and 8</b></td>
-              </tr>
-              <tr>
-                <td>Range</td>
-                <td>8 − 6</td>
-                <td><b>2</b></td>
-              </tr>
+            <table aria-label="Worked example calculations">
+              <thead>
+                <tr><th>Measure</th><th>How</th><th>Answer</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Mean</td><td>(6+6+7+8+8) ÷ 5 = 35 ÷ 5</td><td><b>7</b></td></tr>
+                <tr><td>Median</td><td>middle of 6, 6, <b>7</b>, 8, 8</td><td><b>7</b></td></tr>
+                <tr><td>Mode</td><td>6 and 8 each appear twice</td><td><b>6 and 8</b></td></tr>
+                <tr><td>Range</td><td>8 − 6</td><td><b>2</b></td></tr>
+              </tbody>
             </table>
+          </div>
+
+          <div class="how" style="margin-top:14px;">
+            <strong>Key idea:</strong> When there is an outlier (a very large or very small number), the <strong>mean gets pulled</strong> toward it. The median is usually a better description of "typical" in that case.
           </div>
         </section>
 
@@ -369,31 +588,63 @@
         <section class="step" aria-labelledby="s4">
           <span class="pill">Step 4 · Apply</span>
           <h2 id="s4">Show What You Know</h2>
+
+          <!-- SELF-CHECK -->
+          <h3 style="font-size:20px;margin-bottom:4px;">Quick Self-Check</h3>
+          <p style="margin:0 0 14px;">Answer each question, then press <strong>Check</strong> to see instant feedback and an explanation.</p>
+
+          <!-- SC1: Statistical question -->
+          <div class="sc-item">
+            <label class="sc-q" id="sc1l"><span style="color:var(--nt-accent);font-weight:800;">A.</span> Which is a statistical question?</label>
+            <div class="choices" role="radiogroup" aria-labelledby="sc1l">
+              <label><input type="radio" name="sc1" value="a" />What is 2 + 2?</label>
+              <label><input type="radio" name="sc1" value="b" />How many books do students in our class read each month?</label>
+              <label><input type="radio" name="sc1" value="c" />What is today's date?</label>
+            </div>
+            <button class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(1,'b','Correct! Each student reads a different number of books, so answers vary — that makes it statistical.')">Check</button>
+            <div class="sc-feedback" id="sc1-fb" aria-live="polite"></div>
+          </div>
+
+          <!-- SC2: Mean -->
+          <div class="sc-item">
+            <label class="sc-q" id="sc2l"><span style="color:var(--nt-accent);font-weight:800;">B.</span> Find the mean of: 2, 4, 6, 8, 10</label>
+            <div class="choices" role="radiogroup" aria-labelledby="sc2l">
+              <label><input type="radio" name="sc2" value="a" />4</label>
+              <label><input type="radio" name="sc2" value="b" />5</label>
+              <label><input type="radio" name="sc2" value="c" />6</label>
+            </div>
+            <button class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(2,'c','Correct! (2+4+6+8+10) ÷ 5 = 30 ÷ 5 = 6. Always divide by how many numbers there are.')">Check</button>
+            <div class="sc-feedback" id="sc2-fb" aria-live="polite"></div>
+          </div>
+
+          <!-- SC3: Outlier effect -->
+          <div class="sc-item">
+            <label class="sc-q" id="sc3l"><span style="color:var(--nt-accent);font-weight:800;">C.</span> A data set is: 5, 6, 5, 7, 100. Which measure is pulled up the most by the outlier 100?</label>
+            <div class="choices" role="radiogroup" aria-labelledby="sc3l">
+              <label><input type="radio" name="sc3" value="a" />Median</label>
+              <label><input type="radio" name="sc3" value="b" />Mode</label>
+              <label><input type="radio" name="sc3" value="c" />Mean</label>
+            </div>
+            <button class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(3,'c','Correct! The mean includes every value in its calculation, so one very large number pulls it up a lot. The median and mode are resistant to outliers.')">Check</button>
+            <div class="sc-feedback" id="sc3-fb" aria-live="polite"></div>
+          </div>
+
+          <hr style="border:none;border-top:2px dashed var(--nt-border);margin:28px 0;" />
+
+          <!-- GRADED QUESTIONS -->
+          <h3 style="font-size:20px;margin-bottom:4px;">Graded Questions</h3>
           <div class="how">
-            <strong>Do this:</strong> Answer every question. Type numbers or
-            pick one choice. Then press <strong>Check My Answers</strong> at the
-            bottom.
+            <strong>Do this:</strong> Answer every question. Type numbers or pick one choice. Then press <strong>Check My Answers</strong> at the bottom.
           </div>
 
           <form id="quiz" novalidate>
             <!-- Q1 statistical question -->
             <div class="q">
-              <p class="qlabel" id="q1l">
-                1. Which one is a statistical question?
-              </p>
+              <p class="qlabel" id="q1l">1. Which one is a statistical question?</p>
               <div class="choices" role="radiogroup" aria-labelledby="q1l">
-                <label
-                  ><input type="radio" name="q1" value="A" />How old am I
-                  today?</label
-                >
-                <label
-                  ><input type="radio" name="q1" value="B" />How tall are the
-                  students in my class?</label
-                >
-                <label
-                  ><input type="radio" name="q1" value="C" />What is 5 +
-                  5?</label
-                >
+                <label><input type="radio" name="q1" value="A" />How old am I today?</label>
+                <label><input type="radio" name="q1" value="B" />How tall are the students in my class?</label>
+                <label><input type="radio" name="q1" value="C" />What is 5 + 5?</label>
               </div>
             </div>
 
@@ -402,14 +653,7 @@
               <label class="qlabel" for="q2">
                 2. Find the <span class="data">mean</span> of: 4, 8, 6, 2
               </label>
-              <input
-                class="num"
-                type="text"
-                id="q2"
-                inputmode="numeric"
-                aria-describedby="q2h"
-                autocomplete="off"
-              />
+              <input class="num" type="text" id="q2" inputmode="numeric" aria-describedby="q2h" autocomplete="off" />
               <span id="q2h" class="muted"> (add them, then divide by 4)</span>
             </div>
 
@@ -418,17 +662,8 @@
               <label class="qlabel" for="q3">
                 3. Find the <span class="data">median</span> of: 3, 9, 5, 1, 7
               </label>
-              <input
-                class="num"
-                type="text"
-                id="q3"
-                inputmode="numeric"
-                aria-describedby="q3h"
-                autocomplete="off"
-              />
-              <span id="q3h" class="muted">
-                (sort first, then take the middle)</span
-              >
+              <input class="num" type="text" id="q3" inputmode="numeric" aria-describedby="q3h" autocomplete="off" />
+              <span id="q3h" class="muted"> (sort first: 1, 3, 5, 7, 9 — then take the middle)</span>
             </div>
 
             <!-- Q4 mode -->
@@ -436,14 +671,7 @@
               <label class="qlabel" for="q4">
                 4. Find the <span class="data">mode</span> of: 2, 5, 2, 8, 2, 5
               </label>
-              <input
-                class="num"
-                type="text"
-                id="q4"
-                inputmode="numeric"
-                aria-describedby="q4h"
-                autocomplete="off"
-              />
+              <input class="num" type="text" id="q4" inputmode="numeric" aria-describedby="q4h" autocomplete="off" />
               <span id="q4h" class="muted"> (which number shows up most?)</span>
             </div>
 
@@ -452,175 +680,190 @@
               <label class="qlabel" for="q5">
                 5. Find the <span class="data">range</span> of: 10, 4, 7, 2, 9
               </label>
-              <input
-                class="num"
-                type="text"
-                id="q5"
-                inputmode="numeric"
-                aria-describedby="q5h"
-                autocomplete="off"
-              />
+              <input class="num" type="text" id="q5" inputmode="numeric" aria-describedby="q5h" autocomplete="off" />
               <span id="q5h" class="muted"> (biggest minus smallest)</span>
             </div>
 
-            <!-- Q6 read a dot plot / interpret -->
+            <!-- Q6 interpret dot plot -->
             <div class="q">
               <p class="qlabel" id="q6l">
-                6. A dot plot shows pets per home: 0, 1, 1, 1, 2, 4. Which
-                measure is most changed by the one home with 4 pets?
+                6. A dot plot shows pets per home: 0, 1, 1, 1, 2, 4.
+                Which measure is most changed by the one home with 4 pets?
               </p>
               <div class="choices" role="radiogroup" aria-labelledby="q6l">
-                <label
-                  ><input type="radio" name="q6" value="A" />The mode</label
-                >
-                <label
-                  ><input type="radio" name="q6" value="B" />The mean (it gets
-                  pulled up)</label
-                >
-                <label
-                  ><input type="radio" name="q6" value="C" />Nothing
-                  changes</label
-                >
+                <label><input type="radio" name="q6" value="A" />The mode</label>
+                <label><input type="radio" name="q6" value="B" />The mean (it gets pulled up)</label>
+                <label><input type="radio" name="q6" value="C" />Nothing changes</label>
               </div>
             </div>
 
-            <button type="submit" class="checkbtn" id="checkBtn">
-              Check My Answers
-            </button>
+            <button type="submit" class="checkbtn" id="checkBtn">Check My Answers</button>
           </form>
+        </section>
+
+        <!-- RUBRIC -->
+        <section class="step" aria-labelledby="h-rubric">
+          <span class="pill">Rubric</span>
+          <h2 id="h-rubric">How Your Work Is Scored</h2>
+          <div style="overflow-x:auto;">
+            <table class="rubric-table" aria-label="Scoring rubric">
+              <thead>
+                <tr>
+                  <th>Level</th>
+                  <th>Score</th>
+                  <th>What this looks like</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>4 — Exceeds</strong></td>
+                  <td>6/6</td>
+                  <td>All 6 graded questions correct AND both reflection responses are detailed with real-world examples. Self-check completed before graded section.</td>
+                </tr>
+                <tr>
+                  <td><strong>3 — Meets</strong></td>
+                  <td>5–6/6</td>
+                  <td>At least 5 graded questions correct. Both reflections answered in complete sentences. Minor arithmetic error in mean or range.</td>
+                </tr>
+                <tr>
+                  <td><strong>2 — Approaching</strong></td>
+                  <td>3–4/6</td>
+                  <td>Some correct answers; confuses mean with median, or does not sort before finding median. At least one reflection attempted.</td>
+                </tr>
+                <tr>
+                  <td><strong>1 — Beginning</strong></td>
+                  <td>0–2/6</td>
+                  <td>Fewer than 3 correct; does not demonstrate understanding of center vs. spread. Reflections missing or incomplete.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <!-- REFLECT -->
         <section class="step" aria-labelledby="s5">
           <span class="pill">Step 5 · Reflect</span>
           <h2 id="s5">Think About It</h2>
+          <p>Write in complete sentences. Use math vocabulary from Step 3.</p>
+
           <div class="q">
             <label class="qlabel" for="r1">
-              1. Write one statistical question about your class.
+              1. Write one statistical question about your class. Explain why it is statistical (why the answers would vary).
             </label>
-            <textarea
-              class="reflect"
-              id="r1"
-              placeholder="Many different answers, like: How many minutes do we read each day?"
-            ></textarea>
+            <textarea class="reflect" id="r1" aria-required="true"
+              placeholder="My question is… It is statistical because different students would answer differently, for example…"></textarea>
           </div>
           <div class="q">
             <label class="qlabel" for="r2">
-              2. When is the median a better choice than the mean? Use your own
-              words.
+              2. When is the median a better choice than the mean? Give a real-world example using numbers.
             </label>
-            <textarea
-              class="reflect"
-              id="r2"
-              placeholder="Think about one very big or very small number..."
-            ></textarea>
+            <textarea class="reflect" id="r2" aria-required="true"
+              placeholder="The median is better when there is an outlier. For example, if house prices are 100, 110, 105, and 900 thousand dollars…"></textarea>
           </div>
-          <p class="muted">
-            Your reflections are saved in your PDF and DOC downloads below.
-          </p>
+
+          <div style="background:var(--nt-bg);border:2px solid var(--nt-accent);border-radius:10px;padding:14px 16px;margin-top:14px;">
+            <strong>Deliverable:</strong> When you finish, press <strong>Save as PDF</strong> below and upload it to your class folder.
+            Your reflection responses and score will be included in the document.
+          </div>
+
+          <p class="muted" style="margin-top:10px;">Your reflections are saved in your PDF and DOC downloads below.</p>
+        </section>
+
+        <!-- ANSWER KEY (teacher only) -->
+        <section class="step" aria-label="Teacher Answer Key">
+          <span class="pill">Teacher Resource</span>
+          <h2>Answer Key</h2>
+          <details>
+            <summary>Show / Hide Answer Key (Teacher Only)</summary>
+            <table class="ak-table" aria-label="Answer key table">
+              <thead>
+                <tr><th>#</th><th>Question</th><th>Correct Answer</th><th>Standard</th><th>Explanation</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Self-Check A</td><td>Statistical question?</td><td>B — how many books per month</td><td>6.SP.A.1</td><td>Answers vary from student to student.</td></tr>
+                <tr><td>Self-Check B</td><td>Mean of 2, 4, 6, 8, 10</td><td>6</td><td>6.SP.B.5</td><td>(2+4+6+8+10) ÷ 5 = 30 ÷ 5 = 6.</td></tr>
+                <tr><td>Self-Check C</td><td>Outlier effect</td><td>Mean</td><td>6.SP.A.3</td><td>The mean includes all values; one large outlier pulls it significantly.</td></tr>
+                <tr><td>Q1</td><td>Statistical question?</td><td>B — height of students</td><td>6.SP.A.1</td><td>Each student has a different height, so answers vary.</td></tr>
+                <tr><td>Q2</td><td>Mean of 4, 8, 6, 2</td><td>5</td><td>6.SP.B.5</td><td>(4+8+6+2) ÷ 4 = 20 ÷ 4 = 5.</td></tr>
+                <tr><td>Q3</td><td>Median of 3, 9, 5, 1, 7</td><td>5</td><td>6.SP.B.5</td><td>Sorted: 1, 3, 5, 7, 9 — middle value is 5.</td></tr>
+                <tr><td>Q4</td><td>Mode of 2, 5, 2, 8, 2, 5</td><td>2</td><td>6.SP.B.5</td><td>2 appears 3 times; 5 appears 2 times. Mode = 2.</td></tr>
+                <tr><td>Q5</td><td>Range of 10, 4, 7, 2, 9</td><td>8</td><td>6.SP.B.5</td><td>10 − 2 = 8.</td></tr>
+                <tr><td>Q6</td><td>Outlier in dot plot</td><td>B — the mean</td><td>6.SP.A.3</td><td>The mean is pulled toward 4; mode (1) and median (1) stay the same.</td></tr>
+              </tbody>
+            </table>
+          </details>
         </section>
 
         <!-- KIT: name bar, save buttons, results -->
         <section class="step" aria-label="Save your work and see your score">
           <span class="pill">Finish</span>
           <h2>Name, Score, and Save</h2>
-          <p class="muted">
-            Type your name above. Check answers in Step 4. Then Save as PDF or
-            DOC to turn in.
-          </p>
+          <p class="muted">Type your name above. Check answers in Step 4. Then Save as PDF or DOC to turn in.</p>
           <div id="ntkit"></div>
         </section>
+
       </main>
-    </div>
+    </div><!-- /.wrap -->
 
     <script>
-      NTKit.mount("#ntkit");
+      /* ── Self-check ── */
+      function checkSC(num, correct, explanation) {
+        var selected = document.querySelector('input[name="sc' + num + '"]:checked');
+        var fb = document.getElementById('sc' + num + '-fb');
+        if (!fb) return;
+        if (!selected) {
+          fb.className = 'sc-feedback wrong';
+          fb.textContent = 'Please choose an answer first.';
+          return;
+        }
+        if (selected.value === correct) {
+          fb.className = 'sc-feedback correct';
+          fb.textContent = '✅ ' + explanation;
+        } else {
+          fb.className = 'sc-feedback wrong';
+          fb.textContent = '❌ Not quite. ' + explanation;
+        }
+      }
 
-      var ANS = { q1: "B", q2: "5", q3: "5", q4: "2", q5: "8", q6: "B" };
+      /* ── NTKit graded form ── */
+      NTKit.mount('#ntkit');
+
+      var ANS = { q1: 'B', q2: '5', q3: '5', q4: '2', q5: '8', q6: 'B' };
 
       function pick(name) {
         var el = document.querySelector('input[name="' + name + '"]:checked');
-        return el ? el.value : "";
+        return el ? el.value : '';
       }
       function val(id) {
-        return document.getElementById(id).value;
+        var el = document.getElementById(id);
+        return el ? el.value.trim() : '';
       }
 
-      document.getElementById("quiz").addEventListener("submit", function (e) {
+      document.getElementById('quiz').addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Fold reflection answers into the saved doc via graded items (info-only, 0 pts)
         var items = [
-          {
-            prompt: "1. Which one is a statistical question?",
-            studentAnswer: pick("q1"),
-            correctAnswer: ANS.q1,
-            points: 1,
-            skill: "Statistical Questions (6.SP.A)",
-          },
-          {
-            prompt: "2. Mean of 4, 8, 6, 2",
-            studentAnswer: val("q2"),
-            correctAnswer: ANS.q2,
-            points: 1,
-            skill: "Mean (6.SP.B)",
-          },
-          {
-            prompt: "3. Median of 3, 9, 5, 1, 7",
-            studentAnswer: val("q3"),
-            correctAnswer: ANS.q3,
-            points: 1,
-            skill: "Median (6.SP.B)",
-          },
-          {
-            prompt: "4. Mode of 2, 5, 2, 8, 2, 5",
-            studentAnswer: val("q4"),
-            correctAnswer: ANS.q4,
-            points: 1,
-            skill: "Mode (6.SP.B)",
-          },
-          {
-            prompt: "5. Range of 10, 4, 7, 2, 9",
-            studentAnswer: val("q5"),
-            correctAnswer: ANS.q5,
-            points: 1,
-            skill: "Range (6.SP.B)",
-          },
-          {
-            prompt: "6. Which measure is most changed by the home with 4 pets?",
-            studentAnswer: pick("q6"),
-            correctAnswer: ANS.q6,
-            points: 1,
-            skill: "Interpreting Data (6.SP.B)",
-          },
-          {
-            prompt: "Reflection 1: A statistical question about my class",
-            studentAnswer: val("r1"),
-            correctAnswer: "",
-            points: 0,
-            skill: "Reflection",
-          },
-          {
-            prompt: "Reflection 2: When median beats mean",
-            studentAnswer: val("r2"),
-            correctAnswer: "",
-            points: 0,
-            skill: "Reflection",
-          },
+          { prompt: '1. Which one is a statistical question?',              studentAnswer: pick('q1'), correctAnswer: ANS.q1, points: 1, skill: 'Statistical Questions (6.SP.A.1)' },
+          { prompt: '2. Mean of 4, 8, 6, 2',                               studentAnswer: val('q2'),  correctAnswer: ANS.q2, points: 1, skill: 'Mean (6.SP.B.5)' },
+          { prompt: '3. Median of 3, 9, 5, 1, 7',                          studentAnswer: val('q3'),  correctAnswer: ANS.q3, points: 1, skill: 'Median (6.SP.B.5)' },
+          { prompt: '4. Mode of 2, 5, 2, 8, 2, 5',                         studentAnswer: val('q4'),  correctAnswer: ANS.q4, points: 1, skill: 'Mode (6.SP.B.5)' },
+          { prompt: '5. Range of 10, 4, 7, 2, 9',                          studentAnswer: val('q5'),  correctAnswer: ANS.q5, points: 1, skill: 'Range (6.SP.B.5)' },
+          { prompt: '6. Which measure is most changed by the home with 4 pets?', studentAnswer: pick('q6'), correctAnswer: ANS.q6, points: 1, skill: 'Interpreting Data / Outliers (6.SP.A.3)' },
+          { prompt: 'Reflection 1: A statistical question about my class',  studentAnswer: val('r1'),  correctAnswer: '', points: 0, skill: 'Reflection' },
+          { prompt: 'Reflection 2: When median beats mean',                  studentAnswer: val('r2'),  correctAnswer: '', points: 0, skill: 'Reflection' }
         ];
 
         NTKit.grade({
-          activityId: "hyperdoc-unit-8",
-          activityTitle: "Unit 8 · Statistics — HyperDoc",
-          standard: "6.SP.A-B",
-          items: items,
+          activityId: 'hyperdoc-unit-8',
+          activityTitle: 'Unit 8 · Statistics — HyperDoc',
+          standard: '6.SP.A-B',
+          items: items
         });
 
-        // Move focus to results so it is announced / visible
-        var res = document.getElementById("ntkit");
+        var res = document.getElementById('ntkit');
         if (res) {
-          res.scrollIntoView({ behavior: "smooth", block: "start" });
-          res.setAttribute("tabindex", "-1");
+          res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          res.setAttribute('tabindex', '-1');
           res.focus({ preventScroll: true });
         }
       });

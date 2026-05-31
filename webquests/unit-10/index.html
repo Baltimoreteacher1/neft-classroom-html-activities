@@ -14,16 +14,9 @@
     <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      /* Style ONLY with --nt-* variables */
       body {
         margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Arial,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         background: var(--nt-bg);
         color: var(--nt-text);
         font-size: 19px;
@@ -51,32 +44,12 @@
         font-size: 16px;
         letter-spacing: 0.3px;
       }
-      h1 {
-        font-size: 34px;
-        line-height: 1.2;
-        margin: 14px 0 6px;
-      }
-      h2 {
-        font-size: 26px;
-        margin: 0 0 12px;
-        border-bottom: 3px solid var(--nt-accent);
-        padding-bottom: 6px;
-      }
-      h3 {
-        font-size: 21px;
-        margin: 18px 0 6px;
-      }
-      p,
-      li {
-        font-size: 19px;
-      }
-      .lead {
-        font-size: 21px;
-        color: var(--nt-text);
-      }
-      .muted {
-        color: var(--nt-muted);
-      }
+      h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; }
+      h2 { font-size: 26px; margin: 0 0 12px; border-bottom: 3px solid var(--nt-accent); padding-bottom: 6px; }
+      h3 { font-size: 21px; margin: 18px 0 6px; }
+      p, li { font-size: 19px; }
+      .lead { font-size: 21px; color: var(--nt-text); }
+      .muted { color: var(--nt-muted); }
       section.card {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -84,52 +57,21 @@
         padding: 22px 24px;
         margin-bottom: 24px;
       }
-      ol.steps {
-        padding-left: 22px;
-      }
-      ol.steps > li {
-        margin-bottom: 14px;
-      }
-      .resources a {
-        color: var(--nt-accent);
-        font-weight: 700;
-        text-decoration: underline;
-      }
-      .resources a:focus-visible,
-      a:focus-visible,
-      input:focus-visible,
-      select:focus-visible,
-      button:focus-visible {
+      ol.steps { padding-left: 22px; }
+      ol.steps > li { margin-bottom: 14px; }
+      .resources a { color: var(--nt-accent); font-weight: 700; text-decoration: underline; }
+      .resources a:focus-visible, a:focus-visible, input:focus-visible,
+      select:focus-visible, button:focus-visible, details summary:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
       }
-      ul.res-list {
-        list-style: none;
-        padding-left: 0;
-      }
+      ul.res-list { list-style: none; padding-left: 0; }
       ul.res-list li {
         padding: 12px 14px;
         border: 2px solid var(--nt-border);
         border-radius: 10px;
         margin-bottom: 10px;
         background: var(--nt-bg);
-      }
-      table.rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 18px;
-      }
-      table.rubric th,
-      table.rubric td {
-        border: 2px solid var(--nt-border);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      table.rubric th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
       }
       .tip {
         background: var(--nt-bg);
@@ -147,24 +89,77 @@
         font-weight: 700;
         text-align: center;
       }
-      /* Quiz */
-      .q {
-        margin-bottom: 22px;
+
+      /* ── Learning Target ── */
+      .learning-target {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 18px;
       }
-      .q label.qprompt {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 20px;
-      }
-      .q .hint {
+      .learning-target h3 { margin: 0 0 10px; font-size: 19px; color: var(--nt-accent); }
+      .learning-target ul { margin: 0; padding-left: 20px; }
+      .learning-target li { margin-bottom: 5px; }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 12px;
+        font-size: 15px;
         color: var(--nt-muted);
-        font-size: 16px;
-        display: block;
-        margin-bottom: 8px;
       }
-      .q input[type="text"],
-      .q select {
+      .lt-meta span {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 6px;
+        padding: 3px 10px;
+      }
+
+      /* ── Teacher Notes ── */
+      details.teacher-notes {
+        background: #fffbeb;
+        border: 2px dashed #d97706;
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 22px;
+        font-size: 17px;
+      }
+      details.teacher-notes summary {
+        font-weight: 700;
+        font-size: 18px;
+        cursor: pointer;
+        color: #92400e;
+        list-style: none;
+      }
+      details.teacher-notes summary::-webkit-details-marker { display: none; }
+      details.teacher-notes summary::before { content: "\25B6 "; }
+      details.teacher-notes[open] summary::before { content: "\25BC "; }
+      details.teacher-notes h4 { margin: 14px 0 4px; color: #78350f; }
+      details.teacher-notes p, details.teacher-notes li { color: #1c1917; }
+
+      /* ── Rubric ── */
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 17px;
+      }
+      table.rubric th, table.rubric td {
+        border: 2px solid var(--nt-border);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric th { background: var(--nt-accent); color: var(--nt-bg); }
+      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
+      .rubric-level-1 { color: #b91c1c; font-weight: 600; }
+
+      /* ── Self-Check quiz ── */
+      .q { margin-bottom: 22px; }
+      .q label.qprompt { display: block; font-weight: 700; margin-bottom: 8px; font-size: 19px; }
+      .q .hint { color: var(--nt-muted); font-size: 16px; display: block; margin-bottom: 8px; }
+      .q input[type="text"], .q select {
         font-size: 19px;
         padding: 10px 12px;
         width: 100%;
@@ -174,6 +169,43 @@
         background: var(--nt-surface);
         color: var(--nt-text);
       }
+      .q-mc { margin-bottom: 22px; padding: 16px; background: var(--nt-bg); border: 1px solid var(--nt-border); border-radius: 12px; }
+      .q-mc legend { font-weight: 700; font-size: 19px; padding: 0 6px; }
+      .q-mc .opt { display: block; padding: 8px 6px; font-size: 18px; cursor: pointer; border-radius: 8px; }
+      .q-mc .opt:hover { background: var(--nt-surface); }
+      .q-mc input[type="radio"] { margin-right: 8px; transform: scale(1.25); }
+      .q-feedback {
+        display: none;
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .q-feedback.correct {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
+        display: block;
+      }
+      .q-feedback.wrong {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+        display: block;
+      }
+      .sc-check-btn {
+        font-size: 16px;
+        font-weight: 700;
+        padding: 9px 18px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .sc-check-btn:hover { filter: brightness(1.08); }
       .check-btn {
         font-size: 20px;
         font-weight: 700;
@@ -185,257 +217,439 @@
         cursor: pointer;
         margin-top: 8px;
       }
-      .check-btn:hover {
-        filter: brightness(1.08);
+      .check-btn:hover { filter: brightness(1.08); }
+      #sc-summary {
+        display: none;
+        margin-top: 16px;
+        padding: 14px 18px;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: 700;
+        text-align: center;
       }
-      .cube {
-        font-size: 30px;
+
+      /* ── Answer Key ── */
+      details.answer-key {
+        background: #f0fdf4;
+        border: 2px solid #16a34a;
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-top: 14px;
+        font-size: 17px;
+      }
+      details.answer-key summary {
+        font-weight: 700;
+        font-size: 18px;
+        cursor: pointer;
+        color: #15803d;
+        list-style: none;
+      }
+      details.answer-key summary::-webkit-details-marker { display: none; }
+      details.answer-key summary::before { content: "\25B6 "; }
+      details.answer-key[open] summary::before { content: "\25BC "; }
+      details.answer-key ol { margin: 10px 0 0; padding-left: 22px; }
+      details.answer-key li { margin-bottom: 6px; color: #14532d; }
+
+      /* ── Reflection / Deliverable ── */
+      .reflect-box {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-top: 14px;
+      }
+      .reflect-box textarea {
+        width: 100%;
+        min-height: 90px;
+        font-size: 17px;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        box-sizing: border-box;
+        resize: vertical;
+      }
+      .deliverable-box {
+        background: #eff6ff;
+        border: 2px solid #3b82f6;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-top: 14px;
+        font-size: 17px;
+        color: #1e3a8a;
+      }
+      .deliverable-box strong { display: block; margin-bottom: 4px; }
+
+      /* ── Print ── */
+      @media print {
+        body { font-size: 14px; background: #fff; color: #000; }
+        .wrap { padding: 0; }
+        details.teacher-notes, details.answer-key { display: none !important; }
+        .sc-check-btn, .check-btn, .reflect-box textarea { display: none; }
+        section.card { border: 1px solid #ccc; page-break-inside: avoid; }
+        table.rubric th { background: #666 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      }
+
+      /* ── Mobile ── */
+      @media (max-width: 600px) {
+        h1 { font-size: 26px; }
+        h2 { font-size: 21px; }
+        .check-btn, .sc-check-btn { width: 100%; }
+        table.rubric { font-size: 14px; }
+        table.rubric th, table.rubric td { padding: 7px 8px; }
+        .lt-meta { flex-direction: column; gap: 6px; }
+        .q input[type="text"], .q select { max-width: 100%; }
       }
     </style>
   </head>
   <body class="nt-theme-aware">
     <div class="wrap">
+      <p style="font:14px system-ui;padding:10px 0;"><a href="/webquests/">&#8592; All WebQuests</a> &middot; <a href="/math/">Math Hub</a></p>
+
       <header class="hero">
-        <span class="badge">WebQuest · Unit 10 · CCSS 6.G.A.2</span>
-        <h1><span class="cube">📦</span> The Volume Vault WebQuest</h1>
-        <p class="lead">
-          Volume of Prisms — pack the box, find the space inside!
-        </p>
+        <span class="badge">WebQuest &middot; Unit 10 &middot; CCSS 6.G.A.2 &mdash; Neft Teacher</span>
+        <h1>&#x1F4E6; The Volume Vault WebQuest</h1>
+        <p class="lead">Volume of Prisms &mdash; pack the box, find the space inside!</p>
       </header>
 
-      <!-- Student identity bar + Save PDF/DOC + results panel -->
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="card" aria-labelledby="lt-h">
+        <h2 id="lt-h">Learning Target</h2>
+        <div class="learning-target">
+          <h3>I can&hellip;</h3>
+          <ul>
+            <li>Identify the <strong>length</strong>, <strong>width</strong>, and <strong>height</strong> of a rectangular prism.</li>
+            <li>Apply the formula <strong>V = l &times; w &times; h</strong> to find the volume of a rectangular prism.</li>
+            <li>Find volume when the edge lengths are <strong>fractions</strong> (e.g., &frac12; unit).</li>
+            <li>Explain why we fill a prism with <strong>unit cubes</strong> and count them to find volume.</li>
+            <li>Use volume to solve real-world packing problems.</li>
+          </ul>
+          <div class="lt-meta">
+            <span>Standard: 6.G.A.2</span>
+            <span>Estimated time: 45&ndash;60 min</span>
+            <span>Materials: pencil, optional graph paper or unit cube manipulatives</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TEACHER NOTES ══ -->
+      <details class="teacher-notes" aria-label="Teacher Notes — not for students">
+        <summary>Teacher Notes (click to expand)</summary>
+
+        <h4>Pacing</h4>
+        <p>This WebQuest is designed for one 45&ndash;60 minute period. Suggested breakdown: Learning Target + Introduction (5 min) &rarr; Process Steps 1&ndash;3, integer prisms (15 min) &rarr; 3D game (10 min) &rarr; Fraction edges + Step 4 (10 min) &rarr; Self-Check + NTKit quiz (10 min) &rarr; Reflection (5 min).</p>
+
+        <h4>Grouping Suggestions</h4>
+        <p><strong>Think-Pair-Share</strong> works well for Steps 1&ndash;3. Pairs can build prisms with physical unit cubes or use the 3D game cooperatively. The Self-Check and NTKit quiz must be completed individually for grading.</p>
+
+        <h4>Differentiation &mdash; Support</h4>
+        <ul>
+          <li>Provide a labeled diagram of a rectangular prism with l, w, h marked and the formula V = l &times; w &times; h visible at the student's desk.</li>
+          <li>Allow students to count unit cubes physically or use the 3D game before the quiz.</li>
+          <li>Break fraction problems into two steps on a worksheet: (1) find l &times; w, then (2) multiply by h.</li>
+          <li>For Q3 in the Self-Check, remind students that &frac12; &times; any whole number halves it.</li>
+        </ul>
+
+        <h4>Differentiation &mdash; Challenge</h4>
+        <ul>
+          <li>Ask students to find all possible integer dimensions for a prism with volume 36 cubic units.</li>
+          <li>Have students write their own real-world volume word problem and swap with a partner to solve.</li>
+          <li>Extension: If a box has a volume of 7.5 cubic units and a base of 5 &times; 3, what is its height? (Answer: 0.5 units.)</li>
+        </ul>
+
+        <h4>ESOL / Language Supports</h4>
+        <ul>
+          <li>Preview vocabulary in L1 if available: <em>volume, rectangular prism, unit cube, cubic units, length, width, height, fraction</em>.</li>
+          <li>Use a sentence frame: <em>"The volume of this box is __ cubic units because __ &times; __ &times; __ = __."</em></li>
+          <li>Show a physical box and point to each dimension as you say the word.</li>
+          <li>The formula V = l &times; w &times; h uses universal math symbols; students can annotate it in their home language.</li>
+        </ul>
+
+        <h4>Common Errors to Watch For</h4>
+        <ul>
+          <li>Multiplying only two dimensions (area instead of volume) &mdash; emphasize the third factor.</li>
+          <li>Reporting volume in &ldquo;square units&rdquo; instead of &ldquo;cubic units&rdquo;.</li>
+          <li>Fraction arithmetic: students may multiply by 2 instead of &frac12;. Encourage drawing a number line.</li>
+        </ul>
+      </details>
+
+      <!-- Student identity + results panel -->
       <div id="ntkit"></div>
 
-      <!-- INTRODUCTION -->
+      <!-- ══ INTRODUCTION ══ -->
       <section class="card">
         <h2>1. Introduction</h2>
         <p>
-          Welcome to the <strong>Volume Vault</strong>! 📦 Your job is to fill
+          Welcome to the <strong>Volume Vault</strong>! &#x1F4E6; Your job is to fill
           boxes (called <strong>rectangular prisms</strong>) with little
           <strong>unit cubes</strong>.
         </p>
         <p>
           <strong>Volume</strong> tells you how much space is <em>inside</em> a
-          box. We measure it in <strong>cubic units</strong> (like cm³ or in³).
+          box. We measure it in <strong>cubic units</strong> (like cm&#179; or in&#179;).
           The more cubes that fit inside, the bigger the volume.
         </p>
-        <p>In this WebQuest, you will find the volume of prisms.</p>
+        <p>In this WebQuest, you will find the volume of prisms with whole-number <em>and</em> fractional edge lengths.</p>
+        <div class="tip">
+          Key words: <strong>rectangular prism</strong> (a box shape) &middot;
+          <strong>unit cube</strong> (1 &times; 1 &times; 1 cube) &middot;
+          <strong>cubic units</strong> (the unit for volume) &middot;
+          <strong>V = l &times; w &times; h</strong> (the volume formula)
+        </div>
       </section>
 
-      <!-- TASK -->
+      <!-- ══ TASK ══ -->
       <section class="card">
         <h2>2. Task</h2>
         <p>By the end, you will be able to:</p>
         <ul>
-          <li>
-            Name the <strong>length</strong>, <strong>width</strong>, and
-            <strong>height</strong> of a box.
-          </li>
-          <li>
-            Use the formula <strong>V = l × w × h</strong> to find volume.
-          </li>
-          <li>
-            Find volume even when the sides are
-            <strong>fractions</strong> (like ½).
-          </li>
-          <li>Solve a real box problem and finish the short quiz below.</li>
+          <li>Name the <strong>length</strong>, <strong>width</strong>, and <strong>height</strong> of a box.</li>
+          <li>Use the formula <strong>V = l &times; w &times; h</strong> to find volume.</li>
+          <li>Find volume even when the sides are <strong>fractions</strong> (like &frac12;).</li>
+          <li>Pass the Self-Check (5 items) and complete a written reflection.</li>
         </ul>
+        <div class="deliverable-box">
+          <strong>Deliverable</strong>
+          Complete all process steps, answer the Self-Check with instant feedback, submit the NTKit grading quiz with at least 4/5, write your reflection, then save as PDF or DOC to turn in.
+        </div>
       </section>
 
-      <!-- PROCESS -->
+      <!-- ══ PROCESS ══ -->
       <section class="card">
         <h2>3. Process</h2>
         <p class="muted">Do the steps in order. Read each one carefully.</p>
         <ol class="steps">
           <li>
-            <h3>Step 1 — Learn the words</h3>
+            <h3>Step 1 &mdash; Learn the words</h3>
             <p>
               <strong>Volume</strong> = the space inside a box.
-              <strong>Unit cube</strong> = one small cube that is 1 unit on each
-              side. <strong>Cubic units</strong> = how we count volume.
+              <strong>Unit cube</strong> = one small cube that is 1 unit on each side.
+              <strong>Cubic units</strong> = how we count volume.
+              A rectangular prism has three measurements: <strong>length (l)</strong>, <strong>width (w)</strong>, and <strong>height (h)</strong>.
             </p>
           </li>
           <li>
-            <h3>Step 2 — Learn the formula</h3>
-            <div class="formula">Volume = length × width × height</div>
+            <h3>Step 2 &mdash; Learn the formula</h3>
+            <div class="formula">Volume = length &times; width &times; height</div>
             <p>
-              First multiply length × width to get the bottom layer. Then
-              multiply by the height to stack the layers.
+              First multiply length &times; width to count the cubes in the bottom layer. Then multiply by height to stack the layers on top of each other.
+            </p>
+            <p><strong>Example:</strong> A box that is 3 &times; 2 &times; 4 &rarr; bottom layer = 6 cubes &rarr; &times; 4 layers = <strong>24 cubic units</strong>.</p>
+          </li>
+          <li>
+            <h3>Step 3 &mdash; Play the 3D game</h3>
+            <p>
+              Open the Volume Vault 3D game (link in Resources). Pack each prism with unit cubes and watch the volume add up. Notice how each new layer adds the same number of cubes.
             </p>
           </li>
           <li>
-            <h3>Step 3 — Play the 3D game</h3>
+            <h3>Step 4 &mdash; Try fraction sides</h3>
             <p>
-              Open the Volume Vault 3D game. Pack each prism with unit cubes and
-              watch the volume add up.
+              A box can have a side like &frac12; unit. The same formula still works.
+              <br />Example: 4 &times; 3 &times; &frac12; = 12 &times; &frac12; = <strong>6 cubic units</strong>.
             </p>
+            <p>Think of it this way: you are stacking <em>half-cubes</em>, so the total is half of what a full layer would be.</p>
+            <div class="tip">Tip: To multiply a whole number by &frac12;, just divide it by 2. So 12 &times; &frac12; = 12 &divide; 2 = 6.</div>
           </li>
           <li>
-            <h3>Step 4 — Try fraction sides</h3>
+            <h3>Step 5 &mdash; Show what you know</h3>
             <p>
-              A box can have a side like ½ unit. The same formula still works: V
-              = l × w × h. Example: 4 × 3 × ½ =
-              <strong>6 cubic units</strong>.
-            </p>
-          </li>
-          <li>
-            <h3>Step 5 — Show what you know</h3>
-            <p>
-              Type your name in the bar above, finish the quiz, then
-              <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.
+              Complete the Self-Check below (instant feedback), then fill in the NTKit grading quiz and
+              <strong>save as PDF</strong> or <strong>DOC</strong> to turn in.
             </p>
           </li>
         </ol>
         <div class="tip">
-          💡 <strong>Tip:</strong> Volume always uses
-          <strong>cubic</strong> units because a box has 3 directions: long,
-          wide, and tall.
+          <strong>Remember:</strong> Volume always uses
+          <strong>cubic</strong> units because a box has 3 directions: long, wide, and tall.
         </div>
       </section>
 
-      <!-- RESOURCES -->
+      <!-- ══ RESOURCES ══ -->
       <section class="card resources">
         <h2>4. Resources</h2>
         <p>Use these to help you:</p>
         <ul class="res-list">
           <li>
-            🎮 <a href="/games/3d/unit-10/">Unit 10 — Volume Vault 3D Game</a> —
+            &#x1F3AE; <a href="/games/3d/unit-10/">Unit 10 &mdash; Volume Vault 3D Game</a> &mdash;
             pack prisms with unit cubes.
           </li>
           <li>
-            📘 <a href="/math/">Math Lessons Hub</a> — review volume of prisms.
+            &#x1F4D8; <a href="/math/">Math Lessons Hub</a> &mdash; review volume of prisms.
           </li>
           <li>
-            📖 <a href="/graphic-novels/unit-10/">Unit 10 Graphic Novel</a> —
+            &#x1F4D6; <a href="/graphic-novels/unit10/graphic-novel-1.html">Unit 10 Graphic Novel</a> &mdash;
             the volume story.
           </li>
           <li>
-            📝 <a href="/math/unit-10/">Unit 10 Practice Activities</a> — extra
+            &#x1F4DD; <a href="/math/unit-10/">Unit 10 Practice Activities</a> &mdash; extra
             practice.
           </li>
         </ul>
       </section>
 
-      <!-- EVALUATION -->
+      <!-- ══ EVALUATION ══ -->
       <section class="card">
         <h2>5. Evaluation (Rubric)</h2>
         <table class="rubric">
           <thead>
             <tr>
               <th scope="col">Skill</th>
-              <th scope="col">4 — Expert</th>
-              <th scope="col">3 — Good</th>
-              <th scope="col">2 — Getting there</th>
-              <th scope="col">1 — Keep trying</th>
+              <th scope="col">4 &mdash; Expert</th>
+              <th scope="col">3 &mdash; Proficient</th>
+              <th scope="col">2 &mdash; Developing</th>
+              <th scope="col">1 &mdash; Beginning</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>Find length, width, height</strong></td>
-              <td>Names all three sides correctly every time.</td>
-              <td>Names the sides correctly most times.</td>
-              <td>Names some sides correctly.</td>
-              <td>Needs help naming the sides.</td>
+              <td><strong>Identify l, w, h of a prism</strong></td>
+              <td>Names all three dimensions correctly every time; can label a diagram.</td>
+              <td>Names the dimensions correctly most of the time.</td>
+              <td>Identifies some dimensions; confuses width and height occasionally.</td>
+              <td class="rubric-level-1">Needs step-by-step help to identify dimensions.</td>
             </tr>
             <tr>
-              <td><strong>Use V = l × w × h</strong></td>
-              <td>Finds volume fast and correctly.</td>
-              <td>Finds volume correctly.</td>
-              <td>Finds volume with help.</td>
-              <td>Volume not yet found.</td>
+              <td><strong>Apply V = l &times; w &times; h (whole numbers)</strong></td>
+              <td>Calculates volume quickly and correctly; explains the formula.</td>
+              <td>Calculates volume correctly with minor arithmetic slips.</td>
+              <td>Sets up the formula correctly but makes multiplication errors.</td>
+              <td class="rubric-level-1">Cannot yet apply the formula without teacher guidance.</td>
             </tr>
             <tr>
-              <td><strong>Fraction sides</strong></td>
-              <td>Finds volume with fractions, no errors.</td>
-              <td>Finds volume with fractions, few errors.</td>
-              <td>Some fraction answers are correct.</td>
-              <td>Fraction volume not yet correct.</td>
+              <td><strong>Apply V = l &times; w &times; h (fractions)</strong></td>
+              <td>Finds volume with fractional edges accurately; explains the reasoning.</td>
+              <td>Finds volume with fractions; few errors.</td>
+              <td>Some fraction volume answers correct; struggles with the fraction step.</td>
+              <td class="rubric-level-1">Fraction volume not yet attempted correctly.</td>
+            </tr>
+            <tr>
+              <td><strong>Explain unit cubes and packing</strong></td>
+              <td>Explains clearly why volume = layers &times; cubes per layer.</td>
+              <td>Can explain the packing idea with minor gaps.</td>
+              <td>Understands that cubes fill the box; cannot explain why V = l &times; w &times; h.</td>
+              <td class="rubric-level-1">Does not yet connect cubes to the formula.</td>
             </tr>
             <tr>
               <td><strong>Quiz score</strong></td>
-              <td>90–100%</td>
-              <td>75–89%</td>
-              <td>50–74%</td>
-              <td>Below 50%</td>
+              <td>5/5 &mdash; 100%</td>
+              <td>4/5 &mdash; 80%</td>
+              <td>2&ndash;3/5 &mdash; 40&ndash;60%</td>
+              <td class="rubric-level-1">0&ndash;1/5 &mdash; below 20%</td>
             </tr>
           </tbody>
         </table>
       </section>
 
-      <!-- CONCLUSION -->
+      <!-- ══ CONCLUSION ══ -->
       <section class="card">
         <h2>6. Conclusion</h2>
         <p>
           Great work, vault keeper! You can now find the
           <strong>volume</strong> of a rectangular prism with
-          <strong>V = l × w × h</strong> — even when the sides are
+          <strong>V = l &times; w &times; h</strong> &mdash; even when the sides are
           <strong>fractions</strong>. These skills help you pack boxes, fill
-          fish tanks, and measure real space. Finish the quick check below to
-          show what you learned.
+          fish tanks, and measure real space.
         </p>
       </section>
 
-      <!-- CHECK YOUR UNDERSTANDING -->
+      <!-- ══ SELF-CHECK ══ -->
+      <section class="card" aria-labelledby="sc-h">
+        <h2 id="sc-h">Self-Check: 5 Quick Questions</h2>
+        <p class="muted">Answer each question, then press <strong>Check This Answer</strong> for instant feedback.</p>
+
+        <!-- SC Q1 — multiple choice -->
+        <fieldset class="q-mc" id="sc-q1">
+          <legend>SC 1. A box is 5 units long, 4 units wide, and 3 units tall. What is its volume?</legend>
+          <label class="opt"><input type="radio" name="sc1" value="A" /> A. 12 cubic units</label>
+          <label class="opt"><input type="radio" name="sc1" value="B" /> B. 60 cubic units</label>
+          <label class="opt"><input type="radio" name="sc1" value="C" /> C. 20 cubic units</label>
+          <button type="button" class="sc-check-btn" onclick="checkSCmc(1,'B','B','V = 5 &times; 4 &times; 3 = 60 cubic units. Multiply all three dimensions.')">Check This Answer</button>
+          <div class="q-feedback" id="sc-fb1" aria-live="polite"></div>
+        </fieldset>
+
+        <!-- SC Q2 — text -->
+        <div class="q" id="sc-q2-wrap">
+          <label class="qprompt" for="sc2-input">SC 2. The bottom layer of a prism holds 15 unit cubes. The prism is 3 layers tall. What is the total volume? (Type a whole number.)</label>
+          <span class="hint">Multiply layer size &times; height.</span>
+          <input type="text" id="sc2-input" inputmode="numeric" autocomplete="off" placeholder="cubic units" />
+          <button type="button" class="sc-check-btn" onclick="checkSCtext(2,'45','15 &times; 3 = 45 cubic units. Each layer adds 15 more cubes.')">Check This Answer</button>
+          <div class="q-feedback" id="sc-fb2" aria-live="polite"></div>
+        </div>
+
+        <!-- SC Q3 — text (fraction) -->
+        <div class="q" id="sc-q3-wrap">
+          <label class="qprompt" for="sc3-input">SC 3. A prism is 4 units long, 3 units wide, and &frac12; unit tall. What is its volume? (Type a whole number or fraction, e.g. 6 or 1/2.)</label>
+          <span class="hint">4 &times; 3 = 12, then &times; &frac12;.</span>
+          <input type="text" id="sc3-input" inputmode="text" autocomplete="off" placeholder="cubic units" />
+          <button type="button" class="sc-check-btn" onclick="checkSCtext(3,'6','4 &times; 3 &times; &frac12; = 12 &times; &frac12; = 6 cubic units. Multiplying by &frac12; is the same as dividing by 2.')">Check This Answer</button>
+          <div class="q-feedback" id="sc-fb3" aria-live="polite"></div>
+        </div>
+
+        <!-- SC Q4 — multiple choice (units) -->
+        <fieldset class="q-mc" id="sc-q4">
+          <legend>SC 4. What units do we use to measure volume?</legend>
+          <label class="opt"><input type="radio" name="sc4" value="A" /> A. Square units</label>
+          <label class="opt"><input type="radio" name="sc4" value="B" /> B. Single units</label>
+          <label class="opt"><input type="radio" name="sc4" value="C" /> C. Cubic units</label>
+          <button type="button" class="sc-check-btn" onclick="checkSCmc(4,'C','C','Volume is measured in cubic units because a box has 3 dimensions: length, width, and height.')">Check This Answer</button>
+          <div class="q-feedback" id="sc-fb4" aria-live="polite"></div>
+        </fieldset>
+
+        <!-- SC Q5 — text (real world) -->
+        <div class="q" id="sc-q5-wrap">
+          <label class="qprompt" for="sc5-input">SC 5. A fish tank is 6 in long, 4 in wide, and 5 in tall. What is its volume in cubic inches? (Type a whole number.)</label>
+          <span class="hint">6 &times; 4 &times; 5.</span>
+          <input type="text" id="sc5-input" inputmode="numeric" autocomplete="off" placeholder="cubic inches" />
+          <button type="button" class="sc-check-btn" onclick="checkSCtext(5,'120','6 &times; 4 &times; 5 = 120 cubic inches. Same formula, just different real-world labels.')">Check This Answer</button>
+          <div class="q-feedback" id="sc-fb5" aria-live="polite"></div>
+        </div>
+
+        <div id="sc-summary" role="status"></div>
+
+        <!-- Teacher answer key -->
+        <details class="answer-key">
+          <summary>Teacher Answer Key (Self-Check)</summary>
+          <ol>
+            <li><strong>SC 1:</strong> B &mdash; 60 cubic units (5 &times; 4 &times; 3 = 60).</li>
+            <li><strong>SC 2:</strong> 45 cubic units (15 &times; 3 = 45).</li>
+            <li><strong>SC 3:</strong> 6 cubic units (4 &times; 3 &times; &frac12; = 6).</li>
+            <li><strong>SC 4:</strong> C &mdash; Cubic units.</li>
+            <li><strong>SC 5:</strong> 120 cubic inches (6 &times; 4 &times; 5 = 120).</li>
+          </ol>
+        </details>
+      </section>
+
+      <!-- ══ NTKit GRADING QUIZ ══ -->
       <section class="card">
-        <h2>7. Check Your Understanding</h2>
+        <h2>7. Check Your Understanding (for Grading)</h2>
         <p class="muted">
-          Answer all 5. Then press <strong>Check My Answers</strong>. Type
-          numbers only when asked.
+          Answer all 5. Then press <strong>Check My Answers</strong>. Type numbers only when asked.
         </p>
 
         <div class="q">
-          <label class="qprompt" for="q1"
-            >Q1. A box is 5 units long, 3 units wide, and 2 units tall. What is
-            its volume in cubic units?</label
-          >
-          <span class="hint">Use V = l × w × h. Example answer style: 24</span>
-          <input
-            type="text"
-            id="q1"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="cubic units"
-          />
+          <label class="qprompt" for="q1">Q1. A box is 5 units long, 3 units wide, and 2 units tall. What is its volume in cubic units?</label>
+          <span class="hint">Use V = l &times; w &times; h. Example answer style: 24</span>
+          <input type="text" id="q1" inputmode="numeric" autocomplete="off" placeholder="cubic units" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q2"
-            >Q2. The bottom layer of a prism holds 12 unit cubes. The box is 4
-            layers tall. What is the total volume in cubic units?</label
-          >
-          <span class="hint"
-            >Multiply layer × height. Example answer style: 60</span
-          >
-          <input
-            type="text"
-            id="q2"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="cubic units"
-          />
+          <label class="qprompt" for="q2">Q2. The bottom layer of a prism holds 12 unit cubes. The box is 4 layers tall. What is the total volume in cubic units?</label>
+          <span class="hint">Multiply layer &times; height. Example answer style: 60</span>
+          <input type="text" id="q2" inputmode="numeric" autocomplete="off" placeholder="cubic units" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q3"
-            >Q3. A prism is 4 units long, 3 units wide, and ½ unit tall. What is
-            its volume in cubic units?</label
-          >
-          <span class="hint">4 × 3 × ½. Example answer style: 8</span>
-          <input
-            type="text"
-            id="q3"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="cubic units"
-          />
+          <label class="qprompt" for="q3">Q3. A prism is 4 units long, 3 units wide, and &frac12; unit tall. What is its volume in cubic units?</label>
+          <span class="hint">4 &times; 3 &times; &frac12;. Example answer style: 8</span>
+          <input type="text" id="q3" inputmode="numeric" autocomplete="off" placeholder="cubic units" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q4"
-            >Q4. What units do we use to measure volume?</label
-          >
+          <label class="qprompt" for="q4">Q4. What units do we use to measure volume?</label>
           <select id="q4">
-            <option value="">— Choose one —</option>
+            <option value="">&#8212; Choose one &#8212;</option>
             <option value="square units">square units</option>
             <option value="cubic units">cubic units</option>
             <option value="single units">single units</option>
@@ -444,91 +658,163 @@
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q5"
-            >Q5. A fish tank is 6 in long, 4 in wide, and 5 in tall. What is its
-            volume in cubic inches?</label
-          >
-          <span class="hint">6 × 4 × 5. Example answer style: 100</span>
-          <input
-            type="text"
-            id="q5"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="cubic inches"
-          />
+          <label class="qprompt" for="q5">Q5. A fish tank is 6 in long, 4 in wide, and 5 in tall. What is its volume in cubic inches?</label>
+          <span class="hint">6 &times; 4 &times; 5. Example answer style: 100</span>
+          <input type="text" id="q5" inputmode="numeric" autocomplete="off" placeholder="cubic inches" />
         </div>
 
-        <button type="button" class="check-btn" id="checkBtn">
-          Check My Answers ✅
-        </button>
+        <button type="button" class="check-btn" id="checkBtn">Check My Answers</button>
         <p class="muted" style="margin-top: 14px">
-          Your score and a ✓/✗ for each question will appear in the panel at the
-          top. Then use <strong>Save as PDF</strong> or
-          <strong>Save as DOC</strong> to turn it in.
+          Your score and a &#10003;/&#10007; for each question will appear in the panel above. Then use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to turn it in.
         </p>
+
+        <!-- Teacher answer key for grading quiz -->
+        <details class="answer-key">
+          <summary>Teacher Answer Key (Grading Quiz)</summary>
+          <ol>
+            <li><strong>Q1:</strong> 30 cubic units (5 &times; 3 &times; 2 = 30).</li>
+            <li><strong>Q2:</strong> 48 cubic units (12 &times; 4 = 48).</li>
+            <li><strong>Q3:</strong> 6 cubic units (4 &times; 3 &times; &frac12; = 6).</li>
+            <li><strong>Q4:</strong> cubic units.</li>
+            <li><strong>Q5:</strong> 120 cubic inches (6 &times; 4 &times; 5 = 120).</li>
+          </ol>
+        </details>
+      </section>
+
+      <!-- ══ REFLECTION ══ -->
+      <section class="card" aria-labelledby="refl-h">
+        <h2 id="refl-h">Student Reflection</h2>
+        <p>Answer both questions in your own words. Write in complete sentences.</p>
+        <div class="reflect-box">
+          <p><strong>1. Explain in your own words why the formula V = l &times; w &times; h works. Use the idea of layers and unit cubes.</strong></p>
+          <textarea aria-label="Reflection answer 1" placeholder="Write your answer here..."></textarea>
+        </div>
+        <div class="reflect-box" style="margin-top:12px;">
+          <p><strong>2. Describe one real-world situation where you would need to find the volume of a rectangular prism. Why would volume matter in that situation?</strong></p>
+          <textarea aria-label="Reflection answer 2" placeholder="Write your answer here..."></textarea>
+        </div>
+        <div class="deliverable-box" style="margin-top:14px;">
+          <strong>Turn-in Checklist</strong>
+          <ul style="margin:6px 0 0;padding-left:20px;">
+            <li>Self-Check: all 5 questions answered with feedback reviewed</li>
+            <li>NTKit Grading: all 5 questions submitted and score saved</li>
+            <li>Reflection: both questions answered in complete sentences</li>
+            <li>File saved as PDF or DOC and uploaded to your teacher</li>
+          </ul>
+        </div>
       </section>
     </div>
 
     <script>
-      NTKit.mount("#ntkit");
+      /* ── NTKit mount ── */
+      NTKit.mount('#ntkit');
 
+      /* ── Self-Check logic ── */
+      (function () {
+        function checkSCmc(qNum, correctVal, displayCorrect, explanation) {
+          var selected = document.querySelector('[name="sc' + qNum + '"]:checked');
+          var fb = document.getElementById('sc-fb' + qNum);
+          if (!selected) {
+            fb.className = 'q-feedback wrong';
+            fb.innerHTML = 'Please choose an answer first.';
+            return;
+          }
+          if (selected.value === correctVal) {
+            fb.className = 'q-feedback correct';
+            fb.innerHTML = '&#10003; Correct! ' + explanation;
+          } else {
+            fb.className = 'q-feedback wrong';
+            fb.innerHTML = '&#10007; Not quite. Correct answer: ' + displayCorrect + '. ' + explanation;
+          }
+          updateSCSummary();
+        }
+
+        function checkSCtext(qNum, correctVal, explanation) {
+          var input = document.getElementById('sc' + qNum + '-input');
+          var fb = document.getElementById('sc-fb' + qNum);
+          if (!input) return;
+          var answer = input.value.trim().replace(/\s+/g, '');
+          if (answer === correctVal) {
+            fb.className = 'q-feedback correct';
+            fb.innerHTML = '&#10003; Correct! ' + explanation;
+          } else {
+            fb.className = 'q-feedback wrong';
+            fb.innerHTML = '&#10007; Not quite. Correct answer: ' + correctVal + '. ' + explanation;
+          }
+          updateSCSummary();
+        }
+
+        function updateSCSummary() {
+          var correct = document.querySelectorAll('.q-feedback.correct').length;
+          var attempted = document.querySelectorAll('.q-feedback.correct, .q-feedback.wrong').length;
+          var summary = document.getElementById('sc-summary');
+          if (attempted > 0) {
+            summary.style.display = 'block';
+            summary.style.background = correct === attempted ? '#d1fae5' : '#fef3c7';
+            summary.style.border = '2px solid ' + (correct === attempted ? '#6ee7b7' : '#fcd34d');
+            summary.style.borderRadius = '10px';
+            summary.style.padding = '14px 18px';
+            summary.style.color = '#1c1917';
+            summary.innerHTML = 'Self-Check progress: <strong>' + correct + ' / ' + attempted + '</strong> checked so far.';
+          }
+        }
+
+        window.checkSCmc = checkSCmc;
+        window.checkSCtext = checkSCtext;
+      })();
+
+      /* ── NTKit grading quiz ── */
       function val(id) {
         var n = document.getElementById(id);
-        return n ? n.value : "";
+        return n ? n.value : '';
       }
 
-      document
-        .getElementById("checkBtn")
-        .addEventListener("click", function () {
-          NTKit.grade({
-            activityId: "webquest-unit-10",
-            activityTitle:
-              "WebQuest · Unit 10 — Volume of Prisms (Volume Vault)",
-            standard: "6.G.A.2",
-            items: [
-              {
-                prompt: "Q1. Volume of a 5 × 3 × 2 box (cubic units).",
-                studentAnswer: val("q1"),
-                correctAnswer: "30",
-                points: 1,
-                skill: "Use V = l × w × h",
-              },
-              {
-                prompt:
-                  "Q2. Bottom layer 12 cubes, 4 layers tall — total volume.",
-                studentAnswer: val("q2"),
-                correctAnswer: "48",
-                points: 1,
-                skill: "Layers and height",
-              },
-              {
-                prompt: "Q3. Volume of a 4 × 3 × ½ prism (cubic units).",
-                studentAnswer: val("q3"),
-                correctAnswer: "6",
-                points: 1,
-                skill: "Fraction sides",
-              },
-              {
-                prompt: "Q4. Which units measure volume?",
-                studentAnswer: val("q4"),
-                correctAnswer: "cubic units",
-                points: 1,
-                skill: "Vocabulary",
-              },
-              {
-                prompt:
-                  "Q5. Volume of a 6 × 4 × 5 in fish tank (cubic inches).",
-                studentAnswer: val("q5"),
-                correctAnswer: "120",
-                points: 1,
-                skill: "Use V = l × w × h",
-              },
-            ],
-          });
-          var panel = document.getElementById("ntkit");
-          if (panel && panel.scrollIntoView)
-            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById('checkBtn').addEventListener('click', function () {
+        NTKit.grade({
+          activityId: 'webquest-unit-10',
+          activityTitle: 'WebQuest · Unit 10 — Volume of Prisms (Volume Vault)',
+          standard: '6.G.A.2',
+          items: [
+            {
+              prompt: 'Q1. Volume of a 5 × 3 × 2 box (cubic units).',
+              studentAnswer: val('q1'),
+              correctAnswer: '30',
+              points: 1,
+              skill: 'Use V = l × w × h'
+            },
+            {
+              prompt: 'Q2. Bottom layer 12 cubes, 4 layers tall — total volume.',
+              studentAnswer: val('q2'),
+              correctAnswer: '48',
+              points: 1,
+              skill: 'Layers and height'
+            },
+            {
+              prompt: 'Q3. Volume of a 4 × 3 × ½ prism (cubic units).',
+              studentAnswer: val('q3'),
+              correctAnswer: '6',
+              points: 1,
+              skill: 'Fraction sides'
+            },
+            {
+              prompt: 'Q4. Which units measure volume?',
+              studentAnswer: val('q4'),
+              correctAnswer: 'cubic units',
+              points: 1,
+              skill: 'Vocabulary'
+            },
+            {
+              prompt: 'Q5. Volume of a 6 × 4 × 5 in fish tank (cubic inches).',
+              studentAnswer: val('q5'),
+              correctAnswer: '120',
+              points: 1,
+              skill: 'Use V = l × w × h'
+            }
+          ]
         });
+        var panel = document.getElementById('ntkit');
+        if (panel && panel.scrollIntoView) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     </script>
   </body>
 </html>

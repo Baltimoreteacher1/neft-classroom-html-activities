@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-World Data Investigation — Statistics Culminating Project B</title>
+    <meta name="description" content="Grade 6 Statistics culminating project B. Pose a statistical question, analyze real-world data, compute measures of center and spread, and choose the best display." />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --purple: #6d3fa0;
+        --purple-light: #f0eafa;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #0e3d2b 0%, #0e8a7d 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--gold);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--teal); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--blue); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase:nth-of-type(5) .phase-num { background: var(--purple); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--navy); }
+      .task.teal { background: var(--teal-light); }
+      .task.gold { background: var(--gold-light); }
+
+      .dataset-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 15px; }
+      .dataset-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .dataset-table td { border: 1px solid var(--line); padding: 8px 12px; }
+      .dataset-table tr:nth-child(even) td { background: var(--bg); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--teal); }
+      textarea { resize: vertical; min-height: 90px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      .btn {
+        background: var(--teal); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer;
+        font-family: inherit; margin-top: 14px; display: inline-block;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.blue { background: var(--blue); }
+      .btn.gold { background: var(--gold); color: #2a1c00; }
+      .btn.coral { background: var(--coral); }
+      .btn.purple { background: var(--purple); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--teal-light); border: 1px solid #bfe6e0; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 26px; font-weight: 800; color: var(--teal); margin-bottom: 6px; }
+      .readout .step { font-size: 13px; color: var(--muted); margin-top: 8px; font-family: monospace; line-height: 1.7; white-space: pre-wrap; }
+
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--teal); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .display-btns { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+      .display-btn {
+        padding: 10px 18px; border: 2px solid var(--line); border-radius: 10px;
+        background: #fff; cursor: pointer; font-family: inherit; font-size: 14px;
+        font-weight: 700; transition: all .2s;
+      }
+      .display-btn:hover { border-color: var(--teal); background: var(--teal-light); }
+      .display-btn.selected { border-color: var(--teal); background: var(--teal); color: #fff; }
+
+      .center-btns { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+      .center-btn {
+        padding: 10px 18px; border: 2px solid var(--line); border-radius: 10px;
+        background: #fff; cursor: pointer; font-family: inherit; font-size: 14px;
+        font-weight: 700; transition: all .2s;
+      }
+      .center-btn:hover { border-color: var(--blue); background: var(--blue-light); }
+      .center-btn.selected { border-color: var(--blue); background: var(--blue); color: #fff; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 28%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); color: #fff; }
+
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+        .readout { display: block !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🌦️</div>
+      <h1>Real-World Data Investigation</h1>
+      <p>Choose a real-world topic, pose a statistical question, analyze a data set, describe the spread, pick the best display, and write your investigation report.</p>
+      <div class="tags">
+        <span class="tag gold">Statistics &amp; Data</span>
+        <span class="tag">6.SP</span>
+        <span class="tag">6.SP.1</span>
+        <span class="tag">6.SP.3</span>
+        <span class="tag">6.SP.4</span>
+        <span class="tag">6.SP.5c</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/statistics/">Statistics</a> /
+        <a href="/math/statistics/projects/">Projects</a> / Real-World Data Investigation
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🔬 Your Mission</h2>
+        <p class="scenario">
+          You are a data investigator. Choose a real-world dataset (sports, weather, or survey),
+          pose a statistical question, compute the mean and median, measure the spread with
+          range and MAD, then choose the best display and write an investigation report.
+          Work through all four phases, fill every calculator, and complete the checklist.
+        </p>
+      </div>
+
+      <!-- PHASE 1: STATISTICAL QUESTION -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Statistical Question · 6.SP.1</div>
+            <h2>Pose Your Statistical Question</h2>
+          </div>
+        </div>
+        <p>A statistical question <em>anticipates variability</em> — different people, places, or times give different answers. Start your investigation by choosing a topic and a statistical question.</p>
+
+        <div class="task">
+          <strong>Choose a topic and dataset:</strong>
+        </div>
+
+        <label class="fld" for="topic">Select your investigation topic</label>
+        <select id="topic" onchange="loadDataset()">
+          <option value="">-- Select a topic --</option>
+          <option value="basketball">NBA Player Points Per Game (Sports)</option>
+          <option value="weather">Monthly Rainfall in inches (Weather)</option>
+          <option value="survey">Hours of Screen Time per Day (Survey)</option>
+        </select>
+
+        <div id="dataset-display" style="margin-top:16px;"></div>
+
+        <label class="fld" for="sq-answer">Write your statistical question for this dataset</label>
+        <textarea id="sq-answer" rows="3" placeholder="Example: How many points per game did each player on the team score this season?"></textarea>
+
+        <label class="fld" for="units-answer">What are the units of measurement for this data?</label>
+        <input type="text" id="units-answer" placeholder="e.g. points per game, inches, hours" />
+
+        <button class="btn" onclick="checkSQ()">Submit My Question</button>
+        <div class="readout" id="sq-out"></div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>A statistical question has many possible answers — the data varies. Ask something like "How much ___ does each ___ have?" rather than "What is the total ___?" Make sure to name what you are measuring and who or what you are measuring it on.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2: MEAN AND MEDIAN -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Measures of Center · 6.SP.3 · 6.SP.5c</div>
+            <h2>Mean and Median — Compare the Centers</h2>
+          </div>
+        </div>
+        <p>Compute the <strong>mean</strong> and <strong>median</strong> for your selected dataset, then compare them. Are they close? What does that tell you about the shape of the distribution?</p>
+
+        <div class="task teal">
+          <strong>Selected dataset will appear here after you choose a topic in Phase 1.</strong>
+          You can also enter your own data below.
+        </div>
+
+        <label class="fld" for="dataset2">Your data set (numbers separated by commas)</label>
+        <input type="text" id="dataset2" placeholder="Click 'Use Dataset' after choosing a topic, or type your own" />
+
+        <button class="btn blue" onclick="useTopicData()">Use My Topic's Dataset</button>
+        <button class="btn" onclick="calcCenter2()" style="margin-left:8px;">Calculate Mean &amp; Median</button>
+        <div class="readout" id="center2-out"></div>
+
+        <label class="fld" for="center-compare" style="margin-top:20px;">Compare mean and median: what do the two values tell you about your data?</label>
+        <textarea id="center-compare" rows="3" placeholder="The mean is ___ and the median is ___. They are (close / far apart) because ___. This suggests the data is ___..."></textarea>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p><strong>Mean:</strong> Add all values, divide by count. Sensitive to outliers.<br>
+          <strong>Median:</strong> Sort values; take the middle (or average two middles). Resistant to outliers.<br>
+          If mean &gt; median, the data may be skewed right. If mean &lt; median, it may be skewed left. If they are close, the data is roughly symmetric.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3: SPREAD -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Measures of Variability · 6.SP.5c</div>
+            <h2>Range and MAD — How Spread Out Is the Data?</h2>
+          </div>
+        </div>
+        <p>Compute the <strong>range</strong> and <strong>mean absolute deviation (MAD)</strong> to describe how consistent or spread out your data is. A small MAD means the data clusters near the mean.</p>
+
+        <button class="btn coral" onclick="calcSpread()">Calculate Range &amp; MAD</button>
+        <div class="readout" id="spread-out"></div>
+
+        <label class="fld" for="spread-interpret" style="margin-top:20px;">Interpret the spread: what does the range or MAD tell you about your topic?</label>
+        <textarea id="spread-interpret" rows="3" placeholder="The range is ___, which means ___. The MAD is ___, which tells me that on average, each data value is about ___ away from the mean. This means the data is (consistent / varied / spread out) because ___..."></textarea>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check:</strong> The data set is 4, 8, 6, 10, 2. What is the mean?
+        </div>
+        <label class="fld" for="check-mean">Your answer (mean)</label>
+        <input type="number" id="check-mean" placeholder="Type a number" style="max-width:200px;" />
+        <button class="btn blue" onclick="checkMean()" style="margin-left:8px;">Check</button>
+        <div class="feedback" id="mean-fb"></div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p><strong>Range</strong> = Maximum − Minimum.<br>
+          <strong>MAD steps:</strong> (1) Find the mean. (2) Subtract the mean from each value, then take the absolute value. (3) Average all those absolute deviations.<br>
+          <strong>Quick-check mean</strong> = (4 + 8 + 6 + 10 + 2) ÷ 5. Add them all up first!</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4: DISPLAY + BEST MEASURE -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Data Display &amp; Best Measure · 6.SP.4 · 6.SP.2</div>
+            <h2>Choose the Best Display and Measure of Center</h2>
+          </div>
+        </div>
+        <p>Based on your data and its shape, choose the <strong>best type of display</strong> and the <strong>best measure of center</strong>. Justify your choices.</p>
+
+        <label class="fld">Which display best fits your data and question?</label>
+        <div class="display-btns">
+          <button class="display-btn" id="db-dot" onclick="pickDisplay('dot plot')">Dot Plot</button>
+          <button class="display-btn" id="db-hist" onclick="pickDisplay('histogram')">Histogram</button>
+          <button class="display-btn" id="db-box" onclick="pickDisplay('box plot')">Box Plot</button>
+        </div>
+        <div class="feedback" id="display-fb" style="min-height:24px;"></div>
+
+        <label class="fld" style="margin-top:14px;">Which measure of center is best for your data's shape?</label>
+        <div class="center-btns">
+          <button class="center-btn" id="cb-mean" onclick="pickCenter('mean')">Mean</button>
+          <button class="center-btn" id="cb-median" onclick="pickCenter('median')">Median</button>
+          <button class="center-btn" id="cb-mode" onclick="pickCenter('mode')">Mode</button>
+        </div>
+        <div class="feedback" id="center-fb" style="min-height:24px;"></div>
+
+        <label class="fld" style="margin-top:18px;" for="display-justify">Justify your choices: why is this display and measure of center the best for your data?</label>
+        <textarea id="display-justify" rows="4" placeholder="I chose a ___ because ___. The best measure of center for this data is the ___ because ___. The shape of the distribution is ___ because ___..."></textarea>
+
+        <div class="task gold" style="margin-top:18px;">
+          <strong>Quick check:</strong> A data set has a mean of 14 and a median of 8. A student says the mean is the best measure of center. Should you use the mean or the median, and why?
+        </div>
+        <label class="fld" for="check-best">Your answer</label>
+        <textarea id="check-best" rows="2" placeholder="I would use the ___ because ___..."></textarea>
+        <button class="btn purple" onclick="checkBest()">Check My Reasoning</button>
+        <div class="feedback" id="best-fb"></div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p><strong>Display guide:</strong> Use a dot plot for small data sets (fewer than ~20 values). Use a histogram for large data sets grouped into intervals. Use a box plot to show the five-number summary and compare two groups.<br>
+          <strong>Measure of center:</strong> If the mean and median are far apart, an outlier or skew is pulling the mean — in that case, the median is more representative. If they are close, the mean is fine.<br>
+          <strong>Quick-check:</strong> When mean (14) and median (8) are far apart, the mean is pulled by high outliers. The median (8) is more resistant and better represents the typical value.</p>
+        </details>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Investigation Report</h2>
+          </div>
+        </div>
+        <p>Write a 5–7 sentence investigation report. Include your statistical question, the mean and median, the range and MAD, your chosen display, the best measure of center, and what your findings mean in context.</p>
+        <textarea id="report" placeholder="My statistical question was: ___. I investigated data about ___. The mean is ___ and the median is ___. These values are (close / far apart), which tells me ___. The range is ___ and the MAD is ___, meaning the data is ___. I chose a ___ to display this data because ___. The best measure of center for this dataset is the ___ because ___. Overall, my investigation shows that ___..."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Project Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I chose a topic, wrote a statistical question, and identified units.</li>
+          <li><input type="checkbox" /> I computed the mean correctly (sum ÷ count) with work shown.</li>
+          <li><input type="checkbox" /> I found the median by sorting and identifying the middle value.</li>
+          <li><input type="checkbox" /> I compared mean and median and explained what the difference means.</li>
+          <li><input type="checkbox" /> I computed the range and MAD with step-by-step work shown.</li>
+          <li><input type="checkbox" /> I chose an appropriate display type and justified my choice.</li>
+          <li><input type="checkbox" /> My investigation report uses all measures and explains findings in context.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print My Investigation</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr>
+            <td>Statistical Question (6.SP.1)</td>
+            <td>Question clearly anticipates variability; units correctly identified; strong reasoning</td>
+            <td>Question is statistical; units identified</td>
+            <td>Question is partially statistical or units missing</td>
+          </tr>
+          <tr>
+            <td>Mean &amp; Median (6.SP.3 / 6.SP.5c)</td>
+            <td>Both correct with work shown; comparison explains what the difference reveals about shape</td>
+            <td>Both correct; comparison attempted</td>
+            <td>One correct or minor computation error; comparison missing</td>
+          </tr>
+          <tr>
+            <td>Range &amp; MAD (6.SP.5c)</td>
+            <td>Both correct with full steps shown; spread interpreted meaningfully in context</td>
+            <td>Both correct; interpretation attempted</td>
+            <td>Range correct; MAD has a step error; interpretation limited</td>
+          </tr>
+          <tr>
+            <td>Display &amp; Best Measure (6.SP.4 / 6.SP.2)</td>
+            <td>Display and measure of center correctly chosen and well-justified based on data shape</td>
+            <td>Correct choices with some justification</td>
+            <td>Choices made but justification is missing or unclear</td>
+          </tr>
+          <tr>
+            <td>Communication (Investigation Report)</td>
+            <td>Report uses all five measures, explains findings in context, and draws a meaningful conclusion</td>
+            <td>Report uses most measures; conclusion present</td>
+            <td>Report is incomplete or context missing</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Statistics Culminating Project · Version B · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      // ── Datasets ──
+      var DATASETS = {
+        basketball: {
+          label: "NBA Player Points Per Game",
+          unit: "points per game",
+          values: [22.5, 18.3, 29.4, 14.1, 25.0, 19.8, 16.2, 27.1, 12.5, 21.0],
+          question: "How many points per game did each player score this season?"
+        },
+        weather: {
+          label: "Monthly Rainfall (inches)",
+          unit: "inches",
+          values: [1.2, 2.5, 3.8, 4.1, 3.3, 2.0, 0.8, 0.9, 1.5, 2.8, 3.6, 2.2],
+          question: "How much rainfall (in inches) did our city receive each month last year?"
+        },
+        survey: {
+          label: "Daily Screen Time (hours)",
+          unit: "hours",
+          values: [3, 5, 2, 7, 4, 6, 3, 5, 8, 4, 3, 5, 2, 6, 4],
+          question: "How many hours of screen time per day does each student in our grade report?"
+        }
+      };
+
+      var currentData = [];
+      var currentMean = null;
+
+      // ── Utilities ──
+      function show(id, html) {
+        var el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      function parseInput(str) {
+        var parts = str.split(/[,\s]+/).filter(function(s){ return s.trim() !== ""; });
+        var nums = [];
+        for (var i = 0; i < parts.length; i++) {
+          var n = parseFloat(parts[i]);
+          if (isNaN(n)) { return null; }
+          nums.push(n);
+        }
+        return nums.length >= 2 ? nums : null;
+      }
+
+      function sortNums(arr) {
+        return arr.slice().sort(function(a, b){ return a - b; });
+      }
+
+      function calcMean(arr) {
+        var s = 0;
+        for (var i = 0; i < arr.length; i++) { s += arr[i]; }
+        return s / arr.length;
+      }
+
+      function calcMedian(arr) {
+        var s = sortNums(arr);
+        var n = s.length;
+        if (n % 2 === 1) { return s[Math.floor(n / 2)]; }
+        return (s[n / 2 - 1] + s[n / 2]) / 2;
+      }
+
+      function calcMAD(arr, mean) {
+        var devs = [];
+        for (var i = 0; i < arr.length; i++) { devs.push(Math.abs(arr[i] - mean)); }
+        return calcMean(devs);
+      }
+
+      // ── Phase 1: Dataset + Statistical Question ──
+      function loadDataset() {
+        var key = document.getElementById("topic").value;
+        var container = document.getElementById("dataset-display");
+        if (!key) { container.innerHTML = ""; return; }
+        var ds = DATASETS[key];
+        currentData = ds.values.slice();
+        currentMean = null;
+
+        var rows = "";
+        for (var i = 0; i < ds.values.length; i++) {
+          rows += "<tr><td>" + (i + 1) + "</td><td>" + ds.values[i] + " " + ds.unit + "</td></tr>";
+        }
+        container.innerHTML =
+          "<strong style='display:block;margin-bottom:8px;'>Dataset: " + ds.label + "</strong>" +
+          "<table class='dataset-table'>" +
+          "<tr><th>Observation #</th><th>Value (" + ds.unit + ")</th></tr>" +
+          rows +
+          "</table>" +
+          "<p style='font-size:13px;color:var(--muted);'>Suggested question: <em>" + ds.question + "</em></p>";
+
+        document.getElementById("dataset2").value = ds.values.join(", ");
+      }
+
+      function checkSQ() {
+        var sq = document.getElementById("sq-answer").value.trim();
+        var units = document.getElementById("units-answer").value.trim();
+        var key = document.getElementById("topic").value;
+        if (!key) {
+          show("sq-out", "<p>⚠️ Please select a topic first.</p>");
+          return;
+        }
+        if (sq.length < 15) {
+          show("sq-out", "<p>⚠️ Please write a complete statistical question (full sentence).</p>");
+          return;
+        }
+        if (units.length < 2) {
+          show("sq-out", "<p>⚠️ Please identify the units of measurement.</p>");
+          return;
+        }
+        var ds = DATASETS[key];
+        show("sq-out",
+          "<div class='big'>Question Submitted!</div>" +
+          "<p>Your question: <em>\"" + sq + "\"</em></p>" +
+          "<p>Your units: <strong>" + units + "</strong></p>" +
+          "<p>Dataset loaded: <strong>" + ds.label + "</strong> (" + ds.values.length + " observations)</p>" +
+          "<p>✅ Great start! A statistical question like yours expects variability — the data values will differ, which is exactly what statistics helps us understand.</p>"
+        );
+      }
+
+      // ── Phase 2: Mean and Median ──
+      function useTopicData() {
+        var key = document.getElementById("topic").value;
+        if (!key) {
+          alert("Please select a topic in Phase 1 first.");
+          return;
+        }
+        document.getElementById("dataset2").value = DATASETS[key].values.join(", ");
+        currentData = DATASETS[key].values.slice();
+        currentMean = null;
+      }
+
+      function calcCenter2() {
+        var str = document.getElementById("dataset2").value;
+        var nums = parseInput(str);
+        if (!nums) {
+          show("center2-out", "<p>⚠️ Please enter at least 2 valid numbers separated by commas.</p>");
+          return;
+        }
+        currentData = nums;
+        var n = nums.length;
+        var sum = 0;
+        for (var i = 0; i < nums.length; i++) { sum += nums[i]; }
+        var mean = sum / n;
+        currentMean = mean;
+
+        var sorted = sortNums(nums);
+        var median = calcMedian(nums);
+
+        var medianStep;
+        if (n % 2 === 1) {
+          var mi = Math.floor(n / 2);
+          medianStep = "Sorted: " + sorted.join(", ") + "\nMiddle position " + (mi + 1) + " → median = " + median;
+        } else {
+          var lo = n / 2 - 1;
+          var hi = n / 2;
+          medianStep = "Sorted: " + sorted.join(", ") +
+            "\nEven count — average positions " + (lo + 1) + " and " + (hi + 1) +
+            " → (" + sorted[lo] + " + " + sorted[hi] + ") ÷ 2 = " + median.toFixed(2);
+        }
+
+        var diff = Math.abs(mean - median);
+        var comparison = diff < 1.5
+          ? "Mean and median are close (" + diff.toFixed(2) + " apart), suggesting the distribution is roughly symmetric."
+          : mean > median
+            ? "Mean (" + mean.toFixed(2) + ") > Median (" + median.toFixed(2) + ") — the mean may be pulled up by higher values (possible right skew or outlier)."
+            : "Mean (" + mean.toFixed(2) + ") < Median (" + median.toFixed(2) + ") — the mean may be pulled down by lower values (possible left skew or outlier).";
+
+        show("center2-out",
+          "<div class='big'>Mean = " + mean.toFixed(2) + " &nbsp;|&nbsp; Median = " + median.toFixed(2) + "</div>" +
+          "<div class='step'>" +
+          "MEAN:\n  Sum = " + nums.join(" + ") + " = " + sum.toFixed(2) +
+          "\n  Count = " + n +
+          "\n  Mean = " + sum.toFixed(2) + " ÷ " + n + " = " + mean.toFixed(2) +
+          "\n\nMEDIAN:\n  " + medianStep +
+          "\n\nCOMPARISON:\n  " + comparison +
+          "</div>"
+        );
+      }
+
+      // ── Phase 3: Spread ──
+      function calcSpread() {
+        var str = document.getElementById("dataset2").value;
+        var nums = currentData.length ? currentData : parseInput(str);
+        if (!nums || nums.length < 2) {
+          show("spread-out", "<p>⚠️ Please complete Phase 2 first (calculate mean &amp; median).</p>");
+          return;
+        }
+        var mean = currentMean !== null ? currentMean : calcMean(nums);
+        currentMean = mean;
+
+        var sorted = sortNums(nums);
+        var minVal = sorted[0];
+        var maxVal = sorted[sorted.length - 1];
+        var range = maxVal - minVal;
+
+        var devLines = [];
+        var devVals = [];
+        for (var i = 0; i < nums.length; i++) {
+          var d = Math.abs(nums[i] - mean);
+          devVals.push(d);
+          devLines.push("  |" + nums[i] + " - " + mean.toFixed(2) + "| = " + d.toFixed(2));
+        }
+        var madSum = 0;
+        for (var j = 0; j < devVals.length; j++) { madSum += devVals[j]; }
+        var mad = madSum / devVals.length;
+
+        show("spread-out",
+          "<div class='big'>Range = " + range.toFixed(2) + " &nbsp;|&nbsp; MAD = " + mad.toFixed(2) + "</div>" +
+          "<div class='step'>" +
+          "RANGE:\n  Max (" + maxVal + ") - Min (" + minVal + ") = " + range.toFixed(2) +
+          "\n\nMAD steps:\n  Mean = " + mean.toFixed(2) +
+          "\n  Absolute deviations:\n" + devLines.join("\n") +
+          "\n  Sum of deviations = " + madSum.toFixed(2) +
+          "\n  MAD = " + madSum.toFixed(2) + " ÷ " + nums.length + " = " + mad.toFixed(2) +
+          "</div>"
+        );
+      }
+
+      function checkMean() {
+        var v = parseFloat(document.getElementById("check-mean").value);
+        var raw = document.getElementById("check-mean").value.trim();
+        var fb = document.getElementById("mean-fb");
+        if (raw === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
+        // Quick-check: 4, 8, 6, 10, 2 → sum = 30, n = 5, mean = 6
+        if (v === 6) {
+          fb.textContent = "✅ Correct! Sum = 4+8+6+10+2 = 30. Count = 5. Mean = 30 ÷ 5 = 6.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not yet. Add all five values: 4+8+6+10+2 = 30. Then divide by 5. Mean = 30 ÷ 5 = 6.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      // ── Phase 4: Display + Best Measure ──
+      var chosenDisplay = null;
+      var chosenCenter = null;
+
+      function pickDisplay(name) {
+        chosenDisplay = name;
+        var ids = ["db-dot", "db-hist", "db-box"];
+        for (var i = 0; i < ids.length; i++) {
+          document.getElementById(ids[i]).classList.remove("selected");
+        }
+        var map = { "dot plot": "db-dot", "histogram": "db-hist", "box plot": "db-box" };
+        if (map[name]) { document.getElementById(map[name]).classList.add("selected"); }
+        var fb = document.getElementById("display-fb");
+        fb.className = "feedback ok";
+        fb.textContent = "✅ Selected: " + name + ". Justify your choice in the text box below.";
+        updateProgress();
+      }
+
+      function pickCenter(name) {
+        chosenCenter = name;
+        var ids = ["cb-mean", "cb-median", "cb-mode"];
+        for (var i = 0; i < ids.length; i++) {
+          document.getElementById(ids[i]).classList.remove("selected");
+        }
+        var map = { "mean": "cb-mean", "median": "cb-median", "mode": "cb-mode" };
+        if (map[name]) { document.getElementById(map[name]).classList.add("selected"); }
+        var fb = document.getElementById("center-fb");
+        fb.className = "feedback ok";
+        fb.textContent = "✅ Selected: " + name + ". Justify your choice in the text box below.";
+        updateProgress();
+      }
+
+      function checkBest() {
+        var answer = document.getElementById("check-best").value.trim();
+        var fb = document.getElementById("best-fb");
+        if (answer.length < 15) {
+          fb.textContent = "⚠️ Please write a complete sentence explaining your reasoning.";
+          fb.className = "feedback no";
+          return;
+        }
+        // Check if student mentioned median (correct answer for this skewed scenario)
+        var lower = answer.toLowerCase();
+        if (lower.indexOf("median") !== -1) {
+          fb.textContent = "✅ Good reasoning! When mean (14) and median (8) are far apart, the data is skewed or has outliers. The median is resistant to outliers and better represents the typical value.";
+          fb.className = "feedback ok";
+        } else if (lower.indexOf("mean") !== -1 && lower.indexOf("not") === -1 && lower.indexOf("no") === -1) {
+          fb.textContent = "🤔 Reconsider — the mean (14) is much higher than the median (8), meaning high values are pulling the mean up. The median is a better measure here because it is not affected by outliers.";
+          fb.className = "feedback no";
+        } else {
+          fb.textContent = "✅ Nice try! The key idea: when mean and median are far apart, prefer the median — it resists the pull of extreme values.";
+          fb.className = "feedback ok";
+        }
+        updateProgress();
+      }
+
+      // ── Progress ──
+      function updateProgress() {
+        var readouts = document.querySelectorAll(".readout.show").length;
+        var meanOk = document.getElementById("mean-fb").classList.contains("ok") ? 1 : 0;
+        var displayOk = chosenDisplay ? 1 : 0;
+        var centerOk = chosenCenter ? 1 : 0;
+        var bestOk = document.getElementById("best-fb").classList.contains("ok") ? 1 : 0;
+        var checks = document.querySelectorAll("#checklist input:checked").length;
+        var report = document.getElementById("report").value.trim().length > 30 ? 1 : 0;
+        var centerCompare = document.getElementById("center-compare").value.trim().length > 10 ? 1 : 0;
+        var spreadInterp = document.getElementById("spread-interpret").value.trim().length > 10 ? 1 : 0;
+        var displayJust = document.getElementById("display-justify").value.trim().length > 10 ? 1 : 0;
+        // max: 3 readouts + meanOk + displayOk + centerOk + bestOk + 7 checks + report + 3 textareas = 18
+        var total = readouts + meanOk + displayOk + centerOk + bestOk + checks + report + centerCompare + spreadInterp + displayJust;
+        var pct = Math.min(100, Math.round((total / 18) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("report").addEventListener("input", updateProgress);
+      document.getElementById("center-compare").addEventListener("input", updateProgress);
+      document.getElementById("spread-interpret").addEventListener("input", updateProgress);
+      document.getElementById("display-justify").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

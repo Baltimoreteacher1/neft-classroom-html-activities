@@ -14,20 +14,14 @@
     <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      :root {
-        color-scheme: light dark;
-      }
+      /* ── Base ── */
+      :root { color-scheme: light dark; }
 
       body {
         margin: 0;
         background: var(--nt-bg);
         color: var(--nt-text);
-        font-family:
-          "Outfit",
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          sans-serif;
+        font-family: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
         font-size: 19px;
         line-height: 1.6;
       }
@@ -38,6 +32,7 @@
         padding: 24px 20px 80px;
       }
 
+      /* ── Hero ── */
       header.hero {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -57,12 +52,9 @@
         margin: 6px 0 8px;
         line-height: 1.2;
       }
-      header.hero p {
-        margin: 0;
-        color: var(--nt-muted);
-        font-size: 18px;
-      }
+      header.hero p { margin: 0; color: var(--nt-muted); font-size: 18px; }
 
+      /* ── Cards ── */
       section.card {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -95,6 +87,76 @@
         font-weight: 700;
       }
 
+      /* ── Learning Target ── */
+      .target-box {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin: 12px 0 16px;
+      }
+      .target-box h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: var(--nt-accent);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .target-box ul { margin: 0 0 10px; padding-left: 22px; }
+      .target-box ul li { margin: 4px 0; }
+      .target-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .target-meta span {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 600;
+      }
+
+      /* ── Teacher Notes ── */
+      .teacher-notes {
+        background: #fffbea;
+        border: 2px dashed #c9a800;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin: 16px 0;
+        font-size: 16px;
+      }
+      @media (prefers-color-scheme: dark) {
+        .teacher-notes { background: #2a2600; border-color: #c9a800; }
+      }
+      .teacher-notes summary {
+        font-weight: 700;
+        font-size: 17px;
+        cursor: pointer;
+        color: #7a6000;
+        list-style: none;
+      }
+      @media (prefers-color-scheme: dark) {
+        .teacher-notes summary { color: #f0c800; }
+      }
+      .teacher-notes summary::before { content: "🍎 "; }
+      .teacher-notes h4 {
+        margin: 12px 0 4px;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #7a6000;
+      }
+      @media (prefers-color-scheme: dark) {
+        .teacher-notes h4 { color: #f0c800; }
+      }
+      .teacher-notes p, .teacher-notes ul { margin: 4px 0 8px; }
+      .teacher-notes ul { padding-left: 20px; }
+
+      /* ── Explore buttons ── */
       a.btnlink {
         display: inline-block;
         background: var(--nt-accent);
@@ -106,14 +168,13 @@
         margin: 6px 8px 6px 0;
         border: 2px solid transparent;
       }
-      a.btnlink:hover {
-        filter: brightness(1.08);
-      }
+      a.btnlink:hover { filter: brightness(1.08); }
       a.btnlink:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
       }
 
+      /* ── Vocab table / Example ── */
       .example {
         background: var(--nt-bg);
         border: 1px solid var(--nt-border);
@@ -121,8 +182,7 @@
         padding: 14px 16px;
         margin: 14px 0;
       }
-      .example code,
-      .term {
+      .example code, .term {
         font-family: "Consolas", "Courier New", monospace;
         background: var(--nt-bg);
         border: 1px solid var(--nt-border);
@@ -142,23 +202,16 @@
         text-align: left;
         vertical-align: top;
       }
-      table.vocab th {
-        background: var(--nt-bg);
-      }
+      table.vocab th { background: var(--nt-bg); }
 
-      .q {
-        margin: 18px 0;
-      }
+      /* ── Apply / questions ── */
+      .q { margin: 18px 0; }
       .q label {
         display: block;
         font-weight: 700;
         margin-bottom: 6px;
       }
-      .q .hint {
-        color: var(--nt-muted);
-        font-weight: 400;
-        font-size: 16px;
-      }
+      .q .hint { color: var(--nt-muted); font-weight: 400; font-size: 16px; }
       .q input[type="text"],
       .q textarea {
         width: 100%;
@@ -177,11 +230,71 @@
         outline-offset: 1px;
         border-color: var(--nt-accent);
       }
-      textarea {
-        min-height: 80px;
-        resize: vertical;
+      textarea { min-height: 80px; resize: vertical; }
+
+      /* ── Self-check ── */
+      .sc-item {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin: 12px 0;
+      }
+      .sc-item .sc-prompt { font-weight: 700; margin-bottom: 8px; }
+      .sc-item .sc-choices label {
+        display: block;
+        padding: 8px 12px;
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        margin: 5px 0;
+        cursor: pointer;
+        font-weight: 400;
+      }
+      .sc-item .sc-choices label:focus-within {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .sc-feedback {
+        margin-top: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 8px;
+        display: none;
+      }
+      .sc-feedback.correct {
+        background: #d4edda;
+        color: #155724;
+        display: block;
+      }
+      .sc-feedback.wrong {
+        background: #f8d7da;
+        color: #721c24;
+        display: block;
+      }
+      @media (prefers-color-scheme: dark) {
+        .sc-feedback.correct { background: #1a3a22; color: #7ddb96; }
+        .sc-feedback.wrong   { background: #3a1a1a; color: #f08080; }
       }
 
+      .scbtn {
+        font-size: 17px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--nt-accent);
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .scbtn:hover { filter: brightness(1.08); }
+      .scbtn:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 3px;
+      }
+
+      /* ── Main check button ── */
       button.checkbtn {
         background: var(--nt-accent);
         color: var(--nt-bg);
@@ -193,36 +306,98 @@
         cursor: pointer;
         margin-top: 8px;
       }
-      button.checkbtn:hover {
-        filter: brightness(1.08);
-      }
+      button.checkbtn:hover { filter: brightness(1.08); }
       button.checkbtn:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
       }
 
-      #ntkit {
-        margin: 22px 0;
+      /* ── Rubric ── */
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 16px;
       }
-      ul.clean {
-        margin: 8px 0;
-        padding-left: 22px;
+      .rubric-table th,
+      .rubric-table td {
+        border: 1px solid var(--nt-border);
+        padding: 10px 12px;
+        vertical-align: top;
+        text-align: left;
       }
-      ul.clean li {
-        margin: 4px 0;
+      .rubric-table th { background: var(--nt-bg); font-weight: 700; }
+      .rubric-table tr:nth-child(even) td { background: var(--nt-bg); }
+      .level-4 { color: #155724; font-weight: 700; }
+      .level-3 { color: #004085; font-weight: 700; }
+      .level-2 { color: #856404; font-weight: 700; }
+      .level-1 { color: #721c24; font-weight: 700; }
+      @media (prefers-color-scheme: dark) {
+        .level-4 { color: #7ddb96; }
+        .level-3 { color: #74b8f0; }
+        .level-2 { color: #f0c878; }
+        .level-1 { color: #f08080; }
       }
+
+      /* ── Answer key ── */
+      details.answer-key {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-top: 12px;
+        font-size: 16px;
+      }
+      details.answer-key summary {
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--nt-accent);
+        list-style: none;
+      }
+      details.answer-key summary::before { content: "🔑 "; }
+      details.answer-key ol { margin: 10px 0 0; padding-left: 22px; }
+      details.answer-key ol li { margin: 5px 0; }
+
+      /* ── Misc ── */
+      #ntkit { margin: 22px 0; }
+      ul.clean { margin: 8px 0; padding-left: 22px; }
+      ul.clean li { margin: 4px 0; }
       .visually-hidden {
         position: absolute;
-        width: 1px;
-        height: 1px;
+        width: 1px; height: 1px;
         overflow: hidden;
         clip: rect(0 0 0 0);
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 560px) {
+        .target-meta { flex-direction: column; }
+        .rubric-table { font-size: 14px; }
+        .rubric-table th, .rubric-table td { padding: 7px 8px; }
+        header.hero h1 { font-size: 26px; }
+      }
+
+      /* ── Print ── */
+      @media print {
+        body { font-size: 14px; background: #fff; color: #000; }
+        .wrap { max-width: 100%; padding: 0; }
+        .teacher-notes,
+        details.answer-key { display: none !important; }
+        section.card { page-break-inside: avoid; border: 1px solid #ccc; }
+        button.checkbtn, .scbtn { display: none; }
+        a { color: #000; text-decoration: underline; }
+        header.hero { border: 1px solid #ccc; }
       }
     </style>
   </head>
 
   <body class="nt-theme-aware">
+    <p style="font:14px system-ui;padding:10px 16px;">
+      <a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a>
+    </p>
     <div class="wrap">
+
+      <!-- ══ HERO ══ -->
       <header class="hero">
         <div class="eyebrow">Unit 6 HyperDoc · 6.EE.A.1–4</div>
         <h1>Expression Engine: Build &amp; Read Expressions</h1>
@@ -232,10 +407,63 @@
         </p>
       </header>
 
-      <!-- Student name bar + Save buttons + results live here -->
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="card" aria-labelledby="target-h">
+        <h2 id="target-h">📌 Learning Target</h2>
+        <div class="target-box">
+          <h3>I can…</h3>
+          <ul>
+            <li>Write and evaluate numerical expressions using <strong>exponents</strong> (6.EE.A.1).</li>
+            <li>Write, read, and evaluate <strong>algebraic expressions</strong> by substituting values for variables (6.EE.A.2).</li>
+            <li>Apply the <strong>distributive property</strong> to generate equivalent expressions (6.EE.A.3).</li>
+            <li>Identify when two expressions are <strong>equivalent</strong> (6.EE.A.4).</li>
+          </ul>
+          <div class="target-meta">
+            <span>🔢 Standard: 6.EE.A.1–4</span>
+            <span>⏱ Est. time: 45–55 min</span>
+            <span>📦 Materials: pencil, calculator (optional)</span>
+          </div>
+        </div>
+
+        <!-- Teacher Notes -->
+        <details class="teacher-notes">
+          <summary>Teacher Notes — Unit 6 (click to expand)</summary>
+
+          <h4>Pacing</h4>
+          <p>Engage 5 min · Explore 10 min · Explain 8 min · Apply 15 min · Reflect 8 min.
+          Total ≈ 46 min. Distributive property questions may need 5 extra minutes for newcomers.</p>
+
+          <h4>Grouping</h4>
+          <p>Engage — think-pair-share (partners). Explore — pairs on shared device.
+          Apply and Reflect — independent. Compare reflections with a partner before submit.</p>
+
+          <h4>Differentiation — Support</h4>
+          <ul>
+            <li>Provide an order-of-operations anchor chart: Parentheses → Exponents → × ÷ → + −.</li>
+            <li>For PEMDAS practice, write each step on its own line (scaffold with blanks).</li>
+            <li>Allow a variable definition card: "variable = unknown number (a letter)".</li>
+          </ul>
+
+          <h4>Differentiation — Challenge</h4>
+          <ul>
+            <li>Have students write their own expression, swap with a partner, and evaluate each other's.</li>
+            <li>Explore: Is <span class="term">2(x + 3)</span> equivalent to <span class="term">2x + 6</span>? Prove it with three different values of x.</li>
+          </ul>
+
+          <h4>ESOL / Language Supports</h4>
+          <ul>
+            <li>The vocab table in Explain pre-teaches key terms with plain English and examples.</li>
+            <li>Sentence frames: "The coefficient is ___ because…"; "I evaluated the expression by first ___."</li>
+            <li>Cognates: <em>expression → expresión</em>, <em>variable → variable</em>, <em>coefficient → coeficiente</em>.</li>
+            <li>Allow L1 responses for reflections; use a bilingual math dictionary if available.</li>
+          </ul>
+        </details>
+      </section>
+
+      <!-- ══ STUDENT NAME BAR ══ -->
       <div id="ntkit"></div>
 
-      <!-- ENGAGE -->
+      <!-- ══ ENGAGE ══ -->
       <section class="card" aria-labelledby="engage-h">
         <h2 id="engage-h"><span class="step">1</span> Engage</h2>
         <p>
@@ -248,38 +476,34 @@
           <span class="term">b</span> marbles" using math?
         </p>
         <div class="doit">
-          Do this: Say your idea out loud. You will check it in Step 4.
+          Do this: Say your idea out loud to a partner. You will check it in Step 4.
         </div>
       </section>
 
-      <!-- EXPLORE -->
+      <!-- ══ EXPLORE ══ -->
       <section class="card" aria-labelledby="explore-h">
         <h2 id="explore-h"><span class="step">2</span> Explore</h2>
         <p>Open the tools below to play and explore expressions.</p>
-        <a class="btnlink" href="/games/3d/unit-6/index.html"
-          >Play the 3D Expression Engine</a
-        >
+        <a class="btnlink" href="/games/3d/unit-6/index.html">Play the 3D Expression Engine</a>
         <a class="btnlink" href="/math/unit-6/index.html">Unit 6 Math Hub</a>
-        <a class="btnlink" href="/novels/unit-6/index.html"
-          >Read the Math Novel</a
-        >
-        <p class="hint">
+        <a class="btnlink" href="/graphic-novels/unit6/graphic-novel-1.html">Read the Math Novel</a>
+        <p class="hint" style="margin-top:10px;">
           Tip: In the game, feed blocks into the machine to build expressions
           like <span class="term">3 × b</span>.
         </p>
       </section>
 
-      <!-- EXPLAIN -->
+      <!-- ══ EXPLAIN ══ -->
       <section class="card" aria-labelledby="explain-h">
         <h2 id="explain-h"><span class="step">3</span> Explain</h2>
 
-        <p>Read these key words. Then read the worked example.</p>
+        <p>Read these key words. Then read the worked examples.</p>
         <table class="vocab">
           <thead>
             <tr>
-              <th>Word</th>
-              <th>Easy meaning</th>
-              <th>Example</th>
+              <th scope="col">Word</th>
+              <th scope="col">Easy meaning</th>
+              <th scope="col">Example</th>
             </tr>
           </thead>
           <tbody>
@@ -296,237 +520,336 @@
             <tr>
               <td><strong>Coefficient</strong></td>
               <td>The number multiplied by a variable.</td>
-              <td>
-                In <span class="term">3b</span>, it is
-                <span class="term">3</span>
-              </td>
+              <td>In <span class="term">3b</span>, it is <span class="term">3</span></td>
             </tr>
             <tr>
               <td><strong>Exponent</strong></td>
-              <td>Small number. It tells how many times to multiply.</td>
+              <td>Small raised number. It tells how many times to multiply the base by itself.</td>
               <td><span class="term">5² = 5 × 5 = 25</span></td>
             </tr>
             <tr>
               <td><strong>Evaluate</strong></td>
               <td>Put in a number for the letter and find the value.</td>
-              <td>
-                If <span class="term">b = 4</span>, then
-                <span class="term">3b = 12</span>
-              </td>
+              <td>If <span class="term">b = 4</span>, then <span class="term">3b = 12</span></td>
+            </tr>
+            <tr>
+              <td><strong>Distributive</strong></td>
+              <td>Multiply the outside number by each term inside the parentheses.</td>
+              <td><span class="term">2(x + 3) = 2x + 6</span></td>
+            </tr>
+            <tr>
+              <td><strong>Equivalent</strong></td>
+              <td>Two expressions that always give the same value.</td>
+              <td><span class="term">2(x + 3)</span> and <span class="term">2x + 6</span></td>
             </tr>
           </tbody>
         </table>
 
         <div class="example">
-          <strong>Worked example — write &amp; evaluate</strong>
+          <strong>Worked examples</strong>
           <ul class="clean">
-            <li>
-              "3 boxes of <span class="term">b</span> marbles" &rarr; write it
-              as <span class="term">3b</span> (means 3 × b).
-            </li>
-            <li>
-              Now <span class="term">b = 4</span>. Evaluate:
-              <span class="term">3b = 3 × 4 = 12</span>.
-            </li>
+            <li>"3 boxes of <span class="term">b</span> marbles" → write as <span class="term">3b</span> (means 3 × b).</li>
+            <li>Evaluate: <span class="term">b = 4</span> → <span class="term">3b = 3 × 4 = 12</span>.</li>
             <li>Exponent: <span class="term">4³ = 4 × 4 × 4 = 64</span>.</li>
+            <li>Order of operations: <span class="term">2 + 3² = 2 + 9 = 11</span> (exponent first).</li>
+            <li>Distributive: <span class="term">3(x + 5) = 3x + 15</span>.</li>
           </ul>
         </div>
         <p class="hint">
           Rule: <span class="term">3b</span> always means
-          <span class="term">3 × b</span>. The number in front is the
-          coefficient.
+          <span class="term">3 × b</span>. The number in front is the coefficient.
         </p>
       </section>
 
-      <!-- APPLY -->
+      <!-- ══ APPLY ══ -->
       <section class="card" aria-labelledby="apply-h">
         <h2 id="apply-h"><span class="step">4</span> Apply — Quick Check</h2>
-        <p>
-          Type your answer in each box. Then press
-          <strong>Check My Work</strong>.
-        </p>
+
+        <!-- ─── Self-check (instant feedback) ─── -->
+        <div id="self-check-area">
+          <p style="font-weight:700;margin-bottom:4px;">Quick Check — try these first and check yourself:</p>
+
+          <!-- SC1: exponent -->
+          <div class="sc-item" id="sc1">
+            <p class="sc-prompt">SC1. What is the value of 3²?</p>
+            <div class="sc-choices" role="radiogroup">
+              <label><input type="radio" name="sc1" value="a"> 6</label>
+              <label><input type="radio" name="sc1" value="b"> 9</label>
+              <label><input type="radio" name="sc1" value="c"> 8</label>
+              <label><input type="radio" name="sc1" value="d"> 5</label>
+            </div>
+            <button class="scbtn" type="button" onclick="checkSC('sc1','b','3² = 3 × 3 = 9. The exponent tells you how many times to multiply 3 by itself.')">Check</button>
+            <div class="sc-feedback" id="sc1-fb" aria-live="polite"></div>
+          </div>
+
+          <!-- SC2: evaluate expression -->
+          <div class="sc-item" id="sc2">
+            <p class="sc-prompt">SC2. Evaluate <span class="term">4x + 1</span> when <span class="term">x = 3</span>.</p>
+            <div class="sc-choices" role="radiogroup">
+              <label><input type="radio" name="sc2" value="a"> 16</label>
+              <label><input type="radio" name="sc2" value="b"> 13</label>
+              <label><input type="radio" name="sc2" value="c"> 8</label>
+              <label><input type="radio" name="sc2" value="d"> 12</label>
+            </div>
+            <button class="scbtn" type="button" onclick="checkSC('sc2','b','4x + 1 = 4(3) + 1 = 12 + 1 = 13. Multiply first, then add.')">Check</button>
+            <div class="sc-feedback" id="sc2-fb" aria-live="polite"></div>
+          </div>
+
+          <!-- SC3: distributive property -->
+          <div class="sc-item" id="sc3">
+            <p class="sc-prompt">SC3. Use the distributive property. Which expression is equivalent to <span class="term">2(n + 4)</span>?</p>
+            <div class="sc-choices" role="radiogroup">
+              <label><input type="radio" name="sc3" value="a"> 2n + 4</label>
+              <label><input type="radio" name="sc3" value="b"> 2n + 8</label>
+              <label><input type="radio" name="sc3" value="c"> n + 8</label>
+              <label><input type="radio" name="sc3" value="d"> 2n + 6</label>
+            </div>
+            <button class="scbtn" type="button" onclick="checkSC('sc3','b','2(n + 4) = 2 × n + 2 × 4 = 2n + 8. Multiply 2 by each term inside the parentheses.')">Check</button>
+            <div class="sc-feedback" id="sc3-fb" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <hr style="border-color:var(--nt-border);margin:20px 0;" />
+
+        <p>Type your answer in each box. Then press <strong>Check My Work</strong>.</p>
 
         <form id="applyform" novalidate>
           <div class="q">
-            <label for="a1"
-              >1. Write "3 boxes of <span class="term">b</span> marbles" as an
-              expression.
-              <span class="hint"
-                >Use the coefficient and the letter, like 3b.</span
-              ></label
-            >
-            <input
-              type="text"
-              id="a1"
-              name="a1"
-              autocomplete="off"
-              inputmode="text"
-            />
+            <label for="a1">1. Write "3 boxes of <span class="term">b</span> marbles" as an expression.
+              <span class="hint">Use the coefficient and the letter, like 3b.</span>
+            </label>
+            <input type="text" id="a1" name="a1" autocomplete="off" inputmode="text" />
           </div>
 
           <div class="q">
-            <label for="a2"
-              >2. Evaluate <span class="term">3b</span> when
-              <span class="term">b = 4</span>.
-              <span class="hint">Type only the number.</span></label
-            >
-            <input
-              type="text"
-              id="a2"
-              name="a2"
-              autocomplete="off"
-              inputmode="numeric"
-            />
+            <label for="a2">2. Evaluate <span class="term">3b</span> when <span class="term">b = 4</span>.
+              <span class="hint">Type only the number.</span>
+            </label>
+            <input type="text" id="a2" name="a2" autocomplete="off" inputmode="numeric" />
           </div>
 
           <div class="q">
-            <label for="a3"
-              >3. Write <span class="term">5 × 5 × 5</span> using an exponent.
-              <span class="hint">Use the ^ key, like 5^3.</span></label
-            >
-            <input
-              type="text"
-              id="a3"
-              name="a3"
-              autocomplete="off"
-              inputmode="text"
-            />
+            <label for="a3">3. Write <span class="term">5 × 5 × 5</span> using an exponent.
+              <span class="hint">Use the ^ key, like 5^3.</span>
+            </label>
+            <input type="text" id="a3" name="a3" autocomplete="off" inputmode="text" />
           </div>
 
           <div class="q">
-            <label for="a4"
-              >4. In the expression <span class="term">7m</span>, what is the
-              coefficient?
-              <span class="hint">Type only the number.</span></label
-            >
-            <input
-              type="text"
-              id="a4"
-              name="a4"
-              autocomplete="off"
-              inputmode="numeric"
-            />
+            <label for="a4">4. In the expression <span class="term">7m</span>, what is the coefficient?
+              <span class="hint">Type only the number.</span>
+            </label>
+            <input type="text" id="a4" name="a4" autocomplete="off" inputmode="numeric" />
           </div>
 
           <div class="q">
-            <label for="a5"
-              >5. Evaluate <span class="term">2³</span> (two to the third
-              power).
-              <span class="hint">2 × 2 × 2. Type only the number.</span></label
-            >
-            <input
-              type="text"
-              id="a5"
-              name="a5"
-              autocomplete="off"
-              inputmode="numeric"
-            />
+            <label for="a5">5. Evaluate <span class="term">2³</span> (two to the third power).
+              <span class="hint">2 × 2 × 2. Type only the number.</span>
+            </label>
+            <input type="text" id="a5" name="a5" autocomplete="off" inputmode="numeric" />
           </div>
 
-          <button type="submit" class="checkbtn" id="checkbtn">
-            Check My Work
-          </button>
+          <div class="q">
+            <label for="a6">6. Apply the distributive property: <span class="term">5(x + 3)</span> = ?
+              <span class="hint">Multiply 5 by each term. Write the full expression, e.g. 5x+15.</span>
+            </label>
+            <input type="text" id="a6" name="a6" autocomplete="off" inputmode="text" />
+          </div>
+
+          <button type="submit" class="checkbtn" id="checkbtn">Check My Work</button>
         </form>
       </section>
 
-      <!-- REFLECT -->
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-labelledby="rubric-h">
+        <h2 id="rubric-h">📊 Rubric</h2>
+        <table class="rubric-table" role="table" aria-label="Scoring rubric">
+          <thead>
+            <tr>
+              <th scope="col">Level</th>
+              <th scope="col">Score</th>
+              <th scope="col">What it looks like</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="level-4">4 — Exceeds</span></td>
+              <td>6/6</td>
+              <td>All expressions, evaluations, and distributive property correct. Reflections use math vocabulary precisely and explain reasoning.</td>
+            </tr>
+            <tr>
+              <td><span class="level-3">3 — Meets</span></td>
+              <td>4–5/6</td>
+              <td>Correctly writes and evaluates expressions; may make a minor error with exponents or distribution. Reflections are complete.</td>
+            </tr>
+            <tr>
+              <td><span class="level-2">2 — Approaching</span></td>
+              <td>2–3/6</td>
+              <td>Can identify coefficient and variable but struggles to apply exponents or distributive property. Reflections are brief.</td>
+            </tr>
+            <tr>
+              <td><span class="level-1">1 — Beginning</span></td>
+              <td>0–1/6</td>
+              <td>Confuses expressions with equations, or cannot yet evaluate by substitution. Needs re-teaching of core concepts.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Answer Key (teacher only) -->
+        <details class="answer-key">
+          <summary>Answer Key (teacher only)</summary>
+          <ol>
+            <li><strong>A1:</strong> <strong>3b</strong> (also accept "3 × b" or "3*b")</li>
+            <li><strong>A2:</strong> 3 × 4 = <strong>12</strong></li>
+            <li><strong>A3:</strong> <strong>5^3</strong></li>
+            <li><strong>A4:</strong> <strong>7</strong></li>
+            <li><strong>A5:</strong> 2 × 2 × 2 = <strong>8</strong></li>
+            <li><strong>A6:</strong> <strong>5x+15</strong> (also accept "5x + 15")</li>
+            <li><strong>SC1:</strong> b — 9</li>
+            <li><strong>SC2:</strong> b — 13</li>
+            <li><strong>SC3:</strong> b — 2n + 8</li>
+          </ol>
+        </details>
+      </section>
+
+      <!-- ══ REFLECT ══ -->
       <section class="card" aria-labelledby="reflect-h">
         <h2 id="reflect-h"><span class="step">5</span> Reflect</h2>
-        <p>
-          Write 1–2 sentences for each. Your words are saved in your PDF and
-          DOC.
+        <p class="doit">
+          Write 2–4 sentences for each prompt. Use math vocabulary:
+          <em>variable, coefficient, exponent, evaluate, equivalent</em>.
+          Your answers are saved in your PDF/DOC and count toward your grade.
         </p>
-        <div class="q">
-          <label for="r1"
-            >A. In your own words, what is a <strong>variable</strong>?</label
-          >
+        <p><strong>Deliverable:</strong> Complete both reflections, press
+          <strong>Check My Work</strong> above, then submit your PDF or DOC
+          to the class folder.</p>
+
+        <div class="q" style="margin-top:18px;">
+          <label for="r1">A. In your own words, what is a <strong>variable</strong>?
+            Give one example from real life where something is unknown and you would use a variable.
+          </label>
           <textarea id="r1" name="r1"></textarea>
         </div>
+
         <div class="q">
-          <label for="r2"
-            >B. What was the trickiest part for you today? Why?</label
-          >
+          <label for="r2">B. What was the trickiest part of this lesson for you — exponents, evaluating,
+            or the distributive property? Explain why it was tricky and what strategy helped you.
+          </label>
           <textarea id="r2" name="r2"></textarea>
         </div>
+
         <p class="hint">
           When you finish, use <strong>Save as PDF</strong> or
           <strong>Save as DOC</strong> at the top to turn in your work.
         </p>
       </section>
-    </div>
+
+    </div><!-- /.wrap -->
 
     <script>
+      /* ── Self-check handler ── */
+      function checkSC(id, correct, explanation) {
+        var chosen = document.querySelector('input[name="' + id + '"]:checked');
+        var fb = document.getElementById(id + '-fb');
+        if (!chosen) {
+          fb.className = 'sc-feedback wrong';
+          fb.textContent = 'Please choose an answer first.';
+          return;
+        }
+        if (chosen.value === correct) {
+          fb.className = 'sc-feedback correct';
+          fb.textContent = '✔ Correct! ' + explanation;
+        } else {
+          fb.className = 'sc-feedback wrong';
+          fb.textContent = '✘ Not quite. ' + explanation;
+        }
+      }
+
+      /* ── NTKit mount + grade ── */
       (function () {
-        NTKit.mount("#ntkit");
+        NTKit.mount('#ntkit');
 
-        var form = document.getElementById("applyform");
+        var form = document.getElementById('applyform');
 
-        form.addEventListener("submit", function (e) {
+        form.addEventListener('submit', function (e) {
           e.preventDefault();
 
-          var r1 = (document.getElementById("r1").value || "").trim();
-          var r2 = (document.getElementById("r2").value || "").trim();
+          var r1 = (document.getElementById('r1').value || '').trim();
+          var r2 = (document.getElementById('r2').value || '').trim();
+
+          /* Normalize A6: strip spaces for comparison */
+          var raw6 = (document.getElementById('a6').value || '').trim();
+          var norm6 = raw6.replace(/\s+/g, '').toLowerCase();
+          var ans6 = (norm6 === '5x+15') ? '5x+15' : raw6;
 
           NTKit.grade({
-            activityId: "hyperdoc-unit-6",
-            activityTitle: "Unit 6 · Expressions — HyperDoc Quick Check",
-            standard: "6.EE.A.1-4",
+            activityId: 'hyperdoc-unit-6',
+            activityTitle: 'Unit 6 · Expressions — HyperDoc Quick Check',
+            standard: '6.EE.A.1-4',
             items: [
               {
-                prompt: "Write “3 boxes of b marbles” as an expression.",
-                studentAnswer: document.getElementById("a1").value,
-                correctAnswer: "3b",
+                prompt: 'Write “3 boxes of b marbles” as an expression.',
+                studentAnswer: document.getElementById('a1').value,
+                correctAnswer: '3b',
                 points: 1,
-                skill: "Write expressions (6.EE.A.2)",
+                skill: 'Write expressions (6.EE.A.2)'
               },
               {
-                prompt: "Evaluate 3b when b = 4.",
-                studentAnswer: document.getElementById("a2").value,
-                correctAnswer: "12",
+                prompt: 'Evaluate 3b when b = 4.',
+                studentAnswer: document.getElementById('a2').value,
+                correctAnswer: '12',
                 points: 1,
-                skill: "Evaluate expressions (6.EE.A.2)",
+                skill: 'Evaluate expressions (6.EE.A.2)'
               },
               {
-                prompt: "Write 5 × 5 × 5 using an exponent.",
-                studentAnswer: document.getElementById("a3").value,
-                correctAnswer: "5^3",
+                prompt: 'Write 5 × 5 × 5 using an exponent.',
+                studentAnswer: document.getElementById('a3').value,
+                correctAnswer: '5^3',
                 points: 1,
-                skill: "Exponents (6.EE.A.1)",
+                skill: 'Exponents (6.EE.A.1)'
               },
               {
-                prompt: "Coefficient in 7m.",
-                studentAnswer: document.getElementById("a4").value,
-                correctAnswer: "7",
+                prompt: 'Coefficient in 7m.',
+                studentAnswer: document.getElementById('a4').value,
+                correctAnswer: '7',
                 points: 1,
-                skill: "Parts of an expression (6.EE.A.2b)",
+                skill: 'Parts of an expression (6.EE.A.2b)'
               },
               {
-                prompt: "Evaluate 2³.",
-                studentAnswer: document.getElementById("a5").value,
-                correctAnswer: "8",
+                prompt: 'Evaluate 2³.',
+                studentAnswer: document.getElementById('a5').value,
+                correctAnswer: '8',
                 points: 1,
-                skill: "Exponents (6.EE.A.1)",
+                skill: 'Exponents (6.EE.A.1)'
               },
               {
-                prompt: "Reflect A: What is a variable?",
+                prompt: 'Distributive property: 5(x + 3) = ?',
+                studentAnswer: ans6,
+                correctAnswer: '5x+15',
+                points: 1,
+                skill: 'Distributive property (6.EE.A.3)'
+              },
+              {
+                prompt: 'Reflect A: What is a variable?',
                 studentAnswer: r1,
                 correctAnswer: r1,
                 points: 0,
-                skill: "Reflection",
+                skill: 'Reflection'
               },
               {
-                prompt: "Reflect B: Trickiest part and why?",
+                prompt: 'Reflect B: Trickiest part and why?',
                 studentAnswer: r2,
                 correctAnswer: r2,
                 points: 0,
-                skill: "Reflection",
-              },
-            ],
+                skill: 'Reflection'
+              }
+            ]
           });
 
-          var panel = document.getElementById("ntkit");
-          if (panel && panel.scrollIntoView)
-            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+          var panel = document.getElementById('ntkit');
+          if (panel && panel.scrollIntoView) {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         });
       })();
     </script>

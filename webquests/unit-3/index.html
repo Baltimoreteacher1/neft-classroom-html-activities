@@ -16,17 +16,11 @@
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
 
     <style>
-      /* Style ONLY with the --nt-* variables (no hard-coded colors). */
+      /* ── Base ── */
       body {
         background: var(--nt-bg);
         color: var(--nt-text);
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Arial,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         font-size: 19px;
         line-height: 1.65;
         margin: 0;
@@ -38,6 +32,7 @@
         padding: 1rem 1.25rem;
       }
 
+      /* ── Hero ── */
       header.hero {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -57,33 +52,16 @@
         padding: 0.2rem 0.85rem;
         margin-bottom: 0.75rem;
       }
-      h1 {
-        font-size: 2.2rem;
-        line-height: 1.2;
-        margin: 0.2rem 0 0.5rem;
-      }
-      h2 {
-        font-size: 1.7rem;
-        margin: 2rem 0 0.6rem;
-        padding-bottom: 0.35rem;
-        border-bottom: 3px solid var(--nt-accent);
-      }
-      h3 {
-        font-size: 1.25rem;
-        margin: 1.2rem 0 0.4rem;
-      }
-      p,
-      li {
-        font-size: 1.05rem;
-      }
-      .lead {
-        font-size: 1.2rem;
-        color: var(--nt-text);
-      }
-      .muted {
-        color: var(--nt-muted);
-      }
 
+      /* ── Typography ── */
+      h1 { font-size: 2.2rem; line-height: 1.2; margin: 0.2rem 0 0.5rem; }
+      h2 { font-size: 1.7rem; margin: 2rem 0 0.6rem; padding-bottom: 0.35rem; border-bottom: 3px solid var(--nt-accent); }
+      h3 { font-size: 1.25rem; margin: 1.2rem 0 0.4rem; }
+      p, li { font-size: 1.05rem; }
+      .lead { font-size: 1.2rem; color: var(--nt-text); }
+      .muted { color: var(--nt-muted); }
+
+      /* ── Cards ── */
       section.card {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -91,18 +69,57 @@
         padding: 1.25rem 1.5rem;
         margin: 1rem 0;
       }
-      a {
+      a { color: var(--nt-accent); font-weight: 600; }
+      a:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; border-radius: 4px; }
+
+      /* ── Learning Target box ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 1.1rem 1.4rem;
+        margin: 1rem 0;
+      }
+      .learning-target h2 {
+        border-bottom: none;
+        margin: 0 0 0.6rem;
+        font-size: 1.3rem;
         color: var(--nt-accent);
-        font-weight: 600;
       }
+      .learning-target ul { margin: 0.4rem 0 0.8rem 1.2rem; }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem 1.4rem;
+        font-size: 0.98rem;
+        color: var(--nt-muted);
+        margin-top: 0.6rem;
+      }
+      .lt-meta span { white-space: nowrap; }
 
-      ol.process {
-        padding-left: 1.4rem;
+      /* ── Teacher Notes ── */
+      .teacher-notes {
+        background: var(--nt-surface);
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        padding: 1.1rem 1.4rem;
+        margin: 1rem 0;
       }
-      ol.process > li {
-        margin-bottom: 0.9rem;
+      .teacher-notes h2 {
+        border-bottom: none;
+        margin: 0 0 0.5rem;
+        font-size: 1.2rem;
+        color: var(--nt-muted);
       }
+      .teacher-notes h3 { font-size: 1rem; margin: 0.9rem 0 0.25rem; color: var(--nt-muted); }
+      .teacher-notes p, .teacher-notes li { font-size: 0.97rem; color: var(--nt-muted); }
+      @media print { .teacher-notes { border-style: solid; } }
 
+      /* ── Process list ── */
+      ol.process { padding-left: 1.4rem; }
+      ol.process > li { margin-bottom: 0.9rem; }
+
+      /* ── Resources ── */
       .resources a {
         display: block;
         background: var(--nt-bg);
@@ -112,27 +129,17 @@
         margin: 0.55rem 0;
         text-decoration: none;
       }
-      .resources a:hover {
-        border-color: var(--nt-accent);
-      }
-      .resources .what {
-        display: block;
-        color: var(--nt-muted);
-        font-weight: 400;
-        font-size: 0.98rem;
-      }
+      .resources a:hover { border-color: var(--nt-accent); }
+      .resources .what { display: block; color: var(--nt-muted); font-weight: 400; font-size: 0.98rem; }
 
+      /* ── Rubric ── */
       table.rubric {
         width: 100%;
         border-collapse: collapse;
         margin: 0.75rem 0;
         font-size: 1rem;
       }
-      table.rubric caption {
-        text-align: left;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-      }
+      table.rubric caption { text-align: left; font-weight: 700; margin-bottom: 0.5rem; }
       table.rubric th,
       table.rubric td {
         border: 1px solid var(--nt-border);
@@ -140,20 +147,79 @@
         text-align: left;
         vertical-align: top;
       }
-      table.rubric thead th {
-        background: var(--nt-bg);
-      }
+      table.rubric thead th { background: var(--nt-bg); font-weight: 700; }
+      table.rubric tbody tr:nth-child(even) { background: var(--nt-bg); }
 
-      .quiz label {
+      /* ── Self-Check Quiz ── */
+      .self-check { margin: 1rem 0; }
+      .sc-item {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 1rem 1.15rem;
+        margin: 0.85rem 0;
+      }
+      .sc-item label {
         display: block;
         font-weight: 700;
-        margin: 1.1rem 0 0.35rem;
+        margin-bottom: 0.45rem;
+        font-size: 1.05rem;
       }
-      .quiz .hint {
+      .sc-item .hint {
+        display: block;
         font-weight: 400;
         color: var(--nt-muted);
-        font-size: 0.98rem;
+        font-size: 0.95rem;
+        margin-bottom: 0.55rem;
       }
+      .sc-item input[type="text"],
+      .sc-item select {
+        width: 100%;
+        max-width: 320px;
+        font-size: 1.05rem;
+        padding: 0.5rem 0.65rem;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .sc-item input:focus,
+      .sc-item select:focus {
+        outline: 3px solid var(--nt-accent);
+        outline-offset: 2px;
+      }
+      .sc-feedback {
+        margin-top: 0.5rem;
+        font-size: 0.97rem;
+        font-weight: 600;
+        min-height: 1.4em;
+        border-radius: 6px;
+        padding: 0.3rem 0.6rem;
+        display: none;
+      }
+      .sc-feedback.correct { background: #d4edda; color: #155724; display: block; }
+      .sc-feedback.incorrect { background: #f8d7da; color: #721c24; display: block; }
+      @media (prefers-color-scheme: dark) {
+        .sc-feedback.correct { background: #1a3a24; color: #75d8a0; }
+        .sc-feedback.incorrect { background: #3a1a1d; color: #f5a0a7; }
+      }
+      .sc-check-btn {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--nt-bg);
+        background: var(--nt-accent);
+        border: 2px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 0.55rem 1.3rem;
+        margin-top: 0.6rem;
+        cursor: pointer;
+      }
+      .sc-check-btn:hover { filter: brightness(1.08); }
+      .sc-check-btn:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; }
+
+      /* ── NTKit Quiz ── */
+      .quiz label { display: block; font-weight: 700; margin: 1.1rem 0 0.35rem; }
+      .quiz .hint { font-weight: 400; color: var(--nt-muted); font-size: 0.98rem; }
       .quiz input[type="text"],
       .quiz select {
         width: 100%;
@@ -165,6 +231,10 @@
         background: var(--nt-bg);
         color: var(--nt-text);
       }
+      .quiz input:focus,
+      .quiz select:focus { outline: 3px solid var(--nt-accent); outline-offset: 2px; }
+
+      /* ── Buttons ── */
       .btn {
         font-size: 1.15rem;
         font-weight: 700;
@@ -176,9 +246,10 @@
         margin-top: 1.4rem;
         cursor: pointer;
       }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; }
+
+      /* ── Tip box ── */
       .tip {
         background: var(--nt-bg);
         border-left: 5px solid var(--nt-accent);
@@ -186,11 +257,68 @@
         padding: 0.6rem 0.9rem;
         margin: 0.8rem 0;
       }
+
+      /* ── Reflection ── */
+      .reflection textarea {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 1rem;
+        padding: 0.65rem 0.8rem;
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        min-height: 110px;
+        resize: vertical;
+        font-family: inherit;
+      }
+      .reflection textarea:focus { outline: 3px solid var(--nt-accent); outline-offset: 2px; }
+
+      /* ── Answer Key (details) ── */
+      details.answer-key {
+        background: var(--nt-surface);
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        padding: 1rem 1.4rem;
+        margin: 1rem 0;
+      }
+      details.answer-key summary {
+        font-weight: 700;
+        font-size: 1.05rem;
+        cursor: pointer;
+        color: var(--nt-muted);
+        padding: 0.2rem 0;
+      }
+      details.answer-key summary:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; border-radius: 4px; }
+      details.answer-key p, details.answer-key li { font-size: 0.97rem; color: var(--nt-muted); }
+      details.answer-key strong { color: var(--nt-text); }
+
+      /* ── Mobile ── */
+      @media (max-width: 600px) {
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.25rem; }
+        table.rubric { font-size: 0.85rem; }
+        table.rubric th, table.rubric td { padding: 0.4rem 0.45rem; }
+        .lt-meta { gap: 0.4rem 0.8rem; }
+      }
+
+      /* ── Print ── */
+      @media print {
+        body { font-size: 14px; padding: 0; }
+        .wrap { max-width: 100%; padding: 0.5rem; }
+        header.hero, section.card, .learning-target, .teacher-notes { border-radius: 0; box-shadow: none; }
+        .btn, .sc-check-btn { display: none; }
+        a { color: inherit; text-decoration: underline; }
+        details.answer-key { display: block; }
+        details.answer-key[open] { border: 1px solid #999; }
+        .sc-feedback { display: none !important; }
+      }
     </style>
   </head>
 
   <body class="nt-theme-aware">
     <div class="wrap">
+      <p style="font:14px system-ui;padding:10px 0;"><a href="/webquests/">← All WebQuests</a> · <a href="/math/">Math Hub</a></p>
       <!-- Activity kit mount: name bar + Save-as-PDF / Save-as-DOC + results panel -->
       <div id="ntkit"></div>
 
@@ -204,16 +332,66 @@
         </p>
       </header>
 
+      <!-- LEARNING TARGET -->
+      <section class="learning-target" aria-label="Learning Target">
+        <h2>Learning Target</h2>
+        <ul>
+          <li>I can find and explain a <strong>unit rate</strong> by dividing two quantities (6.RP.A.2).</li>
+          <li>I can use <strong>equivalent ratios</strong> and <strong>unit rates</strong> to solve real-world problems (6.RP.A.3).</li>
+          <li>I can find a <strong>percent of a number</strong> and use percent to compare quantities (6.RP.A.3c).</li>
+        </ul>
+        <div class="lt-meta">
+          <span><strong>Standards:</strong> 6.RP.A.2, 6.RP.A.3, 6.RP.A.3c</span>
+          <span><strong>Estimated Time:</strong> 45–55 minutes</span>
+          <span><strong>Materials:</strong> This page, pencil/paper for work, calculator (optional)</span>
+          <span><strong>Product:</strong> Race Engineer Report (written + quiz)</span>
+        </div>
+      </section>
+
+      <!-- TEACHER NOTES -->
+      <section class="teacher-notes" aria-label="Teacher Notes">
+        <h2>Teacher Notes <span style="font-weight:400;font-size:0.9rem;">(not printed in student view)</span></h2>
+
+        <h3>Pacing</h3>
+        <p>Introduction + Process reading: ~10 min | Game / research phase: ~15 min | Report writing: ~10 min | Self-Check + Quiz: ~10 min | Reflection: ~5 min. Adjust game phase to 20 min if this is students' first encounter with unit rates.</p>
+
+        <h3>Grouping</h3>
+        <p>Works well as individual or pairs. For pairs, have partners each write their own report and quiz, then compare answers before submitting.</p>
+
+        <h3>Differentiation — Support</h3>
+        <ul>
+          <li>Provide a reference card with the three steps: (1) write the ratio, (2) divide by the second number, (3) label with "per 1."</li>
+          <li>Pre-fill the first row of the report template to model the format.</li>
+          <li>Allow students to use the graphic novel or vocabulary link before starting Step 1.</li>
+        </ul>
+
+        <h3>Differentiation — Challenge</h3>
+        <ul>
+          <li>Have students find two different unit rates from the same problem (e.g., miles per hour AND hours per mile) and explain what each means.</li>
+          <li>Ask: "If Shop A lowers its price by 10%, is it still the same deal as Shop B? Show your work."</li>
+          <li>Have students write their own best-buy or percent scenario and trade with a partner to solve.</li>
+        </ul>
+
+        <h3>ESOL / Language Supports</h3>
+        <ul>
+          <li>Key sentence frames: "The unit rate is ___ per 1 ___." | "The better deal is ___ because the price per 1 is lower."</li>
+          <li>Post the vocabulary: <em>rate, unit rate, ratio, per, percent, equivalent</em> with pictures.</li>
+          <li>Allow students to show work in their home language alongside English.</li>
+          <li>The ESOL tip box in the Process section highlights "per" and "percent" in plain language.</li>
+        </ul>
+
+        <h3>Assessment Notes</h3>
+        <p>The Self-Check section gives instant formative feedback. The NTKit quiz at the bottom can be saved as PDF/DOC for gradebook upload. Use the rubric below to score the written Race Engineer Report.</p>
+      </section>
+
       <!-- INTRODUCTION -->
       <section class="card">
         <h2>1. Introduction</h2>
         <p>
           Welcome to <strong>Ratio Rally</strong>! Race cars need smart math,
           not just speed. A good engineer asks:
-          <em
-            >How fast per minute? What is the best price per liter? What percent
-            of the fuel is left?</em
-          >
+          <em>How fast per minute? What is the best price per liter? What percent
+          of the fuel is left?</em>
         </p>
         <p>
           In this WebQuest you will think like a race engineer. You will use
@@ -232,18 +410,18 @@
           <strong>Race Engineer Report</strong> that shows:
         </p>
         <ul>
-          <li>
-            One <strong>unit rate</strong> you found (example: miles per 1
-            hour).
-          </li>
+          <li>One <strong>unit rate</strong> you found (example: miles per 1 hour).</li>
           <li>One <strong>best buy</strong> choice using price per 1 item.</li>
-          <li>One <strong>percent</strong> answer (example: 25% of 80).</li>
+          <li>One <strong>percent</strong> answer (example: 25% of 80 = 20).</li>
         </ul>
         <p>
-          Then you will finish the
-          <strong>Check Your Understanding</strong> quiz and save it with your
+          Then you will complete the <strong>Self-Check</strong> questions and the
+          <strong>Check Your Understanding</strong> quiz, and save it with your
           name as a PDF or DOC.
         </p>
+        <div class="tip">
+          <strong>Deliverable:</strong> Written Race Engineer Report (3 answers with work shown) + saved quiz PDF/DOC with your name.
+        </div>
       </section>
 
       <!-- PROCESS -->
@@ -273,7 +451,11 @@
           </li>
           <li>
             <strong>Write your report.</strong> Write your three answers from
-            the Task section.
+            the Task section. Show your division or multiplication for each.
+          </li>
+          <li>
+            <strong>Self-Check your knowledge.</strong> Try the three practice
+            questions below — get instant feedback before the real quiz.
           </li>
           <li>
             <strong>Take the quiz.</strong> Type your name in the top bar,
@@ -291,71 +473,92 @@
       <section class="card resources">
         <h2>4. Resources</h2>
         <p class="muted">Use these on-site links to learn and practice:</p>
-        <a href="/games/3d/unit-3/"
-          >Unit 3 — Ratio Rally (3D Game)<span class="what"
-            >Tune unit rates, equivalent ratios, percent &amp; conversions to
-            launch your car.</span
-          ></a
-        >
-        <a href="/math/"
-          >Math Curriculum Hub<span class="what"
-            >All lessons, tools, and units in one place.</span
-          ></a
-        >
-        <a href="/graphic-novels/unit-3/"
-          >Unit 3 Graphic Novel<span class="what"
-            >Read the rates &amp; percent story with pictures and ESOL
-            support.</span
-          ></a
-        >
-        <a href="/games/3d/unit-3/#vocab"
-          >Unit 3 Vocabulary<span class="what"
-            >Words: rate, unit rate, ratio, percent, with pictures and easy
-            meanings.</span
-          ></a
-        >
+        <a href="/games/3d/unit-3/">Unit 3 — Ratio Rally (3D Game)<span class="what">Tune unit rates, equivalent ratios, percent &amp; conversions to launch your car.</span></a>
+        <a href="/math/">Math Curriculum Hub<span class="what">All lessons, tools, and units in one place.</span></a>
+        <a href="/graphic-novels/unit3/graphic-novel-1.html">Unit 3 Graphic Novel<span class="what">Read the rates &amp; percent story with pictures and ESOL support.</span></a>
+        <a href="/games/3d/unit-3/#vocab">Unit 3 Vocabulary<span class="what">Words: rate, unit rate, ratio, percent, with pictures and easy meanings.</span></a>
       </section>
 
-      <!-- EVALUATION -->
+      <!-- SELF-CHECK -->
       <section class="card">
-        <h2>5. Evaluation — How You Are Graded</h2>
+        <h2>5. Self-Check — Try These First!</h2>
+        <p class="muted">Answer each question, then click <strong>Check</strong> to see if you are right. You get instant feedback and a hint. These do not count toward your final grade.</p>
+
+        <div class="self-check" role="group" aria-label="Self-check practice questions">
+
+          <!-- SC Q1 -->
+          <div class="sc-item">
+            <label for="sc1">1. A train travels 240 miles in 4 hours. What is the unit rate in miles per 1 hour?</label>
+            <span class="hint" id="sc1-hint">Divide total miles by total hours. Type a number only.</span>
+            <input type="text" id="sc1" inputmode="numeric" autocomplete="off" aria-describedby="sc1-hint" aria-label="Answer for question 1" />
+            <button type="button" class="sc-check-btn" data-target="sc1" data-answer="60" data-explanation="240 ÷ 4 = 60. The unit rate is 60 miles per 1 hour.">Check</button>
+            <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- SC Q2 -->
+          <div class="sc-item">
+            <label for="sc2">2. Which is the better deal: $10 for 5 bottles, or $9 for 3 bottles?</label>
+            <span class="hint" id="sc2-hint">Find the price per 1 bottle for each. Choose the lower one.</span>
+            <select id="sc2" aria-describedby="sc2-hint" aria-label="Answer for question 2">
+              <option value="">-- choose --</option>
+              <option value="10for5">$10 for 5 bottles ($2 each)</option>
+              <option value="9for3">$9 for 3 bottles ($3 each)</option>
+              <option value="same">They are the same price per bottle</option>
+            </select>
+            <button type="button" class="sc-check-btn" data-target="sc2" data-answer="10for5" data-explanation="$10 ÷ 5 = $2 each. $9 ÷ 3 = $3 each. $2 &lt; $3, so $10 for 5 is the better deal.">Check</button>
+            <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
+          </div>
+
+          <!-- SC Q3 -->
+          <div class="sc-item">
+            <label for="sc3">3. What is 30% of 50?</label>
+            <span class="hint" id="sc3-hint">Change 30% to a decimal (0.30), then multiply by 50. Type a number only.</span>
+            <input type="text" id="sc3" inputmode="numeric" autocomplete="off" aria-describedby="sc3-hint" aria-label="Answer for question 3" />
+            <button type="button" class="sc-check-btn" data-target="sc3" data-answer="15" data-explanation="0.30 × 50 = 15. So 30% of 50 is 15.">Check</button>
+            <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
+          </div>
+
+        </div><!-- /.self-check -->
+      </section>
+
+      <!-- EVALUATION / RUBRIC -->
+      <section class="card">
+        <h2>6. Evaluation — How You Are Graded</h2>
         <table class="rubric">
-          <caption>
-            Race Engineer Rubric
-          </caption>
+          <caption>Race Engineer Rubric — 4 Levels</caption>
           <thead>
             <tr>
-              <th>Skill</th>
-              <th>4 — Champion</th>
-              <th>3 — On Track</th>
-              <th>2 — Pit Stop</th>
-              <th>1 — Restart</th>
+              <th scope="col">Skill</th>
+              <th scope="col">4 — Champion</th>
+              <th scope="col">3 — On Track</th>
+              <th scope="col">2 — Pit Stop</th>
+              <th scope="col">1 — Restart</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Unit Rate</td>
-              <td>Finds correct unit rate and shows the division.</td>
-              <td>Finds correct unit rate.</td>
-              <td>Tries, small error.</td>
-              <td>Not shown.</td>
+              <td><strong>Unit Rate</strong></td>
+              <td>Correct unit rate with division work shown and label (e.g., "60 mph").</td>
+              <td>Correct unit rate; label or work may be missing.</td>
+              <td>Attempted; minor arithmetic error in division.</td>
+              <td>Not attempted or unit rate concept missing.</td>
             </tr>
             <tr>
-              <td>Best Buy</td>
-              <td>Compares price per 1 and picks the better deal correctly.</td>
-              <td>Picks the better deal.</td>
-              <td>Tries, small error.</td>
-              <td>Not shown.</td>
+              <td><strong>Best Buy</strong></td>
+              <td>Compares price-per-1 for both options, picks correct deal, explains why.</td>
+              <td>Picks the correct deal; one price-per-1 shown.</td>
+              <td>Attempted; minor error in one price-per-1.</td>
+              <td>Not attempted or comparison missing.</td>
             </tr>
             <tr>
-              <td>Percent</td>
-              <td>Finds percent of a number correctly with steps.</td>
-              <td>Finds percent correctly.</td>
-              <td>Tries, small error.</td>
-              <td>Not shown.</td>
+              <td><strong>Percent of a Number</strong></td>
+              <td>Correct answer with decimal conversion and multiplication shown.</td>
+              <td>Correct answer; one step may be missing.</td>
+              <td>Attempted; error in decimal conversion or multiplication.</td>
+              <td>Not attempted or percent concept missing.</td>
             </tr>
             <tr>
-              <td>Quiz Score</td>
+              <td><strong>Quiz Score</strong></td>
               <td>5 of 5 correct.</td>
               <td>4 of 5 correct.</td>
               <td>3 of 5 correct.</td>
@@ -365,59 +568,45 @@
         </table>
       </section>
 
-      <!-- CHECK YOUR UNDERSTANDING -->
+      <!-- CHECK YOUR UNDERSTANDING (NTKit graded) -->
       <section class="card quiz">
-        <h2>6. Check Your Understanding</h2>
+        <h2>7. Check Your Understanding</h2>
         <p class="muted">
           Type your name in the bar at the top first. Answer all 5. Then click
           <strong>Check My Answers</strong>.
         </p>
 
-        <label for="q1"
-          >1. A car goes 150 miles in 3 hours. What is the unit rate in miles
-          per 1 hour?
-          <span class="hint"
-            >Divide: 150 &divide; 3. Type a number only.</span
-          ></label
-        >
-        <input type="text" id="q1" inputmode="numeric" autocomplete="off" />
+        <label for="q1">1. A car goes 150 miles in 3 hours. What is the unit rate in miles per 1 hour?
+          <span class="hint">Divide: 150 &divide; 3. Type a number only.</span>
+        </label>
+        <input type="text" id="q1" inputmode="numeric" autocomplete="off" aria-label="Quiz question 1 answer" />
 
-        <label for="q2"
-          >2. 8 apples cost $4. What is the price for 1 apple?
-          <span class="hint">Divide: 4 &divide; 8. Type like 0.5</span></label
-        >
-        <input type="text" id="q2" inputmode="decimal" autocomplete="off" />
+        <label for="q2">2. 8 apples cost $4. What is the price for 1 apple?
+          <span class="hint">Divide: 4 &divide; 8. Type like 0.5</span>
+        </label>
+        <input type="text" id="q2" inputmode="decimal" autocomplete="off" aria-label="Quiz question 2 answer" />
 
-        <label for="q3"
-          >3. What is 20% of 60?
-          <span class="hint">0.20 &times; 60. Type a number only.</span></label
-        >
-        <input type="text" id="q3" inputmode="numeric" autocomplete="off" />
+        <label for="q3">3. What is 20% of 60?
+          <span class="hint">0.20 &times; 60. Type a number only.</span>
+        </label>
+        <input type="text" id="q3" inputmode="numeric" autocomplete="off" aria-label="Quiz question 3 answer" />
 
-        <label for="q4"
-          >4. Best buy: Shop A is $6 for 2 liters. Shop B is $9 for 3 liters.
-          Which has the lower price per 1 liter?
-          <span class="hint">Find price per 1 liter for each.</span></label
-        >
-        <select id="q4">
+        <label for="q4">4. Best buy: Shop A is $6 for 2 liters. Shop B is $9 for 3 liters. Which has the lower price per 1 liter?
+          <span class="hint">Find price per 1 liter for each. Shop A: 6÷2=3. Shop B: 9÷3=3.</span>
+        </label>
+        <select id="q4" aria-label="Quiz question 4 answer">
           <option value="">-- choose --</option>
           <option value="same">They are the same</option>
           <option value="A">Shop A</option>
           <option value="B">Shop B</option>
         </select>
 
-        <label for="q5"
-          >5. A team finished 45 of 50 laps. What percent of the laps did they
-          finish?
-          <span class="hint"
-            >45 &divide; 50 = 0.9, then &times; 100. Type a number only.</span
-          ></label
-        >
-        <input type="text" id="q5" inputmode="numeric" autocomplete="off" />
+        <label for="q5">5. A team finished 45 of 50 laps. What percent of the laps did they finish?
+          <span class="hint">45 &divide; 50 = 0.9, then &times; 100. Type a number only.</span>
+        </label>
+        <input type="text" id="q5" inputmode="numeric" autocomplete="off" aria-label="Quiz question 5 answer" />
 
-        <button type="button" class="btn" id="checkBtn">
-          Check My Answers
-        </button>
+        <button type="button" class="btn" id="checkBtn">Check My Answers</button>
         <p class="muted" style="margin-top: 1rem">
           Your score and results appear in the panel at the top. Use
           <strong>Save as PDF</strong> or <strong>Save as DOC</strong> there to
@@ -425,9 +614,24 @@
         </p>
       </section>
 
+      <!-- REFLECTION -->
+      <section class="card reflection">
+        <h2>8. Reflection</h2>
+        <p>Think about what you learned in this WebQuest. Write 2–3 sentences to answer:</p>
+        <ul>
+          <li>What is the most useful math skill you practiced today, and why would an engineer (or shopper, or athlete) need it?</li>
+          <li>What was the hardest part? What would you do differently next time?</li>
+        </ul>
+        <label for="reflectionBox" style="font-weight:700;">Your reflection (write here):</label>
+        <textarea id="reflectionBox" rows="5" aria-label="Student reflection response" placeholder="Write your reflection here..."></textarea>
+        <div class="tip" style="margin-top:0.8rem;">
+          <strong>Deliverable reminder:</strong> Submit your Race Engineer Report (3 answers with work shown) AND save this quiz page as a PDF or DOC with your name before turning in.
+        </div>
+      </section>
+
       <!-- CONCLUSION -->
       <section class="card">
-        <h2>7. Conclusion</h2>
+        <h2>9. Conclusion</h2>
         <p>
           Great driving, engineer! You used <strong>rates</strong>,
           <strong>unit rates</strong>, and <strong>percent</strong> to make
@@ -439,67 +643,117 @@
           Next pit stop: keep practicing in the Ratio Rally game to beat your
           best lap time.
         </p>
+        <p style="font-size:0.88rem;color:var(--nt-muted);margin-top:1rem;">Neft Teacher · Grade 6 Math · Unit 3 · 6.RP.A.2-3</p>
       </section>
-    </div>
+
+      <!-- ANSWER KEY (teacher-only, inside <details>) -->
+      <details class="answer-key">
+        <summary>&#128274; Teacher Answer Key — click to expand (do not share with students)</summary>
+
+        <h3 style="margin-top:1rem;font-size:1.05rem;color:var(--nt-text);">Self-Check Answers</h3>
+        <ol>
+          <li><strong>SC Q1:</strong> <strong>60</strong> miles per hour. (240 ÷ 4 = 60)</li>
+          <li><strong>SC Q2:</strong> <strong>$10 for 5 bottles</strong> ($2 each vs. $3 each).</li>
+          <li><strong>SC Q3:</strong> <strong>15</strong>. (0.30 × 50 = 15)</li>
+        </ol>
+
+        <h3 style="font-size:1.05rem;color:var(--nt-text);">Quiz Answers</h3>
+        <ol>
+          <li><strong>Q1:</strong> <strong>50</strong> miles per hour. (150 ÷ 3 = 50)</li>
+          <li><strong>Q2:</strong> <strong>0.5</strong> (or $0.50). ($4 ÷ 8 = $0.50)</li>
+          <li><strong>Q3:</strong> <strong>12</strong>. (0.20 × 60 = 12)</li>
+          <li><strong>Q4:</strong> <strong>They are the same</strong>. (Shop A: $6÷2=$3/liter; Shop B: $9÷3=$3/liter — equal.)</li>
+          <li><strong>Q5:</strong> <strong>90</strong>%. (45÷50 = 0.9 × 100 = 90%)</li>
+        </ol>
+
+        <h3 style="font-size:1.05rem;color:var(--nt-text);">Sample Race Engineer Report (strong response)</h3>
+        <ul>
+          <li><strong>Unit Rate:</strong> "My car goes 150 miles in 3 hours. 150 ÷ 3 = 50. The unit rate is 50 miles per 1 hour."</li>
+          <li><strong>Best Buy:</strong> "Shop A is $6 for 2 liters ($3 each). Shop B is $9 for 3 liters ($3 each). They cost the same per liter."</li>
+          <li><strong>Percent:</strong> "20% of 60. I changed 20% to 0.20. Then 0.20 × 60 = 12. So 20% of 60 is 12."</li>
+        </ul>
+
+        <h3 style="font-size:1.05rem;color:var(--nt-text);">Sample Reflection (strong response)</h3>
+        <p>"The most useful skill was finding unit rates because shoppers and engineers use them every day to compare options. The hardest part was converting percent to a decimal before multiplying. Next time I would write the steps on paper first to keep track."</p>
+      </details>
+
+    </div><!-- /.wrap -->
 
     <!-- Activity kit -->
     <script src="/assets/nt-activity-kit.js"></script>
     <script>
       NTKit.mount("#ntkit");
 
+      /* ── Self-Check Logic ── */
+      (function () {
+        var btns = document.querySelectorAll(".sc-check-btn");
+        btns.forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var targetId = btn.getAttribute("data-target");
+            var correct  = btn.getAttribute("data-answer");
+            var explain  = btn.getAttribute("data-explanation");
+            var el       = document.getElementById(targetId);
+            var fb       = document.getElementById(targetId + "-fb");
+            if (!el || !fb) { return; }
+            var raw = (el.tagName === "SELECT") ? el.value : (el.value || "").trim();
+            var student = raw.replace(/\s/g, "").toLowerCase();
+            var isCorrect = (student === String(correct).toLowerCase());
+            fb.className = "sc-feedback " + (isCorrect ? "correct" : "incorrect");
+            fb.innerHTML = (isCorrect ? "&#10003; Correct! " : "&#10007; Not quite. ") + explain;
+          });
+        });
+      }());
+
+      /* ── NTKit graded quiz ── */
       function val(id) {
         return (document.getElementById(id).value || "").trim();
       }
 
-      document
-        .getElementById("checkBtn")
-        .addEventListener("click", function () {
-          NTKit.grade({
-            activityId: "webquest-unit-3",
-            activityTitle: "Unit 3 · Ratio Rally — WebQuest Check",
-            standard: "6.RP.A.2-3",
-            items: [
-              {
-                prompt: "150 miles in 3 hours = ___ miles per 1 hour",
-                studentAnswer: val("q1"),
-                correctAnswer: "50",
-                points: 1,
-                skill: "Unit Rate",
-              },
-              {
-                prompt: "8 apples cost $4. Price for 1 apple?",
-                studentAnswer: val("q2"),
-                correctAnswer: "0.5",
-                points: 1,
-                skill: "Unit Rate",
-              },
-              {
-                prompt: "20% of 60 = ?",
-                studentAnswer: val("q3"),
-                correctAnswer: "12",
-                points: 1,
-                skill: "Percent",
-              },
-              {
-                prompt: "Lower price per 1 liter: Shop A or Shop B?",
-                studentAnswer: val("q4"),
-                correctAnswer: "same",
-                points: 1,
-                skill: "Best Buy",
-              },
-              {
-                prompt: "45 of 50 laps finished = ___ percent",
-                studentAnswer: val("q5"),
-                correctAnswer: "90",
-                points: 1,
-                skill: "Percent",
-              },
-            ],
-          });
-          document
-            .getElementById("ntkit")
-            .scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("checkBtn").addEventListener("click", function () {
+        NTKit.grade({
+          activityId: "webquest-unit-3",
+          activityTitle: "Unit 3 · Ratio Rally — WebQuest Check",
+          standard: "6.RP.A.2-3",
+          items: [
+            {
+              prompt: "150 miles in 3 hours = ___ miles per 1 hour",
+              studentAnswer: val("q1"),
+              correctAnswer: "50",
+              points: 1,
+              skill: "Unit Rate"
+            },
+            {
+              prompt: "8 apples cost $4. Price for 1 apple?",
+              studentAnswer: val("q2"),
+              correctAnswer: "0.5",
+              points: 1,
+              skill: "Unit Rate"
+            },
+            {
+              prompt: "20% of 60 = ?",
+              studentAnswer: val("q3"),
+              correctAnswer: "12",
+              points: 1,
+              skill: "Percent"
+            },
+            {
+              prompt: "Lower price per 1 liter: Shop A or Shop B?",
+              studentAnswer: val("q4"),
+              correctAnswer: "same",
+              points: 1,
+              skill: "Best Buy"
+            },
+            {
+              prompt: "45 of 50 laps finished = ___ percent",
+              studentAnswer: val("q5"),
+              correctAnswer: "90",
+              points: 1,
+              skill: "Percent"
+            }
+          ]
         });
+        document.getElementById("ntkit").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     </script>
   </body>
 </html>

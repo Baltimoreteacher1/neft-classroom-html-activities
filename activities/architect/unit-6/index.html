@@ -57,6 +57,15 @@
         font-size: 30px;
         margin: 10px 0 6px;
       }
+      h2 {
+        font-size: 21px;
+        margin: 0 0 4px;
+      }
+      h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0 0 6px;
+      }
       .lead {
         font-size: 19px;
         color: var(--nt-text);
@@ -105,7 +114,186 @@
         color: var(--nt-accent);
       }
 
-      /* ---- Block bank / build area (Architect feel) ---- */
+      /* ---- Learning Target ---- */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin: 0 0 16px;
+      }
+      .learning-target h2 {
+        font-size: 1.05rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--nt-accent);
+        margin: 0 0 10px;
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.92rem;
+        color: var(--nt-muted);
+        border-top: 1px solid var(--nt-border);
+        padding-top: 10px;
+        margin-top: 8px;
+      }
+
+      /* ---- Teacher Notes / Answer Key collapsibles ---- */
+      details.teacher-notes,
+      details.answer-key {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 12px;
+        padding: 0;
+        margin: 14px 0;
+        overflow: hidden;
+      }
+      details.teacher-notes > summary,
+      details.answer-key > summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 12px 16px;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--nt-surface);
+        border-radius: 12px;
+        user-select: none;
+      }
+      details.teacher-notes > summary::-webkit-details-marker,
+      details.answer-key > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-notes > summary::before,
+      details.answer-key > summary::before {
+        content: "▶";
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+        display: inline-block;
+      }
+      details[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      details.teacher-notes > summary:focus-visible,
+      details.answer-key > summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .details-body {
+        padding: 4px 18px 16px;
+        border-top: 1px solid var(--nt-border);
+      }
+      .details-body h3 {
+        margin-top: 12px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 6px 0 8px;
+        padding-left: 1.4em;
+      }
+      .details-body li {
+        margin-bottom: 3px;
+      }
+      .teacher-tag {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* ---- Rubric ---- */
+      .rubric-wrap {
+        margin: 14px 0;
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.94rem;
+        min-width: 500px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      table.rubric tbody tr:nth-child(odd) {
+        background: var(--nt-surface);
+      }
+      table.rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg);
+      }
+
+      /* ---- Reflection ---- */
+      .reflection-block {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-left: 6px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 18px 0;
+      }
+      .reflection-block label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+      }
+      textarea#reflection {
+        width: 100%;
+        min-height: 90px;
+        font-size: 1rem;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family: inherit;
+        resize: vertical;
+      }
+      textarea#reflection:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-color: var(--nt-accent);
+      }
+      .deliverable {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin: 14px 0;
+        font-size: 1rem;
+      }
+      .deliverable strong {
+        color: var(--nt-accent);
+      }
+
+      /* ---- Block bank / build area ---- */
       .bank-label,
       .build-label {
         font-size: 14px;
@@ -170,7 +358,7 @@
         cursor: pointer;
       }
       .block-built::after {
-        content: " ✕";
+        content: " \00D7";
         font-size: 14px;
         opacity: 0.8;
       }
@@ -256,10 +444,49 @@
       #results-anchor {
         scroll-margin-top: 20px;
       }
+
+      /* aria-live feedback region */
+      #a11y-feedback {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      /* ---- Print polish ---- */
+      @media print {
+        details.teacher-notes,
+        details.answer-key {
+          display: none !important;
+        }
+        .check-btn {
+          display: none !important;
+        }
+        .wrap {
+          padding: 8px;
+        }
+        body {
+          font-size: 13px;
+        }
+        h1 {
+          font-size: 1.4rem;
+        }
+        .card {
+          break-inside: avoid;
+        }
+        .rubric-wrap {
+          break-inside: avoid;
+        }
+      }
     </style>
   </head>
 
   <body class="nt-theme-aware">
+    <!-- Accessible live region for screen reader feedback -->
+    <div id="a11y-feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+
     <div class="wrap">
       <header class="hero">
         <span class="badge">Unit 6 · 6.EE.A.1–4</span>
@@ -281,6 +508,62 @@
           0 of 6 tasks done
         </div>
       </header>
+
+      <!-- ===== LEARNING TARGET ===== -->
+      <section class="learning-target" aria-labelledby="lt-heading">
+        <h2 id="lt-heading">Learning Target</h2>
+        <ul>
+          <li>I can write and evaluate numerical expressions involving whole-number exponents.</li>
+          <li>I can write algebraic expressions that represent real-world situations using variables.</li>
+          <li>I can identify the parts of an expression: coefficient, variable, and constant.</li>
+          <li>I can apply the distributive property to write equivalent expressions.</li>
+        </ul>
+        <div class="lt-meta">
+          <span><strong>Standards:</strong> 6.EE.A.1, 6.EE.A.2a, 6.EE.A.2b, 6.EE.A.2c, 6.EE.A.3, 6.EE.A.4</span>
+          <span><strong>Estimated time:</strong> 30–40 min</span>
+          <span><strong>Materials:</strong> This activity, pencil/scratch paper</span>
+        </div>
+      </section>
+
+      <!-- ===== TEACHER NOTES (hidden in print) ===== -->
+      <details class="teacher-notes" aria-label="Teacher notes — hidden in print">
+        <summary><span class="teacher-tag">Teacher</span> Notes &amp; Pacing</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li><strong>Warm-up (3–5 min):</strong> Write "2 × 2 × 2 × 2" on the board. Ask, "Is there a shorter way to write this?" Connect to exponent notation.</li>
+            <li><strong>Task 1–2 (8 min):</strong> Block-builder for powers. Clarify that the blocks build the expression notation (5^3), not the product (125).</li>
+            <li><strong>Task 3 (5 min):</strong> Writing expressions. Discuss that "more than" signals addition, and encourage correct order (n + 7).</li>
+            <li><strong>Task 4 (5 min):</strong> Parts of an expression. Use the visual chip prompts. Vocab: coefficient, variable, constant.</li>
+            <li><strong>Task 5–6 (8 min):</strong> Evaluating and the distributive property. For Task 6, have students expand 2(x+3) step by step.</li>
+            <li><strong>Debrief (5 min):</strong> Share Task 6 strategies. Ask: "Does 2x + 6 and 2(x + 3) always give the same number? Try x = 5."</li>
+          </ul>
+          <h3>Grouping</h3>
+          <ul>
+            <li>Tasks 1 and 3 (block builders) work well with partners — one student drags blocks, the other checks the expression.</li>
+            <li>Task 4 (vocabulary) is strong as a whole-class think-pair-share before students choose independently.</li>
+          </ul>
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>Provide a vocabulary anchor chart: coefficient = number in front of a variable, variable = letter, constant = lone number.</li>
+            <li>For Task 1, provide the sentence: "5 to the 3rd power means 5 is a factor ___ times." Scaffold: 5 × 5 × 5.</li>
+            <li>For Task 5, break into two steps: "(a) 3 × 4 = ?  (b) ? + 5 = ?"</li>
+          </ul>
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Task 2 extension: "What is 3⁴? What pattern do you notice in powers of 2 vs. powers of 3?"</li>
+            <li>Task 6 extension: "Expand 3(2x − 4). Write two equivalent forms."</li>
+            <li>Ask students to write their own verbal description for a given expression (e.g., "What story could 5n + 2 tell?").</li>
+          </ul>
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Key operation words: "more than" → add; "times" → multiply; "less than" → subtract. Post a word wall.</li>
+            <li>Allow students to read Task 3 aloud before writing: speaking the phrase often clarifies word order.</li>
+            <li>For Task 4, connect "coefficient" to the everyday word "co-" (together with) — the number that works together with the variable.</li>
+            <li>Sentence frame for Task 5: "When x = ___, the expression 3x + 5 becomes 3 × ___ + 5 = ___ + 5 = ___."</li>
+          </ul>
+        </div>
+      </details>
 
       <!-- Student name bar + Save buttons + results panel -->
       <div id="ntkit"></div>
@@ -312,11 +595,11 @@
       <section class="card" aria-labelledby="t2h">
         <h2 id="t2h">Task 2 — Find the Value</h2>
         <p class="task">
-          What is the value of <strong>2⁴</strong>? (2 × 2 × 2 × 2)
+          What is the value of <strong>2&#x2074;</strong>? (2 × 2 × 2 × 2)
         </p>
         <div class="row">
           <div>
-            <label class="q" for="a2">2⁴ =</label>
+            <label class="q" for="a2">2&#x2074; =</label>
             <input
               type="number"
               id="a2"
@@ -331,7 +614,7 @@
       <section class="card" aria-labelledby="t3h">
         <h2 id="t3h">Task 3 — Write the Expression</h2>
         <p class="task">
-          Write an expression: <strong>“7 more than a number n.”</strong> Build
+          Write an expression: <strong>"7 more than a number n."</strong> Build
           it with blocks in the right order.
         </p>
         <div class="bank-label">Block bank</div>
@@ -347,7 +630,7 @@
           id="zone3"
           aria-label="Build area for task 3"
         ></div>
-        <p class="hint">“More than” means add.</p>
+        <p class="hint">"More than" means add.</p>
       </section>
 
       <!-- ============ TASK 4: Parts of an expression (6.EE.A.2b) ============ -->
@@ -434,6 +717,80 @@
         <p class="hint">Multiply 2 by each part inside the parentheses.</p>
       </section>
 
+      <!-- ===== RUBRIC ===== -->
+      <section aria-labelledby="rubric-heading">
+        <h2 id="rubric-heading" style="font-size:1.1rem; margin: 18px 0 8px;">Performance Rubric — Expressions &amp; Exponents (6.EE.A.1–4)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th scope="col">Score</th>
+                <th scope="col">Level</th>
+                <th scope="col">Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>Expert</td>
+                <td>Correctly completes all 6 tasks. Can explain the difference between a coefficient and a constant, and can verify equivalence with a numerical example. Reflection demonstrates conceptual understanding of why the distributive property works.</td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>Proficient</td>
+                <td>Correctly completes 5–6 tasks. Builds correct expressions with blocks, evaluates 2⁴ and 3x+5 correctly, and identifies parts of an expression with at most one error. Applies the distributive property to Task 6.</td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>Developing</td>
+                <td>Correctly completes 3–4 tasks. May confuse exponent notation (5^3 vs. 5×3), or mix up coefficient and constant. Evaluates the expression with arithmetic errors (e.g., adds 3+4 instead of multiplying in Task 5).</td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>Emerging</td>
+                <td>Correctly completes 0–2 tasks. May not understand exponent notation or the meaning of a variable. Needs direct instruction on expression vocabulary and evaluation using substitution.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== ANSWER KEY (teacher only, hidden in print) ===== -->
+      <details class="answer-key" aria-label="Answer key — hidden in print">
+        <summary><span class="teacher-tag">Teacher</span> Answer Key</summary>
+        <div class="details-body">
+          <h3>Correct Answers</h3>
+          <ol>
+            <li><strong>Task 1 — Build a Power:</strong> Blocks in order: <strong>5 ^ 3</strong> (joined string "5^3"). The blocks represent the exponent notation, not the value 125.</li>
+            <li><strong>Task 2 — Evaluate 2⁴:</strong> 2 × 2 × 2 × 2 = <strong>16</strong></li>
+            <li><strong>Task 3 — Write "7 more than n":</strong> Blocks in order: <strong>n + 7</strong> (joined string "n+7"). Accept "7+n" conceptually; the auto-grader checks "n+7" — note for manual review if needed.</li>
+            <li><strong>Task 4a — The 4 in 4x:</strong> <strong>coefficient</strong> (the number multiplied by the variable)</li>
+            <li><strong>Task 4b — The x:</strong> <strong>variable</strong> (a letter representing an unknown quantity)</li>
+            <li><strong>Task 4c — The 9:</strong> <strong>constant</strong> (a fixed number with no variable)</li>
+            <li><strong>Task 5 — Evaluate 3x + 5 when x = 4:</strong> 3(4) + 5 = 12 + 5 = <strong>17</strong></li>
+            <li><strong>Task 6 — 2(x + 3):</strong> 2·x + 2·3 = <strong>2x + 6</strong></li>
+          </ol>
+          <h3>Common Errors to Watch For</h3>
+          <ul>
+            <li>Task 1: Students may build "5 3" without the "^" caret. Remind them the caret is the exponent symbol.</li>
+            <li>Task 2: Students may multiply 2 × 4 = 8 (confusing 2⁴ with 2×4). Have them expand: 2×2×2×2.</li>
+            <li>Task 5: Students may calculate 3 + 4 + 5 = 12 (adding instead of substituting). Emphasize that 3x means "3 times x."</li>
+            <li>Task 6: Students may choose 2x + 3 (distributing the 2 to x only). Stress that multiplication distributes to every term inside the parentheses.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ===== REFLECTION ===== -->
+      <div class="reflection-block">
+        <label for="reflection">Reflection: Choose an expression from today's activity and explain what each part means. Then show how you would evaluate it for a number of your choice.</label>
+        <textarea id="reflection" aria-label="Reflection — explain an expression and evaluate it for a number you choose" placeholder="Write your thinking here…"></textarea>
+      </div>
+
+      <!-- ===== DELIVERABLE ===== -->
+      <div class="deliverable">
+        <strong>Deliverable:</strong> Complete all 6 tasks and the reflection above, then press <strong>Check My Work</strong>. When your results appear, use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to submit your completed activity to your teacher.
+      </div>
+
       <button class="check-btn" id="checkBtn">Check My Work</button>
       <div id="results-anchor"></div>
     </div>
@@ -516,6 +873,10 @@
         var d = taskDone();
         document.getElementById("pbar").style.width = (d / 6) * 100 + "%";
         document.getElementById("plabel").textContent = d + " of 6 tasks done";
+        var fb = document.getElementById("a11y-feedback");
+        if (fb) {
+          fb.textContent = d + " of 6 tasks done";
+        }
       }
       ["a2", "a4a", "a4b", "a4c", "a5", "a6"].forEach(function (id) {
         document.getElementById(id).addEventListener("input", updateProgress);

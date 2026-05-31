@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 4 Projects — Teacher Answer Key | Neft Teacher</title>
+    <meta name="description" content="Teacher answer key for Unit 4 culminating projects (Version A: Pop-Up Shop Owner and Version B: Smart Shopper Showdown). Worked solutions using default values." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Answer-Key specific styles ── */
+      .ak-hero {
+        background: linear-gradient(135deg, #1a1150 0%, #4f46e5 60%, #0e8a7d 100%);
+        color: #fff;
+        padding: 36px 24px 30px;
+        text-align: center;
+      }
+      .ak-hero h1 { margin: 8px 0 6px; font-size: clamp(24px, 4vw, 36px); letter-spacing: -0.02em; }
+      .ak-hero p  { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .ak-tags    { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .ak-tag     { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3); border-radius: 50px; padding: 4px 13px; font-size: 13px; font-weight: 700; }
+      .ak-tag.gold { background: #d4952a; border-color: #d4952a; color: #2a1c00; }
+
+      .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .ak-print-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: #1a1150; color: #fff; border: none; border-radius: 10px;
+        padding: 11px 22px; font-weight: 800; font-size: 15px; cursor: pointer;
+        margin: 22px 0 10px; font-family: inherit;
+      }
+      .ak-print-btn:hover { filter: brightness(1.1); }
+
+      /* version divider */
+      .version-banner {
+        background: linear-gradient(90deg, #1a1150, #4f46e5);
+        color: #fff; border-radius: 14px; padding: 14px 20px; margin: 30px 0 18px;
+        display: flex; align-items: center; gap: 14px;
+      }
+      .version-banner.green { background: linear-gradient(90deg, #0f3b2c, #0e8a7d); }
+      .version-banner .vb-icon { font-size: 30px; line-height: 1; flex: 0 0 auto; }
+      .version-banner h2 { margin: 0; font-size: 22px; }
+      .version-banner p  { margin: 2px 0 0; font-size: 13px; color: rgba(255,255,255,.85); }
+
+      /* phase answer blocks */
+      .ak-phase {
+        background: #fff; border: 1px solid #e2e7ec; border-radius: 14px;
+        padding: 22px 24px; margin: 16px 0; box-shadow: 0 3px 14px rgba(26,17,80,.08);
+      }
+      .ak-phase-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+      .ak-phase-num  {
+        flex: 0 0 auto; width: 40px; height: 40px; border-radius: 10px;
+        background: #4f46e5; color: #fff; font-weight: 800; font-size: 18px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .ak-phase-num.teal   { background: #0e8a7d; }
+      .ak-phase-num.gold   { background: #d4952a; color: #2a1c00; }
+      .ak-phase-num.coral  { background: #c45a3c; }
+      .ak-phase-num.green  { background: #2d874b; }
+      .ak-phase-num.navy   { background: #1a1150; }
+
+      .ak-phase h3  { margin: 0; font-size: 18px; color: #1a2633; }
+      .ak-phase .skill-label { font-size: 11px; font-weight: 700; color: #5e6e7e; text-transform: uppercase; letter-spacing: .05em; }
+
+      .ak-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+      @media (max-width: 580px) { .ak-row { grid-template-columns: 1fr; } }
+
+      .ak-input-block {
+        background: #f7f9fb; border: 1px solid #e2e7ec; border-radius: 10px; padding: 12px 14px;
+      }
+      .ak-input-block .label { font-size: 12px; font-weight: 700; color: #5e6e7e; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+      .ak-input-block .val   { font-size: 17px; font-weight: 800; color: #1a2633; }
+
+      .ak-answer {
+        background: #e4f5f3; border: 1px solid #bfe6e0; border-radius: 10px;
+        padding: 14px 16px; margin-top: 12px;
+      }
+      .ak-answer .big { font-size: 26px; font-weight: 800; color: #0e8a7d; margin-bottom: 6px; }
+      .ak-answer .steps { font-size: 14px; color: #1a2633; line-height: 1.7; }
+
+      .ak-qc {
+        background: #fdf3e0; border: 1px solid #f5d78a; border-radius: 10px;
+        padding: 14px 16px; margin-top: 12px;
+      }
+      .ak-qc .qc-label { font-size: 12px; font-weight: 700; color: #7c5a00; text-transform: uppercase; letter-spacing: .04em; }
+      .ak-qc .qc-q     { font-size: 15px; font-weight: 700; color: #1a2633; margin: 4px 0; }
+      .ak-qc .qc-a     { font-size: 22px; font-weight: 800; color: #d4952a; }
+      .ak-qc .qc-work  { font-size: 14px; color: #5e6e7e; margin-top: 4px; }
+
+      .ak-sample {
+        background: #e6f4eb; border: 1px solid #a6d9b7; border-radius: 10px;
+        padding: 14px 16px; margin-top: 12px;
+      }
+      .ak-sample .s-label { font-size: 12px; font-weight: 700; color: #185c2e; text-transform: uppercase; letter-spacing: .04em; }
+      .ak-sample p { margin: 6px 0 0; font-size: 14px; color: #1a2633; line-height: 1.65; font-style: italic; }
+
+      .ak-rubric {
+        background: #eeecfd; border: 1px solid #c5bff7; border-radius: 10px;
+        padding: 14px 16px; margin-top: 12px;
+      }
+      .ak-rubric .r-label { font-size: 12px; font-weight: 700; color: #2d1a8a; text-transform: uppercase; letter-spacing: .04em; }
+      .ak-rubric p { margin: 6px 0 0; font-size: 14px; color: #1a2633; line-height: 1.65; }
+
+      .section-divider { border: none; border-top: 2px dashed #e2e7ec; margin: 32px 0; }
+
+      /* Print styles */
+      @media print {
+        .ak-print-btn { display: none !important; }
+        .ak-hero { background: #1a1150 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .ak-phase, .version-banner { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+        .version-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .ak-answer, .ak-qc, .ak-sample, .ak-rubric, .ak-input-block { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="ak-hero">
+      <div style="font-size:44px; line-height:1;">📋</div>
+      <h1>Unit 4 Projects — Teacher Answer Key</h1>
+      <p>Worked solutions using the default input values for both project versions. For teachers only.</p>
+      <div class="ak-tags">
+        <span class="ak-tag gold">Unit 4 · Percents &amp; Rates</span>
+        <span class="ak-tag">6.RP.2</span>
+        <span class="ak-tag">6.RP.3b</span>
+        <span class="ak-tag">6.RP.3c</span>
+        <span class="ak-tag">6.RP.3d</span>
+        <span class="ak-tag">Teacher Use Only</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb" aria-label="Breadcrumb" style="padding-top:14px;">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-4/">Unit 4</a> /
+        <a href="/math/unit-4/projects/">Projects</a> / Answer Key
+      </nav>
+
+      <div class="note-panel" style="margin:20px 0;">
+        <p><strong>For teachers — worked solutions using the default values.</strong> Students who change inputs get different but similarly-structured answers. Each phase shows: default inputs used, step-by-step arithmetic, the correct final answer, and the exact quick-check answer. Sample expert responses and rubric guidance are included for scoring.</p>
+      </div>
+
+      <button class="ak-print-btn" onclick="window.print()">🖨️ Print answer key</button>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- VERSION A: Pop-Up Shop Owner                        -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div class="version-banner">
+        <div class="vb-icon">🛍️</div>
+        <div>
+          <h2>Version A — Pop-Up Shop Owner</h2>
+          <p>Context: Launching a pop-up shop using markup, discount, sales tax, percent conversions, and promo comparisons.</p>
+        </div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num">1</div>
+          <div>
+            <div class="skill-label">Percent of a Number · 6.RP.3c</div>
+            <h3>Set Your Selling Price (Markup)</h3>
+          </div>
+        </div>
+
+        <div class="ak-row">
+          <div class="ak-input-block"><div class="label">Cost price (default)</div><div class="val">$40.00</div></div>
+          <div class="ak-input-block"><div class="label">Markup % (default)</div><div class="val">25%</div></div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">$50.00 selling price</div>
+          <div class="steps">
+            <strong>Step 1 — Markup amount:</strong> $40.00 × (25 ÷ 100) = $40.00 × 0.25 = <strong>$10.00</strong><br>
+            <strong>Step 2 — Selling price:</strong> $40.00 + $10.00 = <strong>$50.00</strong><br>
+            Profit on each item sold at full price: <strong>$10.00</strong>
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>"I bought my item for $40.00 and applied a 25% markup. The markup amount is $40.00 × 0.25 = $10.00, so my selling price is $40.00 + $10.00 = $50.00. Setting the price at $50.00 gives me a $10.00 profit on every item I sell at full price."</p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Sample 4/3/2 Rubric Guidance — Percent of a Number (Markup)</div>
+          <p><strong>4 (Expert):</strong> Markup amount ($10.00) and selling price ($50.00) both correct; shows the two-step process (percent × cost, then add); explains the profit in context.<br>
+          <strong>3 (Proficient):</strong> Selling price $50.00 correct.<br>
+          <strong>2 (Developing):</strong> Partial work shown; may have computed the markup but added incorrectly, or confused markup with the selling price.</p>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">2</div>
+          <div>
+            <div class="skill-label">Percent Discount · 6.RP.3c</div>
+            <h3>Run a Weekend Sale (Discount)</h3>
+          </div>
+        </div>
+
+        <div class="ak-row">
+          <div class="ak-input-block"><div class="label">Selling price (default)</div><div class="val">$50.00</div></div>
+          <div class="ak-input-block"><div class="label">Discount % (default)</div><div class="val">20%</div></div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">$40.00 sale price</div>
+          <div class="steps">
+            <strong>Discount amount:</strong> $50.00 × (20 ÷ 100) = $50.00 × 0.20 = <strong>$10.00 off</strong><br>
+            <strong>Sale price:</strong> $50.00 − $10.00 = <strong>$40.00</strong><br>
+            Shoppers save $10.00!<br><br>
+            <em>Note: A 20% discount on $50 brings the sale price back to $40.00 — the original cost price. The teacher may wish to note that this means the shop breaks even on sale items (no profit on sale day).</em>
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>"This weekend my $50.00 item is 20% off. The discount is $50.00 × 0.20 = $10.00, so the sale price is $50.00 − $10.00 = $40.00. Shoppers save $10.00 compared to the regular price. I notice this equals my original cost price, so I break even on sale-day purchases."</p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Sample 4/3/2 Rubric Guidance — Discounts</div>
+          <p><strong>4 (Expert):</strong> Discount amount ($10.00) and sale price ($40.00) both correct; notes that savings equals the markup amount (showing deeper reasoning); or computes an alternative check using 80% × $50 = $40.<br>
+          <strong>3 (Proficient):</strong> Sale price $40.00 correct.<br>
+          <strong>2 (Developing):</strong> Attempted; common error is subtracting the percent (50 − 20 = 30) instead of computing percent of the price first.</p>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num gold">3</div>
+          <div>
+            <div class="skill-label">Sales Tax &amp; Conversions · 6.RP.3c · 6.RP.3d</div>
+            <h3>Add Tax &amp; Convert the Value</h3>
+          </div>
+        </div>
+
+        <p style="color:#5e6e7e; margin:0 0 10px;">Part A — Sales Tax</p>
+        <div class="ak-row">
+          <div class="ak-input-block"><div class="label">Sale price (default)</div><div class="val">$40.00</div></div>
+          <div class="ak-input-block"><div class="label">Tax rate (default)</div><div class="val">8%</div></div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">$43.20 final total</div>
+          <div class="steps">
+            <strong>Tax amount:</strong> $40.00 × (8 ÷ 100) = $40.00 × 0.08 = <strong>$3.20</strong><br>
+            <strong>Final total:</strong> $40.00 + $3.20 = <strong>$43.20</strong> at checkout.
+          </div>
+        </div>
+
+        <p style="color:#5e6e7e; margin:16px 0 10px;">Part B — Percent Conversion</p>
+        <div class="ak-row">
+          <div class="ak-input-block"><div class="label">Percent to convert (default)</div><div class="val">35%</div></div>
+        </div>
+
+        <div class="ak-answer" style="margin-top:10px;">
+          <div class="big">35%</div>
+          <div class="steps">
+            <strong>Decimal:</strong> 35 ÷ 100 = <strong>0.35</strong><br>
+            <strong>Fraction:</strong> 35/100 — GCF(35, 100) = 5 — simplified to <strong>7/20</strong><br>
+            Check: 7 ÷ 20 = 0.35 ✓
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>"After my 20% weekend discount the sale price is $40.00. The state adds 8% sales tax: $40.00 × 0.08 = $3.20, making the checkout total $43.20. I also converted 35% to its decimal (0.35) and simplified fraction (7/20) by dividing numerator and denominator by GCF = 5."</p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Sample 4/3/2 Rubric Guidance — Tax &amp; Conversions</div>
+          <p><strong>4 (Expert):</strong> Tax amount ($3.20) and final total ($43.20) both correct; fraction 7/20 shown with GCF simplification; decimal 0.35 confirmed; student may cross-check with 7 ÷ 20 = 0.35.<br>
+          <strong>3 (Proficient):</strong> Final total $43.20 correct; fraction and decimal forms both accurate.<br>
+          <strong>2 (Developing):</strong> Tax or conversion has one error (e.g., fraction left as 35/100 unsimplified, or tax computed on selling price $50 instead of sale price $40).</p>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num coral">4</div>
+          <div>
+            <div class="skill-label">Decision &amp; Quick Check · 6.RP.3c</div>
+            <h3>Best Promo Decision + Quick Check</h3>
+          </div>
+        </div>
+
+        <div class="ak-answer" style="margin-bottom:12px;">
+          <div class="big">Best deal: Promo A</div>
+          <div class="steps">
+            <strong>Promo A — 30% off a $60 item:</strong><br>
+            Discount = $60 × 0.30 = $18.00 off &nbsp;→&nbsp; Final price = $60 − $18 = <strong>$42.00</strong><br><br>
+            <strong>Promo B — $15 off a $60 item:</strong><br>
+            Final price = $60 − $15 = <strong>$45.00</strong><br><br>
+            Promo A ($42.00) &lt; Promo B ($45.00) → <strong>Promo A saves the customer more</strong> ($3.00 more savings). 30% of $60 = $18 off, which beats the flat $15 off.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Quick Check — What is 25% of 80?</div>
+          <div class="qc-q">Enter your answer:</div>
+          <div class="qc-a">20</div>
+          <div class="qc-work">80 × (25 ÷ 100) = 80 × 0.25 = <strong>20</strong>. The JS accepts exactly the number 20.</div>
+        </div>
+
+        <div class="ak-sample" style="margin-top:12px;">
+          <div class="s-label">Sample Expert Response — Storefront Sign (Full Deliverable)</div>
+          <p>"Welcome to my pop-up shop! I bought my item for $40.00 and marked it up 25% ($10.00 markup) to sell it for $50.00. This weekend it is on sale for 20% off, so you pay only $40.00 — saving $10.00. After 8% sales tax, your total is $43.20. My best promo deal is Promo A (30% off a $60 item for $42.00) because it saves customers $18.00, which beats Promo B's flat $15.00 off by $3.00!"</p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Sample 4/3/2 Rubric Guidance — Communication</div>
+          <p><strong>4 (Expert):</strong> Storefront sign cites all four numeric results (cost $40, markup $10, selling price $50, discount $10, sale price $40, tax $3.20, total $43.20); Promo A identified as better with both final prices compared ($42 vs $45); reasoning is clear and customer-focused.<br>
+          <strong>3 (Proficient):</strong> Sign uses most numbers; correct promo choice stated.<br>
+          <strong>2 (Developing):</strong> Missing key numbers (e.g., no mention of tax total or promo comparison).</p>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- VERSION B: Smart Shopper Showdown                   -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div class="version-banner green">
+        <div class="vb-icon">🛒</div>
+        <div>
+          <h2>Version B — Smart Shopper Showdown</h2>
+          <p>Context: Smart shopping using unit prices, percent discounts, tip calculation, and measurement unit conversion.</p>
+        </div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">1</div>
+          <div>
+            <div class="skill-label">Unit Price · 6.RP.2 · 6.RP.3b</div>
+            <h3>Find the Better Buy</h3>
+          </div>
+        </div>
+
+        <div class="ak-row">
+          <div class="ak-input-block"><div class="label">Package A price (default)</div><div class="val">$3.60</div></div>
+          <div class="ak-input-block"><div class="label">Package A units (default)</div><div class="val">12</div></div>
+          <div class="ak-input-block"><div class="label">Package B price (default)</div><div class="val">$5.25</div></div>
+          <div class="ak-input-block"><div class="label">Package B units (default)</div><div class="val">20</div></div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">Package B wins (lower unit price)</div>
+          <div class="steps">
+            <strong>Package A:</strong> $3.60 ÷ 12 units = <strong>$0.3000 per unit</strong><br>
+            <strong>Package B:</strong> $5.25 ÷ 20 units = <strong>$0.2625 per unit</strong><br>
+            $0.2625 &lt; $0.3000 → <strong>Package B is the better buy</strong>.<br>
+            Even though Package B costs more upfront ($5.25 vs $3.60), each unit is cheaper by $0.0375.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>"Package A costs $3.60 for 12 units, giving a unit price of $0.30 per unit ($3.60 ÷ 12). Package B costs $5.25 for 20 units, giving a unit price of $0.2625 per unit ($5.25 ÷ 20). Even though Package B has a higher sticker price, its unit price is lower by about $0.04, making it the better buy for a budget-conscious shopper."</p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Sample 4/3/2 Rubric Guidance — Unit Price (6.RP.2/3b)</div>
+          <p><strong>4 (Expert):</strong> Both unit prices computed correctly ($0.30 and $0.2625); Package B identified as better buy with explicit comparison ("$0.2625 &lt; $0.30"); explains the apparent paradox that the bigger, more expensive package is cheaper per unit.<br>
+          <strong>3 (Proficient):</strong> Both unit prices correct; better buy correctly identified.<br>
+          <strong>2 (Developing):</strong> One unit price correct or a minor division error; may choose Package A because its total cost is lower (misunderstanding unit price).</p>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num" style="background:#1a6fb5;">2</div>
+          <div>
+            <div class="skill-label">Percent Discount · 6.RP.3c</div>
+            <h3>Which Store's Deal Is Cheaper?</h3>
+          </div>
+        </div>
+
+        <div class="ak-row">
+          <div class="ak-input-block"><div class="label">Store 1 original price</div><div class="val">$80.00</div></div>
+          <div class="ak-input-block"><div class="label">Store 1 discount</div><div class="val">25%</div></div>
+          <div class="ak-input-block"><div class="label">Store 2 original price</div><div class="val">$75.00</div></div>
+          <div class="ak-input-block"><div class="label">Store 2 discount</div><div class="val">15%</div></div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">Store 1 is cheaper ($60.00 vs $63.75)</div>
+          <div class="steps">
+            <strong>Store 1:</strong> $80.00 × (1 − 0.25) = $80.00 × 0.75 = <strong>$60.00</strong><br>
+            &nbsp;&nbsp;Alternative: Discount = $80 × 0.25 = $20 off → $80 − $20 = $60.00<br><br>
+            <strong>Store 2:</strong> $75.00 × (1 − 0.15) = $75.00 × 0.85 = <strong>$63.75</strong><br>
+            &nbsp;&nbsp;Alternative: Discount = $75 × 0.15 = $11.25 off → $75 − $11.25 = $63.75<br><br>
+            Store 1 is cheaper. You save <strong>$3.75</strong> by choosing Store 1 even though it started at a higher price.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>"Store 1 sells the item for $80.00 with a 25% discount: $80 × 0.75 = $60.00 after the sale. Store 2 sells for $75.00 with a 15% discount: $75 × 0.85 = $63.75 after the sale. Store 1 is the better deal at $60.00 — $3.75 cheaper than Store 2, despite having a higher original price."</p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Sample 4/3/2 Rubric Guidance — Percent Discounts (6.RP.3c)</div>
+          <p><strong>4 (Expert):</strong> Both final prices correct ($60.00, $63.75); Store 1 identified as cheaper with the savings amount ($3.75); explains the counterintuitive result (higher original price, deeper discount → lower final price).<br>
+          <strong>3 (Proficient):</strong> Both prices correct; cheaper store identified.<br>
+          <strong>2 (Developing):</strong> One price correct or minor percent-computation error (e.g., computed 15% of $80 instead of $75).</p>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num gold">3</div>
+          <div>
+            <div class="skill-label">Tip Percent &amp; Measurement Conversion · 6.RP.3c · 6.RP.3d</div>
+            <h3>Tip the Server &amp; Convert Units</h3>
+          </div>
+        </div>
+
+        <p style="color:#5e6e7e; margin:0 0 10px;">Part A — Tip Calculation</p>
+        <div class="ak-row">
+          <div class="ak-input-block"><div class="label">Restaurant bill (default)</div><div class="val">$20.00</div></div>
+          <div class="ak-input-block"><div class="label">Tip % (default)</div><div class="val">15%</div></div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">$3.00 tip / $23.00 total</div>
+          <div class="steps">
+            <strong>Tip amount:</strong> $20.00 × (15 ÷ 100) = $20.00 × 0.15 = <strong>$3.00</strong><br>
+            <strong>Total bill with tip:</strong> $20.00 + $3.00 = <strong>$23.00</strong>
+          </div>
+        </div>
+
+        <p style="color:#5e6e7e; margin:16px 0 10px;">Part B — Measurement Conversion (default: 5 feet → inches)</p>
+        <div class="ak-row">
+          <div class="ak-input-block"><div class="label">Value to convert (default)</div><div class="val">5</div></div>
+          <div class="ak-input-block"><div class="label">From → To (defaults)</div><div class="val">feet → inches</div></div>
+        </div>
+
+        <div class="ak-answer" style="margin-top:10px;">
+          <div class="big">60 inches</div>
+          <div class="steps">
+            Conversion factor: 12 inches / 1 foot<br>
+            5 feet × (12 inches / 1 foot) = <strong>60 inches</strong><br>
+            The "feet" units cancel, leaving <strong>inches</strong>. That's rate reasoning!<br><br>
+            <em>Other default dropdowns: if a student selects a different pair, they can use this method: value × factor from the CONV table in the source JS.</em>
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>"After shopping I had lunch and left a 15% tip on a $20.00 bill: $20 × 0.15 = $3.00 tip, for a $23.00 total. Using rate reasoning, I also converted 5 feet to inches by multiplying by the rate (12 inches per foot): 5 × 12 = 60 inches. The foot units canceled, confirming the conversion."</p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Sample 4/3/2 Rubric Guidance — Tip &amp; Conversion (6.RP.3c/3d)</div>
+          <p><strong>4 (Expert):</strong> Tip ($3.00) and total ($23.00) both correct; conversion shown as a unit-fraction multiplication (5 × 12 in/ft = 60 in) with units explicitly canceling; connects method to "rate reasoning."<br>
+          <strong>3 (Proficient):</strong> Tip and conversion both numerically correct.<br>
+          <strong>2 (Developing):</strong> Tip correct but conversion set up without the unit-fraction framework; or conversion answer correct but tip computation contains arithmetic error.</p>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num coral">4</div>
+          <div>
+            <div class="skill-label">Decision &amp; Quick Check · 6.RP.2 · 6.RP.3b</div>
+            <h3>Shopping Verdict + Quick Check</h3>
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Quick Check — 4 granola bars for $12.00; unit price per bar?</div>
+          <div class="qc-q">What is the unit price (price per bar)?</div>
+          <div class="qc-a">$3.00 per bar</div>
+          <div class="qc-work">$12.00 ÷ 4 bars = <strong>$3.00 per bar</strong>. The JS accepts exactly the number 3.</div>
+        </div>
+
+        <div class="ak-sample" style="margin-top:12px;">
+          <div class="s-label">Sample Expert Response — Shopping Verdict (Full Deliverable)</div>
+          <p>"Based on my unit price research, Package B is the better buy at $0.2625 per unit vs. Package A's $0.30 per unit — a savings of $0.0375 per unit. For the item I compared between stores, Store 1 is cheaper at $60.00 after a 25% discount, beating Store 2's $63.75 after a 15% discount. At the restaurant I tipped 15%, which came to $3.00, for a total of $23.00; and I converted 5 feet to 60 inches using rate reasoning (5 × 12 in/ft). My overall shopping strategy: always compute the unit price before choosing a package, and compare post-discount prices — not original sticker prices — when comparing stores."</p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Sample 4/3/2 Rubric Guidance — Communication</div>
+          <p><strong>4 (Expert):</strong> Verdict cites all four phase results (Package B unit price $0.2625, Store 1 final price $60.00, tip $3.00 and total $23.00, conversion 60 inches); gives a general shopping strategy drawn from the math; reasoning is clear and uses correct mathematical vocabulary (unit price, discount, rate reasoning).<br>
+          <strong>3 (Proficient):</strong> Uses most numbers; package and store choices correctly stated.<br>
+          <strong>2 (Developing):</strong> Verdict is vague or missing phase results (e.g., no unit prices mentioned, or store chosen without showing the post-discount prices).</p>
+        </div>
+      </div>
+
+      <footer class="site-footer" style="margin-top:40px;">
+        <span>Neft Teacher · Unit 4 Projects · Teacher Answer Key</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </div>
+
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>

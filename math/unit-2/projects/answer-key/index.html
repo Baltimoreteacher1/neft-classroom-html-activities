@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 2 Projects — Teacher Answer Key | Neft Teacher</title>
+    <meta name="description" content="Teacher answer key for Unit 2 culminating projects (Version A: Recipe Remix Bakery, Version B: Maker Workshop Cut List). Worked solutions using default values." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Answer-key-specific styles ── */
+      .ak-note {
+        background: #fff8e1;
+        border: 2px solid #f9a825;
+        border-left: 6px solid #f9a825;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin: 18px 0 28px;
+        font-size: 15px;
+      }
+      .ak-note strong { color: #5d4037; }
+
+      .version-block {
+        background: #fff;
+        border: 1px solid #e2e7ec;
+        border-radius: 16px;
+        padding: 28px;
+        margin: 28px 0;
+        box-shadow: 0 4px 18px rgba(15,43,60,.08);
+      }
+      .version-block h2 {
+        margin: 0 0 4px;
+        font-size: 24px;
+        color: #2b1a0f;
+      }
+      .version-kicker {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: #5e6e7e;
+        margin-bottom: 16px;
+        display: block;
+      }
+
+      .phase-ak {
+        background: #f7f9fb;
+        border: 1px solid #e2e7ec;
+        border-radius: 12px;
+        padding: 20px 22px;
+        margin: 20px 0;
+      }
+      .phase-ak h3 {
+        margin: 0 0 12px;
+        font-size: 17px;
+        color: #2b1a0f;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .phase-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #b5521a;
+        color: #fff;
+        font-weight: 800;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .phase-badge.t { background: #0e8a7d; }
+      .phase-badge.g { background: #d4952a; color: #2a1c00; }
+      .phase-badge.c { background: #c45a3c; }
+      .phase-badge.gb { background: #1a6b3a; }
+      .phase-badge.tb { background: #0e8a7d; }
+      .phase-badge.glb { background: #d4952a; color: #2a1c00; }
+      .phase-badge.cb { background: #c45a3c; }
+
+      .ak-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        margin: 10px 0 14px;
+      }
+      .ak-table th {
+        background: #2b1a0f;
+        color: #fff;
+        padding: 9px 12px;
+        text-align: left;
+        font-size: 13px;
+      }
+      .ak-table td {
+        border: 1px solid #e2e7ec;
+        padding: 9px 12px;
+        vertical-align: top;
+      }
+      .ak-table tr:nth-child(even) td { background: #f0f4f8; }
+      .ak-table .ans { font-weight: 800; color: #0e8a7d; }
+
+      .quick-check-box {
+        background: #e4f5f3;
+        border: 1px solid #bfe6e0;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        font-size: 14px;
+      }
+      .quick-check-box .qc-answer {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0e8a7d;
+      }
+
+      .sample-response {
+        background: #e6f4eb;
+        border: 1px solid #b2dfcc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        font-size: 14px;
+      }
+      .sample-response h4 { margin: 0 0 8px; color: #1a4a28; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
+
+      .rubric-note {
+        background: #fdf3e0;
+        border: 1px solid #f0c070;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        font-size: 14px;
+      }
+      .rubric-note h4 { margin: 0 0 8px; color: #7c4a00; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
+
+      .divider {
+        border: none;
+        border-top: 3px solid #e2e7ec;
+        margin: 36px 0;
+      }
+
+      .print-btn-wrap { margin: 24px 0 8px; }
+      .print-btn {
+        background: #2b1a0f;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .print-btn:hover { filter: brightness(1.15); }
+
+      .worked { font-family: "Courier New", monospace; font-size: 13px; color: #1a2633; line-height: 1.8; }
+
+      .frac {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        vertical-align: middle;
+        margin: 0 3px;
+        font-size: 12px;
+        line-height: 1.1;
+      }
+      .frac .fnum { border-bottom: 1px solid currentColor; padding: 0 2px; }
+      .frac .fden { padding: 0 2px; }
+
+      @media print {
+        .print-btn-wrap, nav.breadcrumb { display: none !important; }
+        .version-block, .phase-ak { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+        .ak-note { border: 2px solid #f9a825; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span>
+        <a href="/math/">Math</a><span>/</span>
+        <a href="/math/unit-2/">Unit 2</a><span>/</span>
+        <a href="/math/unit-2/projects/">Projects</a><span>/</span>
+        <span>Answer Key</span>
+      </nav>
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">Unit 2 · Teacher Resource</p>
+        <h1>Unit 2 Projects — Teacher Answer Key</h1>
+        <p class="hero-copy">
+          Worked solutions for both versions of the Unit 2 culminating project
+          (Fraction Division). Covers Version A: Recipe Remix Bakery and
+          Version B: Maker Workshop Cut List.
+        </p>
+      </section>
+
+      <div class="page-shell" style="padding-top:0;">
+
+        <div class="ak-note">
+          <strong>For teachers — worked solutions using the default values.</strong>
+          Students who change the inputs will get different (but similarly-structured) answers.
+          Every number on this page has been verified by tracing the exact formula each
+          calculator uses. Quick-check answers are deterministic (hard-coded in the JS)
+          and do not change regardless of inputs. Fraction arithmetic follows the
+          multiply-by-reciprocal rule; all fractions are simplified to lowest terms.
+        </div>
+
+        <div class="print-btn-wrap">
+          <button class="print-btn" onclick="window.print()">&#128438; Print answer key</button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- VERSION A                                           -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="version-block">
+          <span class="version-kicker">Version A &nbsp;·&nbsp; Design &amp; Build</span>
+          <h2>&#129345; Recipe Remix Bakery</h2>
+          <p style="color:#5e6e7e;margin:0 0 20px;">Standard: 6.NS.1 &bull; Fraction division in a bakery context</p>
+
+          <!-- PHASE 1 -->
+          <div class="phase-ak">
+            <h3><span class="phase-badge">1</span> Phase 1 — Portion Control: Mini-Loaf Pans (Fraction &divide; Fraction &middot; 6.NS.1)</h3>
+
+            <table class="ak-table">
+              <tr>
+                <th>Input</th><th>Default</th><th>Worked Solution</th><th>Final Answer</th>
+              </tr>
+              <tr>
+                <td>Dough numerator (a)</td><td>3</td>
+                <td rowspan="4">
+                  <div class="worked">
+                    Rule: (a/b) &divide; (c/d) = (a&times;d) / (b&times;c)<br><br>
+                    (3/4) &divide; (1/8)<br>
+                    = (3&times;8) / (4&times;1)<br>
+                    = 24 / 4<br>
+                    = <strong>6</strong><br><br>
+                    Simplify: GCF(24, 4) = 4<br>
+                    24/4 = <strong>6</strong> (whole number)<br><br>
+                    Decimal: 24 &divide; 4 = <strong>6.0</strong><br>
+                    Check: 6 &times; (1/8) = 6/8 = 3/4 &#10003;
+                  </div>
+                </td>
+                <td rowspan="4" class="ans">6 mini-loaves<br><small>(whole number, no dough left over)</small></td>
+              </tr>
+              <tr><td>Dough denominator (b)</td><td>4</td></tr>
+              <tr><td>Per loaf numerator (c)</td><td>1</td></tr>
+              <tr><td>Per loaf denominator (d)</td><td>8</td></tr>
+            </table>
+          </div>
+
+          <!-- PHASE 2 -->
+          <div class="phase-ak">
+            <h3><span class="phase-badge t">2</span> Phase 2 — Scaling Down: How Many Servings? (Whole Number &divide; Unit Fraction &middot; 6.NS.1)</h3>
+
+            <table class="ak-table">
+              <tr>
+                <th>Input</th><th>Default</th><th>Worked Solution</th><th>Final Answer</th>
+              </tr>
+              <tr>
+                <td>Total cups of frosting</td><td>4</td>
+                <td rowspan="2">
+                  <div class="worked">
+                    Rule: whole &divide; (1/d) = whole &times; d<br><br>
+                    4 &divide; (1/3)<br>
+                    = 4 &times; 3<br>
+                    = <strong>12</strong><br><br>
+                    Interpretation: each cup holds<br>
+                    3 servings of 1/3-cup each;<br>
+                    4 cups &times; 3 = 12 cupcakes<br><br>
+                    Check: 12 &times; (1/3) = 12/3 = 4 cups &#10003;
+                  </div>
+                </td>
+                <td rowspan="2" class="ans">12 cupcakes</td>
+              </tr>
+              <tr>
+                <td>Each cupcake uses 1/(this) cup</td><td>3</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- PHASE 3 -->
+          <div class="phase-ak">
+            <h3><span class="phase-badge g">3</span> Phase 3 — Roll Cuts: Mixed-Number Dough (Mixed Number &divide; Fraction &middot; 6.NS.1)</h3>
+
+            <table class="ak-table">
+              <tr>
+                <th>Input</th><th>Default</th><th>Worked Solution</th><th>Final Answer</th>
+              </tr>
+              <tr>
+                <td>Whole part</td><td>2</td>
+                <td rowspan="5">
+                  <div class="worked">
+                    Step 1 — Convert mixed number:<br>
+                    2 and 1/2 = (2&times;2 + 1)/2 = 5/2<br><br>
+                    Step 2 — Divide fractions:<br>
+                    (5/2) &divide; (3/4)<br>
+                    = (5&times;4) / (2&times;3)<br>
+                    = 20/6<br><br>
+                    Simplify: GCF(20, 6) = 2<br>
+                    20/6 = <strong>10/3</strong><br><br>
+                    As mixed number: 10 &divide; 3 = 3 remainder 1<br>
+                    = <strong>3 and 1/3</strong><br><br>
+                    Full pieces: <strong>3</strong><br>
+                    Leftover fraction of a piece: 1/3<br>
+                    Leftover in feet: (1/3) piece &times; (3/4) ft/piece<br>
+                    = 3/(3&times;4) = 3/12 = <strong>1/4 ft left over</strong>
+                  </div>
+                </td>
+                <td rowspan="5" class="ans">3 full pieces<br><small>(10/3 = 3&frac13; pieces; 1/4 ft left over)</small></td>
+              </tr>
+              <tr><td>Fraction numerator</td><td>1</td></tr>
+              <tr><td>Fraction denominator</td><td>2</td></tr>
+              <tr><td>Cut size — numerator</td><td>3</td></tr>
+              <tr><td>Cut size — denominator</td><td>4</td></tr>
+            </table>
+          </div>
+
+          <!-- PHASE 4 -->
+          <div class="phase-ak">
+            <h3><span class="phase-badge c">4</span> Phase 4 — Best Deal Decision (Real Decision &middot; 6.NS.1)</h3>
+
+            <table class="ak-table">
+              <tr>
+                <th>Input</th><th>Default</th><th>Worked Solution</th><th>Final Answer</th>
+              </tr>
+              <tr>
+                <td>Total cups (Supplier A)</td><td>6</td>
+                <td rowspan="2">
+                  <div class="worked">
+                    6 &divide; (2/3)<br>
+                    = 6 &times; (3/2)<br>
+                    = 18/2<br>
+                    = <strong>9</strong><br><br>
+                    Check: 9 &times; (2/3) = 18/3 = 6 cups &#10003;<br><br>
+                    Every cup of batter is used (whole number result).
+                  </div>
+                </td>
+                <td rowspan="2" class="ans">9 muffins</td>
+              </tr>
+              <tr>
+                <td>Each muffin uses 2/(this) cup</td><td>3</td>
+              </tr>
+            </table>
+
+            <div class="quick-check-box">
+              <strong>Quick-Check Problem (hard-coded, always the same):</strong>
+              A jar holds 6 cups of batter. Each muffin uses 2/3 cup. How many muffins?
+              <br>
+              <div class="worked" style="margin-top:8px;">
+                6 &divide; (2/3) = 6 &times; (3/2) = 18/2 = <strong>9</strong><br>
+                Check: 9 &times; (2/3) = 18/3 = 6 &#10003;
+              </div>
+              <div class="qc-answer" style="margin-top:6px;">Answer: 9 muffins</div>
+              <p style="margin:6px 0 0;font-size:13px;color:#5e6e7e;">
+                Note: This is the same problem as Phase 4 with the default inputs, so the calculator and quick-check give the same answer.
+              </p>
+            </div>
+          </div>
+
+          <!-- SAMPLE RESPONSE -->
+          <div class="sample-response">
+            <h4>Sample Expert Written Menu Card (Final Deliverable)</h4>
+            <p>
+              "At the Recipe Remix Bakery, I can bake <strong>6 mini-loaves</strong> from 3/4 of a pan of dough, because (3/4) &divide; (1/8) = (3&times;8)/(4&times;1) = 24/4 = 6 — a perfect whole number with no dough left over.
+              With <strong>4 cups of frosting</strong> I can frost <strong>12 cupcakes</strong> because dividing by 1/3 is the same as multiplying by 3: 4 &times; 3 = 12.
+              My 2&frac12;-foot dough roll cuts into <strong>3 full pieces</strong> of 3/4 ft each (5/2 &divide; 3/4 = 20/6 = 10/3 = 3&#8531; pieces; I get 3 full pieces with 1/4 ft left over).
+              From 6 cups of batter I can make <strong>9 muffins</strong> because 6 &divide; (2/3) = 6 &times; (3/2) = 18/2 = 9."
+            </p>
+          </div>
+
+          <div class="rubric-note">
+            <h4>Sample 4 / 3 / 2 Rubric Scoring Notes</h4>
+            <p>
+              <strong>Expert (4) responses demonstrate:</strong>
+              (Fraction &divide; Fraction) correct answer 6, simplified fraction shown (24/4 = 6), and decimal or check shown;
+              (Whole &divide; Unit Fraction) correct count of 12 with explicit explanation of why multiplying by the reciprocal works (e.g., "each cup holds 3 servings of 1/3");
+              (Mixed Numbers) mixed number correctly converted to 5/2 first, division result 10/3 simplified, full pieces (3) AND remainder (1/4 ft) both identified;
+              menu card names every calculated value with correct units and connects each to the division operation used.
+            </p>
+            <p>
+              <strong>Proficient (3):</strong> All four numerical answers correct; menu card uses most numbers but may omit the remainder interpretation or skip showing the reciprocal step.
+            </p>
+            <p>
+              <strong>Developing (2):</strong> At least two phases attempted; error in the mixed-number conversion or a sign/simplification error; menu card present but incomplete.
+            </p>
+          </div>
+        </div><!-- end version-block A -->
+
+        <hr class="divider" />
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- VERSION B                                           -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="version-block">
+          <span class="version-kicker">Version B &nbsp;·&nbsp; Real-World Investigation</span>
+          <h2>&#129490; Maker Workshop Cut List</h2>
+          <p style="color:#5e6e7e;margin:0 0 20px;">Standard: 6.NS.1 &bull; Fraction division in a workshop context</p>
+
+          <!-- PHASE 1 -->
+          <div class="phase-ak">
+            <h3><span class="phase-badge gb">1</span> Phase 1 — Shelf Boards: How Many Shelves? (Whole Number &divide; Fraction &middot; 6.NS.1)</h3>
+
+            <table class="ak-table">
+              <tr>
+                <th>Input</th><th>Default</th><th>Worked Solution</th><th>Final Answer</th>
+              </tr>
+              <tr>
+                <td>Board length (feet)</td><td>8</td>
+                <td rowspan="2">
+                  <div class="worked">
+                    Each shelf is 2/3 ft (numerator fixed at 2)<br>
+                    Rule: L &divide; (2/d) = L &times; (d/2)<br><br>
+                    8 &divide; (2/3)<br>
+                    = 8 &times; (3/2)<br>
+                    = 24/2<br>
+                    = <strong>12</strong><br><br>
+                    Full shelves: <strong>12</strong><br>
+                    Leftover: 24 mod 2 = 0 pieces remainder<br>
+                    &rarr; <strong>no scrap — perfect cut!</strong><br><br>
+                    Check: 12 &times; (2/3) = 24/3 = 8 ft &#10003;
+                  </div>
+                </td>
+                <td rowspan="2" class="ans">12 shelves<br><small>(no scrap — perfect cut)</small></td>
+              </tr>
+              <tr>
+                <td>Each shelf is 2/(denominator) ft</td><td>3</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- PHASE 2 -->
+          <div class="phase-ak">
+            <h3><span class="phase-badge tb">2</span> Phase 2 — Ribbon Roll: Smaller Pieces (Fraction &divide; Fraction &middot; 6.NS.1)</h3>
+
+            <table class="ak-table">
+              <tr>
+                <th>Input</th><th>Default</th><th>Worked Solution</th><th>Final Answer</th>
+              </tr>
+              <tr>
+                <td>Ribbon numerator (a)</td><td>5</td>
+                <td rowspan="4">
+                  <div class="worked">
+                    Rule: (a/b) &divide; (c/d) = (a&times;d) / (b&times;c)<br><br>
+                    (5/6) &divide; (1/4)<br>
+                    = (5&times;4) / (6&times;1)<br>
+                    = 20/6<br><br>
+                    Simplify: GCF(20, 6) = 2<br>
+                    20/6 = <strong>10/3</strong><br><br>
+                    Decimal: 10 &divide; 3 &approx; 3.333...<br>
+                    Full pieces: <strong>3</strong><br>
+                    Remainder: 20 &minus; (3&times;6) = 20 &minus; 18 = 2 (in sixths-of-quarter units)<br><br>
+                    Leftover in yards:<br>
+                    remPiecesNum&times;c / (rDen&times;d) = 2&times;1 / (6&times;4) = 2/24 = <strong>1/12 yd</strong>
+                  </div>
+                </td>
+                <td rowspan="4" class="ans">3 full pieces<br><small>(10/3 &asymp; 3.33; 1/12 yd left over)</small></td>
+              </tr>
+              <tr><td>Ribbon denominator (b)</td><td>6</td></tr>
+              <tr><td>Per piece numerator (c)</td><td>1</td></tr>
+              <tr><td>Per piece denominator (d)</td><td>4</td></tr>
+            </table>
+          </div>
+
+          <!-- PHASE 3 -->
+          <div class="phase-ak">
+            <h3><span class="phase-badge glb">3</span> Phase 3 — Pipe Sections: Mixed-Number Length (Mixed Number &divide; Fraction &middot; 6.NS.1)</h3>
+
+            <table class="ak-table">
+              <tr>
+                <th>Input</th><th>Default</th><th>Worked Solution</th><th>Final Answer</th>
+              </tr>
+              <tr>
+                <td>Whole part (W)</td><td>3</td>
+                <td rowspan="3">
+                  <div class="worked">
+                    Cut size is fixed at 1/4 m<br><br>
+                    Step 1 — Convert mixed number:<br>
+                    3 and 1/2 = (3&times;2 + 1)/2 = 7/2 m<br><br>
+                    Step 2 — Divide by 1/4:<br>
+                    (7/2) &divide; (1/4)<br>
+                    = (7/2) &times; 4<br>
+                    = 28/2<br>
+                    = <strong>14</strong><br><br>
+                    Full pieces: <strong>14</strong><br>
+                    Remainder: 28 mod 2 = 0<br>
+                    &rarr; <strong>no scrap — perfect cut!</strong><br><br>
+                    Check: 14 &times; (1/4) = 14/4 = 7/2 = 3.5 m &#10003;
+                  </div>
+                </td>
+                <td rowspan="3" class="ans">14 pipe pieces<br><small>(each 1/4 m; no scrap)</small></td>
+              </tr>
+              <tr><td>Numerator (n)</td><td>1</td></tr>
+              <tr><td>Denominator (d)</td><td>2</td></tr>
+            </table>
+          </div>
+
+          <!-- PHASE 4 -->
+          <div class="phase-ak">
+            <h3><span class="phase-badge cb">4</span> Phase 4 — Which Cut Wastes Less? (Decision + Quick Check &middot; 6.NS.1)</h3>
+
+            <p style="font-size:14px;color:#5e6e7e;margin:0 0 10px;">Both options use a 7-foot board; inputs are hard-coded in this phase.</p>
+
+            <table class="ak-table">
+              <tr>
+                <th>Option</th><th>Calculation</th><th>Full Pieces</th><th>Leftover (ft)</th>
+              </tr>
+              <tr>
+                <td><strong>Option A</strong><br>3/4-ft cuts</td>
+                <td>
+                  <div class="worked">
+                    7 &divide; (3/4) = 7 &times; (4/3) = 28/3<br>
+                    28 &divide; 3 = 9 remainder 1<br>
+                    Leftover: (1 piece-rem) &times; (3/4 ft/piece)<br>
+                    = 1&times;3 / (3&times;4) = 3/12 = <strong>1/4 ft</strong>
+                  </div>
+                </td>
+                <td class="ans">9 pieces</td>
+                <td><strong>1/4 ft</strong> (= 0.25 ft)</td>
+              </tr>
+              <tr>
+                <td><strong>Option B</strong><br>2/3-ft cuts</td>
+                <td>
+                  <div class="worked">
+                    7 &divide; (2/3) = 7 &times; (3/2) = 21/2<br>
+                    21 &divide; 2 = 10 remainder 1<br>
+                    Leftover: (1 piece-rem) &times; (2/3 ft/piece)<br>
+                    = 1&times;2 / (2&times;3) = 2/6 = <strong>1/3 ft</strong>
+                  </div>
+                </td>
+                <td class="ans">10 pieces</td>
+                <td><strong>1/3 ft</strong> (= 0.333... ft)</td>
+              </tr>
+              <tr>
+                <td colspan="4" class="ans">
+                  <strong>Winner: Option A (3/4-ft cuts)</strong> wastes less — only 1/4 ft of scrap vs. 1/3 ft.<br>
+                  <span style="font-weight:400;color:#1a2633;">Comparison: 1/4 &lt; 1/3 because 3 &lt; 4 (same numerator, larger denominator = smaller fraction).</span>
+                </td>
+              </tr>
+            </table>
+
+            <div class="quick-check-box">
+              <strong>Quick-Check Problem (hard-coded, always the same):</strong>
+              A 5-foot rope is cut into 1/2-foot pieces. How many full pieces?
+              <br>
+              <div class="worked" style="margin-top:8px;">
+                5 &divide; (1/2) = 5 &times; 2 = <strong>10</strong><br>
+                Check: 10 &times; (1/2) = 5 ft &#10003;
+              </div>
+              <div class="qc-answer" style="margin-top:6px;">Answer: 10 pieces</div>
+            </div>
+          </div>
+
+          <!-- SAMPLE RESPONSE -->
+          <div class="sample-response">
+            <h4>Sample Expert Written Cut-List Memo (Final Deliverable)</h4>
+            <p>
+              "Workshop team: The 8-ft board yields <strong>12 shelves</strong> at 2/3 ft each, with no scrap at all (8 &divide; 2/3 = 8 &times; 3/2 = 12 — a perfect whole-number result).
+              The 5/6-yd ribbon yields <strong>3 full decoration pieces</strong> of 1/4 yd each (5/6 &divide; 1/4 = 20/6 = 10/3 &asymp; 3.33), with 1/12 yd of ribbon left over.
+              The 3&frac12;-meter pipe gives <strong>14 quarter-meter pieces</strong> (7/2 &divide; 1/4 = 7/2 &times; 4 = 14 — again no waste).
+              For the 7-ft board, <strong>Option A (3/4-ft cuts) wastes less</strong>, leaving only 1/4 ft of scrap compared to 1/3 ft for Option B, because 1/4 &lt; 1/3."
+            </p>
+          </div>
+
+          <div class="rubric-note">
+            <h4>Sample 4 / 3 / 2 Rubric Scoring Notes</h4>
+            <p>
+              <strong>Expert (4) responses demonstrate:</strong>
+              (Whole &divide; Fraction) correct shelf count of 12, leftover stated as zero (or "no scrap"), and multiplication check shown;
+              (Fraction &divide; Fraction) correct result 10/3, full piece count 3, simplified fraction shown, AND leftover in yards (1/12 yd) identified;
+              (Mixed Numbers) correct conversion 3&frac12; &rarr; 7/2 written explicitly, division 14 shown, no-scrap conclusion stated;
+              (Decision) both leftover amounts computed and compared using fraction comparison reasoning (1/4 &lt; 1/3);
+              memo names the better option (<em>Option A</em>) with a mathematical justification, not just a guess.
+            </p>
+            <p>
+              <strong>Proficient (3):</strong> Correct answer for each phase; memo identifies Option A but may not explain the fraction comparison; leftover amounts present but may lack units.
+            </p>
+            <p>
+              <strong>Developing (2):</strong> At least two phases correct; error in the mixed-number conversion or leftover calculation; memo present but missing the cut-option comparison.
+            </p>
+          </div>
+        </div><!-- end version-block B -->
+
+      </div><!-- end page-shell inner -->
+
+      <footer class="site-footer">
+        <span>Neft Teacher &middot; Unit 2 Projects &mdash; Teacher Answer Key</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </main>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>

@@ -42,6 +42,127 @@
         padding: 20px 16px 64px;
       }
 
+      /* ── Learning Target box ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+
+      /* ── Teacher / Answer Key collapsibles ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      details.teacher-only summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-radius: 10px;
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+      .details-body li {
+        margin-bottom: 4px;
+      }
+
+      /* ── Rubric ── */
+      .rubric-wrap {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+        overflow-x: auto;
+      }
+      .rubric-wrap h2 {
+        margin: 0 0 12px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+      .rubric tr:nth-child(even) td {
+        background: var(--nt-bg);
+      }
+
       /* Header */
       .hero {
         background: var(--nt-surface);
@@ -294,10 +415,54 @@
         font-weight: 700;
       }
 
+      /* ── Reflection & Deliverable ── */
+      .reflection-wrap {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-bottom: 18px;
+      }
+      .reflection-wrap h2 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .reflection-wrap label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .reflection-wrap textarea {
+        font: inherit;
+        font-size: 17px;
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        resize: vertical;
+      }
+      .deliverable {
+        margin-top: 14px;
+        font-size: 16px;
+        border-left: 4px solid var(--nt-accent);
+        padding-left: 12px;
+        color: var(--nt-muted);
+      }
+      .deliverable strong {
+        color: var(--nt-text);
+      }
+
       /* Visible keyboard focus everywhere */
       a:focus-visible,
       button:focus-visible,
       input:focus-visible,
+      textarea:focus-visible,
       [tabindex]:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
@@ -306,11 +471,79 @@
       #ntkit {
         margin-top: 10px;
       }
+
+      /* ── Print styles ── */
+      @media print {
+        details.teacher-only,
+        .checkbar,
+        #ntkit .nt-kit-actions,
+        .btn-check {
+          display: none !important;
+        }
+        .wrap {
+          padding-bottom: 0;
+        }
+      }
     </style>
   </head>
 
   <body class="nt-theme-aware">
     <main class="wrap">
+
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
+        <ul>
+          <li>I can find a unit rate by dividing the total by the number of units.</li>
+          <li>I can identify and build equivalent ratios by multiplying or dividing both terms by the same number.</li>
+          <li>I can find a percent of a number using ratio reasoning or multiplication.</li>
+          <li>I can use rate reasoning to convert between quantities (e.g., miles per liter).</li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standard: CCSS 6.RP.A.2–3</span>
+          <span>Time: ~35 min</span>
+          <span>Materials: This activity (device or printed)</span>
+          <span>Grade 6</span>
+        </div>
+      </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li><strong>Whole-class launch (5 min):</strong> Read the scenario aloud. Ask: "What does 'unit rate' mean in real life?"</li>
+            <li><strong>Independent work (20–25 min):</strong> Students work through Tasks 1–6. Circulate and prompt with Socratic questions.</li>
+            <li><strong>Debrief (5–10 min):</strong> Share Part 3 (equivalent ratios) and Part 5 (percent) on the board. Discuss strategies.</li>
+          </ul>
+          <h3>Grouping Suggestions</h3>
+          <ul>
+            <li><strong>Partners:</strong> Pair students for Tasks 3–4 (ratio tasks) to encourage discourse.</li>
+            <li><strong>Individual:</strong> Tasks 1, 2, 5, 6 for independent practice and accountability.</li>
+          </ul>
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>Provide a ratio table graphic organizer for Tasks 3–4.</li>
+            <li>Allow calculator use on Tasks 5–6 for students with IEP/504 accommodations.</li>
+            <li>Pre-teach vocabulary: ratio, rate, unit rate, percent, equivalent.</li>
+          </ul>
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Ask: "Could you write Task 6 as a proportion and solve it? Show two methods."</li>
+            <li>Have students create a second equivalent ratio for Task 3 that was NOT listed as an answer.</li>
+            <li>Extension: find what percent of the 80-liter tank is filled after 30 liters are used.</li>
+          </ul>
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Pair the word "rate" with a visual (price tag per item, speedometer).</li>
+            <li>Post a bilingual vocabulary card: rate / tasa, ratio / razón, percent / por ciento.</li>
+            <li>Allow oral responses or drawing for the reflection prompt.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ══ HERO ══ -->
       <header class="hero">
         <span class="standard">CCSS 6.RP.A.2–3 · Grade 6</span>
         <h1>Pit-Crew Architect — Build the Winning Race Car</h1>
@@ -319,19 +552,19 @@
           Rally. Build each car part by setting rates, ratios, and percents.
           Tap, drag, or set the numbers, then press <b>Check My Build</b>.
         </p>
-        <div class="progress" aria-hidden="false">
-          <div class="progress-track">
+        <div class="progress" aria-label="Activity progress">
+          <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6" id="progBar">
             <div class="progress-fill" id="progFill"></div>
           </div>
-          <div class="progress-label" id="progLabel">0 of 6 parts built</div>
+          <div class="progress-label" id="progLabel" aria-live="polite">0 of 6 parts built</div>
         </div>
       </header>
 
       <!-- TASK 1: Unit rate (price per item) -->
-      <section class="task" data-task="1">
+      <section class="task" data-task="1" aria-labelledby="t1heading">
         <div class="task-head">
-          <div class="task-num">1</div>
-          <h2 class="task-title">Tune the Fuel Price (unit rate)</h2>
+          <div class="task-num" aria-hidden="true">1</div>
+          <h2 class="task-title" id="t1heading">Tune the Fuel Price (unit rate)</h2>
         </div>
         <p class="task-do">
           4 cans of fuel cost $12. Set the price for <b>1 can</b>.
@@ -343,12 +576,12 @@
               class="step-btn"
               data-step="t1"
               data-dir="-1"
-              aria-label="Lower price"
+              aria-label="Lower price by $1"
             >
               −
             </button>
-            <span class="step-unit">$</span>
-            <span class="step-val" id="t1val" role="status" aria-live="polite"
+            <span class="step-unit" aria-hidden="true">$</span>
+            <span class="step-val" id="t1val" role="status" aria-live="polite" aria-label="Current price per can: 0 dollars"
               >0</span
             >
             <span class="step-unit">per 1 can</span>
@@ -357,21 +590,21 @@
               class="step-btn"
               data-step="t1"
               data-dir="1"
-              aria-label="Raise price"
+              aria-label="Raise price by $1"
             >
               +
             </button>
           </div>
-          <div class="live" id="t1live">4 cans = $12, so 1 can = ?</div>
+          <div class="live" id="t1live" aria-live="polite">4 cans = $12, so 1 can = ?</div>
           <p class="hint">Hint: <b>$12 ÷ 4 cans</b> = price for 1 can.</p>
         </div>
       </section>
 
       <!-- TASK 2: Unit rate (speed) -->
-      <section class="task" data-task="2">
+      <section class="task" data-task="2" aria-labelledby="t2heading">
         <div class="task-head">
-          <div class="task-num">2</div>
-          <h2 class="task-title">Set the Engine Speed (miles per hour)</h2>
+          <div class="task-num" aria-hidden="true">2</div>
+          <h2 class="task-title" id="t2heading">Set the Engine Speed (miles per hour)</h2>
         </div>
         <p class="task-do">
           The car goes 150 miles in 3 hours. Type the speed for <b>1 hour</b>.
@@ -385,20 +618,21 @@
               min="0"
               step="1"
               inputmode="numeric"
+              aria-describedby="t2hint"
             />
             <span class="step-unit">miles per hour</span>
           </div>
-          <p class="hint">
+          <p class="hint" id="t2hint">
             Hint: <b>150 miles ÷ 3 hours</b> = miles in 1 hour.
           </p>
         </div>
       </section>
 
       <!-- TASK 3: Equivalent ratio (pick the lane) -->
-      <section class="task" data-task="3">
+      <section class="task" data-task="3" aria-labelledby="t3heading">
         <div class="task-head">
-          <div class="task-num">3</div>
-          <h2 class="task-title">Match the Tire Mix (equivalent ratio)</h2>
+          <div class="task-num" aria-hidden="true">3</div>
+          <h2 class="task-title" id="t3heading">Match the Tire Mix (equivalent ratio)</h2>
         </div>
         <p class="task-do">
           The grip mix is <b>2 red : 3 blue</b>. Tap the lane with the
@@ -409,7 +643,7 @@
             class="lanes"
             id="t3lanes"
             role="group"
-            aria-label="Pick the equivalent ratio"
+            aria-label="Pick the equivalent ratio to 2 red : 3 blue"
           >
             <button
               type="button"
@@ -451,10 +685,10 @@
       </section>
 
       <!-- TASK 4: Build equivalent ratio with stepper -->
-      <section class="task" data-task="4">
+      <section class="task" data-task="4" aria-labelledby="t4heading">
         <div class="task-head">
-          <div class="task-num">4</div>
-          <h2 class="task-title">Scale Up the Pit Crew (equivalent ratio)</h2>
+          <div class="task-num" aria-hidden="true">4</div>
+          <h2 class="task-title" id="t4heading">Scale Up the Pit Crew (equivalent ratio)</h2>
         </div>
         <p class="task-do">
           1 driver needs <b>5 helpers</b>. Build the crew for <b>4 drivers</b>.
@@ -471,7 +705,7 @@
             >
               −
             </button>
-            <span class="step-val" id="t4val" role="status" aria-live="polite"
+            <span class="step-val" id="t4val" role="status" aria-live="polite" aria-label="Current helpers: 0"
               >0</span
             >
             <span class="step-unit">helpers for 4 drivers</span>
@@ -485,7 +719,7 @@
               +
             </button>
           </div>
-          <div class="live" id="t4live">
+          <div class="live" id="t4live" aria-live="polite">
             1 driver : 5 helpers → 4 drivers : ? helpers
           </div>
           <p class="hint">
@@ -495,20 +729,21 @@
       </section>
 
       <!-- TASK 5: Percent of a number (slider) -->
-      <section class="task" data-task="5">
+      <section class="task" data-task="5" aria-labelledby="t5heading">
         <div class="task-head">
-          <div class="task-num">5</div>
-          <h2 class="task-title">Charge the Boost Bar (percent of a number)</h2>
+          <div class="task-num" aria-hidden="true">5</div>
+          <h2 class="task-title" id="t5heading">Charge the Boost Bar (percent of a number)</h2>
         </div>
         <p class="task-do">
           The full tank holds 80 liters. Fill the bar to <b>25%</b> of the tank.
           Then type how many <b>liters</b> that is.
         </p>
         <div class="scene">
-          <div class="ptrack">
+          <div class="ptrack" role="img" aria-label="Percent bar showing current fill level">
             <div class="ptrack-fill" id="t5fill"></div>
-            <div class="ptrack-text" id="t5pct">0%</div>
+            <div class="ptrack-text" id="t5pct" aria-hidden="true">0%</div>
           </div>
+          <label for="t5range" class="sr-only">Set percent of tank (0–100)</label>
           <input
             type="range"
             id="t5range"
@@ -516,7 +751,10 @@
             max="100"
             step="5"
             value="0"
-            aria-label="Set percent of tank"
+            aria-label="Set percent of tank: 0%"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="100"
           />
           <div class="entry" style="margin-top: 12px">
             <label for="t5in">25% of 80 liters =</label>
@@ -526,20 +764,21 @@
               min="0"
               step="1"
               inputmode="numeric"
+              aria-describedby="t5hint"
             />
             <span class="step-unit">liters</span>
           </div>
-          <p class="hint">
+          <p class="hint" id="t5hint">
             Hint: 25% means 25 out of 100. 25% of 80 = <b>80 ÷ 4</b>.
           </p>
         </div>
       </section>
 
       <!-- TASK 6: Find the whole / convert units -->
-      <section class="task" data-task="6">
+      <section class="task" data-task="6" aria-labelledby="t6heading">
         <div class="task-head">
-          <div class="task-num">6</div>
-          <h2 class="task-title">Measure the Track (convert units)</h2>
+          <div class="task-num" aria-hidden="true">6</div>
+          <h2 class="task-title" id="t6heading">Measure the Track (convert units)</h2>
         </div>
         <p class="task-do">
           The car uses <b>2 liters of fuel for every 10 miles</b>. Type how many
@@ -554,10 +793,11 @@
               min="0"
               step="1"
               inputmode="numeric"
+              aria-describedby="t6hint"
             />
             <span class="step-unit">miles</span>
           </div>
-          <p class="hint">
+          <p class="hint" id="t6hint">
             Hint: 2 liters = 10 miles, so 1 liter = 5 miles. Then ×6.
           </p>
         </div>
@@ -572,7 +812,99 @@
 
       <!-- Activity Kit: name field, PDF/DOC export, results -->
       <div id="ntkit"></div>
+
+      <!-- ══ RUBRIC ══ -->
+      <section class="rubric-wrap" aria-label="Scoring rubric">
+        <h2>Scoring Rubric</h2>
+        <table class="rubric" role="table">
+          <thead>
+            <tr>
+              <th scope="col">Level</th>
+              <th scope="col">Score</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>4 — Exceeds</strong></td>
+              <td>6 / 6</td>
+              <td>All 6 parts correct. Demonstrates fluent unit-rate, equivalent-ratio, and percent reasoning. Work is complete and precise (e.g., slider set to exactly 25%, correct equivalent ratio identified on first try).</td>
+            </tr>
+            <tr>
+              <td><strong>3 — Meets</strong></td>
+              <td>4–5 / 6</td>
+              <td>Most rate and ratio tasks correct; may have one arithmetic slip on the percent or fuel-conversion task. Equivalent-ratio logic is clearly applied.</td>
+            </tr>
+            <tr>
+              <td><strong>2 — Approaching</strong></td>
+              <td>2–3 / 6</td>
+              <td>Some correct unit rates or ratios, but errors indicate partial understanding (e.g., adds instead of multiplies for equivalent ratios, or confuses percent with the whole number).</td>
+            </tr>
+            <tr>
+              <td><strong>1 — Beginning</strong></td>
+              <td>0–1 / 6</td>
+              <td>Attempts made but answers reflect significant misunderstanding of rate/ratio/percent concepts. Needs direct instruction and guided practice before re-attempt.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ══ ANSWER KEY (teacher only, hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Answer key">
+        <summary>Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>Part 1 — Fuel Price (Unit Rate)</h3>
+          <p><strong>Answer: $3 per can.</strong> Reasoning: $12 ÷ 4 cans = $3/can.</p>
+
+          <h3>Part 2 — Engine Speed (Unit Rate)</h3>
+          <p><strong>Answer: 50 miles per hour.</strong> Reasoning: 150 miles ÷ 3 hours = 50 mph.</p>
+
+          <h3>Part 3 — Tire Mix (Equivalent Ratio)</h3>
+          <p><strong>Answer: 6 : 9.</strong> Reasoning: 2 × 3 = 6 and 3 × 3 = 9. Both terms scaled by 3 → same ratio. Distractors: 2:5 (different sum), 4:9 (4÷2=2 but 9÷3=3, different scale factor), 3:2 (reversed).</p>
+
+          <h3>Part 4 — Pit Crew (Equivalent Ratio)</h3>
+          <p><strong>Answer: 20 helpers.</strong> Reasoning: 1 driver : 5 helpers → 4 drivers : 4 × 5 = 20 helpers.</p>
+
+          <h3>Part 5 — Boost Bar (Percent of a Number)</h3>
+          <p><strong>Answer: 20 liters.</strong> Reasoning: 25% of 80 = 80 × (25/100) = 80 × 0.25 = 20. Equivalently, 80 ÷ 4 = 20. Slider should be set to 25%.</p>
+
+          <h3>Part 6 — Track Distance (Rate Reasoning)</h3>
+          <p><strong>Answer: 30 miles.</strong> Reasoning: Unit rate = 10 miles ÷ 2 liters = 5 miles/liter. Then 6 liters × 5 miles/liter = 30 miles.</p>
+        </div>
+      </details>
+
+      <!-- ══ REFLECTION ══ -->
+      <section class="reflection-wrap" aria-label="Reflection">
+        <h2>Reflection</h2>
+        <label for="reflectionText">
+          Choose ONE task that challenged you. Explain what you did and why it works.
+          Use the words <em>rate</em>, <em>ratio</em>, or <em>percent</em>.
+        </label>
+        <textarea
+          id="reflectionText"
+          name="reflection"
+          rows="5"
+          placeholder="I found Part ___ challenging because… I solved it by…"
+        ></textarea>
+        <p class="deliverable">
+          <strong>Deliverable:</strong> Enter your name in the field above, complete all 6 tasks, write your reflection, then press <strong>Check My Build</strong> to submit and save your score as a PDF or DOC.
+        </p>
+      </section>
+
     </main>
+
+    <style>
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
+    </style>
 
     <script>
       (function () {
@@ -600,9 +932,11 @@
           var c = stepCfg[key];
           $(c.valEl).textContent = state[key];
           if (key === "t1") {
+            $("t1val").setAttribute("aria-label", "Current price per can: " + state.t1 + " dollars");
             $("t1live").textContent = "4 cans = $12, so 1 can = $" + state.t1;
           }
           if (key === "t4") {
+            $("t4val").setAttribute("aria-label", "Current helpers: " + state.t4);
             $("t4live").textContent =
               "1 driver : 5 helpers → 4 drivers : " + state.t4 + " helpers";
           }
@@ -639,6 +973,8 @@
           state.t5 = parseInt(range.value, 10);
           $("t5fill").style.width = state.t5 + "%";
           $("t5pct").textContent = state.t5 + "%";
+          range.setAttribute("aria-label", "Set percent of tank: " + state.t5 + "%");
+          range.setAttribute("aria-valuenow", state.t5);
           markProgress();
         }
         range.addEventListener("input", renderPct);
@@ -671,6 +1007,7 @@
           for (var i = 1; i <= 6; i++) if (isBuilt(i)) done++;
           $("progFill").style.width = (done / 6) * 100 + "%";
           $("progLabel").textContent = done + " of 6 parts built";
+          $("progBar").setAttribute("aria-valuenow", done);
         }
 
         // ---------- mount kit ----------
@@ -737,7 +1074,7 @@
               standard: "6.RP.A.2-3",
               items: items,
             });
-            var res = document.getElementById("ntkit-results");
+            var res = document.getElementById("ntkit");
             if (res && res.scrollIntoView)
               res.scrollIntoView({ behavior: "smooth", block: "start" });
           }

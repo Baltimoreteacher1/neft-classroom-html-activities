@@ -14,16 +14,10 @@
     <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      /* Style ONLY with --nt-* variables */
+      /* ── Base ── */
       body {
         margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Arial,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         background: var(--nt-bg);
         color: var(--nt-text);
         font-size: 19px;
@@ -34,6 +28,8 @@
         margin: 0 auto;
         padding: 24px 20px 80px;
       }
+
+      /* ── Hero ── */
       header.hero {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -66,17 +62,11 @@
         font-size: 21px;
         margin: 18px 0 6px;
       }
-      p,
-      li {
-        font-size: 19px;
-      }
-      .lead {
-        font-size: 21px;
-        color: var(--nt-text);
-      }
-      .muted {
-        color: var(--nt-muted);
-      }
+      p, li { font-size: 19px; }
+      .lead { font-size: 21px; color: var(--nt-text); }
+      .muted { color: var(--nt-muted); }
+
+      /* ── Cards ── */
       section.card {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
@@ -84,24 +74,73 @@
         padding: 22px 24px;
         margin-bottom: 24px;
       }
-      ol.steps {
-        padding-left: 22px;
+
+      /* ── Learning Target box ── */
+      .lt-box {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin: 0 0 16px;
       }
-      ol.steps > li {
-        margin-bottom: 14px;
+      .lt-box h3 {
+        margin: 0 0 8px;
+        font-size: 17px;
+        color: var(--nt-accent);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
+      .lt-box ul { margin: 0 0 10px; padding-left: 20px; }
+      .lt-box ul li { margin: 4px 0; font-size: 18px; }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+        border-top: 1px solid var(--nt-border);
+        padding-top: 8px;
+        margin-top: 8px;
+      }
+      .lt-meta span::before { content: "• "; }
+
+      /* ── Teacher Notes ── */
+      details.teacher-notes {
+        background: #fff8e1;
+        border: 2px solid #f9a825;
+        border-radius: 12px;
+        padding: 12px 18px;
+        margin: 16px 0;
+      }
+      details.teacher-notes summary {
+        font-weight: 700;
+        font-size: 16px;
+        color: #5d4037;
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      details.teacher-notes summary::before {
+        content: "▶";
+        font-size: 12px;
+        transition: transform 0.2s;
+      }
+      details.teacher-notes[open] summary::before { transform: rotate(90deg); }
+      details.teacher-notes p,
+      details.teacher-notes li { font-size: 16px; color: #3e2723; }
+      details.teacher-notes h4 { margin: 12px 0 4px; color: #5d4037; font-size: 16px; }
+
+      /* ── Steps ── */
+      ol.steps { padding-left: 22px; }
+      ol.steps > li { margin-bottom: 14px; }
+
+      /* ── Resources ── */
       .resources a {
         color: var(--nt-accent);
         font-weight: 700;
         text-decoration: underline;
-      }
-      .resources a:focus-visible,
-      a:focus-visible,
-      input:focus-visible,
-      select:focus-visible,
-      button:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
       }
       ul.res-list {
         list-style: none;
@@ -114,6 +153,53 @@
         margin-bottom: 10px;
         background: var(--nt-bg);
       }
+
+      /* ── Formulas ── */
+      .tip {
+        background: var(--nt-bg);
+        border-left: 6px solid var(--nt-accent);
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin: 14px 0;
+      }
+      .formula {
+        background: var(--nt-bg);
+        border: 2px dashed var(--nt-border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 20px;
+        margin: 10px 0;
+      }
+      .formula strong { font-size: 22px; }
+      .dataset {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin: 10px 0;
+      }
+
+      /* ── Dot-plot visual ── */
+      .dotplot {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 10px 0;
+        font-family: monospace;
+        font-size: 18px;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      .dotplot .dp-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 4px; }
+      .dotplot .dp-axis { border-top: 2px solid var(--nt-text); padding-top: 4px; display: flex; gap: 10px; }
+      .dotplot .dp-col { text-align: center; min-width: 28px; }
+      .dotplot .dp-dot { color: var(--nt-accent); font-size: 20px; line-height: 1; }
+
+      /* ── Rubric ── */
       table.rubric {
         width: 100%;
         border-collapse: collapse;
@@ -131,38 +217,75 @@
         background: var(--nt-accent);
         color: var(--nt-bg);
       }
-      .tip {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin: 14px 0;
+      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
+      @media (max-width: 600px) {
+        table.rubric { font-size: 15px; }
+        table.rubric th, table.rubric td { padding: 8px; }
       }
-      .formula {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        font-size: 20px;
-        margin: 10px 0;
-      }
-      .formula strong {
-        font-size: 22px;
-      }
-      .dataset {
+
+      /* ── Self-check quiz ── */
+      .sc-item {
         background: var(--nt-bg);
         border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        font-size: 22px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 14px 0;
+      }
+      .sc-item .sc-prompt {
         font-weight: 700;
-        letter-spacing: 1px;
-        margin: 10px 0;
+        font-size: 18px;
+        margin-bottom: 10px;
       }
-      /* Quiz */
-      .q {
-        margin-bottom: 22px;
+      .sc-item .sc-choices {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 10px;
       }
+      .sc-item .sc-choices label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 17px;
+        cursor: pointer;
+        padding: 8px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+      }
+      .sc-item .sc-choices label:hover { border-color: var(--nt-accent); }
+      .sc-item .sc-choices input[type="radio"] { width: 18px; height: 18px; cursor: pointer; }
+      .sc-btn {
+        font-size: 16px;
+        font-weight: 700;
+        padding: 10px 22px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .sc-btn:hover { filter: brightness(1.08); }
+      .sc-feedback {
+        margin-top: 10px;
+        font-size: 16px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        display: none;
+      }
+      .sc-feedback.correct {
+        background: #e8f5e9;
+        border: 2px solid #388e3c;
+        color: #1b5e20;
+      }
+      .sc-feedback.wrong {
+        background: #fce4ec;
+        border: 2px solid #c62828;
+        color: #b71c1c;
+      }
+
+      /* ── NTKit quiz ── */
+      .q { margin-bottom: 22px; }
       .q label.qprompt {
         display: block;
         font-weight: 700;
@@ -197,61 +320,200 @@
         cursor: pointer;
         margin-top: 8px;
       }
-      .check-btn:hover {
-        filter: brightness(1.08);
+      .check-btn:hover { filter: brightness(1.08); }
+
+      /* ── Answer key ── */
+      details.answer-key {
+        background: #e8f5e9;
+        border: 2px solid #388e3c;
+        border-radius: 12px;
+        padding: 12px 18px;
+        margin: 14px 0;
       }
-      .architect {
-        font-size: 30px;
+      details.answer-key summary {
+        font-weight: 700;
+        color: #1b5e20;
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+      }
+      details.answer-key summary::before {
+        content: "▶";
+        font-size: 12px;
+        transition: transform 0.2s;
+      }
+      details.answer-key[open] summary::before { transform: rotate(90deg); }
+      details.answer-key ol { margin: 10px 0 0; padding-left: 20px; }
+      details.answer-key li { font-size: 16px; color: #1b5e20; margin: 6px 0; }
+
+      /* ── Reflection ── */
+      .reflect-box {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin: 14px 0;
+      }
+      .reflect-box label {
+        font-weight: 700;
+        display: block;
+        margin-bottom: 8px;
+        font-size: 17px;
+      }
+      .reflect-box textarea {
+        width: 100%;
+        min-height: 80px;
+        font-size: 17px;
+        font-family: inherit;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        box-sizing: border-box;
+        resize: vertical;
+      }
+      .deliverable-box {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin: 14px 0;
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      /* ── Focus & accessibility ── */
+      a:focus-visible, input:focus-visible, select:focus-visible,
+      button:focus-visible, textarea:focus-visible,
+      details summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      /* ── Print ── */
+      @media print {
+        body { font-size: 13px; line-height: 1.4; background: #fff; color: #000; }
+        .wrap { max-width: 100%; padding: 0 12px 20px; }
+        header.hero { break-after: avoid; }
+        section.card { break-inside: avoid; border: 1px solid #ccc; margin: 10px 0; padding: 10px 14px; }
+        .check-btn, .sc-btn, details.teacher-notes, .deliverable-box { display: none; }
+        details.answer-key { display: none; }
+        a { color: #000; text-decoration: none; }
+        table.rubric th { background: #555; color: #fff; }
+        .sc-choices label { border: 1px solid #ccc; }
+        .dotplot { overflow: visible; white-space: normal; }
       }
     </style>
   </head>
+
   <body class="nt-theme-aware">
     <div class="wrap">
+      <!-- Back-link -->
+      <p style="font:14px system-ui;padding:10px 0;">
+        <a href="/webquests/">← All WebQuests</a> · <a href="/math/">Math Hub</a>
+      </p>
+
+      <!-- HERO -->
       <header class="hero">
         <span class="badge">WebQuest · Unit 8 · CCSS 6.SP.A &amp; B</span>
-        <h1><span class="architect">📊</span> The Data Lab WebQuest</h1>
-        <p class="lead">
-          Statistics — collect data, build plots, and find the center!
-        </p>
+        <h1>&#128202; The Data Lab WebQuest</h1>
+        <p class="lead">Statistics — collect data, build plots, and find the center!</p>
       </header>
 
       <!-- Student identity bar + Save PDF/DOC + results panel -->
       <div id="ntkit"></div>
 
+      <!-- LEARNING TARGET -->
+      <section class="card" aria-label="Learning Target">
+        <h2>Learning Target</h2>
+        <div class="lt-box">
+          <h3>I can…</h3>
+          <ul>
+            <li>Tell the difference between a statistical and a non-statistical question (6.SP.A.1).</li>
+            <li>Describe a data set using mean, median, mode, and range (6.SP.A.3).</li>
+            <li>Calculate mean absolute deviation (MAD) to describe spread (6.SP.B.5c).</li>
+            <li>Read and interpret a dot plot, histogram, and box plot (6.SP.B.4).</li>
+            <li>Describe the shape of a distribution (symmetric, skewed) (6.SP.A.2).</li>
+          </ul>
+          <div class="lt-meta">
+            <span>Standards: 6.SP.A.1–3, 6.SP.B.4–5</span>
+            <span>Estimated time: 50–60 min</span>
+            <span>Materials: pencil, graph paper or device, calculator (optional)</span>
+          </div>
+        </div>
+
+        <!-- TEACHER NOTES -->
+        <details class="teacher-notes" aria-label="Teacher Notes — hidden from print">
+          <summary>Teacher Notes (click to expand)</summary>
+          <h4>Pacing</h4>
+          <p>
+            Intro + vocab: 8 min · Steps 1–2 (learn concepts): 10 min ·
+            Game (Step 3): 10 min · Dataset practice (Step 4): 8 min ·
+            Self-check quiz: 8 min · NTKit quiz + save: 8 min · Reflection: 5 min.
+            Total ≈ 57 min. Reduce game time to 5 min for a 50-min class.
+          </p>
+          <h4>Grouping</h4>
+          <p>
+            Steps 1–4: pairs (discuss each formula together). Step 4 dataset: individual with pair check.
+            Self-check quiz: individual. NTKit quiz: individual.
+          </p>
+          <h4>Differentiation — Support</h4>
+          <ul>
+            <li>Provide a reference card with the four formulas (mean, median, mode, range) pre-filled.</li>
+            <li>For the dataset practice, pre-sort the numbers so students focus on finding median/mode rather than sorting.</li>
+            <li>Allow use of a calculator for the mean calculation.</li>
+            <li>Use the dot-plot visual in the self-check section to anchor the concept of mode visually.</li>
+          </ul>
+          <h4>Differentiation — Challenge</h4>
+          <ul>
+            <li>Have students collect their own class data (e.g., number of siblings) and calculate all four measures.</li>
+            <li>Introduce mean absolute deviation (MAD): find the distance of each data point from the mean, then average those distances.</li>
+            <li>Ask students to compare two data sets by their median and range and write a conclusion sentence.</li>
+            <li>Extension: identify whether a distribution is symmetric or skewed-right / skewed-left from a dot plot or histogram.</li>
+          </ul>
+          <h4>ESOL / Language Supports</h4>
+          <ul>
+            <li>Post a word wall: data, statistical question, mean, median, mode, range, dot plot, histogram, box plot, distribution.</li>
+            <li>Use color-coded formula cards (mean = blue, median = green, mode = orange, range = red).</li>
+            <li>Allow native-language calculation scratch work; require English labels on final answers.</li>
+            <li>Sentence frames: "The mean of this data set is ___ because ___." / "This is a statistical question because it has many possible answers."</li>
+            <li>Pair ESOL students with a bilingual partner for the game step.</li>
+          </ul>
+        </details>
+      </section>
+
       <!-- INTRODUCTION -->
       <section class="card">
         <h2>1. Introduction</h2>
         <p>
-          Welcome to the <strong>Data Lab</strong>! 🔬 Today you are a
+          Welcome to the <strong>Data Lab</strong>! Today you are a
           <strong>data scientist</strong>. Your job is to collect numbers, show
           them in a plot, and describe them.
         </p>
         <p>
           A <strong>statistical question</strong> is a question that has many
-          different answers (for example: "How many pets do students have?"). We
-          use the <strong>mean</strong>, <strong>median</strong>,
-          <strong>mode</strong>, and <strong>range</strong> to describe the data
-          set.
+          different answers (for example: "How many pets do students have?"). A
+          non-statistical question has exactly one answer (e.g., "How many pets
+          does Maya have?"). We use the <strong>mean</strong>,
+          <strong>median</strong>, <strong>mode</strong>, <strong>range</strong>,
+          and plots to describe and display the data set.
         </p>
       </section>
 
       <!-- TASK -->
       <section class="card">
         <h2>2. Task</h2>
-        <p>By the end, you will be able to:</p>
+        <p>By the end of this WebQuest, you will be able to:</p>
         <ul>
-          <li>
-            Tell a <strong>statistical question</strong> from a normal one.
-          </li>
-          <li>
-            Find the <strong>mean</strong> (average),
-            <strong>median</strong> (middle), and <strong>mode</strong> (most
-            common).
-          </li>
+          <li>Tell a <strong>statistical question</strong> from a non-statistical one.</li>
+          <li>Find the <strong>mean</strong> (average), <strong>median</strong> (middle), and <strong>mode</strong> (most common).</li>
           <li>Find the <strong>range</strong> (biggest − smallest).</li>
-          <li>
-            Read a <strong>dot plot</strong> and finish the short quiz below.
-          </li>
+          <li>Read a <strong>dot plot</strong> and explain the shape of the data.</li>
+          <li>Finish the self-check quiz and the graded Check Your Understanding.</li>
         </ul>
       </section>
 
@@ -264,9 +526,12 @@
             <h3>Step 1 — Learn the words</h3>
             <p>
               <strong>Data</strong> = the numbers you collect.
-              <strong>Mean</strong> = average. <strong>Median</strong> = middle
-              number when sorted. <strong>Mode</strong> = number seen most.
+              <strong>Mean</strong> = average.
+              <strong>Median</strong> = middle number when sorted.
+              <strong>Mode</strong> = number seen most.
               <strong>Range</strong> = how spread out the data is.
+              <strong>Distribution</strong> = the shape of how data is spread.
+              <strong>MAD</strong> = mean absolute deviation (average distance from the mean).
             </p>
           </li>
           <li>
@@ -275,42 +540,80 @@
               Mean: <strong>add all numbers, then divide by how many</strong>
             </div>
             <div class="formula">
-              Median: <strong>sort the numbers, pick the middle one</strong>
+              Median: <strong>sort the numbers, pick the middle one (average the two middle numbers if even count)</strong>
             </div>
             <div class="formula">
-              Mode: <strong>the number that shows up most</strong>
+              Mode: <strong>the number that shows up most often</strong>
             </div>
             <div class="formula">
               Range: <strong>biggest number − smallest number</strong>
+            </div>
+            <div class="formula">
+              MAD: <strong>find each value's distance from the mean, then average those distances</strong>
             </div>
           </li>
           <li>
             <h3>Step 3 — Play the 3D game</h3>
             <p>
-              Open the Data Lab 3D game. Stack blocks to match the numbers, then
-              pick the right answer pad for the mean, median, or mode.
+              Open the <a href="/games/3d/unit-8/" style="color:var(--nt-accent);font-weight:700;">Data Lab 3D game</a>.
+              Stack blocks to match the numbers, then pick the right answer pad for the mean, median, or mode.
             </p>
           </li>
           <li>
             <h3>Step 4 — Practice with one data set</h3>
-            <p>Use this data set of pets per student:</p>
-            <div class="dataset">2, 3, 3, 4, 8</div>
+            <p>Use this data set of pets per student in a class:</p>
+            <div class="dataset" aria-label="Data set: 2, 3, 3, 4, 8">2, 3, 3, 4, 8</div>
             <p>
-              Try to find the mean, median, mode, and range before the quiz.
+              Find the mean, median, mode, and range before the quiz.<br>
+              <em>Mean = (2+3+3+4+8) ÷ 5 = 20 ÷ 5 = 4 | Median = 3 | Mode = 3 | Range = 8 − 2 = 6</em>
             </p>
+            <p>
+              Below is a <strong>dot plot</strong> of the same data. Each dot = one student.
+              The number with the most dots is the mode.
+            </p>
+            <div class="dotplot" aria-label="Dot plot: 2 has one dot, 3 has two dots, 4 has one dot, 8 has one dot">
+              <div style="display:flex;gap:18px;align-items:flex-end;padding-bottom:4px;">
+                <div style="text-align:center;min-width:28px;">
+                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
+                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">2</div>
+                </div>
+                <div style="text-align:center;min-width:28px;">
+                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
+                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
+                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">3</div>
+                </div>
+                <div style="text-align:center;min-width:28px;">
+                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
+                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">4</div>
+                </div>
+                <div style="text-align:center;min-width:28px;">
+                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">5</div>
+                </div>
+                <div style="text-align:center;min-width:28px;">
+                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">6</div>
+                </div>
+                <div style="text-align:center;min-width:28px;">
+                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">7</div>
+                </div>
+                <div style="text-align:center;min-width:28px;">
+                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
+                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">8</div>
+                </div>
+              </div>
+              <p style="font-size:15px;color:var(--nt-muted);margin:4px 0 0;">Number of pets per student</p>
+            </div>
           </li>
           <li>
             <h3>Step 5 — Show what you know</h3>
             <p>
-              Type your name in the bar above, finish the quiz, then
-              <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.
+              Type your name in the bar above, complete the self-check and the graded quiz,
+              then <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.
             </p>
           </li>
         </ol>
         <div class="tip">
-          💡 <strong>Tip:</strong> Always
-          <em>sort the numbers from small to big</em> before you look for the
-          median.
+          <strong>Tip:</strong> Always <em>sort the numbers from smallest to biggest</em>
+          before you look for the median or range.
         </div>
       </section>
 
@@ -319,63 +622,130 @@
         <h2>4. Resources</h2>
         <p>Use these to help you:</p>
         <ul class="res-list">
-          <li>
-            🎮 <a href="/games/3d/unit-8/">Unit 8 — Data Lab 3D Game</a> — build
-            plots and read the measures.
-          </li>
-          <li>📘 <a href="/math/">Math Lessons Hub</a> — review statistics.</li>
-          <li>
-            📖 <a href="/graphic-novels/unit-8/">Unit 8 Graphic Novel</a> — the
-            data story.
-          </li>
-          <li>
-            📝 <a href="/math/unit-8/">Unit 8 Practice Activities</a> — extra
-            practice.
-          </li>
+          <li>&#127918; <a href="/games/3d/unit-8/">Unit 8 — Data Lab 3D Game</a> — build plots and read the measures.</li>
+          <li>&#128216; <a href="/math/">Math Lessons Hub</a> — review statistics.</li>
+          <li>&#128218; <a href="/graphic-novels/unit8/graphic-novel-1.html">Unit 8 Graphic Novel</a> — the data story.</li>
+          <li>&#128221; <a href="/math/unit-8/">Unit 8 Practice Activities</a> — extra practice.</li>
         </ul>
       </section>
 
-      <!-- EVALUATION -->
+      <!-- SELF-CHECK (interactive, instant feedback) -->
+      <section class="card" aria-label="Self-Check — instant feedback">
+        <h2>5. Self-Check</h2>
+        <p class="muted">
+          Answer each question and press <strong>Check</strong> for instant feedback.
+          These help you learn — they do <em>not</em> affect your grade.
+        </p>
+
+        <!-- SC1 -->
+        <div class="sc-item" id="sc1">
+          <p class="sc-prompt">1. Which is a statistical question?</p>
+          <div class="sc-choices">
+            <label><input type="radio" name="sc1" value="a"> How old is my teacher?</label>
+            <label><input type="radio" name="sc1" value="b"> How old are the students in my school?</label>
+            <label><input type="radio" name="sc1" value="c"> What is 6 times 7?</label>
+          </div>
+          <button class="sc-btn" type="button" onclick="checkSC('sc1','b','A statistical question expects a variety of answers — ages of many students will vary. The other two have a single answer.')">Check</button>
+          <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- SC2 -->
+        <div class="sc-item" id="sc2">
+          <p class="sc-prompt">2. Find the mean of: 4, 6, 8, 10, 12.</p>
+          <div class="sc-choices">
+            <label><input type="radio" name="sc2" value="6"> 6</label>
+            <label><input type="radio" name="sc2" value="8"> 8</label>
+            <label><input type="radio" name="sc2" value="10"> 10</label>
+          </div>
+          <button class="sc-btn" type="button" onclick="checkSC('sc2','8','Mean = (4+6+8+10+12) ÷ 5 = 40 ÷ 5 = 8. Add all values, then divide by the count.')">Check</button>
+          <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- SC3 -->
+        <div class="sc-item" id="sc3">
+          <p class="sc-prompt">3. Find the median of: 1, 3, 5, 7, 9.</p>
+          <div class="sc-choices">
+            <label><input type="radio" name="sc3" value="3"> 3</label>
+            <label><input type="radio" name="sc3" value="5"> 5</label>
+            <label><input type="radio" name="sc3" value="7"> 7</label>
+          </div>
+          <button class="sc-btn" type="button" onclick="checkSC('sc3','5','Already sorted: 1, 3, 5, 7, 9 — the middle value (3rd of 5) is 5.')">Check</button>
+          <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- SC4 -->
+        <div class="sc-item" id="sc4">
+          <p class="sc-prompt">4. What is the range of: 3, 8, 15, 2, 10?</p>
+          <div class="sc-choices">
+            <label><input type="radio" name="sc4" value="11"> 11</label>
+            <label><input type="radio" name="sc4" value="13"> 13</label>
+            <label><input type="radio" name="sc4" value="12"> 12</label>
+          </div>
+          <button class="sc-btn" type="button" onclick="checkSC('sc4','13','Range = biggest − smallest = 15 − 2 = 13. Sorted: 2, 3, 8, 10, 15.')">Check</button>
+          <div class="sc-feedback" id="sc4-fb" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- SC5 -->
+        <div class="sc-item" id="sc5">
+          <p class="sc-prompt">5. A dot plot of test scores shows: 70 has 1 dot, 80 has 3 dots, 90 has 2 dots. What is the mode?</p>
+          <div class="sc-choices">
+            <label><input type="radio" name="sc5" value="70"> 70</label>
+            <label><input type="radio" name="sc5" value="80"> 80</label>
+            <label><input type="radio" name="sc5" value="90"> 90</label>
+          </div>
+          <button class="sc-btn" type="button" onclick="checkSC('sc5','80','The mode is the value with the most dots. 80 has 3 dots — more than 70 (1 dot) or 90 (2 dots).')">Check</button>
+          <div class="sc-feedback" id="sc5-fb" role="alert" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- EVALUATION (Rubric) -->
       <section class="card">
-        <h2>5. Evaluation (Rubric)</h2>
+        <h2>6. Evaluation (Rubric)</h2>
         <table class="rubric">
           <thead>
             <tr>
               <th scope="col">Skill</th>
               <th scope="col">4 — Expert</th>
-              <th scope="col">3 — Good</th>
-              <th scope="col">2 — Getting there</th>
-              <th scope="col">1 — Keep trying</th>
+              <th scope="col">3 — Proficient</th>
+              <th scope="col">2 — Developing</th>
+              <th scope="col">1 — Beginning</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>Statistical questions</strong></td>
-              <td>Always tells statistical from non-statistical.</td>
-              <td>Tells them apart most times.</td>
-              <td>Tells some apart correctly.</td>
+              <td><strong>Statistical questions (6.SP.A.1)</strong></td>
+              <td>Correctly identifies statistical vs. non-statistical in all cases and explains why.</td>
+              <td>Correctly identifies them; explanation is incomplete.</td>
+              <td>Identifies them correctly most of the time.</td>
               <td>Needs help telling them apart.</td>
             </tr>
             <tr>
-              <td><strong>Mean &amp; median</strong></td>
-              <td>Finds mean and median fast and correctly.</td>
-              <td>Finds mean and median correctly.</td>
-              <td>Finds them with help.</td>
-              <td>Mean and median not yet found.</td>
+              <td><strong>Mean &amp; median (6.SP.A.3 / 6.SP.B.5c)</strong></td>
+              <td>Calculates mean and median with no errors; explains which is better for skewed data.</td>
+              <td>Calculates mean and median correctly.</td>
+              <td>Finds one of the two correctly.</td>
+              <td>Mean and median not yet found correctly.</td>
             </tr>
             <tr>
-              <td><strong>Mode &amp; range</strong></td>
-              <td>Finds mode and range with no errors.</td>
-              <td>Finds mode and range with few errors.</td>
-              <td>Finds one of them correctly.</td>
-              <td>Cannot find mode or range yet.</td>
+              <td><strong>Mode &amp; range (6.SP.A.3)</strong></td>
+              <td>Finds mode and range with no errors; uses range to describe spread.</td>
+              <td>Finds mode and range with minor errors.</td>
+              <td>Finds one of the two correctly.</td>
+              <td>Cannot yet find mode or range correctly.</td>
+            </tr>
+            <tr>
+              <td><strong>Data displays (6.SP.B.4)</strong></td>
+              <td>Reads dot plot, histogram, and box plot accurately; describes shape (symmetric/skewed).</td>
+              <td>Reads dot plot accurately; can identify mode from plot.</td>
+              <td>Can read a dot plot with some support.</td>
+              <td>Cannot yet read a data display independently.</td>
             </tr>
             <tr>
               <td><strong>Quiz score</strong></td>
-              <td>90–100%</td>
-              <td>75–89%</td>
-              <td>50–74%</td>
-              <td>Below 50%</td>
+              <td>6 of 6 correct (100%)</td>
+              <td>5 of 6 correct</td>
+              <td>3–4 of 6 correct</td>
+              <td>0–2 of 6 correct</td>
             </tr>
           </tbody>
         </table>
@@ -383,34 +753,28 @@
 
       <!-- CONCLUSION -->
       <section class="card">
-        <h2>6. Conclusion</h2>
+        <h2>7. Conclusion</h2>
         <p>
-          Great work, data scientist! You can now spot a
-          <strong>statistical question</strong> and find the
-          <strong>mean</strong>, <strong>median</strong>, <strong>mode</strong>,
-          and <strong>range</strong> of a data set. These same skills help you
-          read graphs, sports stats, and surveys in real life. Finish the quick
-          check below to show what you learned.
+          Great work, data scientist! You can now spot a <strong>statistical question</strong>
+          and find the <strong>mean</strong>, <strong>median</strong>, <strong>mode</strong>,
+          and <strong>range</strong> of a data set. You can also read a dot plot and
+          describe the shape of the data. These same skills help you read graphs,
+          sports stats, and surveys in real life.
         </p>
       </section>
 
-      <!-- CHECK YOUR UNDERSTANDING -->
+      <!-- CHECK YOUR UNDERSTANDING (NTKit graded) -->
       <section class="card">
-        <h2>7. Check Your Understanding</h2>
+        <h2>8. Check Your Understanding</h2>
         <p class="muted">
-          Answer all 6. Then press <strong>Check My Answers</strong>. Type
-          numbers only when asked.
+          Answer all 6. Then press <strong>Check My Answers</strong>. Type numbers only when asked.
         </p>
 
         <div class="q">
-          <label class="qprompt" for="q1"
-            >Q1. Which one is a <strong>statistical question</strong>?</label
-          >
-          <select id="q1">
+          <label class="qprompt" for="q1">Q1. Which one is a <strong>statistical question</strong>?</label>
+          <select id="q1" aria-required="true">
             <option value="">— Choose one —</option>
-            <option value="How tall are the students in my class?">
-              How tall are the students in my class?
-            </option>
+            <option value="How tall are the students in my class?">How tall are the students in my class?</option>
             <option value="How tall am I?">How tall am I?</option>
             <option value="What is 5 + 5?">What is 5 + 5?</option>
             <option value="What day is today?">What day is today?</option>
@@ -418,157 +782,166 @@
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q2"
-            >Q2. Find the <strong>mean</strong> of: 2, 4, 6, 8.</label
-          >
-          <span class="hint"
-            >Add them, then divide by 4. Example answer: 5</span
-          >
-          <input
-            type="text"
-            id="q2"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="the mean"
-          />
+          <label class="qprompt" for="q2">Q2. Find the <strong>mean</strong> of: 2, 4, 6, 8.</label>
+          <span class="hint">Add them all (total = 20), then divide by 4.</span>
+          <input type="text" id="q2" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q3"
-            >Q3. Find the <strong>median</strong> of: 3, 7, 9, 12, 20.</label
-          >
-          <span class="hint"
-            >Sort them, pick the middle number. Example answer: 6</span
-          >
-          <input
-            type="text"
-            id="q3"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="the median"
-          />
+          <label class="qprompt" for="q3">Q3. Find the <strong>median</strong> of: 3, 7, 9, 12, 20.</label>
+          <span class="hint">Sort them (already sorted), then pick the middle number (3rd of 5).</span>
+          <input type="text" id="q3" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q4"
-            >Q4. Find the <strong>mode</strong> of: 5, 8, 8, 8, 10, 12.</label
-          >
-          <span class="hint">The number seen most. Example answer: 7</span>
-          <input
-            type="text"
-            id="q4"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="the mode"
-          />
+          <label class="qprompt" for="q4">Q4. Find the <strong>mode</strong> of: 5, 8, 8, 8, 10, 12.</label>
+          <span class="hint">The number seen most often.</span>
+          <input type="text" id="q4" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q5"
-            >Q5. Find the <strong>range</strong> of: 4, 9, 15, 20.</label
-          >
-          <span class="hint">Biggest − smallest. Example answer: 10</span>
-          <input
-            type="text"
-            id="q5"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="the range"
-          />
+          <label class="qprompt" for="q5">Q5. Find the <strong>range</strong> of: 4, 9, 15, 20.</label>
+          <span class="hint">Biggest − smallest = 20 − 4 = ?</span>
+          <input type="text" id="q5" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
         </div>
 
         <div class="q">
-          <label class="qprompt" for="q6"
-            >Q6. A dot plot shows these numbers: 1, 1, 2, 2, 2, 3. What is the
-            <strong>mode</strong>?</label
-          >
-          <span class="hint"
-            >Which number has the most dots? Example answer: 4</span
-          >
-          <input
-            type="text"
-            id="q6"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="the mode"
-          />
+          <label class="qprompt" for="q6">Q6. A dot plot shows: 1 has 2 dots, 2 has 3 dots, 3 has 1 dot. What is the <strong>mode</strong>?</label>
+          <span class="hint">Which number has the most dots?</span>
+          <input type="text" id="q6" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
         </div>
 
-        <button type="button" class="check-btn" id="checkBtn">
-          Check My Answers ✅
-        </button>
-        <p class="muted" style="margin-top: 14px">
-          Your score and a ✓/✗ for each question will appear in the panel at the
-          top. Then use <strong>Save as PDF</strong> or
-          <strong>Save as DOC</strong> to turn it in.
+        <button type="button" class="check-btn" id="checkBtn">Check My Answers</button>
+        <p class="muted" style="margin-top:14px;">
+          Your score and a check or X for each question will appear in the panel at the top.
+          Then use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to turn it in.
         </p>
+      </section>
+
+      <!-- ANSWER KEY (teacher-only) -->
+      <section class="card" aria-label="Answer Key — Teacher Only">
+        <h2>Answer Key</h2>
+        <details class="answer-key">
+          <summary>Teacher Answer Key — Click to Reveal</summary>
+          <ol>
+            <li><strong>Q1:</strong> "How tall are the students in my class?" — statistical because answers vary. Standard: 6.SP.A.1.</li>
+            <li><strong>Q2:</strong> 5 — Mean of 2, 4, 6, 8: (2+4+6+8) ÷ 4 = 20 ÷ 4 = 5. Standard: 6.SP.A.3.</li>
+            <li><strong>Q3:</strong> 9 — Sorted: 3, 7, 9, 12, 20 — middle value is 9. Standard: 6.SP.A.3.</li>
+            <li><strong>Q4:</strong> 8 — appears 3 times (more than any other value). Standard: 6.SP.A.3.</li>
+            <li><strong>Q5:</strong> 16 — Range = 20 − 4 = 16. Standard: 6.SP.A.3.</li>
+            <li><strong>Q6:</strong> 2 — has 3 dots, the most of any value. Standard: 6.SP.B.4.</li>
+          </ol>
+          <p style="margin-top:8px;"><em>Self-Check answers: 1-b, 2-8, 3-5, 4-13, 5-80.</em></p>
+        </details>
+      </section>
+
+      <!-- REFLECTION + DELIVERABLE -->
+      <section class="card">
+        <h2>9. Reflection &amp; Deliverable</h2>
+
+        <div class="reflect-box">
+          <label for="reflect1">Reflection 1: In your own words, explain the difference between mean and median. When might one be more useful than the other?</label>
+          <textarea id="reflect1" aria-required="true" placeholder="Write your answer here…"></textarea>
+        </div>
+        <div class="reflect-box">
+          <label for="reflect2">Reflection 2: Give a real-world example of a statistical question you could ask at your school. What data would you collect and how would you display it?</label>
+          <textarea id="reflect2" placeholder="Write your answer here…"></textarea>
+        </div>
+
+        <div class="deliverable-box" role="note">
+          Deliverable: Save your completed page as a PDF or DOC with your first and last name in the filename (Example: JaneDoe_Unit8_WebQuest.pdf) and submit it to your teacher.
+        </div>
       </section>
     </div>
 
     <script>
       NTKit.mount("#ntkit");
 
+      /* ── Self-check helper ── */
+      function checkSC(id, correct, explanation) {
+        var chosen = null;
+        var radios = document.getElementsByName(id);
+        for (var i = 0; i < radios.length; i++) {
+          if (radios[i].checked) { chosen = radios[i].value; break; }
+        }
+        var fb = document.getElementById(id + "-fb");
+        if (!fb) return;
+        if (chosen === null) {
+          fb.style.display = "block";
+          fb.className = "sc-feedback wrong";
+          fb.textContent = "Please select an answer first.";
+          return;
+        }
+        if (chosen === correct) {
+          fb.className = "sc-feedback correct";
+          fb.innerHTML = "<strong>Correct!</strong> " + explanation;
+        } else {
+          fb.className = "sc-feedback wrong";
+          fb.innerHTML = "<strong>Not quite.</strong> " + explanation;
+        }
+        fb.style.display = "block";
+      }
+
+      /* ── NTKit graded quiz ── */
       function val(id) {
         var n = document.getElementById(id);
         return n ? n.value : "";
       }
 
-      document
-        .getElementById("checkBtn")
-        .addEventListener("click", function () {
-          NTKit.grade({
-            activityId: "webquest-unit-8",
-            activityTitle: "WebQuest · Unit 8 — Statistics (Data Lab)",
-            standard: "6.SP.A-B",
-            items: [
-              {
-                prompt: "Q1. Which one is a statistical question?",
-                studentAnswer: val("q1"),
-                correctAnswer: "How tall are the students in my class?",
-                points: 1,
-                skill: "Statistical questions",
-              },
-              {
-                prompt: "Q2. Mean of 2, 4, 6, 8 = ?",
-                studentAnswer: val("q2"),
-                correctAnswer: "5",
-                points: 1,
-                skill: "Mean",
-              },
-              {
-                prompt: "Q3. Median of 3, 7, 9, 12, 20 = ?",
-                studentAnswer: val("q3"),
-                correctAnswer: "9",
-                points: 1,
-                skill: "Median",
-              },
-              {
-                prompt: "Q4. Mode of 5, 8, 8, 8, 10, 12 = ?",
-                studentAnswer: val("q4"),
-                correctAnswer: "8",
-                points: 1,
-                skill: "Mode",
-              },
-              {
-                prompt: "Q5. Range of 4, 9, 15, 20 = ?",
-                studentAnswer: val("q5"),
-                correctAnswer: "16",
-                points: 1,
-                skill: "Range",
-              },
-              {
-                prompt: "Q6. Mode of dot plot 1,1,2,2,2,3 = ?",
-                studentAnswer: val("q6"),
-                correctAnswer: "2",
-                points: 1,
-                skill: "Mode (dot plot)",
-              },
-            ],
-          });
-          var panel = document.getElementById("ntkit");
-          if (panel && panel.scrollIntoView)
-            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("checkBtn").addEventListener("click", function () {
+        NTKit.grade({
+          activityId: "webquest-unit-8",
+          activityTitle: "WebQuest · Unit 8 — Statistics (Data Lab)",
+          standard: "6.SP.A-B",
+          items: [
+            {
+              prompt: "Q1. Which one is a statistical question?",
+              studentAnswer: val("q1"),
+              correctAnswer: "How tall are the students in my class?",
+              points: 1,
+              skill: "Statistical questions"
+            },
+            {
+              prompt: "Q2. Mean of 2, 4, 6, 8 = ?",
+              studentAnswer: val("q2"),
+              correctAnswer: "5",
+              points: 1,
+              skill: "Mean"
+            },
+            {
+              prompt: "Q3. Median of 3, 7, 9, 12, 20 = ?",
+              studentAnswer: val("q3"),
+              correctAnswer: "9",
+              points: 1,
+              skill: "Median"
+            },
+            {
+              prompt: "Q4. Mode of 5, 8, 8, 8, 10, 12 = ?",
+              studentAnswer: val("q4"),
+              correctAnswer: "8",
+              points: 1,
+              skill: "Mode"
+            },
+            {
+              prompt: "Q5. Range of 4, 9, 15, 20 = ?",
+              studentAnswer: val("q5"),
+              correctAnswer: "16",
+              points: 1,
+              skill: "Range"
+            },
+            {
+              prompt: "Q6. Mode of dot plot 1(2 dots), 2(3 dots), 3(1 dot) = ?",
+              studentAnswer: val("q6"),
+              correctAnswer: "2",
+              points: 1,
+              skill: "Mode (dot plot)"
+            }
+          ]
         });
+        var panel = document.getElementById("ntkit");
+        if (panel && panel.scrollIntoView)
+          panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     </script>
   </body>
 </html>

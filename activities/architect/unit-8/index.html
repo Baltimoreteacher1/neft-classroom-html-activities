@@ -35,35 +35,138 @@
         margin: 0 auto;
         padding: 20px 16px 64px;
       }
-      h1 {
-        font-size: 30px;
-        margin: 8px 0 4px;
-      }
-      .sub {
-        color: var(--nt-muted);
-        font-size: 17px;
-        margin: 0 0 16px;
-      }
-      .what {
+
+      /* ---- Hero header ---- */
+      header.hero {
         background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin: 0 0 20px;
-        font-size: 18px;
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 20px 22px 16px;
+        margin-bottom: 4px;
       }
-      .what b {
-        color: var(--nt-accent);
+      .badge {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 700;
+        font-size: 14px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        letter-spacing: 0.3px;
+      }
+      header.hero h1 {
+        font-size: 30px;
+        margin: 10px 0 4px;
+      }
+      .lead {
+        font-size: 18px;
+        margin: 0 0 12px;
+        border-left: 5px solid var(--nt-accent);
+        padding-left: 12px;
       }
 
-      /* progress */
+      /* ---- Learning Target box ---- */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin: 14px 0;
+      }
+      .learning-target h2 {
+        font-size: 1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--nt-accent);
+        margin: 0 0 10px;
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target ul li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.88rem;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 6px;
+        padding: 2px 10px;
+      }
+
+      /* ---- Teacher notes (collapsible) ---- */
+      details.teacher-notes {
+        background: var(--nt-surface);
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        padding: 0;
+        margin: 14px 0;
+      }
+      details.teacher-notes summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 12px 16px;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--nt-text);
+        border-radius: 14px;
+      }
+      details.teacher-notes summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-notes summary::before {
+        content: "▶";
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+        color: var(--nt-accent);
+      }
+      details.teacher-notes[open] summary::before {
+        transform: rotate(90deg);
+      }
+      details.teacher-notes summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-radius: 12px;
+      }
+      .teacher-notes-body {
+        padding: 0 16px 16px;
+        font-size: 0.95rem;
+      }
+      .teacher-notes-body h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--nt-accent);
+        margin: 14px 0 4px;
+      }
+      .teacher-notes-body p,
+      .teacher-notes-body ul {
+        margin: 0 0 8px;
+      }
+      .teacher-notes-body ul {
+        padding-left: 1.4em;
+      }
+
+      /* ---- Progress ---- */
       .progress-wrap {
         height: 12px;
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
         border-radius: 999px;
         overflow: hidden;
-        margin: 4px 0 6px;
+        margin: 14px 0 4px;
       }
       .progress-bar {
         height: 100%;
@@ -77,6 +180,7 @@
         margin: 0 0 22px;
       }
 
+      /* ---- Task cards ---- */
       .task {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -105,7 +209,7 @@
         vertical-align: 1px;
       }
 
-      /* dot plot builder */
+      /* ---- Dot plot builder ---- */
       .dotplot {
         display: flex;
         gap: 6px;
@@ -173,7 +277,7 @@
         color: var(--nt-text);
       }
 
-      /* data chips */
+      /* ---- Data chips ---- */
       .chips {
         display: flex;
         gap: 8px;
@@ -206,6 +310,11 @@
         color: var(--nt-text);
       }
       input:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-color: var(--nt-accent);
+      }
+      textarea:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
         border-color: var(--nt-accent);
@@ -261,48 +370,253 @@
         color: var(--nt-muted);
         margin: 4px 0 0;
       }
+      .feedback-live {
+        font-size: 0.95rem;
+        min-height: 1.4em;
+        color: var(--nt-muted);
+        margin-top: 6px;
+      }
+
+      /* ---- Rubric ---- */
+      .rubric-section {
+        margin: 24px 0;
+      }
+      .rubric-section h2 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--nt-accent);
+        margin: 0 0 10px;
+      }
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        border: 1px solid var(--nt-border);
+        padding: 8px 12px;
+        vertical-align: top;
+        text-align: left;
+        background: var(--nt-surface);
+      }
+      .rubric-table th {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .rubric-table tr:nth-child(even) td {
+        background: var(--nt-bg);
+      }
+
+      /* ---- Answer key (collapsible teacher) ---- */
+      details.answer-key {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 0;
+        margin: 14px 0;
+      }
+      details.answer-key summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 12px 16px;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--nt-text);
+      }
+      details.answer-key summary::-webkit-details-marker {
+        display: none;
+      }
+      details.answer-key summary::before {
+        content: "▶";
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+        color: var(--nt-accent);
+      }
+      details.answer-key[open] summary::before {
+        transform: rotate(90deg);
+      }
+      details.answer-key summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-radius: 12px;
+      }
+      .answer-key-body {
+        padding: 0 16px 16px;
+        font-size: 0.95rem;
+      }
+      .answer-key-body ol {
+        margin: 0;
+        padding-left: 1.6em;
+      }
+      .answer-key-body ol li {
+        margin-bottom: 6px;
+      }
+      .answer-key-body strong {
+        color: var(--nt-accent);
+      }
+
+      /* ---- Reflection / Deliverable ---- */
+      .reflection-section {
+        margin: 24px 0;
+      }
+      .reflection-section h2 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--nt-accent);
+        margin: 0 0 8px;
+      }
+      .deliverable {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-left: 6px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.97rem;
+        margin-bottom: 14px;
+      }
+      .reflection-section label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      textarea.reflection-input {
+        width: 100%;
+        min-height: 100px;
+        font-size: 1rem;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        resize: vertical;
+        font-family: inherit;
+      }
+
+      /* ---- Print styles ---- */
+      @media print {
+        details.teacher-notes,
+        details.answer-key {
+          display: none !important;
+        }
+        .check-btn {
+          display: none !important;
+        }
+        .progress-wrap,
+        .progress-label {
+          display: none !important;
+        }
+        .stepbtns {
+          display: none !important;
+        }
+      }
     </style>
   </head>
 
   <body class="nt-theme-aware">
     <div class="wrap">
-      <h1>Data Lab · Build the Plot, Read the Measures</h1>
-      <p class="sub">Unit 8 — Statistics · Grade 6 · CCSS 6.SP.A &amp; B</p>
 
-      <div class="what">
-        <b>What to do:</b> Build dot plots with the + and − buttons. Then read
-        the data and type each answer. Press <b>Check My Work</b> at the bottom
-        to see your score.
-      </div>
+      <!-- ============ HERO HEADER ============ -->
+      <header class="hero">
+        <span class="badge">CCSS 6.SP.A &amp; B</span>
+        <h1>Data Lab · Build the Plot, Read the Measures</h1>
+        <p class="lead">
+          <strong>What to do:</strong> Build dot plots with the + and − buttons. Then read
+          the data and type each answer. Press <strong>Check My Work</strong> at the bottom
+          to see your score.
+        </p>
+      </header>
 
+      <!-- ============ LEARNING TARGET ============ -->
+      <section class="learning-target" aria-labelledby="lt-heading">
+        <h2 id="lt-heading">Learning Targets</h2>
+        <ul>
+          <li>I can recognize and ask a statistical question that expects variability in answers.</li>
+          <li>I can display data on a dot plot and describe its distribution.</li>
+          <li>I can calculate the mean, median, mode, and range of a data set.</li>
+          <li>I can build a data set to match a given measure of center.</li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standards: 6.SP.A.1, 6.SP.A.2, 6.SP.A.3, 6.SP.B.4, 6.SP.B.5</span>
+          <span>Time: ~40–50 min</span>
+          <span>Materials: This activity, pencil, optional calculator</span>
+        </div>
+      </section>
+
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-notes" aria-label="Teacher Notes">
+        <summary>Teacher Notes (collapse for students)</summary>
+        <div class="teacher-notes-body">
+          <h3>Pacing</h3>
+          <p>Allow 5 minutes for the "What to do" orientation and vocabulary review. Tasks 1–2 take about 10 minutes together; Tasks 3–5 (mean/median/mode/range) take 15–20 minutes; Task 6 (build to a target median) is the challenge closer and may need 10 minutes. Reserve 5 minutes for the reflection.</p>
+
+          <h3>Grouping</h3>
+          <p>Tasks 1 and 6 (dot-plot building) work well in pairs so students discuss their dot-placement decisions aloud. Tasks 3–5 (calculations) are best done individually first, then compared with a partner.</p>
+
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>For mean: provide the addition step already computed (e.g., "The sum is 24.") so students focus on the division step.</li>
+            <li>For median: print or display the data set on number cards so students can physically sort and find the middle.</li>
+            <li>For Task 6: suggest starting with one dot on 3 (the target median) and then adding two dots on each side.</li>
+          </ul>
+
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Ask students to find a second arrangement in Task 6 with a different spread but the same median of 3.</li>
+            <li>Ask: "Can a data set have more than one mode? Give an example."</li>
+            <li>Extension: compare the mean and median of the Task 3 data set — why are they the same here?</li>
+          </ul>
+
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Preview the terms mean, median, mode, range with visual anchor charts (e.g., "mode = most often").</li>
+            <li>Use sentence frames: "The mean is __ because I added __ and divided by __."</li>
+            <li>The dot-plot builder is visual and language-light — use it as an entry point for emerging English speakers.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ============ PROGRESS ============ -->
       <div class="progress-wrap" aria-hidden="true">
         <div class="progress-bar" id="pbar"></div>
       </div>
-      <p class="progress-label" id="plabel">0 of 6 answered</p>
+      <p class="progress-label" id="plabel" role="status" aria-live="polite">0 of 6 answered</p>
 
-      <!-- TASK 1: Build a dot plot -->
+      <!-- ============ TASK 1: Build a dot plot ============ -->
       <section class="task" aria-labelledby="t1h">
         <h2 id="t1h">1. Build the Dot Plot</h2>
         <p class="dir">
           <span class="tag">BUILD</span> Pet survey. Make this many dots:
           <b>2</b> at 1, <b>3</b> at 2, <b>1</b> at 4. Use + and −.
         </p>
-        <div class="dotplot" id="dp1"></div>
+        <div class="dotplot" id="dp1" aria-label="Dot plot builder for task 1"></div>
         <p class="readout">You built: <b id="dp1read">—</b></p>
         <p class="hint">Goal: 2 dots over 1, 3 dots over 2, 1 dot over 4.</p>
+        <div class="feedback-live" id="dp1feedback" aria-live="polite"></div>
       </section>
 
-      <!-- TASK 2: read a data set -->
+      <!-- ============ TASK 2: Read a data set ============ -->
       <section class="task" aria-labelledby="t2h">
         <h2 id="t2h">2. Read the Data Set</h2>
         <p class="dir">
           <span class="tag">COUNT</span> A statistical question gives many
           answers. Here is the data:
         </p>
-        <div class="chips">
-          <span class="chip">3</span><span class="chip">5</span
-          ><span class="chip">5</span><span class="chip">7</span
-          ><span class="chip">10</span>
+        <div class="chips" aria-label="Data values: 3, 5, 5, 7, 10" role="list">
+          <span class="chip" role="listitem">3</span>
+          <span class="chip" role="listitem">5</span>
+          <span class="chip" role="listitem">5</span>
+          <span class="chip" role="listitem">7</span>
+          <span class="chip" role="listitem">10</span>
         </div>
         <label class="q" for="a2">How many data values are there?</label>
         <input
@@ -310,7 +624,9 @@
           id="a2"
           inputmode="numeric"
           aria-label="number of data values"
+          aria-describedby="a2feedback"
         />
+        <div class="feedback-live" id="a2feedback" aria-live="polite"></div>
 
         <label class="q">Which question is a statistical question?</label>
         <div
@@ -324,88 +640,172 @@
             B. How tall is each student in my class?
           </button>
         </div>
+        <div class="feedback-live" id="c2feedback" aria-live="polite"></div>
       </section>
 
-      <!-- TASK 3: mean -->
+      <!-- ============ TASK 3: Mean ============ -->
       <section class="task" aria-labelledby="t3h">
         <h2 id="t3h">3. Find the Mean (Average)</h2>
         <p class="dir">
           <span class="tag">MEAN</span> Add all the values, then divide by how
           many there are.
         </p>
-        <div class="chips">
-          <span class="chip">4</span><span class="chip">6</span
-          ><span class="chip">6</span><span class="chip">8</span>
+        <div class="chips" aria-label="Data values: 4, 6, 6, 8" role="list">
+          <span class="chip" role="listitem">4</span>
+          <span class="chip" role="listitem">6</span>
+          <span class="chip" role="listitem">6</span>
+          <span class="chip" role="listitem">8</span>
         </div>
         <label class="q" for="a3">Mean = (4 + 6 + 6 + 8) ÷ 4 = ?</label>
-        <input type="number" id="a3" inputmode="numeric" aria-label="mean" />
+        <input type="number" id="a3" inputmode="numeric" aria-label="mean" aria-describedby="a3feedback" />
+        <div class="feedback-live" id="a3feedback" aria-live="polite"></div>
       </section>
 
-      <!-- TASK 4: median -->
+      <!-- ============ TASK 4: Median ============ -->
       <section class="task" aria-labelledby="t4h">
         <h2 id="t4h">4. Find the Median (Middle)</h2>
         <p class="dir">
           <span class="tag">MEDIAN</span> The numbers are in order. The median
           is the middle value.
         </p>
-        <div class="chips">
-          <span class="chip">2</span><span class="chip">5</span
-          ><span class="chip">8</span><span class="chip">9</span
-          ><span class="chip">11</span>
+        <div class="chips" aria-label="Data values in order: 2, 5, 8, 9, 11" role="list">
+          <span class="chip" role="listitem">2</span>
+          <span class="chip" role="listitem">5</span>
+          <span class="chip" role="listitem">8</span>
+          <span class="chip" role="listitem">9</span>
+          <span class="chip" role="listitem">11</span>
         </div>
         <label class="q" for="a4">What is the median?</label>
-        <input type="number" id="a4" inputmode="numeric" aria-label="median" />
+        <input type="number" id="a4" inputmode="numeric" aria-label="median" aria-describedby="a4feedback" />
+        <div class="feedback-live" id="a4feedback" aria-live="polite"></div>
       </section>
 
-      <!-- TASK 5: mode + range -->
+      <!-- ============ TASK 5: Mode + Range ============ -->
       <section class="task" aria-labelledby="t5h">
         <h2 id="t5h">5. Mode and Range</h2>
         <p class="dir">
           <span class="tag">SPREAD</span> The <b>mode</b> is the value that
           shows up most. The <b>range</b> is biggest − smallest.
         </p>
-        <div class="chips">
-          <span class="chip">3</span><span class="chip">3</span
-          ><span class="chip">3</span><span class="chip">6</span
-          ><span class="chip">9</span>
+        <div class="chips" aria-label="Data values: 3, 3, 3, 6, 9" role="list">
+          <span class="chip" role="listitem">3</span>
+          <span class="chip" role="listitem">3</span>
+          <span class="chip" role="listitem">3</span>
+          <span class="chip" role="listitem">6</span>
+          <span class="chip" role="listitem">9</span>
         </div>
         <label class="q" for="a5a">Mode = ?</label>
-        <input type="number" id="a5a" inputmode="numeric" aria-label="mode" />
+        <input type="number" id="a5a" inputmode="numeric" aria-label="mode" aria-describedby="a5afeedback" />
+        <div class="feedback-live" id="a5afeedback" aria-live="polite"></div>
         <label class="q" for="a5b">Range = 9 − 3 = ?</label>
-        <input type="number" id="a5b" inputmode="numeric" aria-label="range" />
+        <input type="number" id="a5b" inputmode="numeric" aria-label="range" aria-describedby="a5bfeedback" />
+        <div class="feedback-live" id="a5bfeedback" aria-live="polite"></div>
       </section>
 
-      <!-- TASK 6: build to match a measure -->
+      <!-- ============ TASK 6: Build to match median ============ -->
       <section class="task" aria-labelledby="t6h">
         <h2 id="t6h">6. Build to Match the Median</h2>
         <p class="dir">
           <span class="tag">BUILD</span> Build a dot plot of <b>5 dots</b> so
           the <b>median is 3</b>. (Place dots over 1–5. Tip: put one dot on 3.)
         </p>
-        <div class="dotplot" id="dp6"></div>
+        <div class="dotplot" id="dp6" aria-label="Dot plot builder for task 6"></div>
         <p class="readout">
           Total dots: <b id="dp6count">0</b> · Median:
           <b id="dp6med">—</b>
         </p>
         <p class="hint">You need exactly 5 dots and a median of 3.</p>
+        <div class="feedback-live" id="dp6feedback" aria-live="polite"></div>
       </section>
 
-      <button class="check-btn" id="checkBtn" type="button">
+      <!-- ============ SUBMIT ============ -->
+      <button class="check-btn" id="checkBtn" type="button" aria-label="Check my work and see score">
         Check My Work
       </button>
 
       <!-- NTKit mounts here: name, score, Save PDF / DOC -->
       <div id="ntkit"></div>
-    </div>
+
+      <!-- ============ RUBRIC ============ -->
+      <section class="rubric-section" aria-labelledby="rubric-heading">
+        <h2 id="rubric-heading">Scoring Rubric</h2>
+        <div style="overflow-x:auto">
+          <table class="rubric-table" role="table">
+            <thead>
+              <tr>
+                <th scope="col">Score (out of 8)</th>
+                <th scope="col">Level</th>
+                <th scope="col">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>7–8</td>
+                <td><strong>Exceeding</strong></td>
+                <td>Accurately builds dot plots, identifies statistical questions, and calculates mean, median, mode, and range with no errors. Can construct a data set to match a given median.</td>
+              </tr>
+              <tr>
+                <td>5–6</td>
+                <td><strong>Meeting</strong></td>
+                <td>Correctly completes most tasks; may have one arithmetic error in mean or one error distinguishing median from mode. Understands statistical vs. non-statistical questions.</td>
+              </tr>
+              <tr>
+                <td>3–4</td>
+                <td><strong>Approaching</strong></td>
+                <td>Demonstrates partial understanding; confuses mean and median, or mode and range. Can build a dot plot but struggles to match a target median. Needs guided practice with the algorithm.</td>
+              </tr>
+              <tr>
+                <td>0–2</td>
+                <td><strong>Beginning</strong></td>
+                <td>Has difficulty reading or building a dot plot and identifying measures of center/spread. Requires direct instruction with small, concrete data sets before attempting this activity.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ ANSWER KEY (teacher only, hidden in print) ============ -->
+      <details class="answer-key" aria-label="Answer Key">
+        <summary>Answer Key (Teacher Use Only)</summary>
+        <div class="answer-key-body">
+          <ol>
+            <li><strong>Task 1 — Build the dot plot:</strong> Exactly 2 dots over 1, 3 dots over 2, 0 dots over 3, 1 dot over 4, 0 dots over 5. Total: 6 data points.</li>
+            <li><strong>Task 2a — Number of data values:</strong> 5. Count: 3, 5, 5, 7, 10 = five values.</li>
+            <li><strong>Task 2b — Statistical question:</strong> B ("How tall is each student in my class?"). It anticipates variability; option A has one fixed answer.</li>
+            <li><strong>Task 3 — Mean of 4, 6, 6, 8:</strong> (4 + 6 + 6 + 8) ÷ 4 = 24 ÷ 4 = <strong>6</strong>.</li>
+            <li><strong>Task 4 — Median of 2, 5, 8, 9, 11:</strong> 5 values, middle is the 3rd = <strong>8</strong>.</li>
+            <li><strong>Task 5a — Mode of 3, 3, 3, 6, 9:</strong> <strong>3</strong> (appears 3 times, more than any other).</li>
+            <li><strong>Task 5b — Range of 3, 3, 3, 6, 9:</strong> 9 − 3 = <strong>6</strong>.</li>
+            <li><strong>Task 6 — Build 5 dots, median = 3:</strong> Any arrangement with exactly 5 dots where the 3rd value in sorted order equals 3. Example valid sets: {1,2,3,4,5}, {2,3,3,4,5}, {1,3,3,3,4}, etc. The dot plot must have the 3rd dot (from smallest) over 3.</li>
+          </ol>
+        </div>
+      </details>
+
+      <!-- ============ REFLECTION ============ -->
+      <section class="reflection-section" aria-labelledby="reflection-heading">
+        <h2 id="reflection-heading">Reflection</h2>
+        <div class="deliverable">
+          <strong>Deliverable:</strong> Complete all 6 tasks and the reflection below. Press <em>Check My Work</em> to save your score. Your teacher will collect your score and this reflection.
+        </div>
+        <label for="reflectionInput">
+          In your own words: explain the difference between the mean and the median. When might they give different results? Write at least 2 sentences.
+        </label>
+        <textarea
+          id="reflectionInput"
+          class="reflection-input"
+          aria-label="Reflection: explain the difference between mean and median in your own words"
+          placeholder="The mean is… The median is… They can be different when…"
+        ></textarea>
+      </section>
+
+    </div><!-- /.wrap -->
 
     <script>
       /* ---------- Dot-plot builder factory ---------- */
       function buildDotPlot(containerId, values) {
         var c = document.getElementById(containerId);
         var counts = {};
-        values.forEach(function (v) {
-          counts[v] = 0;
-        });
+        values.forEach(function (v) { counts[v] = 0; });
         function render() {
           c.innerHTML = "";
           values.forEach(function (v) {
@@ -417,6 +817,7 @@
             for (var i = 0; i < counts[v]; i++) {
               var d = document.createElement("span");
               d.className = "dot";
+              d.setAttribute("aria-hidden", "true");
               dots.appendChild(d);
             }
 
@@ -458,10 +859,7 @@
         return {
           counts: counts,
           values: values,
-          setOnChange: function (fn) {
-            onChange = fn;
-          },
-          // flat list of all data points (value repeated)
+          setOnChange: function (fn) { onChange = fn; },
           data: function () {
             var out = [];
             values.forEach(function (v) {
@@ -474,9 +872,7 @@
 
       function median(arr) {
         if (!arr.length) return null;
-        var s = arr.slice().sort(function (a, b) {
-          return a - b;
-        });
+        var s = arr.slice().sort(function (a, b) { return a - b; });
         var m = Math.floor(s.length / 2);
         return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
       }
@@ -487,24 +883,30 @@
       function updateDp1() {
         var c = dp1.counts;
         document.getElementById("dp1read").textContent =
-          c[1] +
-          " at 1, " +
-          c[2] +
-          " at 2, " +
-          c[3] +
-          " at 3, " +
-          c[4] +
-          " at 4, " +
-          c[5] +
-          " at 5";
+          c[1] + " at 1, " + c[2] + " at 2, " + c[3] + " at 3, " + c[4] + " at 4, " + c[5] + " at 5";
+        var fb = document.getElementById("dp1feedback");
+        if (dp1Done()) {
+          fb.textContent = "Plot matches the goal!";
+        } else {
+          fb.textContent = "Goal: 2 at 1, 3 at 2, 0 at 3, 1 at 4, 0 at 5.";
+        }
         updateProgress();
       }
       function updateDp6() {
         var d = dp6.data();
         document.getElementById("dp6count").textContent = d.length;
-        document.getElementById("dp6med").textContent = d.length
-          ? median(d)
-          : "—";
+        var med = d.length ? median(d) : null;
+        document.getElementById("dp6med").textContent = med !== null ? med : "—";
+        var fb = document.getElementById("dp6feedback");
+        if (dp6Done()) {
+          fb.textContent = "5 dots with median 3 — great!";
+        } else if (d.length === 5) {
+          fb.textContent = "5 dots placed, but median is " + med + ". Try moving a dot.";
+        } else if (d.length > 5) {
+          fb.textContent = "Too many dots (" + d.length + "). Remove " + (d.length - 5) + ".";
+        } else {
+          fb.textContent = "Add " + (5 - d.length) + " more dot(s). Median needs to be 3.";
+        }
         updateProgress();
       }
       dp1.setOnChange(updateDp1);
@@ -512,45 +914,59 @@
       updateDp1();
       updateDp6();
 
-      /* ---------- choice buttons (task 2) ---------- */
+      /* ---------- Choice buttons (task 2) ---------- */
       var c2val = "";
       var c2 = document.getElementById("c2");
       Array.prototype.forEach.call(c2.querySelectorAll("button"), function (b) {
         b.setAttribute("aria-pressed", "false");
         b.addEventListener("click", function () {
           c2val = b.getAttribute("data-v");
-          Array.prototype.forEach.call(
-            c2.querySelectorAll("button"),
-            function (x) {
-              x.setAttribute("aria-pressed", x === b ? "true" : "false");
-            },
-          );
+          Array.prototype.forEach.call(c2.querySelectorAll("button"), function (x) {
+            x.setAttribute("aria-pressed", x === b ? "true" : "false");
+          });
+          var fb = document.getElementById("c2feedback");
+          fb.textContent = c2val === "B"
+            ? "Correct — B varies across many people."
+            : "Try again. A has only one answer; B varies.";
           updateProgress();
         });
       });
 
-      /* ---------- progress ---------- */
+      /* ---------- Inline feedback on number inputs ---------- */
+      function attachFeedback(id, correct, feedbackId) {
+        var el = document.getElementById(id);
+        var fb = document.getElementById(feedbackId);
+        if (!el || !fb) return;
+        el.addEventListener("input", function () {
+          var v = el.value.trim();
+          if (v === "") { fb.textContent = ""; return; }
+          fb.textContent = v === String(correct) ? "Correct!" : "Not quite — check your work.";
+        });
+      }
+      attachFeedback("a2", 5, "a2feedback");
+      attachFeedback("a3", 6, "a3feedback");
+      attachFeedback("a4", 8, "a4feedback");
+      attachFeedback("a5a", 3, "a5afeedback");
+      attachFeedback("a5b", 6, "a5bfeedback");
+
+      /* ---------- Progress ---------- */
       function dp1Done() {
         var c = dp1.counts;
-        return (
-          c[1] === 2 && c[2] === 3 && c[3] === 0 && c[4] === 1 && c[5] === 0
-        );
+        return c[1] === 2 && c[2] === 3 && c[3] === 0 && c[4] === 1 && c[5] === 0;
       }
       function dp6Done() {
         var d = dp6.data();
         return d.length === 5 && median(d) === 3;
       }
-      function val(id) {
-        return document.getElementById(id).value.trim();
-      }
+      function val(id) { return document.getElementById(id).value.trim(); }
       function updateProgress() {
         var done = 0;
-        if (dp1Done()) done++; // task 1
-        if (val("a2") !== "" && c2val !== "") done++; // task 2
-        if (val("a3") !== "") done++; // task 3
-        if (val("a4") !== "") done++; // task 4
-        if (val("a5a") !== "" && val("a5b") !== "") done++; // task 5
-        if (dp6Done()) done++; // task 6
+        if (dp1Done()) done++;
+        if (val("a2") !== "" && c2val !== "") done++;
+        if (val("a3") !== "") done++;
+        if (val("a4") !== "") done++;
+        if (val("a5a") !== "" && val("a5b") !== "") done++;
+        if (dp6Done()) done++;
         document.getElementById("pbar").style.width = (done / 6) * 100 + "%";
         document.getElementById("plabel").textContent = done + " of 6 answered";
       }
@@ -559,82 +975,76 @@
       });
       updateProgress();
 
-      /* ---------- mount kit ---------- */
+      /* ---------- Mount kit ---------- */
       NTKit.mount("#ntkit");
 
-      /* ---------- check / submit ---------- */
-      document
-        .getElementById("checkBtn")
-        .addEventListener("click", function () {
-          NTKit.grade({
-            activityId: "architect-unit-8",
-            activityTitle: "Unit 8 · Data Lab — Statistics",
-            standard: "6.SP.A-B",
-            items: [
-              {
-                prompt:
-                  "Build a dot plot: 2 dots at 1, 3 dots at 2, 1 dot at 4",
-                studentAnswer: dp1Done() ? "correct plot" : "not yet",
-                correctAnswer: "correct plot",
-                points: 1,
-                skill: "Display data on a dot plot (6.SP.B.4)",
-              },
-              {
-                prompt: "How many data values in 3, 5, 5, 7, 10?",
-                studentAnswer: val("a2"),
-                correctAnswer: "5",
-                points: 1,
-                skill: "Number of observations (6.SP.B.5a)",
-              },
-              {
-                prompt:
-                  "Which is a statistical question? (B = varies across class)",
-                studentAnswer: c2val,
-                correctAnswer: "B",
-                points: 1,
-                skill: "Recognize a statistical question (6.SP.A.1)",
-              },
-              {
-                prompt: "Mean of 4, 6, 6, 8",
-                studentAnswer: val("a3"),
-                correctAnswer: "6",
-                points: 1,
-                skill: "Find the mean / center (6.SP.A.3, 6.SP.B.5c)",
-              },
-              {
-                prompt: "Median of 2, 5, 8, 9, 11",
-                studentAnswer: val("a4"),
-                correctAnswer: "8",
-                points: 1,
-                skill: "Find the median / center (6.SP.A.2, 6.SP.B.5c)",
-              },
-              {
-                prompt: "Mode of 3, 3, 3, 6, 9",
-                studentAnswer: val("a5a"),
-                correctAnswer: "3",
-                points: 1,
-                skill: "Find the mode (6.SP.B.5c)",
-              },
-              {
-                prompt: "Range of 3, 3, 3, 6, 9 (9 − 3)",
-                studentAnswer: val("a5b"),
-                correctAnswer: "6",
-                points: 1,
-                skill: "Measure of spread / range (6.SP.A.3, 6.SP.B.5c)",
-              },
-              {
-                prompt: "Build 5 dots so the median is 3",
-                studentAnswer: dp6Done() ? "5 dots, median 3" : "not yet",
-                correctAnswer: "5 dots, median 3",
-                points: 1,
-                skill: "Build data to a given center (6.SP.B.4–5)",
-              },
-            ],
-          });
-          document
-            .getElementById("ntkit")
-            .scrollIntoView({ behavior: "smooth", block: "start" });
+      /* ---------- Check / submit ---------- */
+      document.getElementById("checkBtn").addEventListener("click", function () {
+        NTKit.grade({
+          activityId: "architect-unit-8",
+          activityTitle: "Unit 8 · Data Lab — Statistics",
+          standard: "6.SP.A-B",
+          items: [
+            {
+              prompt: "Build a dot plot: 2 dots at 1, 3 dots at 2, 1 dot at 4",
+              studentAnswer: dp1Done() ? "correct plot" : "not yet",
+              correctAnswer: "correct plot",
+              points: 1,
+              skill: "Display data on a dot plot (6.SP.B.4)",
+            },
+            {
+              prompt: "How many data values in 3, 5, 5, 7, 10?",
+              studentAnswer: val("a2"),
+              correctAnswer: "5",
+              points: 1,
+              skill: "Number of observations (6.SP.B.5a)",
+            },
+            {
+              prompt: "Which is a statistical question? (B = varies across class)",
+              studentAnswer: c2val,
+              correctAnswer: "B",
+              points: 1,
+              skill: "Recognize a statistical question (6.SP.A.1)",
+            },
+            {
+              prompt: "Mean of 4, 6, 6, 8",
+              studentAnswer: val("a3"),
+              correctAnswer: "6",
+              points: 1,
+              skill: "Find the mean / center (6.SP.A.3, 6.SP.B.5c)",
+            },
+            {
+              prompt: "Median of 2, 5, 8, 9, 11",
+              studentAnswer: val("a4"),
+              correctAnswer: "8",
+              points: 1,
+              skill: "Find the median / center (6.SP.A.2, 6.SP.B.5c)",
+            },
+            {
+              prompt: "Mode of 3, 3, 3, 6, 9",
+              studentAnswer: val("a5a"),
+              correctAnswer: "3",
+              points: 1,
+              skill: "Find the mode (6.SP.B.5c)",
+            },
+            {
+              prompt: "Range of 3, 3, 3, 6, 9 (9 − 3)",
+              studentAnswer: val("a5b"),
+              correctAnswer: "6",
+              points: 1,
+              skill: "Measure of spread / range (6.SP.A.3, 6.SP.B.5c)",
+            },
+            {
+              prompt: "Build 5 dots so the median is 3",
+              studentAnswer: dp6Done() ? "5 dots, median 3" : "not yet",
+              correctAnswer: "5 dots, median 3",
+              points: 1,
+              skill: "Build data to a given center (6.SP.B.4-5)",
+            },
+          ],
         });
+        document.getElementById("ntkit").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     </script>
   </body>
 </html>

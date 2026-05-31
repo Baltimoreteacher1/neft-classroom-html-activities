@@ -63,6 +63,133 @@
         margin: 8px 0 0;
       }
 
+      /* ---- Learning Target box ---- */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-bottom: 18px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+        color: var(--nt-accent);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target ul li {
+        margin-bottom: 6px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: var(--nt-muted);
+        border-top: 1px solid var(--nt-border);
+        padding-top: 10px;
+        margin-top: 4px;
+      }
+      .lt-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* ---- Teacher Notes / Answer Key (collapsible) ---- */
+      details.teacher-block {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        padding: 0;
+        margin-bottom: 18px;
+      }
+      details.teacher-block summary {
+        padding: 14px 20px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        color: var(--nt-muted);
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 14px;
+      }
+      details.teacher-block summary::-webkit-details-marker { display: none; }
+      details.teacher-block summary::before {
+        content: "▶";
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+      }
+      details.teacher-block[open] summary::before {
+        transform: rotate(90deg);
+      }
+      details.teacher-block summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .teacher-body {
+        padding: 4px 20px 18px;
+        border-top: 1px solid var(--nt-border);
+      }
+      .teacher-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .teacher-body p,
+      .teacher-body li {
+        font-size: 0.95rem;
+        color: var(--nt-muted);
+      }
+      .teacher-body ul {
+        padding-left: 1.4em;
+        margin: 4px 0;
+      }
+
+      /* ---- Rubric ---- */
+      .rubric-wrap {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 18px;
+        overflow-x: auto;
+      }
+      .rubric-wrap h2 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric th {
+        background: var(--nt-bg);
+        font-weight: 700;
+        color: var(--nt-text);
+      }
+      table.rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+        color: var(--nt-accent);
+      }
+
+      /* ---- Activity cards ---- */
       .card {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -152,6 +279,10 @@
         background: var(--nt-surface);
         color: var(--nt-text);
       }
+      input[type="number"]:focus {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
       .countpill {
         font-weight: 700;
         padding: 6px 12px;
@@ -209,6 +340,61 @@
         flex-wrap: wrap;
         margin-top: 10px;
       }
+
+      /* ---- Reflection + Deliverable ---- */
+      .reflection-card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 18px;
+      }
+      .reflection-card h2 {
+        margin: 0 0 8px;
+        font-size: 1.1rem;
+      }
+      .reflection-card textarea {
+        width: 100%;
+        min-height: 90px;
+        font-size: 1rem;
+        font-family: inherit;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        resize: vertical;
+        margin-top: 8px;
+      }
+      .reflection-card textarea:focus {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .deliverable {
+        background: var(--nt-bg);
+        border-left: 5px solid var(--nt-accent);
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin-top: 14px;
+        font-size: 0.95rem;
+      }
+      .deliverable strong {
+        color: var(--nt-accent);
+      }
+
+      /* ---- Feedback live region ---- */
+      #liveRegion {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
       .visually-hidden {
         position: absolute;
         width: 1px;
@@ -216,27 +402,134 @@
         overflow: hidden;
         clip: rect(0 0 0 0);
       }
+
+      /* ---- Print styles ---- */
+      @media print {
+        details.teacher-block,
+        button.btn,
+        .actions {
+          display: none !important;
+        }
+        .wrap {
+          padding: 0;
+        }
+        body {
+          font-size: 14px;
+        }
+      }
     </style>
   </head>
 
   <body class="nt-theme-aware">
+    <!-- Accessible live region for screen reader feedback -->
+    <div id="liveRegion" aria-live="polite" aria-atomic="true"></div>
+
     <div class="wrap">
       <header class="hero">
-        <span class="standard">CCSS 6.G.A.2 · Volume of Prisms</span>
-        <h1>Volume Architect — Pack the Prism</h1>
+        <span class="standard">CCSS 6.G.A.2 &middot; Volume of Prisms</span>
+        <h1>Volume Architect &mdash; Pack the Prism</h1>
         <p class="lead">
           You are the architect of the Volume Vault. Pack each box with unit
-          cubes, then use <strong>V = length × width × height</strong> to find
+          cubes, then use <strong>V = length &times; width &times; height</strong> to find
           the volume.
         </p>
       </header>
+
+      <!-- Learning Target -->
+      <section class="learning-target" aria-label="Learning Targets">
+        <h2>Learning Targets</h2>
+        <ul>
+          <li>I can find the volume of a rectangular prism by packing it with unit cubes and counting them.</li>
+          <li>I can use the formula <strong>V = l &times; w &times; h</strong> to calculate the volume of a rectangular prism.</li>
+          <li>I can apply the volume formula when one dimension is a fractional (decimal) length.</li>
+          <li>I can work backwards from a known volume to find a missing edge length.</li>
+        </ul>
+        <div class="lt-meta">
+          <span><strong>Standard:</strong> 6.G.A.2</span>
+          <span><strong>Est. time:</strong> 35–45 min</span>
+          <span><strong>Materials:</strong> This page, optional physical unit cubes</span>
+          <span><strong>Format:</strong> Individual or pair work</span>
+        </div>
+      </section>
+
+      <!-- Teacher Notes (hidden in print) -->
+      <details class="teacher-block" aria-label="Teacher Notes">
+        <summary>&#x1F4CB; Teacher Notes</summary>
+        <div class="teacher-body">
+          <h3>Pacing</h3>
+          <p>Allow 5–7 min for Q1 (cube builder), 3–4 min each for Q2–Q4, 5 min for Q5 (fractions), and 5 min for Q6 (inverse). Reserve 5 min for the reflection.</p>
+
+          <h3>Grouping</h3>
+          <p>Works well as individual practice. For pairs, one student designs the box in Q3 and the partner verifies the volume. For whole-class launch, project Q1 and ask: "How many cubes does one row hold? How many rows?"</p>
+
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>Provide physical unit cubes so students can build the models for Q1–Q3 before typing.</li>
+            <li>For Q5, write out 1.5 as 3/2 and multiply step-by-step: 3 &times; 2 = 6, then 6 &times; 1.5 = 9.</li>
+            <li>For Q6, provide a graphic organizer: write the formula, substitute the known values, then solve for the missing variable.</li>
+          </ul>
+
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Ask: if you double the height of the box in Q4, what happens to the volume? What if you double all three dimensions?</li>
+            <li>Challenge Q3: can you find two different boxes with the same volume but different dimensions?</li>
+            <li>Extension: if the box in Q6 needs to hold 96 cubic units, what possible integer dimensions would work?</li>
+          </ul>
+
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Key vocabulary with visuals: <em>rectangular prism, volume, length, width, height, unit cube, layer, edge, dimension</em>.</li>
+            <li>Sentence frame for Q2: "There are ___ cubes in one layer. There are ___ layers. The total is ___ &times; ___ = ___."</li>
+            <li>Sentence frame for Q6: "I know V = ___, l = ___, and w = ___. I solve h = V &divide; (l &times; w) = ___."</li>
+            <li>Post the formula V = l &times; w &times; h visually in the room. Allow native-language glossaries.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- Rubric -->
+      <section class="rubric-wrap" aria-label="Scoring Rubric">
+        <h2>Scoring Rubric</h2>
+        <table class="rubric">
+          <thead>
+            <tr>
+              <th scope="col">Level</th>
+              <th scope="col">Score</th>
+              <th scope="col">Descriptor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mastery</td>
+              <td>6 / 6</td>
+              <td>Correctly packs the cube layer; uses V = l &times; w &times; h without error for all word problems; correctly handles the fractional edge; algebraically solves for the missing dimension.</td>
+            </tr>
+            <tr>
+              <td>Proficient</td>
+              <td>4–5 / 6</td>
+              <td>Mostly correct with at most one arithmetic error; packs the layer correctly; applies the formula consistently; may make a minor error with the fractional edge or the inverse problem.</td>
+            </tr>
+            <tr>
+              <td>Developing</td>
+              <td>2–3 / 6</td>
+              <td>Can pack the cube layer and state the formula but makes errors applying it; confuses area with volume; struggles with fractional edges or working backwards from volume.</td>
+            </tr>
+            <tr>
+              <td>Beginning</td>
+              <td>0–1 / 6</td>
+              <td>Cannot consistently pack the layer to the target; does not recall V = l &times; w &times; h; needs direct re-teaching of the relationship between layers and volume.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
       <!-- Activity kit mount: student name + Save PDF/DOC + results -->
       <div id="ntkit"></div>
 
       <section class="card" aria-label="Progress">
         <p class="progress" id="progressText">Step 0 of 6 done</p>
-        <div class="barwrap"><div class="bar" id="bar"></div></div>
+        <div class="barwrap" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" aria-label="Activity progress">
+          <div class="bar" id="bar"></div>
+        </div>
       </section>
 
       <!-- Q1: Cube builder -->
@@ -249,15 +542,17 @@
         </p>
         <div class="builder">
           <div class="stage">
-            <p class="layer-label">Bottom layer (top view)</p>
+            <p class="layer-label" id="g1label">Bottom layer (top view)</p>
             <div
               class="grid"
               id="g1"
               style="grid-template-columns: repeat(4, 26px)"
+              role="group"
+              aria-labelledby="g1label"
             ></div>
           </div>
           <div>
-            <p class="countpill">Cubes placed: <span id="c1">0</span></p>
+            <p class="countpill">Cubes placed: <span id="c1" aria-live="polite">0</span></p>
           </div>
         </div>
       </section>
@@ -265,13 +560,12 @@
       <!-- Q2: Multiply layer x height -->
       <section class="card" aria-labelledby="q2h">
         <h2 id="q2h">2. Stack the layers</h2>
-        <p class="qmeta">Skill: Layers × height</p>
+        <p class="qmeta">Skill: Layers &times; height</p>
         <p class="directions">
           One layer has 12 cubes. The box is 5 layers tall. How many unit cubes
           fill the box? Type the total.
         </p>
-        <label class="f"
-          >Total cubes (volume)
+        <label class="f" for="a2">Total cubes (volume)
           <input
             type="number"
             id="a2"
@@ -285,32 +579,25 @@
       <!-- Q3: Build dims, compute V -->
       <section class="card" aria-labelledby="q3h">
         <h2 id="q3h">3. Design your own box</h2>
-        <p class="qmeta">Skill: V = l × w × h</p>
+        <p class="qmeta">Skill: V = l &times; w &times; h</p>
         <p class="directions">
           Pick length, width, and height. The cube count updates. Type the
           volume in cubic units.
         </p>
         <div class="controls dims">
-          <label class="f"
-            >Length <input type="number" id="dL" min="1" max="6" value="3"
-          /></label>
-          <label class="f"
-            >Width <input type="number" id="dW" min="1" max="6" value="2"
-          /></label>
-          <label class="f"
-            >Height <input type="number" id="dH" min="1" max="6" value="4"
-          /></label>
+          <label class="f" for="dL">Length <input type="number" id="dL" min="1" max="6" value="3" /></label>
+          <label class="f" for="dW">Width <input type="number" id="dW" min="1" max="6" value="2" /></label>
+          <label class="f" for="dH">Height <input type="number" id="dH" min="1" max="6" value="4" /></label>
         </div>
         <div class="builder" style="margin-top: 12px">
           <div class="stage">
-            <p class="layer-label">One layer (length × width)</p>
-            <div class="grid" id="g3"></div>
+            <p class="layer-label" id="g3label">One layer (length &times; width)</p>
+            <div class="grid" id="g3" role="img" aria-labelledby="g3label"></div>
           </div>
-          <p class="countpill" id="hint3">Cubes per layer: 6 · Layers: 4</p>
+          <p class="countpill" id="hint3" aria-live="polite">Cubes per layer: 6 &middot; Layers: 4</p>
         </div>
         <div class="controls">
-          <label class="f"
-            >Volume (cubic units)
+          <label class="f" for="a3">Volume (cubic units)
             <input type="number" id="a3" min="0" inputmode="numeric" />
           </label>
         </div>
@@ -319,13 +606,12 @@
       <!-- Q4: Given dims word -->
       <section class="card" aria-labelledby="q4h">
         <h2 id="q4h">4. Find the volume</h2>
-        <p class="qmeta">Skill: V = l × w × h</p>
+        <p class="qmeta">Skill: V = l &times; w &times; h</p>
         <p class="directions">
           A storage box is 7 cm long, 4 cm wide, and 5 cm tall. Type the volume
-          in cubic centimeters (cm³).
+          in cubic centimeters (cm&sup3;).
         </p>
-        <label class="f"
-          >Volume (cm³)
+        <label class="f" for="a4">Volume (cm&sup3;)
           <input type="number" id="a4" min="0" inputmode="numeric" />
         </label>
       </section>
@@ -335,11 +621,10 @@
         <h2 id="q5h">5. A half-unit edge</h2>
         <p class="qmeta">Skill: Fractional edge lengths</p>
         <p class="directions">
-          A box is 3 units long, 2 units wide, and <strong>1½</strong> (1.5)
+          A box is 3 units long, 2 units wide, and <strong>1&frac12;</strong> (1.5)
           units tall. Type the volume in cubic units. You may type 9 or 9.0.
         </p>
-        <label class="f"
-          >Volume (cubic units)
+        <label class="f" for="a5">Volume (cubic units)
           <input type="number" id="a5" min="0" step="0.5" inputmode="decimal" />
         </label>
       </section>
@@ -352,10 +637,25 @@
           A box has volume 48 cubic units. It is 4 units long and 2 units wide.
           How tall is it? Type the height in units.
         </p>
-        <label class="f"
-          >Height (units)
+        <label class="f" for="a6">Height (units)
           <input type="number" id="a6" min="0" inputmode="numeric" />
         </label>
+      </section>
+
+      <!-- Reflection -->
+      <section class="reflection-card" aria-labelledby="reflHeading">
+        <h2 id="reflHeading">Reflection</h2>
+        <p>Think about what you learned in this activity:</p>
+        <label for="reflectionText"><strong>Explain in your own words why V = l &times; w &times; h works. How does building layers of cubes connect to the formula?</strong></label>
+        <textarea
+          id="reflectionText"
+          name="reflectionText"
+          placeholder="Write 2–3 sentences here…"
+          aria-describedby="deliverableNote"
+        ></textarea>
+        <div class="deliverable" id="deliverableNote">
+          <strong>Deliverable:</strong> When you finish all 6 problems and the reflection, press <em>Check my work</em> below, then use <em>Save as PDF</em> or <em>Save as DOC</em> to submit your Volume Architect activity to your teacher.
+        </div>
       </section>
 
       <section class="card">
@@ -370,6 +670,30 @@
           or Save as DOC to turn it in.
         </p>
       </section>
+
+      <!-- Answer Key (hidden in print) -->
+      <details class="teacher-block" aria-label="Answer Key">
+        <summary>&#x1F511; Answer Key (Teacher Only)</summary>
+        <div class="teacher-body">
+          <h3>Q1: Build one layer (4 &times; 3)</h3>
+          <p><strong>Answer: 12 cubes.</strong> The grid is 4 columns &times; 3 rows = 12 cells. All 12 cubes should be filled (pressed).</p>
+
+          <h3>Q2: Stack the layers (12 cubes/layer, 5 layers)</h3>
+          <p><strong>Answer: 60.</strong> 12 &times; 5 = 60. This models V = (area of base) &times; height = 12 &times; 5.</p>
+
+          <h3>Q3: Design your own box</h3>
+          <p><strong>Answer: varies</strong> based on student's chosen dimensions. The correct volume equals l &times; w &times; h for the values selected. The default (l=3, w=2, h=4) gives 3 &times; 2 &times; 4 = <strong>24</strong>. The grader accepts whatever V = L &times; W &times; H computes for the chosen values.</p>
+
+          <h3>Q4: Storage box 7 cm &times; 4 cm &times; 5 cm</h3>
+          <p><strong>Answer: 140 cm&sup3;.</strong> V = 7 &times; 4 &times; 5 = 28 &times; 5 = 140.</p>
+
+          <h3>Q5: Box 3 &times; 2 &times; 1.5</h3>
+          <p><strong>Answer: 9 cubic units.</strong> V = 3 &times; 2 &times; 1.5 = 6 &times; 1.5 = 9. You can also think of it as 3 &times; 2 &times; (3/2) = 18/2 = 9.</p>
+
+          <h3>Q6: Find the missing height (V=48, l=4, w=2)</h3>
+          <p><strong>Answer: 6 units.</strong> V = l &times; w &times; h &Rightarrow; 48 = 4 &times; 2 &times; h = 8h &Rightarrow; h = 48 &divide; 8 = 6.</p>
+        </div>
+      </details>
     </div>
 
     <!-- Activity kit -->
@@ -377,6 +701,12 @@
     <script>
       (function () {
         "use strict";
+
+        /* ---------- Live region helper ---------- */
+        function announce(msg) {
+          var lr = document.getElementById("liveRegion");
+          if (lr) { lr.textContent = ""; lr.textContent = msg; }
+        }
 
         /* ---------- Q1 + Q3 interactive cube grids ---------- */
         var cube1Count = 0;
@@ -408,6 +738,7 @@
         buildGrid(g1, 4, 3, function () {
           cube1Count = countOn(g1);
           c1.textContent = cube1Count;
+          announce("Cubes placed: " + cube1Count);
           updateProgress();
         });
 
@@ -431,6 +762,7 @@
             H = clampDim(dH);
           buildGrid(g3, L, W, null);
           hint3.textContent = "Cubes per layer: " + L * W + " · Layers: " + H;
+          g3.setAttribute("aria-label", "Layer grid " + L + " by " + W);
         }
         [dL, dW, dH].forEach(function (i) {
           i.addEventListener("input", refreshQ3);
@@ -448,7 +780,10 @@
           });
           document.getElementById("progressText").textContent =
             "Step " + done + " of 6 done";
-          document.getElementById("bar").style.width = (done / 6) * 100 + "%";
+          var barEl = document.getElementById("bar");
+          barEl.style.width = (done / 6) * 100 + "%";
+          var barWrap = document.querySelector(".barwrap");
+          if (barWrap) barWrap.setAttribute("aria-valuenow", done);
         }
         ids.forEach(function (id) {
           document.getElementById(id).addEventListener("input", updateProgress);

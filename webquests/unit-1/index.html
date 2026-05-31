@@ -3,9 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      WebQuest: Unit 1 — Ratios &amp; Unit Rates (6.RP.A.1–3) | Neft Teacher
-    </title>
+    <title>WebQuest: Unit 1 — Ratios &amp; Unit Rates (6.RP.A.1–3) | Neft Teacher</title>
 
     <!-- Shared theme -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
@@ -16,32 +14,36 @@
     <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      /* Style ONLY with --nt-* variables */
+      /* ── Base layout ── */
       body {
         margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Arial,
-          sans-serif;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         background: var(--nt-bg);
         color: var(--nt-text);
         font-size: 19px;
         line-height: 1.65;
       }
       .wrap {
-        max-width: 880px;
+        max-width: 900px;
         margin: 0 auto;
-        padding: 24px 20px 80px;
+        padding: 24px 20px 100px;
       }
+
+      /* ── Back-link ── */
+      .back-link {
+        font: 14px system-ui;
+        padding: 10px 0;
+        margin-bottom: 4px;
+      }
+      .back-link a { color: var(--nt-accent); font-weight: 700; text-decoration: underline; }
+
+      /* ── Hero header ── */
       header.hero {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
         border-radius: 16px;
         padding: 28px 26px;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
       }
       .badge {
         display: inline-block;
@@ -50,64 +52,73 @@
         font-weight: 700;
         padding: 6px 14px;
         border-radius: 999px;
-        font-size: 16px;
+        font-size: 15px;
         letter-spacing: 0.3px;
       }
-      h1 {
-        font-size: 34px;
-        line-height: 1.2;
-        margin: 14px 0 6px;
-      }
-      h2 {
-        font-size: 26px;
-        margin: 0 0 12px;
-        border-bottom: 3px solid var(--nt-accent);
-        padding-bottom: 6px;
-      }
-      h3 {
-        font-size: 21px;
-        margin: 18px 0 6px;
-      }
-      p,
-      li {
-        font-size: 19px;
-      }
-      .lead {
-        font-size: 21px;
-        color: var(--nt-text);
-      }
-      .muted {
-        color: var(--nt-muted);
-      }
+      h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; }
+      h2 { font-size: 26px; margin: 0 0 14px; border-bottom: 3px solid var(--nt-accent); padding-bottom: 6px; }
+      h3 { font-size: 21px; margin: 18px 0 6px; }
+      p, li { font-size: 19px; }
+      .lead { font-size: 21px; }
+      .muted { color: var(--nt-muted); }
+
+      /* ── Cards ── */
       section.card {
         background: var(--nt-surface);
         border: 2px solid var(--nt-border);
         border-radius: 14px;
-        padding: 22px 24px;
+        padding: 22px 26px;
         margin-bottom: 24px;
       }
-      ol.steps {
-        padding-left: 22px;
+
+      /* ── Learning Target box ── */
+      .learning-target {
+        background: var(--nt-bg);
+        border: 3px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
       }
-      ol.steps > li {
-        margin-bottom: 14px;
+      .learning-target h2 { border-bottom-color: var(--nt-accent); margin-top: 0; }
+      .learning-target .lt-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
       }
-      .resources a {
-        color: var(--nt-accent);
-        font-weight: 700;
-        text-decoration: underline;
+      .lt-chip {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 17px;
       }
-      .resources a:focus-visible,
-      a:focus-visible,
-      input:focus-visible,
-      button:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
+      .lt-chip strong { display: block; font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--nt-muted); margin-bottom: 4px; }
+
+      /* ── Teacher Notes ── */
+      .teacher-notes {
+        background: #fffde7;
+        border: 2px dashed #f9a825;
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        color: #333;
       }
-      ul.res-list {
-        list-style: none;
-        padding-left: 0;
+      .teacher-notes h2 { border-bottom-color: #f9a825; color: #333; margin-top: 0; }
+      .teacher-notes h3 { font-size: 18px; margin: 14px 0 4px; }
+      .teacher-notes p, .teacher-notes li { color: #333; font-size: 18px; }
+      @media (prefers-color-scheme: dark) {
+        .teacher-notes { background: #2a2500; border-color: #f9a825; color: #ffe; }
+        .teacher-notes h2, .teacher-notes h3, .teacher-notes p, .teacher-notes li { color: #ffe; }
       }
+
+      /* ── Steps ── */
+      ol.steps { padding-left: 22px; }
+      ol.steps > li { margin-bottom: 14px; }
+
+      /* ── Resources ── */
+      .resources a { color: var(--nt-accent); font-weight: 700; text-decoration: underline; }
+      ul.res-list { list-style: none; padding-left: 0; }
       ul.res-list li {
         padding: 12px 14px;
         border: 2px solid var(--nt-border);
@@ -115,23 +126,15 @@
         margin-bottom: 10px;
         background: var(--nt-bg);
       }
-      table.rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 18px;
-      }
-      table.rubric th,
-      table.rubric td {
-        border: 2px solid var(--nt-border);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      table.rubric th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-      }
+
+      /* ── Rubric ── */
+      .table-wrap { overflow-x: auto; }
+      table.rubric { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 17px; min-width: 540px; }
+      table.rubric th, table.rubric td { border: 2px solid var(--nt-border); padding: 10px 12px; text-align: left; vertical-align: top; }
+      table.rubric th { background: var(--nt-accent); color: var(--nt-bg); }
+      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
+
+      /* ── Tip / Info box ── */
       .tip {
         background: var(--nt-bg);
         border-left: 6px solid var(--nt-accent);
@@ -139,33 +142,80 @@
         border-radius: 8px;
         margin: 14px 0;
       }
-      /* Quiz */
-      .q {
-        margin-bottom: 22px;
+
+      /* ── Ratio example ── */
+      .ratio-example {
+        background: var(--nt-bg);
+        border: 2px dashed var(--nt-border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 20px;
+        margin-top: 8px;
       }
-      .q label.qprompt {
+
+      /* ── Self-check quiz ── */
+      .self-check-item {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 18px 20px;
+        margin-bottom: 18px;
+      }
+      .sc-prompt {
         display: block;
         font-weight: 700;
-        margin-bottom: 8px;
         font-size: 20px;
-      }
-      .q .hint {
-        color: var(--nt-muted);
-        font-size: 16px;
-        display: block;
         margin-bottom: 8px;
       }
-      .q input[type="text"],
-      .q select {
+      .sc-hint {
+        color: var(--nt-muted);
+        font-size: 15px;
+        display: block;
+        margin-bottom: 10px;
+      }
+      .sc-input {
         font-size: 19px;
         padding: 10px 12px;
         width: 100%;
-        max-width: 360px;
+        max-width: 320px;
         border: 2px solid var(--nt-border);
         border-radius: 8px;
         background: var(--nt-surface);
         color: var(--nt-text);
+        box-sizing: border-box;
       }
+      .sc-choices { margin: 6px 0; }
+      .sc-choices label { display: flex; align-items: center; gap: 10px; font-size: 19px; margin: 6px 0; cursor: pointer; }
+      .sc-choices input[type="radio"] { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--nt-accent); }
+      .sc-btn {
+        display: inline-block;
+        margin-top: 10px;
+        font-size: 17px;
+        font-weight: 700;
+        padding: 10px 22px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .sc-btn:hover { filter: brightness(1.08); }
+      .sc-feedback {
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 8px;
+        display: none;
+      }
+      .sc-feedback.correct { background: #d4edda; color: #155724; border: 2px solid #155724; }
+      .sc-feedback.incorrect { background: #f8d7da; color: #721c24; border: 2px solid #721c24; }
+      @media (prefers-color-scheme: dark) {
+        .sc-feedback.correct { background: #1a3a22; color: #a3f0b5; border-color: #a3f0b5; }
+        .sc-feedback.incorrect { background: #3a1a1a; color: #f0a3a3; border-color: #f0a3a3; }
+      }
+
+      /* ── NTKit grade button ── */
       .check-btn {
         font-size: 20px;
         font-weight: 700;
@@ -177,54 +227,167 @@
         cursor: pointer;
         margin-top: 8px;
       }
-      .check-btn:hover {
-        filter: brightness(1.08);
-      }
-      .smoothie {
-        font-size: 30px;
-      }
-      .ratio-example {
+      .check-btn:hover { filter: brightness(1.08); }
+
+      /* ── Answer key details ── */
+      details.answer-key {
         background: var(--nt-bg);
         border: 2px dashed var(--nt-border);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-top: 18px;
+      }
+      details.answer-key summary {
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--nt-accent);
+      }
+      details.answer-key ol { margin: 12px 0 0 0; padding-left: 20px; }
+      details.answer-key li { margin-bottom: 10px; font-size: 18px; }
+
+      /* ── Reflection ── */
+      .reflection-area {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 18px;
+        padding: 12px 14px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        min-height: 90px;
+        resize: vertical;
+        margin-top: 8px;
+      }
+
+      /* ── Deliverable box ── */
+      .deliverable {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
         border-radius: 10px;
-        padding: 12px 16px;
-        font-size: 20px;
+        padding: 14px 18px;
+        margin-top: 14px;
+        font-size: 18px;
+      }
+      .deliverable strong { font-size: 19px; }
+
+      /* ── Focus styles (accessibility) ── */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      select:focus-visible {
+        outline: 3px solid var(--nt-focus, #005fcc);
+        outline-offset: 2px;
+      }
+
+      /* ── Mobile responsive ── */
+      @media (max-width: 600px) {
+        h1 { font-size: 26px; }
+        h2 { font-size: 21px; }
+        .lt-grid { grid-template-columns: 1fr; }
+        section.card, .learning-target, .teacher-notes { padding: 16px 14px; }
+        .sc-input { max-width: 100%; }
+      }
+
+      /* ── Print stylesheet ── */
+      @media print {
+        body { font-size: 13px; line-height: 1.5; background: #fff; color: #000; }
+        .wrap { max-width: 100%; padding: 0; }
+        .teacher-notes { border: 1px dashed #999; background: #f9f9f9; color: #000; }
+        .teacher-notes h2, .teacher-notes h3, .teacher-notes p, .teacher-notes li { color: #000; }
+        .check-btn, .sc-btn { display: none; }
+        .sc-feedback { display: none !important; }
+        details.answer-key { display: none; }
+        a { color: #000; text-decoration: underline; }
+        header.hero { border: 1px solid #ccc; border-radius: 0; }
+        section.card, .learning-target { border: 1px solid #ccc; border-radius: 0; break-inside: avoid; }
+        table.rubric th { background: #555; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .badge { background: #555; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       }
     </style>
   </head>
   <body class="nt-theme-aware">
     <div class="wrap">
+
+      <!-- Back-link (preserved) -->
+      <p class="back-link"><a href="/webquests/">← All WebQuests</a> · <a href="/math/">Math Hub</a></p>
+
+      <!-- Hero -->
       <header class="hero">
         <span class="badge">WebQuest · Unit 1 · CCSS 6.RP.A.1–3</span>
-        <h1><span class="smoothie">🥤</span> The Smoothie Stand WebQuest</h1>
-        <p class="lead">
-          Ratios &amp; Unit Rates — be the math behind the menu!
-        </p>
+        <h1>🥤 The Smoothie Stand WebQuest</h1>
+        <p class="lead">Ratios &amp; Unit Rates — be the math behind the menu!</p>
+        <p class="muted" style="font-size:16px;margin-top:6px;">Neft Teacher · Grade 6 Math</p>
       </header>
 
       <!-- Student identity bar + Save PDF/DOC + results panel -->
       <div id="ntkit"></div>
 
-      <!-- INTRODUCTION -->
-      <section class="card">
-        <h2>1. Introduction</h2>
-        <p>
-          You just opened the <strong>Berry Blast Smoothie Stand</strong>! 🍓🍌
-        </p>
-        <p>
-          Every great smoothie uses a <strong>ratio</strong>: how much of one
-          thing compared to another. Example:
-          <em>2 cups of berries for every 3 cups of milk</em>. To set a fair
-          price, you also need a <strong>unit rate</strong>: the cost for
-          <strong>just 1</strong> cup or 1 smoothie.
-        </p>
-        <p>
-          In this WebQuest, you will use ratios and unit rates to run your
-          stand.
-        </p>
+      <!-- ══════════════════════════════════════════ -->
+      <!-- LEARNING TARGET                            -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="learning-target" aria-label="Learning Target">
+        <h2>Learning Target</h2>
+        <ul style="margin:0 0 14px 0;padding-left:20px;">
+          <li><strong>I can</strong> write a ratio two ways (colon form and fraction form).</li>
+          <li><strong>I can</strong> find a unit rate by dividing to get a "per 1" value.</li>
+          <li><strong>I can</strong> build a ratio table of equivalent ratios.</li>
+          <li><strong>I can</strong> use ratios and unit rates to solve real-world problems.</li>
+        </ul>
+        <div class="lt-grid">
+          <div class="lt-chip"><strong>Standard</strong> CCSS 6.RP.A.1, 6.RP.A.2, 6.RP.A.3</div>
+          <div class="lt-chip"><strong>Estimated time</strong> 45–60 minutes</div>
+          <div class="lt-chip"><strong>Materials</strong> Pencil, paper for scratch work, this page</div>
+          <div class="lt-chip"><strong>Product</strong> Completed quiz saved as PDF or DOC</div>
+        </div>
       </section>
 
-      <!-- TASK -->
+      <!-- ══════════════════════════════════════════ -->
+      <!-- TEACHER NOTES (teacher-facing)             -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="teacher-notes" aria-label="Teacher Notes">
+        <h2>📋 Teacher Notes <span style="font-size:15px;font-weight:400;">(not for student assessment)</span></h2>
+
+        <h3>Pacing</h3>
+        <p>This WebQuest is designed for one 45–60 minute class period. Students who finish early can explore the resources or attempt the extension challenge. A two-day version: Day 1 = Introduction through Process (Steps 1–4); Day 2 = Self-Check and Reflection.</p>
+
+        <h3>Grouping Suggestion</h3>
+        <p>Works well as <strong>individual work</strong> with optional pair-share on Step 3 (ratio tables). Consider think-pair-share before the self-check to let students compare unit rate strategies.</p>
+
+        <h3>Differentiation</h3>
+        <ul>
+          <li><strong>Support:</strong> Provide a pre-filled ratio table template. Allow students to use counters or manipulatives. Accept ratio answers written in fraction form (2/3) in place of colon form (2:3).</li>
+          <li><strong>Challenge / Extension:</strong> Ask students to write their own smoothie recipe, create a full ratio table for 1–10 servings, and determine whether "Buy 3 smoothies for $8.00" or "Buy 5 smoothies for $13.00" is a better deal (compare unit rates).</li>
+        </ul>
+
+        <h3>ESOL / Language Supports</h3>
+        <ul>
+          <li>Preview vocabulary: <em>ratio, unit rate, equivalent, per, colon</em>. Post a word wall or sentence stems.</li>
+          <li>Allow students to draw models or diagrams to show ratios before writing in numbers.</li>
+          <li>Pair students strategically for Steps 1–3 to allow first-language discussion.</li>
+          <li>Accept answers in simplified fraction form (e.g., 1/2 for 2:4) as mathematically equivalent.</li>
+        </ul>
+      </section>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- 1. INTRODUCTION                            -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="card">
+        <h2>1. Introduction</h2>
+        <p>You just opened the <strong>Berry Blast Smoothie Stand</strong>! 🍓🍌</p>
+        <p>
+          Every great smoothie uses a <strong>ratio</strong>: how much of one thing compared to another.
+          Example: <em>2 cups of berries for every 3 cups of milk</em>.
+          To set a fair price, you also need a <strong>unit rate</strong>: the cost for <strong>just 1</strong> cup or 1 smoothie.
+        </p>
+        <p>In this WebQuest, you will use ratios and unit rates to run your stand.</p>
+      </section>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- 2. TASK                                    -->
+      <!-- ══════════════════════════════════════════ -->
       <section class="card">
         <h2>2. Task</h2>
         <p>By the end, you will be able to:</p>
@@ -232,293 +395,353 @@
           <li>Write a <strong>ratio</strong> two ways (like 2:3 and 2/3).</li>
           <li>Find a <strong>unit rate</strong> (cost or amount for 1).</li>
           <li>Make a <strong>ratio table</strong> of equivalent ratios.</li>
-          <li>Solve a real menu problem and finish the short quiz below.</li>
+          <li>Solve a real menu problem and finish the self-check below.</li>
         </ul>
+        <div class="deliverable">
+          <strong>Your Deliverable:</strong> Complete the self-check quiz on this page, then click <em>Check My Answers</em> at the bottom and save your results as a <strong>PDF or DOC</strong> to turn in.
+        </div>
       </section>
 
-      <!-- PROCESS -->
+      <!-- ══════════════════════════════════════════ -->
+      <!-- 3. PROCESS                                 -->
+      <!-- ══════════════════════════════════════════ -->
       <section class="card">
         <h2>3. Process</h2>
         <p class="muted">Do the steps in order. Read each one carefully.</p>
         <ol class="steps">
           <li>
             <h3>Step 1 — Learn the words</h3>
-            <p>
-              <strong>Ratio</strong> = compares two amounts.
-              <strong>Unit rate</strong> = the amount for exactly 1.
-            </p>
-            <div class="ratio-example">
-              Recipe ratio: <strong>2 cups berries : 3 cups milk</strong>
-            </div>
+            <p><strong>Ratio</strong> = compares two amounts. <strong>Unit rate</strong> = the amount for exactly 1.</p>
+            <div class="ratio-example">Recipe ratio: <strong>2 cups berries : 3 cups milk</strong></div>
           </li>
           <li>
             <h3>Step 2 — Play the 3D game</h3>
-            <p>
-              Open the Smoothie Stand 3D game and mix smoothies using ratios.
-            </p>
+            <p>Open the Smoothie Stand 3D game and mix smoothies using ratios. Try to fill at least 3 orders.</p>
           </li>
           <li>
             <h3>Step 3 — Build a ratio table</h3>
-            <p>
-              If 1 smoothie needs 2 berries, then 3 smoothies need 6 berries.
-              Keep the ratio equal.
-            </p>
+            <p>If 1 smoothie needs 2 berries, then 3 smoothies need 6 berries. Keep the ratio equal.</p>
+            <div class="ratio-example">
+              <strong>Smoothies → Berries:</strong> 1→2, 2→4, 3→6, 4→8, 5→10
+            </div>
           </li>
           <li>
             <h3>Step 4 — Find unit rates</h3>
-            <p>
-              If 4 smoothies cost $12, then 1 smoothie costs $12 ÷ 4 =
-              <strong>$3</strong>.
-            </p>
+            <p>If 4 smoothies cost $12, then 1 smoothie costs $12 ÷ 4 = <strong>$3</strong>.</p>
+            <div class="tip">💡 <strong>Tip:</strong> "Per" means "for each 1." Miles <em>per</em> hour = miles for 1 hour.</div>
           </li>
           <li>
             <h3>Step 5 — Show what you know</h3>
-            <p>
-              Type your name in the bar above, finish the quiz, then
-              <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.
-            </p>
+            <p>Type your name in the bar above, finish the self-check below, then <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.</p>
           </li>
         </ol>
-        <div class="tip">
-          💡 <strong>Tip:</strong> "Per" means "for each 1." Miles
-          <em>per</em> hour = miles for 1 hour.
-        </div>
       </section>
 
-      <!-- RESOURCES -->
+      <!-- ══════════════════════════════════════════ -->
+      <!-- 4. RESOURCES                               -->
+      <!-- ══════════════════════════════════════════ -->
       <section class="card resources">
         <h2>4. Resources</h2>
         <p>Use these to help you:</p>
         <ul class="res-list">
-          <li>
-            🎮 <a href="/games/3d/unit-1/">Unit 1 — Smoothie Stand 3D Game</a> —
-            mix smoothies with ratios.
-          </li>
-          <li>
-            📘 <a href="/math/">Math Lessons Hub</a> — review ratios &amp; unit
-            rates.
-          </li>
-          <li>
-            📖 <a href="/graphic-novels/unit-1/">Unit 1 Graphic Novel</a> — the
-            ratio story.
-          </li>
-          <li>
-            📝 <a href="/math/unit-1/">Unit 1 Practice Activities</a> — extra
-            practice.
-          </li>
+          <li>🎮 <a href="/games/3d/unit-1/">Unit 1 — Smoothie Stand 3D Game</a> — mix smoothies with ratios.</li>
+          <li>📘 <a href="/math/">Math Lessons Hub</a> — review ratios &amp; unit rates.</li>
+          <li>📖 <a href="/graphic-novels/unit1/graphic-novel-1.html">Unit 1 Graphic Novel</a> — the ratio story.</li>
+          <li>📝 <a href="/math/unit-1/">Unit 1 Practice Activities</a> — extra practice.</li>
         </ul>
       </section>
 
-      <!-- EVALUATION -->
+      <!-- ══════════════════════════════════════════ -->
+      <!-- 5. EVALUATION (RUBRIC)                     -->
+      <!-- ══════════════════════════════════════════ -->
       <section class="card">
         <h2>5. Evaluation (Rubric)</h2>
-        <table class="rubric">
-          <thead>
-            <tr>
-              <th scope="col">Skill</th>
-              <th scope="col">4 — Expert</th>
-              <th scope="col">3 — Good</th>
-              <th scope="col">2 — Getting there</th>
-              <th scope="col">1 — Keep trying</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Writing ratios</strong></td>
-              <td>Writes ratios correctly every time, two ways.</td>
-              <td>Writes ratios correctly most times.</td>
-              <td>Writes some ratios correctly.</td>
-              <td>Needs help writing ratios.</td>
-            </tr>
-            <tr>
-              <td><strong>Unit rate</strong></td>
-              <td>Finds the unit rate fast and correctly.</td>
-              <td>Finds the unit rate correctly.</td>
-              <td>Finds the unit rate with help.</td>
-              <td>Unit rate not yet found.</td>
-            </tr>
-            <tr>
-              <td><strong>Ratio tables</strong></td>
-              <td>Makes equal ratios with no errors.</td>
-              <td>Makes equal ratios with few errors.</td>
-              <td>Some ratios are equal.</td>
-              <td>Ratios are not equal yet.</td>
-            </tr>
-            <tr>
-              <td><strong>Quiz score</strong></td>
-              <td>90–100%</td>
-              <td>75–89%</td>
-              <td>50–74%</td>
-              <td>Below 50%</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th scope="col">Skill</th>
+                <th scope="col">4 — Expert</th>
+                <th scope="col">3 — Proficient</th>
+                <th scope="col">2 — Developing</th>
+                <th scope="col">1 — Beginning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Writing ratios</strong> (6.RP.A.1)</td>
+                <td>Writes ratios correctly every time, in two forms (colon and fraction), with no errors.</td>
+                <td>Writes ratios correctly most of the time in at least one form.</td>
+                <td>Writes some ratios correctly; makes minor notation errors.</td>
+                <td>Attempts to write ratios but needs significant help.</td>
+              </tr>
+              <tr>
+                <td><strong>Unit rate</strong> (6.RP.A.2)</td>
+                <td>Finds unit rate efficiently and correctly; can explain the strategy clearly.</td>
+                <td>Finds the unit rate correctly with minor calculation errors.</td>
+                <td>Finds the unit rate with a hint or guided step.</td>
+                <td>Has not yet found a correct unit rate independently.</td>
+              </tr>
+              <tr>
+                <td><strong>Ratio tables</strong> (6.RP.A.3)</td>
+                <td>Builds complete equivalent ratio tables with no errors; recognizes pattern.</td>
+                <td>Builds ratio tables with at most one error.</td>
+                <td>Builds partial ratio tables; some ratios are equivalent.</td>
+                <td>Ratio table incomplete or ratios are not equivalent.</td>
+              </tr>
+              <tr>
+                <td><strong>Self-check score</strong></td>
+                <td>90–100 % (4–5 correct)</td>
+                <td>75–89 % (4 correct)</td>
+                <td>50–74 % (2–3 correct)</td>
+                <td>Below 50 % (0–1 correct)</td>
+              </tr>
+              <tr>
+                <td><strong>Deliverable</strong></td>
+                <td>Saved PDF/DOC with name, date, and all 5 answers visible.</td>
+                <td>Saved PDF/DOC with name; all answers visible.</td>
+                <td>Saved PDF/DOC but missing name or some answers.</td>
+                <td>Did not save or submit a deliverable.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
-      <!-- CONCLUSION -->
+      <!-- ══════════════════════════════════════════ -->
+      <!-- 6. CONCLUSION                              -->
+      <!-- ══════════════════════════════════════════ -->
       <section class="card">
         <h2>6. Conclusion</h2>
         <p>
-          Great work, smoothie boss! You can now write
-          <strong>ratios</strong>, build <strong>ratio tables</strong>, and find
-          <strong>unit rates</strong> to price your menu. These same skills help
-          you with recipes, shopping deals, and speed. Finish the quick check
-          below to show what you learned.
+          Great work, smoothie boss! You can now write <strong>ratios</strong>, build <strong>ratio tables</strong>,
+          and find <strong>unit rates</strong> to price your menu. These same skills help you with recipes,
+          shopping deals, and speed problems. Complete the self-check below to show what you learned.
         </p>
       </section>
 
-      <!-- CHECK YOUR UNDERSTANDING -->
+      <!-- ══════════════════════════════════════════ -->
+      <!-- 7. INTERACTIVE SELF-CHECK                  -->
+      <!-- ══════════════════════════════════════════ -->
       <section class="card">
-        <h2>7. Check Your Understanding</h2>
-        <p class="muted">
-          Answer all 5. Then press <strong>Check My Answers</strong>. Use
-          numbers only when asked.
-        </p>
+        <h2>7. Interactive Self-Check</h2>
+        <p class="muted">Try each question, then click <strong>Check</strong> to see instant feedback. Complete all 5, then use the <strong>Check My Answers</strong> button at the bottom to record your score.</p>
 
-        <div class="q">
-          <label class="qprompt" for="q1"
-            >Q1. A smoothie uses 2 cups of berries and 3 cups of milk. Write the
-            ratio of berries to milk using a colon.</label
-          >
-          <span class="hint">Example answer style: 5:7</span>
-          <input
-            type="text"
-            id="q1"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="berries : milk"
-          />
+        <!-- SC Q1 -->
+        <div class="self-check-item" id="sc1">
+          <label class="sc-prompt" for="sc-q1">
+            Q1. A smoothie uses 2 cups of berries and 3 cups of milk. Write the ratio of berries to milk using a colon.
+          </label>
+          <span class="sc-hint">Format: number:number — Example style: 5:7</span>
+          <input type="text" class="sc-input" id="sc-q1" autocomplete="off" aria-describedby="sc-fb1" placeholder="? : ?" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC(1)">Check</button>
+          <div class="sc-feedback" id="sc-fb1" role="alert" aria-live="polite"></div>
         </div>
 
-        <div class="q">
-          <label class="qprompt" for="q2"
-            >Q2. 4 smoothies cost $12. What is the cost of 1 smoothie (the unit
-            rate)? Type the dollar amount as a number.</label
-          >
-          <span class="hint">Example answer style: 5</span>
-          <input
-            type="text"
-            id="q2"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="$ for 1 smoothie"
-          />
+        <!-- SC Q2 -->
+        <div class="self-check-item" id="sc2">
+          <label class="sc-prompt" for="sc-q2">
+            Q2. 4 smoothies cost $12. What is the cost of 1 smoothie (the unit rate)? Type the dollar amount as a number only.
+          </label>
+          <span class="sc-hint">Hint: divide total cost by number of smoothies.</span>
+          <input type="text" class="sc-input" id="sc-q2" inputmode="numeric" autocomplete="off" aria-describedby="sc-fb2" placeholder="e.g. 3" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC(2)">Check</button>
+          <div class="sc-feedback" id="sc-fb2" role="alert" aria-live="polite"></div>
         </div>
 
-        <div class="q">
-          <label class="qprompt" for="q3"
-            >Q3. 1 smoothie needs 2 bananas. How many bananas are needed for 5
-            smoothies?</label
-          >
-          <span class="hint">Example answer style: 10</span>
-          <input
-            type="text"
-            id="q3"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="bananas"
-          />
+        <!-- SC Q3 — multiple choice -->
+        <div class="self-check-item" id="sc3">
+          <span class="sc-prompt">Q3. Which ratio is equivalent to 2:4?</span>
+          <div class="sc-choices">
+            <label><input type="radio" name="sc-q3" value="2:6" /> 2:6</label>
+            <label><input type="radio" name="sc-q3" value="1:2" /> 1:2</label>
+            <label><input type="radio" name="sc-q3" value="4:6" /> 4:6</label>
+            <label><input type="radio" name="sc-q3" value="3:4" /> 3:4</label>
+          </div>
+          <button type="button" class="sc-btn" onclick="checkSC(3)">Check</button>
+          <div class="sc-feedback" id="sc-fb3" role="alert" aria-live="polite"></div>
         </div>
 
-        <div class="q">
-          <label class="qprompt" for="q4"
-            >Q4. Which ratio is equal to 2:4?</label
-          >
-          <select id="q4">
-            <option value="">— Choose one —</option>
-            <option value="1:2">1:2</option>
-            <option value="2:6">2:6</option>
-            <option value="4:6">4:6</option>
-            <option value="3:4">3:4</option>
-          </select>
+        <!-- SC Q4 -->
+        <div class="self-check-item" id="sc4">
+          <label class="sc-prompt" for="sc-q4">
+            Q4. 1 smoothie needs 2 bananas. How many bananas are needed for 5 smoothies?
+          </label>
+          <span class="sc-hint">Use your ratio table from Step 3.</span>
+          <input type="text" class="sc-input" id="sc-q4" inputmode="numeric" autocomplete="off" aria-describedby="sc-fb4" placeholder="bananas" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC(4)">Check</button>
+          <div class="sc-feedback" id="sc-fb4" role="alert" aria-live="polite"></div>
         </div>
 
-        <div class="q">
-          <label class="qprompt" for="q5"
-            >Q5. A car goes 60 miles in 2 hours. What is the unit rate in miles
-            per hour? Type the number only.</label
-          >
-          <span class="hint">Example answer style: 30</span>
-          <input
-            type="text"
-            id="q5"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="miles per hour"
-          />
+        <!-- SC Q5 -->
+        <div class="self-check-item" id="sc5">
+          <label class="sc-prompt" for="sc-q5">
+            Q5. A car goes 60 miles in 2 hours. What is the unit rate in miles per hour? Type the number only.
+          </label>
+          <span class="sc-hint">Divide: 60 ÷ 2 = ?</span>
+          <input type="text" class="sc-input" id="sc-q5" inputmode="numeric" autocomplete="off" aria-describedby="sc-fb5" placeholder="miles per hour" />
+          <br />
+          <button type="button" class="sc-btn" onclick="checkSC(5)">Check</button>
+          <div class="sc-feedback" id="sc-fb5" role="alert" aria-live="polite"></div>
         </div>
 
-        <button type="button" class="check-btn" id="checkBtn">
-          Check My Answers ✅
-        </button>
-        <p class="muted" style="margin-top: 14px">
-          Your score and a ✓/✗ for each question will appear in the panel at the
-          top. Then use <strong>Save as PDF</strong> or
-          <strong>Save as DOC</strong> to turn it in.
-        </p>
+        <hr style="margin:20px 0;border:0;border-top:2px solid var(--nt-border);" />
+
+        <!-- NTKit grade button (submits all 5 for final score/PDF) -->
+        <p class="muted" style="margin-bottom:10px;">When you have tried all 5 questions above, click below to record your official score and save your work.</p>
+        <button type="button" class="check-btn" id="checkBtn">Check My Answers ✅</button>
+        <p class="muted" style="margin-top:14px;">Your score and a ✓/✗ for each question will appear in the panel at the top. Then use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to turn it in.</p>
+
+        <!-- Teacher Answer Key (hidden in details) -->
+        <details class="answer-key">
+          <summary>🔑 Teacher Answer Key (click to expand)</summary>
+          <ol>
+            <li><strong>Q1 — Ratio of berries to milk:</strong> <strong>2:3</strong> (berries 2, milk 3; colon form).</li>
+            <li><strong>Q2 — Unit rate for smoothies:</strong> $12 ÷ 4 = <strong>$3</strong> per smoothie.</li>
+            <li><strong>Q3 — Equivalent ratio to 2:4:</strong> <strong>1:2</strong> (divide both by 2; 2÷2=1, 4÷2=2). Note: 2:6, 4:6, 3:4 are all incorrect because they do not simplify to the same ratio.</li>
+            <li><strong>Q4 — Bananas for 5 smoothies:</strong> 1 smoothie × 5 = 5 smoothies; 2 bananas × 5 = <strong>10 bananas</strong>.</li>
+            <li><strong>Q5 — Unit rate (miles per hour):</strong> 60 ÷ 2 = <strong>30</strong> miles per hour.</li>
+          </ol>
+          <p style="margin-top:12px;font-size:16px;color:var(--nt-muted);">Sample student reflection: "I learned that a unit rate tells me the cost or amount for exactly 1, which makes it easy to compare prices or scale a recipe."</p>
+        </details>
       </section>
-    </div>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- 8. REFLECTION                              -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="card">
+        <h2>8. Reflection</h2>
+        <p>Answer this in 2–3 sentences in the box below:</p>
+        <p><strong>How could you use ratios or unit rates outside of school? Give a real-life example from your own life.</strong></p>
+        <label for="reflection" class="muted" style="font-size:16px;">Type your reflection here (it will be included when you save as PDF):</label>
+        <textarea class="reflection-area" id="reflection" rows="4" placeholder="Example: I could use unit rates when comparing prices at the grocery store to find the best deal..."></textarea>
+      </section>
+
+    </div><!-- /wrap -->
 
     <script>
       NTKit.mount("#ntkit");
 
-      function val(id) {
-        var n = document.getElementById(id);
-        return n ? n.value : "";
+      /* ── Self-check configuration ── */
+      var SC = {
+        1: {
+          type: "text",
+          inputId: "sc-q1",
+          correct: "2:3",
+          explanation: "Berries (2) to milk (3) written with a colon = 2:3."
+        },
+        2: {
+          type: "text",
+          inputId: "sc-q2",
+          correct: "3",
+          explanation: "$12 divided by 4 smoothies = $3 per smoothie."
+        },
+        3: {
+          type: "radio",
+          name: "sc-q3",
+          correct: "1:2",
+          explanation: "2:4 simplified by dividing both by 2 gives 1:2 (equivalent ratios have the same value when simplified)."
+        },
+        4: {
+          type: "text",
+          inputId: "sc-q4",
+          correct: "10",
+          explanation: "Ratio is 1 smoothie : 2 bananas. For 5 smoothies: 5 × 2 = 10 bananas."
+        },
+        5: {
+          type: "text",
+          inputId: "sc-q5",
+          correct: "30",
+          explanation: "60 miles ÷ 2 hours = 30 miles per hour (unit rate)."
+        }
+      };
+
+      function checkSC(num) {
+        var cfg = SC[num];
+        var studentAnswer = "";
+        if (cfg.type === "text") {
+          var el = document.getElementById(cfg.inputId);
+          studentAnswer = el ? el.value.trim().toLowerCase().replace(/\s+/g, "") : "";
+        } else if (cfg.type === "radio") {
+          var checked = document.querySelector('input[name="' + cfg.name + '"]:checked');
+          studentAnswer = checked ? checked.value : "";
+        }
+        var fb = document.getElementById("sc-fb" + num);
+        if (!fb) { return; }
+        var correct = cfg.correct.toLowerCase().replace(/\s+/g, "");
+        var isCorrect = (studentAnswer === correct);
+        fb.className = "sc-feedback " + (isCorrect ? "correct" : "incorrect");
+        fb.style.display = "block";
+        if (isCorrect) {
+          fb.textContent = "✔ Correct! " + cfg.explanation;
+        } else if (studentAnswer === "") {
+          fb.textContent = "⚠ Please enter or select an answer first.";
+          fb.className = "sc-feedback incorrect";
+        } else {
+          fb.textContent = "✘ Not quite. " + cfg.explanation;
+        }
       }
 
-      document
-        .getElementById("checkBtn")
-        .addEventListener("click", function () {
-          NTKit.grade({
-            activityId: "webquest-unit-1",
-            activityTitle:
-              "WebQuest · Unit 1 — Ratios & Unit Rates (Smoothie Stand)",
-            standard: "6.RP.A.1-3",
-            items: [
-              {
-                prompt: "Q1. Ratio of berries (2) to milk (3), using a colon.",
-                studentAnswer: val("q1"),
-                correctAnswer: "2:3",
-                points: 1,
-                skill: "Writing ratios",
-              },
-              {
-                prompt:
-                  "Q2. Unit rate: 4 smoothies cost $12, so 1 smoothie = ?",
-                studentAnswer: val("q2"),
-                correctAnswer: "3",
-                points: 1,
-                skill: "Unit rate",
-              },
-              {
-                prompt: "Q3. 1 smoothie = 2 bananas, so 5 smoothies = ?",
-                studentAnswer: val("q3"),
-                correctAnswer: "10",
-                points: 1,
-                skill: "Ratio tables",
-              },
-              {
-                prompt: "Q4. Which ratio equals 2:4?",
-                studentAnswer: val("q4"),
-                correctAnswer: "1:2",
-                points: 1,
-                skill: "Equivalent ratios",
-              },
-              {
-                prompt:
-                  "Q5. 60 miles in 2 hours = ? miles per hour (unit rate).",
-                studentAnswer: val("q5"),
-                correctAnswer: "30",
-                points: 1,
-                skill: "Unit rate",
-              },
-            ],
-          });
-          var panel = document.getElementById("ntkit");
-          if (panel && panel.scrollIntoView)
-            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      function val(id) {
+        var n = document.getElementById(id);
+        return n ? n.value.trim() : "";
+      }
+      function radio(name) {
+        var el = document.querySelector('input[name="' + name + '"]:checked');
+        return el ? el.value : "";
+      }
+
+      document.getElementById("checkBtn").addEventListener("click", function () {
+        NTKit.grade({
+          activityId: "webquest-unit-1",
+          activityTitle: "WebQuest · Unit 1 — Ratios & Unit Rates (Smoothie Stand)",
+          standard: "6.RP.A.1-3",
+          items: [
+            {
+              prompt: "Q1. Ratio of berries (2) to milk (3), using a colon.",
+              studentAnswer: val("sc-q1"),
+              correctAnswer: "2:3",
+              points: 1,
+              skill: "Writing ratios"
+            },
+            {
+              prompt: "Q2. Unit rate: 4 smoothies cost $12, so 1 smoothie = $?",
+              studentAnswer: val("sc-q2"),
+              correctAnswer: "3",
+              points: 1,
+              skill: "Unit rate"
+            },
+            {
+              prompt: "Q3. Which ratio is equivalent to 2:4?",
+              studentAnswer: radio("sc-q3"),
+              correctAnswer: "1:2",
+              points: 1,
+              skill: "Equivalent ratios"
+            },
+            {
+              prompt: "Q4. 1 smoothie = 2 bananas, so 5 smoothies = ? bananas",
+              studentAnswer: val("sc-q4"),
+              correctAnswer: "10",
+              points: 1,
+              skill: "Ratio tables"
+            },
+            {
+              prompt: "Q5. 60 miles in 2 hours = ? miles per hour (unit rate).",
+              studentAnswer: val("sc-q5"),
+              correctAnswer: "30",
+              points: 1,
+              skill: "Unit rate"
+            }
+          ]
         });
+        var panel = document.getElementById("ntkit");
+        if (panel && panel.scrollIntoView) {
+          panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
     </script>
   </body>
 </html>
