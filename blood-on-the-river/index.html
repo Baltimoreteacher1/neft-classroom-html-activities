@@ -3,59 +3,560 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Blood on the River interactive chapter collection for classroom reading review.">
-  <title>Blood on the River Interactive Chapters</title>
+  <meta name="description" content="Blood on the River interactive portfolio and chapter review collection for classroom reading.">
+  <title>Blood on the River | Interactive Book Review Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    :root {
+      --paper: #fff7e8;
+      --cream: #fffaf0;
+      --navy: #132238;
+      --teal: #1d6f73;
+      --gold: #d6a84f;
+      --accent-pink: #ec4899;
+      --ink: #111827;
+      --muted: #64748b;
+      --shadow: 0 18px 44px rgba(17,24,39,.16);
+      --font-display: 'Outfit', sans-serif;
+      --font-main: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at 8% 0%, rgba(242,211,140,.38), transparent 32rem),
+                  radial-gradient(circle at 90% 5%, rgba(29,111,115,.22), transparent 28rem),
+                  linear-gradient(135deg, #fbefd8,#ead1a0);
+      color: var(--ink);
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    /* Premium Section Blocks */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+      margin: 24px 0;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dashboard-card {
+      background: var(--cream);
+      border: 2px solid rgba(17, 24, 39, 0.1);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .dashboard-card h2 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Timeline Drag Game Styles */
+    .timeline-container {
+      background: var(--paper);
+      border: 1px solid rgba(17, 24, 39, 0.08);
+      border-radius: 18px;
+      padding: 20px;
+      margin-top: 16px;
+      touch-action: none;
+    }
+
+    .drag-items-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+
+    .draggable-badge {
+      background: white;
+      border: 2px solid var(--navy);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .draggable-badge:active {
+      cursor: grabbing;
+      transform: scale(1.05);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.14);
+    }
+
+    .draggable-badge.placed {
+      opacity: 0.4;
+      pointer-events: none;
+      border-style: dashed;
+    }
+
+    .timeline-track {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      position: relative;
+      padding-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .timeline-track {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+    }
+
+    .timeline-node {
+      background: rgba(255,255,255,0.7);
+      border: 2px dashed rgba(17, 24, 39, 0.18);
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 110px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: background 0.25s, border-color 0.25s;
+    }
+
+    .timeline-node.hovered {
+      border-color: var(--teal);
+      background: rgba(29, 111, 115, 0.08);
+    }
+
+    .timeline-node.correct {
+      border-color: var(--teal);
+      border-style: solid;
+      background: #def2ea;
+    }
+
+    .timeline-year {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .timeline-desc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+
+    .placed-text {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--teal);
+    }
+
+    /* Reflections Notepad Styles */
+    .reflections-textarea {
+      width: 100%;
+      height: 172px;
+      border-radius: 16px;
+      border: 1.5px solid rgba(17, 24, 39, 0.12);
+      padding: 14px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--ink);
+      background: white;
+      resize: vertical;
+      outline: none;
+      line-height: 1.5;
+    }
+
+    .reflections-textarea:focus {
+      border-color: var(--teal);
+    }
+
+    .notepad-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .autosave-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--teal);
+    }
+
+    .autosave-status.saving {
+      color: var(--gold);
+    }
+
+    /* Glowing Completion Checkbox Badges */
+    .completion-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(29, 111, 115, 0.12);
+      border: 1px solid rgba(29, 111, 115, 0.3);
+      color: var(--teal);
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      box-shadow: 0 4px 10px rgba(29,111,115,0.15);
+    }
+
+    .activity-card {
+      position: relative;
+    }
+
+    .activity-card.completed {
+      border-color: rgba(29, 111, 115, 0.4);
+      background: radial-gradient(circle at 100% 0%, rgba(29, 111, 115, 0.08), transparent 8rem), white;
+    }
+  </style>
 </head>
 <body>
   <main class="page-shell">
-    <section class="hero">
-      <p class="eyebrow">Reading · Graphic Novel Review</p>
+    <section class="hero" style="position:relative;">
+      <p class="eyebrow">Reading · Graphic Novel Portfolio</p>
       <h1>Blood on the River</h1>
-      <p class="hero-copy">Interactive chapter-by-chapter review collection with visual vocabulary, passage-based scenes, quote explanations, and simple student checks.</p>
+      <p class="hero-copy">Interactive chapter review dashboard with chronological timeline, bilingual vocalizer, reading reflections notepad, and visual progress tracking.</p>
+      
+      <!-- Speech vocalizer panel -->
+      <div style="position: absolute; top: 20px; right: 20px; display: flex; gap: 8px;">
+        <button class="btn clear small" id="speakIntroBtn" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: white; font-weight:800;" onclick="speakIntro('en')">🔊 English Voice</button>
+        <button class="btn clear small" id="speakIntroBtnEs" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: white; font-weight:800;" onclick="speakIntro('es')">🔊 Voz Española</button>
+      </div>
     </section>
 
+    <!-- Phase 2 Premium Interactive Dashboard Row -->
+    <section class="dashboard-grid">
+      <!-- Triad 1: Draggable Motifs Timeline Game -->
+      <article class="dashboard-card" id="timeline-game-card">
+        <h2>🧭 Timeline Motif Matchup</h2>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 14px;">Drag the character motivation badges into their matching chronological target zones along Samuel's journey timeline.</p>
+        
+        <div class="timeline-container">
+          <!-- Motifs to drag -->
+          <div class="drag-items-container" id="drag-items">
+            <div class="draggable-badge" draggable="true" id="motif-smith" data-year="1607">⚔️ Smith (Chains)</div>
+            <div class="draggable-badge" draggable="true" id="motif-samuel" data-year="1606">◉ Samuel (Locket)</div>
+            <div class="draggable-badge" draggable="true" id="motif-hunt" data-year="1607">📖 Hunt (Gallows)</div>
+            <div class="draggable-badge" draggable="true" id="motif-pocahontas" data-year="1608">🌽 Pocahontas (Food)</div>
+            <div class="draggable-badge" draggable="true" id="motif-powhatan" data-year="1608">👑 Powhatan (Coronation)</div>
+          </div>
+
+          <!-- Chronological Target Nodes -->
+          <div class="timeline-track" id="timeline-track">
+            <div class="timeline-node" data-year="1606">
+              <span class="timeline-year">1606</span>
+              <span class="timeline-desc">Steals back mother's locket in dark London</span>
+              <div class="placed-holder" id="holder-1606"></div>
+            </div>
+            <div class="timeline-node" data-year="1607">
+              <span class="timeline-year">1607</span>
+              <span class="timeline-desc">Voyage to Virginia, chains, gallows escape</span>
+              <div class="placed-holder" id="holder-1607"></div>
+            </div>
+            <div class="timeline-node" data-year="1608">
+              <span class="timeline-year">1608</span>
+              <span class="timeline-desc">James Town Fire & Chief Powhatan's coronation</span>
+              <div class="placed-holder" id="holder-1608"></div>
+            </div>
+            <div class="timeline-node" data-year="1609">
+              <span class="timeline-year">1609</span>
+              <span class="timeline-desc">Winter learning survival with Warraskoyacks</span>
+              <div class="placed-holder" id="holder-1609"></div>
+            </div>
+            <div class="timeline-node" data-year="1610">
+              <span class="timeline-year">1610</span>
+              <span class="timeline-desc">Ann Laydon forgives Samuel at Point Comfort</span>
+              <div class="placed-holder" id="holder-1610"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Triad 2: Reflections Journal with Autosave -->
+      <article class="dashboard-card" id="notepad-card">
+        <h2>📝 Bilingual Reflections Notepad</h2>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 14px;">Record your thoughts about Samuel's growth from a street orphan to a trusted builder and family member.</p>
+        
+        <textarea class="reflections-textarea" id="readingJournal" placeholder="Write your reading reflections here... Escribe tus reflexiones de lectura aquí..."></textarea>
+        
+        <div class="notepad-controls">
+          <div class="autosave-status" id="save-status">
+            <span class="status-indicator">✅</span>
+            <span class="status-text">All changes saved</span>
+          </div>
+          <button class="btn small dark" style="border-radius:10px; font-weight:800; font-size:0.75rem;" onclick="clearJournal()">Clear notepad</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- Table of Chapter Collections -->
     <section class="section-block" aria-labelledby="chapters">
       <div class="section-heading">
         <p class="eyebrow">Chapter Collection</p>
         <h2 id="chapters">Interactive Chapters</h2>
       </div>
-      <div class="activity-grid">
-        <a class="activity-card" href="/blood-on-the-river/chapter-1/"><span class="card-kicker">Chapter 1</span><h3>London, the Locket, and the First Turning Point</h3><p>Samuel takes back his mother’s locket and is captured.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-2/"><span class="card-kicker">Chapter 2</span><h3>Orphanage, Reverend Hunt, and the Virginia Voyage</h3><p>Samuel is spared, meets Hunt and Smith, and joins the expedition.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-3/"><span class="card-kicker">Chapter 3</span><h3>Stuck on the Ship</h3><p>The crowded ’tween deck, seasickness, mistrust, and conflict.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-4/"><span class="card-kicker">Chapter 4</span><h3>Fever, Blue Water, and Smith in Chains</h3><p>Samuel recovers, sees blue water, and Smith is accused and chained.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-5/"><span class="card-kicker">Chapter 5</span><h3>Rumors, Fear, and First Contact</h3><p>Dominica, frightening stories, and peaceful food exchange.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-6/"><span class="card-kicker">Chapter 6</span><h3>Nevis, Wonder, and Hard Lessons</h3><p>The whale battle, island danger, forgiveness, and Smith’s hard lesson.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-7/"><span class="card-kicker">Chapter 7</span><h3>Gallows, Grace, and Ignorance</h3><p>Smith nearly hangs, Reverend Hunt saves him, and Mona teaches a deadly lesson.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-8/"><span class="card-kicker">Chapter 8</span><h3>Storm, Landfall, and First Attack</h3><p>The fleet reaches Virginia, Samuel fights Richard, and the shore party is attacked.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-9/"><span class="card-kicker">Chapter 9</span><h3>The Box, the Council, and James Town</h3><p>The sealed box is opened, leaders are named, and the settlement site is chosen.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-10/"><span class="card-kicker">Chapter 10</span><h3>Chapel, Salty Water, and Night Attack</h3><p>James Town works and prays before a sudden raid ends with James’s death.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-11/"><span class="card-kicker">Chapter 11</span><h3>Grief, Palisade, and Sword Training</h3><p>Samuel grieves James, learns about Powhatan power, builds the fort, and trains with Smith.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-12/"><span class="card-kicker">Chapter 12</span><h3>Words, Sickness, and a Hard Choice</h3><p>Language becomes protection as sickness, hunger, hidden food, and fear threaten the colony.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-13/"><span class="card-kicker">Chapter 13</span><h3>Food, Friendship, and Fragile Peace</h3><p>Wingfield falls, rain brings relief, Samuel reaches toward Richard, and Native visitors bring food and political warnings.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-14/"><span class="card-kicker">Chapter 14</span><h3>Houses, Work, and Smith Missing</h3><p>James Town grows healthier, houses replace tents, Smith explores the Chickahominy, and fear returns when he disappears.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-15/"><span class="card-kicker">Chapter 15</span><h3>Escape Attempt, Smith’s Return, and Pocahontas</h3><p>Gentlemen try to flee with the food, Smith returns, tells his captivity story, and is arrested again.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-16/"><span class="card-kicker">Chapter 16</span><h3>Newport Returns and Smith Is Spared</h3><p>New ships bring supplies, settlers, relief, and new survival problems.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-17/"><span class="card-kicker">Chapter 17</span><h3>Gold Dreams and the Great Fire</h3><p>Pocahontas plays in the fort, men search for gold, and fire destroys homes and food.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-18/"><span class="card-kicker">Chapter 18</span><h3>Powhatan Help and a Bigger Circle</h3><p>After the fire, Pocahontas and the Powhatan people bring warmth, food, and aid.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-19/"><span class="card-kicker">Chapter 19</span><h3>Namontack’s Stories and Shared Beliefs</h3><p>Namontack returns from England, shares Powhatan beliefs, and Samuel imagines peace through language and friendship.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-20/"><span class="card-kicker">Chapter 20</span><h3>Newport’s Orders and the Crown</h3><p>Newport returns with colonists, new profit plans, and dangerous orders to crown Chief Powhatan.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-21/"><span class="card-kicker">Chapter 21</span><h3>Powhatan, the Coronation, and a Wedding</h3><p>Samuel meets the Great Powhatan, the forced coronation creates trouble, and Ann and John marry.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-22/"><span class="card-kicker">Chapter 22</span><h3>Warraskoyack Lessons and Pocahontas’s Warning</h3><p>Samuel learns survival with the Warraskoyacks as Pocahontas warns Smith of danger and Richard arrives hungry from James Town.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-23/"><span class="card-kicker">Chapter 23</span><h3>Too Many Colonists and Broken Peace</h3><p>Families and new settlers crowd James Town, Smith’s authority weakens, and English attacks on Native villages threaten war.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-24/"><span class="card-kicker">Chapter 24</span><h3>Smith Falls and Virginia Is Born</h3><p>Smith is badly burned, releases Samuel from service, and Ann Laydon gives birth as hard times close in.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-25/"><span class="card-kicker">Chapter 25</span><h3>Smith Leaves and Samuel’s Plan</h3><p>Captain Smith gives Samuel blue trade beads, Richard says goodbye, Point Comfort seems safer, and Samuel chooses a risky plan for Virginia.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-26/"><span class="card-kicker">Chapter 26</span><h3>Virginia to Point Comfort</h3><p>Samuel secretly takes baby Virginia downriver, faces Ann and John’s anger, is imprisoned, and learns Ratcliffe’s corn mission was a deadly trap.</p><span class="button-link">Open chapter</span></a>
-        <a class="activity-card" href="/blood-on-the-river/chapter-27/"><span class="card-kicker">Chapter 27</span><h3>Safe at Point Comfort</h3><p>Samuel lives with Ann, John, and Virginia at Point Comfort, trades for food, remembers his teachers and friends, and finally feels safe.</p><span class="button-link">Open chapter</span></a>
+      <div class="activity-grid" id="chaptersGrid">
+        <a class="activity-card" href="/blood-on-the-river/chapter-1/" id="chCard-1"><span class="card-kicker">Chapter 1</span><h3>London, the Locket, and the First Turning Point</h3><p>Samuel takes back his mother’s locket and is captured.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-2/" id="chCard-2"><span class="card-kicker">Chapter 2</span><h3>Orphanage, Reverend Hunt, and the Virginia Voyage</h3><p>Samuel is spared, meets Hunt and Smith, and joins the expedition.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-3/" id="chCard-3"><span class="card-kicker">Chapter 3</span><h3>Stuck on the Ship</h3><p>The crowded ’tween deck, seasickness, mistrust, and conflict.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-4/" id="chCard-4"><span class="card-kicker">Chapter 4</span><h3>Fever, Blue Water, and Smith in Chains</h3><p>Samuel recovers, sees blue water, and Smith is accused and chained.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-5/" id="chCard-5"><span class="card-kicker">Chapter 5</span><h3>Rumors, Fear, and First Contact</h3><p>Dominica, frightening stories, and peaceful food exchange.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-6/" id="chCard-6"><span class="card-kicker">Chapter 6</span><h3>Nevis, Wonder, and Hard Lessons</h3><p>The whale battle, island danger, forgiveness, and Smith’s hard lesson.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-7/" id="chCard-7"><span class="card-kicker">Chapter 7</span><h3>Gallows, Grace, and Ignorance</h3><p>Smith nearly hangs, Reverend Hunt saves him, and Mona teaches a deadly lesson.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-8/" id="chCard-8"><span class="card-kicker">Chapter 8</span><h3>Storm, Landfall, and First Attack</h3><p>The fleet reaches Virginia, Samuel fights Richard, and the shore party is attacked.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-9/" id="chCard-9"><span class="card-kicker">Chapter 9</span><h3>The Box, the Council, and James Town</h3><p>The sealed box is opened, leaders are named, and the settlement site is chosen.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-10/" id="chCard-10"><span class="card-kicker">Chapter 10</span><h3>Chapel, Salty Water, and Night Attack</h3><p>James Town works and prays before a sudden raid ends with James’s death.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-11/" id="chCard-11"><span class="card-kicker">Chapter 11</span><h3>Grief, Palisade, and Sword Training</h3><p>Samuel grieves James, learns about Powhatan power, builds the fort, and trains with Smith.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-12/" id="chCard-12"><span class="card-kicker">Chapter 12</span><h3>Words, Sickness, and a Hard Choice</h3><p>Language becomes protection as sickness, hunger, hidden food, and fear threaten the colony.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-13/" id="chCard-13"><span class="card-kicker">Chapter 13</span><h3>Food, Friendship, and Fragile Peace</h3><p>Wingfield falls, rain brings relief, Samuel reaches toward Richard, and Native visitors bring food and political warnings.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-14/" id="chCard-14"><span class="card-kicker">Chapter 14</span><h3>Houses, Work, and Smith Missing</h3><p>James Town grows healthier, houses replace tents, Smith explores the Chickahominy, and fear returns when he disappears.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-15/" id="chCard-15"><span class="card-kicker">Chapter 15</span><h3>Escape Attempt, Smith’s Return, and Pocahontas</h3><p>Gentlemen try to flee with the food, Smith returns, tells his captivity story, and is arrested again.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-16/" id="chCard-16"><span class="card-kicker">Chapter 16</span><h3>Newport Returns and Smith Is Spared</h3><p>New ships bring supplies, settlers, relief, and new survival problems.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-17/" id="chCard-17"><span class="card-kicker">Chapter 17</span><h3>Gold Dreams and the Great Fire</h3><p>Pocahontas plays in the fort, men search for gold, and fire destroys homes and food.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-18/" id="chCard-18"><span class="card-kicker">Chapter 18</span><h3>Powhatan Help and a Bigger Circle</h3><p>After the fire, Pocahontas and the Powhatan people bring warmth, food, and aid.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-19/" id="chCard-19"><span class="card-kicker">Chapter 19</span><h3>Namontack’s Stories and Shared Beliefs</h3><p>Namontack returns from England, shares Powhatan beliefs, and Samuel imagines peace through language and friendship.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-20/" id="chCard-20"><span class="card-kicker">Chapter 20</span><h3>Newport’s Orders and the Crown</h3><p>Newport returns with colonists, new profit plans, and dangerous orders to crown Chief Powhatan.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-21/" id="chCard-21"><span class="card-kicker">Chapter 21</span><h3>Powhatan, the Coronation, and a Wedding</h3><p>Samuel meets the Great Powhatan, the forced coronation creates trouble, and Ann and John marry.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-22/" id="chCard-22"><span class="card-kicker">Chapter 22</span><h3>Warraskoyack Lessons and Pocahontas’s Warning</h3><p>Samuel learns survival with the Warraskoyacks as Pocahontas warns Smith of danger and Richard arrives hungry from James Town.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-23/" id="chCard-23"><span class="card-kicker">Chapter 23</span><h3>Too Many Colonists and Broken Peace</h3><p>Families and new settlers crowd James Town, Smith’s authority weakens, and English attacks on Native villages threaten war.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-24/" id="chCard-24"><span class="card-kicker">Chapter 24</span><h3>Smith Falls and Virginia Is Born</h3><p>Smith is badly burned, releases Samuel from service, and Ann Laydon gives birth as hard times close in.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-25/" id="chCard-25"><span class="card-kicker">Chapter 25</span><h3>Smith Leaves and Samuel’s Plan</h3><p>Captain Smith gives Samuel blue trade beads, Richard says goodbye, Point Comfort seems safer, and Samuel chooses a risky plan for Virginia.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-26/" id="chCard-26"><span class="card-kicker">Chapter 26</span><h3>Virginia to Point Comfort</h3><p>Samuel secretly takes baby Virginia downriver, faces Ann and John’s anger, is imprisoned, and learns Ratcliffe’s corn mission was a deadly trap.</p><span class="button-link">Open chapter</span></a>
+        <a class="activity-card" href="/blood-on-the-river/chapter-27/" id="chCard-27"><span class="card-kicker">Chapter 27</span><h3>Safe at Point Comfort</h3><p>Samuel lives with Ann, John, and Virginia at Point Comfort, trades for food, remembers his teachers and friends, and finally feels safe.</p><span class="button-link">Open chapter</span></a>
       </div>
     </section>
 
     <footer class="site-footer">
-      <span>Blood on the River Interactive Chapters</span>
-      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
+      <span>Blood on the River Interactive Review Dashboard</span>
+      <span>&copy; Classroom-ready static HTML with persistent sync</span>
     </footer>
   </main>
+
   <script src="/assets/app.js" defer></script>
+  <script>
+    // ==========================================
+    // 1. SLOW SPEECH SYNTHESIS VOCALIZER
+    // ==========================================
+    window.speakIntro = function(lang) {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const textEn = "Welcome to Blood on the River interactive portfolio. Review Samuel's story chronologically by placing character badges into the timeline and writing down reflections.";
+      const textEs = "Bienvenido a la cartera interactiva de Sangre en el Río. Revise la historia de Samuel cronológicamente colocando insignias de personajes y escribiendo reflexiones.";
+      
+      const utter = new SpeechSynthesisUtterance(lang === 'es' ? textEs : textEn);
+      utter.lang = lang === 'es' ? 'es-ES' : 'en-US';
+      utter.rate = 0.76; // slow speed for accessibility
+      utter.pitch = 1.0;
+      window.speechSynthesis.speak(utter);
+    };
+
+    // ==========================================
+    // 2. TIMELINE MATCHUP DRAG GAME
+    // ==========================================
+    const dragItems = document.getElementById('drag-items');
+    const nodes = document.querySelectorAll('.timeline-node');
+    const correctPlacements = {
+      'motif-samuel': '1606',
+      'motif-smith': '1607',
+      'motif-hunt': '1607',
+      'motif-pocahontas': '1608',
+      'motif-powhatan': '1608'
+    };
+
+    let activeDragId = null;
+
+    document.addEventListener('dragstart', e => {
+      if (e.target.classList.contains('draggable-badge')) {
+        activeDragId = e.target.id;
+        e.dataTransfer.setData('text/plain', e.target.id);
+        e.target.style.opacity = '0.5';
+      }
+    });
+
+    document.addEventListener('dragend', e => {
+      if (e.target.classList.contains('draggable-badge')) {
+        e.target.style.opacity = '1';
+      }
+    });
+
+    nodes.forEach(node => {
+      node.addEventListener('dragover', e => {
+        e.preventDefault();
+        node.classList.add('hovered');
+      });
+
+      node.addEventListener('dragleave', () => {
+        node.classList.remove('hovered');
+      });
+
+      node.addEventListener('drop', e => {
+        e.preventDefault();
+        node.classList.remove('hovered');
+        const badgeId = e.dataTransfer.getData('text/plain') || activeDragId;
+        const badge = document.getElementById(badgeId);
+        
+        if (badge && node.dataset.year === correctPlacements[badgeId]) {
+          // Success Snapping
+          badge.classList.add('placed');
+          node.classList.add('correct');
+          
+          let holder = node.querySelector('.placed-holder');
+          const placedDiv = document.createElement('div');
+          placedDiv.className = 'placed-text';
+          placedDiv.innerHTML = `✓ Placed: ${badge.textContent}`;
+          holder.appendChild(placedDiv);
+
+          // Play snap tone
+          playAudioTone(440, 0.08, 'sine');
+          playAudioTone(880, 0.12, 'sine', 0.05);
+
+          // Check if all placed
+          checkGameCompletion();
+        } else {
+          // Failure sound
+          playAudioTone(130, 0.22, 'sawtooth');
+        }
+      });
+    });
+
+    function checkGameCompletion() {
+      const placed = document.querySelectorAll('.draggable-badge.placed');
+      if (placed.length === 5) {
+        // Glorious fanfare sound
+        playAudioTone(523.25, 0.15, 'triangle');
+        playAudioTone(659.25, 0.15, 'triangle', 0.15);
+        playAudioTone(783.99, 0.3, 'triangle', 0.3);
+        alert("🎉 Timeline Motivation Matchup Complete! Wonderful job summarizing Samuel's story!");
+      }
+    }
+
+    // Dynamic Tone Player
+    function playAudioTone(freq, dur, type = 'sine', delay = 0) {
+      const A = window.AudioContext || window.webkitAudioContext;
+      if (!A) return;
+      const ctx = new A();
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      g.gain.setValueAtTime(0, ctx.currentTime + delay);
+      g.gain.linearRampToValueAtTime(0.04, ctx.currentTime + delay + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + dur);
+      osc.connect(g).connect(ctx.destination);
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + dur + 0.05);
+    }
+
+    // ==========================================
+    // 3. REFLECTIONS JOURNAL WITH AUTOSAVE
+    // ==========================================
+    const journalTextarea = document.getElementById('readingJournal');
+    const saveStatus = document.getElementById('save-status');
+
+    function updateSaveStatus(state) {
+      if (state === 'saved') {
+        saveStatus.className = 'autosave-status';
+        saveStatus.querySelector('.status-indicator').textContent = '✅';
+        saveStatus.querySelector('.status-text').textContent = 'All changes saved';
+      } else if (state === 'saving') {
+        saveStatus.className = 'autosave-status saving';
+        saveStatus.querySelector('.status-indicator').textContent = '⏳';
+        saveStatus.querySelector('.status-text').textContent = 'Saving reflexiones...';
+      }
+    }
+
+    // Load saved journal notes
+    if (localStorage.getItem('neft_reading_reflections')) {
+      journalTextarea.value = localStorage.getItem('neft_reading_reflections');
+    }
+
+    let saveTimer;
+    journalTextarea.addEventListener('input', () => {
+      updateSaveStatus('saving');
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        localStorage.setItem('neft_reading_reflections', journalTextarea.value);
+        updateSaveStatus('saved');
+      }, 750); // Autosaves 750ms after typing stops
+    });
+
+    window.clearJournal = function() {
+      if (confirm("Do you want to clear your reflection notes?")) {
+        journalTextarea.value = '';
+        localStorage.setItem('neft_reading_reflections', '');
+        updateSaveStatus('saved');
+      }
+    };
+
+    // ==========================================
+    // 4. PROGRESSIVE CHAPTER TRACKER STATE
+    // ==========================================
+    function loadChapterCompletionBadges() {
+      try {
+        const completed = JSON.parse(localStorage.getItem('neft_chapters_completed') || '[]');
+        completed.forEach(chNum => {
+          const card = document.getElementById(`chCard-${chNum}`);
+          if (card && !card.classList.contains('completed')) {
+            card.classList.add('completed');
+            
+            // Add glowing star completion badge
+            const badge = document.createElement('span');
+            badge.className = 'completion-badge';
+            badge.innerHTML = '⭐ Completed';
+            card.appendChild(badge);
+          }
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Initialize Hub
+    window.addEventListener('DOMContentLoaded', () => {
+      loadChapterCompletionBadges();
+      
+      // Auto-focus reflections notepad
+      journalTextarea.focus();
+    });
+  </script>
 </body>
 </html>

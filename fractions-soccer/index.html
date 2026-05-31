@@ -880,6 +880,49 @@
           height: 560px;
         }
       }
+      
+      /* Premium Sketchpad Styles */
+      .sketchpad-toolbar button:active {
+        transform: scale(0.95);
+      }
+      .sketch-color-btn.active {
+        box-shadow: 0 0 0 2px white, 0 0 8px currentColor;
+      }
+      .sketch-tool-btn.active {
+        background: rgba(46, 196, 255, 0.25) !important;
+        border-color: rgba(46, 196, 255, 0.5) !important;
+      }
+      
+      /* Premium Diagnostics Styles */
+      .diagnostics-overlay {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 16px;
+        z-index: 10000;
+        width: 320px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        display: none;
+        animation: slideUp 0.3s ease;
+      }
+      .diag-log-container {
+        font-family: monospace;
+        font-size: 0.72rem;
+        background: #000;
+        padding: 8px;
+        border-radius: 6px;
+        height: 140px;
+        overflow-y: auto;
+        color: #10b981;
+        margin: 8px 0;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
     </style>
   </head>
   <body>
@@ -973,7 +1016,10 @@
             </p>
           </div>
         </div>
-        <div class="badge">Red #35 • All-Time Shooter</div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button class="badge" style="cursor: pointer; background: rgba(46, 196, 255, 0.15); color: #2ec4ff; border-color: rgba(46, 196, 255, 0.35); font-weight: 900;" onclick="triggerSelfTest()">⚡ Run Self-Test</button>
+          <div class="badge">Red #35 • All-Time Shooter</div>
+        </div>
       </header>
 
       <section class="layout" aria-label="Shai Fraction Football game">
@@ -984,6 +1030,25 @@
             height="820"
             aria-label="3D-style soccer shootout canvas"
           ></canvas>
+          <canvas
+            id="sketchpadCanvas"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 742px; z-index: 6; pointer-events: none;"
+            aria-label="Annotation sketchpad overlay"
+          ></canvas>
+          <!-- Premium Floating Sketchpad Toolbar -->
+          <div class="sketchpad-toolbar" style="position: absolute; top: 78px; left: 14px; z-index: 10; display: flex; gap: 8px; background: rgba(5, 13, 24, 0.85); backdrop-filter: blur(12px); padding: 8px 12px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: 0 10px 30px rgba(0,0,0,0.5); align-items: center; pointer-events: auto;">
+            <span style="color: #9fb3cb; font-size: 0.72rem; text-transform: uppercase; font-weight: 900; letter-spacing: 0.05em; margin-right: 4px;">Sketchpad:</span>
+            <button id="sketchDrawBtn" class="sketch-tool-btn" style="background: rgba(255,255,255,0.08); color: white; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: 0.15s;">
+              ✏️ Draw
+            </button>
+            <button id="sketchColorTeal" class="sketch-color-btn active" style="width: 18px; height: 18px; border-radius: 50%; background: #2dd4bf; border: 2px solid white; cursor: pointer;" title="Teal"></button>
+            <button id="sketchColorBlue" class="sketch-color-btn" style="width: 18px; height: 18px; border-radius: 50%; background: #2ec4ff; border: 2px solid transparent; cursor: pointer;" title="Blue"></button>
+            <button id="sketchColorAmber" class="sketch-color-btn" style="width: 18px; height: 18px; border-radius: 50%; background: #ffd166; border: 2px solid transparent; cursor: pointer;" title="Amber"></button>
+            <button id="sketchColorEraser" class="sketch-tool-btn" style="background: transparent; border: 1px solid transparent; color: white; font-size: 0.75rem; cursor: pointer;" title="Eraser">🧹 Eraser</button>
+            <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2); margin: 0 4px;"></div>
+            <button id="sketchUndoBtn" class="sketch-tool-btn" style="background: transparent; border: none; color: white; font-size: 0.75rem; cursor: pointer;" title="Undo">↩️ Undo</button>
+            <button id="sketchClearBtn" class="sketch-tool-btn" style="background: transparent; border: none; color: white; font-size: 0.75rem; cursor: pointer;" title="Clear">🗑️ Clear</button>
+          </div>
           <div class="sr-only" aria-live="assertive" id="game-announce"></div>
           <div class="scoreboard" aria-label="Scoreboard" aria-live="polite">
             <div class="score-tile">
@@ -1074,6 +1139,9 @@
               <button class="tool-btn" id="nextBtn" disabled>Next Shot</button>
               <button class="tool-btn" id="restartBtn">Restart</button>
             </div>
+            <div class="tool-grid">
+              <button class="tool-btn" id="teacherBtn" style="background: rgba(16, 32, 51, 0.04); border-color: rgba(16, 32, 51, 0.16); color: #53647b;">Teacher Console</button>
+            </div>
             <div class="feedback" id="feedback">
               <strong>Coach:</strong> Read the target carefully first.
             </div>
@@ -1086,6 +1154,45 @@
         </aside>
       </section>
     </main>
+
+    <!-- Teacher Administrative Modal -->
+    <div id="teacherModal" style="display: none; position: fixed; inset: 0; background: rgba(5, 13, 24, 0.85); z-index: 10000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px);">
+      <div style="background: white; color: #102033; padding: 28px; border-radius: 24px; max-width: 440px; width: 100%; border: 1.5px solid rgba(16,32,51,0.15); box-shadow: var(--shadow); position: relative;">
+        <h3 style="margin-top: 0; font-size: 1.5rem; letter-spacing: -0.04em; color: #102033; font-family: 'Sora', sans-serif;">Teacher Control Panel</h3>
+        <p style="color: #607086; font-size: 0.85rem; margin: 8px 0 20px;">Review or override current student performance variables or completely restart the practice sheet.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; font-weight: 900; color: #53647b; margin-bottom: 4px;">Override Score Goals</label>
+            <input type="number" id="overrideGoals" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(16,32,51,0.15); font-family: inherit; font-size: 0.9rem;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; font-weight: 900; color: #53647b; margin-bottom: 4px;">Override Total Shots</label>
+            <input type="number" id="overrideShots" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(16,32,51,0.15); font-family: inherit; font-size: 0.9rem;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; font-weight: 900; color: #53647b; margin-bottom: 4px;">Override Round Progress</label>
+            <input type="number" id="overrideRound" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(16,32,51,0.15); font-family: inherit; font-size: 0.9rem;" />
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button id="teacherModalResetBtn" style="background: #ef233c; color: white; padding: 10px 16px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.15s; border: none;">Reset Stats</button>
+          <button id="teacherModalSaveBtn" style="background: #2dd4bf; color: #092236; padding: 10px 16px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.15s; border: none;">Save Override</button>
+          <button id="teacherModalCancelBtn" style="background: #f8fbff; border: 1px solid rgba(16,32,51,0.15); color: #102033; padding: 10px 16px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.15s;">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diagnostics Panel Overlay -->
+    <div class="diagnostics-overlay" id="diagPanel">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:4px; color: white;">
+        <strong style="font-family:'Sora',sans-serif; font-size: 0.9rem;">⚡ Diagnostics Console</strong>
+        <button onclick="document.getElementById('diagPanel').style.display='none'" style="background:none; border:none; color:#ef233c; font-weight:800; cursor:pointer; font-size: 1.1rem;">×</button>
+      </div>
+      <div class="diag-log-container" id="diagLog"></div>
+      <button class="tool-btn" style="width:100%; font-size:0.8rem; background: #2ec4ff; color: #050b16; font-weight: 900; margin-top: 8px;" onclick="document.getElementById('diagPanel').style.display='none'">Close Console</button>
+    </div>
 
     <script>
       const $ = (s, r = document) => r.querySelector(s);
@@ -1248,16 +1355,109 @@
         noise(0.035, 0.045, 0, 1200);
         tone(42, 0.16, "sine", 0.06, 0.025);
       }
+      function cheerSound() {
+        ensureAudio();
+        if (!audio.ctx) return;
+        const now = audio.ctx.currentTime;
+        for (let i = 0; i < 4; i++) {
+          const dur = 1.2 + Math.random() * 0.8;
+          const delay = i * 0.15;
+          const gain = 0.05 + Math.random() * 0.04;
+          noise(dur, gain, delay, 600 + Math.random() * 300);
+          
+          const baseFreq = 80 + Math.random() * 40;
+          const osc = audio.ctx.createOscillator();
+          const g = audio.ctx.createGain();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(baseFreq, now + delay);
+          osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.8, now + delay + dur);
+          
+          const lp = audio.ctx.createBiquadFilter();
+          lp.type = "lowpass";
+          lp.frequency.setValueAtTime(180, now + delay);
+          
+          g.gain.setValueAtTime(0, now + delay);
+          g.gain.linearRampToValueAtTime(gain * 0.3, now + delay + 0.1);
+          g.gain.exponentialRampToValueAtTime(0.0001, now + delay + dur);
+          
+          osc.connect(lp).connect(g).connect(audio.ctx.destination);
+          osc.start(now + delay);
+          osc.stop(now + delay + dur + 0.1);
+        }
+      }
+      function goalSirenSound() {
+        ensureAudio();
+        if (!audio.ctx) return;
+        const now = audio.ctx.currentTime;
+        const dur = 0.8;
+        const osc1 = audio.ctx.createOscillator();
+        const osc2 = audio.ctx.createOscillator();
+        const g1 = audio.ctx.createGain();
+        const g2 = audio.ctx.createGain();
+        
+        osc1.type = "square";
+        osc2.type = "square";
+        osc1.frequency.setValueAtTime(400, now);
+        osc2.frequency.setValueAtTime(600, now);
+        
+        for (let t = 0; t < dur; t += 0.1) {
+          const sweepVal1 = 400 + Math.sin(t * 15) * 150;
+          const sweepVal2 = 600 + Math.cos(t * 15) * 150;
+          osc1.frequency.linearRampToValueAtTime(sweepVal1, now + t);
+          osc2.frequency.linearRampToValueAtTime(sweepVal2, now + t);
+        }
+        
+        g1.gain.setValueAtTime(0, now);
+        g1.gain.linearRampToValueAtTime(0.02, now + 0.05);
+        g1.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+        g2.gain.setValueAtTime(0, now);
+        g2.gain.linearRampToValueAtTime(0.02, now + 0.05);
+        g2.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+        
+        osc1.connect(g1).connect(audio.ctx.destination);
+        osc2.connect(g2).connect(audio.ctx.destination);
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + dur + 0.1);
+        osc2.stop(now + dur + 0.1);
+      }
+      function thudSound() {
+        ensureAudio();
+        if (!audio.ctx) return;
+        const now = audio.ctx.currentTime;
+        const osc = audio.ctx.createOscillator();
+        const g = audio.ctx.createGain();
+        
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 0.12);
+        
+        g.gain.setValueAtTime(0, now);
+        g.gain.linearRampToValueAtTime(0.12, now + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+        
+        const lp = audio.ctx.createBiquadFilter();
+        lp.type = "lowpass";
+        lp.frequency.setValueAtTime(200, now);
+        
+        osc.connect(lp).connect(g).connect(audio.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+        noise(0.04, 0.03, 0, 500);
+      }
       function goalSound() {
         tone(392, 0.18, "triangle", 0.055);
         tone(523, 0.22, "triangle", 0.055, 0.1);
         tone(784, 0.3, "triangle", 0.05, 0.22);
         noise(0.26, 0.045, 0.05, 1800);
+        cheerSound();
+        goalSirenSound();
       }
       function saveSound() {
         tone(100, 0.14, "square", 0.055);
         noise(0.12, 0.06, 0.02, 650);
         tone(62, 0.2, "sawtooth", 0.04, 0.08);
+        thudSound();
       }
       function celebrationDrop() {
         tone(55, 0.28, "sine", 0.09);
@@ -1275,6 +1475,7 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         canvas._w = r.width;
         canvas._h = r.height;
+        if (window.resizeSketchpad) resizeSketchpad();
       }
       window.addEventListener("resize", resizeCanvas);
       resizeCanvas();
@@ -1606,6 +1807,7 @@
         $("#hudAccuracy").textContent = `${acc}%`;
         $("#progressFill").style.width =
           `${Math.min(100, (state.round / GAME_LENGTH) * 100)}%`;
+        if (window.saveGameState) saveGameState();
       }
       function setCommentary(html) {
         $("#commentary").innerHTML = html;
@@ -2729,6 +2931,296 @@
           releaseShot();
         }
       });
+      // ========================================================
+      // STATE PERSISTENCE LAYER (LOCALSTORAGE)
+      // ========================================================
+      window.saveGameState = function() {
+        try {
+          const data = {
+            goals: state.goals,
+            shots: state.shots,
+            streak: state.streak,
+            bestStreak: state.bestStreak,
+            round: state.round
+          };
+          localStorage.setItem("neft_soccer_state", JSON.stringify(data));
+        } catch (e) {
+          console.error("Local storage save failed:", e);
+        }
+      };
+
+      window.loadGameState = function() {
+        try {
+          const raw = localStorage.getItem("neft_soccer_state");
+          if (raw) {
+            const data = JSON.parse(raw);
+            state.goals = Number.isFinite(data.goals) ? data.goals : state.goals;
+            state.shots = Number.isFinite(data.shots) ? data.shots : state.shots;
+            state.streak = Number.isFinite(data.streak) ? data.streak : state.streak;
+            state.bestStreak = Number.isFinite(data.bestStreak) ? data.bestStreak : state.bestStreak;
+            state.round = Number.isFinite(data.round) ? data.round : state.round;
+          }
+        } catch (e) {
+          console.error("Local storage load failed:", e);
+        }
+      };
+
+      // ========================================================
+      // TRANSPARENT ANNOTATION OVERLAY SKETCHPAD
+      // ========================================================
+      const sketchpad = $("#sketchpadCanvas");
+      const sCtx = sketchpad.getContext("2d");
+      let isDrawing = false;
+      let sketchColor = "#2dd4bf"; // Teal
+      let sketchBrushSize = 3.5;
+      let sketchPaths = [];
+      let currentPath = [];
+
+      window.resizeSketchpad = function() {
+        const r = sketchpad.getBoundingClientRect(),
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+        sketchpad.width = Math.round(r.width * dpr);
+        sketchpad.height = Math.round(r.height * dpr);
+        sCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        sketchpad._w = r.width;
+        sketchpad._h = r.height;
+        window.redrawSketchpad();
+      };
+
+      window.redrawSketchpad = function() {
+        sCtx.clearRect(0, 0, sketchpad._w, sketchpad._h);
+        sketchPaths.forEach(path => {
+          if (path.points.length < 2) return;
+          sCtx.beginPath();
+          sCtx.strokeStyle = path.color;
+          sCtx.lineWidth = path.width;
+          sCtx.lineCap = "round";
+          sCtx.lineJoin = "round";
+          sCtx.moveTo(path.points[0].x, path.points[0].y);
+          for (let i = 1; i < path.points.length; i++) {
+            sCtx.lineTo(path.points[i].x, path.points[i].y);
+          }
+          sCtx.stroke();
+        });
+      };
+
+      // Drawing Event Listeners
+      sketchpad.addEventListener("pointerdown", e => {
+        if (sketchpad.style.pointerEvents === "none") return;
+        isDrawing = true;
+        sketchpad.setPointerCapture(e.pointerId);
+        const r = sketchpad.getBoundingClientRect(),
+          mx = e.clientX - r.left,
+          my = e.clientY - r.top;
+        currentPath = [{ x: mx, y: my }];
+        sketchPaths.push({
+          color: sketchColor,
+          width: sketchBrushSize,
+          points: currentPath
+        });
+        window.redrawSketchpad();
+        ensureAudio();
+        tone(600, 0.02, "sine", 0.015);
+      });
+
+      sketchpad.addEventListener("pointermove", e => {
+        if (!isDrawing) return;
+        const r = sketchpad.getBoundingClientRect(),
+          mx = e.clientX - r.left,
+          my = e.clientY - r.top;
+        currentPath.push({ x: mx, y: my });
+        window.redrawSketchpad();
+      });
+
+      sketchpad.addEventListener("pointerup", e => {
+        if (!isDrawing) return;
+        isDrawing = false;
+        sketchpad.releasePointerCapture(e.pointerId);
+        if (currentPath.length < 2) {
+          sketchPaths.pop();
+          window.redrawSketchpad();
+        }
+      });
+
+      // Toolbar Controls
+      const drawBtn = $("#sketchDrawBtn");
+      const eraserBtn = $("#sketchColorEraser");
+      const colorBtns = $$(".sketch-color-btn");
+
+      drawBtn.addEventListener("click", () => {
+        const active = drawBtn.classList.toggle("active");
+        if (active) {
+          sketchpad.style.pointerEvents = "auto";
+          eraserBtn.classList.remove("active");
+          sketchColor = getSelectedColor();
+          setCommentary("<strong>Draw Mode active:</strong> Sketch fractions or reference marks directly over the pitch!");
+        } else {
+          sketchpad.style.pointerEvents = "none";
+          setCommentary("<strong>Aim Mode active:</strong> Drag the ball to line up Shai's shootout shot!");
+        }
+      });
+
+      eraserBtn.addEventListener("click", () => {
+        eraserBtn.classList.add("active");
+        drawBtn.classList.add("active");
+        sketchpad.style.pointerEvents = "auto";
+        sketchColor = "#06111f"; // Match field dark color as eraser
+      });
+
+      colorBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          colorBtns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          eraserBtn.classList.remove("active");
+          drawBtn.classList.add("active");
+          sketchpad.style.pointerEvents = "auto";
+          
+          if (btn.id === "sketchColorTeal") sketchColor = "#2dd4bf";
+          if (btn.id === "sketchColorBlue") sketchColor = "#2ec4ff";
+          if (btn.id === "sketchColorAmber") sketchColor = "#ffd166";
+        });
+      });
+
+      function getSelectedColor() {
+        if ($("#sketchColorTeal").classList.contains("active")) return "#2dd4bf";
+        if ($("#sketchColorBlue").classList.contains("active")) return "#2ec4ff";
+        if ($("#sketchColorAmber").classList.contains("active")) return "#ffd166";
+        return "#2dd4bf";
+      }
+
+      $("#sketchUndoBtn").addEventListener("click", () => {
+        sketchPaths.pop();
+        window.redrawSketchpad();
+      });
+
+      $("#sketchClearBtn").addEventListener("click", () => {
+        sketchPaths = [];
+        window.redrawSketchpad();
+      });
+
+      // ========================================================
+      // TEACHER ADMINISTRATIVE CONSOLE LAYER
+      // ========================================================
+      const tModal = $("#teacherModal");
+      $("#teacherBtn").addEventListener("click", () => {
+        const pw = prompt("Please enter administrative password:");
+        if (pw === "admin") {
+          tModal.style.display = "flex";
+          $("#overrideGoals").value = state.goals;
+          $("#overrideShots").value = state.shots;
+          $("#overrideRound").value = state.round;
+        } else {
+          alert("Invalid teacher password authorization.");
+        }
+      });
+
+      $("#teacherModalCancelBtn").addEventListener("click", () => {
+        tModal.style.display = "none";
+      });
+
+      $("#teacherModalSaveBtn").addEventListener("click", () => {
+        const gVal = parseInt($("#overrideGoals").value, 10);
+        const sVal = parseInt($("#overrideShots").value, 10);
+        const rVal = parseInt($("#overrideRound").value, 10);
+        
+        if (Number.isInteger(gVal) && Number.isInteger(sVal) && Number.isInteger(rVal)) {
+          state.goals = Math.max(0, gVal);
+          state.shots = Math.max(0, sVal);
+          state.round = Math.max(0, rVal);
+          updateHUD();
+          tModal.style.display = "none";
+          setCommentary("<strong>Teacher update:</strong> Student variables updated from Admin panel.");
+        } else {
+          alert("Please input valid integer coordinates.");
+        }
+      });
+
+      $("#teacherModalResetBtn").addEventListener("click", () => {
+        if (confirm("Reset all game statistics back to 0?")) {
+          state.goals = 0;
+          state.shots = 0;
+          state.round = 0;
+          state.streak = 0;
+          state.bestStreak = 0;
+          localStorage.removeItem("neft_soccer_state");
+          updateHUD();
+          tModal.style.display = "none";
+          setCommentary("<strong>Teacher override:</strong> Restarted student scorecard progress.");
+        }
+      });
+
+      // ========================================================
+      // ROBUST DIAGNOSTICS & SELF-TEST LAYER
+      // ========================================================
+      window.logDiag = function(msg) {
+        const log = $("#diagLog");
+        if (log) {
+          log.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+          log.scrollTop = log.scrollHeight;
+        }
+      };
+
+      window.triggerSelfTest = function() {
+        const panel = $("#diagPanel");
+        panel.style.display = "block";
+        $("#diagLog").innerHTML = "";
+        window.logDiag("Starting Fractions Soccer Diagnostics Self-Test...");
+        
+        try {
+          // Test 1: Math challenge engines
+          window.logDiag("Validating math challenge generators...");
+          const origRound = state.round;
+          for (let r = 0; r < 5; r++) {
+            state.round = r;
+            const question = buildQuestion();
+            if (!question || !question.prompt || !question.correct) {
+              throw new Error(`Math generator failed on Round ${r}`);
+            }
+          }
+          state.round = origRound;
+          window.logDiag("✓ Question builders validated successfully.");
+
+          // Test 2: Local storage sync test
+          window.logDiag("Testing scorecard serialization sync...");
+          const testGoals = state.goals;
+          state.goals = 99;
+          window.saveGameState();
+          
+          state.goals = 0;
+          window.loadGameState();
+          if (state.goals !== 99) {
+            throw new Error("Local storage sync mismatch.");
+          }
+          state.goals = testGoals;
+          window.saveGameState(); // Restore original
+          window.logDiag("✓ LocalStorage load and save cycles passed.");
+
+          // Test 3: Audio routing context
+          window.logDiag("Validating audio synthesizers...");
+          ensureAudio();
+          if (!audio.ctx) {
+            window.logDiag("⚠️ AudioContext not ready (requires first user gesture).");
+          } else {
+            window.logDiag(`✓ Audio Context active. Sample rate: ${audio.ctx.sampleRate}Hz`);
+          }
+
+          // Test 4: Sketchpad scaling assertions
+          window.logDiag("Testing sketchpad metrics...");
+          if (!sketchpad || !sCtx) {
+            throw new Error("Sketchpad overlay canvas missing.");
+          }
+          window.logDiag(`✓ Sketchpad dimensions: ${sketchpad.width}x${sketchpad.height}`);
+          
+          window.logDiag("🎉 SHAI SOCCER ALL CORE SELF-TESTS COMPLETED SUCCESSFULLY!");
+        } catch (err) {
+          window.logDiag(`❌ DIAGNOSTIC CRITICAL FAIL: ${err.message}`);
+          console.error(err);
+        }
+      };
+
+      // ========================================================
+      // INITIALIZATION & EVENT BINDS
+      // ========================================================
       $("#hintBtn").addEventListener("click", showHint);
       $("#nextBtn").addEventListener("click", setupNextQuestion);
       $("#restartBtn").addEventListener("click", () => {
@@ -2736,6 +3228,12 @@
       });
       $("#startBtn").addEventListener("click", startGame);
       $("#playAgainBtn").addEventListener("click", startGame);
+
+      // Startup
+      window.loadGameState();
+      window.resizeSketchpad();
+      window.addEventListener("resize", window.resizeSketchpad);
+      
       runSmokeTests();
       updateHUD();
       requestAnimationFrame(loop);
