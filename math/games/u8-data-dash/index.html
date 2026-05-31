@@ -103,7 +103,6 @@
     <script>
       function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
       function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
-      function round2(n){ return Math.round(n*100)/100; }
 
       var TOTAL=12, TIME=12;
       var state={};
@@ -112,7 +111,8 @@
         var set={}; set[fmt(correct)]=true; var opts=[fmt(correct)];
         var guard=0;
         while(opts.length<4 && guard<50){ guard++; var w=makeWrong(); var k=fmt(w); if(!set[k]){ set[k]=true; opts.push(k); } }
-        while(opts.length<4){ opts.push(fmt(correct + opts.length * 2 + 1)); }
+        var pad=1;
+        while(opts.length<4){ var ek=fmt(correct + pad*2 + 1); if(!set[ek]){ set[ek]=true; opts.push(ek); } pad++; }
         return { opts:shuffle(opts), correct:fmt(correct) };
       }
 

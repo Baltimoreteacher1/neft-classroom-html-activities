@@ -110,7 +110,8 @@
         var set={}; set[String(correct)]=true; var opts=[correct];
         var guard=0;
         while(opts.length<4 && guard<50){ guard++; var w=makeWrong(); var k=String(w); if(!set[k] && w>0){ set[k]=true; opts.push(w); } }
-        while(opts.length<4){ var extra=correct+opts.length; var k2=String(extra); if(!set[k2]){ set[k2]=true; opts.push(extra); } else { correct++; } }
+        var pad=1;
+        while(opts.length<4){ var extra=correct+pad; var k2=String(extra); if(!set[k2]){ set[k2]=true; opts.push(extra); } pad++; }
         return { opts:shuffle(opts.map(String)), correct:String(correct) };
       }
 

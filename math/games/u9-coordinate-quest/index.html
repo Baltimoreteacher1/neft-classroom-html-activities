@@ -114,11 +114,6 @@
         return { opts:shuffle(opts), correct:correctStr };
       }
 
-      function formatInt(n){
-        // Display integer with explicit minus sign, no plus sign
-        return String(n);
-      }
-
       function buildQuestion(i){
         var round = i<4 ? 1 : (i<8 ? 2 : 3);
 
@@ -150,21 +145,10 @@
         if(round===2){
           // Order integers: which is least of 3 integers?
           // Generate 3 distinct integers with a mix of negatives and positives
-          var nums;
-          var attempts = 0;
-          do {
-            var a = rnd(-15, 15);
-            var b = rnd(-15, 15);
-            var c = rnd(-15, 15);
-            attempts++;
-          } while((a===b || b===c || a===c) && attempts<50);
-          // Ensure at least one negative
-          if(a>=0 && b>=0 && c>=0){ a = -rnd(1,10); }
-          // Recalculate in case of duplicate after forcing negative
-          if(a===b) b = b + 1;
-          if(b===c) c = c + 1;
-          if(a===c) c = c - 1;
-          nums = [a, b, c];
+          var nums = [], seenN = {};
+          while(nums.length < 3){ var val = rnd(-15, 15); if(!seenN[val]){ seenN[val] = true; nums.push(val); } }
+          if(!nums.some(function(v){ return v < 0; })){ var idx = rnd(0,2); var nv = -rnd(1,15); while(seenN[nv]){ nv = -rnd(1,15); } seenN[nv] = true; nums[idx] = nv; }
+          var a = nums[0], b = nums[1], c = nums[2];
           var minVal = Math.min(a, b, c);
           var minStr = String(minVal);
           // Options are the three integers themselves (as strings) + one more distractor
