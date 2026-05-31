@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coordinate Plotter — Math Manipulatives | Neft Teacher</title>
+    <meta name="description" content="Interactive four-quadrant coordinate plotter: plot points, identify quadrants, reflect across axes, compute distances." />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #0f766e;
+        --teal-dark: #115e59;
+        --teal-light: #e4f5f3;
+        --gold: #b7791f;
+        --gold-light: #fef7e0;
+        --coral: #c2410c;
+        --coral-light: #fdeee9;
+        --green: #0f7c4a;
+        --green-light: #e6f7ef;
+        --purple: #6d28d9;
+        --purple-light: #ede9fe;
+        --bg: #f6f7f2;
+        --surface: #ffffff;
+        --ink: #17202a;
+        --muted: #5b6773;
+        --line: #d8dfdc;
+        --radius: 10px;
+        --shadow: 0 4px 18px rgba(23,32,42,.1);
+        --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--ink); line-height: 1.55; }
+      .wrap { max-width: 940px; margin: 0 auto; padding: 0 18px 60px; }
+
+      .hero {
+        background: linear-gradient(135deg, #12355b 0%, #6d28d9 100%);
+        color: #fff; padding: 36px 24px 30px; text-align: center;
+      }
+      .hero h1 { font-size: clamp(24px,5vw,38px); margin: 6px 0 8px; }
+      .hero p { max-width: 560px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 15px; }
+      .hero .icon { font-size: 48px; line-height: 1; }
+
+      .breadcrumb { font-size: 13px; padding: 12px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--teal); text-decoration: none; font-weight: 700; }
+
+      .card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 20px 22px; margin: 18px 0; box-shadow: var(--shadow);
+      }
+      .card h2 { margin: 0 0 14px; font-size: 18px; }
+
+      /* Layout: grid SVG on left, controls on right */
+      .main-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 18px;
+        margin: 18px 0;
+      }
+      @media (max-width: 720px) { .main-layout { grid-template-columns: 1fr; } }
+
+      #grid-container {
+        border: 2px solid var(--line); border-radius: 10px;
+        background: #fff; cursor: crosshair; overflow: hidden;
+      }
+      #grid-container svg { display: block; width: 100%; touch-action: none; }
+
+      /* Controls panel */
+      .ctrl-panel { display: flex; flex-direction: column; gap: 14px; }
+      .ctrl-section { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); }
+      .ctrl-section h3 { margin: 0 0 10px; font-size: 15px; color: var(--navy); }
+
+      .fld-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .fld-group { display: flex; flex-direction: column; gap: 4px; }
+      label { font-weight: 700; font-size: 13px; }
+      input[type="number"] {
+        padding: 7px 8px; border: 2px solid var(--line); border-radius: 7px;
+        font-family: inherit; font-size: 14px; background: #fff; width: 100%;
+      }
+      input[type="number"]:focus { outline: none; border-color: var(--teal); }
+
+      .btn {
+        width: 100%; padding: 9px 12px; border: none; border-radius: 8px;
+        font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; color: #fff;
+        margin-top: 8px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.teal { background: var(--teal); }
+      .btn.purple { background: var(--purple); }
+      .btn.gold { background: var(--gold); }
+      .btn.green { background: var(--green); }
+      .btn.coral { background: var(--coral); }
+      .btn.navy { background: var(--navy); }
+      .btn.ghost { background: transparent; color: var(--teal-dark); border: 2px solid var(--teal); margin-top: 0; }
+      .btn.ghost:hover { background: var(--teal-light); }
+      .btn.sm { width: auto; padding: 7px 12px; }
+
+      .info-panel {
+        background: var(--teal-light); border: 1px solid #bfe6e0; border-radius: 10px;
+        padding: 12px 14px; font-size: 14px;
+      }
+      .info-panel .kv { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,.06); }
+      .info-panel .kv:last-child { border-bottom: none; }
+      .info-panel .k { color: var(--muted); font-weight: 700; }
+      .info-panel .v { font-weight: 800; color: var(--teal-dark); }
+
+      .result-box {
+        background: var(--gold-light); border: 1px solid #e6c96e; border-radius: 8px;
+        padding: 10px 12px; font-size: 14px; margin-top: 8px; display: none;
+      }
+      .result-box.show { display: block; }
+      .result-box .big { font-size: 20px; font-weight: 800; color: var(--gold); }
+
+      .legend-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+      .legend-dot { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; }
+      .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+      .site-footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="icon">&#x1F4CD;</div>
+      <h1>Coordinate Plotter</h1>
+      <p>Plot points on a four-quadrant grid, identify the quadrant, reflect across axes, and find distances.</p>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/manipulatives/">Manipulatives</a> / Coordinate Plotter
+      </nav>
+
+      <div class="main-layout">
+        <!-- LEFT: SVG grid -->
+        <div>
+          <div class="legend-row">
+            <div class="legend-dot"><span class="dot" style="background:#0f766e"></span> Point A</div>
+            <div class="legend-dot"><span class="dot" style="background:#6d28d9"></span> Point B</div>
+            <div class="legend-dot"><span class="dot" style="background:#c2410c;border:2px dashed #c2410c;background:transparent;width:14px;height:14px;border-radius:50%"></span> Reflection</div>
+          </div>
+          <div id="grid-container">
+            <svg id="coord-svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin:6px 0 0;">Click anywhere on the grid to place Point A, then B.</p>
+        </div>
+
+        <!-- RIGHT: controls -->
+        <div class="ctrl-panel">
+          <!-- Place points -->
+          <div class="ctrl-section">
+            <h3>Place Points</h3>
+            <div class="fld-row">
+              <div class="fld-group">
+                <label for="ax">A x</label>
+                <input type="number" id="ax" value="" placeholder="x" min="-10" max="10" />
+              </div>
+              <div class="fld-group">
+                <label for="ay">A y</label>
+                <input type="number" id="ay" value="" placeholder="y" min="-10" max="10" />
+              </div>
+            </div>
+            <button class="btn teal" onclick="placeFromInput('A')">Place Point A</button>
+            <div class="fld-row" style="margin-top:10px;">
+              <div class="fld-group">
+                <label for="bx">B x</label>
+                <input type="number" id="bx" value="" placeholder="x" min="-10" max="10" />
+              </div>
+              <div class="fld-group">
+                <label for="by">B y</label>
+                <input type="number" id="by" value="" placeholder="y" min="-10" max="10" />
+              </div>
+            </div>
+            <button class="btn purple" onclick="placeFromInput('B')">Place Point B</button>
+            <button class="btn coral" style="margin-top:8px;" onclick="clearPoints()">Clear All Points</button>
+          </div>
+
+          <!-- Point info -->
+          <div class="ctrl-section">
+            <h3>Point Info</h3>
+            <div class="info-panel" id="point-info">
+              <div class="kv"><span class="k">Point A</span><span class="v" id="info-a">—</span></div>
+              <div class="kv"><span class="k">Quadrant A</span><span class="v" id="info-qa">—</span></div>
+              <div class="kv"><span class="k">Point B</span><span class="v" id="info-b">—</span></div>
+              <div class="kv"><span class="k">Quadrant B</span><span class="v" id="info-qb">—</span></div>
+            </div>
+          </div>
+
+          <!-- Reflections -->
+          <div class="ctrl-section">
+            <h3>Reflect Point A</h3>
+            <button class="btn navy" onclick="reflect('A', 'x')">Reflect A across x-axis</button>
+            <button class="btn navy" style="margin-top:6px;" onclick="reflect('A', 'y')">Reflect A across y-axis</button>
+            <div class="result-box" id="reflect-result"></div>
+          </div>
+
+          <!-- Distance -->
+          <div class="ctrl-section">
+            <h3>Distance Between A &amp; B</h3>
+            <p style="font-size:13px;color:var(--muted);margin:0 0 8px;">Works for points sharing an x or y coordinate (horizontal/vertical segment).</p>
+            <button class="btn green" onclick="computeDistance()">Compute Distance</button>
+            <div class="result-box" id="dist-result"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">Neft Teacher · Manipulatives</footer>
+
+    <script>
+      // Grid config
+      const RANGE = 10;      // -10 to 10
+      const SVG_SIZE = 500;
+      const MARGIN = 40;
+      const GRID_SIZE = SVG_SIZE - 2 * MARGIN;
+      const STEP = GRID_SIZE / (2 * RANGE);  // pixels per unit
+
+      let pts = { A: null, B: null };
+      let reflection = null;  // { pt, axis, coord }
+      let nextClick = 'A'; // which point the next click places
+
+      function unitToSVG(v) { return MARGIN + (v + RANGE) * STEP; }
+      function svgToUnit(px) { return Math.round(((px - MARGIN) / STEP - RANGE) * 2) / 2; }
+
+      function quadrant(x, y) {
+        if (x === 0 || y === 0) return 'On an axis';
+        if (x > 0 && y > 0) return 'Quadrant I (+,+)';
+        if (x < 0 && y > 0) return 'Quadrant II (−,+)';
+        if (x < 0 && y < 0) return 'Quadrant III (−,−)';
+        return 'Quadrant IV (+,−)';
+      }
+
+      function buildGrid() {
+        const svg = document.getElementById('coord-svg');
+        svg.innerHTML = '';
+
+        // Grid lines
+        for (let i = -RANGE; i <= RANGE; i++) {
+          const x = unitToSVG(i);
+          const y = unitToSVG(i);
+          const isAxis = i === 0;
+          const col = isAxis ? '#17202a' : (i % 5 === 0 ? '#b0b8bc' : '#e0e6e4');
+          const w = isAxis ? 2 : 1;
+
+          const vl = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          vl.setAttribute('x1', x); vl.setAttribute('y1', MARGIN);
+          vl.setAttribute('x2', x); vl.setAttribute('y2', SVG_SIZE - MARGIN);
+          vl.setAttribute('stroke', col); vl.setAttribute('stroke-width', w);
+          svg.appendChild(vl);
+
+          const hl = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          hl.setAttribute('x1', MARGIN); hl.setAttribute('y1', y);
+          hl.setAttribute('x2', SVG_SIZE - MARGIN); hl.setAttribute('y2', y);
+          hl.setAttribute('stroke', col); hl.setAttribute('stroke-width', w);
+          svg.appendChild(hl);
+        }
+
+        // Axis arrowheads
+        const ax0 = unitToSVG(0);
+        // x-axis arrow right
+        addArrow(svg, SVG_SIZE - MARGIN + 8, ax0, 'right');
+        // x-axis arrow left
+        addArrow(svg, MARGIN - 8, ax0, 'left');
+        // y-axis arrow up
+        addArrow(svg, ax0, MARGIN - 8, 'up');
+        // y-axis arrow down
+        addArrow(svg, ax0, SVG_SIZE - MARGIN + 8, 'down');
+
+        // Axis labels
+        for (let i = -RANGE; i <= RANGE; i++) {
+          if (i === 0) continue;
+          const skip = RANGE > 8 ? (i % 2 !== 0) : false;
+          if (skip) continue;
+          const x = unitToSVG(i);
+          const y = unitToSVG(i);
+          const t1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          t1.setAttribute('x', x); t1.setAttribute('y', ax0 + 18);
+          t1.setAttribute('text-anchor', 'middle'); t1.setAttribute('font-size', '11');
+          t1.setAttribute('fill', '#5b6773'); t1.textContent = i;
+          svg.appendChild(t1);
+          const t2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          t2.setAttribute('x', ax0 - 8); t2.setAttribute('y', y + 4);
+          t2.setAttribute('text-anchor', 'end'); t2.setAttribute('font-size', '11');
+          t2.setAttribute('fill', '#5b6773'); t2.textContent = i;
+          svg.appendChild(t2);
+        }
+
+        // Quadrant labels (faint)
+        const qLabels = [['I',6,6], ['II',-6,6], ['III',-6,-6], ['IV',6,-6]];
+        for (const [lbl, dx, dy] of qLabels) {
+          const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          const qx = unitToSVG(dx * (RANGE * 0.55));
+          const qy = unitToSVG(-dy * (RANGE * 0.55));
+          t.setAttribute('x', qx); t.setAttribute('y', qy);
+          t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', '22');
+          t.setAttribute('fill', '#d8dfdc'); t.setAttribute('font-weight', '800');
+          t.textContent = lbl;
+          svg.appendChild(t);
+        }
+
+        // Distance segment
+        if (pts.A && pts.B) {
+          const x1 = unitToSVG(pts.A[0]), y1 = unitToSVG(-pts.A[1]);
+          const x2 = unitToSVG(pts.B[0]), y2 = unitToSVG(-pts.B[1]);
+          const seg = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          seg.setAttribute('x1', x1); seg.setAttribute('y1', y1);
+          seg.setAttribute('x2', x2); seg.setAttribute('y2', y2);
+          seg.setAttribute('stroke', '#0f7c4a'); seg.setAttribute('stroke-width', '2');
+          seg.setAttribute('stroke-dasharray', '6,4');
+          svg.appendChild(seg);
+        }
+
+        // Reflection point
+        if (reflection) {
+          const rx = unitToSVG(reflection.rx);
+          const ry = unitToSVG(-reflection.ry);
+          const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c.setAttribute('cx', rx); c.setAttribute('cy', ry); c.setAttribute('r', '7');
+          c.setAttribute('fill', 'none'); c.setAttribute('stroke', '#c2410c'); c.setAttribute('stroke-width', '2.5');
+          c.setAttribute('stroke-dasharray', '4,3');
+          svg.appendChild(c);
+          const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          t.setAttribute('x', rx + 10); t.setAttribute('y', ry - 10);
+          t.setAttribute('font-size', '12'); t.setAttribute('font-weight', '800'); t.setAttribute('fill', '#c2410c');
+          t.textContent = `A'(${reflection.rx}, ${reflection.ry})`;
+          svg.appendChild(t);
+        }
+
+        // Points
+        for (const [name, color] of [['A', '#0f766e'], ['B', '#6d28d9']]) {
+          if (!pts[name]) continue;
+          const [ux, uy] = pts[name];
+          const cx = unitToSVG(ux), cy = unitToSVG(-uy);
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', '7');
+          circle.setAttribute('fill', color); circle.setAttribute('stroke', '#fff'); circle.setAttribute('stroke-width', '2');
+          svg.appendChild(circle);
+          const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          label.setAttribute('x', cx + 10); label.setAttribute('y', cy - 10);
+          label.setAttribute('font-size', '13'); label.setAttribute('font-weight', '800'); label.setAttribute('fill', color);
+          label.textContent = `${name}(${ux}, ${uy})`;
+          svg.appendChild(label);
+        }
+
+        // Re-attach click
+        svg.addEventListener('click', onSvgClick);
+      }
+
+      function addArrow(svg, x, y, dir) {
+        const size = 6;
+        let pts;
+        if (dir === 'right') pts = `${x},${y} ${x-size},${y-size/2} ${x-size},${y+size/2}`;
+        else if (dir === 'left') pts = `${x},${y} ${x+size},${y-size/2} ${x+size},${y+size/2}`;
+        else if (dir === 'up') pts = `${x},${y} ${x-size/2},${y+size} ${x+size/2},${y+size}`;
+        else pts = `${x},${y} ${x-size/2},${y-size} ${x+size/2},${y-size}`;
+        const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        poly.setAttribute('points', pts); poly.setAttribute('fill', '#17202a');
+        svg.appendChild(poly);
+      }
+
+      function onSvgClick(e) {
+        const svg = e.currentTarget;
+        const rect = svg.getBoundingClientRect();
+        const scaleX = SVG_SIZE / rect.width;
+        const scaleY = SVG_SIZE / rect.height;
+        const px = (e.clientX - rect.left) * scaleX;
+        const py = (e.clientY - rect.top) * scaleY;
+        let ux = svgToUnit(px);
+        let uy = -svgToUnit(py); // flip y
+        ux = Math.max(-RANGE, Math.min(RANGE, ux));
+        uy = Math.max(-RANGE, Math.min(RANGE, uy));
+
+        const pt = nextClick;
+        pts[pt] = [ux, uy];
+        document.getElementById(pt.toLowerCase() + 'x').value = ux;
+        document.getElementById(pt.toLowerCase() + 'y').value = uy;
+        nextClick = pt === 'A' ? 'B' : 'A';
+        reflection = null;
+        hideResults();
+        buildGrid();
+        updateInfo();
+      }
+
+      function placeFromInput(pt) {
+        const x = parseFloat(document.getElementById(pt.toLowerCase() + 'x').value);
+        const y = parseFloat(document.getElementById(pt.toLowerCase() + 'y').value);
+        if (isNaN(x) || isNaN(y)) { alert(`Enter both x and y for Point ${pt}.`); return; }
+        if (x < -RANGE || x > RANGE || y < -RANGE || y > RANGE) {
+          alert(`Coordinates must be between -${RANGE} and ${RANGE}.`); return;
+        }
+        pts[pt] = [x, y];
+        reflection = null;
+        hideResults();
+        buildGrid();
+        updateInfo();
+      }
+
+      function clearPoints() {
+        pts = { A: null, B: null };
+        reflection = null;
+        nextClick = 'A';
+        hideResults();
+        buildGrid();
+        updateInfo();
+      }
+
+      function hideResults() {
+        document.getElementById('reflect-result').classList.remove('show');
+        document.getElementById('dist-result').classList.remove('show');
+      }
+
+      function updateInfo() {
+        const ai = document.getElementById('info-a');
+        const qi = document.getElementById('info-qa');
+        const bi = document.getElementById('info-b');
+        const qbi = document.getElementById('info-qb');
+        if (pts.A) { ai.textContent = `(${pts.A[0]}, ${pts.A[1]})`; qi.textContent = quadrant(pts.A[0], pts.A[1]); }
+        else { ai.textContent = '—'; qi.textContent = '—'; }
+        if (pts.B) { bi.textContent = `(${pts.B[0]}, ${pts.B[1]})`; qbi.textContent = quadrant(pts.B[0], pts.B[1]); }
+        else { bi.textContent = '—'; qbi.textContent = '—'; }
+      }
+
+      function reflect(pt, axis) {
+        if (!pts[pt]) { alert(`Place Point ${pt} first.`); return; }
+        const [x, y] = pts[pt];
+        let rx, ry, desc;
+        if (axis === 'x') {
+          rx = x; ry = -y;
+          desc = `Reflect across the x-axis: the x-coordinate stays the same, y is negated.<br><strong>(${x}, ${y}) → (${rx}, ${ry})</strong>`;
+        } else {
+          rx = -x; ry = y;
+          desc = `Reflect across the y-axis: the y-coordinate stays the same, x is negated.<br><strong>(${x}, ${y}) → (${rx}, ${ry})</strong>`;
+        }
+        reflection = { rx, ry };
+        const box = document.getElementById('reflect-result');
+        box.innerHTML = `<div class="big">(${rx}, ${ry})</div><div style="margin-top:6px;font-size:13px;">${desc}</div>`;
+        box.classList.add('show');
+        buildGrid();
+      }
+
+      function computeDistance() {
+        if (!pts.A || !pts.B) { alert('Place both Point A and Point B first.'); return; }
+        const [ax, ay] = pts.A;
+        const [bx, by] = pts.B;
+        const box = document.getElementById('dist-result');
+
+        let dist, formula, note = '';
+        if (ax === bx) {
+          // Vertical segment — same x
+          dist = Math.abs(ay - by);
+          formula = `|${ay} − ${by}| = |${ay - by}| = ${dist}`;
+          note = `Points share x = ${ax} (vertical segment).`;
+        } else if (ay === by) {
+          // Horizontal segment — same y
+          dist = Math.abs(ax - bx);
+          formula = `|${ax} − ${bx}| = |${ax - bx}| = ${dist}`;
+          note = `Points share y = ${ay} (horizontal segment).`;
+        } else {
+          // General distance (not a horizontal/vertical segment)
+          dist = Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2);
+          formula = `√((${ax}−${bx})² + (${ay}−${by})²) = ${dist.toFixed(2)}`;
+          note = 'These points do not share an x or y coordinate. Using the distance formula.';
+          dist = parseFloat(dist.toFixed(2));
+        }
+
+        box.innerHTML = `<div class="big">${dist} units</div><div style="margin-top:6px;font-size:13px;">${formula}</div><div style="margin-top:4px;font-size:13px;color:var(--muted);">${note}</div>`;
+        box.classList.add('show');
+        buildGrid();
+      }
+
+      buildGrid();
+      updateInfo();
+    </script>
+  </body>
+</html>
