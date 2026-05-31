@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 9 Choice Board — Integers & the Coordinate Plane | Neft Teacher</title>
+    <meta name="description" content="Unit 9 (Integers & the Coordinate Plane, 6.NS.5–8) choice board: pick activities, complete any three in a row." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      .cb-intro { background:#fff; border:1px solid var(--line,#e2e7ec); border-left:6px solid #1a6fb5; border-radius:14px; padding:16px 20px; margin:18px 0; }
+      .cb-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:10px 0 4px; }
+      .cb-btn { background:#0f2b3c; color:#fff; border:none; border-radius:10px; padding:9px 16px; font-weight:700; font-size:14px; cursor:pointer; font-family:inherit; }
+      .cb-status { font-weight:800; color:#2d874b; min-height:22px; }
+      .cb-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:14px 0; }
+      @media (max-width:640px){ .cb-grid{ grid-template-columns:1fr; } }
+      .cb-cell { background:#fff; border:2px solid var(--line,#e2e7ec); border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:8px; box-shadow:0 2px 10px rgba(15,43,60,.06); transition:border-color .15s; }
+      .cb-cell.done { border-color:#2d874b; background:#e6f4eb; }
+      .cb-cell .ctype { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:#1a6fb5; }
+      .cb-cell h3 { margin:0; font-size:17px; line-height:1.25; }
+      .cb-cell .open { color:#1a6fb5; font-weight:700; text-decoration:none; font-size:14px; }
+      .cb-cell .open:hover { text-decoration:underline; }
+      .cb-cell .mark { margin-top:auto; display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; color:#5e6e7e; cursor:pointer; }
+      .cb-cell .mark input { width:20px; height:20px; }
+      .cb-emoji { font-size:30px; line-height:1; }
+      @media print { .cb-btn,.cb-bar .cb-status{ display:none; } .cb-cell{ box-shadow:none; break-inside:avoid; } }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span><a href="/math/choice-boards/">Choice Boards</a><span>/</span><span>Unit 9</span>
+      </nav>
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">Choice Board · Unit 9</p>
+        <h1>Integers & the Coordinate Plane — Pick Your Path</h1>
+        <p class="hero-copy">
+          Choose activities that work for you. Try to <strong>complete any three
+          in a row</strong> — across, down, or diagonally. Standard focus: 6.NS.5–8.
+        </p>
+      </section>
+
+      <div class="cb-intro">
+        <strong>How it works:</strong> open any activity, then check it off here.
+        Get <strong>3 in a row</strong> for a bingo! Your checkmarks save on this
+        device. Teachers can print this page as a menu.
+      </div>
+
+      <div class="cb-bar">
+        <button class="cb-btn" type="button" id="resetBtn">↺ Reset board</button>
+        <button class="cb-btn" type="button" onclick="window.print()">🖨️ Print</button>
+        <span class="cb-status" id="status"></span>
+      </div>
+
+      <div class="cb-grid" id="grid"></div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Unit 9 Choice Board</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </main>
+
+    <script>
+      var UNIT_KEY = "choiceboard-u9";
+      var CELLS = [
+        { e:"📚", type:"Lessons", title:"Unit Lessons", url:"/math/unit-7/" },
+        { e:"🧭", type:"Game", title:"Coordinate Quest", url:"/math/games/u9-coordinate-quest/" },
+        { e:"🏗️", type:"Project", title:"Culminating Project", url:"/math/unit-7/projects/" },
+        { e:"📖", type:"Reading · ESOL", title:"Reading (ESOL)", url:"/math/reading/integers-esol/" },
+        { e:"📈", type:"Reading · Enrichment", title:"Reading (Enrichment)", url:"/math/reading/integers-enrichment/" },
+        { e:"🧭", type:"WebQuest", title:"WebQuest", url:"/webquests/unit-7/" },
+        { e:"📑", type:"HyperDoc", title:"HyperDoc", url:"/hyperdocs/unit-9/" },
+        { e:"📐", type:"Architect", title:"Architect", url:"/activities/architect/unit-9/" },
+        { e:"🧰", type:"Tool", title:"Coordinate Plotter Tool", url:"/math/manipulatives/coordinate-plotter/" }
+      ];
+      var LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+      function load(){ try { return JSON.parse(localStorage.getItem(UNIT_KEY)) || []; } catch(e){ return []; } }
+      function save(d){ try { localStorage.setItem(UNIT_KEY, JSON.stringify(d)); } catch(e){} }
+
+      var done = load();
+      var grid = document.getElementById("grid");
+      var statusEl = document.getElementById("status");
+
+      function render(){
+        grid.innerHTML = "";
+        CELLS.forEach(function(c, i){
+          var cell = document.createElement("div");
+          cell.className = "cb-cell" + (done[i] ? " done" : "");
+          cell.innerHTML =
+            '<div class="cb-emoji">' + c.e + '</div>' +
+            '<div class="ctype">' + c.type + '</div>' +
+            '<h3>' + c.title + '</h3>' +
+            '<a class="open" href="' + c.url + '">Open activity →</a>' +
+            '<label class="mark"><input type="checkbox" ' + (done[i] ? "checked" : "") + ' data-i="' + i + '"> Mark complete</label>';
+          grid.appendChild(cell);
+        });
+        checkWin();
+      }
+      function checkWin(){
+        var count = done.filter(Boolean).length;
+        var bingo = LINES.some(function(l){ return l.every(function(i){ return done[i]; }); });
+        if (bingo) statusEl.textContent = "🎉 Bingo! You completed 3 in a row! (" + count + "/9 done)";
+        else if (count) statusEl.textContent = count + "/9 activities completed — keep going for 3 in a row!";
+        else statusEl.textContent = "";
+      }
+      grid.addEventListener("change", function(e){
+        var box = e.target.closest("input[type=checkbox]");
+        if (!box) return;
+        done[box.dataset.i] = box.checked;
+        save(done); render();
+      });
+      document.getElementById("resetBtn").addEventListener("click", function(){
+        done = []; save(done); render();
+      });
+      render();
+    </script>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>
