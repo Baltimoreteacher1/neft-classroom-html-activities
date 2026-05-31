@@ -268,7 +268,7 @@ export default {
       color: "#ffffff",
       background: "rgba(15,34,56,0.92)",
       fontSize: 56,
-      scale: 0.5,
+      scale: 0.72,
     });
     seaLabel.position.set(1.2, 0.0, 1.8);
     group.add(seaLabel);
