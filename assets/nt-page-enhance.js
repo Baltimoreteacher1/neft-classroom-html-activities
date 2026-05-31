@@ -1,10 +1,13 @@
 /*!
- * nt-page-enhance.js — one-include upgrade for ANY existing Neft Teacher page.
- * Adds: (1) a universal Light/Dark toggle (works on pages that don't use the
- * --nt-* design tokens, via a filter-based dark mode), and (2) a Save bar with
- * "Save as PDF" + "Save as DOC" that embeds the student's name so finished work
- * can be uploaded to a grading folder. Optional auto-grading if the page sets
+ * nt-page-enhance.js — adds a "Save your work" bar to existing activity pages so
+ * finished work can be saved as PDF or DOC with the student's name and uploaded
+ * to a grading folder. Optional auto-grading if the page sets
  * window.NT_GRADE_ITEMS. Self-contained, no dependencies, offline-first.
+ *
+ * NOTE: this script intentionally does NOT add a dark-mode toggle. A universal
+ * filter-based dark mode looked muddy on these designed pages, so legacy pages
+ * render exactly as designed. (The new content pages do their own proper
+ * token-based theming via neft-theme.js.)
  *
  * Drop in once, near </body>:  <script src="/assets/nt-page-enhance.js" defer></script>
  */
@@ -12,19 +15,17 @@
   if (window.__ntPageEnhance) return; // idempotent
   window.__ntPageEnhance = true;
 
-  var LS_THEME = "nt-page-theme";
+  // Safety: clear any dark-mode state a previous version may have applied, so
+  // pages return to their normal look on next load.
+  try {
+    document.documentElement.classList.remove("nt-dark");
+  } catch (e) {}
+
   var LS_STUDENT = "nt_student";
 
-  // ---- styles -------------------------------------------------------------
+  // ---- styles (save bar only) --------------------------------------------
   var css = document.createElement("style");
   css.textContent = [
-    "html.nt-dark{filter:invert(0.92) hue-rotate(180deg);background:#0e1116!important;}",
-    "html.nt-dark img,html.nt-dark video,html.nt-dark canvas,html.nt-dark iframe,",
-    "html.nt-dark svg,html.nt-dark [style*='background-image']{filter:invert(1) hue-rotate(180deg);}",
-    ".nt-pe-btn{position:fixed;top:12px;right:12px;z-index:2147483646;width:44px;height:44px;",
-    "border-radius:50%;border:1px solid rgba(120,120,120,.4);background:#fff;color:#111;",
-    "font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:flex;",
-    "align-items:center;justify-content:center;}",
     ".nt-pe-bar{position:fixed;bottom:0;left:0;right:0;z-index:2147483646;display:flex;",
     "gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;padding:8px 12px;",
     "background:#12355b;color:#fff;font:600 14px system-ui,sans-serif;box-shadow:0 -2px 10px rgba(0,0,0,.25);}",
@@ -34,38 +35,11 @@
     "background:#1fa6a2;color:#fff;min-height:40px;}",
     ".nt-pe-bar button.doc{background:#4f8fd0;}",
     ".nt-pe-bar label{opacity:.9;}",
-    "@media print{.nt-pe-btn,.nt-pe-bar{display:none!important;}}",
+    "@media print{.nt-pe-bar{display:none!important;}}",
   ].join("");
   document.head.appendChild(css);
 
-  // ---- theme toggle -------------------------------------------------------
-  function applyTheme(t) {
-    document.documentElement.classList.toggle("nt-dark", t === "dark");
-    if (btn) btn.textContent = t === "dark" ? "☀️" : "🌙";
-  }
-  var saved = null;
-  try {
-    saved = localStorage.getItem(LS_THEME);
-  } catch (e) {}
-  // Default to LIGHT so every page looks as designed. The filter-based dark
-  // mode is a rough universal approximation that can look muddy on richly
-  // styled pages, so it is OPT-IN ONLY — never auto-applied from OS preference.
-  if (saved !== "dark") saved = "light";
-
-  var btn = document.createElement("button");
-  btn.className = "nt-pe-btn";
-  btn.setAttribute("aria-label", "Toggle light or dark mode");
-  btn.addEventListener("click", function () {
-    var t = document.documentElement.classList.contains("nt-dark")
-      ? "light"
-      : "dark";
-    try {
-      localStorage.setItem(LS_THEME, t);
-    } catch (e) {}
-    applyTheme(t);
-  });
-
-  // ---- student name + save bar -------------------------------------------
+  // ---- student name -------------------------------------------------------
   function getStudent() {
     try {
       return JSON.parse(localStorage.getItem(LS_STUDENT) || "{}");
@@ -107,7 +81,6 @@
       .slice(0, 60);
   }
   function maybeGrade() {
-    // Optional: page can expose window.NT_GRADE_ITEMS = [{prompt,studentAnswer,correctAnswer,points}]
     if (!Array.isArray(window.NT_GRADE_ITEMS) || !window.NT_GRADE_ITEMS.length)
       return "";
     var items = window.NT_GRADE_ITEMS,
@@ -131,7 +104,6 @@
         "</td></tr>";
     });
     var pct = possible ? Math.round((earned / possible) * 100) : 0;
-    // persist to the shared results store
     try {
       var arr = JSON.parse(localStorage.getItem("nt_results_v1") || "[]");
       arr.push({
@@ -179,8 +151,6 @@
       nameIn.focus();
       return;
     }
-    // Set the document title so the browser's "Save as PDF" defaults the filename
-    // to the student's name, then print (user picks "Save as PDF").
     var orig = document.title;
     document.title = safeName() + "_" + pageSlug();
     window.print();
@@ -195,9 +165,8 @@
       return;
     }
     var clone = document.body.cloneNode(true);
-    // strip the enhancer UI from the export
     Array.prototype.forEach.call(
-      clone.querySelectorAll(".nt-pe-bar,.nt-pe-btn"),
+      clone.querySelectorAll(".nt-pe-bar"),
       function (n) {
         n.remove();
       },
@@ -229,9 +198,7 @@
   bar.appendChild(pdfBtn);
   bar.appendChild(docBtn);
 
-  // The Save bar belongs on activity/test pages, not nav hubs or dashboards.
-  // Show it when the page opts in (window.NT_ACTIVITY) or looks like an activity:
-  // a <form>, a <textarea>, 2+ text/number inputs, or quiz/question/activity markers.
+  // Save bar belongs on activity/test pages, not nav hubs or dashboards.
   function isActivityPage() {
     if (window.NT_ACTIVITY === true) return true;
     if (window.NT_ACTIVITY === false) return false;
@@ -250,9 +217,7 @@
   }
 
   function mount() {
-    document.body.appendChild(btn); // theme toggle: every page
-    if (isActivityPage()) document.body.appendChild(bar); // save bar: activities only
-    applyTheme(saved);
+    if (isActivityPage()) document.body.appendChild(bar);
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", mount);
