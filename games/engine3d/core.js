@@ -33,9 +33,11 @@ export function createScene(mountEl, opts = {}) {
     fog = true,
     environment = true, // PMREM IBL (guarded)
     bloom = true, // UnrealBloom post (guarded)
-    bloomStrength = 0.55,
-    bloomRadius = 0.6,
-    bloomThreshold = 0.82,
+    // Subtle accent glow only. Kept low + high-threshold so it never washes out
+    // text/numbers — earlier (0.55 / 0.82) made white labels bloom into a haze.
+    bloomStrength = 0.2,
+    bloomRadius = 0.4,
+    bloomThreshold = 0.92,
   } = opts;
 
   mountEl.style.position = mountEl.style.position || "relative";
@@ -75,7 +77,9 @@ export function createScene(mountEl, opts = {}) {
   const top = base.clone().lerp(new THREE.Color(0xffffff), 0.22);
   const bottom = base.clone().lerp(new THREE.Color(0x000000), 0.32);
   scene.background = makeGradientTexture(top, bottom);
-  if (fog) scene.fog = new THREE.Fog(base.clone().lerp(bottom, 0.5), 26, 90);
+  // Fog starts well past typical gameplay depth so it only softens the far
+  // backdrop and never hazes the objects/numbers the student is reading.
+  if (fog) scene.fog = new THREE.Fog(base.clone().lerp(bottom, 0.5), 45, 120);
 
   // ---- Studio light rig -----------------------------------------------------
   const hemi = new THREE.HemisphereLight(0xdfefff, 0x2a3344, 0.55);
