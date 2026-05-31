@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Class Data Detective — Statistics Culminating Project A</title>
+    <meta name="description" content="Grade 6 Statistics culminating project. Classify statistical questions, compute mean/median/mode, find range and MAD, and describe data distributions." />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --purple: #6d3fa0;
+        --purple-light: #f0eafa;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--gold);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--blue); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase:nth-of-type(5) .phase-num { background: var(--purple); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--navy); }
+
+      .q-grid { display: grid; gap: 10px; margin: 16px 0; }
+      .q-item {
+        background: var(--bg); border: 2px solid var(--line); border-radius: 12px;
+        padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;
+        cursor: pointer; transition: border-color .2s;
+      }
+      .q-item:hover { border-color: var(--blue); }
+      .q-item input[type="radio"] { margin-top: 3px; flex: 0 0 auto; width: 18px; height: 18px; }
+      .q-item label { cursor: pointer; font-size: 15px; }
+      .q-group { margin-bottom: 18px; }
+      .q-group p { font-weight: 700; margin: 0 0 8px; font-size: 15px; }
+      .q-result { margin-top: 8px; font-size: 14px; font-weight: 700; min-height: 20px; }
+      .q-result.ok { color: var(--green); }
+      .q-result.no { color: var(--coral); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 90px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      .btn {
+        background: var(--blue); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer;
+        font-family: inherit; margin-top: 14px; display: inline-block;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.teal { background: var(--teal); }
+      .btn.gold { background: var(--gold); color: #2a1c00; }
+      .btn.coral { background: var(--coral); }
+      .btn.purple { background: var(--purple); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--teal-light); border: 1px solid #bfe6e0; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 26px; font-weight: 800; color: var(--teal); margin-bottom: 6px; }
+      .readout .step { font-size: 13px; color: var(--muted); margin-top: 8px; font-family: monospace; line-height: 1.7; white-space: pre-wrap; }
+
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .shape-btns { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+      .shape-btn {
+        padding: 10px 18px; border: 2px solid var(--line); border-radius: 10px;
+        background: #fff; cursor: pointer; font-family: inherit; font-size: 14px;
+        font-weight: 700; transition: all .2s;
+      }
+      .shape-btn:hover { border-color: var(--blue); background: var(--blue-light); }
+      .shape-btn.selected { border-color: var(--blue); background: var(--blue); color: #fff; }
+
+      .dot-plot-wrap { margin: 16px 0; overflow-x: auto; }
+      .dot-plot-svg { display: block; max-width: 100%; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 28%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox, .shape-btns { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+        .readout { display: block !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">📊</div>
+      <h1>Class Data Detective</h1>
+      <p>You are a data detective! Collect a data set, analyze it with statistics, display it, and write your data story. Every phase builds toward a complete statistical investigation.</p>
+      <div class="tags">
+        <span class="tag gold">Statistics &amp; Data</span>
+        <span class="tag">6.SP</span>
+        <span class="tag">6.SP.1</span>
+        <span class="tag">6.SP.3</span>
+        <span class="tag">6.SP.4</span>
+        <span class="tag">6.SP.5c</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/statistics/">Statistics</a> /
+        <a href="/math/statistics/projects/">Projects</a> / Class Data Detective
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🔍 Your Mission</h2>
+        <p class="scenario">
+          You are the class data detective. Work through four phases to carry out a full
+          statistical investigation: classify statistical questions, compute measures of
+          center and variability, display the data, and write a data story. Hit
+          <em>Calculate</em> or <em>Check</em> in each phase, then complete the final
+          checklist and reflection. Print your finished investigation.
+        </p>
+      </div>
+
+      <!-- PHASE 1: STATISTICAL QUESTIONS -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Statistical Questions · 6.SP.1</div>
+            <h2>Is It a Statistical Question?</h2>
+          </div>
+        </div>
+        <p>A <strong>statistical question</strong> is one you would collect data to answer — and the data has <em>variability</em> (different people or things give different answers). A non-statistical question has one definite answer.</p>
+
+        <div class="task">
+          <strong>Directions:</strong> For each question below, decide whether it is statistical (S) or non-statistical (NS). Click your choice, then hit Check to see if you are right.
+        </div>
+
+        <div class="q-group">
+          <p>1. "How many minutes does each student in our class spend reading each day?"</p>
+          <div class="q-grid">
+            <div class="q-item" onclick="selectQ('q1','S')">
+              <input type="radio" name="q1" id="q1-s" value="S"> <label for="q1-s">Statistical — answers vary from student to student</label>
+            </div>
+            <div class="q-item" onclick="selectQ('q1','NS')">
+              <input type="radio" name="q1" id="q1-ns" value="NS"> <label for="q1-ns">Non-statistical — one definite answer</label>
+            </div>
+          </div>
+          <div class="q-result" id="r1"></div>
+        </div>
+
+        <div class="q-group">
+          <p>2. "How many pages are in our math textbook?"</p>
+          <div class="q-grid">
+            <div class="q-item" onclick="selectQ('q2','S')">
+              <input type="radio" name="q2" id="q2-s" value="S"> <label for="q2-s">Statistical — answers vary</label>
+            </div>
+            <div class="q-item" onclick="selectQ('q2','NS')">
+              <input type="radio" name="q2" id="q2-ns" value="NS"> <label for="q2-ns">Non-statistical — one definite answer</label>
+            </div>
+          </div>
+          <div class="q-result" id="r2"></div>
+        </div>
+
+        <div class="q-group">
+          <p>3. "What are the heights (in inches) of students on the school basketball team?"</p>
+          <div class="q-grid">
+            <div class="q-item" onclick="selectQ('q3','S')">
+              <input type="radio" name="q3" id="q3-s" value="S"> <label for="q3-s">Statistical — answers vary from player to player</label>
+            </div>
+            <div class="q-item" onclick="selectQ('q3','NS')">
+              <input type="radio" name="q3" id="q3-ns" value="NS"> <label for="q3-ns">Non-statistical — one definite answer</label>
+            </div>
+          </div>
+          <div class="q-result" id="r3"></div>
+        </div>
+
+        <div class="q-group">
+          <p>4. "How many days are in a week?"</p>
+          <div class="q-grid">
+            <div class="q-item" onclick="selectQ('q4','S')">
+              <input type="radio" name="q4" id="q4-s" value="S"> <label for="q4-s">Statistical — answers vary</label>
+            </div>
+            <div class="q-item" onclick="selectQ('q4','NS')">
+              <input type="radio" name="q4" id="q4-ns" value="NS"> <label for="q4-ns">Non-statistical — one definite answer</label>
+            </div>
+          </div>
+          <div class="q-result" id="r4"></div>
+        </div>
+
+        <button class="btn" onclick="checkQuestions()">Check My Answers</button>
+        <div class="readout" id="q-out"></div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Ask yourself: "Could different people, objects, or times give different answers?" If yes, the data would vary — so it is a statistical question. If there is one fixed answer (like 7 days in a week), it is non-statistical.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2: MEASURES OF CENTER -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Measures of Center · 6.SP.3 · 6.SP.5c</div>
+            <h2>Mean, Median, and Mode</h2>
+          </div>
+        </div>
+        <p>Enter a data set of 6–9 numbers (your own class data, or use the example below). The calculator will find the <strong>mean</strong>, <strong>median</strong>, and <strong>mode</strong> and show every step.</p>
+
+        <div class="task">
+          <strong>Example data set (minutes of daily reading):</strong> 15, 20, 20, 25, 30, 18, 22, 20, 28<br>
+          <em>Use these or type your own numbers separated by commas.</em>
+        </div>
+
+        <label class="fld" for="dataset">Your data set (numbers separated by commas)</label>
+        <input type="text" id="dataset" value="15, 20, 20, 25, 30, 18, 22, 20, 28" placeholder="e.g. 15, 20, 20, 25, 30" />
+        <button class="btn teal" onclick="calcCenter()">Calculate Mean, Median &amp; Mode</button>
+        <div class="readout" id="center-out"></div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p><strong>Mean:</strong> Add all values, then divide by how many there are.<br>
+          <strong>Median:</strong> Sort the values from least to greatest. The middle value is the median. If there is an even count, average the two middle values.<br>
+          <strong>Mode:</strong> The value that appears most often. A data set can have no mode, one mode, or multiple modes.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3: VARIABILITY -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Measures of Variability · 6.SP.5c</div>
+            <h2>Range and Mean Absolute Deviation</h2>
+          </div>
+        </div>
+        <p>Using the <strong>same data set</strong> from Phase 2, compute the <strong>range</strong> (how spread out) and <strong>MAD</strong> (mean absolute deviation — the average distance each value is from the mean). Show your work.</p>
+
+        <button class="btn coral" onclick="calcVariability()">Calculate Range &amp; MAD</button>
+        <div class="readout" id="var-out"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check:</strong> A data set is 4, 8, 6, 10, 2. What is the range?
+        </div>
+        <label class="fld" for="check-range">Your answer (range)</label>
+        <input type="number" id="check-range" placeholder="Type a number" style="max-width:200px;" />
+        <button class="btn teal" onclick="checkRange()" style="margin-left:8px;">Check</button>
+        <div class="feedback" id="range-fb"></div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p><strong>Range</strong> = Maximum value − Minimum value.<br>
+          <strong>MAD steps:</strong> (1) Find the mean. (2) Subtract the mean from each value and take the absolute value — that is the deviation. (3) Find the average of all those absolute deviations. That average is the MAD.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4: DISPLAY + SHAPE -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Data Display &amp; Shape · 6.SP.4 · 6.SP.2</div>
+            <h2>Display and Describe the Distribution</h2>
+          </div>
+        </div>
+        <p>Click <em>Draw Dot Plot</em> to see your data set visualized. Then choose the shape that best describes your distribution and check a quick-check problem.</p>
+
+        <button class="btn gold" onclick="drawDotPlot()">Draw Dot Plot</button>
+        <div id="dot-plot-container" style="margin-top:16px;"></div>
+
+        <label class="fld" style="margin-top:20px;">Choose the shape of your distribution:</label>
+        <div class="shape-btns">
+          <button class="shape-btn" id="sb-sym" onclick="pickShape('symmetric')">Symmetric</button>
+          <button class="shape-btn" id="sb-skl" onclick="pickShape('skewed left')">Skewed Left</button>
+          <button class="shape-btn" id="sb-skr" onclick="pickShape('skewed right')">Skewed Right</button>
+          <button class="shape-btn" id="sb-out" onclick="pickShape('has outlier(s)')">Has Outlier(s)</button>
+          <button class="shape-btn" id="sb-uni" onclick="pickShape('uniform')">Uniform</button>
+        </div>
+        <div class="feedback" id="shape-fb" style="min-height:24px;margin-top:4px;"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check:</strong> The data set is 3, 5, 7, 9, 11. What is the median?
+        </div>
+        <label class="fld" for="check-med">Your answer (median)</label>
+        <input type="number" id="check-med" placeholder="Type a number" style="max-width:200px;" />
+        <button class="btn purple" onclick="checkMedian()" style="margin-left:8px;">Check</button>
+        <div class="feedback" id="med-fb"></div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Sort the values: 3, 5, 7, 9, 11. There are 5 values, so the middle one (position 3) is the median.<br>
+          <strong>Distribution shapes:</strong> Symmetric means the data is balanced on both sides of the center. Skewed right means a long tail stretches to the right. Skewed left means the tail goes left. Outliers are values much higher or lower than the rest.</p>
+        </details>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Data Story</h2>
+          </div>
+        </div>
+        <p>Write a 4–6 sentence data story using all your results. Tell a reader what the data shows — use your mean, median, mode, range, MAD, and distribution shape. A good data story explains what the numbers mean in context.</p>
+        <textarea id="story" placeholder="The data set shows the number of minutes students read each day. The mean is ___, the median is ___, and the mode is ___. This tells me ___ about the center of the data. The range is ___ and the MAD is ___, which means ___. The distribution is ___ because ___. Overall, ___..."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Project Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I identified which questions are statistical and explained why.</li>
+          <li><input type="checkbox" /> I calculated the mean correctly (sum ÷ count) and showed the steps.</li>
+          <li><input type="checkbox" /> I found the median by sorting the data and locating the middle value.</li>
+          <li><input type="checkbox" /> I identified the mode (most frequent value).</li>
+          <li><input type="checkbox" /> I calculated the range and MAD and showed the steps.</li>
+          <li><input type="checkbox" /> I created and described the dot plot / distribution shape.</li>
+          <li><input type="checkbox" /> My data story uses all measures and explains what they mean.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print My Investigation</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr>
+            <td>Statistical Questions (6.SP.1)</td>
+            <td>All questions correctly classified with clear reasoning about variability</td>
+            <td>All or most questions correctly classified</td>
+            <td>Some questions classified correctly; reasoning unclear</td>
+          </tr>
+          <tr>
+            <td>Center: Mean, Median, Mode (6.SP.3 / 6.SP.5c)</td>
+            <td>All three measures correct with work shown; explains which to use and why</td>
+            <td>All three measures correct</td>
+            <td>One or two measures correct; minor computation error</td>
+          </tr>
+          <tr>
+            <td>Variability: Range &amp; MAD (6.SP.5c)</td>
+            <td>Range and MAD both correct with step-by-step work shown; interprets what spread means</td>
+            <td>Range and MAD both correct</td>
+            <td>Range correct; MAD attempted with a step error</td>
+          </tr>
+          <tr>
+            <td>Display &amp; Shape (6.SP.4 / 6.SP.2)</td>
+            <td>Dot plot is accurate; distribution shape correctly described and justified</td>
+            <td>Dot plot accurate; shape identified</td>
+            <td>Dot plot has minor errors; shape partially described</td>
+          </tr>
+          <tr>
+            <td>Communication (Data Story)</td>
+            <td>Data story clearly uses all five measures in context; reader understands the data</td>
+            <td>Data story uses most measures; meaning is clear</td>
+            <td>Data story is incomplete or missing context</td>
+          </tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Statistics Culminating Project · Version A · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      // ── Stored state across phases ──
+      var lastParsed = [];
+      var lastMean = null;
+      var chosenShape = null;
+
+      // ── Utilities ──
+      function parseDataset() {
+        var raw = document.getElementById("dataset").value;
+        var parts = raw.split(/[,\s]+/).filter(function(s){ return s.trim() !== ""; });
+        var nums = [];
+        for (var i = 0; i < parts.length; i++) {
+          var n = parseFloat(parts[i]);
+          if (isNaN(n)) { return null; }
+          nums.push(n);
+        }
+        return nums.length >= 2 ? nums : null;
+      }
+
+      function show(id, html) {
+        var el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      function sortNums(arr) {
+        return arr.slice().sort(function(a, b){ return a - b; });
+      }
+
+      function calcMean(arr) {
+        var sum = 0;
+        for (var i = 0; i < arr.length; i++) { sum += arr[i]; }
+        return sum / arr.length;
+      }
+
+      function calcMedian(arr) {
+        var s = sortNums(arr);
+        var n = s.length;
+        if (n % 2 === 1) {
+          return s[Math.floor(n / 2)];
+        } else {
+          return (s[n / 2 - 1] + s[n / 2]) / 2;
+        }
+      }
+
+      function calcMode(arr) {
+        var freq = {};
+        for (var i = 0; i < arr.length; i++) {
+          freq[arr[i]] = (freq[arr[i]] || 0) + 1;
+        }
+        var maxFreq = 0;
+        var keys = Object.keys(freq);
+        for (var j = 0; j < keys.length; j++) {
+          if (freq[keys[j]] > maxFreq) { maxFreq = freq[keys[j]]; }
+        }
+        if (maxFreq === 1) { return { modes: [], label: "No mode (all values appear once)" }; }
+        var modes = [];
+        for (var k = 0; k < keys.length; k++) {
+          if (freq[keys[k]] === maxFreq) { modes.push(parseFloat(keys[k])); }
+        }
+        modes.sort(function(a,b){ return a - b; });
+        return { modes: modes, label: modes.join(", ") + " (each appears " + maxFreq + " times)" };
+      }
+
+      function calcMAD(arr, mean) {
+        var deviations = [];
+        for (var i = 0; i < arr.length; i++) {
+          deviations.push(Math.abs(arr[i] - mean));
+        }
+        return calcMean(deviations);
+      }
+
+      // ── Phase 1: Statistical Questions ──
+      function selectQ(name, val) {
+        var inputs = document.querySelectorAll('input[name="' + name + '"]');
+        for (var i = 0; i < inputs.length; i++) {
+          if (inputs[i].value === val) { inputs[i].checked = true; }
+        }
+      }
+
+      // Correct answers: 1=S, 2=NS, 3=S, 4=NS
+      var qAnswers = { q1: "S", q2: "NS", q3: "S", q4: "NS" };
+      var qExplain = {
+        q1: "STATISTICAL — Minutes of reading vary from student to student, so you need to collect data.",
+        q2: "NON-STATISTICAL — The textbook has a fixed number of pages. One definite answer.",
+        q3: "STATISTICAL — Players have different heights, so heights vary across the team.",
+        q4: "NON-STATISTICAL — There are always exactly 7 days in a week. One fixed answer."
+      };
+
+      function checkQuestions() {
+        var score = 0;
+        var total = 4;
+        for (var qid in qAnswers) {
+          var sel = document.querySelector('input[name="' + qid + '"]:checked');
+          var res = document.getElementById("r" + qid.replace("q", ""));
+          if (sel) {
+            var isRight = sel.value === qAnswers[qid];
+            if (isRight) {
+              score++;
+              res.className = "q-result ok";
+              res.textContent = "✅ Correct! " + qExplain[qid];
+            } else {
+              res.className = "q-result no";
+              res.textContent = "❌ Not quite. " + qExplain[qid];
+            }
+          } else {
+            res.className = "q-result no";
+            res.textContent = "⚠️ Please make a selection.";
+          }
+        }
+        show("q-out",
+          '<div class="big">' + score + " / " + total + " correct</div>" +
+          (score === total
+            ? "✅ All correct! You understand the difference between statistical and non-statistical questions."
+            : "Review the explanations above, then remember: a statistical question <em>anticipates variability</em> in the answers.")
+        );
+      }
+
+      // ── Phase 2: Measures of Center ──
+      function calcCenter() {
+        var nums = parseDataset();
+        if (!nums) {
+          show("center-out", "<p>⚠️ Please enter at least 2 valid numbers separated by commas.</p>");
+          return;
+        }
+        lastParsed = nums;
+        var n = nums.length;
+        var sum = 0;
+        for (var i = 0; i < nums.length; i++) { sum += nums[i]; }
+        var mean = sum / n;
+        lastMean = mean;
+
+        var sorted = sortNums(nums);
+        var median = calcMedian(nums);
+        var modeObj = calcMode(nums);
+
+        var medianStep;
+        if (n % 2 === 1) {
+          var mi = Math.floor(n / 2);
+          medianStep = "Sorted: " + sorted.join(", ") + "\nMiddle position " + (mi + 1) + " → median = " + median;
+        } else {
+          var lo = n / 2 - 1;
+          var hi = n / 2;
+          medianStep = "Sorted: " + sorted.join(", ") + "\nEven count — average positions " + (lo + 1) + " and " + (hi + 1) +
+            " → (" + sorted[lo] + " + " + sorted[hi] + ") ÷ 2 = " + median;
+        }
+
+        var modeDisplay = modeObj.modes.length ? modeObj.modes[0] : "none";
+        show("center-out",
+          "<div class=\"big\">Mean = " + mean.toFixed(2) + " &nbsp;|&nbsp; Median = " + median + " &nbsp;|&nbsp; Mode = " + modeDisplay + "</div>" +
+          "<div class=\"step\">" +
+          "MEAN steps:\n" +
+          "  Sum = " + nums.join(" + ") + " = " + sum + "\n" +
+          "  Count = " + n + "\n" +
+          "  Mean = " + sum + " ÷ " + n + " = " + mean.toFixed(4) + " ≈ " + mean.toFixed(2) +
+          "\n\n" +
+          "MEDIAN steps:\n  " + medianStep +
+          "\n\n" +
+          "MODE:\n  " + modeObj.label +
+          "</div>"
+        );
+      }
+
+      // ── Phase 3: Variability ──
+      function calcVariability() {
+        var nums = lastParsed.length ? lastParsed : parseDataset();
+        if (!nums || nums.length < 2) {
+          show("var-out", "<p>⚠️ Please complete Phase 2 first (or re-enter your data there and calculate).</p>");
+          return;
+        }
+        var mean = lastMean !== null ? lastMean : calcMean(nums);
+        lastMean = mean;
+
+        var sorted = sortNums(nums);
+        var minVal = sorted[0];
+        var maxVal = sorted[sorted.length - 1];
+        var range = maxVal - minVal;
+
+        var devLines = [];
+        var devVals = [];
+        for (var i = 0; i < nums.length; i++) {
+          var d = Math.abs(nums[i] - mean);
+          devVals.push(d);
+          devLines.push("  |" + nums[i] + " - " + mean.toFixed(2) + "| = " + d.toFixed(2));
+        }
+        var madSum = 0;
+        for (var j = 0; j < devVals.length; j++) { madSum += devVals[j]; }
+        var mad = madSum / devVals.length;
+
+        show("var-out",
+          "<div class=\"big\">Range = " + range + " &nbsp;|&nbsp; MAD = " + mad.toFixed(2) + "</div>" +
+          "<div class=\"step\">" +
+          "RANGE:\n  Max (" + maxVal + ") - Min (" + minVal + ") = " + range +
+          "\n\n" +
+          "MAD steps:\n  Mean = " + mean.toFixed(2) + "\n  Absolute deviations:\n" +
+          devLines.join("\n") +
+          "\n  Sum of deviations = " + madSum.toFixed(2) +
+          "\n  MAD = " + madSum.toFixed(2) + " ÷ " + nums.length + " = " + mad.toFixed(2) +
+          "</div>"
+        );
+      }
+
+      function checkRange() {
+        var v = parseFloat(document.getElementById("check-range").value);
+        var fb = document.getElementById("range-fb");
+        var raw = document.getElementById("check-range").value.trim();
+        if (raw === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
+        // Quick-check data: 4, 8, 6, 10, 2 → range = 10 - 2 = 8
+        if (v === 8) {
+          fb.textContent = "✅ Correct! For 4, 8, 6, 10, 2: max = 10, min = 2, range = 10 − 2 = 8.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not yet. Sort the data: 2, 4, 6, 8, 10. Range = max − min = 10 − 2 = 8.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      // ── Phase 4: Dot Plot + Shape ──
+      function drawDotPlot() {
+        var nums = lastParsed.length ? lastParsed : parseDataset();
+        if (!nums) {
+          document.getElementById("dot-plot-container").innerHTML = "<p style='color:var(--coral);font-weight:700;'>⚠️ Please enter your data set in Phase 2 first.</p>";
+          return;
+        }
+        var sorted = sortNums(nums);
+        var minVal = sorted[0];
+        var maxVal = sorted[sorted.length - 1];
+        var range = maxVal - minVal || 1;
+
+        // Count frequency of each value
+        var freq = {};
+        for (var i = 0; i < sorted.length; i++) {
+          freq[sorted[i]] = (freq[sorted[i]] || 0) + 1;
+        }
+        var maxFreq = 0;
+        var keys = Object.keys(freq);
+        for (var j = 0; j < keys.length; j++) {
+          if (freq[keys[j]] > maxFreq) { maxFreq = freq[keys[j]]; }
+        }
+
+        var W = 600, dotR = 10, pad = 40, axisY = 40 + maxFreq * (dotR * 2 + 4);
+        var H = axisY + 50;
+        var xScale = range > 0 ? (W - pad * 2) / range : 1;
+
+        var dots = "";
+        var labels = "";
+        var uniqueVals = Object.keys(freq).map(parseFloat).sort(function(a,b){return a-b;});
+        for (var u = 0; u < uniqueVals.length; u++) {
+          var val = uniqueVals[u];
+          var cx = pad + (val - minVal) * xScale;
+          var count = freq[val];
+          for (var c = 0; c < count; c++) {
+            var cy = axisY - dotR - c * (dotR * 2 + 4);
+            dots += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + dotR + '" fill="#1a6fb5" opacity="0.8"/>';
+          }
+          labels += '<text x="' + cx.toFixed(1) + '" y="' + (axisY + 20) + '" text-anchor="middle" font-size="12" fill="#1a2633">' + val + '</text>';
+        }
+
+        // Axis line
+        var axis = '<line x1="' + pad + '" y1="' + axisY + '" x2="' + (W - pad) + '" y2="' + axisY + '" stroke="#5e6e7e" stroke-width="2"/>';
+
+        var svg = '<svg class="dot-plot-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect width="' + W + '" height="' + H + '" fill="#f7f9fb" rx="12"/>' +
+          '<text x="' + (W/2) + '" y="20" text-anchor="middle" font-size="14" font-weight="700" fill="#0f2b3c">Dot Plot of Your Data</text>' +
+          axis + dots + labels +
+          '</svg>';
+
+        document.getElementById("dot-plot-container").innerHTML = '<div class="dot-plot-wrap">' + svg + '</div>';
+        updateProgress();
+      }
+
+      function pickShape(name) {
+        chosenShape = name;
+        var ids = ["sb-sym","sb-skl","sb-skr","sb-out","sb-uni"];
+        for (var i = 0; i < ids.length; i++) {
+          document.getElementById(ids[i]).classList.remove("selected");
+        }
+        var map = { "symmetric":"sb-sym","skewed left":"sb-skl","skewed right":"sb-skr","has outlier(s)":"sb-out","uniform":"sb-uni" };
+        if (map[name]) { document.getElementById(map[name]).classList.add("selected"); }
+        var fb = document.getElementById("shape-fb");
+        fb.className = "feedback ok";
+        fb.textContent = "✅ You chose: " + name + ". Make sure your data story explains why.";
+        updateProgress();
+      }
+
+      function checkMedian() {
+        var v = parseFloat(document.getElementById("check-med").value);
+        var raw = document.getElementById("check-med").value.trim();
+        var fb = document.getElementById("med-fb");
+        if (raw === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
+        // Quick-check: 3,5,7,9,11 → sorted, 5 values, middle = index 2 → 7
+        if (v === 7) {
+          fb.textContent = "✅ Correct! Sorted: 3, 5, 7, 9, 11. Five values → middle is the 3rd → median = 7.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not quite. Sort the data: 3, 5, 7, 9, 11. With 5 values, the median is in position 3 → 7.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      // ── Progress ──
+      function updateProgress() {
+        var readouts = document.querySelectorAll(".readout.show").length;
+        var rangeOk = document.getElementById("range-fb").classList.contains("ok") ? 1 : 0;
+        var medOk = document.getElementById("med-fb").classList.contains("ok") ? 1 : 0;
+        var shapeOk = chosenShape ? 1 : 0;
+        var dotOk = document.getElementById("dot-plot-container").innerHTML.trim().length > 10 ? 1 : 0;
+        var checks = document.querySelectorAll("#checklist input:checked").length;
+        var story = document.getElementById("story").value.trim().length > 30 ? 1 : 0;
+        // max: 4 readouts + rangeOk + medOk + shapeOk + dotOk + 7 checks + story = 16
+        var total = readouts + rangeOk + medOk + shapeOk + dotOk + checks + story;
+        var pct = Math.min(100, Math.round((total / 16) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("story").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>
