@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Activities Finder | Neft Teacher</title>
+    <meta name="description" content="Find every Grade 6 math activity by type and topic — culminating projects, WebQuests, HyperDocs, Architect activities, games, test prep, and support tools." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      .finder-controls { margin: 18px 0 8px; }
+      .finder-search {
+        width: 100%; max-width: 460px; padding: 12px 14px; font-size: 16px;
+        border: 2px solid var(--line, #e2e7ec); border-radius: 12px; font-family: inherit;
+      }
+      .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+      .chip {
+        border: 1.5px solid var(--line, #d9dee3); background: #fff; color: #243; cursor: pointer;
+        border-radius: 50px; padding: 7px 15px; font-size: 14px; font-weight: 700; font-family: inherit;
+      }
+      .chip[aria-pressed="true"] { background: #1a6fb5; border-color: #1a6fb5; color: #fff; }
+      .finder-count { font-size: 14px; color: #5e6e7e; font-weight: 600; margin: 10px 2px; }
+      .res-card .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+      .res-tag { font-size: 11px; font-weight: 700; background: #eef3f8; color: #1a4a6b; border-radius: 50px; padding: 3px 9px; }
+      .res-type { font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+      .res-card[hidden] { display: none; }
+      .no-results { color: #5e6e7e; font-weight: 600; padding: 20px 2px; }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span><span>Activities Finder</span>
+      </nav>
+
+      <section class="hero compact-hero">
+        <p class="eyebrow">Find Anything · Grade 6 Math</p>
+        <h1>Math Activities Finder</h1>
+        <p class="hero-copy">
+          One place to find every interactive Grade 6 math activity. Filter by
+          type or search by topic or standard — then open the matching
+          collection. Organized by topic and standard, so it works no matter how
+          your units are numbered.
+        </p>
+      </section>
+
+      <div class="finder-controls">
+        <label class="sr-only" for="finder-search">Search activities</label>
+        <input id="finder-search" class="finder-search" type="search"
+               placeholder="Search a topic or standard (e.g. ratios, 6.G.1, fractions)…"
+               aria-label="Search activities by topic or standard" />
+        <div class="filter-chips" id="filter-chips" role="group" aria-label="Filter by type">
+          <button class="chip" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" data-filter="Project" aria-pressed="false">Projects</button>
+          <button class="chip" data-filter="WebQuest" aria-pressed="false">WebQuests</button>
+          <button class="chip" data-filter="HyperDoc" aria-pressed="false">HyperDocs</button>
+          <button class="chip" data-filter="Architect" aria-pressed="false">Architect</button>
+          <button class="chip" data-filter="Review" aria-pressed="false">Review &amp; Test Prep</button>
+          <button class="chip" data-filter="Tool" aria-pressed="false">Tools &amp; Support</button>
+          <button class="chip" data-filter="Remediation" aria-pressed="false">Remediation</button>
+        </div>
+        <p class="finder-count" id="finder-count"></p>
+      </div>
+
+      <div class="activity-grid" id="results"></div>
+      <p class="no-results" id="no-results" hidden>No activities match that search. Try a different word or clear the filters.</p>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Activities Finder</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </main>
+
+    <script>
+      var RESOURCES = [
+        // Culminating projects — one hub per Reveal unit (each = 2 versions + answer key)
+        { t:"Unit 1 Projects — Number Sense", type:"Project", topic:"Factors, multiples, decimals, division", std:["6.NS.2","6.NS.3","6.NS.4"], url:"/math/unit-1/projects/" },
+        { t:"Unit 2 Projects — Fraction Division", type:"Project", topic:"Dividing fractions", std:["6.NS.1"], url:"/math/unit-2/projects/" },
+        { t:"Unit 3 Projects — Ratios & Rates", type:"Project", topic:"Ratios, rates, unit rates", std:["6.RP.1","6.RP.2","6.RP.3"], url:"/math/unit-3/projects/" },
+        { t:"Unit 4 Projects — Percents & Rates", type:"Project", topic:"Percents, discounts, unit price", std:["6.RP.2","6.RP.3"], url:"/math/unit-4/projects/" },
+        { t:"Unit 5 Projects — Area", type:"Project", topic:"Area of polygons & composite figures", std:["6.G.1"], url:"/math/unit-5/projects/" },
+        { t:"Unit 6 Projects — Expressions", type:"Project", topic:"Exponents, evaluate & write expressions", std:["6.EE.1","6.EE.2","6.EE.3","6.EE.4"], url:"/math/unit-6/projects/" },
+        { t:"Unit 7 Projects — Integers & Coordinate Plane", type:"Project", topic:"Integers, absolute value, coordinate plane", std:["6.NS.5","6.NS.6","6.NS.7","6.NS.8"], url:"/math/unit-7/projects/" },
+        { t:"Unit 8 Projects — Equations & Inequalities", type:"Project", topic:"One-step equations & inequalities", std:["6.EE.5","6.EE.6","6.EE.7","6.EE.8"], url:"/math/unit-8/projects/" },
+        { t:"Unit 9 Projects — Two-Variable Relationships", type:"Project", topic:"Dependent/independent variables, tables, graphs", std:["6.EE.9"], url:"/math/unit-9/projects/" },
+        { t:"Unit 10 Projects — Volume & Surface Area", type:"Project", topic:"Volume & surface area of prisms", std:["6.G.2","6.G.4"], url:"/math/unit-10/projects/" },
+        { t:"Statistics & Data Projects", type:"Project", topic:"Mean, median, mode, MAD, data displays", std:["6.SP.1","6.SP.2","6.SP.3","6.SP.4","6.SP.5"], url:"/math/statistics/projects/" },
+
+        // Artifact sets (all 10 units in each hub)
+        { t:"Math WebQuests (all units)", type:"WebQuest", topic:"Guided inquiry missions for every unit", std:["6.RP","6.NS","6.EE","6.G","6.SP"], url:"/webquests/" },
+        { t:"Math HyperDocs (all units)", type:"HyperDoc", topic:"Self-paced Engage→Explore→Explain→Apply→Reflect docs", std:["6.RP","6.NS","6.EE","6.G","6.SP"], url:"/hyperdocs/" },
+        { t:"Architect Activities (all units)", type:"Architect", topic:"Hands-on build-and-design challenges", std:["6.RP","6.NS","6.EE","6.G","6.SP"], url:"/activities/architect/" },
+
+        // Capstone, review, test prep
+        { t:"Start-Up City — Year-End Capstone", type:"Review", topic:"Cross-unit business simulation (all strands)", std:["6.RP","6.NS","6.EE","6.G","6.SP"], url:"/math/capstone-startup-city/" },
+        { t:"Boss-Battle Review Arcade", type:"Review", topic:"Gamified review, 80 questions, Boss Battle", std:["6.RP","6.NS","6.EE","6.G","6.SP"], url:"/math/review-arcade/" },
+        { t:"MCAP Practice Test", type:"Review", topic:"Self-grading MCAP-style test prep", std:["6.RP","6.NS","6.EE","6.G","6.SP"], url:"/math/mcap-practice/" },
+
+        // Tools & support
+        { t:"Math Manipulatives Toolkit", type:"Tool", topic:"Fraction bars, number line, algebra tiles, area, coordinate plotter", std:["6.NS","6.RP","6.EE","6.G"], url:"/math/manipulatives/" },
+        { t:"Bilingual Vocab Deck (EN/ES)", type:"Tool", topic:"Flashcards with audio, English/Spanish", std:["6.RP","6.NS","6.EE","6.G","6.SP"], url:"/math/vocab-deck/" },
+
+        // Remediation
+        { t:"Bridge to Grade 6 — Remediation", type:"Remediation", topic:"Grades 7–8 catch-up: whole numbers, fractions, decimals, factors, pre-algebra", std:["6.NS","6.RP","6.G"], url:"/math/remediation/" }
+      ];
+
+      var state = { filter:"all", q:"" };
+      var grid = document.getElementById("results");
+      var countEl = document.getElementById("finder-count");
+      var noRes = document.getElementById("no-results");
+
+      function render() {
+        grid.innerHTML = "";
+        var q = state.q.trim().toLowerCase();
+        var shown = 0;
+        RESOURCES.forEach(function (r) {
+          var matchType = state.filter === "all" || r.type === state.filter;
+          var hay = (r.t + " " + r.topic + " " + r.std.join(" ") + " " + r.type).toLowerCase();
+          var matchQ = !q || hay.indexOf(q) !== -1;
+          if (matchType && matchQ) {
+            shown++;
+            var a = document.createElement("a");
+            a.className = "activity-card res-card";
+            a.href = r.url;
+            a.innerHTML =
+              '<span class="card-kicker res-type">' + r.type + '</span>' +
+              '<h3>' + r.t + '</h3>' +
+              '<p>' + r.topic + '</p>' +
+              '<div class="tags">' + r.std.map(function (s) { return '<span class="res-tag">' + s + '</span>'; }).join("") + '</div>' +
+              '<span class="button-link">Open</span>';
+            grid.appendChild(a);
+          }
+        });
+        countEl.textContent = shown + " activit" + (shown === 1 ? "y" : "ies") + " shown";
+        noRes.hidden = shown !== 0;
+      }
+
+      document.getElementById("filter-chips").addEventListener("click", function (e) {
+        var btn = e.target.closest(".chip");
+        if (!btn) return;
+        state.filter = btn.dataset.filter;
+        Array.prototype.forEach.call(this.querySelectorAll(".chip"), function (c) {
+          c.setAttribute("aria-pressed", c === btn ? "true" : "false");
+        });
+        render();
+      });
+      document.getElementById("finder-search").addEventListener("input", function () {
+        state.q = this.value; render();
+      });
+      render();
+    </script>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>
