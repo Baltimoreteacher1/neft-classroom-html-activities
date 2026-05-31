@@ -1,888 +1,1174 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Unit 5 HyperDoc — Area of Polygons (6.G.A.1) | Neft Teacher</title>
-
-    <!-- Shared theme -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 5 HyperDoc — Area of Polygons | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Grade 6 interactive HyperDoc for Unit 5: find the area of triangles, parallelograms, trapezoids, and composite figures (6.G.A.1)."
+    />
     <link rel="stylesheet" href="/assets/neft-theme.css" />
-    <script src="/assets/neft-theme.js" defer></script>
-    <!-- Shared activity kit -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/nt-activity-kit.js"></script>
-
+    <script defer src="/assets/neft-theme.js"></script>
+    <script defer src="/assets/nt-activity-kit.js"></script>
     <style>
-      /* ── Base ── */
-      :root { color-scheme: light dark; }
-      body {
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        font-size: 19px;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0 16px 64px;
+      /* ---- Unit 5 HyperDoc: scoped styles layered on the shared Neft theme ---- */
+      .u5-wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 0 18px 64px;
       }
-      .wrap { max-width: 860px; margin: 0 auto; }
 
-      /* ── Hero ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 28px 24px;
-        margin: 24px 0;
+      .u5-hero {
+        position: relative;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background:
+          radial-gradient(
+            900px 240px at 12% -10%,
+            rgba(56, 142, 235, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            700px 220px at 95% 0%,
+            rgba(45, 191, 150, 0.16),
+            transparent 55%
+          ),
+          var(--nt-surface, #fff);
+        border-radius: 22px;
+        padding: 26px 26px 22px;
+        margin: 18px 0 22px;
+        overflow: hidden;
       }
-      header.hero h1 {
-        margin: 0 0 6px;
-        font-size: 32px;
-        line-height: 1.2;
+      .u5-hero h1 {
+        margin: 6px 0 4px;
+        font-size: clamp(1.5rem, 1.1rem + 2vw, 2.2rem);
+        line-height: 1.15;
       }
-      .pill {
-        display: inline-block;
-        background: var(--nt-accent);
-        color: #fff;
+      .u5-hero .u5-sub {
+        color: var(--nt-muted, #5b6472);
+        margin: 0 0 12px;
+        font-size: 1.02rem;
+      }
+      .u5-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         font-weight: 700;
-        font-size: 15px;
-        padding: 4px 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        color: var(--nt-accent, #2563eb);
+        background: color-mix(
+          in srgb,
+          var(--nt-accent, #2563eb) 12%,
+          transparent
+        );
         border-radius: 999px;
+        padding: 5px 12px;
       }
-      .lede { color: var(--nt-muted); font-size: 18px; margin: 10px 0 0; }
+      .u5-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .u5-chip {
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--nt-bg, #f4f6fb);
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 4px 11px;
+      }
 
-      /* ── Sections ── */
-      section {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 22px 24px;
-        margin: 20px 0;
+      .u5-toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 8px;
       }
-      section h2 {
-        font-size: 25px;
+      .u5-toc a {
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 6px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u5-toc a:hover {
+        border-color: var(--nt-accent, #2563eb);
+        color: var(--nt-accent, #2563eb);
+      }
+      .u5-toc a:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+
+      .u5-step {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        border-radius: 18px;
+        padding: 22px 22px 20px;
+        margin: 16px 0;
+      }
+      .u5-step > h2 {
         margin: 0 0 4px;
+        font-size: 1.28rem;
         display: flex;
         align-items: center;
         gap: 10px;
       }
-      .step {
-        font-size: 14px;
+      .u5-badge {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: inline-grid;
+        place-items: center;
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .b1 {
+        background: #2563eb;
+      }
+      .b2 {
+        background: #0ea5e9;
+      }
+      .b3 {
+        background: #0d9488;
+      }
+      .b4 {
+        background: #7c3aed;
+      }
+      .b5 {
+        background: #db2777;
+      }
+      .u5-step .u5-phase {
+        color: var(--nt-muted, #5b6472);
         font-weight: 700;
-        color: var(--nt-accent);
-        letter-spacing: 0.08em;
+        font-size: 0.74rem;
         text-transform: uppercase;
-      }
-      .do {
-        background: var(--nt-bg);
-        border-left: 5px solid var(--nt-accent);
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin: 14px 0;
-        font-weight: 600;
-      }
-      .hint { color: var(--nt-muted); font-size: 16px; }
-
-      /* ── Learning Target box ── */
-      .target-box {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin: 16px 0;
-      }
-      .target-box h3 {
-        margin: 0 0 10px;
-        font-size: 18px;
-        color: var(--nt-accent);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-      }
-      .target-box ul {
-        margin: 0 0 10px;
-        padding-left: 22px;
-      }
-      .target-box ul li { margin: 4px 0; }
-      .target-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-top: 10px;
-        font-size: 15px;
-        color: var(--nt-muted);
-      }
-      .target-meta span {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 8px;
-        padding: 4px 10px;
-        font-weight: 600;
+        letter-spacing: 0.05em;
+        margin: 0 0 10px 40px;
       }
 
-      /* ── Teacher Notes ── */
-      .teacher-notes {
-        background: #fffbea;
-        border: 2px dashed #c9a800;
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin: 16px 0;
-        font-size: 16px;
-      }
-      @media (prefers-color-scheme: dark) {
-        .teacher-notes { background: #2a2600; border-color: #c9a800; }
-      }
-      .teacher-notes summary {
-        font-weight: 700;
-        font-size: 17px;
-        cursor: pointer;
-        color: #7a6000;
-        list-style: none;
-      }
-      @media (prefers-color-scheme: dark) {
-        .teacher-notes summary { color: #f0c800; }
-      }
-      .teacher-notes summary::before { content: "🍎 "; }
-      .teacher-notes h4 {
-        margin: 12px 0 4px;
-        font-size: 15px;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #7a6000;
-      }
-      @media (prefers-color-scheme: dark) {
-        .teacher-notes h4 { color: #f0c800; }
-      }
-      .teacher-notes p, .teacher-notes ul { margin: 4px 0 8px; }
-      .teacher-notes ul { padding-left: 20px; }
-
-      /* ── Explore links ── */
-      .links {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-        display: grid;
-        gap: 12px;
-      }
-      .links a {
-        display: block;
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 14px 16px;
-        color: var(--nt-accent);
-        text-decoration: none;
-        font-weight: 700;
-      }
-      .links a:hover,
-      .links a:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      .links a small {
-        display: block;
-        color: var(--nt-muted);
-        font-weight: 500;
-        margin-top: 2px;
-      }
-
-      /* ── Vocab / Example ── */
-      .vocab {
-        display: grid;
-        gap: 10px;
-        grid-template-columns: 1fr 1fr;
-        margin-top: 12px;
-      }
-      .vocab div {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 10px 12px;
-      }
-      .vocab b { color: var(--nt-accent); }
-      .example {
-        background: var(--nt-bg);
-        border: 1px dashed var(--nt-border);
-        border-radius: 10px;
-        padding: 16px;
-        margin-top: 14px;
-      }
-      .example b { color: var(--nt-accent); }
-
-      /* ── Apply / questions ── */
-      .q {
-        margin: 18px 0;
-        padding-bottom: 14px;
-        border-bottom: 1px solid var(--nt-border);
-      }
-      .q:last-of-type { border-bottom: none; }
-      .q .prompt { font-weight: 600; margin-bottom: 8px; }
-      .figure { font-size: 15px; color: var(--nt-muted); margin: 4px 0 8px; }
-
-      label.opt {
-        display: block;
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 8px;
-        padding: 10px 14px;
-        margin: 6px 0;
-        cursor: pointer;
-      }
-      label.opt:focus-within {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-
-      input[type="text"].txt {
-        font-size: 18px;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        width: 160px;
-        font-family: inherit;
-      }
-      input[type="text"].txt:focus,
-      input[type="radio"]:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-
-      /* ── Self-check feedback ── */
-      .sc-item {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 10px;
+      .u5-card {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
         padding: 14px 16px;
         margin: 12px 0;
+        background: var(--nt-bg, #f7f9fc);
       }
-      .sc-item .sc-prompt { font-weight: 600; margin-bottom: 8px; }
-      .sc-item .sc-choices label {
-        display: block;
+      .u5-card h3 {
+        margin: 0 0 6px;
+        font-size: 1.02rem;
+      }
+
+      .u5-grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 640px) {
+        .u5-grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .u5-fig {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .u5-fig svg {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      .u5-cap {
+        font-size: 0.82rem;
+        color: var(--nt-muted, #5b6472);
+        text-align: center;
+      }
+
+      .u5-formula {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        background: var(--nt-text, #1c2330);
+        color: #fff;
+        border-radius: 10px;
         padding: 8px 12px;
-        border: 1px solid var(--nt-border);
-        border-radius: 8px;
-        margin: 5px 0;
+        display: inline-block;
+        font-size: 1rem;
+      }
+
+      details.u5-level {
+        border: 1px dashed var(--nt-border, #c3cad6);
+        border-radius: 12px;
+        padding: 4px 14px;
+        margin: 12px 0;
+        background: var(--nt-surface, #fff);
+      }
+      details.u5-level > summary {
         cursor: pointer;
+        font-weight: 700;
+        padding: 8px 0;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-      .sc-item .sc-choices label:focus-within {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      .sc-feedback {
-        margin-top: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        padding: 8px 12px;
-        border-radius: 8px;
+      details.u5-level > summary::-webkit-details-marker {
         display: none;
       }
-      .sc-feedback.correct {
-        background: #d4edda;
-        color: #155724;
-        display: block;
+      details.u5-level > summary::before {
+        content: "▸";
+        transition: transform 0.15s;
+        color: var(--nt-accent, #2563eb);
       }
-      .sc-feedback.wrong {
-        background: #f8d7da;
-        color: #721c24;
-        display: block;
+      details.u5-level[open] > summary::before {
+        transform: rotate(90deg);
       }
-      @media (prefers-color-scheme: dark) {
-        .sc-feedback.correct { background: #1a3a22; color: #7ddb96; }
-        .sc-feedback.wrong   { background: #3a1a1a; color: #f08080; }
+      .u5-tag {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        color: #fff;
+      }
+      .u5-tag.l1 {
+        background: #0d9488;
+      }
+      .u5-tag.l2 {
+        background: #7c3aed;
+      }
+      .u5-es {
+        color: var(--nt-muted, #5b6472);
+        font-style: italic;
       }
 
-      .scbtn {
-        font-size: 17px;
-        font-weight: 700;
-        color: #fff;
-        background: var(--nt-accent);
-        border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-        cursor: pointer;
-        margin-top: 8px;
+      .u5-q {
+        margin: 14px 0;
       }
-      .scbtn:hover { filter: brightness(1.08); }
-      .scbtn:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 3px;
+      .u5-q p.u5-prompt {
+        font-weight: 600;
+        margin: 0 0 8px;
       }
-
-      /* ── Main check button ── */
-      .checkbtn {
-        font-size: 19px;
-        font-weight: 700;
-        color: #fff;
-        background: var(--nt-accent);
-        border: none;
+      .u5-q input[type="text"],
+      .u5-q input[type="number"] {
+        font: inherit;
+        padding: 9px 11px;
         border-radius: 10px;
-        padding: 14px 28px;
-        cursor: pointer;
-        margin-top: 8px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        width: 160px;
+        max-width: 100%;
       }
-      .checkbtn:hover { filter: brightness(1.08); }
-      .checkbtn:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 3px;
+      .u5-q input:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+      .u5-opts {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .u5-opts li label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 11px;
+        padding: 10px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u5-opts li label:hover {
+        border-color: var(--nt-accent, #2563eb);
+      }
+      .u5-unit {
+        color: var(--nt-muted, #5b6472);
+        margin-left: 6px;
+      }
+      .u5-fb {
+        margin-top: 7px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        min-height: 1.1em;
+      }
+      .u5-fb.ok {
+        color: #0d9488;
+      }
+      .u5-fb.no {
+        color: #db2777;
       }
 
-      /* ── Reflect ── */
-      textarea {
-        width: 100%;
-        box-sizing: border-box;
-        min-height: 90px;
-        font-size: 17px;
-        padding: 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        font-family: inherit;
-        resize: vertical;
+      .u5-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
       }
-      textarea:focus {
-        outline: 3px solid var(--nt-focus);
+      .u5-btn {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--nt-accent, #2563eb);
+        background: var(--nt-accent, #2563eb);
+        color: #fff;
+        border-radius: 11px;
+        padding: 11px 18px;
+      }
+      .u5-btn.ghost {
+        background: transparent;
+        color: var(--nt-accent, #2563eb);
+      }
+      .u5-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
         outline-offset: 2px;
       }
+      .u5-score {
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
 
-      /* ── Rubric ── */
-      .rubric-table {
+      .u5-explore {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .u5-explore a.u5-link {
+        text-decoration: none;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        display: block;
+      }
+      .u5-explore a.u5-link:hover {
+        border-color: var(--nt-accent, #2563eb);
+        transform: translateY(-1px);
+      }
+      .u5-explore .u5-link strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 3px;
+      }
+      .u5-explore .u5-link span {
+        font-size: 0.85rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      .u5-reflect textarea {
         width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 16px;
+        min-height: 96px;
+        font: inherit;
+        padding: 11px 13px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        resize: vertical;
       }
-      .rubric-table th,
-      .rubric-table td {
-        border: 1px solid var(--nt-border);
-        padding: 10px 12px;
-        vertical-align: top;
-        text-align: left;
-      }
-      .rubric-table th {
-        background: var(--nt-bg);
-        font-weight: 700;
-      }
-      .rubric-table tr:nth-child(even) td { background: var(--nt-bg); }
-      .level-4 { color: #155724; font-weight: 700; }
-      .level-3 { color: #004085; font-weight: 700; }
-      .level-2 { color: #856404; font-weight: 700; }
-      .level-1 { color: #721c24; font-weight: 700; }
-      @media (prefers-color-scheme: dark) {
-        .level-4 { color: #7ddb96; }
-        .level-3 { color: #74b8f0; }
-        .level-2 { color: #f0c878; }
-        .level-1 { color: #f08080; }
+      .u5-reflect textarea:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
       }
 
-      /* ── Answer key details ── */
-      details.answer-key {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        margin-top: 12px;
-        font-size: 16px;
+      .u5-vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
       }
-      details.answer-key summary {
-        font-weight: 700;
-        cursor: pointer;
-        color: var(--nt-accent);
-        list-style: none;
+      .u5-vocab dt {
+        font-weight: 800;
       }
-      details.answer-key summary::before { content: "🔑 "; }
-      details.answer-key ol { margin: 10px 0 0; padding-left: 22px; }
-      details.answer-key ol li { margin: 5px 0; }
-
-      /* ── Responsive ── */
-      @media (max-width: 560px) {
-        .vocab { grid-template-columns: 1fr; }
-        .target-meta { flex-direction: column; }
-        .rubric-table { font-size: 14px; }
-        .rubric-table th, .rubric-table td { padding: 7px 8px; }
+      .u5-vocab dd {
+        margin: 2px 0 0;
+        font-size: 0.9rem;
+        color: var(--nt-muted, #5b6472);
       }
 
-      /* ── Print ── */
       @media print {
-        body { font-size: 14px; padding: 0; background: #fff; color: #000; }
-        .wrap { max-width: 100%; }
-        .teacher-notes,
-        details.answer-key { display: none !important; }
-        section { page-break-inside: avoid; border: 1px solid #ccc; }
-        .checkbtn, .scbtn { display: none; }
-        a { color: #000; text-decoration: underline; }
-        header.hero { border: 1px solid #ccc; }
+        .u5-toc,
+        .u5-actions,
+        .u5-explore a.u5-link::after {
+          display: none !important;
+        }
+        .u5-step {
+          break-inside: avoid;
+        }
       }
     </style>
   </head>
-
   <body class="nt-theme-aware">
-    <p style="font:14px system-ui;padding:10px 16px;">
-      <a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a>
-    </p>
-    <div class="wrap">
+    <div id="ntkit"></div>
 
-      <!-- ══ HERO ══ -->
-      <header class="hero">
-        <span class="pill">Unit 5 · HyperDoc</span>
-        <h1>Area of Polygons</h1>
-        <p class="lede">
-          Standard 6.G.A.1 — Find the area of rectangles, triangles, and shapes
-          you can break apart. Work through each step. Type your name in the box
-          before you start.
+    <main class="u5-wrap">
+      <header class="u5-hero">
+        <span class="u5-kicker">Grade 6 • Unit 5 HyperDoc</span>
+        <h1>Build It With Area: Triangles, Parallelograms &amp; Beyond</h1>
+        <p class="u5-sub">
+          You are joining the <strong>Riverside Community Garden</strong> design
+          team. Every plot, path, and shade-sail on the map is a polygon — and
+          your job is to measure the space using area.
+          <span class="u5-es"
+            >Tú eres parte del equipo de diseño del jardín comunitario.</span
+          >
         </p>
+        <div class="u5-meta">
+          <span class="u5-chip">Standard: 6.G.A.1</span>
+          <span class="u5-chip">Topic: Area of Polygons</span>
+          <span class="u5-chip">MCAP-aligned</span>
+          <span class="u5-chip">Work time: ~45 min</span>
+        </div>
       </header>
 
-      <!-- ══ LEARNING TARGET ══ -->
-      <section aria-labelledby="target-h">
-        <h2 id="target-h" style="margin-bottom:12px;">📌 Learning Target</h2>
-        <div class="target-box">
-          <h3>I can…</h3>
-          <ul>
-            <li>Find the area of a rectangle using <strong>base × height</strong>.</li>
-            <li>Find the area of a triangle using <strong>(base × height) ÷ 2</strong>.</li>
-            <li>Break apart a composite figure into rectangles and/or triangles and add their areas.</li>
-          </ul>
-          <div class="target-meta">
-            <span>📐 Standard: 6.G.A.1</span>
-            <span>⏱ Est. time: 45–55 min</span>
-            <span>📦 Materials: pencil, calculator (optional)</span>
-          </div>
-        </div>
+      <nav class="u5-toc" aria-label="HyperDoc sections">
+        <a href="#engage">1 · Engage</a>
+        <a href="#explore">2 · Explore</a>
+        <a href="#explain">3 · Explain</a>
+        <a href="#apply">4 · Apply</a>
+        <a href="#reflect">5 · Reflect</a>
+        <a href="#extend">6 · Extend</a>
+      </nav>
 
-        <!-- Teacher Notes -->
-        <details class="teacher-notes">
-          <summary>Teacher Notes — Unit 5 (click to expand)</summary>
+      <!-- ============ 1. ENGAGE ============ -->
+      <section class="u5-step" id="engage">
+        <h2><span class="u5-badge b1">1</span> Engage</h2>
+        <p class="u5-phase">Hook &amp; essential question</p>
 
-          <h4>Pacing</h4>
-          <p>Engage 5 min · Explore 10 min · Explain 8 min · Apply 15 min · Reflect 8 min.
-          Total ≈ 46 min. Can be split across two 25-min sessions.</p>
-
-          <h4>Grouping</h4>
-          <p>Explore in pairs (shared device). Apply and Reflect independently.
-          Share reflections with a partner before submitting.</p>
-
-          <h4>Differentiation — Support</h4>
-          <ul>
-            <li>Provide a formula card (base × height; ÷ 2 for triangles).</li>
-            <li>Allow graph-paper sketches for Q4 (composite figure).</li>
-            <li>Read questions aloud for students who need it.</li>
-          </ul>
-
-          <h4>Differentiation — Challenge</h4>
-          <ul>
-            <li>Ask: Can you find the area of a parallelogram? A trapezoid? How?</li>
-            <li>Extension: Design your own composite figure and compute its area.</li>
-          </ul>
-
-          <h4>ESOL / Language Supports</h4>
-          <ul>
-            <li>Key vocabulary is pre-taught in the Explain section with visuals.</li>
-            <li>Sentence frames for Reflect: "To find the area I… first I…, then I…"</li>
-            <li>Allow L1 drafts of reflections, then translate.</li>
-            <li>Highlight cognates: <em>area → área</em>, <em>rectangle → rectángulo</em>.</li>
-          </ul>
-        </details>
-      </section>
-
-      <!-- ══ STUDENT NAME / SAVE BAR ══ -->
-      <div id="ntkit"></div>
-
-      <!-- ══ ENGAGE ══ -->
-      <section aria-labelledby="engage-h">
-        <span class="step">Step 1 · Engage</span>
-        <h2 id="engage-h">Think First</h2>
         <p>
-          You are an <b>Area Architect</b>. You must cover a gold floor with
-          tiles. No gaps. No tiles on top of each other.
+          The garden team needs to cover a triangular herb bed with mulch. One
+          bag of mulch covers <strong>9 square feet</strong>. Looking at the bed
+          below, how many bags should they buy?
         </p>
-        <p class="do">
-          Big question: How many square tiles fit inside a shape? That number is
-          the <b>area</b>.
-        </p>
-        <p class="hint">
-          Area is measured in <b>square units</b>, like square meters (m²).
-        </p>
-      </section>
 
-      <!-- ══ EXPLORE ══ -->
-      <section aria-labelledby="explore-h">
-        <span class="step">Step 2 · Explore</span>
-        <h2 id="explore-h">Play and Look</h2>
-        <p class="do">Open these. Build, watch, and read about area.</p>
-        <ul class="links">
-          <li>
-            <a href="/games/3d/unit-5/">🎮 Play: Area Architect (3D game)
-              <small>Fill the gold shape with blocks. Area = length × width.</small>
-            </a>
-          </li>
-          <li>
-            <a href="/math/unit-5/">📐 Unit 5 Math Hub
-              <small>Lessons and practice for area of polygons.</small>
-            </a>
-          </li>
-          <li>
-            <a href="/graphic-novels/unit5/graphic-novel-1.html">📖 Unit 5 Graphic Novel
-              <small>Read the area story with pictures.</small>
-            </a>
-          </li>
-        </ul>
-      </section>
-
-      <!-- ══ EXPLAIN ══ -->
-      <section aria-labelledby="explain-h">
-        <span class="step">Step 3 · Explain</span>
-        <h2 id="explain-h">How It Works</h2>
-
-        <div class="vocab" aria-label="Key words">
-          <div><b>Area</b> — the space inside a flat shape. Use square units.</div>
-          <div><b>Base (b)</b> — the bottom side you measure.</div>
-          <div><b>Height (h)</b> — how tall the shape is, straight up.</div>
-          <div><b>Composite</b> — a shape made of smaller shapes joined together.</div>
+        <div class="u5-card">
+          <div class="u5-fig">
+            <svg
+              viewBox="0 0 240 160"
+              width="300"
+              role="img"
+              aria-label="A triangular herb bed with a base of 12 feet and a height of 6 feet."
+            >
+              <defs>
+                <pattern
+                  id="soil"
+                  width="8"
+                  height="8"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <rect width="8" height="8" fill="#caa472" />
+                  <circle cx="2" cy="2" r="1" fill="#9c7b4c" />
+                  <circle cx="6" cy="6" r="1" fill="#9c7b4c" />
+                </pattern>
+              </defs>
+              <polygon
+                points="20,130 220,130 70,30"
+                fill="url(#soil)"
+                stroke="#5c4326"
+                stroke-width="2.5"
+              />
+              <line
+                x1="70"
+                y1="30"
+                x2="70"
+                y2="130"
+                stroke="#2563eb"
+                stroke-width="2"
+                stroke-dasharray="5 4"
+              />
+              <rect
+                x="70"
+                y="118"
+                width="12"
+                height="12"
+                fill="none"
+                stroke="#2563eb"
+                stroke-width="1.5"
+              />
+              <text
+                x="120"
+                y="148"
+                font-size="12"
+                text-anchor="middle"
+                fill="#1c2330"
+              >
+                base = 12 ft
+              </text>
+              <text x="78" y="78" font-size="12" fill="#2563eb">
+                height = 6 ft
+              </text>
+            </svg>
+            <p class="u5-cap">
+              Herb bed (drawn to scale). The dashed blue line is the height.
+            </p>
+          </div>
+          <p>
+            <strong>Quick think (no calculator):</strong> Make a first guess. Is
+            it closer to <em>2 bags</em>, <em>4 bags</em>, or <em>8 bags</em>?
+            Write your guess and one reason in your notebook. You will check it
+            in the Apply section.
+          </p>
         </div>
 
-        <div class="example">
-          <p><b>Rectangle:</b> Area = base × height</p>
-          <p>A rug is 6 m long and 4 m wide. Area = 6 × 4 = <b>24 m²</b>.</p>
-          <hr style="border-color: var(--nt-border)" />
-          <p><b>Triangle:</b> Area = (base × height) ÷ 2</p>
-          <p>A flag has base 8 m and height 5 m. Area = (8 × 5) ÷ 2 = 40 ÷ 2 = <b>20 m²</b>.</p>
-          <hr style="border-color: var(--nt-border)" />
-          <p><b>Composite (break it apart):</b></p>
-          <p>Cut an L-shape into two rectangles. Find each area, then add them together.</p>
-        </div>
+        <p style="margin-top: 14px">
+          <strong>Essential question:</strong>
+          <em
+            >How can I break a real space into shapes I know, so I can measure
+            exactly how much material it needs?</em
+          >
+        </p>
       </section>
 
-      <!-- ══ APPLY ══ -->
-      <section aria-labelledby="apply-h">
-        <span class="step">Step 4 · Apply</span>
-        <h2 id="apply-h">Your Turn — Solve</h2>
-        <p class="do">
-          Answer all 6. Type numbers only (no units). Then press
-          <b>Check My Work</b> at the bottom.
+      <!-- ============ 2. EXPLORE ============ -->
+      <section class="u5-step" id="explore">
+        <h2><span class="u5-badge b2">2</span> Explore</h2>
+        <p class="u5-phase">Investigate before the lesson</p>
+
+        <p>
+          Explore each tool below for a few minutes. As you go, watch for
+          <strong>one big idea</strong>: every area formula comes from
+          rearranging a shape into a rectangle.
         </p>
 
-        <!-- ─── Self-check items (instant feedback) ─── -->
-        <div id="self-check-area">
-          <p style="font-weight:700;margin-bottom:4px;">Quick Check — check yourself before the big submit:</p>
+        <div class="u5-explore">
+          <a
+            class="u5-link"
+            href="/games/3d/unit-5/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🎮 Area Builder (3D Game)</strong>
+            <span
+              >Slice and rebuild polygons in 3D to discover where each formula
+              comes from.</span
+            >
+          </a>
+          <a
+            class="u5-link"
+            href="/math/unit-5/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>📐 Unit 5 Math Hub</strong>
+            <span
+              >Worked examples and practice for parallelograms, triangles, and
+              trapezoids.</span
+            >
+          </a>
+          <a
+            class="u5-link"
+            href="/webquests/unit-5/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🧭 Area Architect WebQuest</strong>
+            <span>Design a real layout and defend your area calculations.</span>
+          </a>
+        </div>
 
-          <!-- SC1 -->
-          <div class="sc-item" id="sc1">
-            <p class="sc-prompt">SC1. A rectangle has base 5 m and height 4 m. What is its area?</p>
-            <div class="sc-choices" role="radiogroup" aria-labelledby="sc1-label">
-              <label><input type="radio" name="sc1" value="a"> 9 m²</label>
-              <label><input type="radio" name="sc1" value="b"> 18 m²</label>
-              <label><input type="radio" name="sc1" value="c"> 20 m²</label>
-              <label><input type="radio" name="sc1" value="d"> 40 m²</label>
+        <div class="u5-card" style="margin-top: 14px">
+          <h3>Cut-and-slide experiment</h3>
+          <p>
+            Drag your eyes across these two figures. The parallelogram on the
+            left has a triangle "cut" from one end and "slid" to the other —
+            turning it into the rectangle on the right. The
+            <strong>base</strong> and <strong>height</strong> never change, so
+            the area is the same.
+          </p>
+          <div class="u5-grid2">
+            <div class="u5-fig">
+              <svg
+                viewBox="0 0 200 130"
+                width="100%"
+                role="img"
+                aria-label="A parallelogram with base 10 and height 6."
+              >
+                <polygon
+                  points="40,100 180,100 160,30 20,30"
+                  fill="#bfe3ff"
+                  stroke="#2563eb"
+                  stroke-width="2"
+                />
+                <line
+                  x1="40"
+                  y1="30"
+                  x2="40"
+                  y2="100"
+                  stroke="#db2777"
+                  stroke-width="2"
+                  stroke-dasharray="4 3"
+                />
+                <text x="105" y="118" font-size="11" text-anchor="middle">
+                  base = 10
+                </text>
+                <text x="46" y="68" font-size="11" fill="#db2777">h = 6</text>
+              </svg>
+              <p class="u5-cap">Parallelogram</p>
             </div>
-            <button class="scbtn" type="button" onclick="checkSC('sc1','c','Area = base × height = 5 × 4 = 20 m².')">Check</button>
-            <div class="sc-feedback" id="sc1-fb" aria-live="polite"></div>
+            <div class="u5-fig">
+              <svg
+                viewBox="0 0 200 130"
+                width="100%"
+                role="img"
+                aria-label="A rectangle with base 10 and height 6, the same area as the parallelogram."
+              >
+                <rect
+                  x="40"
+                  y="30"
+                  width="120"
+                  height="70"
+                  fill="#c9f4e6"
+                  stroke="#0d9488"
+                  stroke-width="2"
+                />
+                <line
+                  x1="40"
+                  y1="30"
+                  x2="40"
+                  y2="100"
+                  stroke="#db2777"
+                  stroke-width="2"
+                  stroke-dasharray="4 3"
+                />
+                <text x="100" y="118" font-size="11" text-anchor="middle">
+                  base = 10
+                </text>
+                <text x="46" y="68" font-size="11" fill="#db2777">h = 6</text>
+              </svg>
+              <p class="u5-cap">Same shape, rearranged → rectangle</p>
+            </div>
           </div>
+          <p>
+            <strong>Notice:</strong> Both have area = base × height = 10 × 6 =
+            <strong>60 square units</strong>. That is why a parallelogram uses
+            <span class="u5-formula">A = b × h</span>
+          </p>
+        </div>
+      </section>
 
-          <!-- SC2 -->
-          <div class="sc-item" id="sc2">
-            <p class="sc-prompt">SC2. A triangle has base 6 m and height 4 m. What is its area?</p>
-            <div class="sc-choices" role="radiogroup">
-              <label><input type="radio" name="sc2" value="a"> 24 m²</label>
-              <label><input type="radio" name="sc2" value="b"> 12 m²</label>
-              <label><input type="radio" name="sc2" value="c"> 10 m²</label>
-              <label><input type="radio" name="sc2" value="d"> 6 m²</label>
-            </div>
-            <button class="scbtn" type="button" onclick="checkSC('sc2','b','Area = (base × height) ÷ 2 = (6 × 4) ÷ 2 = 24 ÷ 2 = 12 m².')">Check</button>
-            <div class="sc-feedback" id="sc2-fb" aria-live="polite"></div>
+      <!-- ============ 3. EXPLAIN ============ -->
+      <section class="u5-step" id="explain">
+        <h2><span class="u5-badge b3">3</span> Explain</h2>
+        <p class="u5-phase">The math, in plain language</p>
+
+        <p>
+          Area is the number of unit squares that fit <em>inside</em> a flat
+          shape. We always measure it in <strong>square units</strong> (like
+          ft², m², or square units). Here are the four formulas for this unit,
+          each connected to a rectangle.
+        </p>
+
+        <dl class="u5-vocab u5-card">
+          <div>
+            <dt>base (b)</dt>
+            <dd>
+              a side you measure along <span class="u5-es">· la base</span>
+            </dd>
           </div>
+          <div>
+            <dt>height (h)</dt>
+            <dd>
+              straight distance, square to the base
+              <span class="u5-es">· la altura</span>
+            </dd>
+          </div>
+          <div>
+            <dt>area (A)</dt>
+            <dd>
+              space inside, in square units <span class="u5-es">· el área</span>
+            </dd>
+          </div>
+          <div>
+            <dt>compose / decompose</dt>
+            <dd>
+              join shapes / break a shape apart
+              <span class="u5-es">· componer / descomponer</span>
+            </dd>
+          </div>
+        </dl>
 
-          <!-- SC3 -->
-          <div class="sc-item" id="sc3">
-            <p class="sc-prompt">SC3. An L-shape is cut into two rectangles: 3 m × 2 m and 4 m × 5 m. What is the total area?</p>
-            <div class="sc-choices" role="radiogroup">
-              <label><input type="radio" name="sc3" value="a"> 26 m²</label>
-              <label><input type="radio" name="sc3" value="b"> 35 m²</label>
-              <label><input type="radio" name="sc3" value="c"> 56 m²</label>
-              <label><input type="radio" name="sc3" value="d"> 14 m²</label>
-            </div>
-            <button class="scbtn" type="button" onclick="checkSC('sc3','a','(3 × 2) + (4 × 5) = 6 + 20 = 26 m². Add the areas of each rectangle.')">Check</button>
-            <div class="sc-feedback" id="sc3-fb" aria-live="polite"></div>
+        <div class="u5-grid2">
+          <div class="u5-card">
+            <h3>Parallelogram</h3>
+            <p class="u5-formula">A = b × h</p>
+            <p>
+              Slide the triangle to make a rectangle. Multiply base × height.
+            </p>
+          </div>
+          <div class="u5-card">
+            <h3>Triangle</h3>
+            <p class="u5-formula">A = ½ × b × h</p>
+            <p>
+              Two identical triangles make a parallelogram, so a triangle is
+              <em>half</em>.
+            </p>
+          </div>
+          <div class="u5-card">
+            <h3>Trapezoid</h3>
+            <p class="u5-formula">A = ½ × (b₁ + b₂) × h</p>
+            <p>Average the two parallel bases, then multiply by the height.</p>
+          </div>
+          <div class="u5-card">
+            <h3>Composite figure</h3>
+            <p class="u5-formula">A = A₁ + A₂ + …</p>
+            <p>
+              Cut it into simple shapes, find each area, then add (or subtract a
+              hole).
+            </p>
           </div>
         </div>
 
-        <hr style="border-color:var(--nt-border);margin:20px 0;" />
+        <div class="u5-card">
+          <h3>Worked example — triangular herb bed</h3>
+          <p>Back to the Engage bed: base = 12 ft, height = 6 ft.</p>
+          <p>A = ½ × b × h = ½ × 12 × 6 = ½ × 72 = <strong>36 ft²</strong></p>
+          <p>
+            One bag covers 9 ft², so bags = 36 ÷ 9 = <strong>4 bags</strong>.
+            (How close was your Engage guess?)
+          </p>
+        </div>
 
-        <!-- Main graded questions -->
-        <form id="apply-form">
-          <div class="q">
-            <p class="prompt">1. A rectangle has base 7 m and height 3 m. What is the area?</p>
-            <p class="figure">Area = base × height. Type the number of square meters.</p>
-            <label for="q1">Area (m²): </label>
-            <input class="txt" type="text" id="q1" inputmode="numeric" aria-label="Question 1 answer" />
-          </div>
-
-          <div class="q">
-            <p class="prompt">2. A square tile floor is 9 m on each side. What is the area?</p>
-            <p class="figure">A square has equal sides. Area = side × side.</p>
-            <label for="q2">Area (m²): </label>
-            <input class="txt" type="text" id="q2" inputmode="numeric" aria-label="Question 2 answer" />
-          </div>
-
-          <div class="q">
-            <p class="prompt">3. A triangle has base 10 m and height 6 m. What is the area?</p>
-            <p class="figure">Area = (base × height) ÷ 2.</p>
-            <label for="q3">Area (m²): </label>
-            <input class="txt" type="text" id="q3" inputmode="numeric" aria-label="Question 3 answer" />
-          </div>
-
-          <div class="q">
-            <p class="prompt">4. An L-shape is made of two rectangles. One is 5 m × 4 m. The other is 3 m × 2 m. What is the total area?</p>
-            <p class="figure">Find each rectangle's area, then add them.</p>
-            <label for="q4">Total area (m²): </label>
-            <input class="txt" type="text" id="q4" inputmode="numeric" aria-label="Question 4 answer" />
-          </div>
-
-          <div class="q">
-            <p class="prompt">5. Which formula finds the area of a triangle?</p>
-            <label class="opt"><input type="radio" name="q5" value="a" /> base + height</label>
-            <label class="opt"><input type="radio" name="q5" value="b" /> base × height</label>
-            <label class="opt"><input type="radio" name="q5" value="c" /> (base × height) ÷ 2</label>
-            <label class="opt"><input type="radio" name="q5" value="d" /> side × side × side</label>
-          </div>
-
-          <div class="q">
-            <p class="prompt">6. A garden is 12 m by 5 m. You cover it with 1 m × 1 m square tiles. How many tiles do you need?</p>
-            <p class="figure">Number of unit squares = area. Type the number.</p>
-            <label for="q6">Tiles: </label>
-            <input class="txt" type="text" id="q6" inputmode="numeric" aria-label="Question 6 answer" />
-          </div>
-
-          <button class="checkbtn" type="button" id="checkBtn">Check My Work</button>
-        </form>
-      </section>
-
-      <!-- ══ RUBRIC ══ -->
-      <section aria-labelledby="rubric-h">
-        <h2 id="rubric-h" style="margin-bottom:12px;">📊 Rubric</h2>
-        <table class="rubric-table" role="table" aria-label="Scoring rubric">
-          <thead>
-            <tr>
-              <th scope="col">Level</th>
-              <th scope="col">Score</th>
-              <th scope="col">What it looks like</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="level-4">4 — Exceeds</span></td>
-              <td>6/6</td>
-              <td>All areas and composite figures correct. Reflections show deep understanding of the process and explain why formulas work.</td>
-            </tr>
-            <tr>
-              <td><span class="level-3">3 — Meets</span></td>
-              <td>4–5/6</td>
-              <td>Most areas correct. May make a minor arithmetic slip. Composite figure method is sound. Reflections are complete.</td>
-            </tr>
-            <tr>
-              <td><span class="level-2">2 — Approaching</span></td>
-              <td>2–3/6</td>
-              <td>Can find area of rectangles but struggles with triangles or composites. Reflections are brief or incomplete.</td>
-            </tr>
-            <tr>
-              <td><span class="level-1">1 — Beginning</span></td>
-              <td>0–1/6</td>
-              <td>Confuses perimeter with area, or applies formulas incorrectly. Needs re-teaching of core concepts.</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Answer Key (teacher only) -->
-        <details class="answer-key">
-          <summary>Answer Key (teacher only)</summary>
+        <details class="u5-level">
+          <summary>
+            <span class="u5-tag l1">Level 1 · support</span> Step-by-step helper
+            / Ayuda paso a paso
+          </summary>
           <ol>
-            <li><strong>Q1:</strong> 7 × 3 = <strong>21 m²</strong></li>
-            <li><strong>Q2:</strong> 9 × 9 = <strong>81 m²</strong></li>
-            <li><strong>Q3:</strong> (10 × 6) ÷ 2 = 60 ÷ 2 = <strong>30 m²</strong></li>
-            <li><strong>Q4:</strong> (5 × 4) + (3 × 2) = 20 + 6 = <strong>26 m²</strong></li>
-            <li><strong>Q5:</strong> <strong>(base × height) ÷ 2</strong> (option c)</li>
-            <li><strong>Q6:</strong> 12 × 5 = <strong>60 tiles</strong></li>
-            <li><strong>SC1:</strong> c — 20 m²</li>
-            <li><strong>SC2:</strong> b — 12 m²</li>
-            <li><strong>SC3:</strong> a — 26 m²</li>
+            <li>
+              Find the <strong>base</strong> and the <strong>height</strong>.
+              The height is always the dashed square line, not a slanted side.
+            </li>
+            <li>Write the formula first, then put the numbers in.</li>
+            <li>
+              For a triangle, do b × h first, then take half (divide by 2).
+            </li>
+            <li>
+              End your answer with <strong>square units</strong> (ft², m²,
+              units²).
+              <span class="u5-es">Siempre escribe unidades cuadradas.</span>
+            </li>
           </ol>
         </details>
+
+        <details class="u5-level">
+          <summary>
+            <span class="u5-tag l2">Level 2 · enrichment</span> Push your
+            thinking
+          </summary>
+          <p>
+            The "height" can fall <em>outside</em> a stretched (obtuse)
+            triangle. Why does <span class="u5-formula">A = ½bh</span> still
+            work? Sketch an obtuse triangle, drop the height, and explain how
+            the cut-and-slide idea still rearranges it into the same rectangle.
+          </p>
+        </details>
       </section>
 
-      <!-- ══ REFLECT ══ -->
-      <section aria-labelledby="reflect-h">
-        <span class="step">Step 5 · Reflect</span>
-        <h2 id="reflect-h">Think About It</h2>
-        <p class="do">
-          Write 2–4 sentences for each prompt below. Use math vocabulary
-          (area, base, height, composite). Your reflections are saved in
-          your PDF/DOC and count toward your grade.
-        </p>
-        <p><strong>Deliverable:</strong> Complete both reflections, then
-          press <strong>Check My Work</strong> above and submit your PDF or DOC
-          to the class folder.</p>
+      <!-- ============ 4. APPLY ============ -->
+      <section class="u5-step" id="apply">
+        <h2><span class="u5-badge b4">4</span> Apply</h2>
+        <p class="u5-phase">Show what you can do — auto-checked</p>
 
-        <p style="margin-top:18px;">
-          <label for="r1"><b>A.</b> Explain step-by-step how you find the area of a triangle.
-          Use the words <em>base</em>, <em>height</em>, and <em>square units</em>.</label>
-        </p>
-        <textarea id="r1" aria-label="Reflection A — steps to find a triangle's area"></textarea>
+        <form id="u5-quiz" novalidate>
+          <div
+            class="u5-q"
+            data-type="text"
+            data-answer="36"
+            data-tol="0"
+            id="q1"
+          >
+            <p class="u5-prompt">
+              1. The triangular herb bed has base 12 ft and height 6 ft. What is
+              its area? (number only)
+            </p>
+            <label
+              >Area =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Area in square feet"
+              />
+              <span class="u5-unit">ft²</span></label
+            >
+            <p class="u5-fb" aria-live="polite"></p>
+          </div>
 
-        <p style="margin-top: 16px">
-          <label for="r2"><b>B.</b> Why do we break a composite shape into smaller shapes?
-          What would happen if we did not?</label>
-        </p>
-        <textarea id="r2" aria-label="Reflection B — why break composite shapes apart"></textarea>
+          <div
+            class="u5-q"
+            data-type="text"
+            data-answer="4"
+            data-tol="0"
+            id="q2"
+          >
+            <p class="u5-prompt">
+              2. One bag of mulch covers 9 ft². How many full bags are needed to
+              cover the 36 ft² bed?
+            </p>
+            <label
+              ><input
+                type="number"
+                inputmode="numeric"
+                aria-label="Number of bags"
+              />
+              <span class="u5-unit">bags</span></label
+            >
+            <p class="u5-fb" aria-live="polite"></p>
+          </div>
 
-        <p class="hint" style="margin-top: 16px">
-          When you are done: scroll up to the name bar and press
-          <b>Save as PDF</b> or <b>Save as DOC</b> to turn in your HyperDoc.
+          <div class="u5-q" data-type="mc" data-answer="b" id="q3">
+            <p class="u5-prompt">
+              3. A rectangular flower plot is a parallelogram with base 8 m and
+              height 5 m. Which is its area?
+            </p>
+            <ul class="u5-opts">
+              <li>
+                <label><input type="radio" name="q3" value="a" /> 13 m²</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q3" value="b" /> 40 m²</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q3" value="c" /> 26 m²</label>
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="d" /> 40 m (not
+                  squared)</label
+                >
+              </li>
+            </ul>
+            <p class="u5-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u5-q"
+            data-type="text"
+            data-answer="35"
+            data-tol="0"
+            id="q4"
+          >
+            <p class="u5-prompt">
+              4. A trapezoid shade-sail has parallel bases of 6 ft and 8 ft and
+              a height of 5 ft. Find its area. A = ½ × (b₁ + b₂) × h
+            </p>
+            <div class="u5-fig" style="margin: 6px 0">
+              <svg
+                viewBox="0 0 220 120"
+                width="240"
+                role="img"
+                aria-label="A trapezoid with top base 6, bottom base 8, and height 5."
+              >
+                <polygon
+                  points="60,30 150,30 190,95 20,95"
+                  fill="#ede0ff"
+                  stroke="#7c3aed"
+                  stroke-width="2"
+                />
+                <line
+                  x1="60"
+                  y1="30"
+                  x2="60"
+                  y2="95"
+                  stroke="#db2777"
+                  stroke-width="2"
+                  stroke-dasharray="4 3"
+                />
+                <text x="105" y="24" font-size="11" text-anchor="middle">
+                  b₁ = 6 ft
+                </text>
+                <text x="105" y="112" font-size="11" text-anchor="middle">
+                  b₂ = 8 ft
+                </text>
+                <text x="66" y="66" font-size="11" fill="#db2777">
+                  h = 5 ft
+                </text>
+              </svg>
+            </div>
+            <label
+              >Area =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Trapezoid area in square feet"
+              />
+              <span class="u5-unit">ft²</span></label
+            >
+            <p class="u5-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u5-q"
+            data-type="text"
+            data-answer="54"
+            data-tol="0"
+            id="q5"
+          >
+            <p class="u5-prompt">
+              5. A garden path is an L-shape: a 6×6 ft square garden corner with
+              a 3×6 ft rectangle added on. Decompose it and find the total area.
+              (6×6) + (3×6) = ?
+            </p>
+            <div class="u5-fig" style="margin: 6px 0">
+              <svg
+                viewBox="0 0 200 150"
+                width="220"
+                role="img"
+                aria-label="An L-shaped figure made of a 6 by 6 square and a 3 by 6 rectangle."
+              >
+                <polygon
+                  points="20,20 140,20 140,140 80,140 80,80 20,80"
+                  fill="#d7f0ea"
+                  stroke="#0d9488"
+                  stroke-width="2"
+                />
+                <line
+                  x1="80"
+                  y1="20"
+                  x2="80"
+                  y2="80"
+                  stroke="#0d9488"
+                  stroke-width="1"
+                  stroke-dasharray="3 3"
+                />
+                <text x="50" y="55" font-size="11" text-anchor="middle">
+                  6×6
+                </text>
+                <text x="110" y="100" font-size="11" text-anchor="middle">
+                  3×6
+                </text>
+              </svg>
+            </div>
+            <label
+              >Total area =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Total area in square feet"
+              />
+              <span class="u5-unit">ft²</span></label
+            >
+            <p class="u5-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u5-actions">
+            <button type="button" class="u5-btn" id="u5-check">
+              Check my answers
+            </button>
+            <button type="button" class="u5-btn ghost" id="u5-reset">
+              Clear
+            </button>
+            <span class="u5-score" id="u5-scoreout" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <details class="u5-level" style="margin-top: 14px">
+          <summary>
+            <span class="u5-tag l1">Level 1 · support</span> Sentence starters
+            for explaining
+          </summary>
+          <p>
+            "To find the area I used the formula ____. I multiplied ____ × ____,
+            then I ____. My answer is ____ square ____."
+          </p>
+          <p class="u5-es">
+            "Para hallar el área usé la fórmula ____. Multipliqué ____ × ____ y
+            luego ____. Mi respuesta es ____ unidades cuadradas."
+          </p>
+        </details>
+
+        <details class="u5-level">
+          <summary>
+            <span class="u5-tag l2">Level 2 · enrichment</span> Reverse it
+          </summary>
+          <p>
+            A triangular bed has area 48 ft² and a height of 8 ft. Work
+            backwards to find the base. Then write a one-sentence rule for
+            finding a missing dimension when you already know the area.
+          </p>
+        </details>
+      </section>
+
+      <!-- ============ 5. REFLECT ============ -->
+      <section class="u5-step u5-reflect" id="reflect">
+        <h2><span class="u5-badge b5">5</span> Reflect</h2>
+        <p class="u5-phase">Think about your thinking</p>
+
+        <div class="u5-q">
+          <p class="u5-prompt">
+            A. Every area formula in this unit connects back to one shape. Which
+            shape, and why is that connection useful?
+          </p>
+          <textarea aria-label="Reflection A"></textarea>
+        </div>
+        <div class="u5-q">
+          <p class="u5-prompt">
+            B. Where in real life (sports field, room, screen, garden) would you
+            need to decompose a figure to find its area? Describe it.
+          </p>
+          <textarea aria-label="Reflection B"></textarea>
+        </div>
+        <div class="u5-q">
+          <p class="u5-prompt">
+            C. One thing that is now clear to me / Una cosa que ahora entiendo
+            bien:
+          </p>
+          <textarea aria-label="Reflection C"></textarea>
+        </div>
+        <p class="u5-cap">
+          Your reflections save with this HyperDoc when you use Save as PDF or
+          Save as DOC above.
         </p>
       </section>
 
-    </div><!-- /.wrap -->
+      <!-- ============ 6. EXTEND ============ -->
+      <section class="u5-step" id="extend">
+        <h2>
+          <span class="u5-badge b3" style="background: #475569">6</span> Extend
+        </h2>
+        <p class="u5-phase">Optional challenge project</p>
+        <div class="u5-card">
+          <h3>Design a garden plot for the Riverside team</h3>
+          <p>
+            On grid paper, design a garden made of at least
+            <strong>three</strong> different polygons (include one triangle and
+            one trapezoid). Then:
+          </p>
+          <ol>
+            <li>Label every base and height.</li>
+            <li>Find the area of each plot and the total.</li>
+            <li>If seed costs $2 per square foot, find the total seed cost.</li>
+          </ol>
+          <p class="u5-es">
+            Diseña un jardín con al menos tres polígonos y calcula el área total
+            y el costo.
+          </p>
+        </div>
+      </section>
+    </main>
 
     <script>
-      /* ─────────────────────────────────────────────────────────
-         Answer normaliser — tolerant of common formatting
-         variations without changing any correct answer.
-         ───────────────────────────────────────────────────────── */
-      function normalise(raw) {
-        var s = String(raw).trim().toLowerCase();
-        s = s.replace(/\s+/g, '');
-        s = s.replace(/^\$/, '');
-        s = s.replace(/%$/, '');
-        s = s.replace(/,(\d{3})/g, '$1');
-        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|sq)$/, '');
-        return s;
-      }
-
-      function numericMatch(a, b) {
-        var na = parseFloat(a);
-        var nb = parseFloat(b);
-        if (isNaN(na) || isNaN(nb)) { return false; }
-        return Math.abs(na - nb) < 1e-9;
-      }
-
-      function answersMatch(studentRaw, correctRaw) {
-        var s = normalise(studentRaw);
-        var c = normalise(correctRaw);
-        if (s === c) { return true; }
-        return numericMatch(s, c);
-      }
-
-      /* ── Self-check handler (radio buttons only — compare letter values) ── */
-      function checkSC(id, correct, explanation) {
-        var chosen = document.querySelector('input[name="' + id + '"]:checked');
-        var fb = document.getElementById(id + '-fb');
-        if (!chosen) {
-          fb.className = 'sc-feedback wrong';
-          fb.textContent = 'Please choose an answer first.';
-          return;
-        }
-        if (chosen.value === correct) {
-          fb.className = 'sc-feedback correct';
-          fb.textContent = '✔ Correct! ' + explanation;
-        } else {
-          fb.className = 'sc-feedback wrong';
-          fb.textContent = '✘ Not quite. ' + explanation;
-        }
-      }
-
-      /* ── NTKit mount + grade ── */
       (function () {
-        function start() {
-          if (!window.NTKit) { return setTimeout(start, 50); }
-          NTKit.mount('#ntkit');
+        "use strict";
 
-          document.getElementById('checkBtn').addEventListener('click', function () {
-            function val(id) {
-              var n = document.getElementById(id);
-              return n ? n.value.trim() : '';
+        // ---- Mount the shared Neft Activity Kit (name bar + Save as PDF/DOC + results) ----
+        function mountKit() {
+          if (window.NTKit && typeof NTKit.mount === "function") {
+            try {
+              NTKit.mount("#ntkit");
+            } catch (e) {
+              /* kit optional */
             }
-            function norm(id) {
-              return normalise(val(id));
-            }
-            function radio(name) {
-              var n = document.querySelector('input[name="' + name + '"]:checked');
-              return n ? n.value : '';
-            }
-
-            var refA = val('r1');
-            var refB = val('r2');
-
-            NTKit.grade({
-              activityId: 'hyperdoc-unit-5',
-              activityTitle: 'Unit 5 HyperDoc — Area of Polygons',
-              standard: '6.G.A.1',
-              items: [
-                {
-                  prompt: '1. Rectangle: base 7 m × height 3 m. Area?',
-                  studentAnswer: norm('q1'),
-                  correctAnswer: '21',
-                  points: 1,
-                  skill: 'Area of rectangles'
-                },
-                {
-                  prompt: '2. Square floor, side 9 m. Area?',
-                  studentAnswer: norm('q2'),
-                  correctAnswer: '81',
-                  points: 1,
-                  skill: 'Area of rectangles'
-                },
-                {
-                  prompt: '3. Triangle: base 10 m × height 6 m. Area?',
-                  studentAnswer: norm('q3'),
-                  correctAnswer: '30',
-                  points: 1,
-                  skill: 'Area of triangles'
-                },
-                {
-                  prompt: '4. L-shape: (5×4) + (3×2). Total area?',
-                  studentAnswer: norm('q4'),
-                  correctAnswer: '26',
-                  points: 1,
-                  skill: 'Composite figures'
-                },
-                {
-                  prompt: '5. Which formula finds a triangle\'s area?',
-                  studentAnswer: radio('q5'),
-                  correctAnswer: 'c',
-                  points: 1,
-                  skill: 'Area formulas'
-                },
-                {
-                  prompt: '6. Garden 12 m × 5 m. How many 1 m² tiles?',
-                  studentAnswer: norm('q6'),
-                  correctAnswer: '60',
-                  points: 1,
-                  skill: 'Area & unit squares'
-                },
-                {
-                  prompt: 'Reflect A: Steps to find a triangle\'s area.',
-                  studentAnswer: refA,
-                  correctAnswer: '',
-                  points: 0,
-                  skill: 'Reflection'
-                },
-                {
-                  prompt: 'Reflect B: Why break a composite shape apart?',
-                  studentAnswer: refB,
-                  correctAnswer: '',
-                  points: 0,
-                  skill: 'Reflection'
-                }
-              ]
-            });
-
-            var results = document.getElementById('ntkit-results');
-            if (results) {
-              results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              if (results.focus) { results.focus(); }
-            }
-          });
+          }
         }
-        start();
+        if (document.readyState !== "loading") mountKit();
+        else document.addEventListener("DOMContentLoaded", mountKit);
+
+        var form = document.getElementById("u5-quiz");
+
+        function checkOne(q) {
+          var type = q.getAttribute("data-type");
+          var fb = q.querySelector(".u5-fb");
+          var correct = false,
+            answered = true;
+
+          if (type === "mc") {
+            var sel = q.querySelector('input[type="radio"]:checked');
+            answered = !!sel;
+            correct = answered && sel.value === q.getAttribute("data-answer");
+          } else {
+            // text/number
+            var input = q.querySelector(
+              'input[type="number"], input[type="text"]',
+            );
+            var raw = (input.value || "").trim();
+            answered = raw !== "";
+            var ans = parseFloat(q.getAttribute("data-answer"));
+            var tol = parseFloat(q.getAttribute("data-tol") || "0");
+            var val = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+            correct = answered && !isNaN(val) && Math.abs(val - ans) <= tol;
+          }
+
+          if (fb) {
+            if (!answered) {
+              fb.textContent = "";
+              fb.className = "u5-fb";
+            } else if (correct) {
+              fb.textContent = "✓ Correct";
+              fb.className = "u5-fb ok";
+            } else {
+              fb.textContent =
+                "✗ Not yet — recheck your base, height, and units.";
+              fb.className = "u5-fb no";
+            }
+          }
+          return { correct: correct, answered: answered };
+        }
+
+        function checkAll() {
+          var qs = form.querySelectorAll(".u5-q[data-type]");
+          var score = 0,
+            total = qs.length;
+          var items = [];
+          qs.forEach(function (q, i) {
+            var r = checkOne(q);
+            if (r.correct) score++;
+            var promptEl = q.querySelector(".u5-prompt");
+            items.push({
+              id: q.id || "q" + (i + 1),
+              prompt: promptEl
+                ? promptEl.textContent.trim()
+                : "Question " + (i + 1),
+              correct: r.correct,
+            });
+          });
+
+          var out = document.getElementById("u5-scoreout");
+          var pct = Math.round((score / total) * 100);
+          out.textContent =
+            "Score: " + score + " / " + total + " (" + pct + "%)";
+
+          // Hand results to the shared kit if its grade() API is available.
+          if (window.NTKit && typeof NTKit.grade === "function") {
+            try {
+              NTKit.grade({
+                activityId: "hyperdoc-unit-5-area",
+                activityTitle: "Unit 5 HyperDoc — Area of Polygons",
+                standard: "6.G.A.1",
+                score: score,
+                total: total,
+                items: items,
+              });
+            } catch (e) {
+              /* fallback score already shown */
+            }
+          }
+        }
+
+        document.getElementById("u5-check").addEventListener("click", checkAll);
+        document
+          .getElementById("u5-reset")
+          .addEventListener("click", function () {
+            form.reset();
+            form.querySelectorAll(".u5-fb").forEach(function (f) {
+              f.textContent = "";
+              f.className = "u5-fb";
+            });
+            document.getElementById("u5-scoreout").textContent = "";
+          });
       })();
     </script>
   </body>

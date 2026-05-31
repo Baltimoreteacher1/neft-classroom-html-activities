@@ -1,129 +1,386 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>3D WebGL Unit Games | Neft Classroom</title>
-  <style>
-    :root { --ink:#0f172a; --muted:#475569; --line:#d7dee9; --paper:#f8fafc; --panel:#ffffff; --accent:#2563eb; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:var(--ink); background:linear-gradient(180deg,#eef6ff 0%,#f8fafc 45%,#fff 100%); }
-    .shell { width:min(1180px, calc(100% - 32px)); margin:0 auto; padding:24px 0 38px; }
-    .topbar { display:flex; justify-content:space-between; gap:16px; align-items:center; margin-bottom:22px; }
-    .brand { font-weight:900; letter-spacing:.02em; }
-    .home { color:var(--ink); text-decoration:none; border:1px solid var(--line); background:#fff; padding:10px 14px; border-radius:8px; font-weight:800; }
-    .hero { display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:stretch; margin-bottom:24px; }
-    .headline { padding:26px 0; }
-    h1 { font-size:clamp(2.2rem, 5vw, 4.8rem); line-height:.94; margin:0 0 16px; letter-spacing:0; }
-    .lead { color:var(--muted); font-size:1.12rem; line-height:1.55; max-width:780px; margin:0; }
-    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:24px; }
-    .stat { border:1px solid var(--line); border-radius:8px; padding:16px; background:#fff; }
-    .stat b { display:block; font-size:2rem; }
-    .stat span { color:var(--muted); font-weight:700; }
-    .preview { min-height:330px; border-radius:8px; overflow:hidden; border:1px solid #bfd4ee; background:#09111f; position:relative; }
-    .preview canvas { width:100%; height:100%; display:block; }
-    .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
-    .unit-card { min-height:188px; display:flex; flex-direction:column; gap:10px; color:var(--ink); text-decoration:none; background:#fff; border:1px solid var(--line); border-top:5px solid var(--accent); border-radius:8px; padding:16px; box-shadow:0 16px 34px rgba(15,23,42,.08); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
-    .unit-card:hover, .unit-card:focus-visible { transform:translateY(-3px); box-shadow:0 22px 42px rgba(15,23,42,.12); border-color:var(--accent); outline:none; }
-    .unit-chip { width:max-content; border-radius:999px; padding:5px 9px; background:#eef2ff; color:#1e3a8a; font-weight:900; font-size:.8rem; }
-    .unit-card strong { font-size:1.08rem; line-height:1.18; }
-    .unit-card span:not(.unit-chip) { color:var(--muted); line-height:1.32; }
-    .unit-card small { margin-top:auto; color:#334155; font-weight:800; }
-    @media (max-width:980px) { .hero { grid-template-columns:1fr; } .grid { grid-template-columns:repeat(2,1fr); } }
-    @media (max-width:620px) { .shell { width:min(100% - 22px, 1180px); padding-top:16px; } .topbar { align-items:flex-start; flex-direction:column; } .stats { grid-template-columns:1fr; } .grid { grid-template-columns:1fr; } .preview { min-height:240px; } }
-  </style>
-</head>
-<body>
-  <main class="shell">
-    <nav class="topbar" aria-label="Classroom navigation"><div class="brand">Neft Classroom</div><a class="home" href="/">Classroom Home</a></nav>
-    <section class="hero" aria-labelledby="page-title">
-      <div class="headline">
-        <h1 id="page-title">3D WebGL Unit Games</h1>
-        <p class="lead">Ten polished math games for the full unit sequence. Each game has clear mission prompts, standards-aligned problems, instant worked feedback, keyboard support, and a live 3D WebGL scene that responds to student progress.</p>
-        <div class="stats" aria-label="Game collection stats">
-          <div class="stat"><b>10</b><span>unit games</span></div>
-          <div class="stat"><b>80</b><span>math missions</span></div>
-          <div class="stat"><b>100%</b><span>static WebGL</span></div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>3D WebGL Unit Games | Neft Classroom</title>
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #d7dee9;
+        --paper: #f8fafc;
+        --panel: #ffffff;
+        --accent: #2563eb;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        color: var(--ink);
+        background: linear-gradient(180deg, #eef6ff 0%, #f8fafc 45%, #fff 100%);
+      }
+      .shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 24px 0 38px;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 22px;
+      }
+      .brand {
+        font-weight: 900;
+        letter-spacing: 0.02em;
+      }
+      .home {
+        color: var(--ink);
+        text-decoration: none;
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-weight: 800;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 24px;
+        align-items: stretch;
+        margin-bottom: 24px;
+      }
+      .headline {
+        padding: 26px 0;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 5vw, 4.8rem);
+        line-height: 0.94;
+        margin: 0 0 16px;
+        letter-spacing: 0;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 1.12rem;
+        line-height: 1.55;
+        max-width: 780px;
+        margin: 0;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 24px;
+      }
+      .stat {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        background: #fff;
+      }
+      .stat b {
+        display: block;
+        font-size: 2rem;
+      }
+      .stat span {
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .preview {
+        min-height: 330px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #bfd4ee;
+        background: #09111f;
+        position: relative;
+      }
+      .preview canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+      }
+      .unit-card {
+        min-height: 188px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        color: var(--ink);
+        text-decoration: none;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-top: 5px solid var(--accent);
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease,
+          border-color 0.18s ease;
+      }
+      .unit-card:hover,
+      .unit-card:focus-visible {
+        transform: translateY(-3px);
+        box-shadow: 0 22px 42px rgba(15, 23, 42, 0.12);
+        border-color: var(--accent);
+        outline: none;
+      }
+      .unit-chip {
+        width: max-content;
+        border-radius: 999px;
+        padding: 5px 9px;
+        background: #eef2ff;
+        color: #1e3a8a;
+        font-weight: 900;
+        font-size: 0.8rem;
+      }
+      .unit-card strong {
+        font-size: 1.08rem;
+        line-height: 1.18;
+      }
+      .unit-card span:not(.unit-chip) {
+        color: var(--muted);
+        line-height: 1.32;
+      }
+      .unit-card small {
+        margin-top: auto;
+        color: #334155;
+        font-weight: 800;
+      }
+      @media (max-width: 980px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 620px) {
+        .shell {
+          width: min(100% - 22px, 1180px);
+          padding-top: 16px;
+        }
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .stats {
+          grid-template-columns: 1fr;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .preview {
+          min-height: 240px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="topbar" aria-label="Classroom navigation">
+        <div class="brand">Neft Classroom</div>
+        <a class="home" href="/">Classroom Home</a>
+      </nav>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="headline">
+          <h1 id="page-title">3D WebGL Unit Games</h1>
+          <p class="lead">
+            Ten polished math games for the full unit sequence. Each game has
+            clear mission prompts, standards-aligned problems, instant worked
+            feedback, keyboard support, and a live 3D WebGL scene that responds
+            to student progress.
+          </p>
+          <div class="stats" aria-label="Game collection stats">
+            <div class="stat"><b>10</b><span>unit games</span></div>
+            <div class="stat"><b>80</b><span>math missions</span></div>
+            <div class="stat"><b>100%</b><span>static WebGL</span></div>
+          </div>
         </div>
-      </div>
-      <div class="preview" aria-label="Animated 3D preview"><canvas id="hub-canvas"></canvas></div>
-    </section>
-    <section class="grid" aria-label="Choose a unit game">
-      <a class="unit-card" href="/games/3d/unit-1/" style="--accent:#2dd4bf">
-      <span class="unit-chip">Unit 1</span>
-      <strong>Smoothie Stand Command</strong>
-      <span>Ratios, equivalent ratios, and unit rates</span>
-      <small>6.RP.A.1-3 - 8 missions</small>
-    </a>
-      <a class="unit-card" href="/games/3d/unit-2/" style="--accent:#f59e0b">
-      <span class="unit-chip">Unit 2</span>
-      <strong>Fraction Division Bakery</strong>
-      <span>Dividing fractions and mixed numbers</span>
-      <small>6.NS.A.1 - 8 missions</small>
-    </a>
-      <a class="unit-card" href="/games/3d/unit-3/" style="--accent:#22c55e">
-      <span class="unit-chip">Unit 3</span>
-      <strong>Percent and Rate Rally</strong>
-      <span>Percents, rates, and equivalent comparisons</span>
-      <small>6.RP.A.2-3 - 8 missions</small>
-    </a>
-      <a class="unit-card" href="/games/3d/unit-4/" style="--accent:#6366f1">
-      <span class="unit-chip">Unit 4</span>
-      <strong>Number System Factory</strong>
-      <span>Decimal operations, long division, GCF, and LCM</span>
-      <small>6.NS.B.2-4 - 8 missions</small>
-    </a>
-      <a class="unit-card" href="/games/3d/unit-5/" style="--accent:#06b6d4">
-      <span class="unit-chip">Unit 5</span>
-      <strong>Area Architect Studio</strong>
-      <span>Area of polygons and composed shapes</span>
-      <small>6.G.A.1 - 8 missions</small>
-    </a>
-      <a class="unit-card" href="/games/3d/unit-6/" style="--accent:#8b5cf6">
-      <span class="unit-chip">Unit 6</span>
-      <strong>Expression Machine Lab</strong>
-      <span>Expressions, exponents, and equivalent forms</span>
-      <small>6.EE.A.1-4 - 8 missions</small>
-    </a>
-      <a class="unit-card" href="/games/3d/unit-7/" style="--accent:#0ea5e9">
-      <span class="unit-chip">Unit 7</span>
-      <strong>Integer Submarine Mission</strong>
-      <span>Integers, opposites, absolute value, and ordering</span>
-      <small>6.NS.C.5-7 - 8 missions</small>
-    </a>
-      <a class="unit-card" href="/games/3d/unit-8/" style="--accent:#10b981">
-      <span class="unit-chip">Unit 8</span>
-      <strong>Data Lab Observatory</strong>
-      <span>Statistical questions, center, spread, and displays</span>
-      <small>6.SP.A-B - 8 missions</small>
-    </a>
-      <a class="unit-card" href="/games/3d/unit-9/" style="--accent:#ef4444">
-      <span class="unit-chip">Unit 9</span>
-      <strong>Coordinate Quest Arena</strong>
-      <span>Coordinate plane, distance, and reflections</span>
-      <small>6.NS.C.6, 6.NS.C.8 - 8 missions</small>
-    </a>
-      <a class="unit-card" href="/games/3d/unit-10/" style="--accent:#2563eb">
-      <span class="unit-chip">Unit 10</span>
-      <strong>Volume Vault Expedition</strong>
-      <span>Volume of rectangular prisms and fractional edge lengths</span>
-      <small>6.G.A.2 - 8 missions</small>
-    </a>
-    </section>
-  </main>
-  <script>
-    const canvas = document.getElementById('hub-canvas');
-    const gl = canvas.getContext('webgl', { antialias:true });
-    function size(){ const r=canvas.getBoundingClientRect(); const d=Math.min(devicePixelRatio||1,2); canvas.width=Math.max(1,Math.floor(r.width*d)); canvas.height=Math.max(1,Math.floor(r.height*d)); gl.viewport(0,0,canvas.width,canvas.height); }
-    function shader(t,s){ const sh=gl.createShader(t); gl.shaderSource(sh,s); gl.compileShader(sh); return sh; }
-    const vs='attribute vec3 p; attribute vec3 c; varying vec3 v; uniform float time; void main(){ vec3 q=p; q.y += sin(time + p.x*1.7 + p.z)*0.08; gl_Position=vec4(q,1.0); v=c; }';
-    const fs='precision mediump float; varying vec3 v; void main(){ gl_FragColor=vec4(v,1.0); }';
-    const pr=gl.createProgram(); gl.attachShader(pr,shader(gl.VERTEX_SHADER,vs)); gl.attachShader(pr,shader(gl.FRAGMENT_SHADER,fs)); gl.linkProgram(pr); gl.useProgram(pr);
-    const data=[]; for(let i=0;i<10;i++){ const x=-.86+i*.19; const h=.18+(i%5)*.085; const col=[.12+i*.055,.48,.9-i*.035]; data.push(x,-.72,0,...col, x+.13,-.72,0,...col, x+.13,-.72+h,0,...col, x,-.72,0,...col, x+.13,-.72+h,0,...col, x,-.72+h,0,...col); }
-    const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
-    const stride=24; const p=gl.getAttribLocation(pr,'p'); const c=gl.getAttribLocation(pr,'c'); gl.enableVertexAttribArray(p); gl.enableVertexAttribArray(c); gl.vertexAttribPointer(p,3,gl.FLOAT,false,stride,0); gl.vertexAttribPointer(c,3,gl.FLOAT,false,stride,12); const t=gl.getUniformLocation(pr,'time');
-    function draw(ms){ size(); gl.clearColor(.035,.067,.12,1); gl.clear(gl.COLOR_BUFFER_BIT); gl.uniform1f(t,ms*.001); gl.drawArrays(gl.TRIANGLES,0,data.length/6); requestAnimationFrame(draw); }
-    if(gl) requestAnimationFrame(draw);
-  </script>
-</body>
+        <div class="preview" aria-label="Animated 3D preview">
+          <canvas id="hub-canvas"></canvas>
+        </div>
+      </section>
+      <section class="grid" aria-label="Choose a unit game">
+        <a
+          class="unit-card"
+          href="/games/3d/boss-battle-3d/"
+          style="
+            --accent: #f2c15b;
+            grid-column: 1/-1;
+            border-top-width: 5px;
+            background: linear-gradient(135deg, #fffdf7, #fff);
+          "
+        >
+          <span class="unit-chip" style="background: #fff3d6; color: #7a5a12"
+            >Boss Battle</span
+          >
+          <strong>MCAP Boss Battle 3D — All Units</strong>
+          <span
+            >Fight a 3D boss across 10 phases. Answer Grade 6 review questions
+            to attack; wrong answers cost a life. Full MCAP review in one
+            battle.</span
+          >
+          <small>Units 1-10 - 80 review questions</small>
+        </a>
+        <a class="unit-card" href="/games/3d/unit-1/" style="--accent: #2dd4bf">
+          <span class="unit-chip">Unit 1</span>
+          <strong>Smoothie Stand Command</strong>
+          <span>Ratios, equivalent ratios, and unit rates</span>
+          <small>6.RP.A.1-3 - 8 missions</small>
+        </a>
+        <a class="unit-card" href="/games/3d/unit-2/" style="--accent: #f59e0b">
+          <span class="unit-chip">Unit 2</span>
+          <strong>Fraction Division Bakery</strong>
+          <span>Dividing fractions and mixed numbers</span>
+          <small>6.NS.A.1 - 8 missions</small>
+        </a>
+        <a class="unit-card" href="/games/3d/unit-3/" style="--accent: #22c55e">
+          <span class="unit-chip">Unit 3</span>
+          <strong>Percent and Rate Rally</strong>
+          <span>Percents, rates, and equivalent comparisons</span>
+          <small>6.RP.A.2-3 - 8 missions</small>
+        </a>
+        <a class="unit-card" href="/games/3d/unit-4/" style="--accent: #6366f1">
+          <span class="unit-chip">Unit 4</span>
+          <strong>Number System Factory</strong>
+          <span>Decimal operations, long division, GCF, and LCM</span>
+          <small>6.NS.B.2-4 - 8 missions</small>
+        </a>
+        <a class="unit-card" href="/games/3d/unit-5/" style="--accent: #06b6d4">
+          <span class="unit-chip">Unit 5</span>
+          <strong>Area Architect Studio</strong>
+          <span>Area of polygons and composed shapes</span>
+          <small>6.G.A.1 - 8 missions</small>
+        </a>
+        <a class="unit-card" href="/games/3d/unit-6/" style="--accent: #8b5cf6">
+          <span class="unit-chip">Unit 6</span>
+          <strong>Expression Machine Lab</strong>
+          <span>Expressions, exponents, and equivalent forms</span>
+          <small>6.EE.A.1-4 - 8 missions</small>
+        </a>
+        <a class="unit-card" href="/games/3d/unit-7/" style="--accent: #0ea5e9">
+          <span class="unit-chip">Unit 7</span>
+          <strong>Integer Submarine Mission</strong>
+          <span>Integers, opposites, absolute value, and ordering</span>
+          <small>6.NS.C.5-7 - 8 missions</small>
+        </a>
+        <a class="unit-card" href="/games/3d/unit-8/" style="--accent: #10b981">
+          <span class="unit-chip">Unit 8</span>
+          <strong>Data Lab Observatory</strong>
+          <span>Statistical questions, center, spread, and displays</span>
+          <small>6.SP.A-B - 8 missions</small>
+        </a>
+        <a class="unit-card" href="/games/3d/unit-9/" style="--accent: #ef4444">
+          <span class="unit-chip">Unit 9</span>
+          <strong>Coordinate Quest Arena</strong>
+          <span>Coordinate plane, distance, and reflections</span>
+          <small>6.NS.C.6, 6.NS.C.8 - 8 missions</small>
+        </a>
+        <a
+          class="unit-card"
+          href="/games/3d/unit-10/"
+          style="--accent: #2563eb"
+        >
+          <span class="unit-chip">Unit 10</span>
+          <strong>Volume Vault Expedition</strong>
+          <span>Volume of rectangular prisms and fractional edge lengths</span>
+          <small>6.G.A.2 - 8 missions</small>
+        </a>
+      </section>
+    </main>
+    <script>
+      const canvas = document.getElementById("hub-canvas");
+      const gl = canvas.getContext("webgl", { antialias: true });
+      function size() {
+        const r = canvas.getBoundingClientRect();
+        const d = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = Math.max(1, Math.floor(r.width * d));
+        canvas.height = Math.max(1, Math.floor(r.height * d));
+        gl.viewport(0, 0, canvas.width, canvas.height);
+      }
+      function shader(t, s) {
+        const sh = gl.createShader(t);
+        gl.shaderSource(sh, s);
+        gl.compileShader(sh);
+        return sh;
+      }
+      const vs =
+        "attribute vec3 p; attribute vec3 c; varying vec3 v; uniform float time; void main(){ vec3 q=p; q.y += sin(time + p.x*1.7 + p.z)*0.08; gl_Position=vec4(q,1.0); v=c; }";
+      const fs =
+        "precision mediump float; varying vec3 v; void main(){ gl_FragColor=vec4(v,1.0); }";
+      const pr = gl.createProgram();
+      gl.attachShader(pr, shader(gl.VERTEX_SHADER, vs));
+      gl.attachShader(pr, shader(gl.FRAGMENT_SHADER, fs));
+      gl.linkProgram(pr);
+      gl.useProgram(pr);
+      const data = [];
+      for (let i = 0; i < 10; i++) {
+        const x = -0.86 + i * 0.19;
+        const h = 0.18 + (i % 5) * 0.085;
+        const col = [0.12 + i * 0.055, 0.48, 0.9 - i * 0.035];
+        data.push(
+          x,
+          -0.72,
+          0,
+          ...col,
+          x + 0.13,
+          -0.72,
+          0,
+          ...col,
+          x + 0.13,
+          -0.72 + h,
+          0,
+          ...col,
+          x,
+          -0.72,
+          0,
+          ...col,
+          x + 0.13,
+          -0.72 + h,
+          0,
+          ...col,
+          x,
+          -0.72 + h,
+          0,
+          ...col,
+        );
+      }
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+      const stride = 24;
+      const p = gl.getAttribLocation(pr, "p");
+      const c = gl.getAttribLocation(pr, "c");
+      gl.enableVertexAttribArray(p);
+      gl.enableVertexAttribArray(c);
+      gl.vertexAttribPointer(p, 3, gl.FLOAT, false, stride, 0);
+      gl.vertexAttribPointer(c, 3, gl.FLOAT, false, stride, 12);
+      const t = gl.getUniformLocation(pr, "time");
+      function draw(ms) {
+        size();
+        gl.clearColor(0.035, 0.067, 0.12, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.uniform1f(t, ms * 0.001);
+        gl.drawArrays(gl.TRIANGLES, 0, data.length / 6);
+        requestAnimationFrame(draw);
+      }
+      if (gl) requestAnimationFrame(draw);
+    </script>
+  </body>
 </html>
