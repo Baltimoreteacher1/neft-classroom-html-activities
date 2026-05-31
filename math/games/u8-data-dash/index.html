@@ -102,6 +102,7 @@
     <script>
       function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
       function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+      function round2(n){ return Math.round(n*100)/100; }
 
       var TOTAL=12, TIME=12;
       var state={};
@@ -114,49 +115,43 @@
         return { opts:shuffle(opts), correct:fmt(correct) };
       }
 
-      // MEAN questions: pick count values whose sum is divisible by count
-      // Strategy: pick (count-1) random values, compute last to make sum divisible
-      var meanTemplates = [
-        [4, 6, 8, 10],
-        [3, 7, 9, 5],
-        [2, 4, 6, 12, 6],
-        [5, 10, 15, 20],
-        [8, 12, 4, 16],
-        [6, 9, 3, 12, 15]
-      ];
-
-      // Pre-validated question banks to guarantee correctness
+      // MEAN questions: pick a target mean and count, then build numbers around it
       function buildMeanQuestion(){
-        // Build a fresh mean question: pick 4 or 5 numbers, force sum divisible by count
+        // guaranteed-integer approach: pick mean and count, generate (count-1) random offsets
+        // that sum to 0 (some +delta, some -delta), then all values = mean ± delta
         var count = (Math.random() < 0.5) ? 4 : 5;
+        var mean = rnd(4, 14); // target mean
         var nums = [];
-        var sumSoFar = 0;
+        // generate (count-1) values as mean + offset, track offset sum
+        var offsetSum = 0;
         for(var k=0; k<count-1; k++){
-          var v = rnd(2, 15);
-          nums.push(v);
-          sumSoFar += v;
+          var delta = rnd(-3, 3);
+          nums.push(mean + delta);
+          offsetSum += delta;
         }
-        // choose last value so sum % count === 0
-        var rem = sumSoFar % count;
-        var last;
-        if(rem === 0){ last = rnd(2,15); }
-        else { last = count - rem + rnd(0,3)*count; }
-        // keep last in reasonable range
-        if(last < 1) last += count;
-        if(last > 20) last = last % count + 2;
-        nums.push(last);
+        // last value corrects the offset so total sum = mean * count
+        nums.push(mean - offsetSum);
+        // verify all positive
+        var allPos = true;
+        for(var k=0; k<nums.length; k++){ if(nums[k] < 1){ allPos = false; break; } }
+        if(!allPos){
+          // fallback: simple evenly-spaced set
+          if(count===4){ nums=[mean-3,mean-1,mean+1,mean+3]; }
+          else { nums=[mean-4,mean-2,mean,mean+2,mean+4]; }
+        }
         var total = 0;
         for(var k=0; k<nums.length; k++) total += nums[k];
-        var mean = total / count;
-        // verify integer
-        if(mean !== Math.floor(mean) || mean < 1){
-          // fallback to a known good set
-          nums = [4, 6, 8, 10];
-          mean = 7;
+        var computedMean = total / count;
+        // safety check
+        if(computedMean !== Math.floor(computedMean) || computedMean < 1){
+          nums = [4, 6, 8, 10]; count = 4; total = 28; mean = 7; computedMean = 7;
         }
         var setStr = nums.join(", ");
-        var o = distinctOpts(mean, function(){ return mean + rnd(1,4)*(Math.random()<0.5?1:-1); }, String);
-        return { tag:"Mean", prompt:"Mean of "+setStr+" = ?", sub:"Add all values, then divide by the count ("+count+" numbers).", opts:o.opts, correct:o.correct, why:"Sum = "+total+"; "+total+" ÷ "+count+" = "+mean+"." };
+        var finalMean = computedMean;
+        var finalTotal = total;
+        var finalCount = count;
+        var o = distinctOpts(finalMean, function(){ return finalMean + rnd(1,4)*(Math.random()<0.5?1:-1); }, String);
+        return { tag:"Mean", prompt:"Mean of "+setStr+" = ?", sub:"Add all values, then divide by the count ("+finalCount+" numbers).", opts:o.opts, correct:o.correct, why:"Sum = "+finalTotal+"; "+finalTotal+" ÷ "+finalCount+" = "+finalMean+"." };
       }
 
       function buildMedianQuestion(){
