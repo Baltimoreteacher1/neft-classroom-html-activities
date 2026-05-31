@@ -4,7 +4,7 @@
   <link rel="stylesheet" href="/assets/shared.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>World Architect — Interactive Math Expedition</title>
+<title>World Architect Geometry Challenge</title>
 <style>
 :root {
   --navy:#1C2E42;
@@ -386,7 +386,7 @@ textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(56,127,132,
       <div class="logo-icon">🌍</div>
       <div>
         <div class="logo-text">World Architect</div>
-        <div class="logo-sub">Explore · Calculate · Submit</div>
+        <div class="logo-sub">Model · Formula · Submit</div>
       </div>
     </div>
     <div class="header-progress" id="header-progress">
@@ -408,17 +408,17 @@ textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(56,127,132,
     <div class="hero-banner">
       <div class="hero-content">
         <div>
-          <div class="hero-kicker">Grade 6 Geometry Expedition</div>
-          <h1 class="hero-title">World <span>Architect</span><br>Math Project</h1>
-          <p class="hero-tagline">Students choose real-world landmarks, open exploration links, collect observations, plug information into formulas, and create a Google Classroom–ready submission report.</p>
+          <div class="hero-kicker">Grade 6 Geometry Challenge</div>
+          <h1 class="hero-title">World <span>Architect</span><br>Geometry Challenge</h1>
+          <p class="hero-tagline">Students identify the solid, choose the correct formula, substitute dimensions, calculate accurately, and explain the units. Landmark context adds interest; the score comes from the geometry.</p>
         </div>
         <div class="hero-mission">
           <h3>Your Mission</h3>
           <ul>
-            <li>Choose your travel route from famous countries and landmarks.</li>
-            <li>Explore each place and record something interesting you notice.</li>
-            <li>Use the correct geometry formula to calculate area, surface area, or volume.</li>
-            <li>Download or copy a final report to submit in Google Classroom.</li>
+            <li>Choose a geometry route and open each mission card.</li>
+            <li>Read the solid, dimensions, and target measurement.</li>
+            <li>Use the correct formula, substitute values, calculate, and label units.</li>
+            <li>Download or copy a final math report for Google Classroom.</li>
           </ul>
         </div>
       </div>
@@ -1212,10 +1212,11 @@ const SHAPE_NOTES = {
 };
 
 const SENTENCE_STARTERS = [
-  "I noticed that ",
-  "One real detail I found is ",
-  "This landmark is interesting because ",
-  "The design makes me think about "
+  "The model card says this landmark can be approximated by ",
+  "The question asks me to find ",
+  "The dimensions I will use are ",
+  "The formula that matches this solid is ",
+  "My units are "
 ];
 
 const PRESETS = {
@@ -1576,9 +1577,9 @@ function formulaOptions(selected) {
 }
 function mapLinks(d) {
   return `
-    <span class="explore-link" role="note">Map/photo research: use teacher-approved sources</span>
-    <span class="explore-link" role="note">Search term: ${escapeHtml(d.query)}</span>
-    <span class="explore-link" role="note">Add one classroom-safe fact from your assignment materials</span>
+    <span class="explore-link" role="note">Model card data: use the dimensions and shape shown on this screen</span>
+    <span class="explore-link" role="note">Context term: ${escapeHtml(d.query)}</span>
+    <span class="explore-link" role="note">Optional context: add a teacher-approved fact only if it helps your explanation</span>
   `;
 }
 function dataTable(d) {
@@ -1617,19 +1618,19 @@ function renderMission() {
     <div class="mission-body">
       <div class="panel-grid">
         <div class="panel soft">
-          <h3>🧭 Explore the Place</h3>
+          <h3>Read the Model Card</h3>
           <p>${escapeHtml(d.explorePrompt)}</p>
           <div class="explore-links">${mapLinks(d)}</div>
           <div class="check-grid">
-            <label class="check-row"><input type="checkbox" id="check-opened" ${r.checks.opened ? "checked" : ""} onchange="updateCheck('opened',this.checked)"> I opened a map, image search, or fact page.</label>
-            <label class="check-row"><input type="checkbox" id="check-found" ${r.checks.found ? "checked" : ""} onchange="updateCheck('found',this.checked)"> I found one real detail about the landmark.</label>
-            <label class="check-row"><input type="checkbox" id="check-geometry" ${r.checks.geometry ? "checked" : ""} onchange="updateCheck('geometry',this.checked)"> I connected the place to a geometry idea.</label>
+            <label class="check-row"><input type="checkbox" id="check-opened" ${r.checks.opened ? "checked" : ""} onchange="updateCheck('opened',this.checked)"> I identified the solid and what the question asks.</label>
+            <label class="check-row"><input type="checkbox" id="check-found" ${r.checks.found ? "checked" : ""} onchange="updateCheck('found',this.checked)"> I copied the given dimensions with units.</label>
+            <label class="check-row"><input type="checkbox" id="check-geometry" ${r.checks.geometry ? "checked" : ""} onchange="updateCheck('geometry',this.checked)"> I connected the model to the correct geometry formula.</label>
           </div>
           <div class="lab-field">
-            <label for="observation">Travel Log: One interesting detail I found</label>
-            <div class="starter-note">Optional: drag or click a sentence starter, then finish it with your own real detail.</div>
+            <label for="observation">Geometry Notes: what I know before calculating</label>
+            <div class="starter-note">Drag or click a sentence starter, then finish it with the model, dimensions, or formula you will use.</div>
             <div class="starter-tray">${sentenceStarterButtons('observation')}</div>
-            <textarea id="observation" oninput="updateText('observation',this.value)" ondragover="allowStarterDrop(event)" ondrop="dropStarter(event,'observation')" placeholder="Write your own observation here after exploring the place.">${escapeHtml(r.observation)}</textarea>
+            <textarea id="observation" oninput="updateText('observation',this.value)" ondragover="allowStarterDrop(event)" ondrop="dropStarter(event,'observation')" placeholder="Write the solid, dimensions, and target measurement before calculating.">${escapeHtml(r.observation)}</textarea>
           </div>
           <div class="lab-field" style="margin-top:10px;">
             <label for="geometry-note">Geometry Connection</label>
@@ -1697,10 +1698,10 @@ function renderMission() {
       </div>
 
       <div class="nav-row">
-        <button class="ghost-btn" onclick="previousMission()" ${state.currentIndex === 0 ? "disabled" : ""}>← Previous Stop</button>
+        <button class="ghost-btn" onclick="previousMission()" ${state.currentIndex === 0 ? "disabled" : ""}>← Previous Mission</button>
         <div style="display:flex;gap:9px;flex-wrap:wrap;">
           <button class="ghost-btn" onclick="downloadProgressCheckpoint()">Save Checkpoint File</button>
-          <button class="primary-btn" onclick="nextMission()">${state.currentIndex === state.selectedIds.length-1 ? "Finish Expedition 🏁" : "Next Stop →"}</button>
+          <button class="primary-btn" onclick="nextMission()">${state.currentIndex === state.selectedIds.length-1 ? "Finish Challenge" : "Next Mission →"}</button>
         </div>
       </div>
     </div>
@@ -1906,9 +1907,9 @@ function buildPlainReport() {
 function buildHtmlReport() {
   const text = buildPlainReport();
   const escaped = escapeHtml(text).replace(/\n/g,"<br>");
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>World Architect Report — ${escapeHtml(studentDisplayName())}</title>
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>World Architect Geometry Challenge Report — ${escapeHtml(studentDisplayName())}</title>
   <style>body{font-family:Arial,sans-serif;line-height:1.45;margin:32px;color:#222} h1{color:#1C2E42} .box{border:2px solid #1C2E42;border-radius:12px;padding:18px}</style></head>
-  <body><h1>World Architect — Math Expedition Submission</h1><div class="box">${escaped}</div></body></html>`;
+  <body><h1>World Architect Geometry Challenge Submission</h1><div class="box">${escaped}</div></body></html>`;
 }
 function safeFilename() {
   const base = `World_Architect_${studentDisplayName()}_${state.student.period || "Period"}_${state.student.date || todayISO()}`;
@@ -1960,7 +1961,7 @@ function submitViaEmail() {
     $("teacher-email").focus();
     return;
   }
-  const subject = encodeURIComponent(`World Architect — ${studentDisplayName()} — ${state.student.period || "Period"}`);
+  const subject = encodeURIComponent(`World Architect Geometry Challenge — ${studentDisplayName()} — ${state.student.period || "Period"}`);
   const body = encodeURIComponent(buildPlainReport().slice(0, 12000));
   window.location.href = `mailto:${teacherEmail}?subject=${subject}&body=${body}`;
   $("email-confirm").style.display = "block";

@@ -266,7 +266,7 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
 .gl-fallback-note{display:none;font-size:.72rem;color:var(--muted);text-align:center;padding:8px 12px;margin:0;background:#fff9f0;border-top:1px solid rgba(217,121,93,.2)}
 .gl-fallback-active .gl-fallback-note{display:block!important}
 
-/* language-friendly layout + clarity */
+/* ESOL-friendly layout + clarity */
 .reader-guide{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.09);border-radius:16px;padding:12px 14px;margin:0 0 14px;font-size:.81rem;line-height:1.48;color:rgba(255,255,255,.93)}
 .reader-guide h2{margin:0 0 8px;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.72);font-weight:900}
 .reader-guide ol{margin:6px 0 0;padding-left:18px;display:grid;gap:7px}
@@ -282,83 +282,6 @@ button:focus-visible,.util:focus-visible,.tab-btn:focus-visible,.check:focus-vis
 </style>
 </head>
 <body>
-<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
-<style>
-#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
-#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
-.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
-@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
-.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
-.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
-.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
-.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
-.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
-.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
-.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
-.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
-.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
-.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
-.vso-dot.active{background:#6366F1;transform:scale(1.25)}
-.vso-dot.seen{background:#A5B4FC}
-</style>
-<div id="vocabSlideshowOverlay">
-<div class="vso-card">
-  <div class="vso-progress" id="vsoProgress">Word 1 of 5</div>
-  <div class="vso-svg-wrap" id="vsoSvg"></div>
-  <div class="vso-word" id="vsoWord"></div>
-  <div class="vso-def" id="vsoDef"></div>
-  <div class="vso-nav">
-    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
-    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
-    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
-  </div>
-  <div class="vso-dots" id="vsoDots"></div>
-</div>
-</div>
-<script>
-(function(){
-const VSO_ITEMS=[
-  {word: 'Area', def: 'The space inside a two-dimensional shape.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="60" y="80" width="180" height="140" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <pattern id="areaGrid" width="30" height="30" patternUnits="userSpaceOnUse"><rect width="30" height="30" fill="none" stroke="#93C5FD" stroke-width="1"/></pattern>   <rect x="60" y="80" width="180" height="140" fill="url(#areaGrid)"/>   <text x="150" y="160" text-anchor="middle" font-size="24" font-weight="800" fill="#1E40AF" font-family="sans-serif">A = l x w</text> </svg>'},
-  {word: 'Parallelogram', def: 'A shape with two pairs of parallel sides.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <polygon points="100,80 260,80 200,220 40,220" fill="#EDE9FE" stroke="#8B5CF6" stroke-width="3"/>   <line x1="40" y1="220" x2="200" y2="220" stroke="#DC2626" stroke-width="4"/>   <text x="120" y="248" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">base</text>   <line x1="100" y1="80" x2="100" y2="220" stroke="#10B981" stroke-width="3" stroke-dasharray="6,4"/>   <text x="80" y="155" font-size="16" font-weight="800" fill="#10B981" font-family="sans-serif">h</text> </svg>'},
-  {word: 'Base', def: 'The bottom side of a shape.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <polygon points="80,200 220,200 180,80" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <line x1="80" y1="200" x2="220" y2="200" stroke="#DC2626" stroke-width="5"/>   <text x="150" y="230" text-anchor="middle" font-size="20" font-weight="800" fill="#DC2626" font-family="sans-serif">base (b)</text> </svg>'},
-  {word: 'Height', def: 'The perpendicular distance from base to top.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <polygon points="80,200 220,200 180,80" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>   <line x1="180" y1="80" x2="180" y2="200" stroke="#10B981" stroke-width="4" stroke-dasharray="8,4"/>   <text x="200" y="145" font-size="20" font-weight="800" fill="#10B981" font-family="sans-serif">h</text> </svg>'},
-  {word: 'Triangle', def: 'A three-sided polygon. Area = 1/2 x base x height.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <polygon points="150,60 60,230 240,230" fill="#D1FAE5" stroke="#10B981" stroke-width="3"/>   <text x="150" y="260" text-anchor="middle" font-size="16" font-weight="800" fill="#10B981" font-family="sans-serif">A = 1/2 x b x h</text> </svg>'}
-];
-let vsoIdx=0,vsoSeen=new Set();
-function vsoRender(){
-  const it=VSO_ITEMS[vsoIdx];
-  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
-  document.getElementById('vsoWord').textContent=it.word;
-  document.getElementById('vsoDef').textContent=it.def;
-  document.getElementById('vsoSvg').innerHTML=it.svg;
-  vsoSeen.add(vsoIdx);
-  document.getElementById('vsoPrev').disabled=vsoIdx===0;
-  const isLast=vsoIdx===VSO_ITEMS.length-1;
-  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
-  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
-  const dots=document.getElementById('vsoDots');
-  dots.innerHTML='';
-  VSO_ITEMS.forEach(function(_,i){
-    const d=document.createElement('span');
-    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
-    d.onclick=function(){vsoIdx=i;vsoRender();};
-    dots.appendChild(d);
-  });
-}
-window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
-window.vsoClose=function(){
-  const el=document.getElementById('vocabSlideshowOverlay');
-  el.classList.add('vso-hidden');
-  setTimeout(function(){el.remove();},600);
-};
-vsoRender();
-})();
-</script>
-<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
-
-
 <a class="skip-link" href="#main-content">Skip to lesson content</a>
 <div class="app">
   <aside class="sidebar" aria-label="Notebook navigation">
@@ -915,17 +838,17 @@ vsoRender();
     </section>
 
     <section class="section" data-section="create" id="panel-create" role="tabpanel" aria-labelledby="tab-create">
-      <h2 class="print-title">Independent Practice: Create a Net</h2>
+      <h2 class="print-title">Net Builder Challenge</h2>
       <div class="card">
-        <h3>Independent Practice: Create a Net</h3>
+        <h3>Net Builder Challenge</h3>
         <div class="grid-main-side">
           <div>
             <label class="subtle" for="createSolid"><strong>Choose a solid to design:</strong></label>
-            <select id="createSolid" data-save="createSolid" class="select"><option value="cube">Cube</option><option value="rectangular_prism">Rectangular prism</option><option value="square_pyramid">Square pyramid</option></select>
-            <p class="subtle">Click the grid to build your net. For a square pyramid, use one square as the base and describe where the triangular faces attach.</p>
+            <select id="createSolid" data-save="createSolid" class="select"><option value="cube">Cube</option><option value="rectangular_prism">Rectangular prism</option></select>
+            <p class="subtle">Win condition: build one connected net with exactly 6 faces, then explain how it folds. Every face must touch another by a full edge. Avoid isolated squares and 2-by-2 blocks that would overlap.</p>
             <div class="builder" id="createGrid" aria-label="Clickable design a net grid"></div>
-            <textarea id="createExplain" data-save="createExplain" class="writebox short" placeholder="My solid is a ___ because ___. One thing I checked was ___."></textarea>
-            <div class="check-row"><button class="check" onclick="checkCreate()">Check My Creation</button><button class="check light" onclick="clearGrid('create')">Clear Grid</button></div><div class="feedback" id="createFeedback"></div>
+            <textarea id="createExplain" data-save="createExplain" class="writebox short" placeholder="My net has 6 faces. It folds into a ___ because ___. I checked that ___."></textarea>
+            <div class="check-row"><button class="check" onclick="checkCreate()">Check My Net</button><button class="check light" onclick="clearGrid('create')">Clear Grid</button></div><div class="feedback" id="createFeedback"></div>
           </div>
           <div class="help-stack">
             <div class="help-card"><h4>Hints / Help</h4><ul id="dynamicHints"><li>Choose a solid first.</li><li>Count how many faces your solid needs.</li><li>Keep every face attached by a full edge.</li></ul></div>
@@ -963,7 +886,6 @@ vsoRender();
 <script type="module">
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 function showRasterFallback(wrap, reason) {
   wrap.classList.add("gl-fallback-active");
@@ -1006,9 +928,6 @@ function initCube(wrap) {
   renderer.toneMappingExposure = 1.08;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.035).texture;
 
   const materials = [
     new THREE.MeshPhysicalMaterial({
@@ -1239,10 +1158,9 @@ function checkPyramid(){ const u=text('pyramidUse'), b=text('pyramidBase'), f=te
 function checkBuilder(){ const solid=$('builderSolid').value; const n=count(grids.builder); if(n===0) return setFeedback('builderFeedback','hint','Hint: Click squares to build the flat net first.'); if(n<6) return setFeedback('builderFeedback','hint','Hint: A cube or rectangular prism needs 6 faces. Add more connected faces.'); if(n>6) return setFeedback('builderFeedback','hint','Hint: This solid needs 6 faces. Remove extra faces before checking the fold structure.'); if(!connected(grids.builder)) return setFeedback('builderFeedback','hint','Hint: All faces in a net should be connected along edges. Move any separate pieces so they touch by a full edge.'); if(solid==='cube' && has2x2(grids.builder)) return setFeedback('builderFeedback','hint','Hint: A cube net usually should not contain a 2-by-2 block because faces can overlap when folded. Try a strip with side faces and flaps.'); const exp=text('builderExplain'); if(exp.trim().length<15) return setFeedback('builderFeedback','hint','Your face count and connection look promising. Add an explanation: which faces touch when it folds?'); setFeedback('builderFeedback','good','Your net has the core structure: 6 connected faces and a written explanation. Nice work checking the fold structure.'); }
 function checkError(){ const a=text('errorWrong')+' '+text('errorFix'); if(a.trim().length<20) return setFeedback('errorFeedback','hint','Hint: Explain what would happen when the faces fold. Look for overlap or a connected arrangement that cannot become a cube.'); if(hasAny(a,['overlap','2 by 3','2x3','block','not fold','cannot fold','wrong places']) && hasAny(a,['move','flap','cross','strip','fix','connect','edge'])) return setFeedback('errorFeedback','good','Strong error analysis. You identified a structural problem and described how to fix the arrangement.'); setFeedback('errorFeedback','hint','Hint: Use structure language. Tell whether faces would overlap or connect in the wrong places, then describe moving one or more faces.'); }
 function checkDiscuss(){ const a=text('discussAnswer'); if(a.trim().length<15) return setFeedback('discussFeedback','hint','Hint: Use the frame: This net makes a ___ because ___.'); if(hasAny(a,['rectangular prism','prism']) && hasAny(a,['face','faces','rectangle','fold','6','six'])) return setFeedback('discussFeedback','good','Good reasoning. You used evidence from the faces and fold structure to name the solid.'); setFeedback('discussFeedback','hint','Hint: Count the faces and name their shapes. Then decide what solid has those faces.'); }
-function checkCreate(){ const solid=$('createSolid').value; const n=count(grids.create); const exp=text('createExplain'); if(solid==='square_pyramid'){ if(n<1) return setFeedback('createFeedback','hint','Hint: Start by placing the square base on the grid. Then describe where the triangular faces attach.'); if(!hasAny(exp,['triangle','triangular','4','four','base','fold'])) return setFeedback('createFeedback','hint','Hint: For a square pyramid, your explanation should include the base and four triangular faces attached around it.'); return setFeedback('createFeedback','good','Good square-pyramid design explanation. You identified a base and explained how triangular faces attach and fold.'); }
- if(n<6) return setFeedback('createFeedback','hint','Hint: This solid needs 6 faces. Add connected faces until your net has every face.'); if(n>6) return setFeedback('createFeedback','hint','Hint: This solid needs exactly 6 faces. Remove extra faces.'); if(!connected(grids.create)) return setFeedback('createFeedback','hint','Hint: A net should be one connected flat pattern. Move any separated face so it shares a full edge.'); if(solid==='cube' && has2x2(grids.create)) return setFeedback('createFeedback','hint','Hint: For a cube net, avoid a 2-by-2 block. Try a strip of squares with flaps attached.'); if(exp.trim().length<15 || !hasAny(exp,['face','fold','edge','net','solid'])) return setFeedback('createFeedback','hint','Your design is close. Add an explanation using net, face, edge, or fold.'); setFeedback('createFeedback','good','Your creation has the main requirements: correct face count, connected faces, and an explanation of the fold structure.'); }
+function checkCreate(){ const solid=$('createSolid').value; const n=count(grids.create); const exp=text('createExplain'); if(n<6) return setFeedback('createFeedback','hint','Hint: This solid needs 6 faces. Add connected faces until your net has every face.'); if(n>6) return setFeedback('createFeedback','hint','Hint: This solid needs exactly 6 faces. Remove extra faces.'); if(!connected(grids.create)) return setFeedback('createFeedback','hint','Hint: A net should be one connected flat pattern. Move any separated face so it shares a full edge.'); if(solid==='cube' && has2x2(grids.create)) return setFeedback('createFeedback','hint','Hint: For a cube net, avoid a 2-by-2 block. Try a strip of squares with flaps attached.'); if(exp.trim().length<15 || !hasAny(exp,['face','fold','edge','net','solid'])) return setFeedback('createFeedback','hint','Your design is close. Add an explanation using net, face, edge, or fold.'); setFeedback('createFeedback','good','Challenge complete. Your net has 6 connected faces and an explanation that uses face, edge, or fold reasoning.'); }
 function checkExit(){ const a=text('exitAnswer')+' '+text('exitVocab'); if(a.trim().length<20) return setFeedback('exitFeedback','hint','Hint: Name the solid and explain using the six rectangular faces.'); if(hasAny(a,['rectangular prism','prism']) && hasAny(a,['rectangle','rectangles','6','six','faces','net'])) return setFeedback('exitFeedback','good','Correct. Your answer connects the six rectangular faces to a rectangular prism.'); setFeedback('exitFeedback','hint','Hint: The faces are rectangles: long rectangles, short rectangles, and matching end rectangles. What prism is made from rectangular faces?'); }
-function updateHints(){ const solid=$('createSolid')?.value; const box=$('dynamicHints'); if(!box) return; let items; if(solid==='cube') items=['A cube needs 6 square faces.','Keep the squares connected by full edges.','Avoid a 2-by-2 block because faces may overlap.','Try a strip of 4 squares with 2 flaps.']; else if(solid==='rectangular_prism') items=['A rectangular prism needs 6 faces.','Think in pairs: top/bottom, front/back, left/right.','Use a strip for side faces, then attach matching ends.','Explain which faces touch when folded.']; else items=['A square pyramid has 1 square base.','It also has 4 triangular faces.','Attach triangles around the base.','Use your explanation box to describe the triangles.']; box.innerHTML=items.map(i=>`<li>${i}</li>`).join(''); }
+function updateHints(){ const solid=$('createSolid')?.value; const box=$('dynamicHints'); if(!box) return; let items; if(solid==='cube') items=['A cube needs 6 square faces.','Keep the squares connected by full edges.','Avoid a 2-by-2 block because faces may overlap.','Try a strip of 4 squares with 2 flaps.']; else items=['A rectangular prism needs 6 faces.','Think in pairs: top/bottom, front/back, left/right.','Use a strip for side faces, then attach matching ends.','Explain which faces touch when folded.']; box.innerHTML=items.map(i=>`<li>${i}</li>`).join(''); }
 function downloadResponses(){
   const values={}; document.querySelectorAll('[data-save]').forEach(el=>{ const k=el.dataset.save; if(el.type==='radio'){ if(el.checked) values[k]=el.value; } else if(el.type==='checkbox') values[k]=el.checked; else values[k]=el.value; });
   values.tryitGrid=[...grids.tryit]; values.builderGrid=[...grids.builder]; values.createGrid=[...grids.create];
