@@ -465,6 +465,9 @@
                 <div class="summary-math" id="ratio-math-str" style="margin-top: 14px;">
                     2 : 3 = 4 : 6
                 </div>
+                <button class="btn btn-secondary" id="btn-play-audio" style="margin-top: 12px; width: 100%; display: flex; justify-content: center; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.85rem;" onclick="AudioSynth.playRatio(STATE.ratioA, STATE.ratioB)">
+                    🎵 Play Ratio Chord
+                </button>
             </div>
         </div>
 
@@ -476,9 +479,23 @@
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     <span id="lbl-card-numberline">Double Number Line Workspace (Click & Drag Indicators)</span>
                 </div>
-                <svg id="svg-numberline" class="svg-viewport" viewBox="0 0 500 160" style="background: white;">
-                    <!-- Double Number Line programmatically generated -->
-                </svg>
+                <div class="canvas-container" style="position: relative; width: 100%; overflow: hidden; border-radius: var(--radius-md);">
+                    <svg id="svg-numberline" class="svg-viewport" viewBox="0 0 500 160" style="background: white; width: 100%; display: block;">
+                        <!-- Double Number Line programmatically generated -->
+                    </svg>
+                    <canvas id="sketchpad-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                </div>
+                <!-- Drawing Glassmorphic Toolbar -->
+                <div class="drawing-toolbar" style="display: flex; gap: 8px; justify-content: center; align-items: center; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 8px; border-radius: var(--radius-sm); backdrop-filter: blur(5px);">
+                    <button class="btn btn-secondary" id="btn-draw-toggle" onclick="toggleDrawingMode()">✏️ Draw</button>
+                    <div id="drawing-tools" style="display: none; gap: 8px; align-items: center;">
+                        <button class="btn" onclick="setBrushColor('#0ea5e9')" style="background: #0ea5e9; width: 24px; height: 24px; border-radius: 50%; padding: 0; border: 2px solid transparent;" id="color-btn-0ea5e9" title="Blue"></button>
+                        <button class="btn" onclick="setBrushColor('#10b981')" style="background: #10b981; width: 24px; height: 24px; border-radius: 50%; padding: 0; border: 2px solid transparent;" id="color-btn-10b981" title="Green"></button>
+                        <button class="btn" onclick="setBrushColor('#f59e0b')" style="background: #f59e0b; width: 24px; height: 24px; border-radius: 50%; padding: 0; border: 2px solid transparent;" id="color-btn-f59e0b" title="Amber"></button>
+                        <button class="btn btn-secondary" onclick="setBrushColor('eraser')" id="btn-eraser" style="padding: 4px 10px; font-size: 0.8rem;">🧽 Eraser</button>
+                        <button class="btn btn-secondary" onclick="clearCanvas()" style="padding: 4px 10px; font-size: 0.8rem;">🗑️ Clear</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Split View: Visual Scaling Grid & Percent Liquid Beaker -->
@@ -513,6 +530,16 @@
                     <span id="esol-starter">Adjust the laboratory sliders to see rates in action!</span>
                     <div class="translation-sub" id="esol-starter-trans">¡Ajuste los controles deslizantes del laboratorio para ver las tasas en acción!</div>
                 </div>
+            </div>
+
+            <!-- Journal Reflections Card -->
+            <div class="card" style="margin-top: 8px;">
+                <h2 style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 16px;">
+                    <span id="lbl-journal-title">📝 Journal & Reflections</span>
+                    <span id="journal-status" style="font-size: 0.8rem; font-weight: normal; color: var(--secondary); opacity: 0; transition: opacity 0.3s;">Saved!</span>
+                </h2>
+                <p style="font-size: 0.85rem; color: var(--gray-400); margin-bottom: 12px;" id="lbl-journal-prompt">Write down what happens to the pitch and the beaker percentage when you double the base ratio.</p>
+                <textarea id="journal-input" placeholder="Type your observation here... / Escriba su observación aquí..." style="width: 100%; min-height: 90px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: white; padding: 12px; font-family: var(--font-main); font-size: 0.9rem; resize: vertical;" oninput="saveJournal()"></textarea>
             </div>
         </div>
     </main>
@@ -592,7 +619,11 @@
                 'starter-default': 'For every {a} beakers, we have exactly {b} flasks. This creates a simplified rate of {rate} flasks per beaker.',
                 'starter-default-trans': 'Por cada {a} vasos, tenemos exactamente {b} matraces. Esto crea una tasa simplificada de {rate} matraces por vaso.',
                 'beaker-desc': 'The beaker is filled to {percent}%. This represents the fraction {fraction}, or {decimal} as a decimal value.',
-                'beaker-desc-trans': 'El vaso está lleno al {percent}%. Esto representa la fracción {fraction}, o {decimal} en formato decimal.'
+                'beaker-desc-trans': 'El vaso está lleno al {percent}%. Esto representa la fracción {fraction}, o {decimal} en formato decimal.',
+                'journal-title': '📝 Journal & Reflections',
+                'journal-prompt': 'Write down what happens to the pitch and the beaker percentage when you double the base ratio.',
+                'journal-saved': 'Saved!',
+                'journal-placeholder': 'Type your observation here...'
             },
             es: {
                 'lab-config': '🔧 Configuración del Laboratorio',
@@ -608,13 +639,30 @@
                 'starter-default': 'Por cada {a} vasos, tenemos exactamente {b} matraces. Esto crea una tasa simplificada de {rate} matraces por vaso.',
                 'starter-default-trans': 'For every {a} beakers, we have exactly {b} flasks. This creates a simplified rate of {rate} flasks per beaker.',
                 'beaker-desc': 'El vaso está lleno al {percent}%. Esto representa la fracción {fraction}, o {decimal} en formato decimal.',
-                'beaker-desc-trans': 'The beaker is filled to {percent}%. This represents the fraction {fraction}, or {decimal} as a decimal value.'
+                'beaker-desc-trans': 'The beaker is filled to {percent}%. This represents the fraction {fraction}, or {decimal} as a decimal value.',
+                'journal-title': '📝 Diario de Laboratorio y Reflexiones',
+                'journal-prompt': 'Escriba lo que sucede con el tono y el porcentaje del vaso cuando duplica la relación base.',
+                'journal-saved': '¡Guardado!',
+                'journal-placeholder': 'Escriba su observación aquí...'
             }
         };
 
+        let audioTimeout = null;
         function transitionState(updatedFields) {
+            const oldRatioA = STATE.ratioA;
+            const oldRatioB = STATE.ratioB;
+            const oldMult = STATE.multiplier;
+
             Object.assign(STATE, updatedFields);
             renderUI();
+
+            // Trigger harmonic pitch on base ratio / multiplier change
+            if (STATE.ratioA !== oldRatioA || STATE.ratioB !== oldRatioB || STATE.multiplier !== oldMult) {
+                if (audioTimeout) clearTimeout(audioTimeout);
+                audioTimeout = setTimeout(() => {
+                    AudioSynth.playRatio(STATE.ratioA, STATE.ratioB);
+                }, 120);
+            }
         }
 
         // ==========================================
@@ -754,6 +802,9 @@
             document.getElementById('lbl-card-scaling').innerText = t['card-scaling'];
             document.getElementById('lbl-card-beaker').innerText = t['card-beaker'];
             document.getElementById('lbl-esol-title').innerText = t['esol-title'];
+            document.getElementById('lbl-journal-title').innerText = t['journal-title'];
+            document.getElementById('lbl-journal-prompt').innerText = t['journal-prompt'];
+            document.getElementById('journal-input').placeholder = t['journal-placeholder'];
 
             // Compute exact unit rates
             const unitA = (STATE.ratioB / STATE.ratioA).toFixed(2);
@@ -1007,6 +1058,235 @@
             trans.innerHTML = `<div>${rateTransFrame}</div><div style="margin-top:4px; border-top:1px dashed rgba(16,185,129,0.1); padding-top:4px;">${beakerTransFrame}</div>`;
         }
 
+        // ==========================================
+        // PREMIUM TRIAD UPGRADES ADDITIONS
+        // ==========================================
+
+        // 1. Harmonic Web Audio Pitch Synthesizer
+        const AudioSynth = {
+            ctx: null,
+            oscA: null,
+            oscB: null,
+            gainNodeA: null,
+            gainNodeB: null,
+            masterGain: null,
+            
+            init() {
+                if (this.ctx) return;
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                    
+                    this.masterGain = this.ctx.createGain();
+                    this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                    this.masterGain.connect(this.ctx.destination);
+                    
+                    this.gainNodeA = this.ctx.createGain();
+                    this.gainNodeA.gain.setValueAtTime(0.5, this.ctx.currentTime);
+                    this.gainNodeA.connect(this.masterGain);
+                    
+                    this.gainNodeB = this.ctx.createGain();
+                    this.gainNodeB.gain.setValueAtTime(0.5, this.ctx.currentTime);
+                    this.gainNodeB.connect(this.masterGain);
+                } catch (e) {
+                    console.warn("Web Audio not supported in this browser", e);
+                }
+            },
+            
+            playRatio(ratioA, ratioB) {
+                this.init();
+                if (!this.ctx) return;
+                
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                
+                this.stop();
+                
+                const baseFreq = 180; // beautiful base pitch
+                const freqA = baseFreq * ratioA;
+                const freqB = baseFreq * ratioB;
+                
+                this.oscA = this.ctx.createOscillator();
+                this.oscA.type = 'triangle'; // rich, woodwind-like sound
+                this.oscA.frequency.setValueAtTime(freqA, this.ctx.currentTime);
+                this.oscA.connect(this.gainNodeA);
+                
+                this.oscB = this.ctx.createOscillator();
+                this.oscB.type = 'triangle';
+                this.oscB.frequency.setValueAtTime(freqB, this.ctx.currentTime);
+                this.oscB.connect(this.gainNodeB);
+                
+                this.oscA.start();
+                this.oscB.start();
+                
+                // Graceful soft attack
+                this.masterGain.gain.cancelScheduledValues(this.ctx.currentTime);
+                this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.masterGain.gain.linearRampToValueAtTime(0.2, this.ctx.currentTime + 0.15);
+                
+                // Fade out decay
+                this.masterGain.gain.setValueAtTime(0.2, this.ctx.currentTime + 1.2);
+                this.masterGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.6);
+                
+                setTimeout(() => {
+                    this.stop();
+                }, 1800);
+            },
+            
+            stop() {
+                try {
+                    if (this.oscA) {
+                        this.oscA.stop();
+                        this.oscA.disconnect();
+                        this.oscA = null;
+                    }
+                    if (this.oscB) {
+                        this.oscB.stop();
+                        this.oscB.disconnect();
+                        this.oscB = null;
+                    }
+                } catch (e) {}
+            }
+        };
+
+        // 2. Transparent Annotation Canvas Overlay & Drawing Methods
+        let isDrawing = false;
+        let drawingActive = false;
+        let lastX = 0;
+        let lastY = 0;
+        let brushColor = '#0ea5e9';
+        let brushSize = 3;
+
+        function toggleDrawingMode() {
+            drawingActive = !drawingActive;
+            const canvas = document.getElementById('sketchpad-canvas');
+            const toggleBtn = document.getElementById('btn-draw-toggle');
+            const tools = document.getElementById('drawing-tools');
+
+            if (drawingActive) {
+                canvas.style.pointerEvents = 'auto';
+                toggleBtn.innerText = '🖱️ Interact';
+                toggleBtn.style.background = 'var(--accent)';
+                tools.style.display = 'flex';
+                setBrushColor(brushColor);
+            } else {
+                canvas.style.pointerEvents = 'none';
+                toggleBtn.innerText = '✏️ Draw';
+                toggleBtn.style.background = 'rgba(255,255,255,0.05)';
+                tools.style.display = 'none';
+            }
+        }
+
+        function initCanvas() {
+            const canvas = document.getElementById('sketchpad-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.drawImage(canvas, 0, 0);
+
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, canvas.width, canvas.height);
+            }
+
+            window.addEventListener('resize', resize);
+            setTimeout(resize, 200);
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            function startDraw(e) {
+                if (!drawingActive) return;
+                isDrawing = true;
+                const pos = getPos(e);
+                lastX = pos.x;
+                lastY = pos.y;
+            }
+
+            function draw(e) {
+                if (!isDrawing || !drawingActive) return;
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.strokeStyle = brushColor === 'eraser' ? '#ffffff' : brushColor;
+                ctx.lineWidth = brushColor === 'eraser' ? 15 : brushSize;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+                lastX = pos.x;
+                lastY = pos.y;
+            }
+
+            function endDraw() {
+                isDrawing = false;
+            }
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('mouseleave', endDraw);
+
+            canvas.addEventListener('touchstart', startDraw);
+            canvas.addEventListener('touchmove', draw);
+            canvas.addEventListener('touchend', endDraw);
+        }
+
+        function setBrushColor(color) {
+            brushColor = color;
+            document.querySelectorAll('#drawing-tools button').forEach(b => {
+                b.style.borderColor = 'transparent';
+            });
+            if (color !== 'eraser') {
+                const btn = document.getElementById(`color-btn-${color.replace('#','')}`);
+                if (btn) btn.style.borderColor = '#ffffff';
+            } else {
+                document.getElementById('btn-eraser').style.borderColor = '#ffffff';
+            }
+        }
+
+        function clearCanvas() {
+            const canvas = document.getElementById('sketchpad-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // 3. Alchemical Journal reflections sync
+        function saveJournal() {
+            const text = document.getElementById('journal-input').value;
+            localStorage.setItem('ratiolab_notes', text);
+            
+            const status = document.getElementById('journal-status');
+            status.style.opacity = '1';
+            if (window.journalTimeout) clearTimeout(window.journalTimeout);
+            window.journalTimeout = setTimeout(() => {
+                status.style.opacity = '0';
+            }, 1500);
+        }
+
+        function loadJournal() {
+            const saved = localStorage.getItem('ratiolab_notes');
+            if (saved !== null) {
+                document.getElementById('journal-input').value = saved;
+            }
+        }
+
         // Helper to reduce fraction
         function reduceFraction(numerator, denominator) {
             if (numerator === 0) return "0";
@@ -1065,6 +1345,24 @@
                     throw new Error("Assertion failed: fraction reduction failed.");
                 }
 
+                // Assert 6: Canvas presence and properties
+                const canvas = document.getElementById('sketchpad-canvas');
+                logDiag(`✓ Validating sketchpad canvas overlay presence: ${!!canvas}`);
+                if (!canvas) throw new Error("Assertion failed: sketchpad canvas overlay not found in DOM.");
+
+                // Assert 7: Journal reflections system
+                localStorage.setItem('ratiolab_notes', 'Self-Test reflection check');
+                const savedRef = localStorage.getItem('ratiolab_notes');
+                logDiag(`✓ Validating reflections LocalStorage persistence: ${savedRef}`);
+                if (savedRef !== 'Self-Test reflection check') {
+                    throw new Error("Assertion failed: reflections notepad failed state sync.");
+                }
+                localStorage.removeItem('ratiolab_notes'); // clean up
+
+                // Assert 8: Web Audio support check
+                const hasAudio = !!(window.AudioContext || window.webkitAudioContext);
+                logDiag(`✓ Checked Web Audio API system support: ${hasAudio}`);
+
                 // Reset back to original
                 transitionState({ ratioA: 2, ratioB: 3, multiplier: 2, beakerPercent: 60, activeMarkerVal: 4 });
                 document.getElementById('slider-ratio-a').value = 2;
@@ -1082,6 +1380,8 @@
         window.addEventListener('DOMContentLoaded', () => {
             renderUI();
             setupDNDEvents();
+            initCanvas();
+            loadJournal();
         });
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
