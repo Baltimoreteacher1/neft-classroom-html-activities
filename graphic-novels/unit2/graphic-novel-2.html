@@ -1,0 +1,1628 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #2 · Master Chef Kitchen: The Recipe Rescue</title>
+    <style>
+      :root {
+        --bg: #1c0a06;
+        --ink: #fff4ec;
+        --muted: #e0b99c;
+        --accent: #ff8a3d;
+        --accent2: #ffb24d;
+        --panel: #3a160d;
+        --line: #6e3119;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --gold: #ffd166;
+        --bubble: #2a110a;
+        --bubble-ink: #fff4ec;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: radial-gradient(
+          900px 600px at 80% -10%,
+          #4a1c10,
+          var(--bg) 65%
+        );
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(28, 10, 6, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent2);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #160805;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #320f08;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent2), #ff7a2d);
+        color: #2a1100;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #160805;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent2);
+      }
+
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: var(--accent);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.06rem;
+      }
+      .bubble.caption {
+        background: #160805;
+        border-style: dashed;
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #6e3119;
+      }
+      .dots i.on {
+        background: var(--accent2);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #ff7a2d);
+        color: #2a1100;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .challenge {
+        margin-top: 16px;
+        background: #320f08;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent2);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .challenge.bonus {
+        border-color: var(--gold);
+        background: #1c1606;
+        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      }
+      .challenge.bonus h3 {
+        color: var(--gold);
+      }
+      .bonus-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #1a1200;
+        background: var(--gold);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .bonus-note {
+        font-size: 0.85rem;
+        color: #ffe6a8;
+        margin-bottom: 8px;
+      }
+      .skip-bonus {
+        min-height: 40px;
+        margin-top: 10px;
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .skip-bonus:hover {
+        color: var(--ink);
+        border-color: var(--accent2);
+      }
+      .skip-bonus:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #3a160d;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .choice .note {
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        display: block;
+        margin-top: 4px;
+        color: #ffcf9e;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #2a0d02;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 660px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent2), #ff7a2d);
+        color: #2a1100;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #2a1100;
+        background: linear-gradient(135deg, var(--accent2), #ff7a2d);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #320f08;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        color: var(--accent2);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #320f08;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"
+          ><span class="v">#2</span> Master Chef Kitchen: The Recipe
+          Rescue</span
+        >
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Kitchen progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: The Locked Pantry
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: The Big Order
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Final Dish
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- COVER -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit2/cover.png"
+            alt="Kai, a young chef, strikes a hero pose in a glowing futuristic kitchen with floating order tickets"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
+        <h2>Master Chef Kitchen: The Recipe Rescue</h2>
+        <p>
+          The flagship restaurant Aurora is slammed on its biggest night, and
+          every locked station now answers only to precise fraction math. As the
+          rising chef <b>Kai</b>, you must interpret division of fractions,
+          portion ingredients, and scale recipes under pressure &mdash; before
+          the dinner service collapses. Watch for the optional
+          <b>&#11088; Chef&rsquo;s Challenge</b> in each act for extra credit.
+        </p>
+        <button class="start" id="start-btn">Begin Service &#128722;</button>
+      </section>
+
+      <!-- ACT 1 -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act">Act 1 &middot; Lesson 2-1</span>
+          <h2>The Locked Pantry</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit2/kitchen-orders.png"
+            alt="Kai stands at a prep station looking at floating order tickets and a locked pantry door"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <!-- Core lock 1: interpret the model for 5 ÷ 1/3 -->
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>&#127858; Order Ticket &mdash; Interpret the Model</h3>
+          <p class="prompt">
+            The reduction simmering on the pass measures <b>5 cups</b>, and each
+            tasting spoon takes <b>1/3 cup</b>. Which statement correctly
+            interprets <b>5 &divide; 1/3</b>?
+          </p>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="false">
+              It splits 5 cups into 3 equal portions of 5/3 cup each.
+              <span class="note"
+                >(that models 5 &divide; 3, not 5 &divide; 1/3)</span
+              >
+            </button>
+            <button class="choice" data-correct="true">
+              It counts how many 1/3-cup spoons fill 5 cups &rarr; 5 &times; 3 =
+              15.
+              <span class="note"
+                >(measurement/quotative meaning of ÷ by a fraction)</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              It finds 1/3 of 5 cups, giving 5/3 cup.
+              <span class="note">(that is 5 &times; 1/3, multiplication)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <!-- Core lock 2: solve 7/8 ÷ 1/4 -->
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#128272; Pantry Cipher &mdash; Solve Precisely</h3>
+          <p class="prompt">
+            To release the pantry, portion <b>7/8 cup</b> of glaze into
+            <b>1/4-cup</b> brushes. Evaluate <b>7/8 &divide; 1/4</b> and report
+            it as a mixed number.
+          </p>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              7/32
+              <span class="note"
+                >(that is 7/8 &times; 1/4 &mdash; multiplied instead of
+                divided)</span
+              >
+            </button>
+            <button class="choice" data-correct="true">
+              3 1/2 brushes
+              <span class="note">(7/8 &times; 4/1 = 28/8 = 7/2 = 3 1/2)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              4 brushes
+              <span class="note">(that ignores the numerator 7; 7/8 ≠ 1)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <!-- Chef's Challenge (OPTIONAL, non-gating) -->
+        <div class="challenge bonus" id="bonus1" style="display: none">
+          <span class="bonus-tag">&#11088; Chef&rsquo;s Challenge</span>
+          <p class="bonus-note">
+            Optional extra credit &mdash; the pantry is already open. Try it, or
+            skip ahead to Act 2 any time.
+          </p>
+          <h3>The Reverse Recipe</h3>
+          <p class="prompt">
+            A chef divided a batch of dressing into <b>1/6-cup</b> ramekins and
+            filled exactly <b>9</b> of them. How much dressing was there to
+            start? (Think: what total &divide; 1/6 = 9?)
+          </p>
+          <div class="choices" id="choicesB1">
+            <button class="choice" data-correct="false">
+              54 cups
+              <span class="note"
+                >(that is 9 &times; 6, ignoring the 1/6 is a SIXTH)</span
+              >
+            </button>
+            <button class="choice" data-correct="true">
+              1 1/2 cups
+              <span class="note">(9 &times; 1/6 = 9/6 = 3/2 = 1 1/2)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              3/2 of a ramekin... wait, 1/54 cup
+              <span class="note">(that is 9 &divide; 6 mis-set-up)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fbB1"></div>
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">
+            Open the pantry &#128722;
+          </button>
+        </div>
+      </section>
+
+      <!-- ACT 2 -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Complete Act 1 to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act">Act 2 &middot; Lesson 2-2</span>
+            <h2>The Big Order</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit2/scaling-recipe.png"
+              alt="Kai pours flour into measuring cups while scaling up a recipe"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- Core lock 1: whole ÷ fraction, non-unit -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#127859; Service Lock &mdash; Portioning the Pot</h3>
+            <p class="prompt">
+              The banquet pot holds <b>9 cups</b> of risotto and each
+              entr&eacute;e plates <b>3/4 cup</b>. How many full entr&eacute;es
+              can Kai send? Evaluate <b>9 &divide; 3/4</b>.
+            </p>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="false">
+                6 3/4 plates
+                <span class="note"
+                  >(that is 9 &times; 3/4 &mdash; multiplication)</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                12 plates
+                <span class="note">(9 &times; 4/3 = 36/3 = 12)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                3 plates
+                <span class="note"
+                  >(that is 9 &divide; 3, dropping the /4)</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- Core lock 2: scaling a recipe (fraction ÷ fraction) -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>&#129360; Scaling Lock &mdash; Stretch the Recipe</h3>
+            <p class="prompt">
+              A sauce recipe needs <b>2/3 cup</b> of cream, but Kai only wants
+              to make <b>1/6-cup</b> tasting portions for the judges. How many
+              tasting portions does one recipe yield? Evaluate
+              <b>2/3 &divide; 1/6</b>.
+            </p>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="true">
+                4 portions
+                <span class="note">(2/3 &times; 6/1 = 12/3 = 4)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                1/9 of a portion
+                <span class="note"
+                  >(that is 2/3 &times; 1/6 &mdash; multiplied)</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                9 portions
+                <span class="note">(reciprocal of the wrong fraction)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <!-- Chef's Challenge (OPTIONAL, non-gating) -->
+          <div class="challenge bonus" id="bonus2" style="display: none">
+            <span class="bonus-tag">&#11088; Chef&rsquo;s Challenge</span>
+            <p class="bonus-note">
+              Optional extra credit &mdash; the order is already sent. Solve it
+              or jump straight to the Final Dish.
+            </p>
+            <h3>The Mixed-Number Scale-Down</h3>
+            <p class="prompt">
+              Kai has <b>2 1/2 cups</b> of broth and needs <b>5/8-cup</b> bowls.
+              How many bowls can be filled exactly? Evaluate
+              <b>2 1/2 &divide; 5/8</b>.
+            </p>
+            <div class="choices" id="choicesB2">
+              <button class="choice" data-correct="false">
+                1 9/16 bowls
+                <span class="note"
+                  >(that is 5/2 &times; 5/8 &mdash; multiplied)</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                4 bowls
+                <span class="note">(5/2 &times; 8/5 = 40/10 = 4)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                3 1/8 bowls
+                <span class="note">(forgot to convert 2 1/2 to 5/2 first)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbB2"></div>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Send the order &#9889;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINAL -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Complete Act 2 to unlock the Final Dish.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final Dish &middot; Boss</span>
+            <h2>The Banquet</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit2/final-banquet.png"
+              alt="Kai rolls up sleeves to face a huge glowing banquet order ticket"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <!-- Core combined challenge -->
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#127869;&#65039; The Banquet Cipher &mdash; Combined Order</h3>
+            <p class="prompt">
+              The head chef hands Kai the master ticket. It needs ONE fully
+              correct line: first portion <b>3 3/4 cups</b> of bisque into
+              <b>1/2-cup</b> cups, then confirm how many <b>2/3-cup</b> ladles
+              fill <b>6 cups</b>. Pick the line where BOTH results are right.
+            </p>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="false">
+                3 3/4 &divide; 1/2 = 7 1/2 cups, &nbsp; 6 &divide; 2/3 = 4
+                ladles
+                <span class="note"
+                  >(first is right; 6 &divide; 2/3 = 9, not 4)</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                3 3/4 &divide; 1/2 = 7 1/2 cups, &nbsp; 6 &divide; 2/3 = 9
+                ladles
+                <span class="note"
+                  >(15/4 &times; 2 = 30/4 = 7 1/2; 6 &times; 3/2 = 9)</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                3 3/4 &divide; 1/2 = 1 7/8 cups, &nbsp; 6 &divide; 2/3 = 9
+                ladles
+                <span class="note">(first multiplied instead of dividing)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <!-- Chef's Final Challenge (OPTIONAL, non-gating) -->
+          <div class="challenge bonus" id="bonusF" style="display: none">
+            <span class="bonus-tag">&#11088; Chef&rsquo;s Final Challenge</span>
+            <p class="bonus-note">
+              Optional extra credit &mdash; the banquet is already plated. Take
+              the bow now, or crack this last puzzle first.
+            </p>
+            <h3>The Leftover Reallocation</h3>
+            <p class="prompt">
+              After service, <b>3 1/3 cups</b> of soup remain. Kai pours them
+              into <b>5/6-cup</b> staff bowls. How many full bowls, and how much
+              soup is left over?
+            </p>
+            <div class="choices" id="choicesBF">
+              <button class="choice" data-correct="true">
+                4 full bowls, 0 left over
+                <span class="note">(10/3 &times; 6/5 = 60/15 = 4 exactly)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                3 full bowls, 5/6 cup left
+                <span class="note">(undercounts; 10/3 &divide; 5/6 = 4)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                2 7/9 bowls
+                <span class="note"
+                  >(that is 10/3 &times; 5/6 &mdash; multiplied)</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fbBF"></div>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Serve the banquet &#127775;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPLETE -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Kitchen saved"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit2/celebration.png"
+            alt="Kai proudly presents a banquet of finished dishes while chef friends cheer"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#128722;&#11088;</span>
+        <h2>Service Saved &mdash; Five Stars!</h2>
+        <p>
+          Aurora pulled off its biggest night. You interpreted division of
+          fractions, portioned with reciprocals, and scaled every recipe with
+          precision. The critics are raving, and the head chef just put your
+          name on the specials board, Chef Kai.
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Scale the catering order: portion <strong>4 1/2 cups</strong> of flour into small measurement containers of <strong>3/4 cup</strong> each. Solve $4 \frac{1}{2} \div \frac{3}{4}$.
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) $3 \frac{3}{8}$ containers &nbsp;(multiplied instead of dividing)</button>
+            <button class="choice" data-correct="true">B) 6 containers &nbsp;($\frac{9}{2} \times \frac{4}{3} = 6$) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) 8 containers &nbsp;(incorrect mixed fraction conversion)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">
+          Run service again &#8635;
+        </button>
+    
+      </section>
+
+      <!-- GLOSSARY -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Kitchen Codex</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var DLG = {
+          act1: [
+            {
+              who: "Head Chef",
+              en: "Kai, we are buried in tickets and the pantry just locked itself. It only releases for exact fraction work &mdash; no rounding, no guesses.",
+              cap: true,
+            },
+            {
+              who: "Kai",
+              en: "Then I model every ticket precisely. Dividing by a fraction means counting how many portions fit. Patch me into the lock.",
+            },
+          ],
+          act1b: [
+            {
+              who: "Kai",
+              en: "Interpretation locked in. Now the cipher wants the exact quotient as a mixed number. Keep, flip, multiply.",
+            },
+          ],
+          bonus1: [
+            {
+              who: "Head Chef",
+              en: "Optional: the captain's tasting menu hides a reverse-recipe puzzle. Pantry's already open, so only if you want the bonus.",
+              cap: true,
+            },
+          ],
+          act2: [
+            {
+              who: "Head Chef",
+              en: "Pantry's clear. Now a banquet party of dozens just walked in. We portion the pot and scale the sauces &mdash; flawlessly.",
+              cap: true,
+            },
+            {
+              who: "Kai",
+              en: "Whole cups over a fraction, then a fraction over a fraction. Multiply by the reciprocal and I count exact servings.",
+            },
+          ],
+          act2b: [
+            {
+              who: "Kai",
+              en: "Risotto plated. Now I scale the cream sauce into tasting portions for the judges. Same move: keep, flip, multiply.",
+            },
+          ],
+          bonus2: [
+            {
+              who: "Head Chef",
+              en: "Optional: the judges want a mixed-number scale-down. The order's already out, so this one is just for the extra star.",
+              cap: true,
+            },
+          ],
+          final: [
+            {
+              who: "Head Chef",
+              en: "Master ticket, Kai &mdash; the banquet's signature course. One line, two portion problems, zero mistakes. Show me.",
+              cap: true,
+            },
+            {
+              who: "Kai",
+              en: "Convert the mixed number, multiply by reciprocals, verify both quotients. Firing the banquet now.",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#10135;",
+            en: "Division of fractions",
+            def: "Asking how many copies of the divisor fit in the dividend, or splitting into equal parts. a ÷ b/c = a × c/b.",
+          },
+          {
+            ico: "&#128260;",
+            en: "Reciprocal",
+            def: "The multiplicative inverse of a number; flip the fraction. The reciprocal of 3/4 is 4/3, and of 6 is 1/6.",
+          },
+          {
+            ico: "&#10145;&#65039;",
+            en: "Keep-Change-Flip",
+            def: "Dividing by a fraction equals multiplying by its reciprocal: 7/8 ÷ 1/4 = 7/8 × 4/1 = 7/2.",
+          },
+          {
+            ico: "&#129516;",
+            en: "Quotient",
+            def: "The result of division. In a measurement model it tells how many equal portions fit in the whole.",
+          },
+          {
+            ico: "&#129348;",
+            en: "Unit fraction",
+            def: "A fraction with numerator 1, such as 1/4 or 1/6. Dividing by 1/n is the same as multiplying by n.",
+          },
+          {
+            ico: "&#127869;&#65039;",
+            en: "Mixed number",
+            def: "A whole number plus a proper fraction, like 2 1/2. Convert to an improper fraction (5/2) before dividing.",
+          },
+          {
+            ico: "&#128208;",
+            en: "Measurement (quotative) model",
+            def: "Interpreting a ÷ b as 'how many groups of size b are in a' — the core meaning behind portioning servings.",
+          },
+          {
+            ico: "&#9878;&#65039;",
+            en: "Scaling a recipe",
+            def: "Resizing every ingredient by the same factor. Dividing amounts by a portion size gives the number of servings.",
+          },
+          {
+            ico: "&#10006;&#65039;",
+            en: "Dividend & divisor",
+            def: "In a ÷ b, a is the dividend (the amount you have) and b is the divisor (the portion size you divide into).",
+          },
+          {
+            ico: "&#9989;",
+            en: "Improper fraction",
+            def: "A fraction whose numerator is at least its denominator (7/2, 5/2). Often the cleanest form for computing quotients.",
+          },
+        ];
+
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          $("scene-complete").classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var arr = qa(".tab");
+            var i = arr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (arr[i + 1] || arr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (arr[i - 1] || arr[arr.length - 1]).focus();
+            }
+          });
+        });
+
+        function runDialogue(opts) {
+          var idx = 0,
+            dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            dots.appendChild(document.createElement("i"));
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '"><div class="who">' +
+              line.who +
+              '</div><div class="en">' +
+              line.en +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else if (opts.onDone) opts.onDone();
+          };
+          render();
+        }
+
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var fb = $(opts.feedbackId);
+              if (btn.dataset.correct === "true") {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = opts.goodEn;
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = opts.badEn;
+              }
+            });
+          });
+        }
+
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              "</h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        function showBubble(boxId, line) {
+          $(boxId).innerHTML =
+            '<div class="bubble' +
+            (line.cap ? " caption" : "") +
+            '"><div class="who">' +
+            line.who +
+            '</div><div class="en">' +
+            line.en +
+            "</div></div>";
+        }
+
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Interpret ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Exactly. Dividing by 1/3 counts how many thirds fit: 5 &divide; 1/3 = 5 &times; 3 = 15 spoons.",
+            badEn:
+              "&#10060; That models a different operation. Dividing 5 by 1/3 asks how many 1/3-cup portions fit in 5 cups.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.act1b[0]);
+                $("chal1b").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; 7/8 &divide; 1/4 = 7/8 &times; 4/1 = 28/8 = 7/2 = 3 1/2 brushes. Pantry releasing&hellip;",
+            badEn:
+              "&#10060; Keep, flip, multiply: 7/8 &times; 4/1 = 28/8 = 3 1/2. Recompute and try again.",
+            onSolve: function () {
+              // CORE pantry unlock: reveal advance immediately (bonus is optional, non-gating)
+              $("art-act1").src = "../_art/unit2/pantry-open.png";
+              $("art-act1").alt =
+                "The pantry door bursts open with golden light as Kai raises a fist";
+              $("adv-act1").classList.add("show");
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.bonus1[0]);
+                $("bonus1").style.display = "block";
+              }, 450);
+            },
+          });
+          // Optional bonus: scored but never required to advance.
+          wireChoices({
+            choicesId: "choicesB1",
+            feedbackId: "fbB1",
+            goodEn:
+              "&#11088; Sharp. total &divide; 1/6 = 9 means total = 9 &times; 1/6 = 9/6 = 1 1/2 cups. Bonus earned!",
+            badEn:
+              "&#10060; If total &divide; 1/6 = 9, then total = 9 &times; 1/6 = 1 1/2 cups, not a whole-number scale-up.",
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Portion the pot ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; 9 &divide; 3/4 = 9 &times; 4/3 = 36/3 = 12 entr&eacute;es. Pot portioned cleanly.",
+            badEn:
+              "&#10060; Multiply by the reciprocal of 3/4: 9 &times; 4/3 = 12. Check your setup.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.act2b[0]);
+                $("chal2b").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; 2/3 &divide; 1/6 = 2/3 &times; 6/1 = 12/3 = 4 tasting portions. Sauce scaled.",
+            badEn:
+              "&#10060; Flip the divisor: 2/3 &times; 6/1 = 12/3 = 4. Recompute.",
+            onSolve: function () {
+              // CORE order sent: reveal advance immediately (bonus optional, non-gating)
+              $("adv-act2").classList.add("show");
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.bonus2[0]);
+                $("bonus2").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB2",
+            feedbackId: "fbB2",
+            goodEn:
+              "&#11088; Convert first: 2 1/2 = 5/2, then 5/2 &times; 8/5 = 40/10 = 4 bowls. Bonus earned!",
+            badEn:
+              "&#10060; Convert 2 1/2 to 5/2, then multiply by 8/5: 40/10 = 4 bowls.",
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Fire the banquet ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; Both verified: 3 3/4 &divide; 1/2 = 15/4 &times; 2 = 30/4 = 7 1/2 cups, and 6 &divide; 2/3 = 6 &times; 3/2 = 9 ladles. Banquet fired!",
+            badEn:
+              "&#10060; One quotient is off. Recheck: 15/4 &times; 2 = 7 1/2, and 6 &times; 3/2 = 9.",
+            onSolve: function () {
+              // CORE banquet done: reveal advance immediately (bonus optional, non-gating)
+              $("adv-final").classList.add("show");
+              setTimeout(function () {
+                $("bonusF").style.display = "block";
+              }, 300);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesBF",
+            feedbackId: "fbBF",
+            goodEn:
+              "&#11088; 3 1/3 = 10/3, and 10/3 &divide; 5/6 = 10/3 &times; 6/5 = 60/15 = 4 exactly &mdash; no leftovers. Perfect close!",
+            badEn:
+              "&#10060; Convert 3 1/3 to 10/3, then 10/3 &times; 6/5 = 60/15 = 4 full bowls with nothing left.",
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U2 #2: Master Chef Kitchen: The Recipe Rescue",
+        standard: "6.NS.1",
+        level: "2",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,1647 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #1 · Aquarium Architect</title>
+    <style>
+      :root {
+        --bg: #04141f;
+        --ink: #effaff;
+        --muted: #9fc6d8;
+        --accent: #ff8a3d;
+        --accent2: #2bc4d8;
+        --panel: #0c2a3a;
+        --line: #1d4a5e;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --bubble: #fffdf7;
+        --bubble-ink: #0c2230;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.5;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      /* ---- Top bar ---- */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(4, 20, 31, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #06212f;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      /* ---- Tabs ---- */
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+        scrollbar-width: thin;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #08283a;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      /* ---- Stage ---- */
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #06212f;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      /* ---- Dialogue ---- */
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border-radius: 16px;
+        padding: 14px 16px;
+        position: relative;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: #0a7d8c;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.05rem;
+      }
+      .bubble .es {
+        font-size: 0.92rem;
+        color: #566677;
+        margin-top: 6px;
+        font-style: italic;
+      }
+      .bubble.caption {
+        background: #08283a;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .bubble.caption .es {
+        color: var(--muted);
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #1d4a5e;
+      }
+      .dots i.on {
+        background: var(--accent);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #2b9ad8);
+        color: #02212a;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .next[disabled] {
+        opacity: 0.4;
+        cursor: default;
+      }
+
+      /* ---- Challenge / choice ---- */
+      .challenge {
+        margin-top: 16px;
+        background: #08283a;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .challenge .prompt .es {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 4px;
+      }
+      .diagram {
+        font-family: "Courier New", monospace;
+        white-space: pre;
+        font-size: 0.95rem;
+        line-height: 1.35;
+        color: #8fe;
+        background: #04181f;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 8px 0;
+        overflow-x: auto;
+      }
+      .net {
+        background: #04181f;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+        margin: 8px 0;
+      }
+      .net-row {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin: 4px 0;
+      }
+      .net-face {
+        flex: 0 0 auto;
+        min-width: 64px;
+        text-align: center;
+        padding: 8px 6px;
+        background: #0d3a47;
+        border: 1px solid #2b8aa0;
+        border-radius: 6px;
+        color: #cfeffa;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .hint {
+        font-size: 0.9rem;
+        color: #ffd9b3;
+        background: #3a2410;
+        border: 1px solid #7a4d1f;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin: 8px 0;
+      }
+      .hint b {
+        color: var(--accent);
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #0c2a3a;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+      .feedback .es {
+        display: block;
+        font-style: italic;
+        color: #9fd;
+        opacity: 0.85;
+        margin-top: 4px;
+        font-size: 0.9rem;
+      }
+
+      .frame {
+        margin-top: 12px;
+        font-size: 0.92rem;
+        color: var(--muted);
+        background: #06212f;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .frame b {
+        color: var(--accent2);
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      /* ---- Cover ---- */
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        aspect-ratio: 16/9;
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 620px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #02212a;
+        background: var(--accent2);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      /* ---- Glossary ---- */
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #08283a;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term .es-term {
+        color: var(--accent2);
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* ---- Mission complete ---- */
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        color: var(--accent);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #08283a;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .topbar-inner {
+          gap: 8px;
+        }
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"><span class="v">#1</span> Aquarium Architect</span>
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: Fill the Tank
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: Build the Glass
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Final Tank
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- ============ COVER ============ -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit10/cover.png"
+            alt="Maya, a young aquarium architect, stands in a grand aquarium with glowing fish tanks and floating blueprints"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
+        <h2>Aquarium Architect &#128032;&#127754;</h2>
+        <p>
+          You are Maya, a young architect. You will design a big aquarium! Each
+          tank opens when you find the right <b>volume</b> (how much water fits)
+          or the right <b>surface area</b> (how much glass you need).
+        </p>
+        <p style="font-size: 0.92rem">
+          <i
+            >Eres Maya, una joven arquitecta. Vas a dise&ntilde;ar un gran
+            acuario. Usa el <b>volumen</b> y el
+            <b>&aacute;rea de superficie</b> para abrir cada tanque.</i
+          >
+        </p>
+        <button class="start" id="start-btn">Start Mission &#128640;</button>
+      </section>
+
+      <!-- ============ ACT 1 ============ -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act">Act 1 &middot; Volume</span>
+          <h2>Fill the Tank</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit10/volume.png"
+            alt="Maya points at a glowing wireframe rectangular fish tank with dimension arrows"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <!-- Challenge 1: whole-number volume -->
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>&#128167; Tank Lock #1 &mdash; Fill It Up</h3>
+          <p class="prompt">
+            The clownfish tank is a box. To find <b>volume</b>, multiply
+            <b>length &times; width &times; height</b>. The tank is
+            <b>5 ft long, 4 ft wide, 3 ft tall</b>. How much water fits?
+            <span class="es"
+              >Volumen = largo &times; ancho &times; alto. &iquest;Cu&aacute;nta
+              agua cabe en un tanque de 5 &times; 4 &times; 3?</span
+            >
+          </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> First multiply 5 &times; 4 = 20. Then 20
+            &times; 3 = ?
+          </div>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="false">
+              12 ft&sup3; &nbsp;(that is 5 + 4 + 3, not multiply)
+            </button>
+            <button class="choice" data-correct="true">
+              60 ft&sup3; &nbsp;(5 &times; 4 &times; 3)
+            </button>
+            <button class="choice" data-correct="false">
+              20 ft&sup3; &nbsp;(that is only 5 &times; 4)
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <!-- Challenge 2: fractional edge volume -->
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#128167; Tank Lock #2 &mdash; The Shallow Reef</h3>
+          <p class="prompt">
+            The seahorse tank is long but shallow. It is
+            <b>6 ft long, 4 ft wide,</b> and only <b>&frac12; ft tall</b>. Find
+            the volume.
+            <span class="es"
+              >El tanque mide 6 &times; 4 &times; &frac12;. Encuentra el
+              volumen.</span
+            >
+          </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> 6 &times; 4 = 24. Then 24 &times; &frac12; is
+            the same as <b>half of 24</b>.
+          </div>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              24 ft&sup3; &nbsp;(you forgot to use the &frac12;)
+            </button>
+            <button class="choice" data-correct="false">
+              48 ft&sup3; &nbsp;(that is doubling, not halving)
+            </button>
+            <button class="choice" data-correct="true">
+              12 ft&sup3; &nbsp;(24 &times; &frac12; = half of 24)
+            </button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <div class="frame" id="frame1" style="display: none">
+          <b>Sentence frame:</b> &ldquo;The volume of the tank is ____ &times;
+          ____ &times; ____ = ____ cubic feet (ft&sup3;).&rdquo;
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">Fill the tank &#128032;</button>
+        </div>
+      </section>
+
+      <!-- ============ ACT 2 ============ -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Finish Act 1 first to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act">Act 2 &middot; Surface Area &amp; Nets</span>
+            <h2>Build the Glass</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit10/net.png"
+              alt="Maya unfolds a glass tank into a flat net of six rectangle panels"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- Challenge: count faces on a net -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#129521; Glass Lock #1 &mdash; Unfold the Box</h3>
+            <p class="prompt">
+              To find <b>surface area</b>, we unfold the tank into a flat
+              <b>net</b>. A box tank has how many flat glass faces to add up?
+              <span class="es"
+                >Un prisma rectangular tiene &iquest;cu&aacute;ntas caras
+                planas?</span
+              >
+            </p>
+            <div
+              class="net"
+              aria-label="Net of a box: a top face, a row of four faces (left, front, right, back), and a bottom face"
+            >
+              <div class="net-row"><span class="net-face">top</span></div>
+              <div class="net-row">
+                <span class="net-face">left</span>
+                <span class="net-face">front</span>
+                <span class="net-face">right</span>
+                <span class="net-face">back</span>
+              </div>
+              <div class="net-row"><span class="net-face">bottom</span></div>
+            </div>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Count the rectangles in the net above: top,
+              bottom, front, back, left, right.
+            </div>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="false">
+                4 faces &nbsp;(that misses the top and bottom)
+              </button>
+              <button class="choice" data-correct="true">
+                6 faces &nbsp;(top, bottom, front, back, left, right)
+              </button>
+              <button class="choice" data-correct="false">
+                8 faces &nbsp;(a box has only 6)
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- Challenge: add the face areas -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>&#129521; Glass Lock #2 &mdash; Add the Glass</h3>
+            <p class="prompt">
+              This tank is <b>4 ft long, 3 ft wide, 2 ft tall</b>. Each pair of
+              faces matches. Add all six faces to get the
+              <b>surface area</b> (how much glass).
+              <span class="es"
+                >Suma las 6 caras del tanque de 4 &times; 3 &times; 2 para
+                hallar el &aacute;rea de superficie.</span
+              >
+            </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> front &amp; back = 4&times;3 = 12 each.
+              left &amp; right = 3&times;2 = 6 each. top &amp; bottom =
+              4&times;2 = 8 each. Add: 12+12+6+6+8+8.
+            </div>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                26 ft&sup2; &nbsp;(that is only one of each face)
+              </button>
+              <button class="choice" data-correct="true">
+                52 ft&sup2; &nbsp;(12+12+6+6+8+8)
+              </button>
+              <button class="choice" data-correct="false">
+                24 ft&sup2; &nbsp;(that is the volume, not the glass)
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <div class="frame" id="frame2" style="display: none">
+            <b>Sentence frame:</b> &ldquo;A box has ____ faces. The surface area
+            is the sum of all the faces: ____ ft&sup2;.&rdquo;
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Build the glass &#129521;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ FINAL ============ -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Finish Act 2 first to unlock the Final Tank.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final Tank &middot; Boss Build</span>
+            <h2>The Grand Centerpiece</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit10/final.png"
+              alt="Maya stands before a huge aquarium tank under construction with scaffolding and blueprints"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#127775; Grand Tank &mdash; Volume AND Glass</h3>
+            <p class="prompt">
+              The big centerpiece tank is
+              <b>6 ft long, 5 ft wide, 4 ft tall</b>. The build needs BOTH the
+              <b>volume</b> (water) and the <b>surface area</b> (glass). Pick
+              the line that is fully correct.
+              <span class="es"
+                >Elige la l&iacute;nea correcta: el volumen y el &aacute;rea de
+                superficie de un tanque de 6 &times; 5 &times; 4.</span
+              >
+            </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Volume = 6&times;5&times;4. Surface area:
+              front/back 6&times;5=30 each, left/right 5&times;4=20 each,
+              top/bottom 6&times;4=24 each. Add the six faces.
+            </div>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="false">
+                Volume = 120 ft&sup3;, &nbsp; Surface area = 74 ft&sup2;
+              </button>
+              <button class="choice" data-correct="true">
+                Volume = 120 ft&sup3;, &nbsp; Surface area = 148 ft&sup2;
+              </button>
+              <button class="choice" data-correct="false">
+                Volume = 148 ft&sup3;, &nbsp; Surface area = 120 ft&sup2;
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <div class="frame" id="frameF" style="display: none">
+            <b>Sentence frame:</b> &ldquo;The volume is ____ ft&sup3; and the
+            surface area is ____ ft&sup2;.&rdquo;
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Open the aquarium &#127881;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MISSION COMPLETE ============ -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Mission complete"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit10/complete.png"
+            alt="Maya cuts a ribbon at the grand opening of her finished aquarium full of fish and visitors"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#128032;&#11088;</span>
+        <h2>Mission Complete!</h2>
+        <p>
+          You opened the aquarium, Maya! You used <b>volume</b>
+          (length &times; width &times; height) to fill the tanks, and
+          <b>surface area</b> from a <b>net</b> to build the glass. Amazing
+          work, Architect!
+        </p>
+        <p style="color: var(--muted); font-size: 0.92rem">
+          <i
+            >&iexcl;Misi&oacute;n cumplida! Usaste el volumen y el &aacute;rea
+            de superficie. &iexcl;Excelente trabajo!</i
+          >
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Marine volume: A rectangular seahorse tank is <strong>5 feet long, 3 feet wide, and 4 feet tall</strong>. What is its <strong>volume</strong>?<span class="es">Un tanque mide 5 pies de largo, 3 de ancho y 4 de alto. ¿Cuál es su volumen?</span>
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) 12 cubic feet &nbsp;(added dimensions together)</button>
+            <button class="choice" data-correct="true">B) 60 cubic feet &nbsp;($5 \times 3 \times 4 = 60$) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) 20 cubic feet &nbsp;(only multiplied length by height)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">Play again &#8635;</button>
+    
+      </section>
+
+      <!-- ============ GLOSSARY ============ -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Word Bank</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------- Dialogue data (English + Spanish support) ---------- */
+        var DLG = {
+          act1: [
+            {
+              who: "Site Boss",
+              en: "Welcome, Maya! Our new aquarium needs tanks. First, fill the clownfish tank with the RIGHT amount of water.",
+              es: "&iexcl;Bienvenida, Maya! El acuario necesita tanques. Primero, llena el tanque con la cantidad correcta de agua.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Got it! To know how much water fits, I find the VOLUME. Volume = length × width × height.",
+              es: "&iexcl;Entendido! Para saber cu&aacute;nta agua cabe, busco el VOLUMEN. Volumen = largo × ancho × alto.",
+            },
+            {
+              who: "Site Boss",
+              en: "Read the tank size on your tablet, then choose the correct volume.",
+              es: "Lee el tama&ntilde;o del tanque y elige el volumen correcto.",
+              cap: true,
+            },
+          ],
+          act1b: [
+            {
+              who: "Maya",
+              en: "Tank one is full! The next tank is shallow — only half a foot tall. I can still use length × width × height.",
+              es: "&iexcl;El primer tanque est&aacute; lleno! El siguiente es bajo: solo &frac12; pie de alto. Uso la misma f&oacute;rmula.",
+            },
+          ],
+          act2: [
+            {
+              who: "Site Boss",
+              en: "Great fills, Maya! Now we BUILD the glass. To know how much glass we need, find the SURFACE AREA.",
+              es: "&iexcl;Buen trabajo! Ahora construimos el vidrio. Para saber cu&aacute;nto vidrio, busca el &Aacute;REA DE SUPERFICIE.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "I'll unfold the tank into a flat NET. Then I add up the area of every face. Let's start by counting the faces.",
+              es: "Desdoblo el tanque en una RED plana. Luego sumo el &aacute;rea de cada cara. Primero cuento las caras.",
+            },
+          ],
+          act2b: [
+            {
+              who: "Maya",
+              en: "Six faces, just like the net shows! Now I find the area of each one and add them all together.",
+              es: "&iexcl;Seis caras, como muestra la red! Ahora hallo el &aacute;rea de cada una y las sumo.",
+            },
+          ],
+          final: [
+            {
+              who: "Site Boss",
+              en: "Last build, Maya — the grand centerpiece tank! It needs BOTH the water amount AND the glass amount.",
+              es: "&iexcl;&Uacute;ltima construcci&oacute;n: el gran tanque central! Necesita el agua Y el vidrio.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Volume for the water, surface area for the glass. I'm ready. Let's open this aquarium!",
+              es: "Volumen para el agua, &aacute;rea de superficie para el vidrio. &iexcl;Estoy lista! &iexcl;Vamos a abrir el acuario!",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#128230;",
+            en: "Rectangular prism",
+            es: "prisma rectangular",
+            def: "A box shape with 6 flat rectangle faces, like a fish tank.",
+          },
+          {
+            ico: "&#128167;",
+            en: "Volume",
+            es: "volumen",
+            def: "How much space is inside. Volume = length × width × height. We measure it in cubic units (ft³).",
+          },
+          {
+            ico: "&#128208;",
+            en: "Length, width, height",
+            es: "largo, ancho, alto",
+            def: "The three edge sizes of a box. We multiply all three to get the volume.",
+          },
+          {
+            ico: "&#189;",
+            en: "Fractional edge",
+            es: "borde fraccionario",
+            def: "An edge length that is a fraction, like ½ ft. Multiply just like a whole number: 24 × ½ = 12.",
+          },
+          {
+            ico: "&#129521;",
+            en: "Net",
+            es: "red (plantilla)",
+            def: "A flat pattern you get when you unfold a box. It shows all 6 faces laid out flat.",
+          },
+          {
+            ico: "&#11036;",
+            en: "Face",
+            es: "cara",
+            def: "One flat side of a box. A rectangular prism has 6 faces.",
+          },
+          {
+            ico: "&#128221;",
+            en: "Area",
+            es: "&aacute;rea",
+            def: "How much flat space a face covers. Area of a rectangle = length × width.",
+          },
+          {
+            ico: "&#129521;",
+            en: "Surface area",
+            es: "&aacute;rea de superficie",
+            def: "The total of all the face areas added together. We measure it in square units (ft²).",
+          },
+          {
+            ico: "&#10133;",
+            en: "Cubic vs. square units",
+            es: "unidades c&uacute;bicas y cuadradas",
+            def: "Volume uses cubic units (ft³). Surface area uses square units (ft²).",
+          },
+        ];
+
+        /* ---------- State ---------- */
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        /* ---------- Progress ---------- */
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+
+        /* ---------- Tab locking ---------- */
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+
+        /* ---------- Scene switching ---------- */
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (tabsArr[i + 1] || tabsArr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus();
+            }
+          });
+        });
+
+        /* ---------- Dialogue engine ---------- */
+        function runDialogue(opts) {
+          var idx = 0;
+          var dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            var i = document.createElement("i");
+            dots.appendChild(i);
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '">' +
+              '<div class="who">' +
+              line.who +
+              "</div>" +
+              '<div class="en">' +
+              line.en +
+              "</div>" +
+              '<div class="es">' +
+              line.es +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else {
+              if (opts.onDone) opts.onDone();
+            }
+          };
+          render();
+        }
+
+        /* ---------- Choice handler ---------- */
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var correct = btn.dataset.correct === "true";
+              var fb = $(opts.feedbackId);
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML =
+                  opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML =
+                  opts.badEn + '<span class="es">' + opts.badEs + "</span>";
+              }
+            });
+          });
+        }
+
+        /* ---------- Build glossary ---------- */
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              ' <span class="es-term">(' +
+              g.es +
+              ")</span></h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        /* ---------- ACT 1 flow ---------- */
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Find the volume ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Correct! 5 &times; 4 &times; 3 = 60 ft&sup3;. The clownfish tank is full!",
+            goodEs: "&iexcl;Correcto! 5 &times; 4 &times; 3 = 60 ft&sup3;.",
+            badEn:
+              "&#10060; Not yet. For volume you MULTIPLY all three sides. Try the hint and try again.",
+            badEs:
+              "A&uacute;n no. Para el volumen se MULTIPLICAN los tres lados. Usa la pista.",
+            onSolve: function () {
+              var box = $("dlg-act1");
+              setTimeout(function () {
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act1b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act1b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act1b[0].es +
+                  "</div></div>";
+                $("chal1b").style.display = "block";
+                $("frame1").style.display = "block";
+                $("chal1b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 500);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; Yes! 6 &times; 4 = 24, and 24 &times; &frac12; = 12 ft&sup3;. The shallow reef is ready!",
+            goodEs:
+              "&iexcl;S&iacute;! 6 &times; 4 &times; &frac12; = 12 ft&sup3;.",
+            badEn:
+              "&#10060; Remember the &frac12;. Multiplying by &frac12; means taking HALF. Half of 24 is 12.",
+            badEs:
+              "Recuerda el &frac12;. Multiplicar por &frac12; es tomar la MITAD. La mitad de 24 es 12.",
+            onSolve: function () {
+              $("art-act1").src = "../_art/unit10/unlock.png";
+              $("art-act1").alt =
+                "The tank fills with sparkling water and colorful fish as Maya cheers";
+              $("adv-act1").classList.add("show");
+            },
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        /* ---------- ACT 2 flow ---------- */
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Count the faces ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; Right! A box (rectangular prism) has 6 faces: top, bottom, front, back, left, right.",
+            goodEs: "&iexcl;Correcto! Un prisma rectangular tiene 6 caras.",
+            badEn:
+              "&#10060; Look at the net again and count every rectangle. A box has 6 faces.",
+            badEs:
+              "Mira la red otra vez y cuenta cada rect&aacute;ngulo. Son 6 caras.",
+            onSolve: function () {
+              var box = $("dlg-act2");
+              setTimeout(function () {
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act2b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act2b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act2b[0].es +
+                  "</div></div>";
+                $("chal2b").style.display = "block";
+                $("frame2").style.display = "block";
+                $("chal2b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 500);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; Perfect! 12+12+6+6+8+8 = 52 ft&sup2; of glass. The tank walls are built!",
+            goodEs: "&iexcl;Perfecto! 12+12+6+6+8+8 = 52 ft&sup2; de vidrio.",
+            badEn:
+              "&#10060; Add ALL six faces. Each pair matches: 12+12, 6+6, 8+8. Use the hint.",
+            badEs: "Suma las SEIS caras. Cada par es igual: 12+12, 6+6, 8+8.",
+            onSolve: function () {
+              $("adv-act2").classList.add("show");
+            },
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        /* ---------- FINAL flow ---------- */
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Build the grand tank ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("frameF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; PERFECT BUILD! Volume = 6&times;5&times;4 = 120 ft&sup3;. Surface area = 30+30+20+20+24+24 = 148 ft&sup2;. The grand tank is done!",
+            goodEs:
+              "&iexcl;CONSTRUCCI&Oacute;N PERFECTA! Volumen = 120 ft&sup3; y &aacute;rea = 148 ft&sup2;.",
+            badEn:
+              "&#10060; One part is off. Volume MULTIPLIES the 3 sides (120). Surface area ADDS the 6 faces (148, not 74).",
+            badEs:
+              "Una parte est&aacute; mal. El volumen multiplica (120). El &aacute;rea suma las 6 caras (148).",
+            onSolve: function () {
+              $("adv-final").classList.add("show");
+            },
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        /* ---------- Wire start / restart ---------- */
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        /* ---------- Init ---------- */
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U10 #1: Aquarium Architect",
+        standard: "6.G.2",
+        level: "1",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>

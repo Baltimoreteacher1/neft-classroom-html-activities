@@ -3,25 +3,1594 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Geometry Prep</title>
+    <meta name="description" content="Geometry Prep Studio | Grade 6 Math Readiness. Visual notes, 3D unit cube stacking simulation, coordinate plane plotter, and adaptive self-check.">
+    <title>Geometry Prep Studio</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&family=Lexend:wght@400;700;800&family=Atkinson+Hyperlegible+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Shared Design System -->
     <link rel="stylesheet" href="/assets/shared.css">
+    
+    <style>
+      :root {
+        /* Design Tokens */
+        --navy: #0f172a;
+        --navy-light: #1e293b;
+        --teal: #0d9488;
+        --teal-light: #f0fdfa;
+        --teal-pale: #ccfbf1;
+        --gold: #d97706;
+        --gold-pale: #fef3c7;
+        --terracotta: #ea580c;
+        --terra-pale: #ffedd5;
+        --sage: #16a34a;
+        --sage-pale: #dcfce7;
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #cbd5e1;
+        
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --radius-sm: 8px;
+        --shadow-premium: 0 15px 35px rgba(15, 23, 42, 0.08);
+        --transition-smooth: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--bg);
+        color: var(--ink);
+        overflow-x: hidden;
+      }
+
+      h1, h2, h3, h4 {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0;
+      }
+
+      /* Compact Hero Section */
+      .hero {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+        color: white;
+        border-top: 6px solid var(--teal);
+        padding: clamp(24px, 5vw, 48px);
+        display: grid;
+        grid-template-columns: 1.4fr 0.8fr;
+        gap: 24px;
+        align-items: center;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-premium);
+      }
+
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        color: white;
+        line-height: 1.1;
+      }
+
+      .hero p.tagline {
+        color: #94a3b8;
+        font-size: 1.1rem;
+        margin: 12px 0 20px;
+        max-width: 650px;
+      }
+
+      .hero-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .hero-pill {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #e2e8f0;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      .timing-card {
+        background: rgba(255, 255, 255, 0.96);
+        color: var(--ink);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+      }
+
+      .timing-card h3 {
+        color: var(--navy);
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+      }
+
+      .timing-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .timing-list li {
+        display: flex;
+        gap: 8px;
+        font-size: 0.9rem;
+        align-items: flex-start;
+      }
+
+      .timing-list li::before {
+        content: '•';
+        color: var(--teal);
+        font-weight: 800;
+        font-size: 1.2rem;
+        line-height: 1;
+      }
+
+      /* Sticky Navigation Tabs */
+      nav.tab-nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(246, 247, 242, 0.95);
+        backdrop-filter: blur(12px);
+        border-bottom: 2px solid var(--line);
+        padding: 10px 0;
+        margin: 20px 0;
+      }
+
+      .tab-container {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .tab-container::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab-btn {
+        background: white;
+        border: 1px solid var(--line);
+        padding: 10px 18px;
+        border-radius: var(--radius-md);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--muted);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tab-btn:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+        transform: translateY(-1px);
+      }
+
+      .tab-btn.active {
+        background: var(--navy);
+        color: white;
+        border-color: var(--navy);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+      }
+
+      /* Sticky Floating Language Widget */
+      .lang-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999;
+        display: flex;
+        gap: 8px;
+      }
+
+      .float-btn {
+        background: var(--gold);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(217, 119, 6, 0.3);
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .float-btn:hover {
+        transform: translateY(-2px) scale(1.03);
+      }
+
+      /* Bilingual Spanish Elements */
+      .es-text {
+        display: none;
+        font-style: italic;
+        color: var(--teal);
+        font-size: 0.88em;
+        margin-top: 4px;
+        border-left: 3px solid var(--teal);
+        padding-left: 8px;
+      }
+
+      body.show-spanish .es-text {
+        display: block;
+      }
+
+      /* Sections Structure */
+      section.tab-panel {
+        display: none;
+        animation: panelFade 0.3s ease-out;
+      }
+
+      section.tab-panel.active {
+        display: block;
+      }
+
+      @keyframes panelFade {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      @media (max-width: 900px) {
+        .grid-2, .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Glassmorphism Premium Cards */
+      .card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        padding: 24px;
+        box-shadow: var(--shadow-premium);
+        transition: var(--transition-smooth);
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      .card h2 {
+        color: var(--navy);
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+      }
+
+      .card h3 {
+        color: var(--navy);
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .card p {
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 0.95rem;
+        margin: 0 0 16px;
+      }
+
+      /* Interactive Simulator Grid */
+      .sim-workspace {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 24px;
+      }
+
+      @media (max-width: 900px) {
+        .sim-workspace {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .canvas-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        box-shadow: var(--shadow-premium);
+      }
+
+      .canvas-box {
+        background: #f8fafc;
+        border: 1.5px dashed var(--line);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        min-height: 340px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .canvas-label {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: rgba(15, 23, 42, 0.08);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        font-family: 'Atkinson Hyperlegible Mono', monospace;
+        color: var(--navy);
+      }
+
+      svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Sliders Interface */
+      .control-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .slider-group {
+        display: grid;
+        gap: 6px;
+      }
+
+      .slider-group label {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--navy);
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .slider-group label span {
+        font-family: 'Atkinson Hyperlegible Mono', monospace;
+        color: var(--teal);
+        font-weight: 700;
+      }
+
+      input[type="range"] {
+        accent-color: var(--teal);
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: #cbd5e1;
+        cursor: pointer;
+      }
+
+      /* Volume Calculator Card */
+      .calc-board {
+        background: var(--teal-light);
+        border: 1px solid rgba(13, 148, 136, 0.25);
+        border-radius: var(--radius-md);
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .calc-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        color: var(--teal);
+        border-bottom: 1.5px solid rgba(13, 148, 136, 0.2);
+        padding-bottom: 6px;
+      }
+
+      .calc-grid {
+        display: grid;
+        gap: 8px;
+      }
+
+      .calc-row {
+        background: white;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        border: 1px dashed var(--line);
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-family: 'Atkinson Hyperlegible Mono', monospace;
+        font-weight: 500;
+      }
+
+      .calc-row b {
+        color: var(--navy);
+      }
+
+      .calc-total {
+        font-size: 1.45rem;
+        font-family: 'Lexend', sans-serif;
+        font-weight: 800;
+        color: var(--teal);
+        text-align: center;
+        background: white;
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        border: 2px solid var(--teal);
+      }
+
+      /* Vocab Cards Grid */
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .vocab-card {
+        background: #f8fafc;
+        border: 2px solid var(--line);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        text-align: center;
+        transition: var(--transition-smooth);
+      }
+
+      .vocab-card:hover {
+        border-color: var(--teal);
+        background: white;
+        transform: translateY(-3px);
+      }
+
+      .vocab-icon {
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .vocab-card b {
+        display: block;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.15rem;
+        color: var(--teal);
+        margin-bottom: 6px;
+      }
+
+      .vocab-card p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      /* Grid coordinate game plotter styles */
+      .target-list {
+        background: var(--gold-pale);
+        border: 1.5px solid rgba(217, 119, 6, 0.25);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+
+      .target-list h3 {
+        color: var(--gold);
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+
+      .target-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+
+      .target-node {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 8px;
+        text-align: center;
+        font-family: 'Atkinson Hyperlegible Mono', monospace;
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: var(--muted);
+        transition: var(--transition-smooth);
+      }
+
+      .target-node.completed {
+        background: var(--sage-pale);
+        border-color: var(--sage);
+        color: var(--sage);
+      }
+
+      .coordinate-grid-svg {
+        cursor: crosshair;
+      }
+
+      .grid-dot {
+        fill: #cbd5e1;
+        transition: fill 0.15s, r 0.15s;
+      }
+
+      .grid-dot:hover {
+        fill: var(--teal);
+        r: 6;
+      }
+
+      .grid-dot.plotted {
+        fill: var(--terracotta);
+        r: 7;
+      }
+
+      /* Graded Practice Test Styles */
+      .test-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .test-progress {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-premium);
+      }
+
+      .progress-track {
+        flex: 1;
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        margin: 0 16px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--teal), var(--sage));
+        width: 0%;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .progress-label {
+        font-weight: 800;
+        font-family: 'Lexend', sans-serif;
+        color: var(--navy);
+      }
+
+      .test-card {
+        background: white;
+        border-left: 6px solid var(--teal);
+        border-radius: var(--radius-md);
+        padding: 24px;
+        box-shadow: var(--shadow-premium);
+        transition: var(--transition-smooth);
+      }
+
+      .test-card.correct-card {
+        border-left-color: var(--sage);
+      }
+
+      .test-card.wrong-card {
+        border-left-color: var(--terracotta);
+      }
+
+      .q-header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .q-badge {
+        background: var(--navy);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-family: 'Atkinson Hyperlegible Mono', monospace;
+      }
+
+      .q-title {
+        font-family: 'Lexend', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--navy);
+      }
+
+      .q-text {
+        font-size: 1rem;
+        color: var(--ink);
+        line-height: 1.55;
+        margin-bottom: 16px;
+      }
+
+      .q-options {
+        display: grid;
+        gap: 10px;
+      }
+
+      .q-option {
+        background: #f8fafc;
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .q-option:hover {
+        border-color: var(--teal);
+        background: var(--teal-light);
+      }
+
+      .q-option.correct {
+        border-color: var(--sage) !important;
+        background: var(--sage-pale) !important;
+        color: var(--sage) !important;
+      }
+
+      .q-option.incorrect {
+        border-color: var(--terracotta) !important;
+        background: var(--terra-pale) !important;
+        color: var(--terracotta) !important;
+      }
+
+      /* Completion scorecard */
+      .score-card {
+        display: none;
+        background: linear-gradient(135deg, var(--teal-pale) 0%, var(--gold-pale) 100%);
+        border: 2px solid var(--teal);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        text-align: center;
+        box-shadow: var(--shadow-premium);
+        animation: scalePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes scalePop {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .score-big {
+        font-family: 'Lexend', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--teal-dark);
+        margin: 10px 0;
+      }
+
+      .explain-list {
+        display: grid;
+        gap: 12px;
+        text-align: left;
+        margin: 20px 0;
+      }
+
+      .explain-item {
+        background: white;
+        border: 1.5px dashed var(--line);
+        border-radius: var(--radius-md);
+        padding: 16px;
+      }
+
+      .explain-item b {
+        color: var(--navy);
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      /* Confetti Box */
+      .confetti-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 10000;
+        overflow: hidden;
+      }
+
+      .particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        opacity: 0;
+        animation: fall 2s ease-out forwards;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translate3d(0, 0, 0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translate3d(var(--dx), var(--dy), 0) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* Print optimizations */
+      @media print {
+        header.hero, nav.tab-nav, .timing-card, .lang-widget, input[type="range"], select {
+          display: none !important;
+        }
+        body {
+          background: white;
+        }
+        section.tab-panel {
+          display: block !important;
+          opacity: 1 !important;
+          transform: none !important;
+          page-break-after: always;
+        }
+        .card, .test-card, .canvas-panel {
+          box-shadow: none !important;
+          border: 1px solid #777 !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="page-shell">
-      <main class="placeholder-main">
-        <section class="placeholder-panel" aria-labelledby="page-title">
-          <span class="status-pill">Activity placeholder</span>
-          <h1 id="page-title">Geometry Prep</h1>
-          <p>This activity is ready to be replaced with the full HTML file.</p>
-          <div class="button-row">
-            <a class="button-link" href="/">Back to homepage</a>
+      
+      <!-- Breadcrumb Navigation -->
+      <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 20px;">
+        <a href="/">Home</a><span>/</span>
+        <span>Geometry Prep Studio</span>
+      </nav>
+
+      <!-- Premium Compact Hero -->
+      <header class="hero compact-hero">
+        <div>
+          <p class="eyebrow" style="color:#38bdf8">Foundational Readiness Mission</p>
+          <h1>Geometry Prep Studio</h1>
+          <p class="tagline">Activate your spatial skills! Explore lines vs. grids vs. solids, build 3D unit cube boxes, plot shapes on a coordinate grid, and level-up for Grade 6.</p>
+          <div class="hero-pills" aria-label="Objectives covered">
+            <span class="hero-pill">1D / 2D / 3D Specs</span>
+            <span class="hero-pill">Unit Cube Volume</span>
+            <span class="hero-pill">Coordinate Plotting</span>
+            <span class="hero-pill">Area of Rectangles</span>
           </div>
-        </section>
-      </main>
+        </div>
+        <aside class="timing-card">
+          <h3>Prep Checklists</h3>
+          <ul class="timing-list">
+            <li><strong>Cube Stacker:</strong> Fill a box layer-by-layer to discover volume equations.</li>
+            <li><strong>Coordinate Plotter:</strong> Click the grid coordinates to draw polygons.</li>
+            <li><strong>Grade Self-Check:</strong> Cumulative 4-question graded readiness check.</li>
+          </ul>
+        </aside>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="tab-nav">
+        <div class="tab-container">
+          <button class="tab-btn active" onclick="switchTab('notes')" id="btn-notes">📚 1D, 2D, 3D Notes</button>
+          <button class="tab-btn" onclick="switchTab('stacker')" id="btn-stacker">🧱 Cube Stacker Lab</button>
+          <button class="tab-btn" onclick="switchTab('plotter')" id="btn-plotter">📐 Coordinate Grid Plotter</button>
+          <button class="tab-btn" onclick="switchTab('test')" id="btn-test">🏆 Graded Readiness Check</button>
+        </div>
+      </nav>
+
+      <!-- TAB 1: 1D vs 2D vs 3D Notes -->
+      <section id="notes" class="tab-panel active">
+        <div class="card" style="margin-bottom:20px">
+          <h2>Dimensions in Geometry</h2>
+          <p>Geometry studies different dimensions. Review how we measure lines (1D), flat surfaces (2D), and solid boxes (3D) below.</p>
+        </div>
+
+        <div class="grid-3">
+          <!-- 1D Card -->
+          <div class="card">
+            <h3>📏 1-Dimensional (1D)</h3>
+            <p>Has **length** only. Measured in linear units (such as meters, inches, or feet). Represents a straight boundary line, segment, or perimeter.</p>
+            <div class="es-text">1D (Longitud): Mide distancias unidimensionales como perímetros (cm, m).</div>
+            
+            <div style="background:#f8fafc; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; text-align:center; min-height:120px; display:flex; align-items:center; justify-content:center;">
+              <svg width="220" height="40" viewBox="0 0 220 40">
+                <line x1="20" y1="20" x2="200" y2="20" stroke="var(--teal)" stroke-width="4" />
+                <circle cx="20" cy="20" r="5" fill="var(--navy)" />
+                <circle cx="200" cy="20" r="5" fill="var(--navy)" />
+                <text x="110" y="38" text-anchor="middle" font-family="'Atkinson Hyperlegible Mono', monospace" font-weight="700" font-size="10" fill="var(--navy)">Length = 8 units</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- 2D Card -->
+          <div class="card">
+            <h3>📐 2-Dimensional (2D)</h3>
+            <p>Has **length and width**. Measured in square units (such as cm² or in²). Represents a flat flat flat surface or a plane area enclosed by lines.</p>
+            <div class="es-text">2D (Área): Mide superficies en dos dimensiones en unidades cuadradas (cm²).</div>
+            
+            <div style="background:#f8fafc; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; text-align:center; min-height:120px; display:flex; align-items:center; justify-content:center;">
+              <svg width="180" height="100" viewBox="0 0 180 100">
+                <rect x="30" y="10" width="120" height="80" fill="var(--teal-pale)" stroke="var(--teal)" stroke-width="3" />
+                <pattern id="notesGrid" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none" stroke="#94a3b8" stroke-width="0.5"/></pattern>
+                <rect x="30" y="10" width="120" height="80" fill="url(#notesGrid)" />
+                <text x="90" y="55" text-anchor="middle" font-family="'Lexend', sans-serif" font-weight="800" font-size="12" fill="var(--navy)">Area = 6 × 4 = 24 u²</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- 3D Card -->
+          <div class="card">
+            <h3>📦 3-Dimensional (3D)</h3>
+            <p>Has **length, width, and height**. Measured in cubic units (such as cm³ or in³). Represents a solid shape or space filled by unit cubes (volume).</p>
+            <div class="es-text">3D (Volumen): Mide espacio tridimensional en unidades cúbicas (cm³).</div>
+            
+            <div style="background:#f8fafc; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; text-align:center; min-height:120px; display:flex; align-items:center; justify-content:center;">
+              <svg width="180" height="100" viewBox="0 0 180 100">
+                <!-- isometric outline box representation -->
+                <polygon points="40,70 100,70 100,30 40,30" fill="var(--terra-pale)" stroke="var(--terracotta)" stroke-width="2" />
+                <polygon points="100,70 140,50 140,10 100,30" fill="#fed7aa" stroke="var(--terracotta)" stroke-width="2" />
+                <polygon points="40,30 80,10 140,10 100,30" fill="#ffedd5" stroke="var(--terracotta)" stroke-width="2" />
+                <text x="90" y="90" text-anchor="middle" font-family="'Lexend', sans-serif" font-weight="800" font-size="10" fill="var(--navy)">Volume = l × w × h</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: Cube Stacker Lab -->
+      <section id="stacker" class="tab-panel">
+        <div class="card" style="margin-bottom:20px;">
+          <h2>3D Cube Stacker Lab</h2>
+          <p>Adjust the **Length**, **Width**, and **Height** to draw a 3D box. Drag the **Layers Filled** slider to stack unit cubes layer-by-layer inside the box to calculate the volume ($V = \text{Base Area} \times \text{layers}$).</p>
+        </div>
+
+        <div class="sim-workspace">
+          <!-- Canvas Panel -->
+          <div class="canvas-panel">
+            <div class="canvas-box">
+              <span class="canvas-label">3D ISOMETRIC UNIT CUBE STACK</span>
+              <svg id="cube-canvas" width="300" height="340" viewBox="0 0 300 340"></svg>
+            </div>
+          </div>
+
+          <!-- Controls Panel -->
+          <div class="control-panel">
+            <div class="card">
+              <h3>Box Parameters</h3>
+              
+              <!-- Stacking Layer Filled slider -->
+              <div class="slider-group" style="margin-bottom:16px;">
+                <label for="layerSlider">Layers Filled: <span id="layerVal">1 Layer</span></label>
+                <input type="range" id="layerSlider" min="1" max="4" value="1" oninput="updateStacker()">
+              </div>
+
+              <!-- Dimension sliders -->
+              <div class="slider-group" style="margin-bottom:12px;">
+                <label for="lSlider">Length (l) / Columns: <span id="lVal">4</span></label>
+                <input type="range" id="lSlider" min="1" max="5" value="4" oninput="updateStacker()">
+              </div>
+              <div class="slider-group" style="margin-bottom:12px;">
+                <label for="wSlider">Width (w) / Rows: <span id="wVal">3</span></label>
+                <input type="range" id="wSlider" min="1" max="5" value="3" oninput="updateStacker()">
+              </div>
+              <div class="slider-group" style="margin-bottom:12px;">
+                <label for="hSlider">Height (h) / Max Layers: <span id="hVal">4</span></label>
+                <input type="range" id="hSlider" min="1" max="5" value="4" oninput="updateStacker()">
+              </div>
+            </div>
+
+            <!-- Volume scorecard -->
+            <div class="calc-board">
+              <div class="calc-title">Live Volume Calculator</div>
+              <div class="calc-grid">
+                <div class="calc-row">
+                  <span>Base Row ($l \times w$):</span>
+                  <span id="baseSA">4 × 3 = 12 units²</span>
+                </div>
+                <div class="calc-row">
+                  <span>Layers filled ($h_{active}$):</span>
+                  <span id="layersActive">1 layer</span>
+                </div>
+              </div>
+              <div class="calc-total" id="liveVolume">
+                Volume = 12 cubic units (u³)
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Coordinate Grid Plotter -->
+      <section id="plotter" class="tab-panel">
+        <div class="card" style="margin-bottom:20px;">
+          <h2>Coordinate Grid Area Plotter</h2>
+          <p>Plot the four highlighted target nodes on the Quadrant 1 grid to construct a rectangle. Click directly on the grid intersections to place your vertices. Once complete, we will compute its length, width, and area!</p>
+        </div>
+
+        <div class="sim-workspace">
+          <!-- Interactive grid canvas -->
+          <div class="canvas-panel">
+            <div class="target-list">
+              <h3>🎯 Target Vertices to Plot:</h3>
+              <div class="target-grid">
+                <div class="target-node" id="nodeA">A (2, 3)</div>
+                <div class="target-node" id="nodeB">B (8, 3)</div>
+                <div class="target-node" id="nodeC">C (8, 7)</div>
+                <div class="target-node" id="nodeD">D (2, 7)</div>
+              </div>
+            </div>
+
+            <div class="canvas-box" style="min-height:360px;">
+              <span class="canvas-label">INTERACTIVE COORDINATE GRID</span>
+              <svg id="plotter-canvas" width="340" height="340" viewBox="0 0 340 340" class="coordinate-grid-svg"></svg>
+            </div>
+          </div>
+
+          <!-- Scorecard & results -->
+          <div class="control-panel">
+            <div class="card" style="height:100%; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <h3>Coordinate Dashboard</h3>
+                <p>Click on coordinates to plot them. You can click a plotted vertex again to remove it.</p>
+                
+                <div class="calc-board" style="margin-top:20px; background:var(--gold-pale); border-color:rgba(217, 119, 6, 0.25);">
+                  <div class="calc-title" style="color:var(--gold)">Plotted Points</div>
+                  <div id="plottedPointsList" style="font-family:'Atkinson Hyperlegible Mono', monospace; font-size:0.88rem; font-weight:700; color:#5d3f0f; min-height:80px;">
+                    No points plotted yet. Click on the grid to start!
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live shape results -->
+              <div id="shapeResultBox" class="calc-board" style="display:none; background:var(--sage-pale); border-color:var(--sage);">
+                <div class="calc-title" style="color:var(--sage)">✓ Shape Constructed Successfully!</div>
+                <div class="calc-grid">
+                  <div class="calc-row"><span>Horizontal Length:</span><b>6 units</b></div>
+                  <div class="calc-row"><span>Vertical Width:</span><b>4 units</b></div>
+                </div>
+                <div class="calc-total" style="color:var(--sage); border-color:var(--sage);">
+                  Area = 24 square units (u²)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: Graded Readiness Check -->
+      <section id="test" class="tab-panel">
+        <div class="test-panel">
+          
+          <!-- Graded Progress tracker -->
+          <div class="test-progress">
+            <div class="progress-label" id="progressStatus">GRADE: -- / 100</div>
+            <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+            <div class="progress-label" id="progressCount">0 / 4 Answered</div>
+          </div>
+
+          <!-- Question 1 -->
+          <div class="test-card" id="q1-card">
+            <div class="q-header">
+              <span class="q-badge">1</span>
+              <span class="q-title">Linear Perimeter (1D)</span>
+            </div>
+            <p class="q-text">A rectangle has a length of <b>7 inches</b> and a width of <b>4 inches</b>. What is its **perimeter**?</p>
+            <div class="q-options">
+              <div class="q-option" onclick="selectOption(1, 0, false)">A) 11 inches</div>
+              <div class="q-option" onclick="selectOption(1, 1, false)">B) 28 inches</div>
+              <div class="q-option" onclick="selectOption(1, 2, true)">C) 22 inches</div>
+              <div class="q-option" onclick="selectOption(1, 3, false)">D) 14 inches</div>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="test-card" id="q2-card">
+            <div class="q-header">
+              <span class="q-badge">2</span>
+              <span class="q-title">Area of Grid Surface (2D)</span>
+            </div>
+            <p class="q-text">A rectangle drawn on a coordinate grid has vertices at $(3, 2)$, $(9, 2)$, $(9, 6)$, and $(3, 6)$. What is its **area**?</p>
+            <div class="q-options">
+              <div class="q-option" onclick="selectOption(2, 0, true)">A) 24 square units</div>
+              <div class="q-option" onclick="selectOption(2, 1, false)">B) 20 square units</div>
+              <div class="q-option" onclick="selectOption(2, 2, false)">C) 10 square units</div>
+              <div class="q-option" onclick="selectOption(2, 3, false)">D) 12 square units</div>
+            </div>
+          </div>
+
+          <!-- Question 3 -->
+          <div class="test-card" id="q3-card">
+            <div class="q-header">
+              <span class="q-badge">3</span>
+              <span class="q-title">Layer Stacking Volume (3D)</span>
+            </div>
+            <p class="q-text">A cardboard box has a bottom base area of <b>15 cm²</b>. If it is filled completely with <b>3 layers</b> of unit cubes, what is the total volume of the box?</p>
+            <div class="q-options">
+              <div class="q-option" onclick="selectOption(3, 0, false)">A) 18 cm³</div>
+              <div class="q-option" onclick="selectOption(3, 1, false)">B) 30 cm³</div>
+              <div class="q-option" onclick="selectOption(3, 2, true)">C) 45 cm³</div>
+              <div class="q-option" onclick="selectOption(3, 3, false)">D) 50 cm³</div>
+            </div>
+          </div>
+
+          <!-- Question 4 -->
+          <div class="test-card" id="q4-card">
+            <div class="q-header">
+              <span class="q-badge">4</span>
+              <span class="q-title">Reading Coordinates</span>
+            </div>
+            <p class="q-text">Which coordinate point represents a point plotted **5 units to the right** of the origin and **8 units up**?</p>
+            <div class="q-options">
+              <div class="q-option" onclick="selectOption(4, 0, false)">A) (8, 5)</div>
+              <div class="q-option" onclick="selectOption(4, 1, true)">B) (5, 8)</div>
+              <div class="q-option" onclick="selectOption(4, 2, false)">C) (0, 5)</div>
+              <div class="q-option" onclick="selectOption(4, 3, false)">D) (5, 0)</div>
+            </div>
+          </div>
+
+          <!-- Completion card scorecard -->
+          <div class="score-card" id="finalScoreCard">
+            <h2>🏆 Readiness Achieved!</h2>
+            <p class="eyebrow" style="color:var(--gold)">Geometry Prep Certified Master</p>
+            <div class="score-big" id="finalGrade">100%</div>
+            <p id="scoreSummary">Outstanding! You are fully prepared for Grade 6 coordinate plane coordinates, perimeter, area, and volume lessons.</p>
+            
+            <div class="explain-list" id="feedbackExplains"></div>
+            
+            <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+              <button class="btn btn-teal" onclick="window.print()">Print Scorecard</button>
+              <button class="btn btn-navy" onclick="resetPrepTest()">Retry Check</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Language Toggle and Reset -->
+      <div class="lang-widget no-print">
+        <button class="float-btn" onclick="toggleLanguage()" id="langToggle">ESOL Spanish Help</button>
+        <button class="float-btn" style="background:var(--navy);" onclick="resetAllData()">Reset Studio</button>
+      </div>
+
       <footer class="site-footer">
-        <span>&copy; <span data-current-year></span> Mr. Neft</span>
+        <span>Mr. Neft's classroom activities</span>
+        <span>&copy; <span id="currentYear"></span> Classroom-ready static HTML</span>
       </footer>
+
     </div>
-    <script src="/assets/app.js" defer></script>
+
+    <!-- Confetti box -->
+    <div class="confetti-container" id="confettiBox"></div>
+
+    <script>
+      // 1. CONFIGURATION
+      const CONFIG = {
+        theme: 'navy-teal',
+        defaultLength: 4,
+        defaultWidth: 3,
+        defaultHeight: 4,
+        minDimension: 1,
+        maxDimension: 5,
+        debug: true
+      };
+
+      // 2. DIAGNOSTICS SELF-TEST
+      function selfTest() {
+        console.log("=== Running Geometry Prep Diagnostics ===");
+        try {
+          if (CONFIG.defaultLength < CONFIG.minDimension || CONFIG.defaultLength > CONFIG.maxDimension) {
+            throw new Error("Self-Test Failed: Default Length boundary error.");
+          }
+          const checkIds = ['cube-canvas', 'plotter-canvas', 'layerSlider', 'lSlider', 'wSlider', 'hSlider'];
+          checkIds.forEach(id => {
+            if (!document.getElementById(id)) {
+              throw new Error(`Self-Test Failed: Element #${id} missing.`);
+            }
+          });
+          console.log("Prep Self-Test: 100% PASS");
+          return true;
+        } catch (e) {
+          console.error("Prep Self-Test Error: ", e.message);
+          return false;
+        }
+      }
+
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+      // Plotter State
+      let plottedPoints = [];
+      const targetPoints = [
+        { name: 'A', x: 2, y: 3 },
+        { name: 'B', x: 8, y: 3 },
+        { name: 'C', x: 8, y: 7 },
+        { name: 'D', x: 2, y: 7 }
+      ];
+
+      // Test State
+      let testAnswers = {1: null, 2: null, 3: null, 4: null};
+      const correctKeys = {1: 2, 2: 0, 3: 2, 4: 1};
+      const questionExplains = {
+        1: "Perimeter is the sum of all sides: P = 2(l + w) = 2(7 + 4) = 22 inches.",
+        2: "Horizontal length = 9 - 3 = 6. Vertical width = 6 - 2 = 4. Area = 6 × 4 = 24 square units.",
+        3: "Volume = Base Area × Height = 15 cm² × 3 layers = 45 cm³.",
+        4: "Coordinates are written as (x, y). 5 units right is x = 5. 8 units up is y = 8. So, (5, 8)."
+      };
+
+      // 3. TAB NAVIGATION SWITCHING
+      function switchTab(tabId) {
+        document.querySelectorAll('section.tab-panel').forEach(section => {
+          section.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+
+        document.getElementById(tabId).classList.add('active');
+        document.getElementById('btn-' + tabId).classList.add('active');
+
+        if (tabId === 'stacker') {
+          updateStacker();
+        } else if (tabId === 'plotter') {
+          drawPlotterGrid();
+        }
+      }
+
+      // 4. LANGUAGE HELP TOGGLE
+      function toggleLanguage() {
+        document.body.classList.toggle('show-spanish');
+        const active = document.body.classList.contains('show-spanish');
+        document.getElementById('langToggle').textContent = active ? 'EN English Help' : 'ESOL Spanish Help';
+        showToast(active ? "Spanish overlay helper active!" : "English overlay active.");
+      }
+
+      function showToast(msg) {
+        let toast = document.createElement('div');
+        toast.style.position = 'fixed';
+        toast.style.bottom = '80px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.background = 'var(--navy)';
+        toast.style.color = 'white';
+        toast.style.padding = '8px 20px';
+        toast.style.borderRadius = '999px';
+        toast.style.fontWeight = '800';
+        toast.style.fontSize = '0.85rem';
+        toast.style.zIndex = '9999';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+      }
+
+      // 5. ISOMETRIC 3D CUBE STACKER VISUAL ENGINE
+      function updateStacker() {
+        const layers = parseInt(document.getElementById('layerSlider').value);
+        const l = parseInt(document.getElementById('lSlider').value);
+        const w = parseInt(document.getElementById('wSlider').value);
+        const h = parseInt(document.getElementById('hSlider').value);
+
+        // Adjust Max Layers Filled dynamically based on Height slider limit
+        document.getElementById('layerSlider').max = h;
+        if (layers > h) {
+          document.getElementById('layerSlider').value = h;
+        }
+
+        document.getElementById('layerVal').textContent = `${layers} Layer` + (layers > 1 ? 's' : '');
+        document.getElementById('lVal').textContent = l;
+        document.getElementById('wVal').textContent = w;
+        document.getElementById('hVal').textContent = h;
+
+        // Base area
+        const base = l * w;
+        document.getElementById('baseSA').textContent = `${l} × ${w} = ${base} units²`;
+        document.getElementById('layersActive').textContent = `${layers} layer` + (layers > 1 ? 's' : '');
+        
+        const volume = base * layers;
+        document.getElementById('liveVolume').textContent = `Volume = ${volume} cubic units (u³)`;
+
+        // Render Stack SVG
+        drawCubes(l, w, h, layers);
+      }
+
+      function drawCubes(l, w, h, layers) {
+        const svg = document.getElementById('cube-canvas');
+        svg.innerHTML = '';
+
+        const cx = 150;
+        const cy = 250;
+        const size = 18; // cube size
+
+        // Drawer loop: bottom layers first, backmost columns first (Painter's Overlap Algorithm)
+        for (let k = 0; k < layers; k++) {
+          for (let j = w - 1; j >= 0; j--) {
+            for (let i = l - 1; i >= 0; i--) {
+              // Calc isometric screen coordinate
+              const sx = cx + (i * size * 0.866) - (j * size * 0.866);
+              const sy = cy + (i * size * 0.5) + (j * size * 0.5) - (k * size);
+              
+              drawIsoCube(svg, sx, sy, size, k, j, i);
+            }
+          }
+        }
+      }
+
+      function drawIsoCube(svg, x, y, size, k, j, i) {
+        // HSL colors mapping: top highlights base, sides reflect depths
+        const topFill = `hsl(175, 75%, ${65 - k*4}%)`;
+        const leftFill = `hsl(175, 75%, ${55 - k*4}%)`;
+        const rightFill = `hsl(175, 75%, ${45 - k*4}%)`;
+
+        const wOffset = size * 0.866;
+        const hOffset = size * 0.5;
+
+        // Top Face
+        const top = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        top.setAttribute("points", `${x},${y - size} ${x + wOffset},${y - size - hOffset} ${x},${y - size - size} ${x - wOffset},${y - size - hOffset}`);
+        top.setAttribute("fill", topFill);
+        top.setAttribute("stroke", "#0f3a36");
+        top.setAttribute("stroke-width", "0.5");
+        svg.appendChild(top);
+
+        // Left Face
+        const left = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        left.setAttribute("points", `${x},${y} ${x - wOffset},${y - hOffset} ${x - wOffset},${y - hOffset - size} ${x},${y - size}`);
+        left.setAttribute("fill", leftFill);
+        left.setAttribute("stroke", "#0f3a36");
+        left.setAttribute("stroke-width", "0.5");
+        svg.appendChild(left);
+
+        // Right Face
+        const right = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        right.setAttribute("points", `${x},${y} ${x + wOffset},${y - hOffset} ${x + wOffset},${y - hOffset - size} ${x},${y - size}`);
+        right.setAttribute("fill", rightFill);
+        right.setAttribute("stroke", "#0f3a36");
+        right.setAttribute("stroke-width", "0.5");
+        svg.appendChild(right);
+      }
+
+      // 6. INTERACTIVE COORDINATE GRID PLOTTER
+      function drawPlotterGrid() {
+        const svg = document.getElementById('plotter-canvas');
+        svg.innerHTML = '';
+
+        const padding = 30;
+        const size = 280;
+        const gridLinesCount = 10;
+        const step = size / gridLinesCount;
+
+        // 1. Render grid lines
+        for (let i = 0; i <= gridLinesCount; i++) {
+          const pos = padding + i * step;
+
+          // Vertical line
+          const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          vLine.setAttribute("x1", pos);
+          vLine.setAttribute("y1", padding);
+          vLine.setAttribute("x2", pos);
+          vLine.setAttribute("y2", padding + size);
+          vLine.setAttribute("stroke", i === 0 ? "var(--navy)" : "#e2e8f0");
+          vLine.setAttribute("stroke-width", i === 0 ? "3" : "1");
+          svg.appendChild(vLine);
+
+          // Horizontal line
+          const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          hLine.setAttribute("x1", padding);
+          hLine.setAttribute("y1", padding + size - i * step);
+          hLine.setAttribute("x2", padding + size);
+          hLine.setAttribute("y2", padding + size - i * step);
+          hLine.setAttribute("stroke", i === 0 ? "var(--navy)" : "#e2e8f0");
+          hLine.setAttribute("stroke-width", i === 0 ? "3" : "1");
+          svg.appendChild(hLine);
+
+          // Labels
+          const xLbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          xLbl.setAttribute("x", pos);
+          xLbl.setAttribute("y", padding + size + 16);
+          xLbl.setAttribute("text-anchor", "middle");
+          xLbl.setAttribute("font-size", "9");
+          xLbl.setAttribute("font-family", "Atkinson Hyperlegible Mono");
+          xLbl.setAttribute("font-weight", "800");
+          xLbl.setAttribute("fill", "var(--navy)");
+          xLbl.textContent = i;
+          svg.appendChild(xLbl);
+
+          const yLbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          yLbl.setAttribute("x", padding - 12);
+          yLbl.setAttribute("y", padding + size - i * step + 3);
+          yLbl.setAttribute("text-anchor", "middle");
+          yLbl.setAttribute("font-size", "9");
+          yLbl.setAttribute("font-family", "Atkinson Hyperlegible Mono");
+          yLbl.setAttribute("font-weight", "800");
+          yLbl.setAttribute("fill", "var(--navy)");
+          yLbl.textContent = i;
+          svg.appendChild(yLbl);
+        }
+
+        // 2. Draw shaded area if shape is complete
+        const isComplete = checkShapeCompletion();
+        if (isComplete) {
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          const ax = padding + 2 * step;
+          const ay = padding + size - 7 * step;
+          const aw = 6 * step;
+          const ah = 4 * step;
+          rect.setAttribute("x", ax);
+          rect.setAttribute("y", ay);
+          rect.setAttribute("width", aw);
+          rect.setAttribute("height", ah);
+          rect.setAttribute("fill", "rgba(22, 163, 74, 0.15)");
+          rect.setAttribute("stroke", "var(--sage)");
+          rect.setAttribute("stroke-width", "3");
+          rect.setAttribute("stroke-dasharray", "4 2");
+          svg.appendChild(rect);
+        }
+
+        // 3. Draw grid dots intersections for click plotting
+        for (let i = 0; i <= gridLinesCount; i++) {
+          for (let j = 0; j <= gridLinesCount; j++) {
+            const dotX = padding + i * step;
+            const dotY = padding + size - j * step;
+
+            const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            dot.setAttribute("cx", dotX);
+            dot.setAttribute("cy", dotY);
+            dot.setAttribute("r", "4");
+            
+            const isPlotted = plottedPoints.some(p => p.x === i && p.y === j);
+            dot.setAttribute("class", isPlotted ? "grid-dot plotted" : "grid-dot");
+            dot.onclick = () => handlePlotClick(i, j);
+            
+            svg.appendChild(dot);
+          }
+        }
+      }
+
+      function handlePlotClick(x, y) {
+        const index = plottedPoints.findIndex(p => p.x === x && p.y === y);
+        if (index !== -1) {
+          // Remove point
+          plottedPoints.splice(index, 1);
+          showToast(`Point (${x}, ${y}) removed.`);
+        } else {
+          if (plottedPoints.length >= 4) {
+            showToast("You have already plotted 4 points! Click a point to remove it first.");
+            return;
+          }
+          plottedPoints.push({ x, y });
+          showToast(`Point (${x}, ${y}) plotted!`);
+        }
+
+        updatePlotDashboard();
+        drawPlotterGrid();
+      }
+
+      function updatePlotDashboard() {
+        const board = document.getElementById('plottedPointsList');
+        const result = document.getElementById('shapeResultBox');
+
+        if (plottedPoints.length === 0) {
+          board.innerHTML = 'No points plotted yet. Click on the grid to start!';
+          result.style.display = 'none';
+        } else {
+          board.innerHTML = '<div style="display:grid; gap:6px;">';
+          plottedPoints.forEach((p, idx) => {
+            const letter = String.fromCharCode(65 + idx);
+            board.innerHTML += `<div>Point ${letter}: <b>(${p.x}, ${p.y})</b></div>`;
+          });
+          board.innerHTML += '</div>';
+        }
+
+        // Highlight matching target nodes
+        targetPoints.forEach(target => {
+          const match = plottedPoints.some(p => p.x === target.x && p.y === target.y);
+          const node = document.getElementById('node' + target.name);
+          if (match) {
+            node.className = 'target-node completed';
+          } else {
+            node.className = 'target-node';
+          }
+        });
+
+        const isComplete = checkShapeCompletion();
+        if (isComplete) {
+          result.style.display = 'block';
+          triggerConfetti(35);
+        } else {
+          result.style.display = 'none';
+        }
+      }
+
+      function checkShapeCompletion() {
+        if (plottedPoints.length !== 4) return false;
+        
+        // Check if all target coordinates exist in plottedPoints
+        return targetPoints.every(target => {
+          return plottedPoints.some(p => p.x === target.x && p.y === target.y);
+        });
+      }
+
+      // 7. GRADED PRACTICE TEST
+      function selectOption(qNum, optIdx, isCorrect) {
+        const card = document.getElementById(`q${qNum}-card`);
+        const options = card.querySelectorAll('.q-option');
+
+        options.forEach(opt => opt.className = 'q-option');
+        testAnswers[qNum] = isCorrect;
+
+        options[optIdx].className = isCorrect ? 'q-option correct' : 'q-option incorrect';
+        
+        if (isCorrect) {
+          card.className = "test-card correct-card";
+          showToast("Well done!");
+        } else {
+          card.className = "test-card wrong-card";
+          options[correctKeys[qNum]].classList.add('correct');
+        }
+
+        updateTestProgress();
+      }
+
+      function updateTestProgress() {
+        let answered = 0;
+        let correctCount = 0;
+
+        for (let q in testAnswers) {
+          if (testAnswers[q] !== null) {
+            answered++;
+            if (testAnswers[q] === true) {
+              correctCount++;
+            }
+          }
+        }
+
+        const pct = (answered / 4) * 100;
+        document.getElementById('progressBar').style.width = pct + "%";
+        document.getElementById('progressCount').textContent = `${answered} / 4 Answered`;
+
+        if (answered === 4) {
+          const finalScore = (correctCount / 4) * 100;
+          document.getElementById('progressStatus').textContent = `GRADE: ${finalScore}%`;
+
+          // Generate explains list
+          const explains = document.getElementById('feedbackExplains');
+          explains.innerHTML = '';
+          
+          for (let q = 1; q <= 4; q++) {
+            const isCorrect = testAnswers[q];
+            explains.innerHTML += `
+              <div class="explain-item">
+                <b>Question ${q} (${isCorrect ? '✓ CORRECT' : '✗ WRONG'})</b>
+                <p style="margin:2px 0 0; font-size:0.88rem; color:var(--muted);">${questionExplains[q]}</p>
+              </div>
+            `;
+          }
+
+          document.getElementById('finalGrade').textContent = `${finalScore}%`;
+          document.getElementById('finalScoreCard').style.display = 'block';
+
+          if (finalScore === 100) {
+            triggerConfetti(65);
+            showToast("🎖️ Perfect Score achieved!");
+          } else {
+            showToast("Test complete. Study the solutions below!");
+          }
+        }
+      }
+
+      function resetPrepTest() {
+        testAnswers = {1: null, 2: null, 3: null, 4: null};
+        document.querySelectorAll('.test-card').forEach(card => {
+          card.className = 'test-card';
+          card.querySelectorAll('.q-option').forEach(opt => opt.className = 'q-option');
+        });
+        document.getElementById('finalScoreCard').style.display = 'none';
+        document.getElementById('progressBar').style.width = "0%";
+        document.getElementById('progressCount').textContent = "0 / 4 Answered";
+        document.getElementById('progressStatus').textContent = "GRADE: -- / 100";
+        showToast("Graded test entries reset.");
+      }
+
+      // 8. confetti
+      function triggerConfetti(count) {
+        const box = document.getElementById('confettiBox');
+        box.innerHTML = '';
+        const colors = ['#0d9488', '#ea580c', '#d97706', '#16a34a', '#3b82f6'];
+
+        for (let i = 0; i < count; i++) {
+          const p = document.createElement('div');
+          p.className = 'particle';
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const size = Math.floor(Math.random() * 8) + 6;
+          const left = Math.floor(Math.random() * 100);
+          const top = Math.floor(Math.random() * 20) + 40;
+
+          const dx = (Math.random() - 0.5) * 400 + "px";
+          const dy = (Math.random() * 300) + 150 + "px";
+
+          p.style.background = color;
+          p.style.width = size + "px";
+          p.style.height = size + "px";
+          p.style.left = left + "%";
+          p.style.top = top + "%";
+          p.style.setProperty('--dx', dx);
+          p.style.setProperty('--dy', dy);
+
+          box.appendChild(p);
+        }
+      }
+
+      // 9. reset all
+      function resetAllData() {
+        document.getElementById('layerSlider').value = 1;
+        document.getElementById('lSlider').value = CONFIG.defaultLength;
+        document.getElementById('wSlider').value = CONFIG.defaultWidth;
+        document.getElementById('hSlider').value = CONFIG.defaultHeight;
+        
+        plottedPoints = [];
+        updatePlotDashboard();
+        drawPlotterGrid();
+        
+        document.body.classList.remove('show-spanish');
+        document.getElementById('langToggle').textContent = 'ESOL Spanish Help';
+
+        updateStacker();
+        resetPrepTest();
+        showToast("All lab workspaces and scores reset!");
+      }
+
+      // Init
+      if (selfTest()) {
+        updateStacker();
+      }
+    </script>
   </body>
 </html>

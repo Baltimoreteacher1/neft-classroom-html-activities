@@ -1,26 +1,432 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Arcade-grade mathematical conveyor game. Test inputs on the Function Machine and deduce the active algebraic equation.">
+  <title>Function Forge 6.EE.9 · Conveyor Arcade</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/shared.css">
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Function Forge: Variables Lab Premium</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23263238' width='192' height='192'/><text x='96' y='135' font-size='120' font-weight='900' text-anchor='middle' fill='%23fff'>ƒ</text></svg>" />
-  <meta name="theme-color" content="#263238" />
-  <meta name="description" content="Premium Grade 6 game: independent vs dependent variables with boss battles, skill trees, adaptive scaffolds, teacher reports." />
+
+  <style>
+    :root {
+      --cabinet-bg: #1e1b4b;
+      --screen-bg: #03001e;
+      --grid-pink: #ec4899;
+      --glow-mint: #34d399;
+      --cyan-light: #22d3ee;
+      --amber: #f59e0b;
+      --font-outfit: 'Outfit', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-outfit);
+      background: radial-gradient(circle at center, #111029 0%, #03020c 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .arcade-shell {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .arcade-cabinet {
+      background: linear-gradient(180deg, var(--cabinet-bg) 0%, #0f0a28 100%);
+      border: 6px solid #4338ca;
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8), inset 0 2px 10px rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+    }
+
+    .marquee {
+      background: #09090b;
+      border: 2px solid var(--grid-pink);
+      border-radius: 12px;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+    }
+
+    .marquee h1 {
+      margin: 0;
+      font-family: var(--font-outfit);
+      font-weight: 900;
+      font-size: 1.8rem;
+      letter-spacing: -0.03em;
+      background: linear-gradient(90deg, var(--grid-pink) 0%, var(--cyan-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 12px rgba(236,72,153,0.3);
+    }
+
+    .arcade-screen {
+      background: var(--screen-bg);
+      border: 4px solid #000;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: inset 0 0 40px rgba(34, 211, 238, 0.15), 0 0 20px rgba(0,0,0,0.9);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .machine-viewport {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed rgba(34, 211, 238, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      min-height: 320px;
+    }
+
+    /* Conveyor Table */
+    .conveyor-belt {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 8px;
+      background: rgba(0,0,0,0.5);
+    }
+
+    .belt-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: rgba(34, 211, 238, 0.05);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      padding: 8px;
+      border-radius: 8px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--cyan-light);
+    }
+
+    /* Form control */
+    .cruncher-input-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      width: 100%;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      background: #000;
+      border: 1.5px solid rgba(34, 211, 238, 0.4);
+      border-radius: 10px;
+      color: #fff;
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      font-weight: 700;
+      outline: none;
+      text-align: center;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--cyan-light);
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+    }
+
+    /* Answers grid */
+    .choices-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .choices-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .choice-card {
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      transition: all 0.12s ease;
+      color: #fff;
+    }
+
+    .choice-card:hover {
+      background: rgba(236, 72, 153, 0.1);
+      border-color: var(--grid-pink);
+      transform: translateY(-1px);
+    }
+
+    .choice-card.active {
+      background: var(--grid-pink);
+      border-color: #fff;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+    }
+
+    .score-badge {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--glow-mint);
+    }
+
+    .coach-feedback {
+      background: rgba(34, 211, 238, 0.04);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .coach-feedback.error {
+      border-color: var(--grid-pink);
+      background: rgba(236, 72, 153, 0.04);
+      color: #fecdd3;
+    }
+  </style>
 </head>
 <body>
-  <noscript>This game requires JavaScript enabled.</noscript>
-  <div id="app" class="app" aria-live="polite"></div>
-  <script type="module" src="app.js"></script>
+  <main class="arcade-shell">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a><span>/</span><a href="/expressions-equations/">Expressions &amp; Equations</a><span>/</span><span>Function Forge Arcade</span>
+    </nav>
+
+    <div class="arcade-cabinet">
+      <div class="marquee">
+        <h1>👾 FUNCTION FORGE 6.EE.9</h1>
+        <div class="score-badge">Level: <span id="levelVal">1</span> · Score: <span id="scoreVal">0</span></div>
+      </div>
+
+      <div class="arcade-screen">
+        <!-- Interactive testing column -->
+        <section class="machine-viewport">
+          <p style="margin:0 0 16px 0; font-size:0.85rem; color:#a1a1aa; text-align:center;">
+            Feed numbers into the virtual machine to analyze the outputs. Guess the algebraic relationship!
+          </p>
+
+          <!-- conveyor animation -->
+          <svg width="180" height="140" viewBox="0 0 180 140" style="background:transparent; margin-bottom:14px;">
+            <!-- Outer Machine Body -->
+            <rect x="30" y="20" width="120" height="100" rx="14" fill="#1e1e38" stroke="#22d3ee" stroke-width="3" />
+            <rect x="42" y="32" width="96" height="40" rx="8" fill="#09090b" stroke="#4338ca" stroke-width="2" />
+            
+            <!-- Matrix rule status lights -->
+            <circle cx="54" cy="94" r="6" fill="#34d399" />
+            <circle cx="74" cy="94" r="6" fill="#ec4899" />
+            <circle cx="94" cy="94" r="6" fill="#22d3ee" />
+            
+            <!-- Cruncher gear -->
+            <circle cx="126" cy="94" r="10" fill="none" stroke="#22d3ee" stroke-width="2">
+              <animateTransform attributeName="transform" type="rotate" from="0 126 94" to="360 126 94" dur="3s" repeatCount="indefinite" />
+            </circle>
+
+            <!-- Screen text -->
+            <text x="90" y="56" fill="#22d3ee" font-family="DM Mono" font-size="12" font-weight="700" text-anchor="middle" id="machineOutputText">ACTIVE</text>
+          </svg>
+
+          <div class="conveyor-belt" id="conveyorBelt">
+            <!-- Dynamically logged input/output pairs -->
+            <div class="belt-item"><span>Input (x)</span><span>Output (y)</span></div>
+          </div>
+
+          <div class="cruncher-input-group">
+            <input type="number" id="testInput" placeholder="Enter x" min="0" max="100">
+            <button class="btn-action" id="feedBtn">Feed Machine</button>
+          </div>
+        </section>
+
+        <!-- Deduce Equation column -->
+        <section class="choices-column">
+          <div class="coach-feedback" id="coachFeedback">
+            🤖 <strong>Arcade Attendant:</strong> Enter numbers into the machine on the left, click <strong>Feed Machine</strong>, and observe how the output (y) scales relative to (x). Select the correct equation card from the deck below!
+          </div>
+
+          <div class="choices-grid" id="choicesGrid">
+            <!-- Generated dynamically -->
+          </div>
+
+          <button class="btn-submit" id="submitBtn">Verify Algebraic Rule</button>
+        </section>
+      </div>
+
+      <div class="button-row">
+        <a class="primary-button" href="/expressions-equations/">Back to collection</a>
+        <a class="secondary-button" href="/">Back to homepage</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="/assets/app.js" defer></script>
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(()=>{});
-      });
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq, type, duration) {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
     }
+
+    // Level configs
+    const database = [
+      { rule: "y = 4x", eval: (x) => 4 * x, options: ["y = x + 4", "y = 4x", "y = x / 4", "y = 2x + 2"] },
+      { rule: "y = x + 7", eval: (x) => x + 7, options: ["y = x + 7", "y = 7x", "y = x - 7", "y = 2x + 5"] },
+      { rule: "y = 3x", eval: (x) => 3 * x, options: ["y = x + 3", "y = 3x", "y = x / 3", "y = 2x + 1"] },
+      { rule: "y = x / 2", eval: (x) => x / 2, options: ["y = 2x", "y = x / 2", "y = x + 2", "y = x - 2"] },
+      { rule: "y = 2x + 3", eval: (x) => 2 * x + 3, options: ["y = 2x", "y = x + 3", "y = 2x + 3", "y = 3x + 2"] },
+      { rule: "y = 5x - 1", eval: (x) => 5 * x - 1, options: ["y = 5x", "y = 5x + 1", "y = 5x - 1", "y = 4x + 2"] }
+    ];
+
+    let activeIndex = 0;
+    let score = 0;
+    let level = 1;
+    let activeQuestion = null;
+    let selectedOption = null;
+
+    const testInput = document.getElementById("testInput");
+    const feedBtn = document.getElementById("feedBtn");
+    const conveyorBelt = document.getElementById("conveyorBelt");
+    const choicesGrid = document.getElementById("choicesGrid");
+    const coachFeedback = document.getElementById("coachFeedback");
+    const submitBtn = document.getElementById("submitBtn");
+    const machineOutputText = document.getElementById("machineOutputText");
+    const scoreVal = document.getElementById("scoreVal");
+    const levelVal = document.getElementById("levelVal");
+
+    function loadQuestion() {
+      activeQuestion = database[activeIndex];
+      selectedOption = null;
+
+      // Reset conveyor logs
+      conveyorBelt.innerHTML = '<div class="belt-item"><span>Input (x)</span><span>Output (y)</span></div>';
+      
+      // Load standard examples to give them a baseline to discover
+      [1, 2, 3].forEach(feedMachine);
+
+      // Render choice cards
+      choicesGrid.innerHTML = "";
+      activeQuestion.options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "choice-card";
+        div.textContent = opt;
+        div.addEventListener("click", () => {
+          document.querySelectorAll(".choice-card").forEach(c => c.classList.remove("active"));
+          div.classList.add("active");
+          selectedOption = opt;
+          beep(600, 'sine', 0.08);
+        });
+        choicesGrid.appendChild(div);
+      });
+
+      coachFeedback.className = "coach-feedback";
+      coachFeedback.innerHTML = `🤖 <strong>Attendant:</strong> A new rule matrix has been loaded inside the Function Machine! Test custom numbers or analyze the default conveyor values.`;
+      
+      machineOutputText.textContent = "READY";
+      machineOutputText.style.fill = "var(--cyan-light)";
+    }
+
+    function feedMachine(val) {
+      if (val === undefined) {
+        val = Number(testInput.value);
+        if (isNaN(val) || testInput.value.trim() === "") return;
+        testInput.value = "";
+      }
+
+      const out = activeQuestion.eval(val);
+      
+      // Append row
+      const div = document.createElement("div");
+      div.className = "belt-item";
+      div.innerHTML = `<span>${val}</span><span>${out}</span>`;
+      
+      // Insert right after headers
+      const header = conveyorBelt.firstChild;
+      conveyorBelt.insertBefore(div, conveyorBelt.children[1]);
+
+      machineOutputText.textContent = `IN:${val} OUT:${out}`;
+      machineOutputText.style.fill = "var(--glow-mint)";
+      
+      beep(440, 'triangle', 0.1);
+      setTimeout(() => beep(660, 'triangle', 0.1), 80);
+    }
+
+    function verifyAnswer() {
+      if (!selectedOption) {
+        alert("Select an equation card first.");
+        return;
+      }
+
+      if (selectedOption === activeQuestion.rule) {
+        // Correct
+        score += 10;
+        scoreVal.textContent = score;
+        beep(783.99, 'sine', 0.2); // sweet victory tones
+        setTimeout(() => beep(1046.50, 'sine', 0.25), 100);
+
+        coachFeedback.className = "coach-feedback";
+        coachFeedback.innerHTML = `🎉 <strong>Sensors Verified!</strong> Correct! The relationship between the variables is perfectly defined by <strong>${activeQuestion.rule}</strong>. Loading next rule...`;
+
+        activeIndex = (activeIndex + 1) % database.length;
+        if (activeIndex === 0) {
+          level++;
+          levelVal.textContent = level;
+        }
+
+        setTimeout(loadQuestion, 1600);
+      } else {
+        // Wrong
+        beep(147.01, 'sawtooth', 0.5);
+        coachFeedback.className = "coach-feedback error";
+        coachFeedback.innerHTML = `❌ <strong>Rule Rejected!</strong> Your selected formula does not produce the active output variables. Keep testing values and try again.`;
+      }
+    }
+
+    feedBtn.addEventListener("click", () => feedMachine());
+    submitBtn.addEventListener("click", verifyAnswer);
+
+    // Initial Load
+    window.addEventListener("DOMContentLoaded", loadQuestion);
   </script>
 </body>
 </html>

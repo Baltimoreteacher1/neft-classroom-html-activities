@@ -1723,6 +1723,32 @@
                   developmental feedback...
                 </div>
               </div>
+
+              <!-- Action Button Row -->
+              <div
+                style="
+                  display: flex;
+                  justify-content: flex-end;
+                  margin-top: 12px;
+                  border-top: 1px solid var(--line-muted);
+                  padding-top: 12px;
+                "
+              >
+                <button
+                  id="downloadSpeakingDocx"
+                  class="action-btn"
+                  onclick="downloadSpeakingCaseFile()"
+                  style="
+                    background: #2b579a;
+                    color: white;
+                    padding: 8px 16px;
+                    font-size: 0.85rem;
+                    box-shadow: 0 4px 6px rgba(43, 87, 154, 0.15);
+                  "
+                >
+                  📥 Download Speaking Case File (.docx)
+                </button>
+              </div>
             </div>
           </section>
         </div>
@@ -2797,7 +2823,159 @@
           modelA:
             "<span class='cer-evidence'>Hello, my name is Sam.</span> Nice to meet you.",
           modelB:
-            "<span class='cer-topic'>I will copy the model greeting so my introduction sounds clear and polite.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I listen to how the model says hello and gives their name slowly</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I record myself: hello, my name is Sam, and I am in grade five</span>, <span class='cer-connector'>and I finish by saying</span> <span class='cer-evidence'>it is nice to meet you</span>.",
+            "<span class='cer-topic'>I will copy the model greeting so my introduction sounds clear and polite.</span> <span class='cer-connector'>First</span>, <span class='cer-evidence'>I listen to how the model says hello and gives their name slowly</span>. <span class='cer-connector'>Then</span>, <span class='cer-evidence'>I record myself: hello, my name is Sam, and I am in seventh grade</span>, <span class='cer-connector'>and I finish by saying</span> <span class='cer-evidence'>it is nice to meet you</span>.",
+        },
+
+        // ──────────────────────────────────────────────────────────────
+        // GRADES 6-8 ACADEMIC ARGUMENT FOLDER (T39-T43)
+        // These task sets mirror the upper-grade ACCESS Speaking demand:
+        // the academic register rises from naming, to describing data, to
+        // comparing, to explaining cause/process, to arguing a claim and
+        // justifying it with evidence and academic connectors. Each pairs a
+        // content-area visual (chart, graph, primary source, diagram, data
+        // table) with a model-then-respond sequence.
+        // ──────────────────────────────────────────────────────────────
+        {
+          id: "T39",
+          title: "Climate Data: Average Temperatures",
+          domain: "Language of Science",
+          kind: "Argue from Data",
+          model: "climate-line",
+          terms: ["trend", "increase", "data", "evidence", "interpret"],
+          promptA:
+            "Look at the line graph of average yearly temperatures. In which year was the temperature the highest?",
+          promptB:
+            "Use the line graph to make a claim about how the temperature has changed over time. Support your claim with specific evidence from the data, and explain what the trend suggests.",
+          framesA: [
+            "The highest temperature was in...",
+            "The line goes up from... to...",
+            "The lowest point is...",
+          ],
+          framesB: [
+            "Based on the data, I claim that...",
+            "The evidence that supports this is... because the line...",
+            "This trend suggests that... therefore...",
+          ],
+          modelA:
+            "On this <span class='cer-vocab'>line graph</span>, the highest <span class='cer-evidence'>temperature was in the most recent year</span>, where the line reaches the top.",
+          modelB:
+            "<span class='cer-topic'>Based on this data, I claim that the average temperature has increased steadily over the past decades.</span> <span class='cer-connector'>The evidence that supports this is</span> <span class='cer-evidence'>that the line rises from about 14 degrees to nearly 16 degrees with very few drops</span>. <span class='cer-connector'>This upward trend suggests that</span> <span class='cer-evidence'>the climate is warming</span>, <span class='cer-connector'>therefore</span> scientists would say the data shows a clear pattern, not a coincidence.",
+        },
+        {
+          id: "T40",
+          title: "Math: Interpreting a Scatter Plot",
+          domain: "Language of Mathematics",
+          kind: "Explain a Relationship",
+          model: "scatter-plot",
+          terms: [
+            "relationship",
+            "correlation",
+            "variable",
+            "trend line",
+            "predict",
+          ],
+          promptA:
+            "Look at the scatter plot of study time and test scores. As study time goes up, what happens to the scores?",
+          promptB:
+            "Describe the relationship shown in this scatter plot between study time and test scores. Explain what the trend line tells you, and use it to predict a result.",
+          framesA: [
+            "As study time goes up, the scores...",
+            "Most of the dots are...",
+            "The pattern shows...",
+          ],
+          framesB: [
+            "This scatter plot shows a relationship between... and...",
+            "The trend line tells me that... because the points...",
+            "Using this relationship, I predict that... since...",
+          ],
+          modelA:
+            "As <span class='cer-vocab'>study time</span> goes up, the test scores <span class='cer-evidence'>also go up</span>. The dots climb to the right.",
+          modelB:
+            "<span class='cer-topic'>This scatter plot shows a positive relationship between study time and test scores.</span> <span class='cer-connector'>The trend line tells me that</span> <span class='cer-evidence'>students who study more hours generally earn higher scores, because the points rise from the lower left to the upper right</span>. <span class='cer-connector'>Using this correlation, I predict that</span> <span class='cer-evidence'>a student who studies five hours would likely score above 85</span>, <span class='cer-connector'>since</span> that follows the pattern of the trend line.",
+        },
+        {
+          id: "T41",
+          title: "Primary Source: A Historical Photograph",
+          domain: "Language of Social Studies",
+          kind: "Analyze a Source",
+          model: "primary-source",
+          terms: ["primary source", "evidence", "perspective", "infer", "era"],
+          promptA:
+            "Look at this historical photograph of a factory. Name two things you can see in the image.",
+          promptB:
+            "This photograph is a primary source from the Industrial era. Describe what it shows, then make an inference about what life was like for these workers, supporting your inference with details from the image.",
+          framesA: [
+            "In the photograph I see...",
+            "There are people who are...",
+            "The place looks like a...",
+          ],
+          framesB: [
+            "This primary source shows... which tells me...",
+            "I can infer that life was... because the image shows...",
+            "From this perspective, I would argue that... since the evidence...",
+          ],
+          modelA:
+            "In this <span class='cer-vocab'>photograph</span>, I see <span class='cer-evidence'>workers and large machines</span> inside a crowded factory.",
+          modelB:
+            "<span class='cer-topic'>This primary source shows workers, including young people, standing at rows of machines in a dim, crowded factory.</span> <span class='cer-connector'>I can infer that</span> <span class='cer-evidence'>life was hard for these workers because the room looks unsafe, the hours appear long, and even children are working</span>. <span class='cer-connector'>From this evidence, I would argue that</span> <span class='cer-evidence'>conditions during the Industrial era were difficult and unfair</span>, <span class='cer-connector'>since</span> the photograph captures the workers' tired faces and the lack of safety.",
+        },
+        {
+          id: "T42",
+          title: "Language Arts: Argue a Claim About a Character",
+          domain: "Language of Language Arts",
+          kind: "Argue a Claim",
+          model: "text-claim",
+          terms: ["claim", "evidence", "text", "trait", "justify"],
+          promptA:
+            "Read the short passage on the card. What does the character, Maya, do in the story?",
+          promptB:
+            "Make a claim about Maya's character trait. Defend your claim using two pieces of textual evidence from the passage, and explain how each detail proves your point.",
+          framesA: [
+            "In the passage, Maya...",
+            "One thing she does is...",
+            "The text says...",
+          ],
+          framesB: [
+            "I claim that Maya is... ",
+            "One piece of evidence is when the text says... which shows...",
+            "A second detail that proves this is... therefore...",
+          ],
+          modelA:
+            "In the passage, <span class='cer-vocab'>Maya</span> <span class='cer-evidence'>stays up late to fix the broken robot</span> for the science fair.",
+          modelB:
+            "<span class='cer-topic'>I claim that Maya is a determined character.</span> <span class='cer-connector'>One piece of textual evidence is when the text says</span> <span class='cer-evidence'>she 'tried the wiring six times until it finally lit up,' which shows she does not give up</span>. <span class='cer-connector'>A second detail that proves this is</span> <span class='cer-evidence'>that she stayed up late even when she was tired</span>, <span class='cer-connector'>therefore</span> the author wants readers to see Maya as someone who works hard to reach her goals.",
+        },
+        {
+          id: "T43",
+          title: "Science Experiment: Reading a Data Table",
+          domain: "Language of Science",
+          kind: "Draw a Conclusion",
+          model: "data-table",
+          terms: [
+            "variable",
+            "results",
+            "conclusion",
+            "controlled",
+            "evidence",
+          ],
+          promptA:
+            "Look at the data table from the plant experiment. Which plant grew the tallest?",
+          promptB:
+            "Using the results in this data table, draw a conclusion about how sunlight affected plant growth. Cite the specific data that supports your conclusion and explain the cause.",
+          framesA: [
+            "The tallest plant was...",
+            "Plant A grew... cm",
+            "The shortest plant was...",
+          ],
+          framesB: [
+            "Based on the results in the table, I conclude that...",
+            "The data that supports this is... compared to...",
+            "This happened because... so the experiment shows...",
+          ],
+          modelA:
+            "In this <span class='cer-vocab'>data table</span>, the <span class='cer-evidence'>plant with full sunlight grew the tallest</span>, at 18 centimeters.",
+          modelB:
+            "<span class='cer-topic'>Based on the results in this table, I conclude that more sunlight caused the plants to grow taller.</span> <span class='cer-connector'>The data that supports this is</span> <span class='cer-evidence'>that the plant in full sunlight reached 18 cm, while the plant in the dark only reached 4 cm</span>. <span class='cer-connector'>This happened because</span> <span class='cer-evidence'>plants need sunlight to make food through photosynthesis</span>, <span class='cer-connector'>so</span> the experiment shows a clear cause-and-effect relationship between sunlight and growth.",
         },
       ];
 
@@ -2899,6 +3077,21 @@
             { id: "T26", fn: "Say It Like the Model" },
             { id: "T38", fn: "Greet & Introduce" },
             { id: "T28", fn: "Ask & Answer" },
+          ],
+        },
+        {
+          id: "academic",
+          icon: "🎓",
+          name: "Academic Argument (Grades 6-8)",
+          context: "Academic Language",
+          blurb:
+            "Upper-grade tasks: interpret data, analyze sources, and argue claims with evidence.",
+          sequence: [
+            { id: "T39", fn: "Argue from Data" },
+            { id: "T40", fn: "Explain a Relationship" },
+            { id: "T41", fn: "Analyze a Source" },
+            { id: "T42", fn: "Argue a Claim" },
+            { id: "T43", fn: "Draw a Conclusion" },
           ],
         },
       ];
@@ -4007,6 +4200,153 @@
           <text x="200" y="274" text-anchor="middle" font-size="10" font-weight="800" fill="var(--slate-muted)">TAP A BIN, THEN EXPLAIN HOW TO SORT AND WHY IT HELPS</text>
         </svg>`;
         },
+
+        // ── Grades 6-8 academic stimuli (T39-T43) ──
+        "climate-line": function () {
+          // Line graph: average yearly temperature trending upward.
+          const pts = [
+            [60, 240],
+            [110, 232],
+            [160, 236],
+            [210, 215],
+            [260, 200],
+            [310, 178],
+            [360, 160],
+          ];
+          const years = ["1960", "70", "80", "90", "00", "10", "20"];
+          const poly = pts.map((p) => p.join(",")).join(" ");
+          let dots = "";
+          pts.forEach((p, i) => {
+            dots += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="var(--coral)" style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('point', 'A data point for ${years[i].length === 2 ? "19" + years[i] : years[i]}. Use specific numbers from the graph as your evidence.')" />`;
+          });
+          let yLbl = "";
+          [14, 15, 16].forEach((t, i) => {
+            const y = 240 - i * 40;
+            yLbl += `<line x1="50" y1="${y}" x2="370" y2="${y}" stroke="var(--line-muted)" stroke-width="0.5" /><text x="44" y="${y + 4}" text-anchor="end" font-size="9" font-weight="800" fill="var(--slate-muted)">${t}°</text>`;
+          });
+          let xLbl = "";
+          pts.forEach((p, i) => {
+            xLbl += `<text x="${p[0]}" y="262" text-anchor="middle" font-size="8.5" font-weight="800" fill="var(--slate-muted)">${years[i]}</text>`;
+          });
+          return `<svg width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="Line graph showing average yearly temperature rising from about 14 degrees in 1960 to nearly 16 degrees in 2020" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="28" text-anchor="middle" font-size="13" font-weight="900" fill="var(--navy-deep)">Average Yearly Temperature (°C)</text>
+          ${yLbl}
+          <line x1="50" y1="55" x2="50" y2="248" stroke="var(--navy)" stroke-width="2" />
+          <line x1="50" y1="248" x2="372" y2="248" stroke="var(--navy)" stroke-width="2" />
+          <polyline points="${poly}" fill="none" stroke="var(--primary)" stroke-width="3" />
+          ${dots}
+          ${xLbl}
+          <text x="200" y="288" text-anchor="middle" font-size="9.5" font-weight="900" fill="var(--coral)">TAP A POINT — DESCRIBE THE TREND AND ARGUE WHAT IT MEANS</text>
+        </svg>`;
+        },
+
+        "scatter-plot": function () {
+          // Positive correlation: study hours vs test score, with trend line.
+          const data = [
+            [80, 232],
+            [110, 215],
+            [130, 222],
+            [160, 195],
+            [185, 200],
+            [210, 175],
+            [240, 165],
+            [265, 150],
+            [300, 135],
+            [330, 120],
+          ];
+          let dots = "";
+          data.forEach((p) => {
+            dots += `<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="var(--coral)" style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('dot', 'Each dot is one student: their study hours and their test score. The dots rise to the right.')" />`;
+          });
+          return `<svg width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="Scatter plot of study time versus test score showing a positive correlation, with points rising from lower left to upper right and a trend line" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="26" text-anchor="middle" font-size="13" font-weight="900" fill="var(--navy-deep)">Study Time vs. Test Score</text>
+          <line x1="60" y1="50" x2="60" y2="250" stroke="var(--navy)" stroke-width="2" />
+          <line x1="60" y1="250" x2="370" y2="250" stroke="var(--navy)" stroke-width="2" />
+          <text x="32" y="150" text-anchor="middle" font-size="9.5" font-weight="800" fill="var(--slate-muted)" transform="rotate(-90 32 150)">Test Score</text>
+          <text x="215" y="278" text-anchor="middle" font-size="9.5" font-weight="800" fill="var(--slate-muted)">Hours Studied →</text>
+          <line x1="70" y1="240" x2="345" y2="115" stroke="var(--primary)" stroke-width="2.5" stroke-dasharray="6 4" />
+          <text x="300" y="105" font-size="9" font-weight="900" fill="var(--primary)">trend line</text>
+          ${dots}
+          <text x="215" y="294" text-anchor="middle" font-size="9.5" font-weight="900" fill="var(--coral)">TAP A DOT — EXPLAIN THE RELATIONSHIP AND PREDICT A RESULT</text>
+        </svg>`;
+        },
+
+        "primary-source": function () {
+          // Stylized "historical photograph" of an industrial factory (sepia).
+          return `<svg width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="A sepia-toned historical photograph of an industrial factory with workers, including a child, standing at rows of machines under hanging lamps" style="background:#fff; border: 2px solid var(--line-muted);">
+          <rect x="20" y="20" width="360" height="220" fill="#d8c3a5" stroke="#7c6f57" stroke-width="6" />
+          <rect x="28" y="28" width="344" height="204" fill="#c4ad88" />
+          <!-- back wall windows -->
+          <rect x="40" y="45" width="60" height="44" fill="#a89570" stroke="#7c6f57" stroke-width="2" />
+          <rect x="300" y="45" width="60" height="44" fill="#a89570" stroke="#7c6f57" stroke-width="2" />
+          <!-- hanging lamps -->
+          <line x1="160" y1="28" x2="160" y2="55" stroke="#5c4f37" stroke-width="2" /><circle cx="160" cy="60" r="7" fill="#e8d9b5" />
+          <line x1="240" y1="28" x2="240" y2="55" stroke="#5c4f37" stroke-width="2" /><circle cx="240" cy="60" r="7" fill="#e8d9b5" />
+          <!-- machines (rows) -->
+          <g style="cursor:pointer;" onclick="tapPrepObject('machine', 'Large machines fill the room. They suggest hard, repetitive factory work.')">
+            <rect x="55" y="140" width="80" height="50" fill="#8a7a5a" stroke="#5c4f37" stroke-width="2" rx="3" />
+            <rect x="160" y="140" width="80" height="50" fill="#8a7a5a" stroke="#5c4f37" stroke-width="2" rx="3" />
+            <rect x="265" y="140" width="80" height="50" fill="#8a7a5a" stroke="#5c4f37" stroke-width="2" rx="3" />
+          </g>
+          <!-- workers (one clearly a child) -->
+          <g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('worker', 'A factory worker. Look closely — some workers are children. What does that tell you about this era?')">
+            <circle cx="95" cy="120" r="9" fill="#6b5d44" /><rect x="88" y="129" width="14" height="20" fill="#6b5d44" />
+            <circle cx="200" cy="118" r="10" fill="#6b5d44" /><rect x="192" y="128" width="16" height="22" fill="#6b5d44" />
+            <circle cx="305" cy="123" r="7" fill="#6b5d44" /><rect x="299" y="130" width="12" height="16" fill="#6b5d44" />
+          </g>
+          <text x="200" y="232" text-anchor="middle" font-size="9" font-style="italic" font-weight="700" fill="#4a3f2c">Primary Source · Factory, c. 1890</text>
+          <text x="200" y="262" text-anchor="middle" font-size="10" font-weight="900" fill="var(--navy-deep)">A photograph is a primary source — evidence of the past.</text>
+          <text x="200" y="284" text-anchor="middle" font-size="9.5" font-weight="900" fill="var(--coral)">TAP THE IMAGE — DESCRIBE IT, THEN INFER AND ARGUE</text>
+        </svg>`;
+        },
+
+        "text-claim": function () {
+          // A short passage card to argue a claim about a character.
+          return `<svg width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="A reading passage card about a character named Maya who repeatedly fixes a broken robot for the science fair, staying up late and not giving up" style="background:#fff; border: 2px solid var(--line-muted);">
+          <rect x="30" y="24" width="340" height="210" rx="10" fill="#fffdf7" stroke="var(--line-muted)" stroke-width="2" />
+          <rect x="30" y="24" width="340" height="34" rx="10" fill="var(--primary)" />
+          <text x="200" y="46" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">Reading Passage: "The Science Fair"</text>
+          <g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('text', 'Underline the evidence! Find the exact words that prove the trait you choose.')">
+          <text x="48" y="82" font-size="11" font-weight="600" fill="var(--navy-deep)">Maya's robot would not turn on. She</text>
+          <text x="48" y="102" font-size="11" font-weight="600" fill="var(--navy-deep)">checked the wires <tspan font-weight="900" fill="var(--coral)">six times until it</tspan></text>
+          <text x="48" y="122" font-size="11" font-weight="900" fill="var(--coral)">finally lit up.</text>
+          <text x="48" y="148" font-size="11" font-weight="600" fill="var(--navy-deep)">She <tspan font-weight="900" fill="var(--coral)">stayed up late</tspan>, even though she</text>
+          <text x="48" y="168" font-size="11" font-weight="600" fill="var(--navy-deep)">was tired, so it would be ready for</text>
+          <text x="48" y="188" font-size="11" font-weight="600" fill="var(--navy-deep)">the science fair in the morning.</text>
+          </g>
+          <text x="200" y="216" text-anchor="middle" font-size="10" font-weight="900" fill="var(--navy-deep)">Claim → Evidence → Explain</text>
+          <text x="200" y="258" text-anchor="middle" font-size="9.5" font-weight="900" fill="var(--coral)">TAP THE TEXT — MAKE A CLAIM, THEN CITE TWO QUOTES</text>
+        </svg>`;
+        },
+
+        "data-table": function () {
+          // Plant experiment results table: sunlight vs. height.
+          const rows = [
+            ["Full sunlight", "18 cm", "#16a34a"],
+            ["Half sunlight", "11 cm", "#65a30d"],
+            ["Low light", "7 cm", "#ca8a04"],
+            ["Dark (none)", "4 cm", "#b45309"],
+          ];
+          let body = "";
+          rows.forEach((r, i) => {
+            const y = 96 + i * 38;
+            body += `<g style="cursor:pointer;" onclick="completeQuest(); tapPrepObject('row', 'The plant with ${r[0].toLowerCase()} grew to ${r[1]}. Compare rows to find your evidence.')">
+              <rect x="40" y="${y - 22}" width="320" height="36" fill="${i % 2 ? "#f8fafc" : "#fff"}" stroke="var(--line-muted)" stroke-width="1" />
+              <rect x="40" y="${y - 22}" width="10" height="36" fill="${r[2]}" />
+              <text x="64" y="${y}" font-size="11" font-weight="700" fill="var(--navy-deep)">${r[0]}</text>
+              <text x="300" y="${y}" text-anchor="middle" font-size="12" font-weight="900" fill="${r[2]}">${r[1]}</text>
+            </g>`;
+          });
+          return `<svg width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="Data table from a plant experiment: full sunlight 18 cm, half sunlight 11 cm, low light 7 cm, no light 4 cm" style="background:#fff; border: 2px solid var(--line-muted);">
+          <text x="200" y="32" text-anchor="middle" font-size="13" font-weight="900" fill="var(--navy-deep)">Experiment: Sunlight &amp; Plant Growth</text>
+          <rect x="40" y="48" width="320" height="26" fill="var(--navy)" />
+          <text x="64" y="66" font-size="10.5" font-weight="900" fill="#fff">Amount of Sunlight</text>
+          <text x="300" y="66" text-anchor="middle" font-size="10.5" font-weight="900" fill="#fff">Height (cm)</text>
+          ${body}
+          <text x="200" y="270" text-anchor="middle" font-size="9.5" font-weight="800" fill="var(--slate-muted)">Same water, same soil — only sunlight changed (controlled variables)</text>
+          <text x="200" y="290" text-anchor="middle" font-size="9.5" font-weight="900" fill="var(--coral)">TAP A ROW — DRAW A CONCLUSION WITH THE DATA</text>
+        </svg>`;
+        },
       };
 
       // Interactive model setters
@@ -4729,6 +5069,215 @@
 
         STORE.checklistRubric = true;
         updateChecklistUI();
+      }
+
+      function downloadSpeakingCaseFile() {
+        var draft = document.getElementById("rehearsalDraftBox").value.trim();
+        var task = WIDA_SPEAKING_TASKS[STORE.activeTaskIdx];
+        var title = task.title;
+        var taskId = task.id;
+        var domain = task.kind || task.domain || "Speaking Domain";
+        var promptText = STORE.activeTier === "A" ? task.promptA : task.promptB;
+        var tier = STORE.activeTier;
+
+        var wordsCount = draft
+          ? draft.split(/\s+/).filter(function (w) {
+              return w.length > 0;
+            }).length
+          : 0;
+        var charsCount = draft ? draft.length : 0;
+
+        // Rubric scores
+        var rubricLing = document.getElementById("rubricLinguistic");
+        var rubricLingText = rubricLing.options[rubricLing.selectedIndex].text;
+        var rubricVoc = document.getElementById("rubricVocabulary");
+        var rubricVocText = rubricVoc.options[rubricVoc.selectedIndex].text;
+        var rubricCtrl = document.getElementById("rubricControl");
+        var rubricCtrlText = rubricCtrl.options[rubricCtrl.selectedIndex].text;
+        var overallRating = document.getElementById("liveELPBadge").textContent;
+
+        var coachContent =
+          document.getElementById("widaCoachContent").innerHTML;
+
+        // Audio recording status
+        var audioStatus = STORE.audioBlobUrl
+          ? "🔊 Recorded & Saved (Offline Cache)"
+          : "⚠️ No Audio Recorded";
+
+        // Gamification metrics
+        var streak = localStorage.getItem("widaStreak") || "0";
+        var xp = STORE.sparkPoints || "1200";
+
+        // Vocabulary word wall usage check
+        var usedTerms = [];
+        task.terms.forEach(function (word) {
+          var regex = new RegExp("\\b" + word + "(s|es|ed|ing)?\\b", "i");
+          if (draft && regex.test(draft)) {
+            usedTerms.push(word);
+          }
+        });
+        var usedTermsStr = usedTerms.length > 0 ? usedTerms.join(", ") : "None";
+
+        var today = new Date();
+        var dateString =
+          today.toLocaleDateString() + " " + today.toLocaleTimeString();
+
+        // Building high-fidelity MHTML/XML content
+        var htmlContent =
+          "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>\n" +
+          "<head>\n" +
+          "  <meta charset='utf-8'>\n" +
+          "  <title>WIDA ACCESS Student Speaking Case File</title>\n" +
+          "  <!--[if gte mso 9]>\n" +
+          "  <xml>\n" +
+          "    <w:WordDocument>\n" +
+          "      <w:View>Print</w:View>\n" +
+          "      <w:Zoom>100</w:Zoom>\n" +
+          "      <w:DoNotOptimizeForBrowser/>\n" +
+          "    </w:WordDocument>\n" +
+          "  </xml>\n" +
+          "  <![endif]-->\n" +
+          "  <style>\n" +
+          "    body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; color: #333333; line-height: 1.5; margin: 1in; }\n" +
+          "    .header { border-bottom: 3px double #2b579a; padding-bottom: 12px; margin-bottom: 20px; }\n" +
+          "    .title { font-family: 'Georgia', serif; color: #2b579a; font-size: 26pt; font-weight: bold; margin: 0; }\n" +
+          "    .subtitle { font-size: 11pt; color: #555555; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }\n" +
+          "    h2 { font-family: 'Georgia', serif; color: #1e3a8a; font-size: 16pt; margin-top: 22pt; border-bottom: 1px solid #d1d5db; padding-bottom: 4px; }\n" +
+          "    table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 15px; }\n" +
+          "    th { background-color: #f2f5f9; color: #2b579a; border: 1px solid #d1d5db; padding: 10px; font-weight: bold; text-align: left; font-size: 10pt; }\n" +
+          "    td { border: 1px solid #d1d5db; padding: 10px; font-size: 10pt; vertical-align: top; }\n" +
+          "    .meta-label { font-weight: bold; color: #4b5563; text-transform: uppercase; font-size: 8.5pt; }\n" +
+          "    .essay-box { border: 2px dashed #9ca3af; background-color: #f9fafb; padding: 18px; font-size: 12pt; line-height: 1.6; margin-top: 10px; font-family: 'Georgia', serif; border-radius: 4px; white-space: pre-wrap; color: #4b5563; }\n" +
+          "    .coach-box { background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px; margin-top: 10px; font-size: 10pt; color: #b45309; }\n" +
+          "    .footer { font-size: 8.5pt; color: #9ca3af; text-align: center; margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 10px; }\n" +
+          "    .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 9pt; }\n" +
+          "    .badge-primary { background-color: #eff6ff; color: #1d4ed8; }\n" +
+          "    .badge-success { background-color: #f0fdf4; color: #15803d; }\n" +
+          "  </style>\n" +
+          "</head>\n" +
+          "<body>\n" +
+          "  <div class='header'>\n" +
+          "    <p class='subtitle'>WIDA ACCESS Bilingual Speaking Simulator Portfolio</p>\n" +
+          "    <h1 class='title'>Student Speaking Case File</h1>\n" +
+          "  </div>\n" +
+          "  \n" +
+          "  <table>\n" +
+          "    <tr>\n" +
+          "      <td width='50%'><span class='meta-label'>Task ID & Title:</span><br><strong>" +
+          taskId +
+          " · " +
+          title +
+          "</strong></td>\n" +
+          "      <td width='50%'><span class='meta-label'>Submission Date:</span><br>" +
+          dateString +
+          "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><span class='meta-label'>Speaking Skill type:</span><br>" +
+          domain +
+          "</td>\n" +
+          "      <td><span class='meta-label'>ELP Tier:</span><br>Tier " +
+          tier +
+          "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><span class='meta-label'>Gamification Stats:</span><br>🔥 " +
+          streak +
+          " Day Streak &middot; ✨ " +
+          xp +
+          " XP</td>\n" +
+          "      <td><span class='meta-label'>Voice Response:</span><br><strong>" +
+          audioStatus +
+          "</strong></td>\n" +
+          "    </tr>\n" +
+          "  </table>\n" +
+          "  \n" +
+          "  <h2>📋 Speaking Task Prompt</h2>\n" +
+          "  <p style='font-style: italic; color: #374151; font-size: 10.5pt;'>" +
+          promptText +
+          "</p>\n" +
+          "  \n" +
+          "  <h2>✍️ Rehearsal Draft Transcription (Optional)</h2>\n" +
+          "  <div class='essay-box'>" +
+          (draft ||
+            "*(No rehearsal text was written. Response was delivered entirely via live audio.)*") +
+          "</div>\n" +
+          "  \n" +
+          "  <h2>🎯 Vocabulary Word Wall Report</h2>\n" +
+          "  <table>\n" +
+          "    <tr>\n" +
+          "      <th width='30%'>Required Vocabulary</th>\n" +
+          "      <td width='70%'>" +
+          task.terms.join(", ") +
+          "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <th>Used in Draft</th>\n" +
+          "      <td><strong>" +
+          usedTermsStr +
+          "</strong> (" +
+          usedTerms.length +
+          " of " +
+          task.terms.length +
+          " used)</td>\n" +
+          "    </tr>\n" +
+          "  </table>\n" +
+          "  \n" +
+          "  <h2>🏆 WIDA Speaking Rubric Self-Check</h2>\n" +
+          "  <table>\n" +
+          "    <tr>\n" +
+          "      <th width='40%'>Criterion</th>\n" +
+          "      <th width='60%'>Self-Evaluation Score</th>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><strong>Linguistic Complexity</strong></td>\n" +
+          "      <td>" +
+          rubricLingText +
+          "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><strong>Vocabulary Usage</strong></td>\n" +
+          "      <td>" +
+          rubricVocText +
+          "</td>\n" +
+          "    </tr>\n" +
+          "    <tr>\n" +
+          "      <td><strong>Language Control / Conventions</strong></td>\n" +
+          "      <td>" +
+          rubricCtrlText +
+          "</td>\n" +
+          "    </tr>\n" +
+          "    <tr style='background-color: #f9fafb;'>\n" +
+          "      <td><strong>Overall Rating</strong></td>\n" +
+          "      <td><span class='badge badge-success'>" +
+          overallRating +
+          "</span></td>\n" +
+          "    </tr>\n" +
+          "  </table>\n" +
+          "  \n" +
+          "  <h2>💡 WIDA Speaking Coach Advice</h2>\n" +
+          "  <div class='coach-box'>" +
+          coachContent +
+          "</div>\n" +
+          "  \n" +
+          "  <div class='footer'>\n" +
+          "    <p>Generated by NeftOS Educational Suite &middot; Private, Client-Side, Local-First Architecture</p>\n" +
+          "  </div>\n" +
+          "</body>\n" +
+          "</html>";
+
+        var blob = new Blob(["\ufeff" + htmlContent], {
+          type: "application/msword;charset=utf-8",
+        });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "WIDA_Speaking_CaseFile_" + taskId + "_" + tier + ".doc";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        logToTerminal("WIDA Speaking Case File downloaded successfully!");
       }
 
       // Checklist updates

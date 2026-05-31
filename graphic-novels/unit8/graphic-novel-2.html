@@ -1,0 +1,1805 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #2 · Court Vision: The Data Analyst</title>
+    <style>
+      :root {
+        --bg: #070d1f;
+        --ink: #eef3ff;
+        --muted: #9fb0d6;
+        --accent: #ff8a3d;
+        --accent2: #5d7bff;
+        --panel: #101e44;
+        --line: #283f73;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --gold: #ffd166;
+        --bubble: #0e1c40;
+        --bubble-ink: #eef3ff;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: radial-gradient(
+          900px 600px at 80% -10%,
+          #15265a,
+          var(--bg) 65%
+        );
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(7, 13, 31, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent2);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #0a142e;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #fff;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #0a142e;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      /* Graceful fallback when panel art is unavailable */
+      .art img.art-missing {
+        display: none;
+      }
+      .art.art-fallback::after {
+        content: attr(data-fallback);
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 16px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-style: italic;
+        background: repeating-linear-gradient(
+          135deg,
+          #0a142e,
+          #0a142e 12px,
+          #101e44 12px,
+          #101e44 24px
+        );
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent2);
+      }
+
+      /* ---- Data table ---- */
+      .dataset {
+        margin-top: 12px;
+        background: #0a142e;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        overflow-x: auto;
+      }
+      .dataset table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        min-width: 300px;
+      }
+      .dataset caption {
+        text-align: left;
+        font-weight: 700;
+        color: var(--accent2);
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .dataset th,
+      .dataset td {
+        border: 1px solid var(--line);
+        padding: 7px 9px;
+        text-align: center;
+      }
+      .dataset th {
+        background: #101e44;
+        color: var(--ink);
+      }
+
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: var(--accent);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.06rem;
+      }
+      .bubble.caption {
+        background: #0a142e;
+        border-style: dashed;
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #283f73;
+      }
+      .dots i.on {
+        background: var(--accent2);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .challenge {
+        margin-top: 16px;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent2);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .challenge.bonus {
+        border-color: var(--gold);
+        background: #1c1606;
+        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      }
+      .challenge.bonus h3 {
+        color: var(--gold);
+      }
+      .bonus-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #1a1200;
+        background: var(--gold);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .skip-note {
+        font-size: 0.85rem;
+        color: var(--gold);
+        opacity: 0.85;
+        margin-top: 8px;
+      }
+      .skip-bonus {
+        min-height: 40px;
+        margin-top: 10px;
+        background: transparent;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+      .skip-bonus:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #101e44;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .choice .calc {
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        display: block;
+        margin-top: 4px;
+        color: #9ecbff;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 660px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #fff;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #0c1838;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        color: var(--accent2);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"
+          ><span class="v">#2</span> Court Vision: The Data Analyst</span
+        >
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: The Big Question
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: Center &amp; Spread
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Final Call
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- COVER -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit8/cover.png"
+            alt="A young sports data analyst stands in an arena data room surrounded by glowing holographic basketball stats"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
+        <h2>Court Vision: The Data Analyst</h2>
+        <p>
+          The playoffs are on the line and the front office is counting on you.
+          As lead <b>analyst</b> Maya, you must distinguish
+          <b>statistical questions</b>, decide when the <b>mean</b> lies and the
+          <b>median</b> tells the truth, and quantify a player's consistency
+          with the <b>mean absolute deviation (MAD)</b>. Every call you make is
+          driven by the data.
+        </p>
+        <button class="start" id="start-btn">Begin Analysis &#127936;</button>
+      </section>
+
+      <!-- ACT 1 -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act"
+            >Act 1 &middot; Statistical Questions &amp; Data</span
+          >
+          <h2>The Big Question</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit8/data-room.png"
+            alt="Maya at a glowing analyst desk studying holographic player statistics"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>&#128202; Decision #1 &mdash; Frame a Statistical Question</h3>
+          <p class="prompt">
+            A <b>statistical question</b> anticipates <b>variability</b> in the
+            data &mdash; it expects answers that differ. Which question is
+            statistical?
+          </p>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="false">
+              Did our point guard play in last night's game?
+              <span class="calc">(yes/no — a single answer)</span>
+            </button>
+            <button class="choice" data-correct="true">
+              How many minutes does each player log per game this season?
+              <span class="calc">(answers vary across players/games)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              What is the final score of last night's game?
+              <span class="calc">(one fixed value)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#128202; Decision #2 &mdash; Interrogate the Data Set</h3>
+          <p class="prompt">
+            Below are rebounds across 6 games. Reading the set, what is the
+            <b>range</b> (greatest minus least)?
+          </p>
+          <div class="dataset">
+            <table>
+              <caption>
+                Rivera &mdash; Rebounds per Game
+              </caption>
+              <tr>
+                <th>Game</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+              </tr>
+              <tr>
+                <th>Rebounds</th>
+                <td>9</td>
+                <td>4</td>
+                <td>11</td>
+                <td>7</td>
+                <td>5</td>
+                <td>12</td>
+              </tr>
+            </table>
+          </div>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              12 <span class="calc">(that is the maximum, not the range)</span>
+            </button>
+            <button class="choice" data-correct="true">
+              8 <span class="calc">(12 − 4 = 8)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              7 <span class="calc">(that is one data value)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <!-- Optional bonus -->
+        <div class="challenge bonus" id="bonus1" style="display: none">
+          <span class="bonus-tag"
+            >&#11088; Analyst's Bonus &mdash; Optional</span
+          >
+          <h3>The Right Display</h3>
+          <p class="prompt">
+            You want to show how Rivera's rebounds are <b>distributed</b> across
+            their values. Which display best shows the <b>shape and spread</b>
+            of a single numeric data set?
+          </p>
+          <div class="choices" id="choicesB1">
+            <button class="choice" data-correct="false">
+              A pie chart of the six game numbers
+              <span class="calc">(pie charts show parts of a whole)</span>
+            </button>
+            <button class="choice" data-correct="true">
+              A dot plot (line plot) of the rebound values
+              <span class="calc">(shows each value, clusters &amp; gaps)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              A single bar showing the total rebounds
+              <span class="calc">(hides the spread entirely)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fbB1"></div>
+          <p class="skip-note">
+            &#11088; This bonus is optional &mdash; you can skip it anytime and
+            still advance.
+          </p>
+          <button class="skip-bonus" id="skip1" type="button">
+            Skip bonus &rarr;
+          </button>
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">
+            Submit the report &#127936;
+          </button>
+        </div>
+      </section>
+
+      <!-- ACT 2 -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Complete Act 1 to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act">Act 2 &middot; Mean, Median, Mode &amp; MAD</span>
+            <h2>Center &amp; Spread</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit8/spread-mad.png"
+              alt="Maya studies a holographic scatter of glowing dots spread around a center line"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- Challenge: mean vs median, skewed -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#127919; Insight #1 &mdash; When the Mean Lies</h3>
+            <p class="prompt">
+              A scout's salary offers (in $1000s) are <b>10, 11, 12, 13, 54</b>.
+              The mean is <b>20</b> (sum 100 &divide; 5), but the median is
+              <b>12</b>. Which measure better describes a <b>typical</b> offer,
+              and why?
+            </p>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="false">
+                The mean (20), because it uses every value
+                <span class="calc">(but the 54 outlier inflates it)</span>
+              </button>
+              <button class="choice" data-correct="true">
+                The median (12), because one large outlier (54) pulls the mean
+                up
+                <span class="calc">(median resists skew)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                Neither — only the mode can describe typical values
+                <span class="calc">(this set has no repeated mode)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- Challenge: compute MAD -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>&#127919; Insight #2 &mdash; Compute the MAD</h3>
+            <p class="prompt">
+              Player A scored <b>4, 6, 8, 10, 2</b>. The <b>mean</b> is 6.
+              Compute the <b>mean absolute deviation</b>: average the distance
+              of each value from the mean. What is the MAD?
+            </p>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                3.0
+                <span class="calc">(check each |value − 6| again)</span>
+              </button>
+              <button class="choice" data-correct="true">
+                2.4
+                <span class="calc">|−2|+0+|2|+|4|+|−4| = 12, 12÷5 = 2.4</span>
+              </button>
+              <button class="choice" data-correct="false">
+                12
+                <span class="calc"
+                  >(that is the sum of distances, not the average)</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <!-- Challenge: interpret spread -->
+          <div class="challenge" id="chal2c" style="display: none">
+            <h3>&#127919; Insight #3 &mdash; Interpret the Spread</h3>
+            <p class="prompt">
+              Two guards both <b>average 10 points</b>. Guard X has a
+              <b>MAD of 1.2</b>; Guard Y has a <b>MAD of 4.8</b>. For a
+              must-have-points possession, who is more <b>consistent</b>?
+            </p>
+            <div class="choices" id="choices2c">
+              <button class="choice" data-correct="false">
+                Guard Y — a larger MAD means more scoring
+                <span class="calc">(MAD measures spread, not total)</span>
+              </button>
+              <button class="choice" data-correct="true">
+                Guard X — a smaller MAD means scores cluster tightly near 10
+                <span class="calc">(less variability = more reliable)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                They are equally consistent — same mean
+                <span class="calc"
+                  >(equal means can hide very different spread)</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fb2c"></div>
+          </div>
+
+          <!-- Optional bonus -->
+          <div class="challenge bonus" id="bonus2" style="display: none">
+            <span class="bonus-tag"
+              >&#11088; Analyst's Bonus &mdash; Optional</span
+            >
+            <h3>The Consistency Duel</h3>
+            <p class="prompt">
+              Two players both average 10. Player P: <b>8, 9, 10, 11, 12</b>.
+              Player Q: <b>2, 6, 10, 14, 18</b>. Compute both MADs and pick the
+              correct comparison.
+            </p>
+            <div class="choices" id="choicesB2">
+              <button class="choice" data-correct="true">
+                P's MAD = 1.2, Q's MAD = 4.8 &mdash; P is far more consistent
+                <span class="calc">P: (2+1+0+1+2)/5; Q: (8+4+0+4+8)/5</span>
+              </button>
+              <button class="choice" data-correct="false">
+                P's MAD = 4.8, Q's MAD = 1.2 &mdash; Q is more consistent
+                <span class="calc">(the values are swapped)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                Both MADs = 0 because the means are equal
+                <span class="calc">(equal mean ≠ zero spread)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbB2"></div>
+            <p class="skip-note">
+              &#11088; This bonus is optional &mdash; you can skip it anytime
+              and still advance.
+            </p>
+            <button class="skip-bonus" id="skip2" type="button">
+              Skip bonus &rarr;
+            </button>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Deliver the spread report &#9889;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINAL -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Complete Act 2 to unlock the Final Call.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final Call &middot; Boss</span>
+            <h2>The Playoff Decision</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit8/final-analysis.png"
+              alt="Maya before a giant wall of holographic data making a big decision"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#127942; Full Scouting Report &mdash; The Combined Cipher</h3>
+            <p class="prompt">
+              Closer candidate's last 5 clutch scores: <b>6, 8, 10, 12, 14</b>.
+              Build the complete profile: <b>mean</b>, <b>median</b>, and
+              <b>MAD</b>. Pick the line that is fully correct.
+            </p>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="false">
+                Mean = 10, Median = 10, MAD = 4
+                <span class="calc">(distances are 4,2,0,2,4 → sum 12)</span>
+              </button>
+              <button class="choice" data-correct="true">
+                Mean = 10, Median = 10, MAD = 2.4
+                <span class="calc">sum 50÷5 = 10; (4+2+0+2+4)/5 = 2.4</span>
+              </button>
+              <button class="choice" data-correct="false">
+                Mean = 10, Median = 12, MAD = 2.4
+                <span class="calc">(median of 6,8,10,12,14 is 10, not 12)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <!-- Optional final bonus -->
+          <div class="challenge bonus" id="bonusF" style="display: none">
+            <span class="bonus-tag"
+              >&#11088; Analyst's Final Bonus &mdash; Optional</span
+            >
+            <h3>The Tie-Breaker</h3>
+            <p class="prompt">
+              A rival closer has the <b>same mean (10)</b> and
+              <b>same median (10)</b>, but clutch scores
+              <b>1, 5, 10, 15, 19</b>. Compute their MAD and decide who to trust
+              for one final shot.
+            </p>
+            <div class="choices" id="choicesBF">
+              <button class="choice" data-correct="true">
+                Rival's MAD = 5.6, so trust our closer (MAD 2.4) — more reliable
+                <span class="calc">(9+5+0+5+9)/5 = 28/5 = 5.6</span>
+              </button>
+              <button class="choice" data-correct="false">
+                Both equal — same mean and median means same reliability
+                <span class="calc">(spread can still differ)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                Trust the rival — a larger MAD is better
+                <span class="calc">(larger MAD = less consistent)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbBF"></div>
+            <p class="skip-note">
+              &#11088; This bonus is optional &mdash; skip anytime and still
+              finish the mission.
+            </p>
+            <button class="skip-bonus" id="skipF" type="button">
+              Skip bonus &rarr;
+            </button>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Make the playoff call &#127775;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPLETE -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Mission complete"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit8/celebrate.png"
+            alt="Maya celebrates on the court with the winning team holding her tablet high"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#127936;&#11088;</span>
+        <h2>Series Clinched &mdash; Mission Complete!</h2>
+        <p>
+          Brilliant work, Analyst. You separated statistical questions from
+          single-answer facts, recognized when an <b>outlier</b> makes the
+          <b>median</b> the honest measure, and used the <b>MAD</b> to prove
+          which player was truly reliable under pressure. Your data-driven call
+          won the series.
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Mean Absolute Deviation (MAD): Jordan's score deviations from the mean (6) are <strong>2, 0, 2</strong> (scores: 4, 6, 8). What is the <strong>MAD</strong> of these scores?
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) 2 &nbsp;(took the max individual deviation)</button>
+            <button class="choice" data-correct="true">B) 1.33 &nbsp;(average deviation: $4 \div 3 = 1.33$) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) 0 &nbsp;(assumed deviations cancelled out)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">
+          Run analysis again &#8635;
+        </button>
+    
+      </section>
+
+      <!-- GLOSSARY -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Analyst Codex</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------- Graceful art fallback (panel image unavailable) ---------- */
+        Array.prototype.slice
+          .call(document.querySelectorAll(".art img"))
+          .forEach(function (im) {
+            im.addEventListener("error", function () {
+              im.classList.add("art-missing");
+              var box = im.closest(".art");
+              if (box) {
+                box.classList.add("art-fallback");
+                box.setAttribute(
+                  "data-fallback",
+                  im.getAttribute("alt") || "Illustration",
+                );
+              }
+            });
+          });
+
+        var DLG = {
+          act1: [
+            {
+              who: "GM",
+              en: "Maya, the playoff window is open and the data is a mess. Tell me what's worth measuring.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "First principle: a statistical question expects variability. If every answer is identical, it isn't statistical — it's a fact.",
+            },
+            {
+              who: "GM",
+              en: "Then frame the question that will actually generate a data set we can analyze.",
+              cap: true,
+            },
+          ],
+          act1b: [
+            {
+              who: "Maya",
+              en: "Question locked. Now I read the set itself — range, gaps, and any value that looks out of place.",
+            },
+          ],
+          bonus1: [
+            {
+              who: "GM",
+              en: "Optional, if you want the edge: pick the display that best reveals the distribution. Skip it if you'd rather move on.",
+              cap: true,
+            },
+          ],
+          act2: [
+            {
+              who: "GM",
+              en: "Numbers are in. But one offer sheet looks distorted. Find the center that tells the truth, then quantify the spread.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Center isn't one number — mean, median, and mode each tell a story. And the MAD tells me how tightly the data hugs the center.",
+            },
+          ],
+          act2b: [
+            {
+              who: "Maya",
+              en: "Median chosen. Now the spread: I'll average every value's distance from the mean — the mean absolute deviation.",
+            },
+          ],
+          act2c: [
+            {
+              who: "Maya",
+              en: "MAD computed. Equal means can hide wildly different consistency — the spread decides who I trust.",
+            },
+          ],
+          bonus2: [
+            {
+              who: "GM",
+              en: "Optional duel: two players, same average. Prove with MAD who's steadier. Skip if you'd rather lock the report.",
+              cap: true,
+            },
+          ],
+          final: [
+            {
+              who: "GM",
+              en: "Game 7, final possession. I need a complete profile on our closer — center and spread — before I make the call.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Mean, median, and MAD in one report. No guesswork. Pulling the full cipher now.",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#10067;",
+            en: "Statistical question",
+            def: "A question that anticipates variability in its answers and is answered by collecting data (e.g., minutes played per game).",
+          },
+          {
+            ico: "&#128202;",
+            en: "Data set",
+            def: "A collection of related numeric or categorical values gathered to answer a question.",
+          },
+          {
+            ico: "&#9878;&#65039;",
+            en: "Mean",
+            def: "The arithmetic average: sum of all values divided by the count. Sensitive to outliers.",
+          },
+          {
+            ico: "&#9995;",
+            en: "Median",
+            def: "The middle value of an ordered data set; with an even count, the average of the two middle values. Resistant to outliers.",
+          },
+          {
+            ico: "&#128293;",
+            en: "Mode",
+            def: "The value (or values) that occur most frequently. A set may have no mode or several.",
+          },
+          {
+            ico: "&#128207;",
+            en: "Range",
+            def: "A simple measure of spread: greatest value minus least value.",
+          },
+          {
+            ico: "&#127991;&#65039;",
+            en: "Outlier",
+            def: "A value far from the rest of the data; it can pull the mean toward it while barely affecting the median.",
+          },
+          {
+            ico: "&#9696;",
+            en: "Skewed data",
+            def: "A distribution stretched toward high or low values, so the mean and median differ; the median is often the better center.",
+          },
+          {
+            ico: "&#128208;",
+            en: "Mean absolute deviation (MAD)",
+            def: "The average distance of values from the mean: average of |value − mean|. A smaller MAD means data clusters tightly (more consistent).",
+          },
+          {
+            ico: "&#128201;",
+            en: "Variability / spread",
+            def: "How much the values differ from one another. Measured by range or MAD; key to judging consistency.",
+          },
+          {
+            ico: "&#128290;",
+            en: "Distribution",
+            def: "The overall pattern of a data set — its center, spread, and shape — often shown with a dot plot or histogram.",
+          },
+        ];
+
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          $("scene-complete").classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var arr = qa(".tab");
+            var i = arr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (arr[i + 1] || arr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (arr[i - 1] || arr[arr.length - 1]).focus();
+            }
+          });
+        });
+
+        function runDialogue(opts) {
+          var idx = 0,
+            dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            dots.appendChild(document.createElement("i"));
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '"><div class="who">' +
+              line.who +
+              '</div><div class="en">' +
+              line.en +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else if (opts.onDone) opts.onDone();
+          };
+          render();
+        }
+
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var fb = $(opts.feedbackId);
+              if (btn.dataset.correct === "true") {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = opts.goodEn;
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = opts.badEn;
+              }
+            });
+          });
+        }
+
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              "</h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        function showBubble(boxId, line) {
+          $(boxId).innerHTML =
+            '<div class="bubble' +
+            (line.cap ? " caption" : "") +
+            '"><div class="who">' +
+            line.who +
+            '</div><div class="en">' +
+            line.en +
+            "</div></div>";
+        }
+
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Frame the question ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Exactly. Minutes per player per game vary — that variability is the hallmark of a statistical question.",
+            badEn:
+              "&#10060; That question resolves to a single fixed answer, so it isn't statistical. Look for the one whose answers vary.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.act1b[0]);
+                $("chal1b").style.display = "block";
+                $("chal1b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; Range = 12 − 4 = 8. You read the full set and spotted the extremes.",
+            badEn:
+              "&#10060; Range is greatest minus least: 12 − 4. Re-scan the row for the max and min.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.bonus1[0]);
+                $("bonus1").style.display = "block";
+                // CORE solved -> advance is available regardless of bonus
+                $("adv-act1").classList.add("show");
+                $("bonus1").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB1",
+            feedbackId: "fbB1",
+            goodEn:
+              "&#11088; A dot plot shows every value, revealing clusters, gaps, and spread — the distribution's shape.",
+            badEn:
+              "&#10060; That display hides the spread. You want one that shows each value's position. (Optional — you can still advance.)",
+          });
+          $("skip1").addEventListener("click", function () {
+            $("adv-act1").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Find the true center ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; Right. The 54 is an outlier that drags the mean to 20; the median (12) reflects a typical offer. Use the median for skewed data.",
+            badEn:
+              "&#10060; Reconsider the outlier. The lone 54 inflates the mean — the median is the resistant, honest center here.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.act2b[0]);
+                $("chal2b").style.display = "block";
+                $("chal2b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; MAD = 2.4. Distances from 6 are 2, 0, 2, 4, 4 → sum 12, and 12 ÷ 5 = 2.4.",
+            badEn:
+              "&#10060; Take |value − 6| for each: 2, 0, 2, 4, 4. Sum is 12, then divide by 5 — don't stop at the sum.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.act2c[0]);
+                $("chal2c").style.display = "block";
+                $("chal2c").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2c",
+            feedbackId: "fb2c",
+            goodEn:
+              "&#9989; Guard X. A smaller MAD (1.2) means their scores stay tightly near 10 — far more reliable than Guard Y's MAD of 4.8.",
+            badEn:
+              "&#10060; MAD measures spread, not total points. The smaller MAD signals the more consistent scorer.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.bonus2[0]);
+                $("bonus2").style.display = "block";
+                // CORE solved -> advance available regardless of bonus
+                $("adv-act2").classList.add("show");
+                $("bonus2").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB2",
+            feedbackId: "fbB2",
+            goodEn:
+              "&#11088; Correct. P: distances 2,1,0,1,2 → 6 ÷ 5 = 1.2. Q: 8,4,0,4,8 → 24 ÷ 5 = 4.8. P is far steadier.",
+            badEn:
+              "&#10060; Compute each MAD: average the absolute distances from 10. P clusters tightly; Q is widely spread. (Optional — you can still advance.)",
+          });
+          $("skip2").addEventListener("click", function () {
+            $("adv-act2").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Build the profile ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; Complete profile: mean = 50 ÷ 5 = 10, median = 10, MAD = (4+2+0+2+4) ÷ 5 = 2.4. Verified.",
+            badEn:
+              "&#10060; One statistic is off. Mean and median are both 10; the MAD averages distances 4,2,0,2,4 → 12 ÷ 5 = 2.4.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-final", DLG.final[1]);
+                $("bonusF").style.display = "block";
+                // CORE solved -> advance available regardless of bonus
+                $("adv-final").classList.add("show");
+                $("bonusF").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 350);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesBF",
+            feedbackId: "fbBF",
+            goodEn:
+              "&#11088; Rival's distances from 10 are 9, 5, 0, 5, 9 → sum 28, and 28 ÷ 5 = 5.6. Our closer's MAD (2.4) is smaller, so they're more reliable — trust our closer.",
+            badEn:
+              "&#10060; Average the rival's absolute distances from 10 (9,5,0,5,9). A larger MAD means LESS consistency. (Optional — you can still finish.)",
+          });
+          $("skipF").addEventListener("click", function () {
+            $("adv-final").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U8 #2: Court Vision: The Data Analyst",
+        standard: "6.SP.1",
+        level: "2",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>

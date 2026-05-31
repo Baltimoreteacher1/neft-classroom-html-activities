@@ -1,0 +1,1613 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #1 · Prime Station: The Factor Code</title>
+    <style>
+      :root {
+        --bg: #0a1228;
+        --ink: #f4f7ff;
+        --muted: #aebbdd;
+        --accent: #ff8a3d;
+        --accent2: #3da5ff;
+        --panel: #13234d;
+        --line: #2a4378;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --bubble: #fffdf7;
+        --bubble-ink: #16213d;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.5;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      /* ---- Top bar ---- */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(10, 18, 40, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #0b1530;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      /* ---- Tabs ---- */
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+        scrollbar-width: thin;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #0e1c40;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      /* ---- Stage ---- */
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #0b1530;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      /* ---- Dialogue ---- */
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border-radius: 16px;
+        padding: 14px 16px;
+        position: relative;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: #c2461d;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.05rem;
+      }
+      .bubble .es {
+        font-size: 0.92rem;
+        color: #566677;
+        margin-top: 6px;
+        font-style: italic;
+      }
+      .bubble.caption {
+        background: #0e1c40;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .bubble.caption .es {
+        color: var(--muted);
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #2a4378;
+      }
+      .dots i.on {
+        background: var(--accent);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #5d7bff);
+        color: #02112a;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .next[disabled] {
+        opacity: 0.4;
+        cursor: default;
+      }
+
+      /* ---- Challenge / choice ---- */
+      .challenge {
+        margin-top: 16px;
+        background: #0e1c40;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .challenge .prompt .es {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 4px;
+      }
+      .hint {
+        font-size: 0.9rem;
+        color: #ffd9b3;
+        background: #3a2410;
+        border: 1px solid #7a4d1f;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin: 8px 0;
+      }
+      .hint b {
+        color: var(--accent);
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #13234d;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .choice .tree {
+        font-family: "Courier New", monospace;
+        white-space: pre-wrap;
+        font-size: 0.95rem;
+        line-height: 1.35;
+        display: block;
+        margin-top: 4px;
+        color: #bfe;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+      .feedback .es {
+        display: block;
+        font-style: italic;
+        color: #9fd;
+        opacity: 0.85;
+        margin-top: 4px;
+        font-size: 0.9rem;
+      }
+
+      .frame {
+        margin-top: 12px;
+        font-size: 0.92rem;
+        color: var(--muted);
+        background: #0b1530;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .frame b {
+        color: var(--accent2);
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      /* ---- Cover ---- */
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        aspect-ratio: 16/9;
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 620px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #02112a;
+        background: var(--accent2);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      /* ---- Glossary ---- */
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #0e1c40;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term .es-term {
+        color: var(--accent2);
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* ---- Mission complete ---- */
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        color: var(--accent);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #0e1c40;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .topbar-inner {
+          gap: 8px;
+        }
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"
+          ><span class="v">#1</span> Prime Station: The Factor Code</span
+        >
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: The Locked Bay
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: The Twin Engines
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Final Code
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- ============ COVER ============ -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit1/cover.png"
+            alt="A young space cadet stands on a station bridge surrounded by glowing holographic factor trees"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
+        <h2>Prime Station: The Factor Code</h2>
+        <p>
+          You are a space cadet. The station is broken. The doors are locked.
+          Only <b>factor codes</b> can open them. Use your math to save the
+          station!
+        </p>
+        <p style="font-size: 0.92rem">
+          <i
+            >Eres un cadete espacial. La estaci&oacute;n est&aacute;
+            da&ntilde;ada. Usa las matem&aacute;ticas para abrir las puertas.</i
+          >
+        </p>
+        <button class="start" id="start-btn">Start Mission &#128640;</button>
+      </section>
+
+      <!-- ============ ACT 1 ============ -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act">Act 1 &middot; Lesson 1-1</span>
+          <h2>The Locked Bay</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit1/airlock-locked.png"
+            alt="The cadet faces a locked airlock with a glowing orange code panel"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <!-- Challenge 1: prime vs composite -->
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>&#128272; Airlock Lock #1</h3>
+          <p class="prompt">
+            The panel needs a <b>prime number</b>. A prime number has only
+            <b>two</b> factors: 1 and itself. Which number is prime?
+            <span class="es"
+              >&iquest;Cu&aacute;l n&uacute;mero es primo (solo tiene 2
+              factores)?</span
+            >
+          </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> Try to break each number into a product like
+            2&times;something. If you cannot (except 1&times;itself), it is
+            prime.
+          </div>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="false">
+              9 &nbsp;(9 = 3 &times; 3)
+            </button>
+            <button class="choice" data-correct="true">
+              7 &nbsp;(only 1 &times; 7)
+            </button>
+            <button class="choice" data-correct="false">
+              15 &nbsp;(15 = 3 &times; 5)
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <!-- Challenge 2: factor tree for 36 -->
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#128272; Airlock Lock #2 &mdash; the Factor Code</h3>
+          <p class="prompt">
+            Break <b>36</b> all the way down into <b>prime numbers</b>. Pick the
+            option where every end of the tree is a prime: <b>36 = ?</b>
+            <span class="es"
+              >Elige el &aacute;rbol de factores correcto para 36.</span
+            >
+          </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> 36 = 6 &times; 6. Then break each 6 into 2
+            &times; 3. Keep going until every branch ends in a
+            <b>prime</b> number.
+          </div>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="true">
+              A) 36 = 2 &times; 2 &times; 3 &times; 3<span class="tree"
+                >36 splits into 6 &times; 6, then each 6 into 2 &times; 3
+                &mdash; every end is prime &#9989;</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              B) 36 = 2 &times; 3 &times; 6<span class="tree"
+                >36 splits into 6 &times; 6, but one 6 is left whole &mdash; 6
+                is not prime</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              C) 36 = 4 &times; 9<span class="tree"
+                >36 splits into 4 &times; 9, but 4 and 9 are not prime yet</span
+              >
+            </button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <div class="frame" id="frame1" style="display: none">
+          <b>Sentence frame:</b> &ldquo;The number ____ is prime because it has
+          only ____ factors. The prime factorization of 36 is ____ &times; ____
+          &times; ____ &times; ____.&rdquo;
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">
+            Open the airlock &#128640;
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ ACT 2 ============ -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Finish Act 1 first to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act">Act 2 &middot; Lesson 1-2</span>
+            <h2>The Twin Engines</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit1/twin-engines.png"
+              alt="The cadet stands between two glowing starship engines"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- Challenge: common factors of 12 and 18 -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#9881;&#65039; Sync Lock #1 &mdash; Common Factors</h3>
+            <p class="prompt">
+              Engine A needs power level <b>12</b>. Engine B needs <b>18</b>. To
+              sync them, find a number that <b>divides</b> both (a
+              <b>common factor</b>). Which is a common factor of 12 and 18?
+              <span class="es"
+                >&iquest;Cu&aacute;l n&uacute;mero divide a 12 y a 18 (factor
+                com&uacute;n)?</span
+              >
+            </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Factors of 12: 1, 2, 3, 4, 6, 12. Factors
+              of 18: 1, 2, 3, 6, 9, 18. Look for one in <b>both</b> lists.
+            </div>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="false">
+                4 &nbsp;(divides 12, not 18)
+              </button>
+              <button class="choice" data-correct="true">
+                6 &nbsp;(divides 12 and 18)
+              </button>
+              <button class="choice" data-correct="false">
+                9 &nbsp;(divides 18, not 12)
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- Challenge: GCF of 24 and 36 -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>&#9881;&#65039; Sync Lock #2 &mdash; the GCF</h3>
+            <p class="prompt">
+              Now share the fuel fairly. The crates hold <b>24</b> and
+              <b>36</b> units. Find the
+              <b>Greatest Common Factor (GCF)</b> &mdash; the
+              <b>biggest</b> number that divides both.
+              <span class="es"
+                >Encuentra el M&aacute;ximo Factor Com&uacute;n (el factor
+                com&uacute;n m&aacute;s grande) de 24 y 36.</span
+              >
+            </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Common factors of 24 and 36 are 1, 2, 3, 4,
+              6, 12. The <b>greatest</b> one is the GCF.
+            </div>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                6 &nbsp;(common, but not the biggest)
+              </button>
+              <button class="choice" data-correct="false">
+                4 &nbsp;(common, but not the biggest)
+              </button>
+              <button class="choice" data-correct="true">
+                12 &nbsp;(the greatest common factor)
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <div class="frame" id="frame2" style="display: none">
+            <b>Sentence frame:</b> &ldquo;A common factor of 12 and 18 is ____.
+            The GCF of 24 and 36 is ____ because it is the biggest number that
+            divides both.&rdquo;
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Sync the engines &#9889;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ FINAL ============ -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Finish Act 2 first to unlock the Final Code.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final Code &middot; Boss</span>
+            <h2>The Master Door</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit1/boss-door.png"
+              alt="A giant glowing boss door with rings of orange light"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#128274; Master Door &mdash; the Combined Code</h3>
+            <p class="prompt">
+              The boss door needs BOTH skills. First the prime factorization of
+              <b>30</b>, then the <b>GCF of 30 and 45</b>. Pick the line that is
+              fully correct.
+              <span class="es"
+                >Elige la l&iacute;nea correcta: factorizaci&oacute;n de 30 y el
+                MFC de 30 y 45.</span
+              >
+            </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> 30 = 2 &times; 3 &times; 5. Factors of 30:
+              1,2,3,5,6,10,15,30. Factors of 45: 1,3,5,9,15,45. The biggest
+              shared one is the GCF.
+            </div>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="false">
+                30 = 2 &times; 15, &nbsp; GCF(30,45) = 5
+              </button>
+              <button class="choice" data-correct="true">
+                30 = 2 &times; 3 &times; 5, &nbsp; GCF(30,45) = 15
+              </button>
+              <button class="choice" data-correct="false">
+                30 = 2 &times; 3 &times; 5, &nbsp; GCF(30,45) = 5
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <div class="frame" id="frameF" style="display: none">
+            <b>Sentence frame:</b> &ldquo;30 = ____ &times; ____ &times; ____.
+            The GCF of 30 and 45 is ____.&rdquo;
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Unlock the Master Door &#127775;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MISSION COMPLETE ============ -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Mission complete"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit1/mission-complete.png"
+            alt="The cadet stands proudly on the restored station bridge with a galaxy behind"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#128640;&#11088;</span>
+        <h2>Mission Complete!</h2>
+        <p>
+          You restored Prime Station! You used <b>prime factorization</b> to
+          open the airlocks and the <b>GCF</b> to sync the engines. The crew is
+          safe. Great work, Cadet!
+        </p>
+        <p style="color: var(--muted); font-size: 0.92rem">
+          <i
+            >&iexcl;Misi&oacute;n cumplida! Usaste la factorizaci&oacute;n en
+            primos y el MFC. &iexcl;Excelente trabajo!</i
+          >
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            The final secure chest requires the GCF (Greatest Common Factor) of <strong>18 and 27</strong>. What is the biggest number that divides both?<span class="es">El cofre final requiere el MFC (Máximo Factor Común) de 18 y 27. ¿Cuál es el número más grande que divide a ambos?</span>
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) 3 &nbsp;(common factor, but not the greatest)</button>
+            <button class="choice" data-correct="true">B) 9 &nbsp;(the Greatest Common Factor) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) 18 &nbsp;(divides 18, but not 27)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">Play again &#8635;</button>
+    
+      </section>
+
+      <!-- ============ GLOSSARY ============ -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Word Bank</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------- Dialogue data (English + Spanish support) ---------- */
+        var DLG = {
+          act1: [
+            {
+              who: "Station AI",
+              en: "Cadet! The station is damaged. This airlock is locked with a FACTOR CODE.",
+              es: "&iexcl;Cadete! La estaci&oacute;n est&aacute; da&ntilde;ada. Esta puerta tiene un C&Oacute;DIGO DE FACTORES.",
+              cap: true,
+            },
+            {
+              who: "Cadet",
+              en: "I can do this. Factor codes use prime numbers. Let me read the panel.",
+              es: "Puedo hacerlo. Los c&oacute;digos usan n&uacute;meros primos. Voy a leer el panel.",
+            },
+            {
+              who: "Station AI",
+              en: "First, choose the PRIME number to wake the lock.",
+              es: "Primero, elige el n&uacute;mero PRIMO para activar el cerrojo.",
+              cap: true,
+            },
+          ],
+          act1b: [
+            {
+              who: "Cadet",
+              en: "Lock one is open! Now I need the full factor code: the prime factorization of 36.",
+              es: "&iexcl;El primer cerrojo se abri&oacute;! Ahora necesito la factorizaci&oacute;n en primos de 36.",
+            },
+          ],
+          act2: [
+            {
+              who: "Station AI",
+              en: "Good work, Cadet. Now the two engines must SYNC, or we lose power.",
+              es: "Buen trabajo. Ahora los dos motores deben SINCRONIZARSE o perderemos energ&iacute;a.",
+              cap: true,
+            },
+            {
+              who: "Cadet",
+              en: "Engine A is 12, Engine B is 18. I need a number that divides BOTH &mdash; a common factor.",
+              es: "El motor A es 12 y el B es 18. Necesito un n&uacute;mero que divida a AMBOS: un factor com&uacute;n.",
+            },
+          ],
+          act2b: [
+            {
+              who: "Cadet",
+              en: "The engines hum together! Now I have to share the fuel fairly using the GCF.",
+              es: "&iexcl;Los motores zumban juntos! Ahora debo repartir el combustible con el MFC.",
+            },
+          ],
+          final: [
+            {
+              who: "Station AI",
+              en: "The Master Door is ahead. It needs a code that uses BOTH skills at once.",
+              es: "La Puerta Maestra necesita un c&oacute;digo que use AMBAS destrezas.",
+              cap: true,
+            },
+            {
+              who: "Cadet",
+              en: "Prime factorization AND the GCF. I'm ready. Let's open it!",
+              es: "Factorizaci&oacute;n en primos Y el MFC. Estoy lista. &iexcl;Vamos a abrirla!",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#128290;",
+            en: "Prime number",
+            es: "n&uacute;mero primo",
+            def: "A number bigger than 1 that has only two factors: 1 and itself. Example: 7.",
+          },
+          {
+            ico: "&#129513;",
+            en: "Composite number",
+            es: "n&uacute;mero compuesto",
+            def: "A number with more than two factors. Example: 12 (1,2,3,4,6,12).",
+          },
+          {
+            ico: "&#127795;",
+            en: "Prime factorization",
+            es: "factorizaci&oacute;n en primos",
+            def: "Writing a number as a product of only prime numbers. Example: 36 = 2&times;2&times;3&times;3.",
+          },
+          {
+            ico: "&#127794;",
+            en: "Factor tree",
+            es: "&aacute;rbol de factores",
+            def: "A diagram that breaks a number into branches until every end is a prime number.",
+          },
+          {
+            ico: "&#10094;&#10095;",
+            en: "Exponent",
+            es: "exponente",
+            def: "A small number that shows repeated multiplying. Example: 2&times;2 = 2&sup2;.",
+          },
+          {
+            ico: "&#10006;&#65039;",
+            en: "Factor",
+            es: "factor",
+            def: "A number that divides another number with no remainder. 3 is a factor of 12.",
+          },
+          {
+            ico: "&#129309;",
+            en: "Common factor",
+            es: "factor com&uacute;n",
+            def: "A factor that two numbers share. 6 is a common factor of 12 and 18.",
+          },
+          {
+            ico: "&#127942;",
+            en: "GCF (Greatest Common Factor)",
+            es: "M&aacute;ximo Factor Com&uacute;n (MFC)",
+            def: "The biggest factor that two numbers share. The GCF of 24 and 36 is 12.",
+          },
+          {
+            ico: "&#9989;",
+            en: "Divisible",
+            es: "divisible",
+            def: "One number divides another evenly, with no remainder. 18 is divisible by 6.",
+          },
+        ];
+
+        /* ---------- State ---------- */
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        /* ---------- Progress ---------- */
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+
+        /* ---------- Tab locking ---------- */
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+
+        /* ---------- Scene switching ---------- */
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          // mission complete is a special scene not in tab list
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (tabsArr[i + 1] || tabsArr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus();
+            }
+          });
+        });
+
+        /* ---------- Dialogue engine ---------- */
+        function runDialogue(opts) {
+          // opts: {key, dlg(array), dlgId, nextId, dotsId, onDone}
+          var idx = 0;
+          var dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            var i = document.createElement("i");
+            dots.appendChild(i);
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '">' +
+              '<div class="who">' +
+              line.who +
+              "</div>" +
+              '<div class="en">' +
+              line.en +
+              "</div>" +
+              '<div class="es">' +
+              line.es +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else {
+              if (opts.onDone) opts.onDone();
+            }
+          };
+          render();
+        }
+
+        /* ---------- Choice handler ---------- */
+        function wireChoices(opts) {
+          // opts: {choicesId, feedbackId, goodEn, goodEs, badEn, badEs, onSolve}
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var correct = btn.dataset.correct === "true";
+              var fb = $(opts.feedbackId);
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML =
+                  opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML =
+                  opts.badEn + '<span class="es">' + opts.badEs + "</span>";
+              }
+            });
+          });
+        }
+
+        /* ---------- Build glossary ---------- */
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              ' <span class="es-term">(' +
+              g.es +
+              ")</span></h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        /* ---------- ACT 1 flow ---------- */
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Try the lock ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Correct! 7 is prime &mdash; only 1 and 7 divide it. Lock one is open.",
+            goodEs: "&iexcl;Correcto! 7 es primo. Cerrojo uno abierto.",
+            badEn:
+              "&#10060; Not prime &mdash; that number can be split into smaller factors. Use the hint and try again.",
+            badEs:
+              "No es primo. Ese n&uacute;mero se puede dividir. Usa la pista.",
+            onSolve: function () {
+              // show interlude dialogue, then second challenge
+              var box = $("dlg-act1");
+              setTimeout(function () {
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act1b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act1b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act1b[0].es +
+                  "</div></div>";
+                $("chal1b").style.display = "block";
+                $("frame1").style.display = "block";
+              }, 500);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; Perfect factor tree! 36 = 2&times;2&times;3&times;3 (or 2&sup2;&times;3&sup2;). Every branch ends in a prime. AIRLOCK OPEN!",
+            goodEs:
+              "&iexcl;&Aacute;rbol correcto! 36 = 2&times;2&times;3&times;3. &iexcl;Puerta abierta!",
+            badEn:
+              "&#10060; That tree still has a number that is NOT prime. Keep breaking it down until every end is prime.",
+            badEs:
+              "Ese &aacute;rbol a&uacute;n tiene un n&uacute;mero no primo. Sigue dividiendo.",
+            onSolve: function () {
+              $("art-act1").src = "../_art/unit1/airlock-open.png";
+              $("art-act1").alt =
+                "The airlock slides open with golden light as the cadet raises a fist";
+              $("adv-act1").classList.add("show");
+            },
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        /* ---------- ACT 2 flow ---------- */
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Find a common factor ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; Yes! 6 divides 12 (12&divide;6=2) and 18 (18&divide;6=3). It is a common factor.",
+            goodEs:
+              "&iexcl;S&iacute;! 6 divide a 12 y a 18. Es un factor com&uacute;n.",
+            badEn:
+              "&#10060; That number only divides ONE of them. A common factor must divide BOTH. Check the hint.",
+            badEs: "Ese n&uacute;mero solo divide a uno. Debe dividir a ambos.",
+            onSolve: function () {
+              var box = $("dlg-act2");
+              setTimeout(function () {
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act2b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act2b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act2b[0].es +
+                  "</div></div>";
+                $("chal2b").style.display = "block";
+                $("frame2").style.display = "block";
+              }, 500);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; The GCF of 24 and 36 is 12 &mdash; the biggest factor they share. Fuel shared fairly. ENGINES SYNCED!",
+            goodEs: "El MFC de 24 y 36 es 12. &iexcl;Motores sincronizados!",
+            badEn:
+              "&#10060; That IS a common factor, but not the GREATEST one. Look for a bigger shared factor.",
+            badEs:
+              "Es com&uacute;n, pero no el mayor. Busca uno m&aacute;s grande.",
+            onSolve: function () {
+              $("adv-act2").classList.add("show");
+            },
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        /* ---------- FINAL flow ---------- */
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Enter the code ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("frameF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; CODE ACCEPTED! 30 = 2&times;3&times;5 and GCF(30,45) = 15. Both skills, perfect. THE MASTER DOOR OPENS!",
+            goodEs:
+              "&iexcl;C&Oacute;DIGO ACEPTADO! 30 = 2&times;3&times;5 y MFC(30,45)=15. &iexcl;La puerta se abre!",
+            badEn:
+              "&#10060; One part is wrong. Check that 30 is broken into ONLY primes, and that the GCF is the BIGGEST shared factor (15, not 5).",
+            badEs:
+              "Una parte est&aacute; mal. Revisa los primos de 30 y el MFC m&aacute;s grande (15).",
+            onSolve: function () {
+              $("adv-final").classList.add("show");
+            },
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        /* ---------- Wire start / restart ---------- */
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        /* ---------- Init ---------- */
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U1 #1: Prime Station: The Factor Code",
+        standard: "6.NS.4",
+        level: "1",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>

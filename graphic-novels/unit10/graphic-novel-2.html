@@ -1,0 +1,1698 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #2 · Aquarium Architect</title>
+    <style>
+      :root {
+        --bg: #03101a;
+        --ink: #eafaff;
+        --muted: #92bdd0;
+        --accent: #ff8a3d;
+        --accent2: #36d1e0;
+        --panel: #0a2433;
+        --line: #194458;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --gold: #ffd166;
+        --bubble: #0a2433;
+        --bubble-ink: #eafaff;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: radial-gradient(
+          900px 600px at 80% -10%,
+          #0c3346,
+          var(--bg) 65%
+        );
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(3, 16, 26, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent2);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #05202d;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #07202e;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent2), #2b9ad8);
+        color: #022;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #05202d;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent2);
+      }
+
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: var(--accent);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.06rem;
+      }
+      .bubble.caption {
+        background: #05202d;
+        border-style: dashed;
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #194458;
+      }
+      .dots i.on {
+        background: var(--accent2);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #2b9ad8);
+        color: #022;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .challenge {
+        margin-top: 16px;
+        background: #07202e;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent2);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .challenge.bonus {
+        border-color: var(--gold);
+        background: #1c1606;
+        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      }
+      .challenge.bonus h3 {
+        color: var(--gold);
+      }
+      .bonus-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #1a1200;
+        background: var(--gold);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .skip-note {
+        font-size: 0.82rem;
+        color: #ffe7bf;
+        margin: 4px 0 2px;
+        font-style: italic;
+      }
+      .diagram {
+        font-family: "Courier New", monospace;
+        white-space: pre;
+        font-size: 0.95rem;
+        line-height: 1.35;
+        color: #9ee9ff;
+        background: #04181f;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 8px 0;
+        overflow-x: auto;
+      }
+      .net {
+        background: #04181f;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+        margin: 8px 0;
+      }
+      .net-row {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin: 4px 0;
+        flex-wrap: wrap;
+      }
+      .net-face {
+        flex: 0 0 auto;
+        min-width: 68px;
+        text-align: center;
+        padding: 8px 6px;
+        background: #0d3a47;
+        border: 1px solid #2b8aa0;
+        border-radius: 6px;
+        color: #cfeffa;
+        font-size: 0.82rem;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+      .formula {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #9ee9ff;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #0a2433;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .choice .tree {
+        font-family: "Courier New", monospace;
+        white-space: pre-wrap;
+        font-size: 0.9rem;
+        line-height: 1.35;
+        display: block;
+        margin-top: 4px;
+        color: #9ee9ff;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 660px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent2), #2b9ad8);
+        color: #022;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #022;
+        background: linear-gradient(135deg, var(--accent2), #2b9ad8);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #07202e;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        color: var(--accent2);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #07202e;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"><span class="v">#2</span> Aquarium Architect</span>
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: Volume by Design
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: Glass &amp; Nets
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Final Build
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- COVER -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit10/cover.png"
+            alt="Maya, a young aquarium architect, stands in a grand aquarium with glowing fish tanks and floating blueprints"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
+        <h2>Aquarium Architect &#128032;&#127754;</h2>
+        <p>
+          The city has commissioned a landmark aquarium, and you, Maya, are the
+          lead architect. Every exhibit stays sealed until you certify it: the
+          exact <b>volume</b> of water it holds (even with fractional edge
+          lengths) and the precise <b>surface area</b> of glass &mdash; computed
+          from a <b>net</b> &mdash; needed to enclose it. Get the engineering
+          right and the tanks come alive.
+        </p>
+        <button class="start" id="start-btn">Begin Commission &#128640;</button>
+      </section>
+
+      <!-- ACT 1 -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act">Act 1 &middot; Volume of Prisms</span>
+          <h2>Volume by Design</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit10/volume.png"
+            alt="Maya points at a glowing wireframe rectangular tank with dimension arrows"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <!-- Core lock 1: fractional-edge volume -->
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>&#128167; Exhibit A &mdash; The Mangrove Pool</h3>
+          <p class="prompt">
+            The mangrove pool measures <b>3&frac12; ft</b> long,
+            <b>2 ft</b> wide, and <b>4 ft</b> deep. Certify its volume using V =
+            l &times; w &times; h.
+          </p>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="false">
+              32 ft&sup3;<span class="tree"
+                >rounded 3&frac12; up to 4 &mdash; don&rsquo;t round</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              24 ft&sup3;<span class="tree"
+                >used 3 for the length, dropping the &frac12;</span
+              >
+            </button>
+            <button class="choice" data-correct="true">
+              28 ft&sup3;<span class="tree"
+                >3&frac12; &times; 2 &times; 4 = 7/2 &times; 8 = 28</span
+              >
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <!-- Core lock 2: two fractional edges -->
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#128167; Exhibit B &mdash; The Jewel Cube</h3>
+          <p class="prompt">
+            A compact display measures <b>2&frac12; ft</b> &times;
+            <b>1&frac12; ft</b> &times; <b>2 ft</b>. Two edges are fractional.
+            Find the exact volume.
+            <span class="formula"
+              >Volume = l &times; w &times; h. Multiply the fractions exactly
+              &mdash; do not round.</span
+            >
+          </p>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="true">
+              7&frac12; ft&sup3;<span class="tree"
+                >5/2 &times; 3/2 &times; 2 = 15/4 &times; 2 = 30/4 =
+                7&frac12;</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              6 ft&sup3;<span class="tree"
+                >used 2 &times; 1 &times; 2, dropping both fractions</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              15 ft&sup3;<span class="tree"
+                >forgot to keep the /4 from 5/2 &times; 3/2</span
+              >
+            </button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <!-- OPTIONAL bonus: reverse, find a dimension -->
+        <div class="challenge bonus" id="bonus1" style="display: none">
+          <span class="bonus-tag">&#11088; Architect&rsquo;s Bonus</span>
+          <p class="skip-note">
+            Optional &mdash; you may skip this anytime and keep building. It is
+            not required to advance.
+          </p>
+          <h3>The Reverse Blueprint</h3>
+          <p class="prompt">
+            A reef tank must hold exactly <b>90 ft&sup3;</b> of water. Its base
+            footprint is fixed at <b>5 ft &times; 6 ft</b>. What height does the
+            tank need? (Reverse the volume formula.)
+          </p>
+          <div class="choices" id="choicesB1">
+            <button class="choice" data-correct="false">
+              6 ft<span class="tree"
+                >90 &divide; 6 ignores the other base edge</span
+              >
+            </button>
+            <button class="choice" data-correct="true">
+              3 ft<span class="tree"
+                >base area = 5 &times; 6 = 30; h = 90 &divide; 30 = 3</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              15 ft<span class="tree"
+                >90 &divide; 6 = 15 uses only one edge</span
+              >
+            </button>
+          </div>
+          <div class="feedback" id="fbB1"></div>
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">
+            Flood the exhibits &#128032;
+          </button>
+        </div>
+      </section>
+
+      <!-- ACT 2 -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Complete Act 1 to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act">Act 2 &middot; Surface Area from Nets</span>
+            <h2>Glass &amp; Nets</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit10/net.png"
+              alt="Maya unfolds a glass tank into a flat net of six rectangle panels"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- Core lock 1: SA from net -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#129521; Glazing Order #1 &mdash; Unfold &amp; Sum</h3>
+            <p class="prompt">
+              Unfold the kelp-forest tank (<b>6 ft &times; 4 ft &times; 3 ft</b
+              >) into a net and sum the six face areas to order the glass.
+              <span class="formula"
+                >Surface area = sum of all 6 faces = 2(lw + lh + wh).</span
+              >
+            </p>
+            <div
+              class="net"
+              aria-label="Net of the 6 by 4 by 3 tank: top face 6 by 4, a row of left 4 by 3, front 6 by 3, right 4 by 3, back 6 by 3, and bottom face 6 by 4"
+            >
+              <div class="net-row">
+                <span class="net-face">top<br />6 &times; 4</span>
+              </div>
+              <div class="net-row">
+                <span class="net-face">left<br />4 &times; 3</span>
+                <span class="net-face">front<br />6 &times; 3</span>
+                <span class="net-face">right<br />4 &times; 3</span>
+                <span class="net-face">back<br />6 &times; 3</span>
+              </div>
+              <div class="net-row">
+                <span class="net-face">bottom<br />6 &times; 4</span>
+              </div>
+            </div>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="false">
+                72 ft&sup2;<span class="tree"
+                  >24+18+12 &mdash; counted only one of each pair</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                108 ft&sup2;<span class="tree"
+                  >2(6&times;4) + 2(6&times;3) + 2(4&times;3) = 48+36+24</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                72 ft&sup3;<span class="tree"
+                  >that is the volume (and wrong units)</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- Core lock 2: SA of a different prism -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>&#129521; Glazing Order #2 &mdash; The Long Gallery</h3>
+            <p class="prompt">
+              The walk-through gallery tank is
+              <b>8 ft &times; 3 ft &times; 2 ft</b>. Compute its surface area to
+              finish the glass order.
+              <span class="formula"
+                >Surface area = 2(lw + lh + wh), in square feet
+                (ft&sup2;).</span
+              >
+            </p>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="true">
+                92 ft&sup2;<span class="tree"
+                  >2(8&times;3) + 2(8&times;2) + 2(3&times;2) = 48+32+12</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                46 ft&sup2;<span class="tree"
+                  >24+16+6 &mdash; only one of each face</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                48 ft&sup3;<span class="tree"
+                  >that is the volume, not surface area</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <!-- OPTIONAL bonus: composite-prism surface area -->
+          <div class="challenge bonus" id="bonus2" style="display: none">
+            <span class="bonus-tag">&#11088; Architect&rsquo;s Bonus</span>
+            <p class="skip-note">
+              Optional &mdash; skip anytime; not required to advance.
+            </p>
+            <h3>The L-Shaped Touch Pool</h3>
+            <p class="prompt">
+              A touch pool is built by fusing two prisms: a main tank
+              <b>4 &times; 4 &times; 3 ft</b> and a viewing nook
+              <b>2 &times; 2 &times; 3 ft</b>, joined on a shared
+              <b>2 ft &times; 3 ft</b> face (so that face is hidden on BOTH
+              prisms). What is the surface area of the composite tank?
+            </p>
+            <div class="choices" id="choicesB2">
+              <button class="choice" data-correct="false">
+                112 ft&sup2;<span class="tree"
+                  >80 + 32 &mdash; forgot to remove the hidden faces</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                100 ft&sup2;<span class="tree"
+                  >80 + 32 &minus; 2(2&times;3) = 112 &minus; 12</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                106 ft&sup2;<span class="tree"
+                  >only removed ONE shared face, not both</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fbB2"></div>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Install the glass &#129521;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINAL -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Complete Act 2 to unlock the Final Build.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final Build &middot; Boss</span>
+            <h2>The Grand Ocean Hall</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit10/final.png"
+              alt="Maya stands before a huge aquarium tank under construction with scaffolding and blueprints"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <!-- Core lock: combined V + SA -->
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#127775; Certification &mdash; Volume AND Glass</h3>
+            <p class="prompt">
+              The centerpiece tank is <b>7 ft &times; 4 ft &times; 3 ft</b>.
+              Final sign-off requires BOTH the water volume and the glass
+              surface area on one line. Choose the fully correct certification.
+              <span class="formula"
+                >Volume = l &times; w &times; h (ft&sup3;). Surface area = 2(lw
+                + lh + wh) (ft&sup2;).</span
+              >
+            </p>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="false">
+                V = 84 ft&sup3;, SA = 61 ft&sup2;<span class="tree"
+                  >SA only counted one of each face</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                V = 84 ft&sup3;, SA = 122 ft&sup2;<span class="tree"
+                  >V = 7&times;4&times;3; SA = 2(28+21+12) = 2(61)</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                V = 122 ft&sup3;, SA = 84 ft&sup2;<span class="tree"
+                  >swapped volume and surface area</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <!-- OPTIONAL final bonus: reverse find-a-dimension -->
+          <div class="challenge bonus" id="bonusF" style="display: none">
+            <span class="bonus-tag"
+              >&#11088; Architect&rsquo;s Final Bonus</span
+            >
+            <p class="skip-note">
+              Optional &mdash; the hall is already certified; this is just for
+              the trophy. Skip anytime.
+            </p>
+            <h3>The Overflow Reservoir</h3>
+            <p class="prompt">
+              Behind the hall, an overflow reservoir must hold exactly
+              <b>96 ft&sup3;</b>. Its footprint is fixed at
+              <b>6 ft &times; 4 ft</b>. What height makes it hold exactly 96
+              ft&sup3;?
+            </p>
+            <div class="choices" id="choicesBF">
+              <button class="choice" data-correct="true">
+                4 ft<span class="tree"
+                  >base = 6&times;4 = 24; h = 96 &divide; 24 = 4</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                16 ft<span class="tree"
+                  >96 &divide; 6 uses only one base edge</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                3 ft<span class="tree">6&times;4&times;3 = 72, not 96</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbBF"></div>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Open the aquarium &#127881;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPLETE -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Mission complete"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit10/complete.png"
+            alt="Maya cuts a ribbon at the grand opening of her finished aquarium full of fish and visitors"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#128032;&#11088;</span>
+        <h2>Grand Opening &mdash; Commission Complete!</h2>
+        <p>
+          The landmark aquarium is open, Architect. You certified every exhibit
+          &mdash; computing exact <b>volumes</b> with fractional edge lengths
+          and deriving <b>surface areas</b> from nets, including a composite
+          tank &mdash; and reverse-engineered the dimensions of two reservoirs.
+          The city has named the Ocean Hall in your honor, Maya.
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Surface Area: A cubical touch pool reservoir has a side length of <strong>3 feet</strong>. Find the total <strong>surface area</strong> of the closed reservoir net.
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) 27 square feet &nbsp;(this is the volume, not surface area)</button>
+            <button class="choice" data-correct="true">B) 54 square feet &nbsp;($6 \text{ faces} \times (3^2) = 54$) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) 36 square feet &nbsp;(calculated 4 faces instead of 6)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">Run again &#8635;</button>
+    
+      </section>
+
+      <!-- GLOSSARY -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Architect&rsquo;s Codex</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var DLG = {
+          act1: [
+            {
+              who: "City Liaison",
+              en: "Maya, the commission is yours. No exhibit goes live until you certify its volume to the cubic foot — fractional edges and all.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Understood. Volume is length × width × height — and a fractional edge is no excuse to round. I multiply the exact values.",
+            },
+          ],
+          act1b: [
+            {
+              who: "Maya",
+              en: "Mangrove pool certified. The jewel display has two fractional edges — I'll multiply the fractions carefully before simplifying.",
+            },
+          ],
+          bonus1: [
+            {
+              who: "City Liaison",
+              en: "Optional: a donor wants a reef tank of an EXACT volume on a fixed footprint. Reverse the formula if you're up for it — entirely your call.",
+              cap: true,
+            },
+          ],
+          act2: [
+            {
+              who: "City Liaison",
+              en: "Volumes signed off. Now the glaziers need exact glass. Unfold each tank into its net and total every face.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Surface area, not volume. I'll lay each prism flat as a net, find the area of all six faces, and sum them.",
+            },
+          ],
+          act2b: [
+            {
+              who: "Maya",
+              en: "Kelp tank glazed. The gallery is a longer prism — same method, new dimensions. Order placed.",
+            },
+          ],
+          bonus2: [
+            {
+              who: "City Liaison",
+              en: "Optional design flourish: an L-shaped touch pool made of two fused prisms. Remember the shared face is hidden on both. Try it if you like.",
+              cap: true,
+            },
+          ],
+          final: [
+            {
+              who: "City Liaison",
+              en: "The Grand Ocean Hall awaits final certification — one line stating both the water volume AND the glass surface area.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Both quantities, no errors. Volume multiplies the three edges; surface area sums the six faces. Signing off.",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#128230;",
+            en: "Rectangular prism",
+            def: "A solid with six rectangular faces and three pairs of congruent faces; modeled here as a fish tank.",
+          },
+          {
+            ico: "&#128167;",
+            en: "Volume",
+            def: "The space a solid occupies. For a rectangular prism, V = l × w × h, in cubic units (ft³).",
+          },
+          {
+            ico: "&#189;",
+            en: "Fractional edge length",
+            def: "An edge measured by a fraction or mixed number. Multiply exactly: 3½ × 2 × 4 = 7/2 × 8 = 28.",
+          },
+          {
+            ico: "&#129521;",
+            en: "Net",
+            def: "A two-dimensional pattern that folds into a solid, displaying every face laid flat — ideal for surface area.",
+          },
+          {
+            ico: "&#11036;",
+            en: "Face",
+            def: "A flat polygon surface of a solid. A rectangular prism has 6 faces in 3 congruent pairs.",
+          },
+          {
+            ico: "&#129521;",
+            en: "Surface area",
+            def: "The sum of the areas of all faces. For a box: SA = 2(lw + lh + wh), in square units (ft²).",
+          },
+          {
+            ico: "&#129303;",
+            en: "Composite solid",
+            def: "A figure made of two or more prisms. Its surface area is the sum of the parts MINUS the shared (hidden) faces.",
+          },
+          {
+            ico: "&#128260;",
+            en: "Reverse problem",
+            def: "Working backward from a known volume to find a missing dimension: e.g., h = V ÷ (base area).",
+          },
+          {
+            ico: "&#128208;",
+            en: "Base area",
+            def: "The area of a prism's base (l × w). Volume equals base area × height, so height = V ÷ base area.",
+          },
+          {
+            ico: "&#10133;",
+            en: "Cubic vs. square units",
+            def: "Volume is measured in cubic units (ft³); surface area is measured in square units (ft²).",
+          },
+        ];
+
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          $("scene-complete").classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var arr = qa(".tab");
+            var i = arr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (arr[i + 1] || arr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (arr[i - 1] || arr[arr.length - 1]).focus();
+            }
+          });
+        });
+
+        function runDialogue(opts) {
+          var idx = 0,
+            dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            dots.appendChild(document.createElement("i"));
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '"><div class="who">' +
+              line.who +
+              '</div><div class="en">' +
+              line.en +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else if (opts.onDone) opts.onDone();
+          };
+          render();
+        }
+
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var fb = $(opts.feedbackId);
+              if (btn.dataset.correct === "true") {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = opts.goodEn;
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = opts.badEn;
+              }
+            });
+          });
+        }
+
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              "</h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        function showBubble(boxId, line) {
+          $(boxId).innerHTML =
+            '<div class="bubble' +
+            (line.cap ? " caption" : "") +
+            '"><div class="who">' +
+            line.who +
+            '</div><div class="en">' +
+            line.en +
+            "</div></div>";
+        }
+
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Certify volume ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Exact. 3&frac12; &times; 2 &times; 4 = 7/2 &times; 8 = 28 ft&sup3;. Mangrove pool certified.",
+            badEn:
+              "&#10060; Keep the fraction. 3&frac12; = 7/2; multiply, don&rsquo;t round: 7/2 &times; 2 &times; 4 = 28.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.act1b[0]);
+                $("chal1b").style.display = "block";
+                $("chal1b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; 5/2 &times; 3/2 &times; 2 = 15/4 &times; 2 = 30/4 = 7&frac12; ft&sup3;. Both exhibits certified! (The bonus below is optional.)",
+            badEn:
+              "&#10060; Multiply the fractions first: 5/2 &times; 3/2 = 15/4, then &times; 2 = 30/4 = 7&frac12;.",
+            onSolve: function () {
+              // CORE solved -> reveal advance immediately; bonus is optional and does NOT gate
+              $("art-act1").src = "../_art/unit10/unlock.png";
+              $("art-act1").alt =
+                "The tank fills with sparkling water and colorful fish as Maya cheers";
+              $("adv-act1").classList.add("show");
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.bonus1[0]);
+                $("bonus1").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB1",
+            feedbackId: "fbB1",
+            goodEn:
+              "&#11088; Sharp. Base area = 5 &times; 6 = 30 ft&sup2;; height = 90 &divide; 30 = 3 ft. Donor tank designed.",
+            badEn:
+              "&#10060; Use the WHOLE base: divide the volume by base area (5&times;6=30), not by a single edge.",
+            onSolve: function () {
+              // bonus solved is a nicety only; advance is already available
+            },
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Total the faces ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; SA = 2(6&times;4) + 2(6&times;3) + 2(4&times;3) = 48+36+24 = 108 ft&sup2;. Kelp tank glazed.",
+            badEn:
+              "&#10060; Each face has a matching pair. Double every distinct face: 2(24)+2(18)+2(12) = 108.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.act2b[0]);
+                $("chal2b").style.display = "block";
+                $("chal2b").scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; SA = 2(8&times;3) + 2(8&times;2) + 2(3&times;2) = 48+32+12 = 92 ft&sup2;. Glass order complete! (Bonus below is optional.)",
+            badEn:
+              "&#10060; Sum all six faces: 2(24)+2(16)+2(6) = 92 ft&sup2;. Don&rsquo;t confuse it with volume.",
+            onSolve: function () {
+              // CORE solved -> reveal advance immediately; bonus optional
+              $("adv-act2").classList.add("show");
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.bonus2[0]);
+                $("bonus2").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB2",
+            feedbackId: "fbB2",
+            goodEn:
+              "&#11088; Main 2(16+12+12)=80; nook 2(4+6+6)=32; remove BOTH hidden 2&times;3 faces: 80+32&minus;12 = 100 ft&sup2;.",
+            badEn:
+              "&#10060; The shared face is hidden on each prism, so subtract it TWICE: 80 + 32 &minus; 2(6) = 100.",
+            onSolve: function () {
+              // bonus only; advance already available
+            },
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Certify the hall ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; V = 7&times;4&times;3 = 84 ft&sup3;; SA = 2(28+21+12) = 2(61) = 122 ft&sup2;. Grand Ocean Hall certified! (Final bonus below is optional.)",
+            badEn:
+              "&#10060; Volume multiplies the three edges (84). Surface area sums the six faces: 2(28+21+12)=122. Don&rsquo;t swap them.",
+            onSolve: function () {
+              // CORE solved -> reveal advance immediately; bonus optional, never gates
+              $("adv-final").classList.add("show");
+              setTimeout(function () {
+                $("bonusF").style.display = "block";
+              }, 300);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesBF",
+            feedbackId: "fbBF",
+            goodEn:
+              "&#11088; Base = 6&times;4 = 24 ft&sup2;; height = 96 &divide; 24 = 4 ft. Reservoir designed. Trophy earned!",
+            badEn:
+              "&#10060; Divide the volume by the FULL base area (6&times;4=24): 96 &divide; 24 = 4 ft.",
+            onSolve: function () {
+              // bonus only; advance already available
+            },
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U10 #2: Aquarium Architect",
+        standard: "6.G.2",
+        level: "2",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>

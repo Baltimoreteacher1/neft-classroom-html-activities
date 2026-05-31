@@ -1,0 +1,1615 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Graphic Novel #2 · Detective Case Files: The Equation Mysteries
+    </title>
+    <style>
+      :root {
+        --bg: #070d1f;
+        --ink: #eef3ff;
+        --muted: #9fb0d6;
+        --accent: #ff8a3d;
+        --accent2: #5d7bff;
+        --panel: #101e44;
+        --line: #283f73;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --gold: #ffd166;
+        --bubble: #0e1c40;
+        --bubble-ink: #eef3ff;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: radial-gradient(
+          900px 600px at 80% -10%,
+          #15265a,
+          var(--bg) 65%
+        );
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(7, 13, 31, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent2);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #0a142e;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #fff;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #0a142e;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent2);
+      }
+
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: var(--accent);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.06rem;
+      }
+      .bubble.caption {
+        background: #0a142e;
+        border-style: dashed;
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #283f73;
+      }
+      .dots i.on {
+        background: var(--accent2);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .challenge {
+        margin-top: 16px;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent2);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .case-eq {
+        font-family: "Courier New", monospace;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #9ecbff;
+        background: #0a142e;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 8px 0;
+        text-align: center;
+      }
+      .challenge.bonus {
+        border-color: var(--gold);
+        background: #1c1606;
+        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      }
+      .challenge.bonus h3 {
+        color: var(--gold);
+      }
+      .challenge.bonus .case-eq {
+        color: var(--gold);
+        background: #100b02;
+      }
+      .bonus-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #1a1200;
+        background: var(--gold);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .skip-note {
+        font-size: 0.85rem;
+        color: #ffe6ad;
+        font-style: italic;
+        margin: 4px 0 8px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #101e44;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .choice .eq {
+        font-family: "Courier New", monospace;
+        font-size: 0.95rem;
+        display: block;
+        margin-top: 4px;
+        color: #9ecbff;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 660px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #fff;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #0c1838;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        color: var(--accent2);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"
+          ><span class="v">#2</span> Detective Case Files</span
+        >
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Case progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: The First Clue
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: The Locked Boxes
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Final Case
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- COVER -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit7/cover.png"
+            alt="A young detective stands in a cozy office at night with a board of clues and a locked evidence box"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
+        <h2>Detective Case Files: The Equation Mysteries</h2>
+        <p>
+          Detective Mateo has inherited the precinct's coldest, trickiest cases.
+          Every locked evidence box guards an unknown quantity. Your job:
+          <b>translate layered clues into equations</b>, <b>solve</b> them, and
+          <b>verify</b> each answer before the lock will yield. Only airtight
+          reasoning cracks these files.
+        </p>
+        <p style="font-size: 0.95rem; color: var(--gold)">
+          &#11088; Each act hides an <b>optional</b> Detective&rsquo;s
+          Challenge. It is bonus glory only &mdash; you can skip it anytime and
+          still solve the case.
+        </p>
+        <button class="start" id="start-btn">
+          Open the Case &#128373;&#65039;
+        </button>
+      </section>
+
+      <!-- ACT 1 -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act">Act 1 &middot; Write Equations</span>
+          <h2>The First Clue</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit7/evidence-room.png"
+            alt="Detective Mateo examines a wall of clues with his magnifying glass"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <!-- Core 1a: layered clue -> two-step equation -->
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>&#128373;&#65039; Clue #1 &mdash; Model the Theft</h3>
+          <p class="prompt">
+            The case file reads: &ldquo;The vault held some bills. The thief
+            took
+            <b>half</b> of them, then a guard recovered <b>8</b>, leaving
+            <b>30</b> in the vault.&rdquo; Let <b>b</b> = the original number of
+            bills. Which equation models the clue, in order?
+          </p>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="false">
+              2b + 8 = 30 <span class="eq">(this doubles the bills)</span>
+            </button>
+            <button class="choice" data-correct="true">
+              b/2 + 8 = 30
+              <span class="eq">(half remained, plus the 8 recovered)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              b/2 &minus; 8 = 30
+              <span class="eq">(8 was recovered, not removed)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <!-- Core 1b: layered clue -> two-step equation -->
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#128373;&#65039; Clue #2 &mdash; The Fingerprint Count</h3>
+          <p class="prompt">
+            Lab note: &ldquo;<b>Three more</b> than <b>four times</b> the number
+            of usable fingerprints (<b>f</b>) equals <b>23</b>.&rdquo; Translate
+            it into an equation.
+          </p>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              4(f + 3) = 23
+              <span class="eq">(this adds 3 first, then multiplies)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              3f + 4 = 23 <span class="eq">(mixed up the 3 and the 4)</span>
+            </button>
+            <button class="choice" data-correct="true">
+              4f + 3 = 23
+              <span class="eq">(four times f, then three more)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <!-- Optional bonus 1: equation with variables on both sides -->
+        <div class="challenge bonus" id="bonus1" style="display: none">
+          <span class="bonus-tag">&#11088; Detective&rsquo;s Challenge</span>
+          <h3>The Double-Cross</h3>
+          <p class="skip-note">
+            Optional &mdash; pure bonus. The case is already cracked; skip
+            anytime with the button below.
+          </p>
+          <p class="prompt">
+            A coded confession says: &ldquo;<b>Twice</b> a number,
+            <b>decreased by 7</b>, gives the <b>same result</b> as the number
+            <b>increased by 5</b>.&rdquo; Which equation captures it?
+          </p>
+          <div class="choices" id="choicesB1">
+            <button class="choice" data-correct="true">
+              2n &minus; 7 = n + 5
+              <span class="eq">(both sides describe the same value)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              2n + 7 = n &minus; 5 <span class="eq">(signs reversed)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              2(n &minus; 7) = n + 5
+              <span class="eq">("twice a number" is 2n, not 2(n&minus;7))</span>
+            </button>
+          </div>
+          <div class="feedback" id="fbB1"></div>
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">
+            File the clues &#128373;&#65039;
+          </button>
+        </div>
+      </section>
+
+      <!-- ACT 2 -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Complete Act 1 to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act">Act 2 &middot; Solve Equations</span>
+            <h2>The Locked Boxes</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit7/unlock-box.png"
+              alt="Detective Mateo opens a locked evidence box with golden light pouring out"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- Core 2a: one-step division -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#128272; Box #1 &mdash; Solve to Unlock</h3>
+            <p class="prompt">
+              The first lock opens to the value of <b>x</b>. Isolate the
+              variable and find the code.
+            </p>
+            <div class="case-eq">x / 6 = 9</div>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="true">
+                x = 54
+                <span class="eq">(multiply both sides by 6: 9 &times; 6)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                x = 15 <span class="eq">(this added 6)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                x = 1.5 <span class="eq">(this divided 9 by 6)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- Core 2b: two-step solve (deeper reasoning) -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>&#128272; Box #2 &mdash; The Stubborn Lock</h3>
+            <p class="prompt">
+              This lock needs two moves. Solve for <b>n</b>, then
+              <b>verify</b> by substituting back.
+            </p>
+            <div class="case-eq">3n + 5 = 26</div>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                n = 9 <span class="eq">(check: 3&times;9+5 = 32, not 26)</span>
+              </button>
+              <button class="choice" data-correct="true">
+                n = 7
+                <span class="eq"
+                  >(subtract 5, then divide by 3; check: 3&times;7+5=26)</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                n = 10
+                <span class="eq">(check: 3&times;10+5 = 35, not 26)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <!-- Optional bonus 2: check the solution / verify by substitution -->
+          <div class="challenge bonus" id="bonus2" style="display: none">
+            <span class="bonus-tag">&#11088; Detective&rsquo;s Challenge</span>
+            <h3>The Verification Trap</h3>
+            <p class="skip-note">
+              Optional &mdash; pure bonus. Both boxes are already open; skip
+              anytime with the button below.
+            </p>
+            <p class="prompt">
+              A tampered file claims a solution. Use substitution to find the
+              value of <b>m</b> that <b>actually makes</b> the equation true.
+            </p>
+            <div class="case-eq">8 = m &minus; 15</div>
+            <div class="choices" id="choicesB2">
+              <button class="choice" data-correct="false">
+                m = 7
+                <span class="eq">(check: 7 &minus; 15 = &minus;8, not 8)</span>
+              </button>
+              <button class="choice" data-correct="true">
+                m = 23
+                <span class="eq">(check: 23 &minus; 15 = 8 &check;)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                m = &minus;7
+                <span class="eq">(check: &minus;7 &minus; 15 = &minus;22)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbB2"></div>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Open the next case &#128273;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINAL -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Complete Act 2 to unlock the Final Case.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final Case &middot; Boss</span>
+            <h2>The Vault Mystery</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit7/final-case.png"
+              alt="Detective Mateo faces a giant vault door covered in locks and dials"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <!-- Core final: write AND solve from layered clue -->
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#128274; The Vault &mdash; Write, Solve, Verify</h3>
+            <p class="prompt">
+              The master clue: &ldquo;When you take <b>twice</b> the number of
+              stolen coins and <b>subtract 12</b>, you are left with
+              <b>30</b>.&rdquo; Let <b>c</b> = stolen coins. Pick the line whose
+              equation AND solution are both correct.
+            </p>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="false">
+                2c &minus; 12 = 30, c = 9
+                <span class="eq"
+                  >(equation right, but check: 2&times;9&minus;12=6)</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                2c &minus; 12 = 30, c = 21
+                <span class="eq"
+                  >(add 12 &rarr; 2c=42 &rarr; c=21; check:
+                  2&times;21&minus;12=30)</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                2c + 12 = 30, c = 9
+                <span class="eq">(the clue subtracts 12, not adds)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <!-- Optional bonus final -->
+          <div class="challenge bonus" id="bonusF" style="display: none">
+            <span class="bonus-tag"
+              >&#11088; Detective&rsquo;s Final Challenge</span
+            >
+            <h3>The Inner Safe</h3>
+            <p class="skip-note">
+              Optional &mdash; pure bonus. The vault is already open and the
+              case solved; skip anytime with the button below.
+            </p>
+            <p class="prompt">
+              Behind the vault sits a smaller safe. Its code <b>y</b> satisfies
+              the clue below. Solve and verify.
+            </p>
+            <div class="case-eq">y / 4 + 6 = 13</div>
+            <div class="choices" id="choicesBF">
+              <button class="choice" data-correct="true">
+                y = 28
+                <span class="eq"
+                  >(subtract 6 &rarr; y/4=7 &rarr; y=28; check: 28/4+6=13)</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                y = 76 <span class="eq">(check: 76/4+6 = 25, not 13)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                y = 1.75
+                <span class="eq">(divided too early; handle +6 first)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbBF"></div>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Crack the Vault &#127775;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPLETE -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Case solved"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit7/solved.png"
+            alt="Detective Mateo celebrates with confetti as all the evidence boxes stand open"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#128373;&#65039;&#11088;</span>
+        <h2>Case Closed &mdash; Brilliantly Solved!</h2>
+        <p>
+          Masterful work, Detective. You translated tangled clues into precise
+          <b>equations</b>, <b>solved</b> one-step and multi-step locks, and
+          <b>verified</b> every solution before trusting it. The
+          precinct&rsquo;s coldest case is officially closed.
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Case file equation: Solve the two-step equation to isolate the variable: <strong>3x - 5 = 16</strong>.
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) x = 3.6 &nbsp;(subtracted 5 instead of adding it)</button>
+            <button class="choice" data-correct="true">B) x = 7 &nbsp;($3x = 21 \implies x = 7$) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) x = 18 &nbsp;(added 5 and multiplied incorrectly)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">Run again &#8635;</button>
+    
+      </section>
+
+      <!-- GLOSSARY -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Case Codex</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var DLG = {
+          act1: [
+            {
+              who: "Caption",
+              en: "Midnight at the precinct. The coldest files in the archive land on Detective Mateo's desk &mdash; each one an unknown waiting to be named.",
+              cap: true,
+            },
+            {
+              who: "Mateo",
+              en: "Words are just equations in disguise. I read the clue, name the unknown with a variable, and translate every phrase into an operation &mdash; in the right order.",
+            },
+          ],
+          act1b: [
+            {
+              who: "Mateo",
+              en: "First clue modeled. Now a lab note &mdash; 'three more than four times.' Order matters here: I multiply before I add.",
+            },
+          ],
+          bonus1: [
+            {
+              who: "Caption",
+              en: "Optional: a coded confession surfaces, with the unknown on BOTH sides of the equals sign. Worth a look, Detective?",
+              cap: true,
+            },
+          ],
+          act2: [
+            {
+              who: "Caption",
+              en: "The evidence room. Rows of locked boxes, each code equal to a hidden variable.",
+              cap: true,
+            },
+            {
+              who: "Mateo",
+              en: "I isolate the variable using inverse operations, then substitute my answer back to prove the lock is really open. No guesses.",
+            },
+          ],
+          act2b: [
+            {
+              who: "Mateo",
+              en: "One-step lock cleared. This next box takes two moves &mdash; peel off the constant, then undo the coefficient.",
+            },
+          ],
+          bonus2: [
+            {
+              who: "Caption",
+              en: "Optional: a tampered file lists a 'confirmed' answer. Care to verify it by substitution before signing off?",
+              cap: true,
+            },
+          ],
+          final: [
+            {
+              who: "Caption",
+              en: "The grand vault &mdash; the case behind every case. Its lock demands the full method: write, solve, and verify in one move.",
+              cap: true,
+            },
+            {
+              who: "Mateo",
+              en: "Translate the clue, solve it cleanly, check it cold. One airtight line opens this door.",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#10067;",
+            en: "Variable",
+            def: "A symbol (often a letter) representing an unknown or changing quantity. In 4f + 3 = 23, f is the variable.",
+          },
+          {
+            ico: "&#9878;&#65039;",
+            en: "Equation",
+            def: "A statement that two expressions are equal. A solution is any value of the variable that makes it true.",
+          },
+          {
+            ico: "&#9881;&#65039;",
+            en: "Coefficient",
+            def: "The number multiplying a variable. In 3n the coefficient is 3; undo it by dividing.",
+          },
+          {
+            ico: "&#10133;",
+            en: "Constant",
+            def: "A fixed number with no variable, such as the +5 in 3n + 5 = 26. Undo it first when solving.",
+          },
+          {
+            ico: "&#128260;",
+            en: "Inverse operation",
+            def: "The operation that reverses another. Addition/subtraction are inverses; multiplication/division are inverses.",
+          },
+          {
+            ico: "&#10145;&#65039;",
+            en: "Order of operations",
+            def: "When translating 'three more than four times f,' multiply (4f) before adding (+3): 4f + 3.",
+          },
+          {
+            ico: "&#9878;&#65039;",
+            en: "Balance / both sides",
+            def: "Whatever you do to one side of an equation, do to the other, so equality is preserved.",
+          },
+          {
+            ico: "&#128269;",
+            en: "Substitution",
+            def: "Replacing the variable with a value to test it. 23 &minus; 15 = 8 confirms m = 23 solves 8 = m &minus; 15.",
+          },
+          {
+            ico: "&#9989;",
+            en: "Verify / check",
+            def: "Substituting your solution back into the original equation to confirm it is true before trusting it.",
+          },
+          {
+            ico: "&#129518;",
+            en: "Multi-step equation",
+            def: "An equation needing more than one inverse operation to isolate the variable, e.g. 3n + 5 = 26.",
+          },
+        ];
+
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          $("scene-complete").classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var arr = qa(".tab");
+            var i = arr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (arr[i + 1] || arr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (arr[i - 1] || arr[arr.length - 1]).focus();
+            }
+          });
+        });
+
+        function runDialogue(opts) {
+          var idx = 0,
+            dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            dots.appendChild(document.createElement("i"));
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '"><div class="who">' +
+              line.who +
+              '</div><div class="en">' +
+              line.en +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else if (opts.onDone) opts.onDone();
+          };
+          render();
+        }
+
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var fb = $(opts.feedbackId);
+              if (btn.dataset.correct === "true") {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = opts.goodEn;
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = opts.badEn;
+              }
+            });
+          });
+        }
+
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              "</h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        function showBubble(boxId, line) {
+          $(boxId).innerHTML =
+            '<div class="bubble' +
+            (line.cap ? " caption" : "") +
+            '"><div class="who">' +
+            line.who +
+            '</div><div class="en">' +
+            line.en +
+            "</div></div>";
+        }
+
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Read the clue ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Precise. Half remained (b/2), the guard added 8 back, total 30: b/2 + 8 = 30. Clue modeled.",
+            badEn:
+              "&#10060; Track the actions in order: HALF remained (b&divide;2), then 8 were RECOVERED (added). Re-read and try again.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.act1b[0]);
+                $("chal1b").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; Exactly. 'Four times f' is 4f; 'three more' adds 3: 4f + 3 = 23. Operation order preserved.",
+            badEn:
+              "&#10060; 'Four times the prints' is 4f, and 'three more' adds 3 AFTER multiplying: 4f + 3. Watch the order.",
+            onSolve: function () {
+              $("art-act1").src = "../_art/unit7/write-equation.png";
+              $("art-act1").alt =
+                "Detective Mateo writes equations at his desk under a warm lamp";
+              // CORE locks done -> reveal advance immediately (bonus is optional)
+              $("adv-act1").classList.add("show");
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.bonus1[0]);
+                $("bonus1").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB1",
+            feedbackId: "fbB1",
+            goodEn:
+              "&#11088; Sharp. 'Twice a number decreased by 7' is 2n &minus; 7; 'the number increased by 5' is n + 5. So 2n &minus; 7 = n + 5 (and n = 12).",
+            badEn:
+              "&#10060; 'Twice a number' is 2n (not 2(n&minus;7)); 'decreased by 7' subtracts after. Compare to n + 5.",
+            onSolve: function () {
+              // bonus does not gate; advance already shown
+            },
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Solve box one ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; x &divide; 6 = 9, so multiply both sides by 6: x = 54. Check: 54 &divide; 6 = 9. Lock released.",
+            badEn:
+              "&#10060; Division by 6 is undone by MULTIPLYING both sides by 6: x = 9 &times; 6.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.act2b[0]);
+                $("chal2b").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; Subtract 5 &rarr; 3n = 21; divide by 3 &rarr; n = 7. Verify: 3&times;7 + 5 = 26. Box open.",
+            badEn:
+              "&#10060; Two moves: first subtract the constant 5, THEN divide by the coefficient 3. Substitute to check.",
+            onSolve: function () {
+              // CORE locks done -> advance available (bonus optional)
+              $("adv-act2").classList.add("show");
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.bonus2[0]);
+                $("bonus2").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB2",
+            feedbackId: "fbB2",
+            goodEn:
+              "&#11088; Verified. 8 = m &minus; 15 means m = 23, and 23 &minus; 15 = 8 checks out. The file was honest after all.",
+            badEn:
+              "&#10060; Substitute each value into 8 = m &minus; 15. Only the one giving a true statement is the solution.",
+            onSolve: function () {
+              // bonus does not gate
+            },
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Enter the vault ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; VAULT OPEN! 2c &minus; 12 = 30 &rarr; add 12 &rarr; 2c = 42 &rarr; c = 21. Check: 2&times;21 &minus; 12 = 30. Airtight.",
+            badEn:
+              "&#10060; The clue subtracts 12 from TWICE the coins: 2c &minus; 12 = 30. Add 12, then divide by 2, then verify.",
+            onSolve: function () {
+              // CORE solved -> advance available; bonus is optional
+              $("adv-final").classList.add("show");
+              setTimeout(function () {
+                $("bonusF").style.display = "block";
+              }, 300);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesBF",
+            feedbackId: "fbBF",
+            goodEn:
+              "&#11088; y &divide; 4 + 6 = 13 &rarr; subtract 6 &rarr; y &divide; 4 = 7 &rarr; y = 28. Check: 28 &divide; 4 + 6 = 13. Inner safe cracked.",
+            badEn:
+              "&#10060; Undo the +6 first (subtract 6), THEN multiply by 4. Verify by substituting back.",
+            onSolve: function () {
+              // bonus does not gate
+            },
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U7 #2: Detective Case Files: The Equation Mysteries",
+        standard: "6.EE.7",
+        level: "2",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>

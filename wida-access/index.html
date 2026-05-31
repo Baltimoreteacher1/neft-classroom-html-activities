@@ -968,6 +968,101 @@
         .explorer-split {
           grid-template-columns: 1fr !important;
         }
+        .nav-wrap {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .nav {
+          width: max-content;
+        }
+        #groupBtnRow {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          flex-wrap: nowrap;
+        }
+      }
+      /* WIDA hub + progress */
+      .wida-step {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: rgba(109, 232, 200, 0.18);
+        border: 1px solid rgba(109, 232, 200, 0.5);
+        color: #6de8c8;
+        font-family: "Sora", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .wida-card-prog {
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.78);
+        margin: 0 0 14px 0;
+        min-height: 20px;
+        line-height: 1.5;
+      }
+      .wida-dom-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 14px;
+        color: #fff;
+      }
+      .wida-dom-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .wida-dom-name {
+        font-family: "Sora", sans-serif;
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+      .wida-readiness {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: var(--rpill);
+        padding: 3px 10px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .wr-none {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .wr-prog {
+        background: rgba(251, 208, 122, 0.18);
+        color: #fbd07a;
+      }
+      .wr-strong {
+        background: rgba(109, 232, 200, 0.18);
+        color: #6de8c8;
+      }
+      .wida-dom-detail {
+        font-size: 0.74rem;
+        color: rgba(255, 255, 255, 0.62);
+        margin-top: 8px;
+        line-height: 1.45;
+      }
+      .wida-bar {
+        height: 6px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+        margin-top: 9px;
+      }
+      .wida-bar > i {
+        display: block;
+        height: 100%;
+        border-radius: 4px;
+        background: #6de8c8;
       }
       @media print {
         .nav-wrap,
@@ -1087,6 +1182,13 @@
           </button>
           <button class="nav-btn" data-sec="act" onclick="showSection('act')">
             Plan
+          </button>
+          <button
+            class="nav-btn"
+            data-sec="prep-studios"
+            onclick="showSection('prep-studios')"
+          >
+            Prep Studios
           </button>
         </div>
       </div>
@@ -1344,6 +1446,287 @@
         </div>
 
         <div class="g4" style="margin-bottom: 14px" id="kpiStrip"></div>
+
+        <!-- ═══════ PRACTICE STUDIOS QUICK LINKS ═══════ -->
+        <div style="margin-bottom: 14px">
+          <div
+            class="card"
+            style="
+              background: linear-gradient(
+                135deg,
+                rgba(23, 40, 58, 0.95) 0%,
+                rgba(30, 58, 84, 0.95) 100%
+              );
+              color: #fff;
+              border: 1.5px solid rgba(19, 163, 137, 0.35);
+              box-shadow: var(--shadow);
+              padding: 18px;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+              "
+            >
+              <div>
+                <div
+                  class="card-title"
+                  style="
+                    color: #6de8c8;
+                    font-family: &quot;Sora&quot;, sans-serif;
+                    font-size: 1rem;
+                    font-weight: 700;
+                  "
+                >
+                  WIDA ACCESS Prep &amp; Practice Studios
+                </div>
+                <div
+                  class="card-sub"
+                  style="color: rgba(255, 255, 255, 0.7); font-size: 0.76rem"
+                >
+                  Interactive training simulations for student language
+                  proficiency domains
+                </div>
+              </div>
+              <button
+                onclick="showSection('prep-studios')"
+                class="btn btn-ghost"
+                style="
+                  font-size: 11px;
+                  padding: 4px 10px;
+                  border-radius: var(--rpill);
+                "
+              >
+                View details &rarr;
+              </button>
+            </div>
+
+            <div class="g4">
+              <!-- Speaking Studio -->
+              <a
+                href="/wida-access/speaking/"
+                class="stat-card"
+                style="
+                  background: rgba(255, 255, 255, 0.04);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  color: #fff;
+                  text-decoration: none;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  padding: 12px;
+                  min-height: 100px;
+                "
+              >
+                <div
+                  class="sc-ico"
+                  style="
+                    background: var(--purpleLight);
+                    color: var(--purple);
+                    width: 28px;
+                    height: 28px;
+                    font-size: 13px;
+                    border-radius: 6px;
+                    margin-bottom: 6px;
+                  "
+                >
+                  🗣️
+                </div>
+                <div>
+                  <div
+                    class="sc-v"
+                    style="
+                      font-size: 1.05rem;
+                      font-weight: 700;
+                      color: #fff;
+                      margin-bottom: 2px;
+                    "
+                  >
+                    Speaking
+                  </div>
+                  <div
+                    class="sc-l"
+                    style="
+                      font-size: 0.6rem;
+                      color: rgba(255, 255, 255, 0.55);
+                      letter-spacing: 0.04em;
+                    "
+                  >
+                    Active Studio
+                  </div>
+                </div>
+              </a>
+
+              <!-- Listening Studio -->
+              <a
+                href="/wida-access/listening/"
+                class="stat-card"
+                style="
+                  background: rgba(255, 255, 255, 0.04);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  color: #fff;
+                  text-decoration: none;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  padding: 12px;
+                  min-height: 100px;
+                "
+              >
+                <div
+                  class="sc-ico"
+                  style="
+                    background: var(--tealLight);
+                    color: var(--teal);
+                    width: 28px;
+                    height: 28px;
+                    font-size: 13px;
+                    border-radius: 6px;
+                    margin-bottom: 6px;
+                  "
+                >
+                  🎧
+                </div>
+                <div>
+                  <div
+                    class="sc-v"
+                    style="
+                      font-size: 1.05rem;
+                      font-weight: 700;
+                      color: #fff;
+                      margin-bottom: 2px;
+                    "
+                  >
+                    Listening
+                  </div>
+                  <div
+                    class="sc-l"
+                    style="
+                      font-size: 0.6rem;
+                      color: rgba(255, 255, 255, 0.55);
+                      letter-spacing: 0.04em;
+                    "
+                  >
+                    Active Studio
+                  </div>
+                </div>
+              </a>
+
+              <!-- Reading Studio -->
+              <a
+                href="/wida-access/reading/"
+                class="stat-card"
+                style="
+                  background: rgba(255, 255, 255, 0.04);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  color: #fff;
+                  text-decoration: none;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  padding: 12px;
+                  min-height: 100px;
+                "
+              >
+                <div
+                  class="sc-ico"
+                  style="
+                    background: var(--blueLight);
+                    color: var(--blue);
+                    width: 28px;
+                    height: 28px;
+                    font-size: 13px;
+                    border-radius: 6px;
+                    margin-bottom: 6px;
+                  "
+                >
+                  📖
+                </div>
+                <div>
+                  <div
+                    class="sc-v"
+                    style="
+                      font-size: 1.05rem;
+                      font-weight: 700;
+                      color: #fff;
+                      margin-bottom: 2px;
+                    "
+                  >
+                    Reading
+                  </div>
+                  <div
+                    class="sc-l"
+                    style="
+                      font-size: 0.6rem;
+                      color: rgba(255, 255, 255, 0.55);
+                      letter-spacing: 0.04em;
+                    "
+                  >
+                    Active Studio
+                  </div>
+                </div>
+              </a>
+
+              <!-- Writing Studio -->
+              <a
+                href="/wida-access/writing/"
+                class="stat-card"
+                style="
+                  background: rgba(255, 255, 255, 0.04);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  color: #fff;
+                  text-decoration: none;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  padding: 12px;
+                  min-height: 100px;
+                "
+              >
+                <div
+                  class="sc-ico"
+                  style="
+                    background: var(--amberLight);
+                    color: var(--amber);
+                    width: 28px;
+                    height: 28px;
+                    font-size: 13px;
+                    border-radius: 6px;
+                    margin-bottom: 6px;
+                  "
+                >
+                  ✍️
+                </div>
+                <div>
+                  <div
+                    class="sc-v"
+                    style="
+                      font-size: 1.05rem;
+                      font-weight: 700;
+                      color: #fff;
+                      margin-bottom: 2px;
+                    "
+                  >
+                    Writing
+                  </div>
+                  <div
+                    class="sc-l"
+                    style="
+                      font-size: 0.6rem;
+                      color: rgba(255, 255, 255, 0.55);
+                      letter-spacing: 0.04em;
+                    "
+                  >
+                    Active Studio
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
 
         <div class="g2">
           <div class="card">
@@ -2630,6 +3013,526 @@
           </div>
         </div>
       </section>
+
+      <!-- ═══════ PREP STUDIOS ═══════ -->
+      <section
+        id="prep-studios"
+        class="section"
+        aria-label="WIDA ACCESS practice hub"
+      >
+        <!-- ── PROGRESS PANEL ── -->
+        <div
+          class="card"
+          style="
+            background: linear-gradient(
+              135deg,
+              rgba(23, 40, 58, 0.96) 0%,
+              rgba(30, 58, 84, 0.96) 100%
+            );
+            color: #fff;
+            border: 1.5px solid rgba(19, 163, 137, 0.35);
+            box-shadow: var(--shadowMd);
+            padding: 24px;
+            margin-bottom: 16px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              gap: 12px;
+              flex-wrap: wrap;
+              margin-bottom: 16px;
+              border-bottom: 1px solid rgba(19, 163, 137, 0.25);
+              padding-bottom: 14px;
+            "
+          >
+            <div>
+              <div
+                style="
+                  font-family: &quot;Sora&quot;, sans-serif;
+                  font-size: 1.35rem;
+                  font-weight: 700;
+                  color: #6de8c8;
+                "
+              >
+                My WIDA ACCESS Progress
+              </div>
+              <div
+                style="
+                  color: rgba(255, 255, 255, 0.72);
+                  font-size: 0.88rem;
+                  margin-top: 4px;
+                  max-width: 560px;
+                "
+              >
+                Your practice across the four ACCESS language domains. Readiness
+                is a personal practice snapshot for planning — not an official
+                ACCESS score.
+              </div>
+            </div>
+            <div style="display: flex; gap: 22px">
+              <div style="text-align: center; min-width: 64px">
+                <div
+                  id="widaXpVal"
+                  style="
+                    font-family: &quot;Sora&quot;, sans-serif;
+                    font-size: 2rem;
+                    font-weight: 700;
+                    color: #fbd07a;
+                    line-height: 1;
+                  "
+                >
+                  0
+                </div>
+                <div
+                  style="
+                    font-size: 0.62rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.07em;
+                    color: rgba(255, 255, 255, 0.6);
+                    margin-top: 4px;
+                    font-weight: 700;
+                  "
+                >
+                  XP Points
+                </div>
+              </div>
+              <div style="text-align: center; min-width: 64px">
+                <div
+                  id="widaStreakVal"
+                  style="
+                    font-family: &quot;Sora&quot;, sans-serif;
+                    font-size: 2rem;
+                    font-weight: 700;
+                    color: #f88b6b;
+                    line-height: 1;
+                  "
+                >
+                  0
+                </div>
+                <div
+                  style="
+                    font-size: 0.62rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.07em;
+                    color: rgba(255, 255, 255, 0.6);
+                    margin-top: 4px;
+                    font-weight: 700;
+                  "
+                >
+                  Day Streak
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            id="widaProgressEmpty"
+            style="
+              display: none;
+              background: rgba(255, 255, 255, 0.06);
+              border: 1px dashed rgba(255, 255, 255, 0.22);
+              border-radius: 12px;
+              padding: 16px 18px;
+              font-size: 0.9rem;
+              color: rgba(255, 255, 255, 0.82);
+              line-height: 1.55;
+            "
+          >
+            No practice recorded yet. Pick a studio below to begin — we
+            recommend starting with
+            <strong style="color: #6de8c8">Listening</strong>. Your progress
+            will appear here automatically as you complete tasks.
+          </div>
+          <div
+            id="widaProgressGrid"
+            class="g4"
+            role="list"
+            aria-label="Per-domain readiness"
+          ></div>
+        </div>
+
+        <!-- ── HUB: DOMAIN CARDS WITH RECOMMENDED ORDER ── -->
+        <div
+          class="card"
+          style="
+            background: linear-gradient(
+              135deg,
+              rgba(23, 40, 58, 0.95) 0%,
+              rgba(30, 58, 84, 0.95) 100%
+            );
+            color: #fff;
+            border: 1.5px solid rgba(19, 163, 137, 0.35);
+            box-shadow: var(--shadowMd);
+            padding: 24px;
+          "
+        >
+          <div
+            style="
+              margin-bottom: 16px;
+              border-bottom: 1px solid rgba(19, 163, 137, 0.25);
+              padding-bottom: 12px;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;Sora&quot;, sans-serif;
+                font-size: 1.35rem;
+                font-weight: 700;
+                color: #6de8c8;
+              "
+            >
+              WIDA ACCESS Practice &amp; Prep Studios
+            </div>
+            <div
+              style="
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.88rem;
+                margin-top: 4px;
+              "
+            >
+              Four interactive studios for the WIDA language domains (Grades
+              6–8). Recommended path:
+              <strong style="color: #6de8c8"
+                >Listening → Reading → Speaking → Writing</strong
+              >
+              — build comprehension first, then production.
+            </div>
+          </div>
+
+          <div class="g2" style="gap: 20px">
+            <!-- Listening Studio (step 1) -->
+            <div
+              class="card wida-hub-card"
+              style="
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #fff;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+              "
+            >
+              <div
+                class="card-head"
+                style="margin-bottom: 12px; align-items: center"
+              >
+                <div style="display: flex; align-items: center; gap: 10px">
+                  <span class="wida-step">1</span>
+                  <div
+                    style="
+                      font-size: 1.8rem;
+                      background: var(--tealLight);
+                      width: 44px;
+                      height: 44px;
+                      border-radius: 10px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: var(--teal);
+                    "
+                    aria-hidden="true"
+                  >
+                    🎧
+                  </div>
+                </div>
+                <span class="pill p-teal">Comprehension</span>
+              </div>
+              <h3
+                style="
+                  font-family: &quot;Sora&quot;, sans-serif;
+                  font-size: 1.15rem;
+                  font-weight: 700;
+                  color: #fff;
+                  margin: 0 0 6px 0;
+                "
+              >
+                Listening Practice Studio
+              </h3>
+              <p
+                style="
+                  font-size: 0.85rem;
+                  color: rgba(255, 255, 255, 0.65);
+                  line-height: 1.5;
+                  margin: 0 0 12px 0;
+                "
+              >
+                Start here. Audio listening simulations across academic domains
+                — play test audio, answer comprehension sets, and review
+                targeted answers. Builds the input you need before speaking and
+                writing.
+              </p>
+              <div
+                class="wida-card-prog"
+                id="cardProgListening"
+                aria-live="polite"
+              ></div>
+              <a
+                href="/wida-access/listening/"
+                class="btn btn-white"
+                style="
+                  text-decoration: none;
+                  width: fit-content;
+                  margin-top: auto;
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  min-height: 44px;
+                  display: inline-flex;
+                  align-items: center;
+                "
+                >Open Listening Studio &rarr;</a
+              >
+            </div>
+
+            <!-- Reading Studio (step 2) -->
+            <div
+              class="card wida-hub-card"
+              style="
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #fff;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+              "
+            >
+              <div
+                class="card-head"
+                style="margin-bottom: 12px; align-items: center"
+              >
+                <div style="display: flex; align-items: center; gap: 10px">
+                  <span class="wida-step">2</span>
+                  <div
+                    style="
+                      font-size: 1.8rem;
+                      background: var(--blueLight);
+                      width: 44px;
+                      height: 44px;
+                      border-radius: 10px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: var(--blue);
+                    "
+                    aria-hidden="true"
+                  >
+                    📖
+                  </div>
+                </div>
+                <span class="pill p-blue">Comprehension</span>
+              </div>
+              <h3
+                style="
+                  font-family: &quot;Sora&quot;, sans-serif;
+                  font-size: 1.15rem;
+                  font-weight: 700;
+                  color: #fff;
+                  margin: 0 0 6px 0;
+                "
+              >
+                Reading Practice Studio
+              </h3>
+              <p
+                style="
+                  font-size: 0.85rem;
+                  color: rgba(255, 255, 255, 0.65);
+                  line-height: 1.5;
+                  margin: 0 0 12px 0;
+                "
+              >
+                Multi-passage text comprehension across content areas (science,
+                social studies, math) with scored question sets. Six sets — each
+                tracks your best score.
+              </p>
+              <div
+                class="wida-card-prog"
+                id="cardProgReading"
+                aria-live="polite"
+              ></div>
+              <a
+                href="/wida-access/reading/"
+                class="btn btn-white"
+                style="
+                  text-decoration: none;
+                  width: fit-content;
+                  margin-top: auto;
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  min-height: 44px;
+                  display: inline-flex;
+                  align-items: center;
+                "
+                >Open Reading Studio &rarr;</a
+              >
+            </div>
+
+            <!-- Speaking Studio (step 3) -->
+            <div
+              class="card wida-hub-card"
+              style="
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #fff;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+              "
+            >
+              <div
+                class="card-head"
+                style="margin-bottom: 12px; align-items: center"
+              >
+                <div style="display: flex; align-items: center; gap: 10px">
+                  <span class="wida-step">3</span>
+                  <div
+                    style="
+                      font-size: 1.8rem;
+                      background: var(--purpleLight);
+                      width: 44px;
+                      height: 44px;
+                      border-radius: 10px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: var(--purple);
+                    "
+                    aria-hidden="true"
+                  >
+                    🗣️
+                  </div>
+                </div>
+                <span class="pill p-purple">Production</span>
+              </div>
+              <h3
+                style="
+                  font-family: &quot;Sora&quot;, sans-serif;
+                  font-size: 1.15rem;
+                  font-weight: 700;
+                  color: #fff;
+                  margin: 0 0 6px 0;
+                "
+              >
+                Speaking Practice Studio
+              </h3>
+              <p
+                style="
+                  font-size: 0.85rem;
+                  color: rgba(255, 255, 255, 0.65);
+                  line-height: 1.5;
+                  margin: 0 0 12px 0;
+                "
+              >
+                Record spoken responses with live audio-wave visualizers, model
+                student answers, and speaking case files. Now put your
+                comprehension into spoken language.
+              </p>
+              <div
+                class="wida-card-prog"
+                id="cardProgSpeaking"
+                aria-live="polite"
+              ></div>
+              <a
+                href="/wida-access/speaking/"
+                class="btn btn-white"
+                style="
+                  text-decoration: none;
+                  width: fit-content;
+                  margin-top: auto;
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  min-height: 44px;
+                  display: inline-flex;
+                  align-items: center;
+                "
+                >Open Speaking Studio &rarr;</a
+              >
+            </div>
+
+            <!-- Writing Studio (step 4) -->
+            <div
+              class="card wida-hub-card"
+              style="
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #fff;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+              "
+            >
+              <div
+                class="card-head"
+                style="margin-bottom: 12px; align-items: center"
+              >
+                <div style="display: flex; align-items: center; gap: 10px">
+                  <span class="wida-step">4</span>
+                  <div
+                    style="
+                      font-size: 1.8rem;
+                      background: var(--amberLight);
+                      width: 44px;
+                      height: 44px;
+                      border-radius: 10px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: var(--amber);
+                    "
+                    aria-hidden="true"
+                  >
+                    ✍️
+                  </div>
+                </div>
+                <span class="pill p-amber">Production</span>
+              </div>
+              <h3
+                style="
+                  font-family: &quot;Sora&quot;, sans-serif;
+                  font-size: 1.15rem;
+                  font-weight: 700;
+                  color: #fff;
+                  margin: 0 0 6px 0;
+                "
+              >
+                Writing Practice Studio
+              </h3>
+              <p
+                style="
+                  font-size: 0.85rem;
+                  color: rgba(255, 255, 255, 0.65);
+                  line-height: 1.5;
+                  margin: 0 0 12px 0;
+                "
+              >
+                Drafting studio with writing prompts, paragraph-deconstruction
+                models (claims, evidence, connectors), and multilingual graphic
+                organizers. The most demanding domain — finish strong here.
+              </p>
+              <div
+                class="wida-card-prog"
+                id="cardProgWriting"
+                aria-live="polite"
+              ></div>
+              <a
+                href="/wida-access/writing/"
+                class="btn btn-white"
+                style="
+                  text-decoration: none;
+                  width: fit-content;
+                  margin-top: auto;
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  min-height: 44px;
+                  display: inline-flex;
+                  align-items: center;
+                "
+                >Open Writing Studio &rarr;</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
     <!-- end shell -->
 
@@ -3885,10 +4788,203 @@ ${group.map((s, i) => `  ${i + 1}. ${s.id} / Gr${s.g} / ${s.ty} / ${s.tier} / ga
             Object.values(charts).forEach((c) => c && c.resize && c.resize()),
           80,
         );
+        if (id === "prep-studios") renderWidaProgress();
+      }
+
+      // ══════════════════════════════════════════════════════════
+      // WIDA ACCESS PRACTICE PROGRESS (reads student localStorage)
+      // ══════════════════════════════════════════════════════════
+      // localStorage shapes (written by the 4 domain apps):
+      //   widaCompletedListening / widaCompletedSpeaking / widaCompletedWriting
+      //       -> JSON array of completed task ids, e.g. ["T1","T3"]
+      //   widaReadingSets -> JSON object { setId: "score / total" } (best per set)
+      //   widaXP    -> integer string (total practice points)
+      //   widaStreak-> integer string (consecutive-day streak)
+      function renderWidaProgress() {
+        const lsNum = (k) => {
+          const n = parseInt(localStorage.getItem(k) || "0", 10);
+          return isNaN(n) ? 0 : n;
+        };
+        const lsArr = (k) => {
+          try {
+            const a = JSON.parse(localStorage.getItem(k) || "[]");
+            return Array.isArray(a) ? a : [];
+          } catch (e) {
+            return [];
+          }
+        };
+        const lsObj = (k) => {
+          try {
+            const o = JSON.parse(localStorage.getItem(k) || "{}");
+            return o && typeof o === "object" ? o : {};
+          } catch (e) {
+            return {};
+          }
+        };
+
+        const xp = lsNum("widaXP");
+        const streak = lsNum("widaStreak");
+        const xpEl = document.getElementById("widaXpVal");
+        const stEl = document.getElementById("widaStreakVal");
+        if (xpEl) xpEl.textContent = xp.toLocaleString();
+        if (stEl) stEl.textContent = streak;
+
+        // Readiness from a completion count (Listening / Speaking / Writing).
+        //   0 done  -> Not started; 1-2 -> In progress; 3+ -> Strong
+        const countReadiness = (done) => {
+          if (done <= 0)
+            return { key: "none", label: "Not started", cls: "wr-none" };
+          if (done < 3)
+            return { key: "prog", label: "In progress", cls: "wr-prog" };
+          return { key: "strong", label: "Strong", cls: "wr-strong" };
+        };
+
+        // Reading readiness from best scores across completed sets.
+        //   0 sets -> Not started; avg% < 70 OR < 3 sets -> In progress; else Strong
+        const readingReadiness = (sets, totalSets) => {
+          const ids = Object.keys(sets);
+          if (ids.length === 0)
+            return {
+              key: "none",
+              label: "Not started",
+              cls: "wr-none",
+              done: 0,
+              avgPct: null,
+            };
+          let sumPct = 0,
+            counted = 0;
+          ids.forEach((id) => {
+            const m = String(sets[id]).match(/(\d+)\s*\/\s*(\d+)/);
+            if (m && +m[2] > 0) {
+              sumPct += (+m[1] / +m[2]) * 100;
+              counted++;
+            }
+          });
+          const avgPct = counted ? Math.round(sumPct / counted) : null;
+          let r;
+          if (ids.length >= 3 && avgPct !== null && avgPct >= 70)
+            r = { key: "strong", label: "Strong", cls: "wr-strong" };
+          else r = { key: "prog", label: "In progress", cls: "wr-prog" };
+          r.done = ids.length;
+          r.avgPct = avgPct;
+          r.totalSets = totalSets;
+          return r;
+        };
+
+        const listenDone = lsArr("widaCompletedListening").length;
+        const speakDone = lsArr("widaCompletedSpeaking").length;
+        const writeDone = lsArr("widaCompletedWriting").length;
+        const readSets = lsObj("widaReadingSets");
+        const READING_TOTAL_SETS = 6;
+        const read = readingReadiness(readSets, READING_TOTAL_SETS);
+
+        const anyData =
+          xp > 0 ||
+          streak > 0 ||
+          listenDone > 0 ||
+          speakDone > 0 ||
+          writeDone > 0 ||
+          read.done > 0;
+        const emptyEl = document.getElementById("widaProgressEmpty");
+        if (emptyEl) emptyEl.style.display = anyData ? "none" : "block";
+
+        const domains = [
+          {
+            name: "Listening",
+            icon: "🎧",
+            r: countReadiness(listenDone),
+            detail:
+              listenDone +
+              " task" +
+              (listenDone === 1 ? "" : "s") +
+              " completed",
+            barPct: Math.min(100, listenDone * 25),
+          },
+          {
+            name: "Reading",
+            icon: "📖",
+            r: read,
+            detail:
+              read.done === 0
+                ? "0 of " + READING_TOTAL_SETS + " sets"
+                : read.done +
+                  " of " +
+                  READING_TOTAL_SETS +
+                  " sets" +
+                  (read.avgPct !== null
+                    ? " · best avg " + read.avgPct + "%"
+                    : ""),
+            barPct: Math.round((read.done / READING_TOTAL_SETS) * 100),
+          },
+          {
+            name: "Speaking",
+            icon: "🗣️",
+            r: countReadiness(speakDone),
+            detail:
+              speakDone + " task" + (speakDone === 1 ? "" : "s") + " completed",
+            barPct: Math.min(100, speakDone * 25),
+          },
+          {
+            name: "Writing",
+            icon: "✍️",
+            r: countReadiness(writeDone),
+            detail:
+              writeDone + " task" + (writeDone === 1 ? "" : "s") + " completed",
+            barPct: Math.min(100, writeDone * 25),
+          },
+        ];
+
+        const grid = document.getElementById("widaProgressGrid");
+        if (grid) {
+          grid.innerHTML = domains
+            .map(
+              (d) =>
+                '<div class="wida-dom-card" role="listitem">' +
+                '<div class="wida-dom-head">' +
+                '<span aria-hidden="true" style="font-size:1.1rem;">' +
+                d.icon +
+                "</span>" +
+                '<span class="wida-dom-name">' +
+                d.name +
+                "</span></div>" +
+                '<span class="wida-readiness ' +
+                d.r.cls +
+                '">' +
+                d.r.label +
+                "</span>" +
+                '<div class="wida-bar"><i style="width:' +
+                Math.max(0, Math.min(100, d.barPct)) +
+                '%"></i></div>' +
+                '<div class="wida-dom-detail">' +
+                d.detail +
+                "</div></div>",
+            )
+            .join("");
+        }
+
+        // Mirror a short readout onto each hub card.
+        const cardMap = {
+          Listening: "cardProgListening",
+          Reading: "cardProgReading",
+          Speaking: "cardProgSpeaking",
+          Writing: "cardProgWriting",
+        };
+        domains.forEach((d) => {
+          const el = document.getElementById(cardMap[d.name]);
+          if (el)
+            el.innerHTML =
+              '<span class="wida-readiness ' +
+              d.r.cls +
+              '" style="font-size:0.62rem; padding:2px 8px;">' +
+              d.r.label +
+              "</span> &nbsp;" +
+              d.detail;
+        });
       }
 
       // ── INIT ──
       function init() {
+        renderWidaProgress();
         populateFilterSelects();
         populateExplorerFilters();
         buildStaticCharts();

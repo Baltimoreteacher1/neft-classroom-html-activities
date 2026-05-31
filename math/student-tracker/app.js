@@ -507,11 +507,11 @@
     });
   }
 
-  // Inline SVG sparkline of pct over time (no dependencies).
+  // Inline SVG sparkline of pct over time (no dependencies) with smooth curves, gradients, and custom tooltips.
   function sparkline(recs, w, h) {
-    w = w || 220;
-    h = h || 56;
-    var pad = 4;
+    w = w || 520;
+    h = h || 120;
+    var pad = 12;
     var ns = "http://www.w3.org/2000/svg";
     var svg = document.createElementNS(ns, "svg");
     svg.setAttribute("viewBox", "0 0 " + w + " " + h);
@@ -519,16 +519,40 @@
     svg.setAttribute("role", "img");
     svg.setAttribute("aria-label", "Score trend over time");
     if (recs.length < 1) return svg;
-    var xs = recs.map((r) => r.date);
+    
+    var xs = recs.map(function(r) { return r.date; });
     var minX = Math.min.apply(null, xs),
       maxX = Math.max.apply(null, xs);
     var spanX = maxX - minX || 1;
+    
     function px(d) {
       return pad + ((d - minX) / spanX) * (w - 2 * pad);
     }
     function py(p) {
       return h - pad - (p / 100) * (h - 2 * pad);
     }
+    
+    // Gradient definitions
+    var defs = document.createElementNS(ns, "defs");
+    var grad = document.createElementNS(ns, "linearGradient");
+    grad.setAttribute("id", "curve-grad");
+    grad.setAttribute("x1", "0");
+    grad.setAttribute("y1", "0");
+    grad.setAttribute("x2", "0");
+    grad.setAttribute("y2", "1");
+    
+    var stop1 = document.createElementNS(ns, "stop");
+    stop1.setAttribute("offset", "0%");
+    stop1.setAttribute("stop-color", "hsla(217, 91%, 60%, 0.3)");
+    var stop2 = document.createElementNS(ns, "stop");
+    stop2.setAttribute("offset", "100%");
+    stop2.setAttribute("stop-color", "hsla(217, 91%, 60%, 0.0)");
+    
+    grad.appendChild(stop1);
+    grad.appendChild(stop2);
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+    
     // 70% readiness reference line.
     var ref = document.createElementNS(ns, "line");
     ref.setAttribute("x1", pad);
@@ -537,25 +561,215 @@
     ref.setAttribute("y2", py(70));
     ref.setAttribute("class", "spark-ref");
     svg.appendChild(ref);
-    var d = recs
-      .map(function (r, i) {
-        return (
-          (i ? "L" : "M") + round(px(r.date), 1) + " " + round(py(r.pct), 1)
-        );
-      })
-      .join(" ");
+    
+    var d = "";
+    recs.forEach(function (r, i) {
+      var x = px(r.date);
+      var y = py(r.pct);
+      if (i === 0) {
+        d += "M" + round(x, 1) + " " + round(y, 1);
+      } else {
+        var prevX = px(recs[i - 1].date);
+        var prevY = py(recs[i - 1].pct);
+        var cpX1 = prevX + (x - prevX) / 3;
+        var cpY1 = prevY;
+        var cpX2 = x - (x - prevX) / 3;
+        var cpY2 = y;
+        d += " C " + round(cpX1, 1) + " " + round(cpY1, 1) + ", " + round(cpX2, 1) + " " + round(cpY2, 1) + ", " + round(x, 1) + " " + round(y, 1);
+      }
+    });
+    
+    if (recs.length > 1) {
+      var fillD = d + " L " + round(px(recs[recs.length - 1].date), 1) + " " + round(h - pad, 1) +
+                      " L " + round(px(recs[0].date), 1) + " " + round(h - pad, 1) + " Z";
+      var fillPath = document.createElementNS(ns, "path");
+      fillPath.setAttribute("d", fillD);
+      fillPath.setAttribute("fill", "url(#curve-grad)");
+      svg.appendChild(fillPath);
+    }
+    
     var path = document.createElementNS(ns, "path");
     path.setAttribute("d", d);
     path.setAttribute("class", "spark-line");
+    path.setAttribute("stroke", "var(--st-accent)");
+    path.setAttribute("stroke-width", "3");
+    path.setAttribute("fill", "none");
     svg.appendChild(path);
+    
     recs.forEach(function (r) {
+      var cx = round(px(r.date), 1);
+      var cy = round(py(r.pct), 1);
+      
+      var g = document.createElementNS(ns, "g");
+      g.setAttribute("class", "spark-point-group");
+      g.style.cursor = "pointer";
+      
       var c = document.createElementNS(ns, "circle");
-      c.setAttribute("cx", round(px(r.date), 1));
-      c.setAttribute("cy", round(py(r.pct), 1));
-      c.setAttribute("r", 2.5);
+      c.setAttribute("cx", cx);
+      c.setAttribute("cy", cy);
+      c.setAttribute("r", 5);
       c.setAttribute("class", "spark-dot");
-      svg.appendChild(c);
+      
+      var hue = r.pct >= 85 ? 142 : r.pct >= 70 ? 200 : r.pct >= 60 ? 36 : 0;
+      var color = "hsl(" + hue + ", 80%, 45%)";
+      c.setAttribute("fill", color);
+      c.setAttribute("stroke", "#ffffff");
+      c.setAttribute("stroke-width", "1.5");
+      
+      var title = document.createElementNS(ns, "title");
+      title.textContent = r.label + ": " + r.pct + "% (" + fmtDate(r.date) + ")";
+      
+      g.appendChild(c);
+      g.appendChild(title);
+      svg.appendChild(g);
     });
+    return svg;
+  }
+
+  function getRadarData(s) {
+    var domains = {
+      "NS": { label: "Number System", sum: 0, count: 0 },
+      "RP": { label: "Ratios & Prop.", sum: 0, count: 0 },
+      "EE": { label: "Expressions & Eq.", sum: 0, count: 0 },
+      "G":  { label: "Geometry", sum: 0, count: 0 },
+      "SP": { label: "Statistics", sum: 0, count: 0 }
+    };
+    
+    s.standards.forEach(function (st) {
+      var stdName = String(st.standard).toUpperCase();
+      var key = null;
+      if (stdName.indexOf("NS") !== -1) key = "NS";
+      else if (stdName.indexOf("RP") !== -1) key = "RP";
+      else if (stdName.indexOf("EE") !== -1) key = "EE";
+      else if (stdName.indexOf("SP") !== -1) key = "SP";
+      else if (/\bG\b|6\.G/i.test(stdName)) key = "G";
+      
+      if (key) {
+        domains[key].sum += st.mastery;
+        domains[key].count++;
+      }
+    });
+    
+    return Object.keys(domains).map(function(k) {
+      var d = domains[k];
+      var val = d.count > 0 ? round(d.sum / d.count, 1) : 0;
+      return {
+        key: k,
+        label: d.label,
+        mastery: val,
+        hasData: d.count > 0
+      };
+    });
+  }
+
+  function radarChartSvg(s) {
+    var rData = getRadarData(s);
+    var ns = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 320 300");
+    svg.setAttribute("class", "radar-svg");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Standards Mastery Radar Chart");
+    
+    var cx = 160, cy = 145, R = 85;
+    
+    var bands = [30, 70, 100];
+    bands.forEach(function (b) {
+      var polyPoints = [];
+      for (var i = 0; i < 5; i++) {
+        var angle = i * (2 * Math.PI / 5) - Math.PI / 2;
+        var x = cx + R * (b / 100) * Math.cos(angle);
+        var y = cy + R * (b / 100) * Math.sin(angle);
+        polyPoints.push(round(x, 1) + "," + round(y, 1));
+      }
+      var p = document.createElementNS(ns, "polygon");
+      p.setAttribute("points", polyPoints.join(" "));
+      p.setAttribute("fill", "none");
+      p.setAttribute("stroke", b === 70 ? "#94a3b8" : "#cbd5e1");
+      p.setAttribute("stroke-dasharray", b === 70 ? "4 3" : "none");
+      p.setAttribute("stroke-width", b === 70 ? "1.5" : "1");
+      svg.appendChild(p);
+      
+      var lblText = document.createElementNS(ns, "text");
+      lblText.setAttribute("x", cx + 6);
+      lblText.setAttribute("y", cy - R * (b / 100) + 4);
+      lblText.setAttribute("fill", "#64748b");
+      lblText.setAttribute("font-size", "9");
+      lblText.setAttribute("font-weight", "600");
+      lblText.textContent = b + "%";
+      svg.appendChild(lblText);
+    });
+    
+    rData.forEach(function (d, i) {
+      var angle = i * (2 * Math.PI / 5) - Math.PI / 2;
+      var ax = cx + R * Math.cos(angle);
+      var ay = cy + R * Math.sin(angle);
+      
+      var line = document.createElementNS(ns, "line");
+      line.setAttribute("x1", cx);
+      line.setAttribute("y1", cy);
+      line.setAttribute("x2", round(ax, 1));
+      line.setAttribute("y2", round(ay, 1));
+      line.setAttribute("stroke", "#cbd5e1");
+      line.setAttribute("stroke-width", "1");
+      svg.appendChild(line);
+      
+      var labelX = cx + (R + 18) * Math.cos(angle);
+      var labelY = cy + (R + 14) * Math.sin(angle);
+      
+      var text = document.createElementNS(ns, "text");
+      text.setAttribute("x", round(labelX, 1));
+      text.setAttribute("y", round(labelY, 1));
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("fill", "#1b2733");
+      text.setAttribute("font-size", "10");
+      text.setAttribute("font-weight", "700");
+      text.textContent = d.key;
+      
+      var title = document.createElementNS(ns, "title");
+      title.textContent = d.label + ": " + (d.hasData ? d.mastery + "%" : "No Data");
+      text.appendChild(title);
+      svg.appendChild(text);
+    });
+    
+    var masteryPoints = [];
+    rData.forEach(function (d, i) {
+      var angle = i * (2 * Math.PI / 5) - Math.PI / 2;
+      var val = d.hasData ? d.mastery : 0;
+      var mx = cx + R * (val / 100) * Math.cos(angle);
+      var my = cy + R * (val / 100) * Math.sin(angle);
+      masteryPoints.push(round(mx, 1) + "," + round(my, 1));
+    });
+    
+    var mPoly = document.createElementNS(ns, "polygon");
+    mPoly.setAttribute("points", masteryPoints.join(" "));
+    mPoly.setAttribute("fill", "rgba(37, 99, 235, 0.2)");
+    mPoly.setAttribute("stroke", "var(--st-accent)");
+    mPoly.setAttribute("stroke-width", "3");
+    svg.appendChild(mPoly);
+    
+    rData.forEach(function (d, i) {
+      if (!d.hasData) return;
+      var angle = i * (2 * Math.PI / 5) - Math.PI / 2;
+      var mx = cx + R * (d.mastery / 100) * Math.cos(angle);
+      var my = cy + R * (d.mastery / 100) * Math.sin(angle);
+      
+      var dot = document.createElementNS(ns, "circle");
+      dot.setAttribute("cx", round(mx, 1));
+      dot.setAttribute("cy", round(my, 1));
+      dot.setAttribute("r", "4.5");
+      
+      var hue = d.mastery >= 85 ? 142 : d.mastery >= 70 ? 200 : d.mastery >= 60 ? 36 : 0;
+      dot.setAttribute("fill", "hsl(" + hue + ", 80%, 45%)");
+      dot.setAttribute("stroke", "#ffffff");
+      dot.setAttribute("stroke-width", "1.5");
+      
+      var title = document.createElementNS(ns, "title");
+      title.textContent = d.label + " Mastery: " + d.mastery + "%";
+      dot.appendChild(title);
+      svg.appendChild(dot);
+    });
+    
     return svg;
   }
 
@@ -946,7 +1160,16 @@
         }),
       ),
     ]);
-    stdPanel.appendChild(stbl);
+
+    var grid = el("div", { class: "standards-grid" });
+    grid.appendChild(stbl);
+    
+    var radarWrapper = el("div", { style: "display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid var(--st-line); border-radius: 12px; padding: 12px;" });
+    radarWrapper.appendChild(radarChartSvg(s));
+    radarWrapper.appendChild(el("div", { class: "muted hint", style: "font-weight: 700; margin-top: 4px;", text: "Domain Mastery Profile" }));
+    grid.appendChild(radarWrapper);
+    
+    stdPanel.appendChild(grid);
     root.appendChild(stdPanel);
   }
 
@@ -1054,6 +1277,135 @@
     a.click();
     a.remove();
   }
+
+  function exportRosterDocx() {
+    var k = classKPIs(STATE.students);
+    var pri = reteachPriorities(STATE.students);
+    var groups = pri
+      .slice(0, 4)
+      .map((e) => ({ standard: e.standard, members: e.struggling, avg: e.avg }))
+      .filter((g) => g.members.length >= 2);
+      
+    var docHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+      '<head>' +
+        '<meta charset="utf-8">' +
+        '<title>Class Roster Progress and Intervention Summary</title>' +
+        '<style>' +
+          'body { font-family: "Calibri", "Arial", sans-serif; line-height: 1.4; color: #1e293b; margin: 1in; }' +
+          'h1 { color: #1e3a8a; font-size: 20pt; border-bottom: 3px solid #1e3a8a; padding-bottom: 5px; font-family: "Georgia", serif; margin-bottom: 4pt; }' +
+          '.eyebrow { color: #64748b; font-size: 9pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 15pt; }' +
+          'h2 { color: #1e3a8a; font-size: 13pt; margin-top: 18pt; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; }' +
+          '.metadata { font-size: 10.5pt; margin-bottom: 15pt; background-color: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; }' +
+          '.meta-table { width: 100%; border-collapse: collapse; }' +
+          '.meta-table td { padding: 4px 6px; font-size: 10pt; }' +
+          'table.data-table { width: 100%; border-collapse: collapse; margin-top: 8px; margin-bottom: 16px; }' +
+          'table.data-table th { background-color: #f1f5f9; padding: 6px 8px; border: 1px solid #cbd5e1; text-align: left; font-size: 9.5pt; font-weight: bold; color: #1e3a8a; }' +
+          'table.data-table td { padding: 6px 8px; border: 1px solid #cbd5e1; font-size: 9.5pt; }' +
+          '.group-grid { width: 100%; margin-top: 8px; }' +
+          '.group-card { border: 1px solid #e2e8f0; padding: 10px; margin-bottom: 10px; background-color: #f8fafc; border-radius: 6px; }' +
+          '.group-title { font-weight: bold; color: #1e3a8a; font-size: 10.5pt; border-bottom: 1px dashed #cbd5e1; padding-bottom: 3px; margin-bottom: 4px; }' +
+          '.group-members { font-size: 9.5pt; margin-top: 3px; }' +
+          '.strong { color: #15803d; }' +
+          '.likely { color: #0369a1; }' +
+          '.approaching { color: #b45309; }' +
+          '.reteach { color: #b91c1c; }' +
+          '.risk-high { color: #b91c1c; font-weight: bold; }' +
+          '.risk-mid { color: #b45309; }' +
+          '.risk-low { color: #15803d; }' +
+          '.footer { text-align: center; font-size: 8.5pt; color: #64748b; margin-top: 40pt; border-top: 1px solid #e2e8f0; padding-top: 10px; }' +
+        '</style>' +
+      '</head>' +
+      '<body>' +
+        '<div class="eyebrow">Neft Math Growth Tracker • Educator Intervention Report</div>' +
+        '<h1>Classroom Performance & Intervention Roster</h1>' +
+        
+        '<div class="metadata">' +
+          '<table class="meta-table">' +
+            '<tr>' +
+              '<td style="width: 25%;"><strong>Teacher/Class:</strong></td>' +
+              '<td style="width: 25%;">' + escapeHtml(STATE.filter.period || "All Classes") + '</td>' +
+              '<td style="width: 25%;"><strong>Report Date:</strong></td>' +
+              '<td style="width: 25%;">' + new Date().toLocaleDateString() + '</td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td><strong>Total Students:</strong></td>' +
+              '<td>' + k.count + '</td>' +
+              '<td><strong>Class Mastery:</strong></td>' +
+              '<td>' + k.avg + '% (' + k.band + ')</td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td><strong>Students At Risk:</strong></td>' +
+              '<td><span class="risk-high">' + k.atRisk + '</span></td>' +
+              '<td><strong>Students on Watch:</strong></td>' +
+              '<td><span class="risk-mid">' + k.watch + '</span></td>' +
+            '</tr>' +
+          '</table>' +
+        '</div>' +
+
+        '<h2>Class Performance Roster</h2>' +
+        '<table class="data-table">' +
+          '<thead>' +
+            '<tr>' +
+              '<th>Student Name</th>' +
+              '<th>Period</th>' +
+              '<th>Mastery%</th>' +
+              '<th>Band</th>' +
+              '<th>Trend</th>' +
+              '<th>Projected +2wk</th>' +
+              '<th>Risk Score</th>' +
+              '<th>Risk Level</th>' +
+              '<th>Records</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' +
+            STATE.students.map(function (s) {
+              var bandClass = s.band === 'Strong' ? 'strong' : s.band === 'Likely Ready' ? 'likely' : s.band === 'Approaching' ? 'approaching' : 'reteach';
+              var riskClass = s.riskLevel === 'At Risk' ? 'risk-high' : s.riskLevel === 'Watch' ? 'risk-mid' : 'risk-low';
+              return '<tr>' +
+                '<td><strong>' + escapeHtml(s.name) + '</strong></td>' +
+                '<td>' + escapeHtml(s.period || "—") + '</td>' +
+                '<td>' + s.mastery + '%</td>' +
+                '<td><span class="' + bandClass + '">' + s.band + '</span></td>' +
+                '<td>' + s.trend + ' (' + (s.slopePerWeek > 0 ? '+' : '') + (s.slopePerWeek || '0') + ')</td>' +
+                '<td>' + (s.projection != null ? s.projection + '%' : '—') + '</td>' +
+                '<td>' + s.risk + ' / 100</td>' +
+                '<td><span class="' + riskClass + '">' + s.riskLevel + '</span></td>' +
+                '<td>' + s.records.length + '</td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody>' +
+        '</table>' +
+
+        '<h2>Intervention Small Groups</h2>' +
+        (groups.length === 0 ? '<p>No shared-need small groups of 2+ students found.</p>' : (
+          '<div class="groups">' +
+            groups.map(function(g) {
+              return '<div class="group-card">' +
+                '<div class="group-title">Reteach Focus: ' + escapeHtml(g.standard) + ' (Group Avg: ' + g.avg + '%)</div>' +
+                '<div class="group-members"><strong>Members:</strong> ' + g.members.join(', ') + '</div>' +
+              '</div>';
+            }).join('') +
+          '</div>'
+        )) +
+
+        '<div class="footer">' +
+          '<p>Generated dynamically by EduWonderLab Student Growth Tracker. All records are held locally on the classroom browser in absolute adherence to student record privacy regulations.</p>' +
+        '</div>' +
+      '</body>' +
+      '</html>';
+
+    var blob = new Blob(['\ufeff' + docHtml], {
+      type: "application/msword"
+    });
+    var a = el("a", {
+      href: URL.createObjectURL(blob),
+      download: "Math_Tracker_Roster_Summary_" + new Date().toISOString().slice(0,10) + ".doc"
+    });
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   function csv(v) {
     v = v == null ? "" : String(v);
     return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
@@ -1132,6 +1484,7 @@
     });
     $("#btn-refresh").addEventListener("click", refresh);
     $("#btn-export").addEventListener("click", exportCSV);
+    $("#btn-export-docx").addEventListener("click", exportRosterDocx);
     $("#btn-add").addEventListener("click", openManualDialog);
     $("#manual-form").addEventListener("submit", saveManual);
     $("#m-cancel").addEventListener("click", function () {

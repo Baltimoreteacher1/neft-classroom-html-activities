@@ -136,6 +136,10 @@
   // ---------------------------------------------------------------------------
   const CARDS = [
     ["glance", "Today at a glance"],
+    ["calendar", "Calendar"],
+    ["todos", "To-do list"],
+    ["reminders", "Reminders"],
+    ["assignments", "Assignment list"],
     ["routine", "Right routine"],
     ["momentum", "Momentum"],
     ["soon", "Coming up"],
@@ -238,8 +242,13 @@
     const c = (name, color) => ({
       id: uid("c"),
       name,
+      subject: "",
       teacher: "",
       email: "",
+      room: "",
+      period: "",
+      meetTime: "",
+      meetDays: [],
       color,
     });
     return {
@@ -265,6 +274,8 @@
         c("Social Studies", "#d99028"),
       ],
       assignments: [],
+      reminders: [], // [{ id, text, date, time, done, createdAt }] simple reminders
+      todos: [], // [{ id, text, done, date, createdAt }] quick daily to-dos
       routines: DEFAULT_ROUTINES(),
       routineLog: {}, // { dateKey: { routineId: [doneItemIds] } }
       activity: {}, // { dateKey: { tasks, focusMin, routines } }
@@ -302,6 +313,10 @@
       assignments: Array.isArray(x.assignments)
         ? x.assignments.map(normalizeTask)
         : [],
+      reminders: Array.isArray(x.reminders)
+        ? x.reminders.map(normalizeReminder)
+        : [],
+      todos: Array.isArray(x.todos) ? x.todos.map(normalizeTodo) : [],
       routines:
         Array.isArray(x.routines) && x.routines.length
           ? x.routines
@@ -321,14 +336,34 @@
   const safeColor = (c) => (COLOR_RE.test(String(c || "")) ? c : "#147c78");
   const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   const TIME_RE = /^\d{2}:\d{2}$/;
+  const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   function normalizeClass(c) {
     c = c || {};
     return {
       id: c.id || uid("c"),
       name: String(c.name || "Class").slice(0, 60),
+      subject: String(c.subject || "").slice(0, 60),
       teacher: String(c.teacher || "").slice(0, 80),
       email: String(c.email || "").slice(0, 120),
+      room: String(c.room || "").slice(0, 40),
+      period: String(c.period || "").slice(0, 30),
+      meetTime: String(c.meetTime || "").slice(0, 40),
+      meetDays: Array.isArray(c.meetDays)
+        ? c.meetDays.filter((d) => DAYS.includes(d))
+        : [],
       color: safeColor(c.color),
+    };
+  }
+
+  function normalizeReminder(r) {
+    r = r || {};
+    return {
+      id: r.id || uid("rm"),
+      text: String(r.text || "").slice(0, 200),
+      date: DATE_RE.test(r.date) ? r.date : "",
+      time: TIME_RE.test(r.time) ? r.time : "",
+      done: !!r.done,
+      createdAt: r.createdAt || Date.now(),
     };
   }
 
@@ -369,6 +404,17 @@
     };
   }
 
+  function normalizeTodo(t) {
+    t = t || {};
+    return {
+      id: t.id || uid("td"),
+      text: String(t.text || "").slice(0, 200),
+      done: !!t.done,
+      date: DATE_RE.test(t.date) ? t.date : todayKey(),
+      createdAt: t.createdAt || Date.now(),
+    };
+  }
+
   let state = seed();
   const MIRROR_KEY = "noam-school:state"; // synchronous, never-lose-data fallback
   let saveTimer = null;
@@ -402,6 +448,53 @@
       color: "#147c78",
     };
   const openTasks = () => state.assignments.filter((a) => a.status !== "done");
+  // Reminders sorted: open first, then by date/time (undated last), newest-created last.
+  const reminderSortKey = (r) =>
+    r.date ? r.date + (r.time || "99:99") : "9999-99-99";
+  function sortedReminders() {
+    return [...state.reminders].sort((a, b) =>
+      a.done !== b.done
+        ? a.done
+          ? 1
+          : -1
+        : reminderSortKey(a) === reminderSortKey(b)
+          ? a.createdAt - b.createdAt
+          : reminderSortKey(a) < reminderSortKey(b)
+            ? -1
+            : 1,
+    );
+  }
+  // Today's (or overdue, undated) open reminders for the home screen.
+  const todaysReminders = () => {
+    const t = todayKey();
+    return sortedReminders().filter((r) => !r.done && (!r.date || r.date <= t));
+  };
+  // Today's to-dos = those dated today plus any still-open from earlier days.
+  const todaysTodos = () => {
+    const t = todayKey();
+    return state.todos
+      .filter((td) => td.date === t || (!td.done && td.date < t))
+      .sort((a, b) =>
+        a.done === b.done ? a.createdAt - b.createdAt : a.done ? 1 : -1,
+      );
+  };
+  // Upcoming assignment due dates (today onward), soonest first.
+  function upcomingItems(limit = 15) {
+    const t = todayKey();
+    return state.assignments
+      .filter((a) => a.status !== "done" && a.due && a.due >= t)
+      .map((a) => ({
+        id: a.id,
+        title: a.title,
+        date: a.due,
+        time: a.dueTime || "",
+        classId: a.classId,
+      }))
+      .sort(
+        (a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time),
+      )
+      .slice(0, limit);
+  }
   const stepPct = (a) =>
     a.steps.length
       ? Math.round(
@@ -455,6 +548,7 @@
     ["home", "Now", "🎯"],
     ["today", "Today", "📅"],
     ["tasks", "Tasks", "✅"],
+    ["calendar", "Calendar", "📆"],
     ["routines", "Routines", "🔁"],
     ["more", "More", "⋯"],
   ];
@@ -488,7 +582,7 @@
           ? "#06101a"
           : s.theme === "contrast"
             ? "#000000"
-            : "#16324a";
+            : "#1e293b";
     $("#brandName").textContent =
       (s.studentName || "Noam").split(" ")[0] + " School";
   }
@@ -639,6 +733,177 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Calendar / To-do / Assignment cards (home + dedicated Calendar view)
+  // ---------------------------------------------------------------------------
+  let calMonthOffset = 0; // 0 = current month, ±n to page through months
+  let calSelected = ""; // selected ISO day in the calendar (shows that day's items)
+
+  const isoFor = (y, m, d) =>
+    `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+  // Days in the visible month that have an open assignment due.
+  function dueDaySet() {
+    return new Set(
+      state.assignments
+        .filter((a) => a.status !== "done" && a.due)
+        .map((a) => a.due),
+    );
+  }
+
+  function calendarCard({ full = false } = {}) {
+    const base = startOfToday();
+    base.setDate(1);
+    base.setMonth(base.getMonth() + calMonthOffset);
+    const year = base.getFullYear();
+    const month = base.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthName = base.toLocaleDateString(undefined, {
+      month: "long",
+      year: "numeric",
+    });
+    const due = dueDaySet();
+
+    let cells = ["S", "M", "T", "W", "T", "F", "S"]
+      .map((d) => `<div class="cal-head" aria-hidden="true">${d}</div>`)
+      .join("");
+    for (let i = 0; i < firstDay; i++) cells += `<div class="cal-pad"></div>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds = isoFor(year, month, d);
+      const isToday = ds === todayKey();
+      const hasDue = due.has(ds);
+      const isSel = ds === calSelected;
+      const cnt = hasDue
+        ? state.assignments.filter((a) => a.status !== "done" && a.due === ds)
+            .length
+        : 0;
+      cells += `<button type="button" class="cal-day${isToday ? " is-today" : ""}${isSel ? " is-sel" : ""}${hasDue ? " has-due" : ""}" data-act="cal-pick" data-arg="${ds}" aria-pressed="${isSel}" aria-label="${esc(niceDate(ds))}${hasDue ? `, ${cnt} due` : ""}">${d}${hasDue ? '<span class="cal-dot" aria-hidden="true"></span>' : ""}</button>`;
+    }
+
+    const grid = `
+      <div class="cal-nav">
+        <button class="btn sm" data-act="cal-prev" aria-label="Previous month">‹</button>
+        <strong class="cal-month">${esc(monthName)}</strong>
+        <button class="btn sm" data-act="cal-next" aria-label="Next month">›</button>
+      </div>
+      <div class="cal-grid" role="grid" aria-label="${esc(monthName)}">${cells}</div>
+      <div class="cal-legend"><span><span class="sw today"></span>Today</span><span><span class="sw due"></span>Assignment due</span></div>`;
+
+    // Selected-day detail (defaults to today's due items when nothing picked).
+    const sel = calSelected || todayKey();
+    const dayItems = state.assignments.filter(
+      (a) => a.status !== "done" && a.due === sel,
+    );
+    const detail = `
+      <div class="cal-detail">
+        <div class="section-title" style="margin-top:14px">${esc(niceDate(sel))}</div>
+        ${
+          dayItems.length
+            ? dayItems
+                .map((a) => {
+                  const c = cls(a.classId);
+                  return `<div class="item"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button></div></div></div>`;
+                })
+                .join("")
+            : `<p class="muted" style="font-size:.84rem;margin:4px">Nothing due this day.</p>`
+        }
+      </div>`;
+
+    const body =
+      grid +
+      detail +
+      (full
+        ? ""
+        : `<button class="btn sm" data-act="nav" data-arg="calendar" style="margin-top:10px">Open full calendar →</button>`);
+    return card(
+      "calendar",
+      "📆 Calendar",
+      "Tap a day to see what's due.",
+      body,
+    );
+  }
+
+  function todoCard() {
+    const list = todaysTodos();
+    const openCount = list.filter((t) => !t.done).length;
+    const rows = list.length
+      ? `<ul class="steps">${list
+          .map(
+            (t) =>
+              `<li><input class="check" type="checkbox" data-check="todo" data-id="${t.id}" ${t.done ? "checked" : ""} aria-label="${esc(t.text)}"><span class="steptext ${t.done ? "done" : ""}">${esc(t.text)}</span><button class="btn danger sm" data-act="del-todo" data-id="${t.id}" aria-label="Delete to-do: ${esc(t.text)}">✕</button></li>`,
+          )
+          .join("")}</ul>`
+      : emptyState("📝", "No to-dos yet. Add a quick one below.");
+    return card(
+      "todos",
+      "📝 To-do list",
+      openCount ? `${openCount} left today` : "Today's quick to-dos.",
+      `${rows}
+       <div class="row" style="margin-top:10px">
+         <input id="todoInput" placeholder="Add a quick to-do…" style="flex:1" aria-label="New to-do">
+         <button class="btn primary" data-act="add-todo">＋ Add</button>
+       </div>`,
+    );
+  }
+
+  function remindersCard() {
+    const list = todaysReminders().slice(0, 5);
+    const total = todaysReminders().length;
+    const rows = list.length
+      ? `<ul class="steps">${list
+          .map(
+            (r) =>
+              `<li><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${r.done ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span class="steptext ${r.done ? "done" : ""}">${esc(r.text)}${r.time ? ` <small class="muted">· ${esc(r.time)}</small>` : ""}</span></li>`,
+          )
+          .join(
+            "",
+          )}${total > list.length ? `<li><button class="btn sm" data-act="nav" data-arg="reminders">See all ${total} →</button></li>` : ""}</ul>`
+      : emptyState("🔔", "Nothing to remember right now.");
+    return card(
+      "reminders",
+      "🔔 Reminders",
+      total ? `${total} to remember` : "Quick things not to forget.",
+      `${rows}
+       <div class="row" style="margin-top:10px">
+         <input id="reminderInput" placeholder="Add a reminder…" style="flex:1" aria-label="New reminder">
+         <button class="btn primary" data-act="quick-reminder">＋ Add</button>
+       </div>`,
+    );
+  }
+
+  function assignmentListCard() {
+    const open = openTasks();
+    const overdue = sortByUrgency(open.filter((a) => daysUntil(a.due) < 0));
+    const upcoming = sortByUrgency(
+      open.filter((a) => daysUntil(a.due) !== null && daysUntil(a.due) >= 0),
+    );
+    const show = [...overdue, ...upcoming].slice(0, 5);
+    const rows = show.length
+      ? show
+          .map((a) => {
+            const c = cls(a.classId);
+            const n = daysUntil(a.due);
+            const stateCls =
+              n !== null && n < 0 ? "overdue" : n === 0 ? "today-due" : "";
+            return `<div class="item ${stateCls}"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button><button class="btn sm" data-act="open-task" data-id="${a.id}" aria-label="Edit ${esc(a.title)}">✏️</button></div></div></div>`;
+          })
+          .join("")
+      : emptyState("🎉", "No assignments due. You're caught up!");
+    return card(
+      "assignments",
+      "📚 Assignment list",
+      overdue.length
+        ? `${overdue.length} overdue · ${upcoming.length} upcoming`
+        : "Upcoming and overdue.",
+      `${rows}
+       <div class="row" style="margin-top:10px">
+         <button class="btn primary" data-act="open-task">＋ Add assignment</button>
+         <button class="btn sm" data-act="nav" data-arg="tasks">See all →</button>
+       </div>`,
+    );
+  }
+
+  // ---------------------------------------------------------------------------
   // Views
   // ---------------------------------------------------------------------------
   const VIEWS = {
@@ -660,6 +925,10 @@
             ? today.map((a) => taskItem(a)).join("")
             : emptyState("🌤", "Nothing is due today. Nice."),
         ),
+        calendar: calendarCard(),
+        todos: todoCard(),
+        reminders: remindersCard(),
+        assignments: assignmentListCard(),
         routine: routineCard(routine),
         momentum: momentumCard(),
         soon: card(
@@ -675,6 +944,27 @@
         (k) => !state.settings.hiddenCards.includes(k),
       );
       return `<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
+    },
+
+    calendar() {
+      const upcoming = upcomingItems(20);
+      return `
+        ${calendarCard({ full: true })}
+        <div class="section-title">Upcoming (${upcoming.length})</div>
+        ${
+          upcoming.length
+            ? upcoming
+                .map((x) => {
+                  const c = x.classId ? cls(x.classId) : null;
+                  return `<div class="item"><div class="head"><div><h4>${esc(x.title)}</h4><p class="meta">${dueIcon(daysUntil(x.date))} ${esc(dueLabel(x.date, x.time))}${c ? " · " + esc(c.name) : ""}</p></div><div class="row"><span class="pill red">Due</span></div></div></div>`;
+                })
+                .join("")
+            : emptyState(
+                "📭",
+                "Nothing upcoming. Add an assignment with a due date.",
+              )
+        }
+      `;
     },
 
     today() {
@@ -732,8 +1022,8 @@
         .sort((a, b) => (b.completedAt > a.completedAt ? 1 : -1))
         .slice(0, 6);
       return `
-        <div class="row" style="justify-content:space-between;margin-bottom:6px">
-          <h2 style="margin:0;color:var(--navy);font-size:1.2rem">All tasks</h2>
+        <div class="view-head">
+          <h2 class="view-title">All tasks</h2>
           <button class="btn primary" data-act="open-task">＋ Add assignment</button>
         </div>
         ${open.length === 0 ? emptyState("🎉", "No open tasks. Add one or paste from Classroom (More tab).") : ""}
@@ -755,11 +1045,11 @@
     routines() {
       const log = state.routineLog[todayKey()] || {};
       return `
-        <div class="row" style="justify-content:space-between;margin-bottom:6px">
-          <h2 style="margin:0;color:var(--navy);font-size:1.2rem">Daily routines</h2>
-          <button class="btn sm" data-act="add-routine">＋ New routine</button>
+        <div class="view-head">
+          <h2 class="view-title">Daily routines</h2>
+          <button class="btn sm primary" data-act="add-routine">＋ New routine</button>
         </div>
-        <p class="muted" style="margin-top:0">Same steps every day means less to remember. Check things off as you go.</p>
+        <p class="view-intro">Same steps every day means less to remember. Check things off as you go.</p>
         ${state.routines
           .map((r) => {
             const done = log[r.id] || [];
@@ -791,20 +1081,25 @@
       const grid = (items) =>
         `<div class="grid g2">${items
           .map(
-            (
-              i,
-            ) => `<button class="btn block" style="justify-content:flex-start;text-align:left;height:auto;padding:16px" data-act="${i.act}" ${i.arg ? `data-arg="${i.arg}"` : ""}>
-              <span style="font-size:1.4rem;margin-right:8px">${i.ic}</span><span><b style="display:block">${i.title}</b><small class="muted">${i.sub}</small></span></button>`,
+            (i) =>
+              `<button class="btn block menu-tile" data-act="${i.act}" ${i.arg ? `data-arg="${i.arg}"` : ""}>
+              <span class="menu-ic" aria-hidden="true">${i.ic}</span><span><b>${i.title}</b><small>${i.sub}</small></span></button>`,
           )
           .join("")}</div>`;
       return `
-        <h2 style="margin:0 0 10px;color:var(--navy);font-size:1.2rem">More</h2>
+        <div class="view-head"><h2 class="view-title">More</h2></div>
         ${grid([
           {
             act: "view-classes",
             ic: "🏫",
             title: "My classes",
-            sub: "Teachers, emails, colors",
+            sub: "Subjects, times, colors",
+          },
+          {
+            act: "view-reminders",
+            ic: "🔔",
+            title: "Reminders",
+            sub: "Things to remember",
           },
           {
             act: "view-email",
@@ -832,9 +1127,9 @@
           },
           {
             act: "view-sync",
-            ic: "🔄",
+            ic: "☁️",
             title: "Backup & sync",
-            sub: "Save or move your data",
+            sub: "Back up, or sync across devices",
           },
         ])}
         <div class="section-title">App</div>
@@ -856,19 +1151,52 @@
     },
 
     classes() {
-      return (
-        backHeader("My classes", "more") +
-        `<div class="grid g2"><section class="card"><h3>Classes</h3>${state.classes
-          .map(
-            (c) =>
-              `<div class="item" style="border-left:4px solid ${esc(c.color)}"><div class="head"><div><h4>${esc(c.name)}</h4><p class="meta">${esc(c.teacher || "No teacher saved yet")}${c.email ? " · " + esc(c.email) : ""}</p></div></div><div class="row">
+      const classRow = (c) => {
+        const open = openTasks().filter((a) => a.classId === c.id).length;
+        const meta = [
+          c.subject,
+          c.period,
+          c.meetTime,
+          c.meetDays && c.meetDays.length ? c.meetDays.join("·") : "",
+          c.room,
+          c.teacher,
+        ].filter(Boolean);
+        return `<div class="item" style="border-left:4px solid ${esc(c.color)}"><div class="head"><div><h4><span class="dot" style="background:${esc(c.color)};width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:6px"></span>${esc(c.name)}</h4><p class="meta">${meta.length ? esc(meta.join(" · ")) : "Tap Edit to add details"}${open ? ` · ${open} open task${open === 1 ? "" : "s"}` : ""}</p></div></div><div class="row">
                 <button class="btn sm" data-act="edit-class" data-id="${c.id}">Edit</button>
                 ${c.email ? `<a class="btn sm navy" target="_blank" rel="noopener" href="${gmailCompose(c.email, "Question for " + c.name, "Hi,\n\nI had a question about...\n\nThank you,\n" + state.settings.studentName)}">✉️ Email</a>` : ""}
-              </div></div>`,
-          )
-          .join("")}
-        <button class="btn primary" data-act="add-class" style="margin-top:8px">＋ Add a class</button></section>
-        <section class="card"><h3>Why colors help</h3><p class="sub">Each class has its own color across the app, so you can spot what belongs to which class at a glance — one less thing to think about.</p></section></div>`
+              </div></div>`;
+      };
+      return (
+        backHeader("My classes", "more") +
+        `<div class="grid g2"><section class="card"><div class="head"><div><h3>Classes</h3><p class="sub">Each class has its own color across the app.</p></div></div>${
+          state.classes.length
+            ? state.classes.map(classRow).join("")
+            : emptyState("🏫", "No classes yet. Add your first one below.")
+        }
+        <button class="btn primary block" data-act="add-class" style="margin-top:8px">＋ Add a class</button></section>
+        <section class="card"><h3>Why this helps</h3><p class="sub">Color-coding and class names show up on the Now screen, Calendar, and every assignment, so you can spot what belongs to which class at a glance — one less thing to think about.</p></section></div>`
+      );
+    },
+
+    reminders() {
+      const list = sortedReminders();
+      const open = list.filter((r) => !r.done);
+      const done = list.filter((r) => r.done);
+      const row = (r) => {
+        const when = r.date
+          ? dueLabel(r.date, r.time)
+          : r.time
+            ? "At " + r.time
+            : "";
+        const n = r.date ? daysUntil(r.date) : null;
+        return `<div class="item ${!r.done && n !== null && n < 0 ? "overdue" : ""}"><div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap"><label class="row" style="align-items:flex-start;gap:10px;flex:1;min-width:0;cursor:pointer"><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${r.done ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span style="min-width:0"><span class="steptext ${r.done ? "done" : ""}" style="font-weight:800;display:block">${esc(r.text)}</span>${when ? `<span class="meta" style="display:block;margin-top:2px">${r.date ? dueIcon(n) + " " : "⏰ "}${esc(when)}</span>` : ""}</span></label><span class="row" style="gap:6px"><button class="btn sm" data-act="edit-reminder" data-id="${r.id}">Edit</button><button class="btn danger sm" data-act="del-reminder" data-id="${r.id}" aria-label="Delete reminder: ${esc(r.text)}">✕</button></span></div></div>`;
+      };
+      return (
+        backHeader("Reminders", "more") +
+        `<div class="view-head"><h2 class="view-title" style="font-size:1rem">Reminders</h2><button class="btn primary" data-act="add-reminder">＋ Add reminder</button></div>
+        <p class="view-intro">Quick nudges for things to remember — bring something, ask a teacher, sign a form.</p>
+        ${open.length ? `<div class="section-title">To remember (${open.length})</div>${open.map(row).join("")}` : emptyState("🔔", "No reminders yet. Add one above.")}
+        ${done.length ? `<div class="section-title">✓ Done (${done.length})</div>${done.map(row).join("")}<button class="btn sm" data-act="clear-done-reminders" style="margin-top:8px">Clear done</button>` : ""}`
       );
     },
 
@@ -984,34 +1312,35 @@ Due May 31"></textarea>
 
     sync() {
       const s = state.settings.sync;
+      const status = s.enabled
+        ? '<span class="pill green">● Sync is on</span>'
+        : '<span class="pill">Off by default</span>';
       return (
         backHeader("Backup & sync", "more") +
-        card(
-          "file",
-          "💾 Save a backup file",
-          "The simplest way to move your data to another computer. Always works, even offline.",
-          `
-          <p class="sub">Download a file with everything in this app. Keep it safe, or open it on another device to load your data.</p>
-          <div class="row"><button class="btn primary" data-act="export">⬇️ Download backup</button><button class="btn" data-act="import">⬆️ Load from file</button></div>
-          <input type="file" id="importFile" accept="application/json,.json" hidden>
-        `,
-        ) +
-        card(
-          "cloud",
-          "☁️ Cloud sync (beta)",
-          "Keep this app in sync across devices automatically.",
-          `
-          <p class="sub">Enter the same secret code on every device to share data. ${cloud.available() ? "" : "<b>Note:</b> the cloud service isn't set up on this site yet, so this stays local until it is."}</p>
-          <div class="field"><label>Secret sync code (12+ characters)</label><input id="syncCode" value="${esc(s.code)}" placeholder="Tap 🎲 to make a strong code"></div>
+        `<p class="view-intro">Your work is always saved on this device. Choose how you want to back it up or carry it to another device.</p>` +
+        // Cloud sync surfaced first, highlighted, with a plain-language explanation.
+        `<section class="card feature" data-card="cloud">
+          <div class="head"><div><h3>☁️ Sync across your devices</h3><p class="sub">Optional — work on your phone and laptop and see the same tasks everywhere.</p></div>${status}</div>
+          <p class="sub" style="margin-top:0">Pick one secret code and type it on every device you use. They'll keep each other up to date automatically — no account, no email, no password to remember. ${cloud.available() ? "" : "<b>Heads up:</b> this site isn't set up for cloud sync yet, so your code is saved and ready, but data stays on this device until it is."}</p>
+          <div class="field"><label>Secret sync code (12+ characters)</label><input id="syncCode" value="${esc(s.code)}" placeholder="Tap “Make a code” for a strong one"></div>
           <div class="row">
             <button class="btn" data-act="gen-code">🎲 Make a code</button>
             <button class="btn ${s.enabled ? "danger" : "primary"}" data-act="toggle-sync">${s.enabled ? "Turn off sync" : "Turn on sync"}</button>
             ${s.enabled ? `<button class="btn navy" data-act="sync-now">🔄 Sync now</button>` : ""}
           </div>
           ${s.lastAt ? `<p class="muted" style="font-size:.8rem;margin-top:8px">Last synced: ${esc(new Date(s.lastAt).toLocaleString())}</p>` : ""}
+        </section>` +
+        card(
+          "file",
+          "💾 Save a backup file",
+          "Always works, even offline.",
+          `
+          <p class="sub" style="margin-top:0">Download one file with everything in the app. Keep it somewhere safe, or open it on another device to load your data.</p>
+          <div class="row"><button class="btn primary" data-act="export">⬇️ Download backup</button><button class="btn" data-act="import">⬆️ Load from file</button></div>
+          <input type="file" id="importFile" accept="application/json,.json" hidden>
         `,
         ) +
-        `<div class="note">Your data is stored privately on this device. Backups only leave this device when <b>you</b> download a file or turn on cloud sync.</div>`
+        `<div class="note">Your data is stored privately on this device. It only leaves when <b>you</b> download a backup or turn on cloud sync.</div>`
       );
     },
 
@@ -1043,7 +1372,7 @@ Due May 31"></textarea>
   };
 
   function backHeader(title, back) {
-    return `<div class="row" style="margin-bottom:10px"><button class="btn sm" data-act="nav" data-arg="${back}">←</button><h2 style="margin:0;color:var(--navy);font-size:1.2rem">${esc(title)}</h2></div>`;
+    return `<div class="view-head"><div class="row" style="gap:10px"><button class="btn sm ghost" data-act="nav" data-arg="${back}" aria-label="Back to More">← Back</button><h2 class="view-title">${esc(title)}</h2></div></div>`;
   }
 
   function routineCard(r) {
@@ -1212,12 +1541,37 @@ Due May 31"></textarea>
 
   function classForm(c) {
     c = c || {};
+    const days = Array.isArray(c.meetDays) ? c.meetDays : [];
     return `
-      <div class="field"><label>Class name</label><input id="cName" value="${esc(c.name || "")}"></div>
-      <div class="field"><label>Teacher</label><input id="cTeacher" value="${esc(c.teacher || "")}"></div>
-      <div class="field"><label>Teacher email</label><input id="cEmail" value="${esc(c.email || "")}" placeholder="teacher@school.org"></div>
-      <div class="field"><label>Color</label><input type="color" id="cColor" value="${esc(c.color || "#147c78")}" style="height:48px"></div>
-      <button class="btn primary block" data-act="save-class" data-id="${esc(c.id || "")}">Save class</button>`;
+      <div class="field"><label>Class name</label><input id="cName" value="${esc(c.name || "")}" placeholder="Math"></div>
+      <div class="g2 grid">
+        <div class="field"><label>Subject (optional)</label><input id="cSubject" value="${esc(c.subject || "")}" placeholder="Mathematics"></div>
+        <div class="field"><label>Room (optional)</label><input id="cRoom" value="${esc(c.room || "")}" placeholder="Room 214"></div>
+      </div>
+      <div class="g2 grid">
+        <div class="field"><label>Period (optional)</label><input id="cPeriod" value="${esc(c.period || "")}" placeholder="Period 3"></div>
+        <div class="field"><label>Meeting time (optional)</label><input id="cMeetTime" value="${esc(c.meetTime || "")}" placeholder="8:30 AM"></div>
+      </div>
+      <div class="field"><label>Days it meets</label><div class="seg" id="cDays" role="group" aria-label="Days this class meets">${DAYS.map(
+        (d) =>
+          `<button type="button" data-act="toggle-class-day" data-arg="${d}" aria-pressed="${days.includes(d)}">${d}</button>`,
+      ).join("")}</div></div>
+      <div class="field"><label>Teacher (optional)</label><input id="cTeacher" value="${esc(c.teacher || "")}"></div>
+      <div class="field"><label>Teacher email (optional)</label><input id="cEmail" value="${esc(c.email || "")}" placeholder="teacher@school.org"></div>
+      <div class="field"><label>Color</label><input type="color" id="cColor" value="${esc(safeColor(c.color))}" style="height:48px"></div>
+      <button class="btn primary block" data-act="save-class" data-id="${esc(c.id || "")}">Save class</button>
+      ${c.id ? `<button class="btn danger block" data-act="delete-class" data-id="${c.id}" style="margin-top:8px">Delete class</button>` : ""}`;
+  }
+
+  function reminderForm(r) {
+    r = r || {};
+    return `
+      <div class="field"><label>Reminder</label><input id="rmText" value="${esc(r.text || "")}" placeholder="Bring gym clothes"></div>
+      <div class="g2 grid">
+        <div class="field"><label>Date (optional)</label><input type="date" id="rmDate" value="${esc(r.date || "")}"></div>
+        <div class="field"><label>Time (optional)</label><input type="time" id="rmTime" value="${esc(r.time || "")}"></div>
+      </div>
+      <button class="btn primary block" data-act="save-reminder" data-id="${esc(r.id || "")}">${r.id ? "Save changes" : "Add reminder"}</button>`;
   }
 
   function routineForm(r) {
@@ -1626,6 +1980,7 @@ Due May 31"></textarea>
   const ACTIONS = {
     nav: (_, arg) => setView(arg),
     "view-classes": () => setView("classes"),
+    "view-reminders": () => setView("reminders"),
     "view-email": () => setView("email"),
     "view-import": () => setView("import"),
     "view-wins": () => setView("wins"),
@@ -1730,15 +2085,104 @@ Due May 31"></textarea>
         "Edit class",
         classForm(state.classes.find((c) => c.id === id)),
       ),
+    "toggle-class-day": (_, arg, ev) => {
+      // Toggle aria-pressed in place; the day set is read back on save.
+      const b = ev.target.closest("[data-act='toggle-class-day']");
+      if (b)
+        b.setAttribute(
+          "aria-pressed",
+          b.getAttribute("aria-pressed") !== "true",
+        );
+    },
     "save-class": (id) => {
-      const c = id ? state.classes.find((x) => x.id === id) : { id: uid("c") };
-      c.name = $("#cName").value.trim() || "Class";
-      c.teacher = $("#cTeacher").value.trim();
-      c.email = $("#cEmail").value.trim();
-      c.color = $("#cColor").value;
-      if (!id) state.classes.push(c);
+      const meetDays = $$("#cDays [data-act='toggle-class-day']")
+        .filter((b) => b.getAttribute("aria-pressed") === "true")
+        .map((b) => b.dataset.arg);
+      const c = normalizeClass({
+        id: id || uid("c"),
+        name: $("#cName").value.trim() || "Class",
+        subject: $("#cSubject").value.trim(),
+        room: $("#cRoom").value.trim(),
+        period: $("#cPeriod").value.trim(),
+        meetTime: $("#cMeetTime").value.trim(),
+        meetDays,
+        teacher: $("#cTeacher").value.trim(),
+        email: $("#cEmail").value.trim(),
+        color: $("#cColor").value,
+      });
+      if (id) {
+        const i = state.classes.findIndex((x) => x.id === id);
+        if (i >= 0) state.classes[i] = c;
+      } else state.classes.push(c);
       save();
       closeModal();
+      render();
+      toast(id ? "Class saved" : "Class added");
+    },
+    "delete-class": (id) => {
+      openModal(
+        "Delete this class?",
+        `<p class="sub">Assignments in this class will keep their work but lose the class color and name.</p><div class="row"><button class="btn danger" data-act="confirm-delete-class" data-id="${id}">Delete</button><button class="btn" data-act="close-modal">Keep it</button></div>`,
+      );
+    },
+    "confirm-delete-class": (id) => {
+      state.classes = state.classes.filter((c) => c.id !== id);
+      state.assignments.forEach((a) => {
+        if (a.classId === id) a.classId = "";
+      });
+      save();
+      closeModal();
+      render();
+      toast("Class deleted");
+    },
+
+    "add-reminder": () => openModal("Add a reminder", reminderForm()),
+    "edit-reminder": (id) =>
+      openModal(
+        "Edit reminder",
+        reminderForm(state.reminders.find((r) => r.id === id)),
+      ),
+    "save-reminder": (id) => {
+      const text = $("#rmText").value.trim();
+      if (!text) return toast("Type the reminder first.");
+      const r = normalizeReminder({
+        id: id || uid("rm"),
+        text,
+        date: $("#rmDate").value,
+        time: $("#rmTime").value,
+        done: id ? !!state.reminders.find((x) => x.id === id)?.done : false,
+        createdAt: id
+          ? state.reminders.find((x) => x.id === id)?.createdAt
+          : Date.now(),
+      });
+      if (id) {
+        const i = state.reminders.findIndex((x) => x.id === id);
+        if (i >= 0) state.reminders[i] = r;
+      } else state.reminders.push(r);
+      save();
+      closeModal();
+      render();
+      toast(id ? "Reminder saved" : "Reminder added 🔔");
+    },
+    "quick-reminder": () => {
+      const inp = $("#reminderInput");
+      const v = (inp?.value || "").trim();
+      if (!v) return;
+      state.reminders.push(normalizeReminder({ text: v }));
+      save();
+      render();
+      const again = $("#reminderInput");
+      if (again) again.focus();
+      toast("Reminder added 🔔");
+    },
+    "del-reminder": (id) => {
+      state.reminders = state.reminders.filter((r) => r.id !== id);
+      save();
+      render();
+    },
+    "clear-done-reminders": () => {
+      state.reminders = state.reminders.filter((r) => !r.done);
+      save();
       render();
     },
 
@@ -1797,6 +2241,38 @@ Due May 31"></textarea>
       state.daily.goalDate = todayKey();
       save();
       toast("Goal saved 🌟");
+    },
+
+    // ---- Calendar ----
+    "cal-pick": (_, arg) => {
+      calSelected = calSelected === arg ? "" : arg;
+      render();
+    },
+    "cal-prev": () => {
+      calMonthOffset--;
+      render();
+    },
+    "cal-next": () => {
+      calMonthOffset++;
+      render();
+    },
+
+    // ---- To-dos ----
+    "add-todo": () => {
+      const inp = $("#todoInput");
+      const v = (inp?.value || "").trim();
+      if (!v) return;
+      state.todos.push(normalizeTodo({ text: v, date: todayKey() }));
+      save();
+      render();
+      const again = $("#todoInput");
+      if (again) again.focus();
+      toast("To-do added 📝");
+    },
+    "del-todo": (id) => {
+      state.todos = state.todos.filter((t) => t.id !== id);
+      save();
+      render();
     },
     "add-win": () => {
       const v = $("#winInput").value.trim();
@@ -2032,6 +2508,39 @@ Due May 31"></textarea>
         const label = box.parentElement.querySelector(".steptext");
         if (label) label.classList.toggle("done", box.checked);
         updateProgressBars();
+      } else if (kind === "todo") {
+        const td = state.todos.find((t) => t.id === id);
+        if (td) {
+          td.done = box.checked;
+          if (box.checked) {
+            state.points += 1;
+            bumpActivity("tasks");
+          }
+          save();
+          const label = box.parentElement.querySelector(".steptext");
+          if (label) label.classList.toggle("done", box.checked);
+          renderHero();
+        }
+      } else if (kind === "reminder") {
+        const r = state.reminders.find((x) => x.id === id);
+        if (r) {
+          r.done = box.checked;
+          save();
+          // Re-render so the reminder moves between Open/Done groups cleanly.
+          render();
+        }
+      }
+    });
+
+    // Enter key submits the quick to-do input
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" && ev.target.id === "todoInput") {
+        ev.preventDefault();
+        ACTIONS["add-todo"]();
+      }
+      if (ev.key === "Enter" && ev.target.id === "reminderInput") {
+        ev.preventDefault();
+        ACTIONS["quick-reminder"]();
       }
     });
 

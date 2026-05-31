@@ -1,0 +1,1668 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #1 · Global Travel Planner</title>
+    <style>
+      :root {
+        --bg: #07182a;
+        --ink: #f2f8ff;
+        --muted: #a8c2dd;
+        --accent: #ffb02e;
+        --accent2: #2ec5d3;
+        --panel: #0f2d47;
+        --line: #245071;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --bubble: #fffdf7;
+        --bubble-ink: #14283d;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.5;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      /* ---- Top bar ---- */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(7, 24, 42, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #08203a;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      /* ---- Tabs ---- */
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+        scrollbar-width: thin;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #0c2540;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent), #ff8a1e);
+        color: #2a1500;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      /* ---- Stage ---- */
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #08203a;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      /* ---- Dialogue ---- */
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border-radius: 16px;
+        padding: 14px 16px;
+        position: relative;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: #b25a00;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.05rem;
+      }
+      .bubble .es {
+        font-size: 0.92rem;
+        color: #4a6276;
+        margin-top: 6px;
+        font-style: italic;
+      }
+      .bubble.caption {
+        background: #0c2540;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .bubble.caption .es {
+        color: var(--muted);
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #245071;
+      }
+      .dots i.on {
+        background: var(--accent);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #28a9b6);
+        color: #022027;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .next[disabled] {
+        opacity: 0.4;
+        cursor: default;
+      }
+
+      /* ---- Challenge / choice ---- */
+      .challenge {
+        margin-top: 16px;
+        background: #0c2540;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .challenge .prompt .es {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 4px;
+      }
+      .rtable {
+        margin: 10px 0;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      .rtable caption {
+        text-align: left;
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+      }
+      .rtable th,
+      .rtable td {
+        border: 1px solid var(--line);
+        padding: 8px 14px;
+        text-align: center;
+      }
+      .rtable th {
+        background: #11375a;
+        color: var(--accent2);
+      }
+      .rtable td.q {
+        color: var(--accent);
+        font-weight: 800;
+      }
+      .hint {
+        font-size: 0.9rem;
+        color: #ffe2b3;
+        background: #3a2a0d;
+        border: 1px solid #7a571f;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin: 8px 0;
+      }
+      .hint b {
+        color: var(--accent);
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #11375a;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+      .feedback .es {
+        display: block;
+        font-style: italic;
+        color: #9fd;
+        opacity: 0.85;
+        margin-top: 4px;
+        font-size: 0.9rem;
+      }
+
+      .frame {
+        margin-top: 12px;
+        font-size: 0.92rem;
+        color: var(--muted);
+        background: #08203a;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .frame b {
+        color: var(--accent2);
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff8a1e);
+        color: #2a1500;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      /* ---- Cover ---- */
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        aspect-ratio: 16/9;
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 620px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent), #ff8a1e);
+        color: #2a1500;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #022027;
+        background: var(--accent2);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      /* ---- Glossary ---- */
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #0c2540;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term .es-term {
+        color: var(--accent2);
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* ---- Mission complete ---- */
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        color: var(--accent);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #0c2540;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .topbar-inner {
+          gap: 8px;
+        }
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"
+          ><span class="v">#1</span> Global Travel Planner</span
+        >
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: Paris Ratios
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: Tokyo Tables
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Final Trip
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- ============ COVER ============ -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit3/cover.png"
+            alt="Maya, a young travel planner, stands on a giant glowing globe holding a travel map with airplane trails arcing between landmarks"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
+        <h2>Global Travel Planner</h2>
+        <p>
+          You are <b>Maya</b>, a young trip planner. You will travel around the
+          world! Each city has a <b>ratio puzzle</b>. Solve it to unlock the
+          next stop. Use math to plan the perfect trip!
+        </p>
+        <p style="font-size: 0.92rem">
+          <i
+            >Eres Maya, una joven planificadora de viajes. Resuelve cada
+            acertijo de razones para desbloquear la siguiente ciudad.</i
+          >
+        </p>
+        <button class="start" id="start-btn">
+          Start the Trip &#9992;&#65039;
+        </button>
+      </section>
+
+      <!-- ============ ACT 1 ============ -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act">Act 1 &middot; Understand Ratios</span>
+          <h2>Paris: Compare the Groups</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit3/ratios-compare.png"
+            alt="Maya stands in front of the Eiffel Tower holding passports, with a glowing ratio comparison floating beside her"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <!-- Challenge 1: write a ratio -->
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>&#127467;&#127479; Paris Gate #1 &mdash; Write the Ratio</h3>
+          <p class="prompt">
+            A <b>ratio</b> compares two amounts. The tour bus has
+            <b>2 guides</b> and <b>6 travelers</b>. What is the ratio of
+            <b>guides to travelers</b>?
+            <span class="es"
+              >Una razón compara dos cantidades. ¿Cuál es la razón de guías a
+              viajeros?</span
+            >
+          </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> Write the first amount, then the second:
+            guides : travelers = 2 : 6.
+          </div>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="true">
+              2 to 6 &nbsp;(2 guides : 6 travelers)
+            </button>
+            <button class="choice" data-correct="false">
+              6 to 2 &nbsp;(that is travelers : guides)
+            </button>
+            <button class="choice" data-correct="false">
+              2 to 8 &nbsp;(8 is not the number of travelers)
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <!-- Challenge 2: simplify / equivalent ratio -->
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#127467;&#127479; Paris Gate #2 &mdash; Same Ratio</h3>
+          <p class="prompt">
+            Maya sees <b>1 souvenir stamp for every 3 passports</b>. A bigger
+            group has <b>4 stamps</b>. How many passports do they have if the
+            ratio stays the same?
+            <span class="es"
+              >Hay 1 sello por cada 3 pasaportes. Si hay 4 sellos, ¿cuántos
+              pasaportes hay?</span
+            >
+          </p>
+          <div class="hint">
+            &#128161; <b>Hint:</b> 1 stamp &rarr; 3 passports. So 4 stamps
+            &rarr; 4 &times; 3 passports.
+          </div>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              7 passports &nbsp;(that is 4 + 3, not the ratio)
+            </button>
+            <button class="choice" data-correct="true">
+              12 passports &nbsp;(4 &times; 3 = 12)
+            </button>
+            <button class="choice" data-correct="false">
+              4 passports &nbsp;(same as the stamps)
+            </button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <div class="frame" id="frame1" style="display: none">
+          <b>Sentence frame:</b> &ldquo;The ratio of guides to travelers is ____
+          to ____. For every 1 stamp there are ____ passports, so 4 stamps means
+          ____ passports.&rdquo;
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">
+            Fly to Tokyo &#9992;&#65039;
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ ACT 2 ============ -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Finish Act 1 first to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act">Act 2 &middot; Ratio Tables &amp; Graphs</span>
+            <h2>Tokyo: Build the Table</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit3/ratio-table.png"
+              alt="Maya draws a glowing ratio table and a rising line graph in the air on a Tokyo street"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- Challenge: fill the ratio table -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#127471;&#127477; Tokyo Table #1 &mdash; Fill the Row</h3>
+            <p class="prompt">
+              The train goes <b>50 miles every 1 hour</b>. Finish the ratio
+              table. How many miles in <b>4 hours</b>?
+              <span class="es"
+                >El tren recorre 50 millas por hora. ¿Cuántas millas en 4
+                horas?</span
+              >
+            </p>
+            <table class="rtable">
+              <caption>
+                Hours and miles (same ratio in every row)
+              </caption>
+              <tr>
+                <th scope="row">Hours</th>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <th scope="row">Miles</th>
+                <td>50</td>
+                <td>100</td>
+                <td>150</td>
+                <td class="q">?</td>
+              </tr>
+            </table>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Each hour adds 50 miles. 50, 100, 150, then
+              add 50 more.
+            </div>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="false">
+                190 miles &nbsp;(only added 40)
+              </button>
+              <button class="choice" data-correct="true">
+                200 miles &nbsp;(4 &times; 50 = 200)
+              </button>
+              <button class="choice" data-correct="false">
+                150 miles &nbsp;(that is 3 hours)
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- Challenge: currency ratio table -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>&#127471;&#127477; Tokyo Table #2 &mdash; Money Swap</h3>
+            <p class="prompt">
+              At the money desk, <b>$1 = 5 coins</b>. Maya changes <b>$6</b>.
+              How many coins does she get?
+              <span class="es"
+                >$1 equivale a 5 monedas. ¿Cuántas monedas por $6?</span
+              >
+            </p>
+            <table class="rtable">
+              <caption>
+                Dollars and coins
+              </caption>
+              <tr>
+                <th scope="row">Dollars</th>
+                <td>1</td>
+                <td>2</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <th scope="row">Coins</th>
+                <td>5</td>
+                <td>10</td>
+                <td class="q">?</td>
+              </tr>
+            </table>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Multiply the dollars by 5. 6 &times; 5 = ?
+            </div>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                11 coins &nbsp;(that is 6 + 5)
+              </button>
+              <button class="choice" data-correct="true">
+                30 coins &nbsp;(6 &times; 5 = 30)
+              </button>
+              <button class="choice" data-correct="false">
+                25 coins &nbsp;(that is $5)
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <div class="frame" id="frame2" style="display: none">
+            <b>Sentence frame:</b> &ldquo;In 4 hours the train goes ____ miles
+            because 4 &times; 50 = ____. For $6 Maya gets ____ coins because 6
+            &times; 5 = ____.&rdquo;
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Fly to Egypt &#9992;&#65039;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ FINAL ============ -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Finish Act 2 first to unlock the Final Trip.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final Trip &middot; Both Skills</span>
+            <h2>The Last Gateway</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit3/final-challenge.png"
+              alt="Maya stands before a huge glowing globe gateway with ratio tables and route lines orbiting her"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#127759; Final Gateway &mdash; Ratio + Table</h3>
+            <p class="prompt">
+              The last gate needs BOTH skills. The plane uses
+              <b>2 bags for every 1 traveler</b>. Use the ratio table to find
+              the bags for <b>5 travelers</b>. Pick the line that is fully
+              correct.
+              <span class="es"
+                >2 maletas por cada 1 viajero. ¿Cuántas maletas para 5
+                viajeros?</span
+              >
+            </p>
+            <table class="rtable">
+              <caption>
+                Travelers and bags
+              </caption>
+              <tr>
+                <th scope="row">Travelers</th>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>5</td>
+              </tr>
+              <tr>
+                <th scope="row">Bags</th>
+                <td>2</td>
+                <td>4</td>
+                <td>6</td>
+                <td class="q">?</td>
+              </tr>
+            </table>
+            <div class="hint">
+              &#128161; <b>Hint:</b> The ratio is bags : travelers = 2 : 1.
+              Multiply travelers by 2. 5 &times; 2 = ?
+            </div>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="false">
+                Ratio is 2 : 1, and 5 travelers need 7 bags
+              </button>
+              <button class="choice" data-correct="true">
+                Ratio is 2 : 1, and 5 travelers need 10 bags
+              </button>
+              <button class="choice" data-correct="false">
+                Ratio is 1 : 2, and 5 travelers need 10 bags
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <div class="frame" id="frameF" style="display: none">
+            <b>Sentence frame:</b> &ldquo;The ratio of bags to travelers is 2 to
+            ____. For 5 travelers there are ____ bags because 5 &times; 2 =
+            ____.&rdquo;
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Finish the Trip &#127881;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MISSION COMPLETE ============ -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Trip complete"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit3/celebrate.png"
+            alt="Maya celebrates with arms wide, surrounded by world landmarks, fireworks, and a passport full of stamps"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#9992;&#65039;&#11088;</span>
+        <h2>Trip Complete!</h2>
+        <p>
+          You planned the whole trip around the world! You used
+          <b>ratios</b> to compare groups and <b>ratio tables</b> to scale up
+          trips, money, and bags. Your passport is full of stamps. Amazing work,
+          Maya!
+        </p>
+        <p style="color: var(--muted); font-size: 0.92rem">
+          <i
+            >¡Viaje completo! Usaste razones y tablas de razones. ¡Excelente
+            trabajo!</i
+          >
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Scale the ratio: the ratio of red to blue paint is <strong>3 to 5</strong>. If you use <strong>25 cups of blue paint</strong>, how many cups of red paint are needed?<span class="es">La razón de pintura roja a azul es 3 a 5. Si usas 25 tazas de azul, ¿cuántas tazas de rojo necesitas?</span>
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="true">A) 15 cups of red paint &nbsp;(multiplied both parts by 5) &nbsp;✅</button>
+            <button class="choice" data-correct="false">B) 9 cups of red paint &nbsp;(incorrect scaling factor)</button>
+            <button class="choice" data-correct="false">C) 20 cups of red paint &nbsp;(added instead of multiplying)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">Travel again &#8635;</button>
+    
+      </section>
+
+      <!-- ============ GLOSSARY ============ -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Word Bank</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------- Dialogue data (English + Spanish support) ---------- */
+        var DLG = {
+          act1: [
+            {
+              who: "Travel App",
+              en: "Welcome to Paris, Maya! This gate is locked. To open it, write the right RATIO.",
+              es: "¡Bienvenida a París, Maya! Esta puerta está cerrada. Escribe la RAZÓN correcta.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "A ratio compares two amounts. Let me look at the guides and the travelers.",
+              es: "Una razón compara dos cantidades. Voy a mirar los guías y los viajeros.",
+            },
+            {
+              who: "Travel App",
+              en: "First, write the ratio of guides to travelers to wake the gate.",
+              es: "Primero, escribe la razón de guías a viajeros para activar la puerta.",
+              cap: true,
+            },
+          ],
+          act1b: [
+            {
+              who: "Maya",
+              en: "Gate one is open! Now I need an EQUIVALENT ratio with the same pattern.",
+              es: "¡La primera puerta se abrió! Ahora necesito una razón equivalente con el mismo patrón.",
+            },
+          ],
+          act2: [
+            {
+              who: "Travel App",
+              en: "Now you are in Tokyo! To buy train tickets, fill in a RATIO TABLE.",
+              es: "¡Ahora estás en Tokio! Para comprar boletos, completa una TABLA DE RAZONES.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Every hour the train goes the same distance. I can scale the table up step by step.",
+              es: "Cada hora el tren recorre la misma distancia. Puedo aumentar la tabla paso a paso.",
+            },
+          ],
+          act2b: [
+            {
+              who: "Maya",
+              en: "The table works! Now I need to swap money. Same idea: a ratio table for dollars and coins.",
+              es: "¡La tabla funciona! Ahora cambio dinero. La misma idea: una tabla de dólares y monedas.",
+            },
+          ],
+          final: [
+            {
+              who: "Travel App",
+              en: "The Last Gateway is ahead. It needs BOTH skills: a ratio AND a ratio table.",
+              es: "La Última Puerta necesita AMBAS destrezas: una razón Y una tabla de razones.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Ratios and tables together. I'm ready. Let's finish the trip!",
+              es: "Razones y tablas juntas. Estoy lista. ¡Vamos a terminar el viaje!",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#9878;&#65039;",
+            en: "Ratio",
+            es: "razón",
+            def: "A way to compare two amounts. The ratio of 2 guides to 6 travelers is 2 to 6 (or 2 : 6).",
+          },
+          {
+            ico: "&#128176;",
+            en: "Quantity",
+            es: "cantidad",
+            def: "An amount you can count or measure, like 6 travelers or 50 miles.",
+          },
+          {
+            ico: "&#129516;",
+            en: "Equivalent ratio",
+            es: "razón equivalente",
+            def: "A different ratio with the same pattern. 1 : 3 is equivalent to 4 : 12.",
+          },
+          {
+            ico: "&#128202;",
+            en: "Ratio table",
+            es: "tabla de razones",
+            def: "A table that shows equivalent ratios in rows. Every row keeps the same ratio.",
+          },
+          {
+            ico: "&#128200;",
+            en: "Graph of a ratio table",
+            es: "gráfica de una tabla de razones",
+            def: "When you plot the pairs from a ratio table, the points line up in a straight line.",
+          },
+          {
+            ico: "&#10133;",
+            en: "Scale up",
+            es: "aumentar a escala",
+            def: "Make a ratio bigger while keeping the same pattern, often by multiplying.",
+          },
+          {
+            ico: "&#9889;",
+            en: "Unit rate",
+            es: "tasa por unidad",
+            def: "A ratio for just 1 unit, like 50 miles for 1 hour, or 5 coins for $1.",
+          },
+          {
+            ico: "&#128178;",
+            en: "Currency exchange",
+            es: "cambio de moneda",
+            def: "Trading money from one country for another using a fixed ratio, like $1 = 5 coins.",
+          },
+          {
+            ico: "&#9992;&#65039;",
+            en: "Distance",
+            es: "distancia",
+            def: "How far you travel, measured in units like miles or kilometers.",
+          },
+        ];
+
+        /* ---------- State ---------- */
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        /* ---------- Progress ---------- */
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+
+        /* ---------- Tab locking ---------- */
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+
+        /* ---------- Scene switching ---------- */
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (tabsArr[i + 1] || tabsArr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus();
+            }
+          });
+        });
+
+        /* ---------- Dialogue engine ---------- */
+        function runDialogue(opts) {
+          var idx = 0;
+          var dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            var i = document.createElement("i");
+            dots.appendChild(i);
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '">' +
+              '<div class="who">' +
+              line.who +
+              "</div>" +
+              '<div class="en">' +
+              line.en +
+              "</div>" +
+              '<div class="es">' +
+              line.es +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else {
+              if (opts.onDone) opts.onDone();
+            }
+          };
+          render();
+        }
+
+        /* ---------- Choice handler ---------- */
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var correct = btn.dataset.correct === "true";
+              var fb = $(opts.feedbackId);
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML =
+                  opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML =
+                  opts.badEn + '<span class="es">' + opts.badEs + "</span>";
+              }
+            });
+          });
+        }
+
+        /* ---------- Build glossary ---------- */
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              ' <span class="es-term">(' +
+              g.es +
+              ")</span></h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        /* ---------- ACT 1 flow ---------- */
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Try the gate ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Correct! The ratio of guides to travelers is 2 to 6. Gate one is open!",
+            goodEs: "¡Correcto! La razón de guías a viajeros es 2 a 6.",
+            badEn:
+              "&#10060; Order matters. Write guides FIRST, then travelers: 2 to 6. Try again.",
+            badEs: "El orden importa. Escribe guías primero: 2 a 6.",
+            onSolve: function () {
+              var box = $("dlg-act1");
+              setTimeout(function () {
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act1b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act1b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act1b[0].es +
+                  "</div></div>";
+                $("chal1b").style.display = "block";
+                $("frame1").style.display = "block";
+              }, 500);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; Perfect! 1 stamp goes with 3 passports, so 4 stamps go with 4&times;3 = 12 passports. PARIS UNLOCKED!",
+            goodEs:
+              "¡Perfecto! 1 sello = 3 pasaportes, así que 4 sellos = 12 pasaportes. ¡París desbloqueado!",
+            badEn:
+              "&#10060; Keep the same ratio. Each stamp brings 3 passports, so multiply by 3, not add. Try again.",
+            badEs: "Mantén la misma razón. Multiplica por 3, no sumes.",
+            onSolve: function () {
+              $("art-act1").src = "../_art/unit3/unlock.png";
+              $("art-act1").alt =
+                "A glowing gateway opens to reveal pyramids as Maya cheers with raised fists";
+              $("adv-act1").classList.add("show");
+            },
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        /* ---------- ACT 2 flow ---------- */
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Fill the table ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; Yes! 4 hours &times; 50 miles = 200 miles. The table keeps the same ratio in every row.",
+            goodEs: "¡Sí! 4 horas × 50 millas = 200 millas.",
+            badEn:
+              "&#10060; Each hour adds 50 miles. 50, 100, 150, 200. Use the pattern and try again.",
+            badEs: "Cada hora suma 50 millas: 50, 100, 150, 200.",
+            onSolve: function () {
+              var box = $("dlg-act2");
+              setTimeout(function () {
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act2b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act2b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act2b[0].es +
+                  "</div></div>";
+                $("chal2b").style.display = "block";
+                $("frame2").style.display = "block";
+              }, 500);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; Right! $1 = 5 coins, so $6 = 6&times;5 = 30 coins. TOKYO UNLOCKED!",
+            goodEs: "¡Correcto! $6 × 5 = 30 monedas. ¡Tokio desbloqueado!",
+            badEn:
+              "&#10060; Multiply the dollars by 5, do not add. 6 &times; 5 = 30. Try again.",
+            badEs: "Multiplica los dólares por 5: 6 × 5 = 30.",
+            onSolve: function () {
+              $("adv-act2").classList.add("show");
+            },
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        /* ---------- FINAL flow ---------- */
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Open the gateway ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("frameF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; GATEWAY OPEN! The ratio is bags : travelers = 2 : 1, and 5 travelers need 5&times;2 = 10 bags. You did it!",
+            goodEs:
+              "¡PUERTA ABIERTA! La razón es 2 : 1, y 5 viajeros necesitan 10 maletas.",
+            badEn:
+              "&#10060; Check both parts. The ratio is 2 bags to 1 traveler, and 5&times;2 = 10 bags. Try again.",
+            badEs:
+              "Revisa ambas partes. La razón es 2 a 1 y 5 × 2 = 10 maletas.",
+            onSolve: function () {
+              $("adv-final").classList.add("show");
+            },
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        /* ---------- Wire start / restart ---------- */
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        /* ---------- Init ---------- */
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U3 #1: Global Travel Planner",
+        standard: "6.RP.3a",
+        level: "1",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>

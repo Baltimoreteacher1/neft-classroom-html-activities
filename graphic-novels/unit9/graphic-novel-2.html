@@ -1,0 +1,1883 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #2 · Treasure Map Navigator</title>
+    <style>
+      :root {
+        --bg: #04201b;
+        --ink: #eefbf5;
+        --muted: #97cdbd;
+        --accent: #ffb43d;
+        --accent2: #28c8b6;
+        --panel: #0b332b;
+        --line: #1c5347;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --gold: #ffd166;
+        --bubble: #0b332b;
+        --bubble-ink: #eefbf5;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: radial-gradient(
+          900px 600px at 80% -10%,
+          #0c4438,
+          var(--bg) 65%
+        );
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(4, 32, 27, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent2);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #051d18;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #093029;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent2), #18a695);
+        color: #032019;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #051d18;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      /* Graceful fallback when panel art is unavailable */
+      .art img.art-missing {
+        display: none;
+      }
+      .art.art-fallback::after {
+        content: attr(data-fallback);
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 16px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-style: italic;
+        background: repeating-linear-gradient(
+          135deg,
+          #051d18,
+          #051d18 12px,
+          #093029 12px,
+          #093029 24px
+        );
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent2);
+      }
+
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: var(--accent);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.06rem;
+      }
+      .bubble.caption {
+        background: #051d18;
+        border-style: dashed;
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #1c5347;
+      }
+      .dots i.on {
+        background: var(--accent2);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #18a695);
+        color: #032019;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .challenge {
+        margin-top: 16px;
+        background: #093029;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent2);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .challenge.bonus {
+        border-color: var(--gold);
+        background: #1c1606;
+        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      }
+      .challenge.bonus h3 {
+        color: var(--gold);
+      }
+      .bonus-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #1a1200;
+        background: var(--gold);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .bonus-note {
+        font-size: 0.82rem;
+        color: #ffe2a8;
+        font-style: italic;
+        margin: 4px 0 2px;
+      }
+      .skip-bonus {
+        min-height: 40px;
+        margin-top: 10px;
+        background: transparent;
+        border: 1px dashed var(--gold);
+        color: var(--gold);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .skip-bonus:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      /* grids */
+      .grid-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .grid-wrap svg {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+        background: #051d18;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+      .numline-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .numline-wrap svg {
+        width: 100%;
+        max-width: 470px;
+        height: auto;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #0b332b;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .choice .tree {
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        display: block;
+        margin-top: 4px;
+        color: #9ee9da;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff8a3d);
+        color: #2a1602;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 660px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent2), #18a695);
+        color: #032019;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #032019;
+        background: linear-gradient(135deg, var(--accent2), #18a695);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #093029;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        color: var(--accent2);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #093029;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"
+          ><span class="v">#2</span> Treasure Map Navigator</span
+        >
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: Charting the Grid
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: Elevations &amp; Depths
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Final: The Cache
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- COVER -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit9/cover.png"
+            alt="Maya the young explorer holds up a glowing treasure map on a tropical cliff above the sea"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
+        <h2>Treasure Map Navigator</h2>
+        <p>
+          A storm-worn chart names a lost cache somewhere across the
+          archipelago. As the navigator <b>Maya</b>, you must chart ordered
+          pairs across all four quadrants,
+          <b>reflect points across the axes</b>, and reason with
+          <b>integers and absolute value</b> &mdash; reading elevation above the
+          waves and depth below them &mdash; to triangulate the treasure before
+          the tide turns.
+        </p>
+        <button class="start" id="start-btn">
+          Begin the Expedition &#128506;&#65039;
+        </button>
+      </section>
+
+      <!-- ACT 1 -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act">Act 1 &middot; Graph on the Coordinate Plane</span>
+          <h2>Charting the Grid</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit9/map-grid.png"
+            alt="Maya studies a treasure map overlaid with a glowing coordinate grid"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <!-- 1a: reflection across x-axis -->
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>
+            &#128205; Cartographer&rsquo;s Lock &mdash; Reflect the Marker
+          </h3>
+          <p class="prompt">
+            A landmark sits at the lighthouse, <b>(&minus;6, 4)</b>. The chart
+            says its mirror beacon lies <b>reflected across the x-axis</b>.
+            Where is the beacon?
+          </p>
+          <div class="grid-wrap" id="grid1a"></div>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="false">
+              (6, 4) <span class="tree">(reflected across the y-axis)</span>
+            </button>
+            <button class="choice" data-correct="true">
+              (&minus;6, &minus;4)
+              <span class="tree">(x stays, y changes sign)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              (6, &minus;4)
+              <span class="tree">(reflected across both axes)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <!-- 1b: distance between points sharing a coordinate -->
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#128205; Survey Lock &mdash; Distance on the Chart</h3>
+          <p class="prompt">
+            Two buoys lie at <b>(&minus;3, 2)</b> and <b>(5, 2)</b>. They share
+            the same y-value, so the leg between them is horizontal. Using
+            absolute value, how long is that leg?
+          </p>
+          <div class="grid-wrap" id="grid1b"></div>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">
+              2 units <span class="tree">(that is the shared y-value)</span>
+            </button>
+            <button class="choice" data-correct="true">
+              8 units
+              <span class="tree">(|&minus;3 &minus; 5| = |&minus;8| = 8)</span>
+            </button>
+            <button class="choice" data-correct="false">
+              &minus;8 units
+              <span class="tree">(distance is never negative)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <!-- BONUS 1 (optional) -->
+        <div class="challenge bonus" id="bonus1" style="display: none">
+          <span class="bonus-tag">&#11088; Navigator&rsquo;s Challenge</span>
+          <p class="bonus-note">
+            Optional &mdash; you can skip this anytime; it never blocks your
+            progress.
+          </p>
+          <h3>The Double Reflection</h3>
+          <p class="prompt">
+            A point starts at <b>(4, &minus;7)</b>. Reflect it across the
+            <b>y-axis</b>, then reflect that result across the <b>x-axis</b>.
+            Where does it land?
+          </p>
+          <div class="choices" id="choicesB1">
+            <button class="choice" data-correct="false">
+              (4, 7) <span class="tree">(only reflected across x-axis)</span>
+            </button>
+            <button class="choice" data-correct="true">
+              (&minus;4, 7)
+              <span class="tree"
+                >(both signs flip: (4,&minus;7) &rarr; (&minus;4,&minus;7)
+                &rarr; (&minus;4,7))</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              (&minus;4, &minus;7)
+              <span class="tree">(only reflected across y-axis)</span>
+            </button>
+          </div>
+          <div class="feedback" id="fbB1"></div>
+          <button class="skip-bonus" id="skipB1">
+            Skip bonus &rarr; Breach onward
+          </button>
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">
+            Sail to the cliffs &#129517;
+          </button>
+        </div>
+      </section>
+
+      <!-- ACT 2 -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Complete Act 1 to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act"
+              >Act 2 &middot; Integers &amp; Absolute Value</span
+            >
+            <h2>Elevations &amp; Depths</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit9/elevation.png"
+              alt="Maya at a cliff edge reading a vertical scale of heights above and depths below the sea"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- 2a: order integers in context -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#127956;&#65039; Depth Gauge &mdash; Order the Stations</h3>
+            <p class="prompt">
+              Five dive stations read: reef shelf <b>&minus;9 m</b>, gull rock
+              <b>+14 m</b>, surface buoy <b>0 m</b>, wreck <b>&minus;23 m</b>,
+              and the cliff ledge <b>+5 m</b>. List them from
+              <b>deepest to highest</b>.
+            </p>
+            <div class="numline-wrap" id="nline2a"></div>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="false">
+                &minus;9, &minus;23, 0, 5, 14
+                <span class="tree"
+                  >(&minus;9 and &minus;23 are out of order)</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                &minus;23, &minus;9, 0, 5, 14
+                <span class="tree">(deepest = most negative = least)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                14, 5, 0, &minus;9, &minus;23
+                <span class="tree">(that is highest to deepest)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- 2b: absolute value compares distances -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>&#127754; Pressure Lock &mdash; Distance From the Surface</h3>
+            <p class="prompt">
+              A drone hovers at <b>+18 m</b> above the waves; a diver works at
+              <b>&minus;25 m</b>. Sea level is 0.
+              <b>Who is farther from the surface</b>, and by how much, using
+              absolute value?
+            </p>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                The drone &mdash; +18 &gt; &minus;25
+                <span class="tree">(compares value, not distance)</span>
+              </button>
+              <button class="choice" data-correct="true">
+                The diver &mdash; |&minus;25| = 25 &gt; |18| = 18
+                <span class="tree">(distance ignores sign)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                They are equal &mdash; both 0 from the surface
+                <span class="tree">(only the surface is 0 away)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <!-- BONUS 2 (optional) -->
+          <div class="challenge bonus" id="bonus2" style="display: none">
+            <span class="bonus-tag">&#11088; Navigator&rsquo;s Challenge</span>
+            <p class="bonus-note">
+              Optional &mdash; skip anytime; it never blocks your progress.
+            </p>
+            <h3>The Temperature Trap</h3>
+            <p class="prompt">
+              Two cave inscriptions warn of cold: chamber A at
+              <b>&minus;4&deg;C</b> and chamber B at <b>&minus;11&deg;C</b>.
+              Which statement is true?
+            </p>
+            <div class="choices" id="choicesB2">
+              <button class="choice" data-correct="false">
+                &minus;11 &gt; &minus;4, so B is warmer
+                <span class="tree"
+                  >(&minus;11 is actually less than &minus;4)</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                &minus;4 &gt; &minus;11, so A is warmer, but B is farther from 0
+                <span class="tree">(|&minus;11| = 11 &gt; |&minus;4| = 4)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                They are equal because both are negative
+                <span class="tree">(sign alone doesn&rsquo;t set order)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbB2"></div>
+            <button class="skip-bonus" id="skipB2">
+              Skip bonus &rarr; Engage onward
+            </button>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Triangulate the cache &#9889;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINAL -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Complete Act 2 to unlock the Final.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final &middot; Navigate to the Treasure</span>
+            <h2>The Cache</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit9/final-nav.png"
+              alt="Maya stands at a glowing X on the map grid near a steep cliff edge"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#128081; Master Bearing &mdash; The Combined Fix</h3>
+            <p class="prompt">
+              The cache marker is plotted at <b>(&minus;7, &minus;3)</b> and
+              lies buried at <b>&minus;12 m</b> relative to the surface. Choose
+              the single line that is <b>entirely correct</b>: the quadrant, the
+              reflection of the marker across the y-axis, and the burial depth
+              as a distance.
+            </p>
+            <div class="grid-wrap" id="gridF"></div>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="false">
+                Quadrant III; reflection across y-axis = (&minus;7, 3); depth
+                |&minus;12| = 12 m
+                <span class="tree"
+                  >(reflection across y-axis flips x, not y)</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                Quadrant III; reflection across y-axis = (7, &minus;3); depth
+                |&minus;12| = 12 m
+                <span class="tree">(x &rarr; &minus;x, y unchanged)</span>
+              </button>
+              <button class="choice" data-correct="false">
+                Quadrant II; reflection across y-axis = (7, &minus;3); depth
+                |&minus;12| = &minus;12 m
+                <span class="tree"
+                  >(left+down is QIII, and distance &ge; 0)</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <!-- BONUS F (optional) -->
+          <div class="challenge bonus" id="bonusF" style="display: none">
+            <span class="bonus-tag"
+              >&#11088; Navigator&rsquo;s Final Challenge</span
+            >
+            <p class="bonus-note">
+              Optional &mdash; skip anytime; the treasure is already yours.
+            </p>
+            <h3>The Vertical Span</h3>
+            <p class="prompt">
+              From a watch-point at <b>+9 m</b> elevation, the cache sits at
+              <b>&minus;12 m</b>. What is the total <b>vertical distance</b> the
+              rope must span between them?
+            </p>
+            <div class="choices" id="choicesBF">
+              <button class="choice" data-correct="false">
+                3 m
+                <span class="tree"
+                  >(that is 9 + (&minus;12), not a distance)</span
+                >
+              </button>
+              <button class="choice" data-correct="true">
+                21 m
+                <span class="tree"
+                  >(|9| + |&minus;12| = 9 + 12, opposite sides of 0)</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                12 m <span class="tree">(that is only the depth below 0)</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbBF"></div>
+            <button class="skip-bonus" id="skipBF">
+              Skip bonus &rarr; Claim the treasure
+            </button>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Unearth the cache &#127775;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPLETE -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Mission complete"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit9/treasure-found.png"
+            alt="Maya opens a glowing treasure chest full of gold on the beach at sunset"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#128176;&#11088;</span>
+        <h2>Cache Recovered &mdash; Expedition Complete!</h2>
+        <p>
+          The treasure is unearthed, Navigator. You charted ordered pairs across
+          every quadrant, <b>reflected points across the axes</b>, ordered
+          integers from the deepest wreck to the highest gull rock, and used
+          <b>absolute value</b> to measure true distances from the surface. A
+          flawless fix. The map &mdash; and the gold &mdash; are yours.
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Coordinate Reflection: Reflect the beacon plotted at coordinates <strong>(&minus;3, &minus;4)</strong> across the <strong>x-axis</strong>. What are the coordinates of the reflected point?
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) (3, &minus;4) &nbsp;(reflected across the y-axis)</button>
+            <button class="choice" data-correct="true">B) (&minus;3, 4) &nbsp;(reflected across the x-axis, sign of y flips) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) (3, 4) &nbsp;(reflected across the origin)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">Run it again &#8635;</button>
+    
+      </section>
+
+      <!-- GLOSSARY -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Navigator&rsquo;s Codex</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------- Graceful art fallback (panel image unavailable) ---------- */
+        Array.prototype.slice
+          .call(document.querySelectorAll(".art img"))
+          .forEach(function (im) {
+            im.addEventListener("error", function () {
+              im.classList.add("art-missing");
+              var box = im.closest(".art");
+              if (box) {
+                box.classList.add("art-fallback");
+                box.setAttribute(
+                  "data-fallback",
+                  im.getAttribute("alt") || "Illustration",
+                );
+              }
+            });
+          });
+
+        /* ---------- Coordinate grid SVG (-8..8) ---------- */
+        function gridSVG(points, label) {
+          var size = 260,
+            cx = size / 2,
+            step = size / 16;
+          function X(x) {
+            return cx + x * step;
+          }
+          function Y(y) {
+            return cx - y * step;
+          }
+          var s =
+            '<svg viewBox="0 0 ' +
+            size +
+            " " +
+            size +
+            '" role="img" aria-label="Coordinate grid showing ' +
+            label +
+            '">';
+          var i;
+          for (i = -8; i <= 8; i++) {
+            s +=
+              '<line x1="' +
+              X(i) +
+              '" y1="0" x2="' +
+              X(i) +
+              '" y2="' +
+              size +
+              '" stroke="#1c5347" stroke-width="1"/>';
+            s +=
+              '<line x1="0" y1="' +
+              Y(i) +
+              '" x2="' +
+              size +
+              '" y2="' +
+              Y(i) +
+              '" stroke="#1c5347" stroke-width="1"/>';
+          }
+          s +=
+            '<line x1="0" y1="' +
+            cx +
+            '" x2="' +
+            size +
+            '" y2="' +
+            cx +
+            '" stroke="#97cdbd" stroke-width="2"/>';
+          s +=
+            '<line x1="' +
+            cx +
+            '" y1="0" x2="' +
+            cx +
+            '" y2="' +
+            size +
+            '" stroke="#97cdbd" stroke-width="2"/>';
+          points.forEach(function (p) {
+            s +=
+              '<circle cx="' +
+              X(p[0]) +
+              '" cy="' +
+              Y(p[1]) +
+              '" r="6" fill="' +
+              (p[2] || "#28c8b6") +
+              '" stroke="#04201b" stroke-width="1.5"/>';
+          });
+          s += "</svg>";
+          return s;
+        }
+
+        /* ---------- Number line SVG ---------- */
+        function numlineSVG(points) {
+          var w = 460,
+            h = 70,
+            cy = 38,
+            pad = 22;
+          var min = -25,
+            max = 16;
+          function X(v) {
+            return pad + ((v - min) / (max - min)) * (w - 2 * pad);
+          }
+          var s =
+            '<svg viewBox="0 0 ' +
+            w +
+            " " +
+            h +
+            '" role="img" aria-label="Number line of station depths and heights">';
+          s +=
+            '<line x1="' +
+            pad +
+            '" y1="' +
+            cy +
+            '" x2="' +
+            (w - pad) +
+            '" y2="' +
+            cy +
+            '" stroke="#97cdbd" stroke-width="2"/>';
+          [-25, -20, -15, -10, -5, 0, 5, 10, 15].forEach(function (t) {
+            s +=
+              '<line x1="' +
+              X(t) +
+              '" y1="' +
+              (cy - 5) +
+              '" x2="' +
+              X(t) +
+              '" y2="' +
+              (cy + 5) +
+              '" stroke="#97cdbd" stroke-width="1.5"/>';
+            s +=
+              '<text x="' +
+              X(t) +
+              '" y="' +
+              (cy + 20) +
+              '" fill="#97cdbd" font-size="10" text-anchor="middle">' +
+              t +
+              "</text>";
+          });
+          points.forEach(function (p) {
+            s +=
+              '<circle cx="' +
+              X(p) +
+              '" cy="' +
+              cy +
+              '" r="5" fill="#28c8b6" stroke="#04201b" stroke-width="1.5"/>';
+            s +=
+              '<text x="' +
+              X(p) +
+              '" y="' +
+              (cy - 12) +
+              '" fill="#28c8b6" font-size="10" text-anchor="middle" font-weight="bold">' +
+              p +
+              "</text>";
+          });
+          s += "</svg>";
+          return s;
+        }
+
+        var DLG = {
+          act1: [
+            {
+              who: "Captain's Log",
+              en: "The chart is gridded like a coordinate plane &mdash; origin at the old harbor, four quadrants spanning the archipelago. Read every mark precisely.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Ordered pairs I can do in my sleep. The tricky part is the reflections &mdash; the chart mirrors beacons across the axes. Let me chart the first.",
+            },
+          ],
+          act1b: [
+            {
+              who: "Maya",
+              en: "Beacon located. Next the survey wants a leg length between two buoys &mdash; absolute value gives me the distance.",
+            },
+          ],
+          bonus1: [
+            {
+              who: "Captain's Log",
+              en: "Optional waypoint: a double reflection puzzle is etched in the margin. Attempt it for extra glory, or sail on &mdash; your route is already open.",
+              cap: true,
+            },
+          ],
+          act2: [
+            {
+              who: "Maya",
+              en: "The cliffs! Sea level is my zero. Above the waves is positive elevation; below is negative depth. The chart lists stations all up and down the water column.",
+            },
+            {
+              who: "Captain's Log",
+              en: "Order them, then judge true distance from the surface with absolute value. A deep number can be far from zero even while being 'less'.",
+              cap: true,
+            },
+          ],
+          act2b: [
+            {
+              who: "Maya",
+              en: "Stations ordered. Now the pressure lock wants who's farther from the surface &mdash; that's a contest of absolute values, not raw integers.",
+            },
+          ],
+          bonus2: [
+            {
+              who: "Captain's Log",
+              en: "Optional: a frozen chamber riddle on comparing negative temperatures. Skip freely &mdash; it won't hold the cache from you.",
+              cap: true,
+            },
+          ],
+          final: [
+            {
+              who: "Captain's Log",
+              en: "The cache marker is fixed. The final bearing fuses everything: quadrant, a reflection, and burial depth as a true distance.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "One line, no errors. Plot, reflect, measure. Standing by to dig.",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#128511;",
+            en: "Coordinate plane",
+            def: "A grid formed by a horizontal x-axis and vertical y-axis meeting at the origin, dividing space into four quadrants.",
+          },
+          {
+            ico: "&#128205;",
+            en: "Ordered pair (x, y)",
+            def: "A pair naming a unique point: x is horizontal displacement, y is vertical. Order matters &mdash; (3, &minus;2) &ne; (&minus;2, 3).",
+          },
+          {
+            ico: "&#129517;",
+            en: "Quadrant",
+            def: "I (+,+), II (&minus;,+), III (&minus;,&minus;), IV (+,&minus;), numbered counterclockwise from the top-right.",
+          },
+          {
+            ico: "&#128260;",
+            en: "Reflection across the x-axis",
+            def: "Maps (x, y) to (x, &minus;y): the x-coordinate stays, the y-coordinate changes sign.",
+          },
+          {
+            ico: "&#128259;",
+            en: "Reflection across the y-axis",
+            def: "Maps (x, y) to (&minus;x, y): the y-coordinate stays, the x-coordinate changes sign.",
+          },
+          {
+            ico: "&#127759;",
+            en: "Integer",
+            def: "A number from the set { &hellip; &minus;2, &minus;1, 0, 1, 2 &hellip; }: positive, negative, or zero, with no fractional part.",
+          },
+          {
+            ico: "&#128207;",
+            en: "Absolute value |x|",
+            def: "The distance of x from 0 on the number line; always non-negative. |&minus;25| = 25, |18| = 18.",
+          },
+          {
+            ico: "&#9878;&#65039;",
+            en: "Compare &amp; order integers",
+            def: "On a number line, a value to the right is greater. So &minus;4 &gt; &minus;11 even though 11 &gt; 4 in size.",
+          },
+          {
+            ico: "&#128207;",
+            en: "Distance between points",
+            def: "For points sharing a coordinate, the distance is the absolute value of the difference of the others: |&minus;3 &minus; 5| = 8.",
+          },
+          {
+            ico: "&#127777;&#65039;",
+            en: "Opposite / signed quantity",
+            def: "Opposites are equal distance from 0 with different signs (+18 and &minus;18). Signs encode direction: up vs. down, hot vs. cold.",
+          },
+        ];
+
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          $("scene-complete").classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var arr = qa(".tab");
+            var i = arr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (arr[i + 1] || arr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (arr[i - 1] || arr[arr.length - 1]).focus();
+            }
+          });
+        });
+
+        function runDialogue(opts) {
+          var idx = 0,
+            dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            dots.appendChild(document.createElement("i"));
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '"><div class="who">' +
+              line.who +
+              '</div><div class="en">' +
+              line.en +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else if (opts.onDone) opts.onDone();
+          };
+          render();
+        }
+
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var fb = $(opts.feedbackId);
+              if (btn.dataset.correct === "true") {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = opts.goodEn;
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = opts.badEn;
+              }
+            });
+          });
+        }
+
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              "</h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        function showBubble(boxId, line) {
+          $(boxId).innerHTML =
+            '<div class="bubble' +
+            (line.cap ? " caption" : "") +
+            '"><div class="who">' +
+            line.who +
+            '</div><div class="en">' +
+            line.en +
+            "</div></div>";
+        }
+
+        /* render grids / number line */
+        $("grid1a").innerHTML = gridSVG(
+          [
+            [-6, 4, "#ffb43d"],
+            [-6, -4, "#28c8b6"],
+          ],
+          "lighthouse and reflected beacon",
+        );
+        $("grid1b").innerHTML = gridSVG(
+          [
+            [-3, 2, "#ffb43d"],
+            [5, 2, "#ffb43d"],
+          ],
+          "two buoys on a horizontal leg",
+        );
+        $("gridF").innerHTML = gridSVG(
+          [
+            [-7, -3, "#ffb43d"],
+            [7, -3, "#28c8b6"],
+          ],
+          "cache marker and its reflection",
+        );
+        $("nline2a").innerHTML = numlineSVG([-23, -9, 0, 5, 14]);
+
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Chart the beacon ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Correct. Reflecting (&minus;6, 4) across the x-axis keeps x and negates y &rarr; (&minus;6, &minus;4).",
+            badEn:
+              "&#10060; Across the x-axis, x stays and y flips sign. (&minus;6, 4) &rarr; (&minus;6, &minus;4).",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.act1b[0]);
+                $("chal1b").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; Right. Same y, so the leg is |&minus;3 &minus; 5| = |&minus;8| = 8 units.",
+            badEn:
+              "&#10060; The points share y = 2, so subtract the x-values and take the absolute value: |&minus;3 &minus; 5| = 8.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.bonus1[0]);
+                $("bonus1").style.display = "block";
+                // core locks solved -> allow advance immediately (bonus optional)
+                $("adv-act1").classList.add("show");
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB1",
+            feedbackId: "fbB1",
+            goodEn:
+              "&#11088; Elegant. Across y-axis: (4,&minus;7)&rarr;(&minus;4,&minus;7); then across x-axis: &rarr;(&minus;4, 7).",
+            badEn:
+              "&#10060; Apply them in order: y-axis flips x, then x-axis flips y. Result is (&minus;4, 7).",
+            onSolve: function () {
+              $("adv-act1").classList.add("show");
+            },
+          });
+          $("skipB1").addEventListener("click", function () {
+            $("adv-act1").classList.add("show");
+            $("adv-act1").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Order the stations ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; Deepest to highest: &minus;23, &minus;9, 0, 5, 14. The most negative depth is the least value.",
+            badEn:
+              "&#10060; More negative means deeper and smaller. Deepest-first is &minus;23, &minus;9, 0, 5, 14.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.act2b[0]);
+                $("chal2b").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; The diver: |&minus;25| = 25 exceeds |18| = 18. Distance from the surface ignores the sign.",
+            badEn:
+              "&#10060; Compare DISTANCES, not signed values: |&minus;25| = 25 &gt; |18| = 18, so the diver is farther.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.bonus2[0]);
+                $("bonus2").style.display = "block";
+                $("adv-act2").classList.add("show");
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB2",
+            feedbackId: "fbB2",
+            goodEn:
+              "&#11088; Exactly. &minus;4 &gt; &minus;11 so A is warmer, yet |&minus;11| &gt; |&minus;4|, so B is farther from 0.",
+            badEn:
+              "&#10060; On the number line &minus;4 is to the right of &minus;11, so &minus;4 &gt; &minus;11.",
+            onSolve: function () {
+              $("adv-act2").classList.add("show");
+            },
+          });
+          $("skipB2").addEventListener("click", function () {
+            $("adv-act2").classList.add("show");
+            $("adv-act2").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Enter the fix ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; All correct: (&minus;7,&minus;3) is Quadrant III; reflected across the y-axis it is (7,&minus;3); and |&minus;12| = 12 m deep.",
+            badEn:
+              "&#10060; Left+down is Quadrant III; y-axis reflection flips only x &rarr; (7,&minus;3); and depth = |&minus;12| = 12 m (never negative).",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-final", {
+                  who: "Maya",
+                  en: "Fix confirmed! One optional span calculation remains for bonus glory &mdash; or I dig right now.",
+                });
+                $("bonusF").style.display = "block";
+                $("adv-final").classList.add("show");
+              }, 350);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesBF",
+            feedbackId: "fbBF",
+            goodEn:
+              "&#11088; The points straddle 0, so the span is |9| + |&minus;12| = 9 + 12 = 21 m of rope.",
+            badEn:
+              "&#10060; They are on opposite sides of 0, so add the distances: |9| + |&minus;12| = 21 m.",
+            onSolve: function () {
+              $("adv-final").classList.add("show");
+            },
+          });
+          $("skipBF").addEventListener("click", function () {
+            $("adv-final").classList.add("show");
+            $("adv-final").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U9 #2: Treasure Map Navigator",
+        standard: "6.NS.7",
+        level: "2",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>

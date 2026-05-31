@@ -810,6 +810,114 @@
         align-items: center;
       }
 
+      /* Supporting visual shown while audio plays */
+      .pm-visual {
+        background: linear-gradient(
+          160deg,
+          #effffe 0%,
+          var(--primary-light) 100%
+        );
+        border: 1px solid var(--primary);
+        border-radius: var(--radius-field);
+        padding: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 150px;
+      }
+      .pm-visual svg {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+      }
+      .pm-visual-label {
+        display: block;
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+        text-align: center;
+      }
+
+      /* Playback rate controls inside the practice audio deck */
+      .pm-rate-group {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-wrap: wrap;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--slate-muted);
+      }
+      .pm-rate-btn {
+        border: 1px solid var(--line-muted);
+        background: var(--white);
+        color: var(--slate-ink);
+        padding: 7px 12px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 0.74rem;
+        cursor: pointer;
+        min-height: 36px;
+        transition: var(--transition);
+        font-family: var(--font-outfit);
+      }
+      .pm-rate-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary-dark);
+      }
+      .pm-rate-btn.active {
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary-dark);
+      }
+
+      /* Picture-match (Entering band) grid */
+      .pm-pic-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+      }
+      .pm-pic-opt {
+        background: var(--white);
+        border: 1.5px solid var(--line-muted);
+        border-radius: var(--radius-field);
+        padding: 12px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        transition: var(--transition);
+        font-family: var(--font-outfit);
+        font-weight: 700;
+        color: var(--slate-ink);
+      }
+      .pm-pic-opt svg {
+        width: 84px;
+        height: 84px;
+      }
+      .pm-pic-opt:hover:not(:disabled) {
+        border-color: var(--primary);
+        background: var(--primary-light);
+      }
+      .pm-pic-opt:disabled {
+        cursor: default;
+      }
+      .pm-pic-opt.correct {
+        background: var(--green-light);
+        border-color: var(--green-success);
+        color: var(--green-success);
+      }
+      .pm-pic-opt.incorrect {
+        background: var(--coral-light);
+        border-color: var(--coral);
+        color: var(--coral);
+      }
+
       .pm-btn {
         display: inline-flex;
         align-items: center;
@@ -3792,10 +3900,132 @@
       (function () {
         "use strict";
 
+        // ── Inline SVG visual library (no external images / no AI gen) ──
+        // Simple, content-area icons used as the "supporting visual" that
+        // appears while the academic audio passage plays.
+        const PM_SVG = {
+          water:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Water cycle: sun, ocean, evaporation'><circle cx='95' cy='25' r='14' fill='#fbbf24'/><path d='M10 95 q50 -30 100 0' fill='none' stroke='#0d9488' stroke-width='4'/><rect x='5' y='95' width='110' height='20' fill='#7dd3fc'/><path d='M40 90 q5 -18 0 -34' stroke='#38bdf8' stroke-width='3' fill='none' stroke-dasharray='4 4'/><path d='M60 90 q5 -22 0 -40' stroke='#38bdf8' stroke-width='3' fill='none' stroke-dasharray='4 4'/></svg>",
+          cloud:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Clouds forming from rising vapor'><ellipse cx='60' cy='40' rx='34' ry='18' fill='#cbd5e1'/><ellipse cx='42' cy='48' rx='20' ry='14' fill='#e2e8f0'/><ellipse cx='80' cy='48' rx='20' ry='14' fill='#e2e8f0'/><path d='M50 70 l-4 16M65 70 l-4 16M80 70 l-4 16' stroke='#38bdf8' stroke-width='3'/></svg>",
+          bar: "<svg viewBox='0 0 120 120' role='img' aria-label='Bar chart of student sports'><line x1='15' y1='10' x2='15' y2='100' stroke='#94a3b8' stroke-width='2'/><line x1='15' y1='100' x2='110' y2='100' stroke='#94a3b8' stroke-width='2'/><rect x='25' y='30' width='18' height='70' fill='#0d9488'/><rect x='52' y='55' width='18' height='45' fill='#38bdf8'/><rect x='79' y='70' width='18' height='30' fill='#fbbf24'/></svg>",
+          scale:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Balance scale'><line x1='60' y1='15' x2='60' y2='85' stroke='#475569' stroke-width='4'/><line x1='25' y1='35' x2='95' y2='35' stroke='#475569' stroke-width='4'/><circle cx='60' cy='15' r='5' fill='#475569'/><path d='M25 35 l-10 25 h20 z' fill='#0d9488'/><path d='M95 35 l-10 25 h20 z' fill='#0d9488'/><rect x='40' y='85' width='40' height='8' rx='3' fill='#475569'/></svg>",
+          plant:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Plant in sunlight'><circle cx='95' cy='22' r='12' fill='#fbbf24'/><rect x='40' y='95' width='40' height='18' fill='#92400e'/><line x1='60' y1='95' x2='60' y2='55' stroke='#15803d' stroke-width='4'/><path d='M60 70 q-22 -6 -28 -24 q22 0 28 18' fill='#22c55e'/><path d='M60 60 q22 -6 28 -24 q-22 0 -28 18' fill='#22c55e'/></svg>",
+          food: "<svg viewBox='0 0 120 120' role='img' aria-label='Lunch tray with food groups'><rect x='12' y='40' width='96' height='56' rx='8' fill='#e2e8f0' stroke='#94a3b8' stroke-width='2'/><rect x='22' y='52' width='34' height='20' rx='4' fill='#d97706'/><rect x='62' y='52' width='18' height='34' rx='3' fill='#f8fafc' stroke='#94a3b8'/><circle cx='94' cy='62' r='11' fill='#ef4444'/></svg>",
+          web: "<svg viewBox='0 0 120 120' role='img' aria-label='Food web arrows from producers to consumers'><circle cx='25' cy='90' r='12' fill='#22c55e'/><circle cx='60' cy='55' r='12' fill='#a3e635'/><circle cx='95' cy='25' r='12' fill='#38bdf8'/><path d='M35 84 l16 -18M70 47 l16 -14' stroke='#475569' stroke-width='3' marker-end='url(#ah)'/><defs><marker id='ah' markerWidth='8' markerHeight='8' refX='5' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#475569'/></marker></defs></svg>",
+          map: "<svg viewBox='0 0 120 120' role='img' aria-label='Map with compass rose, roads, and park'><rect x='8' y='8' width='104' height='104' rx='6' fill='#f1f5f9' stroke='#94a3b8'/><rect x='30' y='8' width='10' height='104' fill='#cbd5e1'/><rect x='8' y='60' width='104' height='10' fill='#cbd5e1'/><rect x='55' y='75' width='45' height='30' fill='#bbf7d0'/><g transform='translate(92 28)'><path d='M0 -12 L4 0 L0 12 L-4 0 z' fill='#0d9488'/><text x='0' y='-15' font-size='8' text-anchor='middle' fill='#475569'>N</text></g></svg>",
+          gov: "<svg viewBox='0 0 120 120' role='img' aria-label='Government building with three columns'><polygon points='60,15 105,40 15,40' fill='#0d9488'/><rect x='20' y='40' width='80' height='6' fill='#475569'/><rect x='28' y='46' width='10' height='45' fill='#94a3b8'/><rect x='55' y='46' width='10' height='45' fill='#94a3b8'/><rect x='82' y='46' width='10' height='45' fill='#94a3b8'/><rect x='15' y='91' width='90' height='8' fill='#475569'/></svg>",
+          ramp: "<svg viewBox='0 0 120 120' role='img' aria-label='Block sliding down a ramp with friction'><line x1='10' y1='100' x2='110' y2='40' stroke='#92400e' stroke-width='4'/><rect x='55' y='52' width='26' height='20' rx='3' fill='#0d9488' transform='rotate(-31 68 62)'/><path d='M60 72 l10 6M68 68 l10 6' stroke='#ef4444' stroke-width='2'/><rect x='5' y='100' width='110' height='12' fill='#cbd5e1'/></svg>",
+          timeline:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Timeline with events in order'><line x1='10' y1='60' x2='110' y2='60' stroke='#475569' stroke-width='3'/><circle cx='25' cy='60' r='6' fill='#0d9488'/><circle cx='55' cy='60' r='6' fill='#0d9488'/><circle cx='85' cy='60' r='6' fill='#0d9488'/><text x='25' y='45' font-size='9' text-anchor='middle' fill='#475569'>1900</text><text x='55' y='45' font-size='9' text-anchor='middle' fill='#475569'>1950</text><text x='85' y='45' font-size='9' text-anchor='middle' fill='#475569'>2000</text></svg>",
+          beaker:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Beaker with a reaction'><path d='M45 20 h30 v30 l18 45 a6 6 0 0 1 -5 9 h-56 a6 6 0 0 1 -5 -9 l18 -45 z' fill='#bae6fd' stroke='#0284c7' stroke-width='3'/><circle cx='58' cy='90' r='3' fill='#fff'/><circle cx='68' cy='84' r='2.5' fill='#fff'/><circle cx='62' cy='78' r='2' fill='#fff'/></svg>",
+          rain: "<svg viewBox='0 0 120 120' role='img' aria-label='Person with umbrella in the rain'><ellipse cx='60' cy='40' rx='34' ry='14' fill='#94a3b8'/><line x1='60' y1='40' x2='60' y2='80' stroke='#475569' stroke-width='3'/><line x1='35' y1='60' x2='32' y2='75' stroke='#38bdf8' stroke-width='2'/><line x1='55' y1='62' x2='52' y2='78' stroke='#38bdf8' stroke-width='2'/><line x1='80' y1='60' x2='77' y2='75' stroke='#38bdf8' stroke-width='2'/></svg>",
+          trophy:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Trophy'><path d='M40 25 h40 v18 a20 20 0 0 1 -40 0 z' fill='#fbbf24'/><path d='M40 30 h-12 a10 10 0 0 0 12 14M80 30 h12 a10 10 0 0 1 -12 14' fill='none' stroke='#d97706' stroke-width='4'/><rect x='54' y='62' width='12' height='16' fill='#d97706'/><rect x='42' y='78' width='36' height='10' rx='3' fill='#92400e'/></svg>",
+          storm:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Dark storm cloud with lightning'><ellipse cx='60' cy='45' rx='38' ry='18' fill='#64748b'/><polygon points='58,60 48,82 60,80 52,100 78,72 64,74 72,60' fill='#fbbf24'/></svg>",
+          season:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Two seasons: sun and snowflake'><circle cx='32' cy='40' r='16' fill='#fbbf24'/><g stroke='#64748b' stroke-width='3'><line x1='88' y1='24' x2='88' y2='56'/><line x1='72' y1='40' x2='104' y2='40'/><line x1='77' y1='29' x2='99' y2='51'/><line x1='99' y1='29' x2='77' y2='51'/></g></svg>",
+          garden:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Garden with vegetables and flowers'><rect x='10' y='80' width='100' height='30' fill='#92400e'/><circle cx='30' cy='60' r='10' fill='#ef4444'/><line x1='30' y1='70' x2='30' y2='80' stroke='#15803d' stroke-width='3'/><circle cx='60' cy='55' r='8' fill='#f472b6'/><line x1='60' y1='63' x2='60' y2='80' stroke='#15803d' stroke-width='3'/><circle cx='90' cy='60' r='9' fill='#fbbf24'/><line x1='90' y1='69' x2='90' y2='80' stroke='#15803d' stroke-width='3'/></svg>",
+          biomes:
+            "<svg viewBox='0 0 120 120' role='img' aria-label='Rainforest beside desert'><rect x='8' y='20' width='52' height='80' fill='#bbf7d0'/><rect x='60' y='20' width='52' height='80' fill='#fde68a'/><circle cx='30' cy='38' r='10' fill='#22c55e'/><line x1='30' y1='48' x2='30' y2='90' stroke='#15803d' stroke-width='4'/><circle cx='92' cy='34' r='9' fill='#fbbf24'/><path d='M84 95 q8 -20 16 0' fill='#d97706'/></svg>",
+          // Picture-match word icons
+          sun: "<svg viewBox='0 0 100 100' role='img' aria-label='sun'><circle cx='50' cy='50' r='20' fill='#fbbf24'/><g stroke='#f59e0b' stroke-width='4'><line x1='50' y1='10' x2='50' y2='24'/><line x1='50' y1='76' x2='50' y2='90'/><line x1='10' y1='50' x2='24' y2='50'/><line x1='76' y1='50' x2='90' y2='50'/><line x1='22' y1='22' x2='32' y2='32'/><line x1='68' y1='68' x2='78' y2='78'/><line x1='78' y1='22' x2='68' y2='32'/><line x1='32' y1='68' x2='22' y2='78'/></g></svg>",
+          leaf: "<svg viewBox='0 0 100 100' role='img' aria-label='leaf'><path d='M20 80 q40 -70 60 -60 q10 40 -60 60 z' fill='#22c55e'/><path d='M30 70 q25 -30 45 -45' stroke='#15803d' stroke-width='3' fill='none'/></svg>",
+          drop: "<svg viewBox='0 0 100 100' role='img' aria-label='water drop'><path d='M50 15 q24 34 22 50 a22 22 0 1 1 -44 0 q-2 -16 22 -50 z' fill='#38bdf8'/></svg>",
+          rock: "<svg viewBox='0 0 100 100' role='img' aria-label='rock'><polygon points='25,75 35,40 60,30 80,55 70,78' fill='#94a3b8' stroke='#64748b' stroke-width='2'/></svg>",
+          thermometer:
+            "<svg viewBox='0 0 100 100' role='img' aria-label='thermometer'><rect x='44' y='15' width='12' height='55' rx='6' fill='#e2e8f0' stroke='#94a3b8' stroke-width='2'/><circle cx='50' cy='78' r='14' fill='#ef4444'/><rect x='46' y='40' width='8' height='38' fill='#ef4444'/></svg>",
+          ruler:
+            "<svg viewBox='0 0 100 100' role='img' aria-label='ruler'><rect x='15' y='42' width='70' height='16' fill='#fbbf24' stroke='#d97706' stroke-width='2'/><g stroke='#92400e' stroke-width='2'><line x1='25' y1='42' x2='25' y2='52'/><line x1='35' y1='42' x2='35' y2='50'/><line x1='45' y1='42' x2='45' y2='52'/><line x1='55' y1='42' x2='55' y2='50'/><line x1='65' y1='42' x2='65' y2='52'/><line x1='75' y1='42' x2='75' y2='50'/></g></svg>",
+          book: "<svg viewBox='0 0 100 100' role='img' aria-label='book'><path d='M50 25 q-18 -8 -30 0 v45 q12 -8 30 0 z' fill='#0d9488'/><path d='M50 25 q18 -8 30 0 v45 q-12 -8 -30 0 z' fill='#0f766e'/></svg>",
+        };
+        function pmVisual(key) {
+          return PM_SVG[key] || PM_SVG.book;
+        }
+
         // ── Activity bank ──────────────────────────────────────────
         // Each type has level 1 (support) and level 2 (enrichment) items.
         // audio = what is spoken aloud. transcript = show-text fallback.
+        // visual = key into PM_SVG, shown while the audio plays.
         const PM_TYPES = [
+          {
+            key: "picmatch",
+            emoji: "🖼️",
+            title: "Match Words to Pictures",
+            sub: "Listen, then tap the picture you heard",
+            skill: "Entering · word↔image",
+            items: {
+              1: [
+                {
+                  audio:
+                    "Listen. The sun gives plants light and heat. Tap the sun.",
+                  q: "Tap the picture of the sun.",
+                  pics: [
+                    { key: "sun", label: "sun" },
+                    { key: "drop", label: "water" },
+                    { key: "rock", label: "rock" },
+                  ],
+                  ans: 0,
+                  fb: "Yes! The sun gives light and heat to plants.",
+                },
+                {
+                  audio:
+                    "Listen. A green leaf grows on a plant and makes food. Tap the leaf.",
+                  q: "Tap the picture of the leaf.",
+                  pics: [
+                    { key: "rock", label: "rock" },
+                    { key: "leaf", label: "leaf" },
+                    { key: "drop", label: "water" },
+                  ],
+                  ans: 1,
+                  fb: "Correct! A leaf is green and grows on a plant.",
+                },
+                {
+                  audio:
+                    "Listen. We measure temperature with a thermometer. Tap the thermometer.",
+                  q: "Tap the tool that measures temperature.",
+                  pics: [
+                    { key: "ruler", label: "ruler" },
+                    { key: "book", label: "book" },
+                    { key: "thermometer", label: "thermometer" },
+                  ],
+                  ans: 2,
+                  fb: "Right! A thermometer measures how hot or cold something is.",
+                },
+              ],
+              2: [
+                {
+                  audio:
+                    "Listen. In science class we use a ruler to measure length in centimeters. Tap the tool we use to measure length.",
+                  q: "Tap the tool used to measure length.",
+                  pics: [
+                    { key: "thermometer", label: "thermometer" },
+                    { key: "ruler", label: "ruler" },
+                    { key: "drop", label: "water drop" },
+                  ],
+                  ans: 1,
+                  fb: "Correct — a ruler measures length, such as centimeters.",
+                },
+                {
+                  audio:
+                    "Listen. A drop of water can evaporate when the sun heats it. Tap the picture that shows water.",
+                  q: "Tap the picture that shows water.",
+                  pics: [
+                    { key: "drop", label: "water" },
+                    { key: "leaf", label: "leaf" },
+                    { key: "rock", label: "rock" },
+                  ],
+                  ans: 0,
+                  fb: "Yes — a water drop can evaporate into a gas when heated.",
+                },
+              ],
+            },
+          },
           {
             key: "cloze",
             emoji: "📝",
@@ -3807,6 +4037,7 @@
                 {
                   audio:
                     "The water cycle has three steps. First the sun heats the ocean. The water turns into a gas. This is called evaporation.",
+                  visual: "water",
                   blankBefore: "The water turns into a",
                   blankAfter: "when the sun heats it.",
                   answer: "gas",
@@ -3816,6 +4047,7 @@
                 {
                   audio:
                     "Look at the bar chart. Soccer has the tallest bar. More students chose soccer than any other sport.",
+                  visual: "bar",
                   blankBefore: "Soccer has the",
                   blankAfter: "bar on the chart.",
                   answer: "tallest",
@@ -3825,6 +4057,7 @@
                 {
                   audio:
                     "A balance scale compares the weight of two things. When both sides are even, the scale is balanced.",
+                  visual: "scale",
                   blankBefore: "When both sides are even, the scale is",
                   blankAfter: ".",
                   answer: "balanced",
@@ -3834,6 +4067,7 @@
                 {
                   audio:
                     "Plants are producers. They make their own food from sunlight. Insects eat the plants.",
+                  visual: "plant",
                   blankBefore: "Plants are called",
                   blankAfter: "because they make their own food.",
                   answer: "producers",
@@ -3845,6 +4079,7 @@
                 {
                   audio:
                     "As the vapor rises, it cools high in the sky and changes back into tiny drops that form clouds. This change is called condensation.",
+                  visual: "cloud",
                   blankBefore:
                     "When vapor cools and forms clouds, the change is called",
                   blankAfter: ".",
@@ -3855,6 +4090,7 @@
                 {
                   audio:
                     "A timeline places events in chronological order, from the earliest to the latest. The marks are spaced at equal intervals of fifty years.",
+                  visual: "timeline",
                   blankBefore: "A timeline places events in",
                   blankAfter: "order.",
                   answer: "chronological",
@@ -3864,6 +4100,7 @@
                 {
                   audio:
                     "The government has a system of checks and balances. It keeps any one branch from gaining too much power.",
+                  visual: "gov",
                   blankBefore:
                     "Checks and balances stop one branch from having too much",
                   blankAfter: ".",
@@ -3874,6 +4111,7 @@
                 {
                   audio:
                     "On this map, the scale tells us that one inch stands for ten miles of real distance. Travelers use the scale to measure distance.",
+                  visual: "map",
                   blankBefore: "The map scale connects the map to real",
                   blankAfter: ".",
                   answer: "distance",
@@ -3883,6 +4121,7 @@
                 {
                   audio:
                     "Friction is a force that pushes against a moving block and acts like a brake, so the block slides more slowly down the ramp.",
+                  visual: "ramp",
                   blankBefore:
                     "Friction acts like a brake and slows the block's",
                   blankAfter: ".",
@@ -3904,6 +4143,7 @@
                 {
                   audio:
                     "Boys and girls, please line up at the door quietly. Get your coats and stand in a straight line.",
+                  visual: "book",
                   q: "Why is the teacher talking to the class?",
                   opts: [
                     "To tell a funny story",
@@ -3916,6 +4156,7 @@
                 {
                   audio:
                     "Wow, you all did such a wonderful job on the project! I am so proud of how hard everyone worked.",
+                  visual: "trophy",
                   q: "How does the speaker sound?",
                   opts: ["Angry", "Proud and happy", "Bored"],
                   ans: 1,
@@ -3924,6 +4165,7 @@
                 {
                   audio:
                     "Today I will explain how plants make their own food using sunlight, air, and water.",
+                  visual: "plant",
                   q: "What is the speaker's purpose?",
                   opts: [
                     "To explain how something works",
@@ -3938,6 +4180,7 @@
                 {
                   audio:
                     "I strongly believe our school should start a recycling club. If we work together, we can keep our planet cleaner for everyone.",
+                  visual: "leaf",
                   q: "What is the speaker mainly trying to do?",
                   opts: [
                     "Describe the weather today",
@@ -3950,6 +4193,7 @@
                 {
                   audio:
                     "Unfortunately, the field trip has been canceled because of the storm. I know many of you were looking forward to it.",
+                  visual: "storm",
                   q: "What is the speaker's tone?",
                   opts: ["Excited", "Apologetic and disappointed", "Joking"],
                   ans: 1,
@@ -3958,6 +4202,7 @@
                 {
                   audio:
                     "Let me walk you through the steps of the experiment so you can repeat it safely at your table.",
+                  visual: "beaker",
                   q: "Why is the speaker giving this talk?",
                   opts: [
                     "To entertain with a poem",
@@ -3970,6 +4215,7 @@
                 {
                   audio:
                     "Honestly, I am not sure this plan will work. There are still many problems we have not solved yet.",
+                  visual: "book",
                   q: "How does the speaker feel about the plan?",
                   opts: [
                     "Certain and confident",
@@ -3993,6 +4239,7 @@
                 {
                   audio:
                     "Maria put on her boots and raincoat. She grabbed her umbrella before she opened the front door.",
+                  visual: "rain",
                   q: "What is the weather probably like outside?",
                   opts: ["Sunny and hot", "Rainy", "Snowy"],
                   ans: 1,
@@ -4001,6 +4248,7 @@
                 {
                   audio:
                     "Tom finished all his homework early. He smiled and told his mom he was ready for the test tomorrow.",
+                  visual: "book",
                   q: "How does Tom most likely feel?",
                   opts: ["Worried", "Confident", "Sleepy"],
                   ans: 1,
@@ -4009,6 +4257,7 @@
                 {
                   audio:
                     "The classroom plant's leaves are turning brown and droopy. Nobody has watered it for two weeks.",
+                  visual: "plant",
                   q: "What will probably happen next if nothing changes?",
                   opts: [
                     "The plant will grow flowers",
@@ -4023,6 +4272,7 @@
                 {
                   audio:
                     "The team had practiced every day for a month. When the final whistle blew, they jumped up and hugged each other, raising the trophy high.",
+                  visual: "trophy",
                   q: "What can you infer about the game's result?",
                   opts: [
                     "The team lost the game",
@@ -4035,6 +4285,7 @@
                 {
                   audio:
                     "The sky grew dark in the afternoon, the wind picked up, and the weather reporter told everyone to stay indoors.",
+                  visual: "storm",
                   q: "What is most likely about to happen?",
                   opts: [
                     "A storm is coming",
@@ -4047,6 +4298,7 @@
                 {
                   audio:
                     "Sam kept looking at the clock, tapping his pencil, and reading the same line over and over without turning the page.",
+                  visual: "book",
                   q: "How does Sam most likely feel?",
                   opts: ["Relaxed", "Nervous or distracted", "Excited"],
                   ans: 1,
@@ -4055,6 +4307,7 @@
                 {
                   audio:
                     "When the scientist mixed the two liquids, bubbles formed quickly and the beaker became warm to the touch.",
+                  visual: "beaker",
                   q: "What can you infer happened in the beaker?",
                   opts: [
                     "Nothing changed",
@@ -4078,6 +4331,7 @@
                 {
                   audio:
                     "A balanced lunch has foods from different groups. The tray has a sandwich for grains and protein, milk for calcium, and an apple for fruit. Eating different groups gives you energy.",
+                  visual: "food",
                   q: "Which sentence best summarizes the talk?",
                   opts: [
                     "Apples are red and round.",
@@ -4090,6 +4344,7 @@
                 {
                   audio:
                     "Our class read three chapters this week. We colored three boxes on the chart. The goal was to read three chapters before Friday, and we met it.",
+                  visual: "book",
                   q: "What is the best summary?",
                   opts: [
                     "The class met its goal of reading three chapters this week.",
@@ -4104,6 +4359,7 @@
                 {
                   audio:
                     "A food web shows how energy moves through an ecosystem. Producers like grass make food from sunlight. Consumers like crickets eat the producers, and other consumers like frogs eat the crickets. Arrows show energy moving from food to eater.",
+                  visual: "web",
                   q: "Which is the best summary of the talk?",
                   opts: [
                     "Frogs are green and live near water.",
@@ -4116,6 +4372,7 @@
                 {
                   audio:
                     "The three branches of government share power. The legislative branch makes laws, the executive branch carries them out, and the judicial branch explains them. This system of checks and balances stops any one branch from getting too much power.",
+                  visual: "gov",
                   q: "Which sentence best summarizes the talk?",
                   opts: [
                     "The judicial branch explains laws.",
@@ -4128,6 +4385,7 @@
                 {
                   audio:
                     "To read a map, you use the legend and the scale. The legend explains the symbols, and the scale tells how map distance compares to real distance. Together they help travelers plan a trip.",
+                  visual: "map",
                   q: "What is the best summary?",
                   opts: [
                     "Maps are colorful.",
@@ -4151,6 +4409,7 @@
                 {
                   audio:
                     "Speaker one says: My favorite season is summer because I can swim every day. Speaker two says: My favorite season is winter because I love to build snowmen.",
+                  visual: "season",
                   q: "How are the two speakers different?",
                   opts: [
                     "They like the same season",
@@ -4163,6 +4422,7 @@
                 {
                   audio:
                     "Lily says she walks to school because it is close. Ben says he rides the bus because he lives far away.",
+                  visual: "map",
                   q: "Why do Lily and Ben travel to school differently?",
                   opts: [
                     "They live different distances from school",
@@ -4177,6 +4437,7 @@
                 {
                   audio:
                     "Speaker one describes the rainforest as warm and wet all year, with rain almost every day. Speaker two describes the desert as hot in the day but cold at night, with very little rain.",
+                  visual: "biomes",
                   q: "What is one main difference between the two places?",
                   opts: [
                     "Both places get the same amount of rain",
@@ -4189,6 +4450,7 @@
                 {
                   audio:
                     "The first student says the class should plant a vegetable garden to grow healthy food. The second student says the class should plant flowers to make the school beautiful.",
+                  visual: "garden",
                   q: "How do the two students' ideas compare?",
                   opts: [
                     "Both want the exact same garden",
@@ -4201,6 +4463,7 @@
                 {
                   audio:
                     "One account says the storm caused the picnic to move indoors but everyone still had fun. Another account says the storm ended the picnic early and people went home sad.",
+                  visual: "storm",
                   q: "How are the two accounts of the storm different?",
                   opts: [
                     "They agree the picnic was a happy success",
@@ -4224,6 +4487,7 @@
                 {
                   audio:
                     "First, take out your notebook. Next, write the date at the top. Then open your book to page ten.",
+                  visual: "book",
                   steps: [
                     "Take out your notebook",
                     "Write the date at the top",
@@ -4233,6 +4497,7 @@
                 {
                   audio:
                     "First, line up at the door. Next, walk quietly to the library. Last, find a seat at a table.",
+                  visual: "book",
                   steps: [
                     "Line up at the door",
                     "Walk quietly to the library",
@@ -4244,6 +4509,7 @@
                 {
                   audio:
                     "To start the experiment, first put on your safety goggles. Second, pour the water into the beaker. Third, add one spoon of salt. Finally, stir the mixture slowly until the salt disappears.",
+                  visual: "beaker",
                   steps: [
                     "Put on your safety goggles",
                     "Pour the water into the beaker",
@@ -4254,6 +4520,7 @@
                 {
                   audio:
                     "For the map project, begin by drawing the streets in pencil. Next, add a compass rose in the corner. Then color the parks green. After that, write the names of the streets. Last, draw a legend that explains your symbols.",
+                  visual: "map",
                   steps: [
                     "Draw the streets in pencil",
                     "Add a compass rose in the corner",
@@ -4265,6 +4532,7 @@
                 {
                   audio:
                     "To plant the seed, first fill the cup with soil. Next, push the seed gently into the soil. Then pour a little water on top. Finally, place the cup near a sunny window.",
+                  visual: "plant",
                   steps: [
                     "Fill the cup with soil",
                     "Push the seed into the soil",
@@ -4283,6 +4551,7 @@
           typeIdx: 0,
           itemIdx: 0,
           answered: false,
+          rate: 1, // playback-rate multiplier chosen by the student (0.6 / 0.8 / 1)
           score: Number(localStorage.getItem("pmListeningScore") || 0),
           streak: Number(localStorage.getItem("pmListeningStreak") || 0),
           order: [], // working order for sequence activity
@@ -4310,7 +4579,10 @@
           }
           window.speechSynthesis.cancel();
           const u = new SpeechSynthesisUtterance(text);
-          u.rate = PM.level === 1 ? 0.75 : 0.95;
+          // Base rate by level, scaled by the student's chosen rate multiplier.
+          const base = PM.level === 1 ? 0.85 : 1.0;
+          u.rate = Math.max(0.5, Math.min(1.1, base * PM.rate));
+          u.lang = "en-US";
           u.onstart = function () {
             if (status) status.textContent = "Audio playing.";
             const btn = document.getElementById("pmPlayBtn");
@@ -4445,11 +4717,31 @@
               return "<span class='pm-speaker-tag'>" + m + "</span>";
             },
           );
+          const rateBtn = function (label, val) {
+            return (
+              "<button class='pm-rate-btn" +
+              (PM.rate === val ? " active" : "") +
+              "' type='button' data-rate='" +
+              val +
+              "'>" +
+              label +
+              "</button>"
+            );
+          };
           return (
             "<div class='pm-audio-deck'>" +
+            "<div class='pm-visual'><div><span class='pm-visual-label'>Look while you listen</span>" +
+            pmVisual(item.visual) +
+            "</div></div>" +
             "<div class='pm-audio-row'>" +
             "<button class='pm-btn pm-btn-primary' type='button' id='pmPlayBtn'>🔊 Play Audio</button>" +
             "<button class='pm-btn pm-btn-ghost' type='button' id='pmShowTextBtn'>📄 Show Text</button>" +
+            "</div>" +
+            "<div class='pm-rate-group' role='group' aria-label='Playback speed'>" +
+            "<span>🐢 Speed:</span>" +
+            rateBtn("Slow", 0.6) +
+            rateBtn("Medium", 0.8) +
+            rateBtn("Normal", 1) +
             "</div>" +
             "<div class='pm-transcript' id='pmTranscript'>" +
             "<span class='pm-tr-label'>Transcript (fallback)</span>" +
@@ -4475,6 +4767,17 @@
             };
           const next = document.getElementById("pmNextBtn");
           if (next) next.onclick = window.pmNext;
+          // playback-speed buttons
+          const rateBtns = document.querySelectorAll("#pmPanel .pm-rate-btn");
+          rateBtns.forEach(function (rb) {
+            rb.onclick = function () {
+              PM.rate = Number(rb.dataset.rate);
+              rateBtns.forEach(function (x) {
+                x.classList.toggle("active", x === rb);
+              });
+              pmSpeak(item.audio); // replay at the new speed
+            };
+          });
         }
 
         // ── Renderers per type ─────────────────────────────────────
@@ -4502,6 +4805,7 @@
           let body = "";
           if (t.key === "cloze") body = pmRenderCloze(item);
           else if (t.key === "sequence") body = pmRenderSequence(item);
+          else if (t.key === "picmatch") body = pmRenderPic(item);
           else body = pmRenderMcq(item); // purpose, inference, summarize, compare
 
           panel.innerHTML =
@@ -4514,6 +4818,7 @@
           pmWireAudio();
           if (t.key === "cloze") pmWireCloze(item);
           else if (t.key === "sequence") pmWireSequence(item);
+          else if (t.key === "picmatch") pmWirePic(item);
           else pmWireMcq(item);
 
           // auto-play the audio when a new item loads (gentle, listen-first)
@@ -4572,6 +4877,58 @@
                     if (!x.classList.contains("incorrect")) x.disabled = false;
                   });
                 }, 700);
+              }
+            };
+          });
+        }
+
+        // Picture-match (Entering band): tap the picture you heard
+        function pmRenderPic(item) {
+          let pics = "";
+          item.pics.forEach(function (p, i) {
+            pics +=
+              "<button class='pm-pic-opt' type='button' data-i='" +
+              i +
+              "' aria-label='" +
+              p.label +
+              "'>" +
+              pmVisual(p.key) +
+              "<span>" +
+              p.label +
+              "</span></button>";
+          });
+          return (
+            "<p class='pm-prompt'>" +
+            item.q +
+            "</p><div class='pm-pic-grid' role='group' aria-label='Picture choices'>" +
+            pics +
+            "</div>"
+          );
+        }
+
+        function pmWirePic(item) {
+          const btns = document.querySelectorAll("#pmPanel .pm-pic-opt");
+          btns.forEach(function (b) {
+            b.onclick = function () {
+              if (PM.answered) return;
+              const i = Number(b.dataset.i);
+              const fb = document.getElementById("pmFeedback");
+              if (i === item.ans) {
+                PM.answered = true;
+                btns.forEach(function (x) {
+                  x.disabled = true;
+                });
+                b.classList.add("correct");
+                fb.className = "pm-feedback correct";
+                fb.textContent = "🎉 Correct! " + item.fb;
+                pmAward(true);
+              } else {
+                b.classList.add("incorrect");
+                b.disabled = true;
+                fb.className = "pm-feedback incorrect";
+                fb.textContent =
+                  "Not that one — replay the audio and tap the picture you hear.";
+                pmAward(false);
               }
             };
           });
@@ -4786,6 +5143,7 @@
           let body = "";
           if (t.key === "cloze") body = pmRenderCloze(item);
           else if (t.key === "sequence") body = pmRenderSequence(item);
+          else if (t.key === "picmatch") body = pmRenderPic(item);
           else body = pmRenderMcq(item);
           panel.innerHTML =
             head +
@@ -4796,6 +5154,7 @@
           pmWireAudio();
           if (t.key === "cloze") pmWireCloze(item);
           else if (t.key === "sequence") pmWireSequence(item);
+          else if (t.key === "picmatch") pmWirePic(item);
           else pmWireMcq(item);
         });
       })();

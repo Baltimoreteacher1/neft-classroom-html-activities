@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #2 &middot; Decimal Docking Bay: Deep Space</title>
+    <style>
+      :root {
+        --bg:#0a1228; --ink:#f4f7ff; --muted:#aebbdd; --accent:#ff8a3d;
+        --accent2:#3da5ff; --panel:#13234d; --line:#2a4378; --ok:#39d98a;
+        --bad:#ff6b6b; --bubble:#fffdf7; --bubble-ink:#16213d;
+        --font:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
+      }
+      *{box-sizing:border-box;margin:0;padding:0;}
+      html,body{background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.5;}
+      body{min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+      img{max-width:100%;display:block;}
+      a{color:var(--accent2);}
+      .topbar{position:sticky;top:0;z-index:30;background:rgba(10,18,40,0.96);border-bottom:1px solid var(--line);backdrop-filter:blur(6px);}
+      .topbar-inner{max-width:1000px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+      .home{min-height:44px;display:flex;align-items:center;text-decoration:none;color:var(--muted);font-size:0.85rem;border:1px solid var(--line);border-radius:10px;padding:0 12px;}
+      .home:hover{color:var(--ink);}
+      .title{font-size:1rem;font-weight:700;}
+      .title .v{color:var(--accent);}
+      .progress-wrap{flex:1;min-width:160px;display:flex;align-items:center;gap:8px;}
+      .progress{flex:1;height:10px;background:#0b1530;border:1px solid var(--line);border-radius:999px;overflow:hidden;}
+      .progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width 0.4s ease;}
+      .progress-label{font-size:0.75rem;color:var(--muted);white-space:nowrap;}
+      .tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;max-width:1000px;margin:0 auto;width:100%;scrollbar-width:thin;}
+      .tab{flex:0 0 auto;min-height:44px;display:flex;align-items:center;gap:6px;background:#0e1c40;border:1px solid var(--line);color:var(--muted);border-radius:12px;padding:8px 14px;font-size:0.9rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+      .tab[aria-selected="true"]{background:linear-gradient(135deg,var(--accent),#ff6a3d);color:#1a0d02;border-color:transparent;}
+      .tab:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .tab.locked{opacity:0.5;cursor:not-allowed;}
+      .tab .lk{font-size:0.8rem;}
+      main{flex:1;width:100%;max-width:1000px;margin:0 auto;padding:14px;}
+      .scene{display:none;}
+      .scene.active{display:block;animation:fade 0.35s ease;}
+      @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+      .art{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0b1530;aspect-ratio:16/9;}
+      .art img{width:100%;height:100%;object-fit:cover;}
+      /* Graceful fallback when panel art is unavailable (same as units 8/9) */
+      .art img.art-missing{display:none;}
+      .art.art-fallback::after{content:attr(data-fallback);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;color:var(--muted);font-size:0.9rem;font-style:italic;background:repeating-linear-gradient(135deg,#0b1530,#0b1530 12px,#0e1c40 12px,#0e1c40 24px);}
+      .scene-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+      .scene-head h2{font-size:clamp(1.2rem,3.5vw,1.7rem);}
+      .scene-head .act{font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);}
+      .dialogue{margin-top:14px;min-height:96px;}
+      .bubble{background:var(--bubble);color:var(--bubble-ink);border-radius:16px;padding:14px 16px;position:relative;box-shadow:0 8px 20px -10px rgba(0,0,0,0.6);animation:fade 0.25s ease;}
+      .bubble .who{font-weight:800;color:#c2461d;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
+      .bubble .en{font-size:1.05rem;}
+      .bubble .es{font-size:0.92rem;color:#566677;margin-top:6px;font-style:italic;}
+      .bubble.caption{background:#0e1c40;color:var(--ink);border:1px solid var(--line);}
+      .bubble.caption .es{color:var(--muted);}
+      .dlg-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px;flex-wrap:wrap;}
+      .dots{display:flex;gap:5px;}
+      .dots i{width:8px;height:8px;border-radius:50%;background:#2a4378;}
+      .dots i.on{background:var(--accent);}
+      .next{min-height:44px;background:linear-gradient(135deg,var(--accent2),#5d7bff);color:#02112a;border:none;border-radius:12px;padding:10px 18px;font-weight:800;font-size:1rem;cursor:pointer;}
+      .next:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .next[disabled]{opacity:0.4;cursor:default;}
+      .challenge{margin-top:16px;background:#0e1c40;border:1px solid var(--line);border-radius:16px;padding:16px;}
+      .challenge h3{font-size:1.05rem;margin-bottom:4px;color:var(--accent);}
+      .challenge .prompt{font-size:1.05rem;margin-bottom:6px;}
+      .challenge .prompt .es{display:block;font-size:0.9rem;color:var(--muted);font-style:italic;margin-top:4px;}
+      .hint{font-size:0.9rem;color:#ffd9b3;background:#3a2410;border:1px solid #7a4d1f;border-radius:10px;padding:8px 12px;margin:8px 0;}
+      .hint b{color:var(--accent);}
+      .choices{display:grid;gap:10px;margin-top:10px;}
+      .choice{min-height:48px;text-align:left;background:#13234d;border:2px solid var(--line);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:1rem;cursor:pointer;font-family:var(--font);}
+      .choice:hover{border-color:var(--accent2);}
+      .choice:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .choice.correct{border-color:var(--ok);background:#10351f;}
+      .choice.wrong{border-color:var(--bad);background:#3a1414;}
+      .feedback{margin-top:12px;border-radius:12px;padding:12px 14px;font-size:1rem;display:none;}
+      .feedback.show{display:block;animation:fade 0.25s ease;}
+      .feedback.good{background:#10351f;border:1px solid var(--ok);color:#c8ffe0;}
+      .feedback.bad{background:#3a1414;border:1px solid var(--bad);color:#ffd5d5;}
+      .feedback .es{display:block;font-style:italic;color:#9fd;opacity:0.85;margin-top:4px;font-size:0.9rem;}
+      .frame{margin-top:12px;font-size:0.92rem;color:var(--muted);background:#0b1530;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;}
+      .frame b{color:var(--accent2);}
+      .scene-foot{margin-top:18px;display:flex;justify-content:flex-end;}
+      .advance{min-height:48px;background:linear-gradient(135deg,var(--accent),#ff6a3d);color:#1a0d02;border:none;border-radius:12px;padding:12px 22px;font-weight:800;font-size:1.05rem;cursor:pointer;display:none;}
+      .advance.show{display:inline-flex;align-items:center;gap:8px;animation:fade 0.3s ease;}
+      .advance:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .cover-card{text-align:center;}
+      .cover-card .art{aspect-ratio:16/9;margin-bottom:16px;}
+      .cover-card h2{font-size:clamp(1.6rem,5vw,2.4rem);}
+      .cover-card p{color:var(--muted);max-width:620px;margin:10px auto;}
+      .start{min-height:52px;margin-top:8px;background:linear-gradient(135deg,var(--accent),#ff6a3d);color:#1a0d02;border:none;border-radius:14px;padding:14px 28px;font-weight:800;font-size:1.15rem;cursor:pointer;}
+      .start:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+      .level-pill{display:inline-block;margin-bottom:10px;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:#02112a;background:var(--accent2);border-radius:999px;padding:5px 14px;font-weight:700;}
+      .gloss{display:grid;gap:12px;}
+      .term{background:#0e1c40;border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start;}
+      .term .ico{font-size:1.6rem;flex:0 0 auto;}
+      .term h3{font-size:1.1rem;}
+      .term .es-term{color:var(--accent2);font-size:0.9rem;font-style:italic;}
+      .term p{color:var(--muted);margin-top:4px;}
+      .complete{text-align:center;display:none;}
+      .complete.show{display:block;}
+      .complete .art{margin-bottom:16px;}
+      .complete h2{font-size:clamp(1.6rem,5vw,2.4rem);color:var(--accent);}
+      .badge-done{display:inline-block;font-size:3rem;margin:8px;}
+      .restart{min-height:48px;margin-top:14px;background:#0e1c40;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:12px 20px;font-weight:700;cursor:pointer;}
+      .locked-note{display:none;text-align:center;color:var(--muted);padding:30px 10px;}
+      .locked-note.show{display:block;}
+      @media (max-width:480px){.topbar-inner{gap:8px;}.title{font-size:0.9rem;flex:1 1 100%;}}
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../../index.html">&#8592; Home</a>
+        <span class="title"><span class="v">#2</span> Decimal Docking Bay: Deep Space</span>
+        <div class="progress-wrap">
+          <div class="progress" role="progressbar" aria-label="Story progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button class="tab" role="tab" aria-selected="true" data-scene="cover" id="tab-cover">Cover</button>
+        <button class="tab" role="tab" aria-selected="false" data-scene="act1" id="tab-act1">Act 1: Supply Manifest</button>
+        <button class="tab locked" role="tab" aria-selected="false" data-scene="act2" id="tab-act2"><span class="lk">&#128274;</span> Act 2: Thruster Calibration</button>
+        <button class="tab locked" role="tab" aria-selected="false" data-scene="final" id="tab-final"><span class="lk">&#128274;</span> Final: Fleet Launch</button>
+        <button class="tab" role="tab" aria-selected="false" data-scene="gloss" id="tab-gloss">Glossary</button>
+      </div>
+    </div>
+
+    <main>
+      <!-- COVER -->
+      <section class="scene active cover-card" id="scene-cover" role="tabpanel" aria-labelledby="tab-cover">
+        <div class="art">
+          <img src="../../_art/lessons/u1-l5l6/cover.png" alt="A confident cadet commands a deep-space station with multi-step decimal mission boards" />
+        </div>
+        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
+        <h2>Decimal Docking Bay: Deep Space</h2>
+        <p>Command rank, Cadet. These missions chain several decimal operations and ask you to reason about place value, not just compute. Think it through and launch the fleet.</p>
+        <p style="font-size:0.92rem"><i>Rango de mando, Cadete. Estas misiones encadenan operaciones con decimales y piden razonar sobre el valor posicional. Piensa bien y lanza la flota.</i></p>
+        <button class="start" id="start-btn">Begin Command 🚀 &#9654;</button>
+      </section>
+
+      <section class="scene" id="scene-act1" role="tabpanel" aria-labelledby="tab-act1">
+          <div class="scene-head">
+            <span class="act">Act 1 &middot; Lesson 1-5</span>
+            <h2>The Supply Manifest</h2>
+          </div>
+        <div class="art">
+            <img id="art-act1" src="../../_art/lessons/u1-l5l6/act1.png" alt="A holographic manifest listing several decimal supply masses" />
+          </div>
+          <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act1"></div>
+            <button class="next" id="next-act1">Next &#9654;</button>
+          </div>
+        <div class="challenge" id="chal-act1-a" style="display:none">
+          <h3>📦 Manifest Lock #1 — Add Three Decimals</h3>
+          <p class="prompt">Add all three crates: 2.45 + 1.8 + 0.75. What is the total mass?<span class="es">Suma las tres cajas: 2.45 + 1.8 + 0.75. ¿Cuál es la masa total?</span></p>
+          <div class="hint">&#128161; <b>Hint:</b> Annex a zero so 1.8 = 1.80. Then 2.45 + 1.80 + 0.75. Add the hundredths first.</div>
+          <div class="choices" id="choices-act1-a">
+            <button class="choice" data-correct="true">5.00 kg  (2.45 + 1.80 + 0.75)</button>
+            <button class="choice" data-correct="false">4.98 kg</button>
+            <button class="choice" data-correct="false">5.28 kg</button>
+          </div>
+          <div class="feedback" id="fb-act1-a"></div>
+        </div>
+        <div class="frame" id="frame-act1-a" style="display:none"><b>Sentence frame:</b> &ldquo;Lining up all three, 2.45 + 1.80 + 0.75 = ____ kg.&rdquo;</div>
+
+        <div class="challenge" id="chal-act1-b" style="display:none">
+          <h3>📦 Manifest Lock #2 — Remaining Capacity</h3>
+          <p class="prompt">The cargo limit is 6 kg. With 5.00 kg loaded, how much more mass can you add?<span class="es">El límite es 6 kg. Con 5.00 kg cargados, ¿cuánta masa más cabe?</span></p>
+          <div class="hint">&#128161; <b>Hint:</b> Subtract: 6.00 - 5.00. Annex zeros so both have two decimal places.</div>
+          <div class="choices" id="choices-act1-b">
+            <button class="choice" data-correct="true">1.00 kg</button>
+            <button class="choice" data-correct="false">0.10 kg</button>
+            <button class="choice" data-correct="false">11 kg</button>
+          </div>
+          <div class="feedback" id="fb-act1-b"></div>
+        </div>
+        <div class="frame" id="frame-act1-b" style="display:none"><b>Sentence frame:</b> &ldquo;6.00 - 5.00 = ____ kg of room left.&rdquo;</div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act1">Confirm the manifest &#9654;</button>
+          </div>
+      </section>
+
+      <section class="scene" id="scene-act2" role="tabpanel" aria-labelledby="tab-act2">
+        <div class="locked-note" id="lock-act2">&#128274; Finish the previous chapter first to unlock this one.</div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act">Act 2 &middot; Lesson 1-6</span>
+            <h2>Thruster Calibration</h2>
+          </div>
+        <div class="art">
+            <img id="art-act2" src="../../_art/lessons/u1-l5l6/act2.png" alt="A cadet calibrating thrusters with decimal multiplier dials" />
+          </div>
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+        <div class="challenge" id="chal-act2-a" style="display:none">
+          <h3>🔥 Thruster Lock #1 — Multiply Decimals</h3>
+          <p class="prompt">Compute 1.2 × 0.25 to find the plasma used. What is the product?<span class="es">Calcula 1.2 × 0.25 para el plasma usado. ¿Cuál es el producto?</span></p>
+          <div class="hint">&#128161; <b>Hint:</b> 12 × 25 = 300. Decimal places: 1 (in 1.2) + 2 (in 0.25) = 3, so 0.300 = 0.3.</div>
+          <div class="choices" id="choices-act2-a">
+            <button class="choice" data-correct="true">0.3 units  (0.300)</button>
+            <button class="choice" data-correct="false">3.0 units</button>
+            <button class="choice" data-correct="false">0.03 units</button>
+          </div>
+          <div class="feedback" id="fb-act2-a"></div>
+        </div>
+        <div class="frame" id="frame-act2-a" style="display:none"><b>Sentence frame:</b> &ldquo;12 × 25 = 300, and with 3 decimal places that is 0.3 units.&rdquo;</div>
+
+        <div class="challenge" id="chal-act2-b" style="display:none">
+          <h3>🔥 Thruster Lock #2 — Scale the Array</h3>
+          <p class="prompt">The array has 4 thrusters. If one uses 0.3 units, the array uses 4 × 0.3. How much plasma total?<span class="es">El arreglo tiene 4 propulsores. Si uno usa 0.3, el arreglo usa 4 × 0.3. ¿Cuánto total?</span></p>
+          <div class="hint">&#128161; <b>Hint:</b> 4 × 3 = 12, and 0.3 has 1 decimal place, so the product has 1 decimal place: 1.2.</div>
+          <div class="choices" id="choices-act2-b">
+            <button class="choice" data-correct="true">1.2 units</button>
+            <button class="choice" data-correct="false">0.12 units</button>
+            <button class="choice" data-correct="false">12 units</button>
+          </div>
+          <div class="feedback" id="fb-act2-b"></div>
+        </div>
+        <div class="frame" id="frame-act2-b" style="display:none"><b>Sentence frame:</b> &ldquo;4 × 0.3 = ____ units of plasma for the whole array.&rdquo;</div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">Calibrate thrusters &#9654;</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene" id="scene-final" role="tabpanel" aria-labelledby="tab-final">
+        <div class="locked-note" id="lock-final">&#128274; Finish the previous chapter first to unlock this one.</div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final &middot; Lessons 1-5 &amp; 1-6</span>
+            <h2>The Fleet Launch Code</h2>
+          </div>
+        <div class="art">
+            <img id="art-final" src="../../_art/lessons/u1-l5l6/final.png" alt="A commander entering a multi-step decimal launch code for a fleet" />
+          </div>
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+        <div class="challenge" id="chal-final-a" style="display:none">
+          <h3>🔒 Fleet Code — Multi-Step</h3>
+          <p class="prompt">Compute (3.25 + 0.75) × 0.5. Which line is fully correct?<span class="es">Calcula (3.25 + 0.75) × 0.5. ¿Cuál línea es correcta?</span></p>
+          <div class="hint">&#128161; <b>Hint:</b> 3.25 + 0.75 = 4.00. Then 4.00 × 0.5 = 2.0 (half of 4).</div>
+          <div class="choices" id="choices-final-a">
+            <button class="choice" data-correct="true">3.25 + 0.75 = 4.00, then 4.00 × 0.5 = 2.0</button>
+            <button class="choice" data-correct="false">3.25 + 0.75 = 4.00, then 4.00 × 0.5 = 20</button>
+            <button class="choice" data-correct="false">3.25 + 0.75 = 3.90, then 3.90 × 0.5 = 1.95</button>
+          </div>
+          <div class="feedback" id="fb-final-a"></div>
+        </div>
+        <div class="frame" id="frame-final-a" style="display:none"><b>Sentence frame:</b> &ldquo;3.25 + 0.75 = ____, and that sum × 0.5 = ____.&rdquo;</div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">Launch the fleet! 🌟 &#9654;</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MISSION COMPLETE -->
+      <section class="scene complete" id="scene-complete" role="tabpanel" aria-label="Story complete">
+        <div class="art">
+          <img src="../../_art/lessons/u1-l5l6/complete.png" alt="A proud commander salutes as a fleet of ships launches into deep space" />
+        </div>
+        <span class="badge-done">&#127881;&#11088;</span>
+        <h2>Fleet Launched!</h2>
+        <p>You chained decimal addition, subtraction, and multiplication across the whole mission. Command rank earned, Commander!</p>
+        <p style="color:var(--muted);font-size:0.92rem"><i>¡Encadenaste sumas, restas y multiplicaciones con decimales en toda la misión! Rango de mando ganado.</i></p>
+        <div class="challenge bonus" id="chalComplete" style="margin-top:24px;text-align:left;background:#1c1606;border:2px solid #ffd166;">
+          <span class="bonus-tag" style="background:#ffd166;color:#1a1200;font-weight:800;font-size:0.72rem;letter-spacing:0.1em;padding:3px 8px;border-radius:6px;display:inline-block;">&#127942; MASTER RANK CHALLENGE</span>
+          <h3 style="color:#ffd166;font-size:1.1rem;margin-top:8px;margin-bottom:6px;font-weight:700;">Bonus challenge — for mastery, not required.</h3>
+          <p class="prompt" style="font-size:1.05rem;margin-bottom:12px;line-height:1.55;">Command challenge: (1.5 + 2.5) × 0.25. What is the result?<span class="es">Reto de mando: (1.5 + 2.5) × 0.25. ¿Cuál es el resultado?</span></p>
+          <div class="choices" id="choicesComplete" style="display:grid;gap:10px;">
+            <button class="choice" data-correct="true">1  (4 × 0.25 = 1.00)</button>
+            <button class="choice" data-correct="false">10</button>
+            <button class="choice" data-correct="false">0.4</button>
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top:12px;border-radius:12px;padding:12px 14px;font-size:1rem;display:none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">Play again &#8635;</button>
+      </section>
+
+      <!-- GLOSSARY -->
+      <section class="scene" id="scene-gloss" role="tabpanel" aria-labelledby="tab-gloss">
+        <div class="scene-head"><span class="act">Reference</span><h2>Glossary &middot; Word Bank</h2></div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------- Graceful art fallback (panel image unavailable) ---------- */
+        Array.prototype.slice.call(document.querySelectorAll(".art img")).forEach(function (im) {
+          im.addEventListener("error", function () {
+            im.classList.add("art-missing");
+            var box = im.closest(".art");
+            if (box) {
+              box.classList.add("art-fallback");
+              box.setAttribute("data-fallback", im.getAttribute("alt") || "Illustration");
+            }
+          });
+          if (im.complete && im.naturalWidth === 0) {
+            im.dispatchEvent(new Event("error"));
+          }
+        });
+
+        var DLG = {
+          act1: [
+            { who: "Station AI", en: "Commander, three crates: 2.45 kg, 1.8 kg, and 0.75 kg. I need the exact combined mass.", es: "Comandante, tres cajas: 2.45 kg, 1.8 kg y 0.75 kg. Necesito la masa combinada exacta.", cap: true },
+            { who: "Cadet", en: "I'll annex zeros so every value has two decimal places, then add carefully.", es: "Agregaré ceros para que todos tengan dos decimales y luego sumaré con cuidado." }
+          ],
+          act1b: [
+            { who: "Cadet", en: "Manifest confirmed. Now find the difference from our 6 kg limit.", es: "Manifiesto confirmado. Ahora halla la diferencia con el límite de 6 kg." }
+          ],
+          act2: [
+            { who: "Station AI", en: "Each thruster uses 0.25 units of plasma. We are firing 1.2 thruster-seconds. How much plasma?", es: "Cada propulsor usa 0.25 de plasma. Encenderemos 1.2 segundos. ¿Cuánto plasma?", cap: true },
+            { who: "Cadet", en: "Multiply like whole numbers, then count three decimal places total.", es: "Multiplico como enteros y cuento tres lugares decimales en total." }
+          ],
+          act2b: [
+            { who: "Cadet", en: "Calibrated! Now scale it up for the whole array.", es: "¡Calibrado! Ahora escálalo para todo el arreglo." }
+          ],
+          final: [
+            { who: "Station AI", en: "Final code, Commander: it chains a sum and a product. Reason carefully.", es: "Código final, Comandante: encadena una suma y un producto. Razona con cuidado.", cap: true },
+            { who: "Cadet", en: "Add 3.25 + 0.75 first, then multiply that sum by 0.5.", es: "Sumo 3.25 + 0.75 primero, luego multiplico por 0.5." }
+          ]
+        };
+        var GLOSS = [
+          { en: "Decimal", es: "Decimal", def: "A number with a dot that shows a part between whole numbers." },
+          { en: "Place value", es: "Valor posicional", def: "What a digit is worth based on where it sits in a number." },
+          { en: "Tenths", es: "Décimas", def: "The first spot after the decimal point. It shows parts out of 10." },
+          { en: "Hundredths", es: "Centésimas", def: "The second spot after the decimal point. It shows parts out of 100." },
+          { en: "Annex zeros", es: "Agregar ceros", def: "Adding zeros at the end of a decimal so numbers line up evenly." },
+          { en: "Product", es: "Producto", def: "The answer when you multiply." },
+          { en: "Decimal point", es: "Punto decimal", def: "The dot that splits the whole number from the part after it." },
+          { en: "Estimate", es: "Estimar", def: "A close answer you get by rounding first." },
+          { en: "Decimal places", es: "Cifras decimales", def: "How many digits come after the decimal point." }
+        ];
+        var ACTS = [
+          { scene: "act1", hasB: true, last: false, next: "act2" },
+          { scene: "act2", hasB: true, last: false, next: "final" },
+          { scene: "final", hasB: false, last: true, next: null }
+        ];
+        var SCENES = ["cover","act1","act2","final","gloss"];
+
+        function $(id) { return document.getElementById(id); }
+        function qa(sel, root) {
+          return Array.prototype.slice.call((root || document).querySelectorAll(sel));
+        }
+
+        /* ---------- Progress ---------- */
+        var solvedCount = 0;
+        function updateProgress() {
+          var pct = Math.round((solvedCount / ACTS.length) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document.querySelector(".progress").setAttribute("aria-valuenow", pct);
+        }
+
+        /* ---------- Tab locking ---------- */
+        var unlocked = { cover: true, gloss: true };
+        ACTS.forEach(function (a, i) { unlocked[a.scene] = i === 0; });
+        function refreshLocks() {
+          ACTS.forEach(function (a, i) {
+            if (i === 0) return;
+            var locked = !unlocked[a.scene];
+            var tab = $("tab-" + a.scene);
+            if (tab) tab.classList.toggle("locked", locked);
+            var ln = $("lock-" + a.scene);
+            if (ln) ln.classList.toggle("show", locked);
+            var body = $("body-" + a.scene);
+            if (body) body.style.display = locked ? "none" : "";
+          });
+        }
+
+        /* ---------- Scene switching ---------- */
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab) tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          var comp = $("scene-complete");
+          comp.classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) { var sc = $("scene-" + s); if (sc) sc.classList.remove("active"); });
+          qa(".tab").forEach(function (t) { t.setAttribute("aria-selected", "false"); });
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
+            if (e.key === "ArrowRight") { e.preventDefault(); (tabsArr[i + 1] || tabsArr[0]).focus(); }
+            if (e.key === "ArrowLeft") { e.preventDefault(); (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus(); }
+          });
+        });
+
+        /* ---------- Dialogue engine ---------- */
+        function runDialogue(opts) {
+          var idx = 0;
+          var dlgBox = $(opts.dlgId), nextBtn = $(opts.nextId), dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () { dots.appendChild(document.createElement("i")); });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' + (line.cap ? " caption" : "") + '">' +
+              '<div class="who">' + line.who + "</div>" +
+              '<div class="en">' + line.en + "</div>" +
+              '<div class="es">' + line.es + "</div></div>";
+            qa("i", dots).forEach(function (d, k) { d.classList.toggle("on", k <= idx); });
+            nextBtn.textContent = idx === opts.dlg.length - 1 ? (opts.lastLabel || "Continue \u25B6") : "Next \u25B6";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) { idx++; render(); }
+            else { if (opts.onDone) opts.onDone(); }
+          };
+          render();
+        }
+
+        /* ---------- Choice handler ---------- */
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var correct = btn.dataset.correct === "true";
+              var fb = $(opts.feedbackId);
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
+                qa(".choice", $(opts.choicesId)).forEach(function (b) { b.disabled = true; });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = opts.badEn + '<span class="es">' + opts.badEs + "</span>";
+              }
+            });
+          });
+        }
+
+        /* ---------- Glossary ---------- */
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">&#128218;</div><div><h3>' + g.en +
+              (g.es ? ' <span class="es-term">(' + g.es + ")</span>" : "") +
+              "</h3><p>" + g.def + "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        /* ---------- Per-act challenge data (math) ---------- */
+        var CH = {
+          "act1": { a: { startLabel: "Add the crates ▶", goodEn: "✅ Exactly! 2.45 + 1.80 + 0.75 = 5.00 kg. Annexing 1.8 → 1.80 kept the places aligned.", goodEs: "¡Exacto! 2.45 + 1.80 + 0.75 = 5.00 kg.", badEn: "❌ Annex a zero (1.80) and add the hundredths column first: 5 + 0 + 5 = 10, carry the tenth.", badEs: "❌ Agrega un cero (1.80) y suma primero las centésimas." }, b: { goodEn: "✅ Right! 6.00 - 5.00 = 1.00 kg of room remains.", goodEs: "¡Correcto! 6.00 - 5.00 = 1.00 kg de espacio.", badEn: "❌ Subtract 5.00 from 6.00: that leaves 1.00 kg.", badEs: "❌ Resta 5.00 de 6.00: queda 1.00 kg." } },
+          "act2": { a: { startLabel: "Calibrate ▶", goodEn: "✅ Yes! 12×25=300; 3 decimal places gives 0.300 = 0.3 units of plasma.", goodEs: "¡Sí! 12×25=300; 3 lugares dan 0.300 = 0.3.", badEn: "❌ 12×25=300. Count places: 1+2=3, so 0.300 = 0.3.", badEs: "❌ 12×25=300. Cuenta lugares: 1+2=3, así que 0.3." }, b: { goodEn: "✅ Correct! 4 × 0.3 = 1.2 units. Array calibrated!", goodEs: "¡Correcto! 4 × 0.3 = 1.2 unidades.", badEn: "❌ 4 × 3 = 12, with 1 decimal place that is 1.2.", badEs: "❌ 4 × 3 = 12, con 1 lugar decimal es 1.2." } },
+          "final": { a: { startLabel: "Enter the code ▶", goodEn: "✅ FLEET CODE ACCEPTED! 4.00 × 0.5 = 2.0 — exactly half of 4. The fleet launches!", goodEs: "¡CÓDIGO ACEPTADO! 4.00 × 0.5 = 2.0. ¡La flota despega!", badEn: "❌ Add first: 3.25 + 0.75 = 4.00. Then × 0.5 is HALF of 4, which is 2.0 — not 20.", badEs: "❌ Suma primero: 3.25 + 0.75 = 4.00. Luego × 0.5 es la MITAD de 4, o sea 2.0." } }
+        };
+
+        /* ---------- Generic act initialiser ---------- */
+        function initAct(actDesc) {
+          var s = actDesc.scene;
+          var data = CH[s];
+          runDialogue({
+            dlgId: "dlg-" + s, nextId: "next-" + s, dotsId: "dots-" + s,
+            dlg: DLG[s], lastLabel: data.a.startLabel || "Try it \u25B6",
+            onDone: function () {
+              $("next-" + s).style.display = "none";
+              $("chal-" + s + "-a").style.display = "block";
+              var fr = $("frame-" + s + "-a"); if (fr) fr.style.display = "block";
+              $("chal-" + s + "-a").scrollIntoView({ behavior: "smooth", block: "center" });
+            },
+          });
+          wireChoices({
+            choicesId: "choices-" + s + "-a", feedbackId: "fb-" + s + "-a",
+            goodEn: data.a.goodEn, goodEs: data.a.goodEs, badEn: data.a.badEn, badEs: data.a.badEs,
+            onSolve: function () {
+              if (actDesc.hasB) {
+                var box = $("dlg-" + s);
+                setTimeout(function () {
+                  if (DLG[s + "b"] && DLG[s + "b"][0]) {
+                    var il = DLG[s + "b"][0];
+                    box.innerHTML = '<div class="bubble"><div class="who">' + il.who +
+                      '</div><div class="en">' + il.en + '</div><div class="es">' + il.es + "</div></div>";
+                  }
+                  $("chal-" + s + "-b").style.display = "block";
+                  var fr = $("frame-" + s + "-b"); if (fr) fr.style.display = "block";
+                  $("chal-" + s + "-b").scrollIntoView({ behavior: "smooth", block: "center" });
+                }, 500);
+              } else {
+                finishAct(actDesc);
+              }
+            },
+          });
+          if (actDesc.hasB) {
+            wireChoices({
+              choicesId: "choices-" + s + "-b", feedbackId: "fb-" + s + "-b",
+              goodEn: data.b.goodEn, goodEs: data.b.goodEs, badEn: data.b.badEn, badEs: data.b.badEs,
+              onSolve: function () { finishAct(actDesc); },
+            });
+          }
+          $("adv-" + s).addEventListener("click", function () {
+            if (actDesc.last) { showComplete(); }
+            else { unlocked[actDesc.next] = true; refreshLocks(); showScene(actDesc.next); }
+          });
+        }
+        function finishAct(actDesc) {
+          if (!actDesc._solved) { actDesc._solved = true; solvedCount++; updateProgress(); }
+          $("adv-" + actDesc.scene).classList.add("show");
+        }
+
+        /* ---------- Start / restart ---------- */
+        $("start-btn").addEventListener("click", function () { showScene(ACTS[0].scene); });
+        $("restart-btn").addEventListener("click", function () { location.reload(); });
+
+        /* ---------- Optional non-gating bonus ---------- */
+        (function () {
+          var wrap = $("choicesComplete"); if (!wrap) return;
+          var solved = false;
+          var fb = $("fbComplete");
+          qa(".choice", wrap).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              if (btn.dataset.correct === "true") {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "&#127942; <b>Master Rank!</b> Excellent work \u2014 you have mastered this skill. \u2B50";
+                qa(".choice", wrap).forEach(function (b) { b.disabled = true; });
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "&#10060; Not quite. Review your work and try another option.";
+              }
+            });
+          });
+        })();
+
+        /* ---------- Init ---------- */
+        ACTS.forEach(initAct);
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1585 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #2 · Shopping Mall Mogul</title>
+    <style>
+      :root {
+        --bg: #070d1f;
+        --ink: #eef3ff;
+        --muted: #9fb0d6;
+        --accent: #ff8a3d;
+        --accent2: #5d7bff;
+        --panel: #101e44;
+        --line: #283f73;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --gold: #ffd166;
+        --bubble: #0e1c40;
+        --bubble-ink: #eef3ff;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: radial-gradient(
+          900px 600px at 80% -10%,
+          #15265a,
+          var(--bg) 65%
+        );
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.55;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(7, 13, 31, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent2);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #0a142e;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #fff;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #0a142e;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent2);
+      }
+
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: var(--accent);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.06rem;
+      }
+      .bubble.caption {
+        background: #0a142e;
+        border-style: dashed;
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #283f73;
+      }
+      .dots i.on {
+        background: var(--accent2);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .challenge {
+        margin-top: 16px;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent2);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .challenge.bonus {
+        border-color: var(--gold);
+        background: #1c1606;
+        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+      }
+      .challenge.bonus h3 {
+        color: var(--gold);
+      }
+      .bonus-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #1a1200;
+        background: var(--gold);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .bonus-note {
+        font-size: 0.85rem;
+        color: #ffe6a8;
+        margin: 4px 0 2px;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #101e44;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .choice .calc {
+        font-family: "Courier New", monospace;
+        font-size: 0.92rem;
+        display: block;
+        margin-top: 4px;
+        color: #9ecbff;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff6a3d);
+        color: #1a0d02;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 660px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        color: #fff;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent2), #7a5cff);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #0c1838;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.7rem, 5vw, 2.6rem);
+        color: var(--accent2);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #0c1838;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"><span class="v">#2</span> Shopping Mall Mogul</span>
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: Best Buy
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: Markdowns
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Grand Opening
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- COVER -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit4/cover.png"
+            alt="A young entrepreneur smiles in front of a bright futuristic shopping mall with floating price tags"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
+        <h2>Shopping Mall Mogul &#128717;&#65039;</h2>
+        <p>
+          Mateo just took over the Nexus Galleria, the city&rsquo;s most
+          ambitious smart-mall. Every shop he wants to open is gated behind a
+          pricing puzzle. To out-negotiate rival retailers and pack the
+          galleria, he must master <b>unit rates</b>, <b>percent markdowns</b>,
+          and the slippery world of percents <b>over 100%</b> and
+          <b>under 1%</b>. Sharpen your deal-making instincts &mdash; the best
+          bargain hunter wins the mall.
+        </p>
+        <button class="start" id="start-btn">
+          Take the Reins &#128717;&#65039;
+        </button>
+      </section>
+
+      <!-- ACT 1 -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act">Act 1 &middot; Rates &amp; Unit Rates</span>
+          <h2>The Best Buy</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit4/unit-rate.png"
+            alt="Mateo weighs two products, deciding which is the better deal"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <!-- Core 1: best buy via unit rate, different units -->
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>&#128722; Supplier Bid #1 &mdash; Best Value</h3>
+          <p class="prompt">
+            Two suppliers pitch the same energy drink. Vendor A: a
+            <b>750 mL</b> bottle for <b>$4.50</b>. Vendor B: a
+            <b>1.25 L</b> (1250 mL) bottle for <b>$6.25</b>. Stock the better
+            value &mdash; compare the price per millilitre.
+          </p>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="false">
+              Vendor A &mdash; 750 mL for $4.50<span class="calc"
+                >4.50 &divide; 750 = $0.0060/mL</span
+              >
+            </button>
+            <button class="choice" data-correct="true">
+              Vendor B &mdash; 1.25 L for $6.25<span class="calc"
+                >6.25 &divide; 1250 = $0.0050/mL (cheaper)</span
+              >
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <!-- Core 2: unit rate per 100 g -->
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#128722; Supplier Bid #2 &mdash; Price per 100 g</h3>
+          <p class="prompt">
+            The roastery offers <b>240 g</b> of premium coffee for <b>$9.60</b>.
+            Shoppers compare prices <b>per 100 g</b>. What is the unit rate per
+            100 g?
+          </p>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="true">
+              $4.00 per 100 g<span class="calc"
+                >9.60 &divide; 240 = $0.04/g &rarr; &times;100 = $4.00</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              $2.50 per 100 g<span class="calc"
+                >240 &divide; 9.60 (inverted)</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              $0.40 per 100 g<span class="calc">off by a factor of 10</span>
+            </button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <!-- Bonus (OPTIONAL) -->
+        <div class="challenge bonus" id="bonus1" style="display: none">
+          <span class="bonus-tag">&#11088; Mogul&rsquo;s Bonus</span>
+          <p class="bonus-note">
+            Optional extra credit &mdash; you can open the shop without it.
+          </p>
+          <h3>The Loyalty Reorder</h3>
+          <p class="prompt">
+            A boutique reorders notebooks. Pack X: <b>5</b> for <b>$7.50</b>.
+            Pack Y: <b>8</b> for <b>$11.20</b>. Which is the better buy, and by
+            how much per notebook?
+          </p>
+          <div class="choices" id="choicesB1">
+            <button class="choice" data-correct="false">
+              Pack X, by $0.10<span class="calc"
+                >7.50 &divide; 5 = $1.50 each</span
+              >
+            </button>
+            <button class="choice" data-correct="true">
+              Pack Y, by $0.10<span class="calc"
+                >$1.50 vs 11.20 &divide; 8 = $1.40; saves $0.10/book</span
+              >
+            </button>
+            <button class="choice" data-correct="false">
+              They cost the same per notebook<span class="calc"
+                >$1.50 &ne; $1.40</span
+              >
+            </button>
+          </div>
+          <div class="feedback" id="fbB1"></div>
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">Open the shop &#128722;</button>
+        </div>
+      </section>
+
+      <!-- ACT 2 -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Complete Act 1 to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act"
+              >Act 2 &middot; Fractions, Decimals &amp; Percents</span
+            >
+            <h2>The Markdown War</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit4/discount.png"
+              alt="Mateo presents a storefront covered in bright percent-off sale signs"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- Core 1: sale price with percent off -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#127991;&#65039; Markdown #1 &mdash; The Sale Price</h3>
+            <p class="prompt">
+              A rival drops sneaker prices, so you counter. Your sneakers list
+              at <b>$80</b> and you mark them <b>35% off</b>. What is the
+              <b>sale price</b> shoppers pay?
+            </p>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="true">
+                $52.00<span class="calc"
+                  >80 &times; (1 &minus; 0.35) = 80 &times; 0.65</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                $28.00<span class="calc"
+                  >that is the discount, not the price</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                $45.00<span class="calc">not 80 &times; 0.65</span>
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- Core 2: percents >100% and <1% -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>
+              &#127991;&#65039; Markdown #2 &mdash; Beyond 100% and Below 1%
+            </h3>
+            <p class="prompt">
+              Your dashboard shows growth of <b>250%</b> and a tiny
+              transaction-fee of <b>0.5%</b>. Percents can be greater than 100%
+              or less than 1%. Which row converts <b>both</b> correctly?
+            </p>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="true">
+                250% = 2.5 = 5/2 &nbsp;and&nbsp; 0.5% = 0.005 = 1/200
+              </button>
+              <button class="choice" data-correct="false">
+                250% = 25 &nbsp;and&nbsp; 0.5% = 0.5
+              </button>
+              <button class="choice" data-correct="false">
+                250% = 0.25 &nbsp;and&nbsp; 0.5% = 0.05
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <!-- Bonus (OPTIONAL): find original price -->
+          <div class="challenge bonus" id="bonus2" style="display: none">
+            <span class="bonus-tag">&#11088; Mogul&rsquo;s Bonus</span>
+            <p class="bonus-note">
+              Optional extra credit &mdash; skip it and still launch the sale.
+            </p>
+            <h3>Reverse the Markdown</h3>
+            <p class="prompt">
+              A designer coat is on the rack at <b>$60</b> after a
+              <b>25% off</b> sale. Working backward, what was the
+              <b>original price</b>?
+            </p>
+            <div class="choices" id="choicesB2">
+              <button class="choice" data-correct="true">
+                $80<span class="calc"
+                  >60 &divide; 0.75 = 80 (since 60 = 75% of original)</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                $75<span class="calc">added 25% of 60, not the right base</span>
+              </button>
+              <button class="choice" data-correct="false">
+                $85<span class="calc">60 &divide; 0.75 &ne; 85</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbB2"></div>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Launch the sale &#127881;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINAL -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Complete Act 2 to unlock the Grand Opening.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Grand Opening &middot; Boss</span>
+            <h2>The Headline Deal</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit4/final-challenge.png"
+              alt="Mateo stands before a giant mall command console covered in deal charts"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <!-- Core: unit rate + percent off -->
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#11088; Headline Deal &mdash; Both Skills</h3>
+            <p class="prompt">
+              The grand-opening special: a <b>6-pack</b> of smart bulbs at
+              <b>$48</b>, then <b>15% off</b>. Find the final price for
+              <b>one bulb</b>.
+            </p>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="true">
+                $6.80<span class="calc"
+                  >48 &divide; 6 = $8 &rarr; 8 &times; 0.85 = $6.80</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                $8.00<span class="calc">unit rate before the discount</span>
+              </button>
+              <button class="choice" data-correct="false">
+                $7.20<span class="calc">subtracted 10%, not 15%</span>
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <!-- Bonus (OPTIONAL): compare two final unit prices -->
+          <div class="challenge bonus" id="bonusF" style="display: none">
+            <span class="bonus-tag">&#11088; Mogul&rsquo;s Final Bonus</span>
+            <p class="bonus-note">
+              Optional extra credit &mdash; the mall opens whether or not you
+              solve it.
+            </p>
+            <h3>The Smarter Bundle</h3>
+            <p class="prompt">
+              A competitor counters your bulb deal. <b>Deal A</b> (yours): 6 for
+              $48, then 15% off. <b>Deal B</b> (theirs): 4 for $30, then 10%
+              off. Which deal is the better value <b>per bulb</b>?
+            </p>
+            <div class="choices" id="choicesBF">
+              <button class="choice" data-correct="true">
+                Deal B<span class="calc"
+                  >B: (30 &divide; 4) &times; 0.90 = $6.75 &lt; A&rsquo;s
+                  $6.80</span
+                >
+              </button>
+              <button class="choice" data-correct="false">
+                Deal A<span class="calc">$6.80 is higher than $6.75</span>
+              </button>
+              <button class="choice" data-correct="false">
+                They are identical per bulb<span class="calc"
+                  >$6.80 &ne; $6.75</span
+                >
+              </button>
+            </div>
+            <div class="feedback" id="fbBF"></div>
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Open the mall! &#127775;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPLETE -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Mission complete"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit4/finish.png"
+            alt="Mateo celebrates on the balcony of his thriving mall with confetti and a cheering crowd"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#128717;&#65039;&#11088;</span>
+        <h2>Galleria Launched &mdash; Mission Complete!</h2>
+        <p>
+          The Nexus Galleria is the busiest mall in the city. You out-priced
+          every rival with sharp <b>unit-rate</b> comparisons, ran precise
+          <b>percent markdowns</b>, and even handled percents beyond 100% and
+          below 1%. Investors are calling, Mogul &mdash; the empire is just
+          getting started.
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Calculate complex savings: A designer coat costs <strong>$80</strong> but is on sale for <strong>25% off</strong>. If the store charges <strong>5% sales tax</strong> on the final sale price, what is the final cost?
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) $60.00 &nbsp;(this is the sale price without tax)</button>
+            <button class="choice" data-correct="true">B) $63.00 &nbsp;(sale price $60 + $3.00 tax) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) $64.00 &nbsp;(calculated 5% tax on original $80 price)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">Run again &#8635;</button>
+    
+      </section>
+
+      <!-- GLOSSARY -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Mogul&rsquo;s Codex</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var DLG = {
+          act1: [
+            {
+              who: "Floor Manager",
+              en: "Welcome to the Nexus Galleria, boss. Suppliers are bidding for shelf space &mdash; but only the sharpest VALUE wins shoppers.",
+              cap: true,
+            },
+            {
+              who: "Mateo",
+              en: "Then I reduce every offer to a unit rate &mdash; price per millilitre, per gram, per item. Whoever's cheaper per unit gets the shelf.",
+            },
+            {
+              who: "Floor Manager",
+              en: "First bid is on the energy drinks. Different sizes, different prices. Pick the real best value.",
+              cap: true,
+            },
+          ],
+          act1b: [
+            {
+              who: "Mateo",
+              en: "Shelf secured. Next, the roastery quotes a bulk price &mdash; I'll express it per 100 grams so shoppers can compare instantly.",
+            },
+          ],
+          bonus1: [
+            {
+              who: "Floor Manager",
+              en: "Optional: a loyalty boutique wants the absolute best notebook reorder. Crunch it if you want the bonus &mdash; not required to open.",
+              cap: true,
+            },
+          ],
+          act2: [
+            {
+              who: "Floor Manager",
+              en: "A rival across the atrium just slashed prices. It's a markdown war, and shoppers are watching the percent signs.",
+              cap: true,
+            },
+            {
+              who: "Mateo",
+              en: "Discounts are just percents of the price. Convert the percent to a decimal, multiply, subtract &mdash; or multiply by what remains. Let's counter.",
+            },
+          ],
+          act2b: [
+            {
+              who: "Mateo",
+              en: "My dashboard is throwing huge growth numbers and microscopic fees. Percents over 100% and under 1% &mdash; I have to read them precisely.",
+            },
+          ],
+          bonus2: [
+            {
+              who: "Floor Manager",
+              en: "Optional puzzle: a shopper asks what a coat originally cost before its sale. Reverse the markdown for the bonus &mdash; or skip ahead.",
+              cap: true,
+            },
+          ],
+          final: [
+            {
+              who: "Floor Manager",
+              en: "Grand opening, boss. The headline deal goes on every billboard &mdash; it has to fuse a unit rate with a percent markdown, flawlessly.",
+              cap: true,
+            },
+            {
+              who: "Mateo",
+              en: "Per-unit price first, then the discount. One clean number for one bulb. Let's give this city the deal of the year.",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#128181;",
+            en: "Rate",
+            def: "A ratio comparing two quantities with different units, such as $6.25 per 1250 mL or 240 g per $9.60.",
+          },
+          {
+            ico: "&#49;&#65039;&#8419;",
+            en: "Unit rate",
+            def: "A rate expressed per single unit (per 1). Computed as quantity-A &divide; quantity-B, e.g. price &divide; amount = $0.04 per gram.",
+          },
+          {
+            ico: "&#128722;",
+            en: "Best buy",
+            def: "The option with the lowest unit rate. Comparisons are only valid in the same unit (per mL, per 100 g, per item).",
+          },
+          {
+            ico: "&#37;",
+            en: "Percent",
+            def: "A ratio out of 100. 35% = 35/100 = 0.35. Percents can exceed 100% or be less than 1%.",
+          },
+          {
+            ico: "&#128201;",
+            en: "Markdown / Discount",
+            def: "An amount subtracted from the original price. A p% discount gives sale price = original &times; (1 &minus; p/100).",
+          },
+          {
+            ico: "&#128200;",
+            en: "Percent over 100%",
+            def: "Values greater than the whole. 250% = 2.5 = 5/2; e.g. 250% of 40 is 100.",
+          },
+          {
+            ico: "&#128302;",
+            en: "Percent under 1%",
+            def: "Values smaller than one hundredth of the whole. 0.5% = 0.005 = 1/200.",
+          },
+          {
+            ico: "&#128260;",
+            en: "Equivalent forms",
+            def: "Fractions, decimals, and percents can name the same value: 3/4 = 0.75 = 75%.",
+          },
+          {
+            ico: "&#9194;",
+            en: "Reverse percent",
+            def: "Finding an original amount from a result. If $60 is 75% of the original, original = 60 &divide; 0.75 = $80.",
+          },
+          {
+            ico: "&#9878;&#65039;",
+            en: "Value comparison",
+            def: "Comparing deals by reducing each to a final unit price, then choosing the lowest.",
+          },
+        ];
+
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Grand)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          $("scene-complete").classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var arr = qa(".tab");
+            var i = arr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (arr[i + 1] || arr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (arr[i - 1] || arr[arr.length - 1]).focus();
+            }
+          });
+        });
+
+        function runDialogue(opts) {
+          var idx = 0,
+            dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            dots.appendChild(document.createElement("i"));
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '"><div class="who">' +
+              line.who +
+              '</div><div class="en">' +
+              line.en +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else if (opts.onDone) opts.onDone();
+          };
+          render();
+        }
+
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var fb = $(opts.feedbackId);
+              if (btn.dataset.correct === "true") {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = opts.goodEn;
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = opts.badEn;
+              }
+            });
+          });
+        }
+
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              "</h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        function showBubble(boxId, line) {
+          $(boxId).innerHTML =
+            '<div class="bubble' +
+            (line.cap ? " caption" : "") +
+            '"><div class="who">' +
+            line.who +
+            '</div><div class="en">' +
+            line.en +
+            "</div></div>";
+        }
+
+        /* ---------- ACT 1 ---------- */
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Compare value ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Vendor B wins: $6.25 &divide; 1250 mL = $0.0050/mL beats $4.50 &divide; 750 mL = $0.0060/mL. Shelf secured.",
+            badEn:
+              "&#10060; Compare the same unit. Divide each price by its millilitres &mdash; the lower price per mL is the better value.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.act1b[0]);
+                $("chal1b").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; $9.60 &divide; 240 g = $0.04/g, so per 100 g it's $4.00. Clear, comparable pricing &mdash; shoppers love it.",
+            badEn:
+              "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g.",
+            onSolve: function () {
+              $("art-act1").src = "../_art/unit4/unlock.png";
+              $("art-act1").alt =
+                "Mateo celebrates as a new shop unlocks with golden light and confetti";
+              // Core locks done -> allow advancing (bonus is OPTIONAL)
+              $("adv-act1").classList.add("show");
+              setTimeout(function () {
+                showBubble("dlg-act1", DLG.bonus1[0]);
+                $("bonus1").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB1",
+            feedbackId: "fbB1",
+            goodEn:
+              "&#11088; Pack Y: $11.20 &divide; 8 = $1.40 vs Pack X's $7.50 &divide; 5 = $1.50 &mdash; $0.10 cheaper per notebook. Bonus claimed!",
+            badEn:
+              "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.)",
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        /* ---------- ACT 2 ---------- */
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Set the price ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; $80 &times; 0.65 = $52.00 (you keep 65% after taking 35% off). Rival countered.",
+            badEn:
+              "&#10060; Sale price = original &times; (1 &minus; 0.35) = 80 &times; 0.65. $28 is only the discount itself.",
+            onSolve: function () {
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.act2b[0]);
+                $("chal2b").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; 250% = 2.5 = 5/2 and 0.5% = 0.005 = 1/200. Percents above 100% and below 1% handled cleanly.",
+            badEn:
+              "&#10060; Divide each percent by 100: 250 &divide; 100 = 2.5; 0.5 &divide; 100 = 0.005.",
+            onSolve: function () {
+              // Core locks done -> allow advancing (bonus is OPTIONAL)
+              $("adv-act2").classList.add("show");
+              setTimeout(function () {
+                showBubble("dlg-act2", DLG.bonus2[0]);
+                $("bonus2").style.display = "block";
+              }, 450);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesB2",
+            feedbackId: "fbB2",
+            goodEn:
+              "&#11088; $60 is 75% of the original, so original = 60 &divide; 0.75 = $80. Reverse markdown solved!",
+            badEn:
+              "&#10060; The $60 equals 75% of the original. Divide: 60 &divide; 0.75. (Optional &mdash; you can still advance.)",
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        /* ---------- FINAL ---------- */
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Build the deal ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; $48 &divide; 6 = $8 per bulb, then $8 &times; 0.85 = $6.80. Unit rate and markdown fused perfectly.",
+            badEn:
+              "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80).",
+            onSolve: function () {
+              // Core done -> allow advancing (bonus is OPTIONAL)
+              $("adv-final").classList.add("show");
+              setTimeout(function () {
+                $("bonusF").style.display = "block";
+              }, 300);
+            },
+          });
+          wireChoices({
+            choicesId: "choicesBF",
+            feedbackId: "fbBF",
+            goodEn:
+              "&#11088; Deal B: ($30 &divide; 4) &times; 0.90 = $7.50 &times; 0.90 = $6.75 per bulb, beating your $6.80. A true mogul knows when the rival is right!",
+            badEn:
+              "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.)",
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U4 #2: Shopping Mall Mogul",
+        standard: "6.RP.2",
+        level: "2",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>

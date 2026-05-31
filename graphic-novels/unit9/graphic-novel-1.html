@@ -1,0 +1,1801 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphic Novel #1 · Treasure Map Navigator</title>
+    <style>
+      :root {
+        --bg: #07241f;
+        --ink: #f3fbf6;
+        --muted: #a9d6c6;
+        --accent: #ffb43d;
+        --accent2: #2fd6c2;
+        --panel: #0f3a32;
+        --line: #1f5a4d;
+        --ok: #39d98a;
+        --bad: #ff6b6b;
+        --bubble: #fffdf3;
+        --bubble-ink: #133029;
+        --font:
+          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.5;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      a {
+        color: var(--accent2);
+      }
+
+      /* ---- Top bar ---- */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(7, 36, 31, 0.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .home {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .home:hover {
+        color: var(--ink);
+      }
+      .title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .title .v {
+        color: var(--accent);
+      }
+      .progress-wrap {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .progress {
+        flex: 1;
+        height: 10px;
+        background: #062019;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 0.4s ease;
+      }
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      /* ---- Tabs ---- */
+      .tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 14px;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+        scrollbar-width: thin;
+      }
+      .tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #0c322b;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab[aria-selected="true"] {
+        background: linear-gradient(135deg, var(--accent), #ff8a3d);
+        color: #2a1602;
+        border-color: transparent;
+      }
+      .tab:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .tab.locked {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tab .lk {
+        font-size: 0.8rem;
+      }
+
+      /* ---- Stage ---- */
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .scene {
+        display: none;
+      }
+      .scene.active {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .art {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #062019;
+        aspect-ratio: 16/9;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      /* Graceful fallback when panel art is unavailable */
+      .art img.art-missing {
+        display: none;
+      }
+      .art.art-fallback::after {
+        content: attr(data-fallback);
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 16px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-style: italic;
+        background: repeating-linear-gradient(
+          135deg,
+          #062019,
+          #062019 12px,
+          #0c322b 12px,
+          #0c322b 24px
+        );
+      }
+      .scene-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .scene-head h2 {
+        font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+      }
+      .scene-head .act {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      /* ---- Dialogue ---- */
+      .dialogue {
+        margin-top: 14px;
+        min-height: 96px;
+      }
+      .bubble {
+        background: var(--bubble);
+        color: var(--bubble-ink);
+        border-radius: 16px;
+        padding: 14px 16px;
+        position: relative;
+        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+        animation: fade 0.25s ease;
+      }
+      .bubble .who {
+        font-weight: 800;
+        color: #0e7a63;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .bubble .en {
+        font-size: 1.05rem;
+      }
+      .bubble .es {
+        font-size: 0.92rem;
+        color: #566677;
+        margin-top: 6px;
+        font-style: italic;
+      }
+      .bubble.caption {
+        background: #0c322b;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .bubble.caption .es {
+        color: var(--muted);
+      }
+      .dlg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #1f5a4d;
+      }
+      .dots i.on {
+        background: var(--accent);
+      }
+      .next {
+        min-height: 44px;
+        background: linear-gradient(135deg, var(--accent2), #1ba99a);
+        color: #04221d;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .next:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .next[disabled] {
+        opacity: 0.4;
+        cursor: default;
+      }
+
+      /* ---- Challenge / choice ---- */
+      .challenge {
+        margin-top: 16px;
+        background: #0c322b;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .challenge h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        color: var(--accent);
+      }
+      .challenge .prompt {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+      }
+      .challenge .prompt .es {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 4px;
+      }
+      .hint {
+        font-size: 0.9rem;
+        color: #ffe2b3;
+        background: #3a2a10;
+        border: 1px solid #7a5a1f;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin: 8px 0;
+      }
+      .hint b {
+        color: var(--accent);
+      }
+      /* mini coordinate grid */
+      .grid-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .grid-wrap svg {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+        background: #062019;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+      .numline-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .numline-wrap svg {
+        width: 100%;
+        max-width: 460px;
+        height: auto;
+      }
+      .choices {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .choice {
+        min-height: 48px;
+        text-align: left;
+        background: #0f3a32;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: var(--font);
+      }
+      .choice:hover {
+        border-color: var(--accent2);
+      }
+      .choice:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .choice.correct {
+        border-color: var(--ok);
+        background: #10351f;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #3a1414;
+      }
+      .feedback {
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 1rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+        animation: fade 0.25s ease;
+      }
+      .feedback.good {
+        background: #10351f;
+        border: 1px solid var(--ok);
+        color: #c8ffe0;
+      }
+      .feedback.bad {
+        background: #3a1414;
+        border: 1px solid var(--bad);
+        color: #ffd5d5;
+      }
+      .feedback .es {
+        display: block;
+        font-style: italic;
+        color: #9fd;
+        opacity: 0.85;
+        margin-top: 4px;
+        font-size: 0.9rem;
+      }
+
+      .frame {
+        margin-top: 12px;
+        font-size: 0.92rem;
+        color: var(--muted);
+        background: #062019;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .frame b {
+        color: var(--accent2);
+      }
+
+      .scene-foot {
+        margin-top: 18px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .advance {
+        min-height: 48px;
+        background: linear-gradient(135deg, var(--accent), #ff8a3d);
+        color: #2a1602;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 22px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+      .advance.show {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fade 0.3s ease;
+      }
+      .advance:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      /* ---- Cover ---- */
+      .cover-card {
+        text-align: center;
+      }
+      .cover-card .art {
+        aspect-ratio: 16/9;
+        margin-bottom: 16px;
+      }
+      .cover-card h2 {
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+      }
+      .cover-card p {
+        color: var(--muted);
+        max-width: 620px;
+        margin: 10px auto;
+      }
+      .start {
+        min-height: 52px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, var(--accent), #ff8a3d);
+        color: #2a1602;
+        border: none;
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        cursor: pointer;
+      }
+      .start:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      .level-pill {
+        display: inline-block;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #04221d;
+        background: var(--accent2);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-weight: 700;
+      }
+
+      /* ---- Glossary ---- */
+      .gloss {
+        display: grid;
+        gap: 12px;
+      }
+      .term {
+        background: #0c322b;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .term .ico {
+        font-size: 1.6rem;
+        flex: 0 0 auto;
+      }
+      .term h3 {
+        font-size: 1.1rem;
+      }
+      .term .es-term {
+        color: var(--accent2);
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+      .term p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* ---- Mission complete ---- */
+      .complete {
+        text-align: center;
+        display: none;
+      }
+      .complete.show {
+        display: block;
+      }
+      .complete .art {
+        margin-bottom: 16px;
+      }
+      .complete h2 {
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        color: var(--accent);
+      }
+      .badge-done {
+        display: inline-block;
+        font-size: 3rem;
+        margin: 8px;
+      }
+      .restart {
+        min-height: 48px;
+        margin-top: 14px;
+        background: #0c322b;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .locked-note {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 30px 10px;
+      }
+      .locked-note.show {
+        display: block;
+      }
+
+      @media (max-width: 480px) {
+        .topbar-inner {
+          gap: 8px;
+        }
+        .title {
+          font-size: 0.9rem;
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <a class="home" href="../index.html">&#8592; Home</a>
+        <span class="title"
+          ><span class="v">#1</span> Treasure Map Navigator</span
+        >
+        <div class="progress-wrap">
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <i id="bar"></i>
+          </div>
+          <span class="progress-label" id="plabel">0%</span>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Chapters">
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="true"
+          data-scene="cover"
+          id="tab-cover"
+        >
+          Cover
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="act1"
+          id="tab-act1"
+        >
+          Act 1: The Map Grid
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="act2"
+          id="tab-act2"
+        >
+          <span class="lk">&#128274;</span> Act 2: Above &amp; Below
+        </button>
+        <button
+          class="tab locked"
+          role="tab"
+          aria-selected="false"
+          data-scene="final"
+          id="tab-final"
+        >
+          <span class="lk">&#128274;</span> Final: The Treasure
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          data-scene="gloss"
+          id="tab-gloss"
+        >
+          Glossary
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <!-- ============ COVER ============ -->
+      <section
+        class="scene active cover-card"
+        id="scene-cover"
+        role="tabpanel"
+        aria-labelledby="tab-cover"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit9/cover.png"
+            alt="Maya the young explorer holds up a glowing treasure map on a tropical cliff above the sea"
+          />
+        </div>
+        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
+        <h2>Treasure Map Navigator</h2>
+        <p>
+          You are <b>Maya</b>, a young explorer. You found an old treasure map!
+          To reach the treasure, you must <b>plot points</b> on a grid and use
+          <b>integers</b> (numbers above and below zero). Let&rsquo;s go!
+        </p>
+        <p style="font-size: 0.92rem">
+          <i
+            >Eres Maya, una joven exploradora. Para llegar al tesoro, debes
+            marcar puntos en una cuadr&iacute;cula y usar n&uacute;meros enteros
+            (arriba y abajo de cero).</i
+          >
+        </p>
+        <button class="start" id="start-btn">
+          Start the Hunt &#128506;&#65039;
+        </button>
+      </section>
+
+      <!-- ============ ACT 1 ============ -->
+      <section
+        class="scene"
+        id="scene-act1"
+        role="tabpanel"
+        aria-labelledby="tab-act1"
+      >
+        <div class="scene-head">
+          <span class="act">Act 1 &middot; Graph on the Coordinate Plane</span>
+          <h2>The Map Grid</h2>
+        </div>
+        <div class="art">
+          <img
+            id="art-act1"
+            src="../_art/unit9/map-grid.png"
+            alt="Maya kneels over a treasure map with a glowing coordinate grid drawn on it"
+          />
+        </div>
+
+        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
+        <div class="dlg-row">
+          <div class="dots" id="dots-act1"></div>
+          <button class="next" id="next-act1">Next &#9654;</button>
+        </div>
+
+        <!-- Challenge 1a: name the quadrant -->
+        <div class="challenge" id="chal1a" style="display: none">
+          <h3>&#128205; Map Point #1 &mdash; Which Quadrant?</h3>
+          <p class="prompt">
+            The map shows the point <b>(&minus;4, 3)</b>. The first number is
+            <b>x</b> (left/right). The second is <b>y</b> (up/down). Which
+            quadrant is it in?
+            <span class="es"
+              >El punto (&minus;4, 3): x es izquierda/derecha, y es
+              arriba/abajo. &iquest;En qu&eacute; cuadrante est&aacute;?</span
+            >
+          </p>
+          <div class="grid-wrap" id="grid1a"></div>
+          <div class="hint">
+            &#128161; <b>Hint:</b> x = &minus;4 means go <b>LEFT</b>. y = 3
+            means go <b>UP</b>. Left + Up is the top-left, which is
+            <b>Quadrant II</b>.
+          </div>
+          <div class="choices" id="choices1a">
+            <button class="choice" data-correct="false">
+              Quadrant I &nbsp;(right + up)
+            </button>
+            <button class="choice" data-correct="true">
+              Quadrant II &nbsp;(left + up)
+            </button>
+            <button class="choice" data-correct="false">
+              Quadrant III &nbsp;(left + down)
+            </button>
+          </div>
+          <div class="feedback" id="fb1a"></div>
+        </div>
+
+        <!-- Challenge 1b: which ordered pair -->
+        <div class="challenge" id="chal1b" style="display: none">
+          <h3>&#128205; Map Point #2 &mdash; Plot the Path</h3>
+          <p class="prompt">
+            From the center (0, 0), the clue says go <b>3 right</b> and
+            <b>2 down</b>. Which ordered pair is that?
+            <span class="es"
+              >Desde (0,0): 3 a la derecha y 2 hacia abajo. &iquest;Cu&aacute;l
+              par ordenado es?</span
+            >
+          </p>
+          <div class="grid-wrap" id="grid1b"></div>
+          <div class="hint">
+            &#128161; <b>Hint:</b> Right is <b>positive x</b>. Down is
+            <b>negative y</b>. So x = 3 and y = &minus;2.
+          </div>
+          <div class="choices" id="choices1b">
+            <button class="choice" data-correct="false">(&minus;3, 2)</button>
+            <button class="choice" data-correct="true">(3, &minus;2)</button>
+            <button class="choice" data-correct="false">(2, &minus;3)</button>
+          </div>
+          <div class="feedback" id="fb1b"></div>
+        </div>
+
+        <div class="frame" id="frame1" style="display: none">
+          <b>Sentence frame:</b> &ldquo;The point (&minus;4, 3) is in Quadrant
+          ____ because x is ____ and y is ____. Going 3 right and 2 down is the
+          point ( ____ , ____ ).&rdquo;
+        </div>
+
+        <div class="scene-foot">
+          <button class="advance" id="adv-act1">
+            Follow the map &#129517;
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ ACT 2 ============ -->
+      <section
+        class="scene"
+        id="scene-act2"
+        role="tabpanel"
+        aria-labelledby="tab-act2"
+      >
+        <div class="locked-note" id="lock-act2">
+          &#128274; Finish Act 1 first to unlock Act 2.
+        </div>
+        <div id="body-act2">
+          <div class="scene-head">
+            <span class="act"
+              >Act 2 &middot; Integers &amp; Absolute Value</span
+            >
+            <h2>Above &amp; Below the Sea</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-act2"
+              src="../_art/unit9/depth-dive.png"
+              alt="Maya dives down past a cliff that shows sea level, with depths below and heights above"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-act2"></div>
+            <button class="next" id="next-act2">Next &#9654;</button>
+          </div>
+
+          <!-- Challenge 2a: order integers -->
+          <div class="challenge" id="chal2a" style="display: none">
+            <h3>&#127956;&#65039; Elevation Lock &mdash; Order the Levels</h3>
+            <p class="prompt">
+              The clues are at these heights: <b>6 m</b> up,
+              <b>&minus;8 m</b> (below sea level), <b>0 m</b> (sea level),
+              <b>12 m</b> up, and <b>&minus;15 m</b> deep. Put them in order
+              from <b>lowest to highest</b>.
+              <span class="es"
+                >Ordena de menor a mayor: 6, &minus;8, 0, 12, &minus;15.</span
+              >
+            </p>
+            <div class="numline-wrap" id="nline2a"></div>
+            <div class="hint">
+              &#128161; <b>Hint:</b> On a number line, numbers get
+              <b>bigger</b> to the right. Negative numbers are
+              <b>below zero</b>. The most negative (deepest) is the smallest.
+            </div>
+            <div class="choices" id="choices2a">
+              <button class="choice" data-correct="false">
+                0, &minus;8, &minus;15, 6, 12
+              </button>
+              <button class="choice" data-correct="true">
+                &minus;15, &minus;8, 0, 6, 12
+              </button>
+              <button class="choice" data-correct="false">
+                12, 6, 0, &minus;8, &minus;15
+              </button>
+            </div>
+            <div class="feedback" id="fb2a"></div>
+          </div>
+
+          <!-- Challenge 2b: absolute value as distance -->
+          <div class="challenge" id="chal2b" style="display: none">
+            <h3>&#127754; Depth Lock &mdash; How Far From the Surface?</h3>
+            <p class="prompt">
+              Maya dives to <b>&minus;20 m</b> (20 meters below sea level). How
+              <b>far</b> is she from the surface (0)? This is the
+              <b>absolute value</b>, written |&minus;20|.
+              <span class="es"
+                >&iquest;Qu&eacute; tan lejos de la superficie est&aacute; a
+                &minus;20 m? Eso es el valor absoluto |&minus;20|.</span
+              >
+            </p>
+            <div class="hint">
+              &#128161; <b>Hint:</b> Absolute value is the <b>distance</b> from
+              0. It is never negative. |&minus;20| = 20.
+            </div>
+            <div class="choices" id="choices2b">
+              <button class="choice" data-correct="false">
+                &minus;20 m &nbsp;(distance is never negative)
+              </button>
+              <button class="choice" data-correct="true">
+                20 m &nbsp;(|&minus;20| = 20)
+              </button>
+              <button class="choice" data-correct="false">
+                0 m &nbsp;(that is the surface)
+              </button>
+            </div>
+            <div class="feedback" id="fb2b"></div>
+          </div>
+
+          <div class="frame" id="frame2" style="display: none">
+            <b>Sentence frame:</b> &ldquo;From lowest to highest the order is
+            ____. The diver at &minus;20 m is ____ meters from the surface
+            because |&minus;20| = ____.&rdquo;
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-act2">
+              Dive for the chest &#129446;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ FINAL ============ -->
+      <section
+        class="scene"
+        id="scene-final"
+        role="tabpanel"
+        aria-labelledby="tab-final"
+      >
+        <div class="locked-note" id="lock-final">
+          &#128274; Finish Act 2 first to unlock the Final.
+        </div>
+        <div id="body-final">
+          <div class="scene-head">
+            <span class="act">Final &middot; Navigate to the Treasure</span>
+            <h2>X Marks the Spot</h2>
+          </div>
+          <div class="art">
+            <img
+              id="art-final"
+              src="../_art/unit9/final-nav.png"
+              alt="Maya stands at a glowing X on the map grid near a steep cliff edge"
+            />
+          </div>
+
+          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
+          <div class="dlg-row">
+            <div class="dots" id="dots-final"></div>
+            <button class="next" id="next-final">Next &#9654;</button>
+          </div>
+
+          <div class="challenge" id="chalF" style="display: none">
+            <h3>&#128081; Treasure Lock &mdash; The Final Clue</h3>
+            <p class="prompt">
+              The treasure is at point <b>(&minus;2, &minus;5)</b>, buried
+              <b>5 m below</b> sea level. Pick the line that is
+              <b>fully correct</b>: the quadrant of the point AND the distance
+              of &minus;5 from the surface.
+              <span class="es"
+                >Elige la l&iacute;nea correcta: el cuadrante de (&minus;2,
+                &minus;5) y la distancia de &minus;5 desde 0.</span
+              >
+            </p>
+            <div class="grid-wrap" id="gridF"></div>
+            <div class="hint">
+              &#128161; <b>Hint:</b> x = &minus;2 (left) and y = &minus;5 (down)
+              &rarr; bottom-left = <b>Quadrant III</b>. And |&minus;5| = 5.
+            </div>
+            <div class="choices" id="choicesF">
+              <button class="choice" data-correct="false">
+                Quadrant II, &nbsp; |&minus;5| = &minus;5
+              </button>
+              <button class="choice" data-correct="true">
+                Quadrant III, &nbsp; |&minus;5| = 5
+              </button>
+              <button class="choice" data-correct="false">
+                Quadrant III, &nbsp; |&minus;5| = &minus;5
+              </button>
+            </div>
+            <div class="feedback" id="fbF"></div>
+          </div>
+
+          <div class="frame" id="frameF" style="display: none">
+            <b>Sentence frame:</b> &ldquo;The point (&minus;2, &minus;5) is in
+            Quadrant ____. The chest is ____ meters from the surface because
+            |&minus;5| = ____.&rdquo;
+          </div>
+
+          <div class="scene-foot">
+            <button class="advance" id="adv-final">
+              Dig up the treasure &#127775;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MISSION COMPLETE ============ -->
+      <section
+        class="scene complete"
+        id="scene-complete"
+        role="tabpanel"
+        aria-label="Mission complete"
+      >
+        <div class="art">
+          <img
+            src="../_art/unit9/treasure-found.png"
+            alt="Maya opens a glowing treasure chest full of gold on the beach at sunset"
+          />
+        </div>
+        <span class="badge-done">&#127881;&#128176;&#11088;</span>
+        <h2>Treasure Found!</h2>
+        <p>
+          You did it, Maya! You used the <b>coordinate plane</b> to plot the
+          path and <b>integers</b> and <b>absolute value</b> to find how deep
+          the chest was buried. The gold is yours. Amazing navigating!
+        </p>
+        <p style="color: var(--muted); font-size: 0.92rem">
+          <i
+            >&iexcl;Lo lograste! Usaste el plano de coordenadas y los
+            n&uacute;meros enteros para encontrar el tesoro.
+            &iexcl;Excelente!</i
+          >
+        </p>
+        
+        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
+          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
+          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
+          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
+            Deep dive elevation: What is the <strong>absolute value</strong> of <strong>&minus;15</strong>?<span class="es">¿Cuál es el valor absoluto de &minus;15?</span>
+          </p>
+          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
+            
+            <button class="choice" data-correct="false">A) 0 &nbsp;(absolute value is never zero unless value is zero)</button>
+            <button class="choice" data-correct="true">B) 15 &nbsp;(represents distance from 0, always positive) &nbsp;✅</button>
+            <button class="choice" data-correct="false">C) &minus;15 &nbsp;(absolute value cannot be negative)</button>
+      
+          </div>
+          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
+        </div>
+        <button class="restart" id="restart-btn">Play again &#8635;</button>
+    
+      </section>
+
+      <!-- ============ GLOSSARY ============ -->
+      <section
+        class="scene"
+        id="scene-gloss"
+        role="tabpanel"
+        aria-labelledby="tab-gloss"
+      >
+        <div class="scene-head">
+          <span class="act">Reference</span>
+          <h2>Glossary &middot; Word Bank</h2>
+        </div>
+        <div class="gloss" id="gloss-list"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------- Graceful art fallback (panel image unavailable) ---------- */
+        Array.prototype.slice
+          .call(document.querySelectorAll(".art img"))
+          .forEach(function (im) {
+            im.addEventListener("error", function () {
+              im.classList.add("art-missing");
+              var box = im.closest(".art");
+              if (box) {
+                box.classList.add("art-fallback");
+                box.setAttribute(
+                  "data-fallback",
+                  im.getAttribute("alt") || "Illustration",
+                );
+              }
+            });
+          });
+
+        /* ---------- Small coordinate grid SVG ---------- */
+        function gridSVG(px, py, label) {
+          // grid from -6..6, point at (px,py)
+          var size = 240,
+            cx = size / 2,
+            step = size / 12;
+          function X(x) {
+            return cx + x * step;
+          }
+          function Y(y) {
+            return cx - y * step;
+          }
+          var s =
+            '<svg viewBox="0 0 ' +
+            size +
+            " " +
+            size +
+            '" role="img" aria-label="Coordinate grid showing the point ' +
+            label +
+            '">';
+          var i;
+          for (i = -6; i <= 6; i++) {
+            s +=
+              '<line x1="' +
+              X(i) +
+              '" y1="0" x2="' +
+              X(i) +
+              '" y2="' +
+              size +
+              '" stroke="#1f5a4d" stroke-width="1"/>';
+            s +=
+              '<line x1="0" y1="' +
+              Y(i) +
+              '" x2="' +
+              size +
+              '" y2="' +
+              Y(i) +
+              '" stroke="#1f5a4d" stroke-width="1"/>';
+          }
+          s +=
+            '<line x1="0" y1="' +
+            cx +
+            '" x2="' +
+            size +
+            '" y2="' +
+            cx +
+            '" stroke="#a9d6c6" stroke-width="2"/>';
+          s +=
+            '<line x1="' +
+            cx +
+            '" y1="0" x2="' +
+            cx +
+            '" y2="' +
+            size +
+            '" stroke="#a9d6c6" stroke-width="2"/>';
+          s +=
+            '<circle cx="' +
+            X(px) +
+            '" cy="' +
+            Y(py) +
+            '" r="6" fill="#ffb43d" stroke="#2a1602" stroke-width="1.5"/>';
+          s += "</svg>";
+          return s;
+        }
+
+        /* ---------- Number line SVG ---------- */
+        function numlineSVG(points) {
+          var w = 440,
+            h = 70,
+            cy = 38,
+            pad = 20;
+          var min = -16,
+            max = 14;
+          function X(v) {
+            return pad + ((v - min) / (max - min)) * (w - 2 * pad);
+          }
+          var s =
+            '<svg viewBox="0 0 ' +
+            w +
+            " " +
+            h +
+            '" role="img" aria-label="Number line">';
+          s +=
+            '<line x1="' +
+            pad +
+            '" y1="' +
+            cy +
+            '" x2="' +
+            (w - pad) +
+            '" y2="' +
+            cy +
+            '" stroke="#a9d6c6" stroke-width="2"/>';
+          var ticks = [-15, -10, -5, 0, 5, 10];
+          ticks.forEach(function (t) {
+            s +=
+              '<line x1="' +
+              X(t) +
+              '" y1="' +
+              (cy - 5) +
+              '" x2="' +
+              X(t) +
+              '" y2="' +
+              (cy + 5) +
+              '" stroke="#a9d6c6" stroke-width="1.5"/>';
+            s +=
+              '<text x="' +
+              X(t) +
+              '" y="' +
+              (cy + 20) +
+              '" fill="#a9d6c6" font-size="11" text-anchor="middle">' +
+              t +
+              "</text>";
+          });
+          points.forEach(function (p) {
+            s +=
+              '<circle cx="' +
+              X(p) +
+              '" cy="' +
+              cy +
+              '" r="5" fill="#ffb43d" stroke="#2a1602" stroke-width="1.5"/>';
+            s +=
+              '<text x="' +
+              X(p) +
+              '" y="' +
+              (cy - 12) +
+              '" fill="#ffb43d" font-size="11" text-anchor="middle" font-weight="bold">' +
+              p +
+              "</text>";
+          });
+          s += "</svg>";
+          return s;
+        }
+
+        /* ---------- Dialogue data (English + Spanish support) ---------- */
+        var DLG = {
+          act1: [
+            {
+              who: "Map",
+              en: "Old map found! It has a GRID with numbers. To follow it, you must read points like (x, y).",
+              es: "&iexcl;Mapa encontrado! Tiene una CUADR&Iacute;CULA. Debes leer puntos como (x, y).",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Okay! The first number tells me left or right. The second tells me up or down. I can do this!",
+              es: "&iexcl;Bien! El primer n&uacute;mero es izquierda/derecha. El segundo es arriba/abajo.",
+            },
+            {
+              who: "Map",
+              en: "First, find which QUADRANT the treasure clue is in.",
+              es: "Primero, encuentra en qu&eacute; CUADRANTE est&aacute; la pista.",
+              cap: true,
+            },
+          ],
+          act1b: [
+            {
+              who: "Maya",
+              en: "Got the quadrant! Now the clue says move from the center. Let me plot the next point.",
+              es: "&iexcl;Tengo el cuadrante! Ahora debo moverme desde el centro y marcar el punto.",
+            },
+          ],
+          act2: [
+            {
+              who: "Maya",
+              en: "The path leads to a cliff over the sea. Some clues are ABOVE the water and some are BELOW it.",
+              es: "El camino lleva a un acantilado. Algunas pistas est&aacute;n ARRIBA del agua y otras ABAJO.",
+            },
+            {
+              who: "Map",
+              en: "Use INTEGERS. Sea level is 0. Up is positive (+). Below the water is negative (&minus;). Order them!",
+              es: "Usa N&Uacute;MEROS ENTEROS. El nivel del mar es 0. Arriba es +, abajo es &minus;.",
+              cap: true,
+            },
+          ],
+          act2b: [
+            {
+              who: "Maya",
+              en: "Ordered them! Now I dive deep. I need to know how FAR below the surface I am &mdash; the absolute value.",
+              es: "&iexcl;Listo! Ahora me sumerjo. Necesito saber qu&eacute; tan LEJOS estoy: el valor absoluto.",
+            },
+          ],
+          final: [
+            {
+              who: "Map",
+              en: "The treasure is close! Use BOTH skills: find the quadrant of the spot AND how deep it is buried.",
+              es: "&iexcl;El tesoro est&aacute; cerca! Usa AMBAS destrezas: el cuadrante y la profundidad.",
+              cap: true,
+            },
+            {
+              who: "Maya",
+              en: "Coordinate plane AND absolute value. I'm ready. X marks the spot!",
+              es: "Plano de coordenadas Y valor absoluto. &iexcl;Estoy lista! &iexcl;La X marca el lugar!",
+            },
+          ],
+        };
+
+        var GLOSS = [
+          {
+            ico: "&#128511;",
+            en: "Coordinate plane",
+            es: "plano de coordenadas",
+            def: "A flat grid made by a horizontal x-axis and a vertical y-axis crossing at 0.",
+          },
+          {
+            ico: "&#128205;",
+            en: "Ordered pair",
+            es: "par ordenado",
+            def: "Two numbers (x, y) that name one point. x first (left/right), y second (up/down).",
+          },
+          {
+            ico: "&#10133;",
+            en: "x-axis / y-axis",
+            es: "eje x / eje y",
+            def: "The x-axis goes left-right. The y-axis goes up-down. They cross at the origin (0, 0).",
+          },
+          {
+            ico: "&#129517;",
+            en: "Quadrant",
+            es: "cuadrante",
+            def: "One of the four regions of the plane. I (right-up), II (left-up), III (left-down), IV (right-down).",
+          },
+          {
+            ico: "&#127919;",
+            en: "Origin",
+            es: "origen",
+            def: "The center point (0, 0) where the two axes cross.",
+          },
+          {
+            ico: "&#127759;",
+            en: "Integer",
+            es: "n&uacute;mero entero",
+            def: "A whole number that can be positive, negative, or zero: &hellip; &minus;2, &minus;1, 0, 1, 2 &hellip;",
+          },
+          {
+            ico: "&#10134;",
+            en: "Negative number",
+            es: "n&uacute;mero negativo",
+            def: "A number less than 0, like &minus;8. It can mean below sea level or below zero.",
+          },
+          {
+            ico: "&#128207;",
+            en: "Absolute value",
+            es: "valor absoluto",
+            def: "The distance of a number from 0. It is never negative. |&minus;20| = 20.",
+          },
+          {
+            ico: "&#9878;&#65039;",
+            en: "Compare / order",
+            es: "comparar / ordenar",
+            def: "To say which integer is bigger or smaller. On a number line, right is bigger.",
+          },
+        ];
+
+        /* ---------- State ---------- */
+        var state = { act1: false, act2: false, final: false };
+        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+
+        function $(id) {
+          return document.getElementById(id);
+        }
+        function qa(sel, root) {
+          return Array.prototype.slice.call(
+            (root || document).querySelectorAll(sel),
+          );
+        }
+
+        /* ---------- Progress ---------- */
+        function updateProgress() {
+          var done =
+            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
+          var pct = Math.round((done / 3) * 100);
+          $("bar").style.width = pct + "%";
+          $("plabel").textContent = pct + "%";
+          document
+            .querySelector(".progress")
+            .setAttribute("aria-valuenow", pct);
+        }
+
+        /* ---------- Tab locking ---------- */
+        function refreshLocks() {
+          setLock("tab-act2", !state.act1);
+          setLock("tab-final", !state.act2);
+          $("lock-act2").classList.toggle("show", !state.act1);
+          $("body-act2").style.display = state.act1 ? "" : "none";
+          $("lock-final").classList.toggle("show", !state.act2);
+          $("body-final").style.display = state.act2 ? "" : "none";
+        }
+        function setLock(tabId, locked) {
+          var t = $(tabId);
+          t.classList.toggle("locked", locked);
+          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
+          t.innerHTML =
+            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+        }
+
+        /* ---------- Scene switching ---------- */
+        function showScene(name) {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.toggle("active", s === name);
+            var tab = $("tab-" + s);
+            if (tab)
+              tab.setAttribute("aria-selected", s === name ? "true" : "false");
+          });
+          $("scene-complete").classList.remove("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        function showComplete() {
+          SCENES.forEach(function (s) {
+            var sc = $("scene-" + s);
+            if (sc) sc.classList.remove("active");
+          });
+          qa(".tab").forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          var c = $("scene-complete");
+          c.classList.add("active", "show");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        qa(".tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            if (tab.classList.contains("locked")) return;
+            showScene(tab.dataset.scene);
+          });
+          tab.addEventListener("keydown", function (e) {
+            var tabsArr = qa(".tab");
+            var i = tabsArr.indexOf(tab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              (tabsArr[i + 1] || tabsArr[0]).focus();
+            }
+            if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus();
+            }
+          });
+        });
+
+        /* ---------- Dialogue engine ---------- */
+        function runDialogue(opts) {
+          var idx = 0;
+          var dlgBox = $(opts.dlgId),
+            nextBtn = $(opts.nextId),
+            dots = $(opts.dotsId);
+          dots.innerHTML = "";
+          opts.dlg.forEach(function () {
+            var i = document.createElement("i");
+            dots.appendChild(i);
+          });
+          function render() {
+            var line = opts.dlg[idx];
+            dlgBox.innerHTML =
+              '<div class="bubble' +
+              (line.cap ? " caption" : "") +
+              '">' +
+              '<div class="who">' +
+              line.who +
+              "</div>" +
+              '<div class="en">' +
+              line.en +
+              "</div>" +
+              '<div class="es">' +
+              line.es +
+              "</div></div>";
+            qa("i", dots).forEach(function (d, k) {
+              d.classList.toggle("on", k <= idx);
+            });
+            nextBtn.textContent =
+              idx === opts.dlg.length - 1
+                ? opts.lastLabel || "Continue ▶"
+                : "Next ▶";
+          }
+          nextBtn.onclick = function () {
+            if (idx < opts.dlg.length - 1) {
+              idx++;
+              render();
+            } else {
+              if (opts.onDone) opts.onDone();
+            }
+          };
+          render();
+        }
+
+        /* ---------- Choice handler ---------- */
+        function wireChoices(opts) {
+          var solved = false;
+          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              if (solved) return;
+              var correct = btn.dataset.correct === "true";
+              var fb = $(opts.feedbackId);
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML =
+                  opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
+                qa(".choice", $(opts.choicesId)).forEach(function (b) {
+                  b.disabled = true;
+                });
+                if (opts.onSolve) opts.onSolve();
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML =
+                  opts.badEn + '<span class="es">' + opts.badEs + "</span>";
+              }
+            });
+          });
+        }
+
+        /* ---------- Build glossary ---------- */
+        (function () {
+          var list = $("gloss-list");
+          GLOSS.forEach(function (g) {
+            var d = document.createElement("div");
+            d.className = "term";
+            d.innerHTML =
+              '<div class="ico">' +
+              g.ico +
+              "</div><div><h3>" +
+              g.en +
+              ' <span class="es-term">(' +
+              g.es +
+              ")</span></h3><p>" +
+              g.def +
+              "</p></div>";
+            list.appendChild(d);
+          });
+        })();
+
+        /* ---------- Render mini grids / number lines ---------- */
+        $("grid1a").innerHTML = gridSVG(-4, 3, "(-4, 3)");
+        $("grid1b").innerHTML = gridSVG(3, -2, "(3, -2)");
+        $("gridF").innerHTML = gridSVG(-2, -5, "(-2, -5)");
+        $("nline2a").innerHTML = numlineSVG([-15, -8, 0, 6, 12]);
+
+        /* ---------- ACT 1 flow ---------- */
+        function initAct1() {
+          runDialogue({
+            dlgId: "dlg-act1",
+            nextId: "next-act1",
+            dotsId: "dots-act1",
+            dlg: DLG.act1,
+            lastLabel: "Read the map ▶",
+            onDone: function () {
+              $("next-act1").style.display = "none";
+              $("chal1a").style.display = "block";
+              $("chal1a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices1a",
+            feedbackId: "fb1a",
+            goodEn:
+              "&#9989; Yes! x = &minus;4 (left) and y = 3 (up) is the top-left, Quadrant II.",
+            goodEs: "&iexcl;S&iacute;! Izquierda y arriba es el Cuadrante II.",
+            badEn:
+              "&#10060; Not quite. x = &minus;4 means LEFT and y = 3 means UP. Use the hint and try again.",
+            badEs:
+              "Casi. x = &minus;4 es izquierda, y = 3 es arriba. Usa la pista.",
+            onSolve: function () {
+              var box = $("dlg-act1");
+              setTimeout(function () {
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act1b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act1b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act1b[0].es +
+                  "</div></div>";
+                $("chal1b").style.display = "block";
+                $("frame1").style.display = "block";
+              }, 500);
+            },
+          });
+          wireChoices({
+            choicesId: "choices1b",
+            feedbackId: "fb1b",
+            goodEn:
+              "&#9989; Correct! 3 right is x = 3 and 2 down is y = &minus;2, so (3, &minus;2). Path plotted!",
+            goodEs:
+              "&iexcl;Correcto! 3 a la derecha y 2 abajo es (3, &minus;2).",
+            badEn:
+              "&#10060; Check the order: x first (right = +3), y second (down = &minus;2).",
+            badEs:
+              "Revisa el orden: x primero (derecha = +3), y despu&eacute;s (abajo = &minus;2).",
+            onSolve: function () {
+              $("adv-act1").classList.add("show");
+            },
+          });
+          $("adv-act1").addEventListener("click", function () {
+            state.act1 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("act2");
+          });
+        }
+
+        /* ---------- ACT 2 flow ---------- */
+        function initAct2() {
+          runDialogue({
+            dlgId: "dlg-act2",
+            nextId: "next-act2",
+            dotsId: "dots-act2",
+            dlg: DLG.act2,
+            lastLabel: "Order the levels ▶",
+            onDone: function () {
+              $("next-act2").style.display = "none";
+              $("chal2a").style.display = "block";
+              $("chal2a").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choices2a",
+            feedbackId: "fb2a",
+            goodEn:
+              "&#9989; Perfect: &minus;15, &minus;8, 0, 6, 12. The deepest (&minus;15) is smallest; the highest (12) is largest.",
+            goodEs:
+              "&iexcl;Perfecto! &minus;15, &minus;8, 0, 6, 12. Lo m&aacute;s profundo es lo menor.",
+            badEn:
+              "&#10060; Remember: more negative = deeper = smaller. Order from the deepest up.",
+            badEs:
+              "Recuerda: m&aacute;s negativo = m&aacute;s profundo = menor.",
+            onSolve: function () {
+              var box = $("dlg-act2");
+              setTimeout(function () {
+                box.innerHTML =
+                  '<div class="bubble"><div class="who">' +
+                  DLG.act2b[0].who +
+                  '</div><div class="en">' +
+                  DLG.act2b[0].en +
+                  '</div><div class="es">' +
+                  DLG.act2b[0].es +
+                  "</div></div>";
+                $("chal2b").style.display = "block";
+                $("frame2").style.display = "block";
+              }, 500);
+            },
+          });
+          wireChoices({
+            choicesId: "choices2b",
+            feedbackId: "fb2b",
+            goodEn:
+              "&#9989; Right! |&minus;20| = 20. She is 20 meters from the surface. Distance is always positive.",
+            goodEs:
+              "&iexcl;Correcto! |&minus;20| = 20. Est&aacute; a 20 metros. La distancia siempre es positiva.",
+            badEn:
+              "&#10060; Absolute value is a DISTANCE, so it is never negative. |&minus;20| = 20.",
+            badEs:
+              "El valor absoluto es una distancia, nunca negativa. |&minus;20| = 20.",
+            onSolve: function () {
+              $("adv-act2").classList.add("show");
+            },
+          });
+          $("adv-act2").addEventListener("click", function () {
+            state.act2 = true;
+            updateProgress();
+            refreshLocks();
+            showScene("final");
+          });
+        }
+
+        /* ---------- FINAL flow ---------- */
+        function initFinal() {
+          runDialogue({
+            dlgId: "dlg-final",
+            nextId: "next-final",
+            dotsId: "dots-final",
+            dlg: DLG.final,
+            lastLabel: "Find the spot ▶",
+            onDone: function () {
+              $("next-final").style.display = "none";
+              $("chalF").style.display = "block";
+              $("frameF").style.display = "block";
+              $("chalF").scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            },
+          });
+          wireChoices({
+            choicesId: "choicesF",
+            feedbackId: "fbF",
+            goodEn:
+              "&#9989; X MARKS THE SPOT! (&minus;2, &minus;5) is Quadrant III (left + down), and |&minus;5| = 5 meters deep. Dig!",
+            goodEs:
+              "&iexcl;La X marca el lugar! (&minus;2, &minus;5) es Cuadrante III y |&minus;5| = 5 m. &iexcl;A cavar!",
+            badEn:
+              "&#10060; One part is wrong. Left + down is Quadrant III, and absolute value is never negative: |&minus;5| = 5.",
+            badEs:
+              "Una parte est&aacute; mal. Izquierda y abajo = Cuadrante III, y |&minus;5| = 5.",
+            onSolve: function () {
+              $("adv-final").classList.add("show");
+            },
+          });
+          $("adv-final").addEventListener("click", function () {
+            state.final = true;
+            updateProgress();
+            showComplete();
+          });
+        }
+
+        /* ---------- Wire start / restart ---------- */
+        $("start-btn").addEventListener("click", function () {
+          showScene("act1");
+        });
+        $("restart-btn").addEventListener("click", function () {
+          location.reload();
+        });
+
+        /* ---------- Init ---------- */
+        initAct1();
+        initAct2();
+        initFinal();
+        
+        // Programmatic Master Challenge Wiring
+        (function() {
+          var solved = false;
+          var btnList = document.querySelectorAll("#choicesComplete .choice");
+          var fb = document.getElementById("fbComplete");
+          
+          btnList.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              if (solved) return;
+              var correct = btn.getAttribute("data-correct") === "true";
+              if (correct) {
+                solved = true;
+                btn.classList.add("correct");
+                fb.className = "feedback show good";
+                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
+                btnList.forEach(function(b) { b.disabled = true; });
+                
+                var h2 = document.querySelector("#scene-complete h2");
+                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
+              } else {
+                btn.classList.add("wrong");
+                btn.disabled = true;
+                fb.className = "feedback show bad";
+                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
+              }
+            });
+          });
+        })();
+
+        refreshLocks();
+        updateProgress();
+      })();
+    </script>
+    
+      <script src="/teacher-tools/nt-results.js"></script>
+<script>
+/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+(function () {
+  "use strict";
+  var FIRED = false; // dedupe guard: record once per completion
+  var complete = document.getElementById("scene-complete");
+  if (!complete || typeof NTResults === "undefined") return;
+
+  function studentName() {
+    try {
+      var k = "nt_gn_student";
+      var n = localStorage.getItem(k);
+      if (n && n.trim()) return n.trim();
+      n = window.prompt("Type your name so your teacher can see you finished:", "");
+      n = (n || "").trim();
+      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+      return n || "Student";
+    } catch (e) { return "Student"; }
+  }
+
+  function score() {
+    // Core math choice-points = all .choices groups except the bonus one.
+    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      .filter(function (g) { return g.id !== "choicesComplete"; });
+    var total = groups.length || 0;
+    var correct = groups.filter(function (g) {
+      return g.querySelector(".choice.correct");
+    }).length;
+    return { correct: correct, total: total };
+  }
+
+  function savedNote() {
+    if (document.getElementById("nt-saved-note")) return;
+    var p = document.createElement("p");
+    p.id = "nt-saved-note";
+    p.setAttribute("role", "status");
+    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+    p.textContent = "✓ Results saved for your teacher.";
+    complete.insertBefore(p, complete.querySelector(".restart") || null);
+  }
+
+  function record() {
+    if (FIRED) return;
+    FIRED = true;
+    var s = score();
+    try {
+      NTResults.finish({
+        student: studentName(),
+        assessment: "Graphic Novel U9 #1: Treasure Map Navigator",
+        standard: "6.NS.7",
+        level: "1",
+        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+        correct: s.correct,
+        total: s.total,
+        download: false, // log only; teacher pulls the class set
+      });
+    } catch (e) { /* non-fatal */ }
+    savedNote();
+  }
+
+  // Fire when the completion scene becomes visible (show/active class added).
+  function visible() {
+    return complete.classList.contains("show") || complete.classList.contains("active");
+  }
+  if (visible()) record();
+  var mo = new MutationObserver(function () { if (visible()) record(); });
+  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+})();
+</script>
+  </body>
+</html>
