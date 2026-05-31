@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 2 · Order Architect — Dividing Fractions (6.NS.A.1)</title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+
+    <!-- Shared activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+
+    <style>
+      /* Style ONLY with --nt-* variables so light/dark mode works. */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 20px 16px 64px;
+      }
+
+      header.hero {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 20px 22px;
+        margin-bottom: 18px;
+      }
+      header.hero h1 {
+        margin: 0 0 6px;
+        font-size: 28px;
+      }
+      .tag {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 700;
+        font-size: 14px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        margin-bottom: 10px;
+      }
+      .howto {
+        font-size: 18px;
+        margin: 4px 0 0;
+        color: var(--nt-text);
+      }
+      .howto strong {
+        color: var(--nt-accent);
+      }
+
+      .progress {
+        margin: 16px 0 8px;
+        font-weight: 700;
+        font-size: 17px;
+      }
+      .progbar {
+        height: 14px;
+        border-radius: 999px;
+        background: var(--nt-border);
+        overflow: hidden;
+        border: 1px solid var(--nt-border);
+      }
+      .progbar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: var(--nt-accent);
+        transition: width 0.25s ease;
+      }
+
+      .card {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 16px 0;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 21px;
+      }
+      .order-line {
+        font-size: 20px;
+        margin: 6px 0 12px;
+        color: var(--nt-text);
+      }
+      .frac-big {
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+
+      /* Visual fraction bar tool */
+      .bar {
+        display: flex;
+        width: 100%;
+        height: 54px;
+        border: 2px solid var(--nt-text);
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 6px 0 12px;
+      }
+      .bar .cell {
+        flex: 1 1 0;
+        border-right: 2px solid var(--nt-text);
+        cursor: pointer;
+        background: var(--nt-surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--nt-muted);
+        transition:
+          background 0.12s ease,
+          color 0.12s ease;
+        user-select: none;
+      }
+      .bar .cell:last-child {
+        border-right: none;
+      }
+      .bar .cell[aria-pressed="true"] {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+      }
+      .bar .cell:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: -3px;
+      }
+
+      .hint {
+        font-size: 15px;
+        color: var(--nt-muted);
+        margin: 4px 0 10px;
+      }
+
+      label.fld {
+        display: block;
+        font-weight: 700;
+        margin: 10px 0 4px;
+      }
+      input[type="text"],
+      input[type="number"],
+      select {
+        font-size: 19px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        width: 140px;
+        max-width: 100%;
+      }
+      input:focus-visible,
+      select:focus-visible,
+      button:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: flex-end;
+      }
+      .eq {
+        font-size: 22px;
+        font-weight: 800;
+        align-self: center;
+        padding-bottom: 8px;
+      }
+
+      /* drag/drop matching tiles */
+      .tiles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 8px 0;
+      }
+      .tile {
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        color: var(--nt-text);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 19px;
+        font-weight: 700;
+        cursor: grab;
+      }
+      .tile[aria-grabbed="true"] {
+        opacity: 0.5;
+      }
+      .slot {
+        min-height: 50px;
+        border: 2px dashed var(--nt-border);
+        border-radius: 10px;
+        padding: 6px 10px;
+        min-width: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--nt-muted);
+        background: var(--nt-surface);
+      }
+      .slot.filled {
+        border-style: solid;
+        border-color: var(--nt-accent);
+        color: var(--nt-text);
+      }
+      .match-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin: 8px 0;
+        flex-wrap: wrap;
+      }
+      .match-row .q {
+        font-size: 19px;
+        font-weight: 700;
+        min-width: 150px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      button.go {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: none;
+        border-radius: 10px;
+        padding: 14px 26px;
+        font-size: 19px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      button.ghost {
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 12px 22px;
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      #ntkit {
+        margin-top: 22px;
+      }
+    </style>
+  </head>
+
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="hero">
+        <span class="tag">Unit 2 · Bakery · 6.NS.A.1</span>
+        <h1>Order Architect: Dividing Fractions</h1>
+        <p class="howto">
+          <strong>What to do:</strong> You run the bakery. For each order,
+          divide the fractions to find how many servings you can make. Use the
+          tools, type your answers, then press <strong>Check My Work</strong>.
+        </p>
+      </header>
+
+      <div class="progress" aria-live="polite">
+        Orders done: <span id="pcount">0</span> of 6
+      </div>
+      <div class="progbar" aria-hidden="true"><span id="pfill"></span></div>
+
+      <!-- Q1: visual bar + how many pieces -->
+      <section class="card" aria-labelledby="q1h">
+        <h2 id="q1h">Order 1 — Cut the dough</h2>
+        <p class="order-line">
+          You have <span class="frac-big">1</span> whole tray. Each cookie needs
+          <span class="frac-big">1/4</span> of the tray.
+        </p>
+        <p class="hint">
+          Tap the tray to cut it into <strong>fourths</strong>. How many cookies
+          can you make? That is 1 ÷ 1/4.
+        </p>
+        <div
+          class="bar"
+          id="bar1"
+          role="group"
+          aria-label="Tray cut into 4 equal parts"
+        ></div>
+        <label class="fld" for="a1">How many cookies? (1 ÷ 1/4 = ?)</label>
+        <input
+          type="number"
+          id="a1"
+          inputmode="numeric"
+          aria-describedby="q1h"
+        />
+      </section>
+
+      <!-- Q2: fill in keep-change-flip -->
+      <section class="card" aria-labelledby="q2h">
+        <h2 id="q2h">Order 2 — Keep, Change, Flip</h2>
+        <p class="order-line">Solve <span class="frac-big">3/4 ÷ 1/8</span>.</p>
+        <p class="hint">
+          Keep 3/4. Change ÷ to ×. Flip 1/8 to its reciprocal. Then type the
+          whole-number answer.
+        </p>
+        <div class="row">
+          <div>
+            <label class="fld" for="a2flip">Flip 1/8 (reciprocal) =</label>
+            <input type="text" id="a2flip" placeholder="e.g. 5/1" />
+          </div>
+          <div>
+            <label class="fld" for="a2ans">3/4 ÷ 1/8 =</label>
+            <input type="number" id="a2ans" inputmode="numeric" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Q3: word problem -->
+      <section class="card" aria-labelledby="q3h">
+        <h2 id="q3h">Order 3 — Bagging flour</h2>
+        <p class="order-line">
+          You have <span class="frac-big">6</span> cups of flour. Each bag holds
+          <span class="frac-big">3/4</span> cup.
+        </p>
+        <p class="hint">How many bags can you fill? Solve 6 ÷ 3/4.</p>
+        <label class="fld" for="a3">Number of bags =</label>
+        <input type="number" id="a3" inputmode="numeric" />
+      </section>
+
+      <!-- Q4: drag tiles to matching answers -->
+      <section class="card" aria-labelledby="q4h">
+        <h2 id="q4h">Order 4 — Match the recipe cards</h2>
+        <p class="hint">
+          Drag each answer tile to the matching problem. Keyboard: press a tile,
+          then press a slot. (Answers are whole numbers.)
+        </p>
+        <div class="tiles" id="bank" role="list" aria-label="Answer tiles">
+          <button class="tile" id="t-2" draggable="true" role="listitem">
+            2
+          </button>
+          <button class="tile" id="t-6" draggable="true" role="listitem">
+            6
+          </button>
+          <button class="tile" id="t-10" draggable="true" role="listitem">
+            10
+          </button>
+        </div>
+        <div class="match-row">
+          <span class="q">1/2 ÷ 1/4 =</span>
+          <div
+            class="slot"
+            id="slotA"
+            data-answer="2"
+            tabindex="0"
+            role="button"
+            aria-label="Drop answer for 1/2 divided by 1/4"
+          >
+            drop here
+          </div>
+        </div>
+        <div class="match-row">
+          <span class="q">3/4 ÷ 1/8 =</span>
+          <div
+            class="slot"
+            id="slotB"
+            data-answer="6"
+            tabindex="0"
+            role="button"
+            aria-label="Drop answer for 3/4 divided by 1/8"
+          >
+            drop here
+          </div>
+        </div>
+        <div class="match-row">
+          <span class="q">5/6 ÷ 1/12 =</span>
+          <div
+            class="slot"
+            id="slotC"
+            data-answer="10"
+            tabindex="0"
+            role="button"
+            aria-label="Drop answer for 5/6 divided by 1/12"
+          >
+            drop here
+          </div>
+        </div>
+      </section>
+
+      <!-- Q5: fraction-by-fraction, fraction answer -->
+      <section class="card" aria-labelledby="q5h">
+        <h2 id="q5h">Order 5 — Half a recipe</h2>
+        <p class="order-line">Solve <span class="frac-big">2/3 ÷ 4</span>.</p>
+        <p class="hint">
+          Dividing by a whole number makes a smaller piece. Write the answer as
+          a fraction in lowest terms.
+        </p>
+        <label class="fld" for="a5">2/3 ÷ 4 =</label>
+        <input type="text" id="a5" placeholder="e.g. 1/3" />
+      </section>
+
+      <!-- Q6: build the order (choose divisor for target) -->
+      <section class="card" aria-labelledby="q6h">
+        <h2 id="q6h">Order 6 — Build the order</h2>
+        <p class="order-line">
+          A chef has <span class="frac-big">1/2</span> pan of brownies and wants
+          to make exactly <span class="frac-big">4</span> servings.
+        </p>
+        <p class="hint">Pick the serving size so that 1/2 ÷ (serving) = 4.</p>
+        <label class="fld" for="a6">Each serving =</label>
+        <select id="a6">
+          <option value="">choose…</option>
+          <option value="1/2">1/2 pan</option>
+          <option value="1/4">1/4 pan</option>
+          <option value="1/8">1/8 pan</option>
+          <option value="2">2 pans</option>
+        </select>
+      </section>
+
+      <div class="controls">
+        <button class="go" id="checkBtn" type="button">Check My Work</button>
+        <button class="ghost" id="resetBtn" type="button">Start Over</button>
+      </div>
+
+      <!-- Activity kit: name bar, save buttons, results -->
+      <div id="ntkit"></div>
+    </div>
+
+    <!-- Shared kit script -->
+    <script src="/assets/nt-activity-kit.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        // ---- Q1: build the tray bar (1 whole cut into 4) ----
+        var bar = document.getElementById("bar1");
+        for (var i = 1; i <= 4; i++) {
+          var c = document.createElement("button");
+          c.type = "button";
+          c.className = "cell";
+          c.setAttribute("aria-pressed", "false");
+          c.setAttribute("aria-label", "Quarter " + i);
+          c.textContent = "1/4";
+          c.addEventListener("click", function () {
+            var on = this.getAttribute("aria-pressed") === "true";
+            this.setAttribute("aria-pressed", on ? "false" : "true");
+          });
+          bar.appendChild(c);
+        }
+
+        // ---- Q4: drag-and-drop + keyboard matching ----
+        var grabbedTile = null;
+
+        function placeTile(tile, slot) {
+          if (!tile || !slot) return;
+          slot.textContent = tile.textContent;
+          slot.dataset.placed = tile.textContent;
+          slot.classList.add("filled");
+          slot.setAttribute(
+            "aria-label",
+            slot.getAttribute("aria-label").split(" — ")[0] +
+              " — has " +
+              tile.textContent,
+          );
+        }
+
+        document.querySelectorAll(".tile").forEach(function (tile) {
+          tile.addEventListener("dragstart", function (e) {
+            e.dataTransfer.setData("text/plain", tile.textContent);
+            tile.setAttribute("aria-grabbed", "true");
+          });
+          tile.addEventListener("dragend", function () {
+            tile.setAttribute("aria-grabbed", "false");
+          });
+          // keyboard: select a tile
+          tile.addEventListener("click", function () {
+            if (grabbedTile) grabbedTile.setAttribute("aria-grabbed", "false");
+            grabbedTile = tile;
+            tile.setAttribute("aria-grabbed", "true");
+          });
+        });
+
+        document.querySelectorAll(".slot").forEach(function (slot) {
+          slot.addEventListener("dragover", function (e) {
+            e.preventDefault();
+          });
+          slot.addEventListener("drop", function (e) {
+            e.preventDefault();
+            var val = e.dataTransfer.getData("text/plain");
+            slot.textContent = val;
+            slot.dataset.placed = val;
+            slot.classList.add("filled");
+          });
+          // keyboard: click slot to place selected tile
+          slot.addEventListener("click", function () {
+            if (grabbedTile) {
+              placeTile(grabbedTile, slot);
+              grabbedTile.setAttribute("aria-grabbed", "false");
+              grabbedTile = null;
+            }
+          });
+          slot.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              slot.click();
+            }
+          });
+        });
+
+        // ---- normalize a fraction string to lowest terms "a/b" ----
+        function gcd(a, b) {
+          a = Math.abs(a);
+          b = Math.abs(b);
+          while (b) {
+            var t = b;
+            b = a % b;
+            a = t;
+          }
+          return a || 1;
+        }
+        function normFrac(s) {
+          s = String(s || "").trim();
+          if (!s) return "";
+          if (s.indexOf("/") === -1) return s; // whole number, leave as-is
+          var p = s.split("/");
+          var n = parseInt(p[0], 10),
+            d = parseInt(p[1], 10);
+          if (isNaN(n) || isNaN(d) || d === 0) return s;
+          var g = gcd(n, d);
+          return n / g + "/" + d / g;
+        }
+
+        // ---- progress tracking ----
+        var pcount = document.getElementById("pcount");
+        var pfill = document.getElementById("pfill");
+        function updateProgress() {
+          var done = 0;
+          if (document.getElementById("a1").value.trim()) done++;
+          if (document.getElementById("a2ans").value.trim()) done++;
+          if (document.getElementById("a3").value.trim()) done++;
+          if (
+            document.getElementById("slotA").dataset.placed &&
+            document.getElementById("slotB").dataset.placed &&
+            document.getElementById("slotC").dataset.placed
+          )
+            done++;
+          if (document.getElementById("a5").value.trim()) done++;
+          if (document.getElementById("a6").value) done++;
+          pcount.textContent = done;
+          pfill.style.width = Math.round((done / 6) * 100) + "%";
+        }
+        document.querySelectorAll("input, select").forEach(function (el) {
+          el.addEventListener("input", updateProgress);
+          el.addEventListener("change", updateProgress);
+        });
+        document.querySelectorAll(".slot").forEach(function (s) {
+          s.addEventListener("click", updateProgress);
+          s.addEventListener("drop", function () {
+            setTimeout(updateProgress, 0);
+          });
+        });
+
+        // ---- mount the kit ----
+        NTKit.mount("#ntkit");
+
+        // ---- check / grade ----
+        document
+          .getElementById("checkBtn")
+          .addEventListener("click", function () {
+            var slotA = document.getElementById("slotA").dataset.placed || "";
+            var slotB = document.getElementById("slotB").dataset.placed || "";
+            var slotC = document.getElementById("slotC").dataset.placed || "";
+            var matchAns =
+              slotA === "2" && slotB === "6" && slotC === "10"
+                ? "all matched"
+                : "not matched";
+
+            NTKit.grade({
+              activityId: "architect-unit-2",
+              activityTitle: "Unit 2 · Order Architect — Dividing Fractions",
+              standard: "6.NS.A.1",
+              items: [
+                {
+                  prompt: "Order 1: 1 ÷ 1/4 (cookies from 1 tray, each 1/4)",
+                  studentAnswer: document.getElementById("a1").value,
+                  correctAnswer: "4",
+                  points: 1,
+                  skill: "Whole ÷ unit fraction",
+                },
+                {
+                  prompt: "Order 2 (flip): reciprocal of 1/8",
+                  studentAnswer: normFrac(
+                    document.getElementById("a2flip").value,
+                  ),
+                  correctAnswer: "8/1",
+                  points: 1,
+                  skill: "Reciprocal / keep-change-flip",
+                },
+                {
+                  prompt: "Order 2: 3/4 ÷ 1/8",
+                  studentAnswer: document.getElementById("a2ans").value,
+                  correctAnswer: "6",
+                  points: 1,
+                  skill: "Fraction ÷ fraction",
+                },
+                {
+                  prompt: "Order 3: 6 ÷ 3/4 (bags of flour)",
+                  studentAnswer: document.getElementById("a3").value,
+                  correctAnswer: "8",
+                  points: 1,
+                  skill: "Whole ÷ fraction (word problem)",
+                },
+                {
+                  prompt:
+                    "Order 4: match 1/2÷1/4, 3/4÷1/8, 5/6÷1/12 to 2, 6, 10",
+                  studentAnswer: matchAns,
+                  correctAnswer: "all matched",
+                  points: 1,
+                  skill: "Fraction ÷ fraction (match)",
+                },
+                {
+                  prompt: "Order 5: 2/3 ÷ 4 (lowest terms)",
+                  studentAnswer: normFrac(document.getElementById("a5").value),
+                  correctAnswer: "1/6",
+                  points: 1,
+                  skill: "Fraction ÷ whole number",
+                },
+                {
+                  prompt: "Order 6: serving size so 1/2 ÷ x = 4",
+                  studentAnswer: document.getElementById("a6").value,
+                  correctAnswer: "1/8",
+                  points: 1,
+                  skill: "Reasoning about division",
+                },
+              ],
+            });
+
+            var kit = document.getElementById("ntkit");
+            if (kit && kit.scrollIntoView)
+              kit.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+
+        // ---- reset ----
+        document
+          .getElementById("resetBtn")
+          .addEventListener("click", function () {
+            document.querySelectorAll("input").forEach(function (el) {
+              el.value = "";
+            });
+            document.getElementById("a6").value = "";
+            document.querySelectorAll(".bar .cell").forEach(function (c) {
+              c.setAttribute("aria-pressed", "false");
+            });
+            document.querySelectorAll(".slot").forEach(function (s) {
+              s.textContent = "drop here";
+              delete s.dataset.placed;
+              s.classList.remove("filled");
+            });
+            document.querySelectorAll(".tile").forEach(function (t) {
+              t.setAttribute("aria-grabbed", "false");
+            });
+            grabbedTile = null;
+            updateProgress();
+          });
+
+        updateProgress();
+      })();
+    </script>
+  </body>
+</html>

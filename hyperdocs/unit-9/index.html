@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 9 HyperDoc — The Coordinate Plane | Neft Teacher</title>
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <script src="/assets/nt-activity-kit.js"></script>
+    <style>
+      /* Style ONLY with --nt-* variables */
+      body {
+        margin: 0;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          Arial,
+          sans-serif;
+        font-size: 19px;
+        line-height: 1.6;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 24px 18px 80px;
+      }
+      header.hero {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 26px 24px;
+        margin-bottom: 22px;
+      }
+      .eyebrow {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--nt-accent);
+        margin: 0 0 6px;
+      }
+      h1 {
+        font-size: 34px;
+        line-height: 1.15;
+        margin: 0 0 8px;
+        color: var(--nt-text);
+      }
+      .standard {
+        display: inline-block;
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--nt-bg);
+        background: var(--nt-accent);
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+      section.card {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px 22px 24px;
+        margin: 0 0 20px;
+      }
+      .step-label {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--nt-accent);
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 26px;
+        margin: 2px 0 10px;
+        color: var(--nt-text);
+      }
+      h3 {
+        font-size: 20px;
+        margin: 16px 0 6px;
+        color: var(--nt-text);
+      }
+      p,
+      li {
+        color: var(--nt-text);
+      }
+      .do-this {
+        background: var(--nt-bg);
+        border-left: 6px solid var(--nt-accent);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin: 12px 0;
+        font-weight: 600;
+      }
+      .links {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .links li {
+        margin: 0 0 10px;
+      }
+      .links a {
+        display: block;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        color: var(--nt-text);
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .links a:hover {
+        border-color: var(--nt-accent);
+      }
+      .links a:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .links .sub {
+        display: block;
+        font-weight: 500;
+        font-size: 16px;
+        color: var(--nt-muted);
+        margin-top: 2px;
+      }
+      .vocab {
+        display: grid;
+        gap: 10px;
+        margin: 12px 0 0;
+      }
+      .vocab dt {
+        font-weight: 800;
+        color: var(--nt-accent);
+        font-size: 18px;
+      }
+      .vocab dd {
+        margin: 2px 0 8px;
+      }
+      .example {
+        background: var(--nt-bg);
+        border: 2px dashed var(--nt-border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin: 12px 0;
+      }
+      .grid-fig {
+        display: block;
+        margin: 14px auto;
+        max-width: 340px;
+        width: 100%;
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+      }
+      .q {
+        margin: 18px 0 0;
+        padding: 16px 0 0;
+        border-top: 2px solid var(--nt-border);
+      }
+      .q:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .q .qnum {
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+      .q label {
+        display: block;
+        font-weight: 600;
+        margin: 6px 0;
+      }
+      input[type="text"] {
+        font-size: 19px;
+        padding: 10px 12px;
+        width: 100%;
+        max-width: 320px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        box-sizing: border-box;
+      }
+      input[type="text"]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 1px;
+        border-color: var(--nt-accent);
+      }
+      .choices {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .choices li {
+        margin: 4px 0;
+      }
+      .choices label {
+        font-weight: 500;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        cursor: pointer;
+      }
+      textarea {
+        font-size: 18px;
+        width: 100%;
+        min-height: 90px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        box-sizing: border-box;
+        resize: vertical;
+      }
+      textarea:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 1px;
+        border-color: var(--nt-accent);
+      }
+      .btn-primary {
+        font-size: 20px;
+        font-weight: 800;
+        cursor: pointer;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 12px;
+        padding: 14px 26px;
+        margin-top: 8px;
+      }
+      .btn-primary:hover {
+        filter: brightness(1.05);
+      }
+      .btn-primary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .skip {
+        position: absolute;
+        left: -9999px;
+      }
+      .skip:focus {
+        position: static;
+        display: inline-block;
+        padding: 8px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+      }
+      .hint {
+        color: var(--nt-muted);
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body class="nt-theme-aware">
+    <a class="skip" href="#apply">Skip to the activity</a>
+    <div class="wrap">
+      <header class="hero">
+        <p class="eyebrow">Neft Teacher · Grade 6 HyperDoc</p>
+        <h1>Unit 9 — The Coordinate Plane</h1>
+        <p><span class="standard">CCSS 6.NS.C.6 &amp; 6.G.A.3</span></p>
+        <p>
+          Follow the 5 steps: Engage, Explore, Explain, Apply, and Reflect. Type
+          your name in the box below before you start so your work is saved with
+          your name.
+        </p>
+      </header>
+
+      <!-- NTKit identity bar + Save buttons + results -->
+      <section class="card">
+        <p class="step-label">Your Name</p>
+        <h2>Sign in to save your work</h2>
+        <p class="hint">
+          Type your name and class section. Use the buttons to save your
+          finished HyperDoc as a PDF or DOC.
+        </p>
+        <div id="ntkit"></div>
+      </section>
+
+      <!-- ENGAGE -->
+      <section class="card">
+        <p class="step-label">Step 1 · Engage</p>
+        <h2>Chart the Star Map</h2>
+        <p>
+          You are a space navigator in <strong>Coordinate Quest</strong>. To
+          reach each star, you must give its exact spot on a grid using two
+          numbers: <strong>(x, y)</strong>.
+        </p>
+        <div class="do-this">
+          Think: How can you tell a friend exactly where a dot is on a grid,
+          using only numbers?
+        </div>
+      </section>
+
+      <!-- EXPLORE -->
+      <section class="card">
+        <p class="step-label">Step 2 · Explore</p>
+        <h2>Play and explore</h2>
+        <p>Open these in a new tab. Explore first, then come back to finish.</p>
+        <ul class="links">
+          <li>
+            <a href="/games/3d/unit-9/" target="_blank" rel="noopener"
+              >Play the 3D Game: Coordinate Quest
+              <span class="sub"
+                >Plot points and explore all four quadrants.</span
+              ></a
+            >
+          </li>
+          <li>
+            <a href="/math/" target="_blank" rel="noopener"
+              >Math Hub
+              <span class="sub">More Unit 9 practice and tools.</span></a
+            >
+          </li>
+          <li>
+            <a href="/novels/" target="_blank" rel="noopener"
+              >Graphic Novels
+              <span class="sub">Read the Unit 9 math story.</span></a
+            >
+          </li>
+        </ul>
+      </section>
+
+      <!-- EXPLAIN -->
+      <section class="card">
+        <p class="step-label">Step 3 · Explain</p>
+        <h2>How the coordinate plane works</h2>
+        <p>
+          The <strong>coordinate plane</strong> has two number lines that cross
+          at <strong>(0, 0)</strong>, called the <strong>origin</strong>.
+        </p>
+
+        <dl class="vocab">
+          <dt>x-axis</dt>
+          <dd>
+            The line that goes left and right. The <strong>x</strong> number is
+            first.
+          </dd>
+          <dt>y-axis</dt>
+          <dd>
+            The line that goes up and down. The <strong>y</strong> number is
+            second.
+          </dd>
+          <dt>ordered pair (x, y)</dt>
+          <dd>
+            Two numbers that name one point. Go right/left first, then up/down.
+          </dd>
+          <dt>quadrant</dt>
+          <dd>
+            One of the 4 corners of the plane. They are named I, II, III, IV.
+          </dd>
+          <dt>reflect</dt>
+          <dd>
+            To flip a point over an axis to the other side, like a mirror.
+          </dd>
+        </dl>
+
+        <svg
+          class="grid-fig"
+          viewBox="0 0 200 200"
+          role="img"
+          aria-label="A coordinate grid with point A at 3 comma 2 in the top right quadrant."
+        >
+          <rect x="0" y="0" width="200" height="200" fill="var(--nt-bg)" />
+          <g stroke="var(--nt-border)" stroke-width="1">
+            <line x1="20" y1="0" x2="20" y2="200" />
+            <line x1="60" y1="0" x2="60" y2="200" />
+            <line x1="140" y1="0" x2="140" y2="200" />
+            <line x1="180" y1="0" x2="180" y2="200" />
+            <line x1="0" y1="20" x2="200" y2="20" />
+            <line x1="0" y1="60" x2="200" y2="60" />
+            <line x1="0" y1="140" x2="200" y2="140" />
+            <line x1="0" y1="180" x2="200" y2="180" />
+          </g>
+          <line
+            x1="0"
+            y1="100"
+            x2="200"
+            y2="100"
+            stroke="var(--nt-text)"
+            stroke-width="2"
+          />
+          <line
+            x1="100"
+            y1="0"
+            x2="100"
+            y2="200"
+            stroke="var(--nt-text)"
+            stroke-width="2"
+          />
+          <circle cx="160" cy="60" r="6" fill="var(--nt-accent)" />
+          <text x="166" y="54" font-size="13" fill="var(--nt-text)">
+            A (3, 2)
+          </text>
+        </svg>
+
+        <div class="example">
+          <h3>Worked example</h3>
+          <p>
+            To plot point <strong>A (3, 2)</strong>: start at the origin (0, 0).
+            Move <strong>3 right</strong> (x = 3). Then move
+            <strong>2 up</strong> (y = 2). Mark the point. Because x and y are
+            both positive, A is in <strong>Quadrant I</strong>.
+          </p>
+        </div>
+      </section>
+
+      <!-- APPLY -->
+      <section class="card" id="apply">
+        <p class="step-label">Step 4 · Apply</p>
+        <h2>Show what you know</h2>
+        <p class="hint">
+          Answer every question. Type ordered pairs like
+          <strong>(3, 2)</strong>. Then press Check My Answers.
+        </p>
+        <form id="apply-form">
+          <div class="q">
+            <p>
+              <span class="qnum">1.</span> What is the name of the point (0, 0)
+              where the two axes cross?
+            </p>
+            <label for="q1" class="hint">Type one word.</label>
+            <input
+              type="text"
+              id="q1"
+              name="q1"
+              autocomplete="off"
+              placeholder="one word"
+            />
+          </div>
+
+          <div class="q">
+            <p>
+              <span class="qnum">2.</span> Start at the origin. Move 4 to the
+              <strong>right</strong> and 1 <strong>up</strong>. Write the
+              ordered pair.
+            </p>
+            <label for="q2" class="hint">Write it as (x, y).</label>
+            <input
+              type="text"
+              id="q2"
+              name="q2"
+              autocomplete="off"
+              placeholder="(x, y)"
+            />
+          </div>
+
+          <div class="q">
+            <p>
+              <span class="qnum">3.</span> The point (2, 3) has both numbers
+              positive. Which quadrant is it in?
+            </p>
+            <ul class="choices">
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="Quadrant I" /> Quadrant
+                  I</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="Quadrant II" /> Quadrant
+                  II</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="Quadrant III" />
+                  Quadrant III</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="Quadrant IV" /> Quadrant
+                  IV</label
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="q">
+            <p>
+              <span class="qnum">4.</span> Reflect the point (5, 2) over the
+              <strong>x-axis</strong>. What is the new point?
+            </p>
+            <label for="q4" class="hint">Flip the y number to negative.</label>
+            <input
+              type="text"
+              id="q4"
+              name="q4"
+              autocomplete="off"
+              placeholder="(x, y)"
+            />
+          </div>
+
+          <div class="q">
+            <p>
+              <span class="qnum">5.</span> A rectangle has corners at (1, 1),
+              (1, 4), and (6, 1). What is the 4th corner?
+            </p>
+            <label for="q5" class="hint">It lines up with the others.</label>
+            <input
+              type="text"
+              id="q5"
+              name="q5"
+              autocomplete="off"
+              placeholder="(x, y)"
+            />
+          </div>
+
+          <div class="q">
+            <p>
+              <span class="qnum">6.</span> Point (1, 1) and point (6, 1) are on
+              the same horizontal line. How many units apart are they?
+            </p>
+            <label for="q6" class="hint">Type a number.</label>
+            <input
+              type="text"
+              id="q6"
+              name="q6"
+              autocomplete="off"
+              placeholder="number"
+            />
+          </div>
+
+          <button type="submit" class="btn-primary">Check My Answers</button>
+        </form>
+      </section>
+
+      <!-- REFLECT -->
+      <section class="card">
+        <p class="step-label">Step 5 · Reflect</p>
+        <h2>Think and write</h2>
+        <p class="hint">
+          Your answers are saved in your HyperDoc when you press Save as PDF or
+          Save as DOC.
+        </p>
+        <div class="q">
+          <label for="r1"
+            ><strong>1.</strong> In your own words, how do you plot the point
+            (x, y)? Say what you do first and second.</label
+          >
+          <textarea id="r1" name="r1"></textarea>
+        </div>
+        <div class="q">
+          <label for="r2"
+            ><strong>2.</strong> What was the trickiest part of Unit 9 for you?
+            How did you figure it out?</label
+          >
+          <textarea id="r2" name="r2"></textarea>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        function ready(fn) {
+          if (document.readyState !== "loading") {
+            fn();
+          } else {
+            document.addEventListener("DOMContentLoaded", fn);
+          }
+        }
+        ready(function () {
+          if (!window.NTKit) {
+            console.error("NTKit not loaded");
+            return;
+          }
+          NTKit.mount("#ntkit");
+
+          var norm = function (s) {
+            return String(s == null ? "" : s)
+              .toLowerCase()
+              .replace(/\s+/g, "") // remove spaces
+              .replace(/[()]/g, "") // remove parentheses
+              .trim();
+          };
+
+          var form = document.getElementById("apply-form");
+          form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            var f = function (n) {
+              var el = form.elements[n];
+              if (!el) return "";
+              if (el.length && el[0] && el[0].type === "radio") {
+                for (var i = 0; i < el.length; i++)
+                  if (el[i].checked) return el[i].value;
+                return "";
+              }
+              return el.value || "";
+            };
+
+            var items = [
+              {
+                prompt: "1. Name the point (0, 0) where the axes cross.",
+                studentAnswer: f("q1"),
+                correctAnswer: "origin",
+                points: 1,
+                skill: "6.NS.C.6 origin",
+              },
+              {
+                prompt:
+                  "2. Move 4 right and 1 up from the origin. Ordered pair?",
+                studentAnswer: norm(f("q2")),
+                correctAnswer: norm("(4, 1)"),
+                points: 1,
+                skill: "6.NS.C.6 plot point",
+              },
+              {
+                prompt: "3. Which quadrant holds (2, 3)?",
+                studentAnswer: f("q3"),
+                correctAnswer: "Quadrant I",
+                points: 1,
+                skill: "6.NS.C.6 quadrants",
+              },
+              {
+                prompt: "4. Reflect (5, 2) over the x-axis.",
+                studentAnswer: norm(f("q4")),
+                correctAnswer: norm("(5, -2)"),
+                points: 1,
+                skill: "6.NS.C.6 reflection",
+              },
+              {
+                prompt: "5. 4th corner of rectangle (1,1)(1,4)(6,1).",
+                studentAnswer: norm(f("q5")),
+                correctAnswer: norm("(6, 4)"),
+                points: 1,
+                skill: "6.G.A.3 polygon vertices",
+              },
+              {
+                prompt: "6. Distance between (1, 1) and (6, 1).",
+                studentAnswer: norm(f("q6")),
+                correctAnswer: "5",
+                points: 1,
+                skill: "6.G.A.3 distance",
+              },
+            ];
+
+            NTKit.grade({
+              activityId: "hyperdoc-unit-9",
+              activityTitle: "Unit 9 HyperDoc — The Coordinate Plane",
+              standard: "6.NS.C.6 & 6.G.A.3",
+              items: items,
+            });
+
+            var res = document.getElementById("ntkit-results");
+            if (res && res.scrollIntoView)
+              res.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

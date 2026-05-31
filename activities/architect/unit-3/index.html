@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>
+      Unit 3 — Pit-Crew Architect | Rates, Unit Rates &amp; Percent (6.RP.A.2–3)
+    </title>
+
+    <!-- Shared theme (light/dark) -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+
+    <!-- Shared activity kit (grading + name + PDF/DOC) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <style>
+      /* Style ONLY with --nt-* variables so light/dark mode both work. */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        font-size: 18px;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 20px 16px 64px;
+      }
+
+      /* Header */
+      .hero {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px 22px 18px;
+        margin-bottom: 18px;
+      }
+      .hero h1 {
+        margin: 0 0 6px;
+        font-size: 30px;
+        line-height: 1.15;
+      }
+      .hero .standard {
+        display: inline-block;
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+        border-radius: 999px;
+        padding: 3px 12px;
+        margin-bottom: 10px;
+      }
+      .hero p {
+        margin: 8px 0 0;
+        color: var(--nt-muted);
+        font-size: 18px;
+      }
+
+      /* Progress */
+      .progress {
+        margin: 16px 0 8px;
+      }
+      .progress-track {
+        height: 14px;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--nt-accent);
+        transition: width 0.25s ease;
+      }
+      .progress-label {
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--nt-muted);
+        margin-top: 6px;
+      }
+
+      /* Task cards */
+      .task {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .task-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 6px;
+      }
+      .task-num {
+        flex: 0 0 auto;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 800;
+        font-size: 18px;
+        display: grid;
+        place-items: center;
+      }
+      .task-title {
+        font-size: 21px;
+        font-weight: 800;
+        margin: 0;
+      }
+      .task-do {
+        color: var(--nt-muted);
+        font-size: 17px;
+        margin: 2px 0 14px;
+      }
+      .scene {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 16px;
+      }
+
+      /* Builder: lanes (equivalent ratios) */
+      .lanes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .chip {
+        font: inherit;
+        font-weight: 800;
+        font-size: 18px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        cursor: pointer;
+      }
+      .chip[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+      }
+
+      /* Stepper builder */
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .step-btn {
+        font: inherit;
+        font-weight: 900;
+        font-size: 26px;
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-surface);
+        color: var(--nt-accent);
+        cursor: pointer;
+      }
+      .step-val {
+        min-width: 86px;
+        text-align: center;
+        font-size: 30px;
+        font-weight: 900;
+        padding: 6px 10px;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        background: var(--nt-surface);
+      }
+      .step-unit {
+        font-size: 18px;
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+
+      /* Number entry */
+      .entry {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 19px;
+      }
+      .entry input[type="number"] {
+        font: inherit;
+        font-size: 22px;
+        font-weight: 800;
+        width: 130px;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .live {
+        margin-top: 12px;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--nt-accent);
+      }
+
+      /* Percent track builder */
+      .ptrack {
+        position: relative;
+        height: 46px;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        background: var(--nt-surface);
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      .ptrack-fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0%;
+        background: var(--nt-accent);
+        opacity: 0.85;
+        transition: width 0.15s ease;
+      }
+      .ptrack-text {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        font-size: 20px;
+        color: var(--nt-text);
+        mix-blend-mode: difference;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--nt-accent);
+        height: 34px;
+      }
+
+      .hint {
+        margin-top: 12px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .hint b {
+        color: var(--nt-text);
+      }
+
+      /* Check button + kit host */
+      .checkbar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 18px 0;
+      }
+      .btn-check {
+        font: inherit;
+        font-weight: 800;
+        font-size: 19px;
+        padding: 14px 28px;
+        border-radius: 14px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        cursor: pointer;
+      }
+      .btn-check:hover {
+        filter: brightness(1.08);
+      }
+      .checkbar .note {
+        color: var(--nt-muted);
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      /* Visible keyboard focus everywhere */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      #ntkit {
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+
+  <body class="nt-theme-aware">
+    <main class="wrap">
+      <header class="hero">
+        <span class="standard">CCSS 6.RP.A.2–3 · Grade 6</span>
+        <h1>Pit-Crew Architect — Build the Winning Race Car</h1>
+        <p>
+          <strong>What to do:</strong> You are the pit-crew engineer in Ratio
+          Rally. Build each car part by setting rates, ratios, and percents.
+          Tap, drag, or set the numbers, then press <b>Check My Build</b>.
+        </p>
+        <div class="progress" aria-hidden="false">
+          <div class="progress-track">
+            <div class="progress-fill" id="progFill"></div>
+          </div>
+          <div class="progress-label" id="progLabel">0 of 6 parts built</div>
+        </div>
+      </header>
+
+      <!-- TASK 1: Unit rate (price per item) -->
+      <section class="task" data-task="1">
+        <div class="task-head">
+          <div class="task-num">1</div>
+          <h2 class="task-title">Tune the Fuel Price (unit rate)</h2>
+        </div>
+        <p class="task-do">
+          4 cans of fuel cost $12. Set the price for <b>1 can</b>.
+        </p>
+        <div class="scene">
+          <div class="stepper">
+            <button
+              type="button"
+              class="step-btn"
+              data-step="t1"
+              data-dir="-1"
+              aria-label="Lower price"
+            >
+              −
+            </button>
+            <span class="step-unit">$</span>
+            <span class="step-val" id="t1val" role="status" aria-live="polite"
+              >0</span
+            >
+            <span class="step-unit">per 1 can</span>
+            <button
+              type="button"
+              class="step-btn"
+              data-step="t1"
+              data-dir="1"
+              aria-label="Raise price"
+            >
+              +
+            </button>
+          </div>
+          <div class="live" id="t1live">4 cans = $12, so 1 can = ?</div>
+          <p class="hint">Hint: <b>$12 ÷ 4 cans</b> = price for 1 can.</p>
+        </div>
+      </section>
+
+      <!-- TASK 2: Unit rate (speed) -->
+      <section class="task" data-task="2">
+        <div class="task-head">
+          <div class="task-num">2</div>
+          <h2 class="task-title">Set the Engine Speed (miles per hour)</h2>
+        </div>
+        <p class="task-do">
+          The car goes 150 miles in 3 hours. Type the speed for <b>1 hour</b>.
+        </p>
+        <div class="scene">
+          <div class="entry">
+            <label for="t2in">Speed for 1 hour:</label>
+            <input
+              type="number"
+              id="t2in"
+              min="0"
+              step="1"
+              inputmode="numeric"
+            />
+            <span class="step-unit">miles per hour</span>
+          </div>
+          <p class="hint">
+            Hint: <b>150 miles ÷ 3 hours</b> = miles in 1 hour.
+          </p>
+        </div>
+      </section>
+
+      <!-- TASK 3: Equivalent ratio (pick the lane) -->
+      <section class="task" data-task="3">
+        <div class="task-head">
+          <div class="task-num">3</div>
+          <h2 class="task-title">Match the Tire Mix (equivalent ratio)</h2>
+        </div>
+        <p class="task-do">
+          The grip mix is <b>2 red : 3 blue</b>. Tap the lane with the
+          <b>same</b> ratio.
+        </p>
+        <div class="scene">
+          <div
+            class="lanes"
+            id="t3lanes"
+            role="group"
+            aria-label="Pick the equivalent ratio"
+          >
+            <button
+              type="button"
+              class="chip"
+              data-val="2:5"
+              aria-pressed="false"
+            >
+              2 : 5
+            </button>
+            <button
+              type="button"
+              class="chip"
+              data-val="6:9"
+              aria-pressed="false"
+            >
+              6 : 9
+            </button>
+            <button
+              type="button"
+              class="chip"
+              data-val="4:9"
+              aria-pressed="false"
+            >
+              4 : 9
+            </button>
+            <button
+              type="button"
+              class="chip"
+              data-val="3:2"
+              aria-pressed="false"
+            >
+              3 : 2
+            </button>
+          </div>
+          <p class="hint">
+            Hint: multiply both numbers by the same amount. 2×3 and 3×3.
+          </p>
+        </div>
+      </section>
+
+      <!-- TASK 4: Build equivalent ratio with stepper -->
+      <section class="task" data-task="4">
+        <div class="task-head">
+          <div class="task-num">4</div>
+          <h2 class="task-title">Scale Up the Pit Crew (equivalent ratio)</h2>
+        </div>
+        <p class="task-do">
+          1 driver needs <b>5 helpers</b>. Build the crew for <b>4 drivers</b>.
+          Set the number of helpers.
+        </p>
+        <div class="scene">
+          <div class="stepper">
+            <button
+              type="button"
+              class="step-btn"
+              data-step="t4"
+              data-dir="-1"
+              aria-label="Fewer helpers"
+            >
+              −
+            </button>
+            <span class="step-val" id="t4val" role="status" aria-live="polite"
+              >0</span
+            >
+            <span class="step-unit">helpers for 4 drivers</span>
+            <button
+              type="button"
+              class="step-btn"
+              data-step="t4"
+              data-dir="1"
+              aria-label="More helpers"
+            >
+              +
+            </button>
+          </div>
+          <div class="live" id="t4live">
+            1 driver : 5 helpers → 4 drivers : ? helpers
+          </div>
+          <p class="hint">
+            Hint: 4 drivers is 4 times 1 driver, so multiply helpers by 4.
+          </p>
+        </div>
+      </section>
+
+      <!-- TASK 5: Percent of a number (slider) -->
+      <section class="task" data-task="5">
+        <div class="task-head">
+          <div class="task-num">5</div>
+          <h2 class="task-title">Charge the Boost Bar (percent of a number)</h2>
+        </div>
+        <p class="task-do">
+          The full tank holds 80 liters. Fill the bar to <b>25%</b> of the tank.
+          Then type how many <b>liters</b> that is.
+        </p>
+        <div class="scene">
+          <div class="ptrack">
+            <div class="ptrack-fill" id="t5fill"></div>
+            <div class="ptrack-text" id="t5pct">0%</div>
+          </div>
+          <input
+            type="range"
+            id="t5range"
+            min="0"
+            max="100"
+            step="5"
+            value="0"
+            aria-label="Set percent of tank"
+          />
+          <div class="entry" style="margin-top: 12px">
+            <label for="t5in">25% of 80 liters =</label>
+            <input
+              type="number"
+              id="t5in"
+              min="0"
+              step="1"
+              inputmode="numeric"
+            />
+            <span class="step-unit">liters</span>
+          </div>
+          <p class="hint">
+            Hint: 25% means 25 out of 100. 25% of 80 = <b>80 ÷ 4</b>.
+          </p>
+        </div>
+      </section>
+
+      <!-- TASK 6: Find the whole / convert units -->
+      <section class="task" data-task="6">
+        <div class="task-head">
+          <div class="task-num">6</div>
+          <h2 class="task-title">Measure the Track (convert units)</h2>
+        </div>
+        <p class="task-do">
+          The car uses <b>2 liters of fuel for every 10 miles</b>. Type how many
+          <b>miles</b> it can go on <b>6 liters</b>.
+        </p>
+        <div class="scene">
+          <div class="entry">
+            <label for="t6in">6 liters takes the car:</label>
+            <input
+              type="number"
+              id="t6in"
+              min="0"
+              step="1"
+              inputmode="numeric"
+            />
+            <span class="step-unit">miles</span>
+          </div>
+          <p class="hint">
+            Hint: 2 liters = 10 miles, so 1 liter = 5 miles. Then ×6.
+          </p>
+        </div>
+      </section>
+
+      <div class="checkbar">
+        <button type="button" class="btn-check" id="checkBtn">
+          Check My Build
+        </button>
+        <span class="note">Add your name below to save your results.</span>
+      </div>
+
+      <!-- Activity Kit: name field, PDF/DOC export, results -->
+      <div id="ntkit"></div>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // ---------- builder state ----------
+        var state = {
+          t1: 0, // $ per 1 can  (target 3)
+          t3: "", // chosen ratio (target 6:9)
+          t4: 0, // helpers for 4 drivers (target 20)
+          t5: 0, // percent set on slider (target 25)
+        };
+
+        function $(id) {
+          return document.getElementById(id);
+        }
+
+        // ---------- TASK 1 stepper ($ per can) ----------
+        // ---------- TASK 4 stepper (helpers) ----------
+        var stepCfg = {
+          t1: { min: 0, max: 12, step: 1, valEl: "t1val" },
+          t4: { min: 0, max: 40, step: 1, valEl: "t4val" },
+        };
+        function renderStep(key) {
+          var c = stepCfg[key];
+          $(c.valEl).textContent = state[key];
+          if (key === "t1") {
+            $("t1live").textContent = "4 cans = $12, so 1 can = $" + state.t1;
+          }
+          if (key === "t4") {
+            $("t4live").textContent =
+              "1 driver : 5 helpers → 4 drivers : " + state.t4 + " helpers";
+          }
+          markProgress();
+        }
+        document.querySelectorAll(".step-btn").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var key = b.getAttribute("data-step");
+            var dir = parseInt(b.getAttribute("data-dir"), 10);
+            var c = stepCfg[key];
+            state[key] = Math.max(
+              c.min,
+              Math.min(c.max, state[key] + dir * c.step),
+            );
+            renderStep(key);
+          });
+        });
+
+        // ---------- TASK 3 lanes (equivalent ratio) ----------
+        var lanes = $("t3lanes");
+        lanes.addEventListener("click", function (e) {
+          var chip = e.target.closest(".chip");
+          if (!chip) return;
+          state.t3 = chip.getAttribute("data-val");
+          lanes.querySelectorAll(".chip").forEach(function (c) {
+            c.setAttribute("aria-pressed", c === chip ? "true" : "false");
+          });
+          markProgress();
+        });
+
+        // ---------- TASK 5 percent slider ----------
+        var range = $("t5range");
+        function renderPct() {
+          state.t5 = parseInt(range.value, 10);
+          $("t5fill").style.width = state.t5 + "%";
+          $("t5pct").textContent = state.t5 + "%";
+          markProgress();
+        }
+        range.addEventListener("input", renderPct);
+
+        // text inputs update progress
+        ["t2in", "t5in", "t6in"].forEach(function (id) {
+          $(id).addEventListener("input", markProgress);
+        });
+
+        // ---------- progress ----------
+        function isBuilt(n) {
+          switch (n) {
+            case 1:
+              return state.t1 > 0;
+            case 2:
+              return $("t2in").value.trim() !== "";
+            case 3:
+              return state.t3 !== "";
+            case 4:
+              return state.t4 > 0;
+            case 5:
+              return state.t5 > 0 || $("t5in").value.trim() !== "";
+            case 6:
+              return $("t6in").value.trim() !== "";
+          }
+          return false;
+        }
+        function markProgress() {
+          var done = 0;
+          for (var i = 1; i <= 6; i++) if (isBuilt(i)) done++;
+          $("progFill").style.width = (done / 6) * 100 + "%";
+          $("progLabel").textContent = done + " of 6 parts built";
+        }
+
+        // ---------- mount kit ----------
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+
+        // ---------- check / grade ----------
+        function num(id) {
+          var v = parseFloat($(id).value);
+          return isNaN(v) ? "" : v;
+        }
+        $("checkBtn").addEventListener("click", function () {
+          var items = [
+            {
+              prompt: "Part 1 — Fuel price: 4 cans cost $12, so 1 can = $?",
+              studentAnswer: state.t1,
+              correctAnswer: 3,
+              points: 1,
+              skill: "Unit rate",
+            },
+            {
+              prompt:
+                "Part 2 — Engine speed: 150 miles in 3 hours = ? miles per hour",
+              studentAnswer: num("t2in"),
+              correctAnswer: 50,
+              points: 1,
+              skill: "Unit rate",
+            },
+            {
+              prompt: "Part 3 — Tire mix: ratio equal to 2 red : 3 blue",
+              studentAnswer: state.t3,
+              correctAnswer: "6:9",
+              points: 1,
+              skill: "Equivalent ratios",
+            },
+            {
+              prompt:
+                "Part 4 — Pit crew: 1 driver : 5 helpers → 4 drivers : ? helpers",
+              studentAnswer: state.t4,
+              correctAnswer: 20,
+              points: 1,
+              skill: "Equivalent ratios",
+            },
+            {
+              prompt: "Part 5 — Boost bar: 25% of 80 liters = ? liters",
+              studentAnswer: num("t5in"),
+              correctAnswer: 20,
+              points: 1,
+              skill: "Percent of a number",
+            },
+            {
+              prompt:
+                "Part 6 — Track: 2 liters = 10 miles, so 6 liters = ? miles",
+              studentAnswer: num("t6in"),
+              correctAnswer: 30,
+              points: 1,
+              skill: "Rate reasoning",
+            },
+          ];
+
+          if (window.NTKit && NTKit.grade) {
+            NTKit.grade({
+              activityId: "architect-unit-3",
+              activityTitle: "Pit-Crew Architect — Rates, Unit Rates & Percent",
+              standard: "6.RP.A.2-3",
+              items: items,
+            });
+            var res = document.getElementById("ntkit-results");
+            if (res && res.scrollIntoView)
+              res.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+
+        // initial paint
+        renderStep("t1");
+        renderStep("t4");
+        renderPct();
+        markProgress();
+      })();
+    </script>
+  </body>
+</html>

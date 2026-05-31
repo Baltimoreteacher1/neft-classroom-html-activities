@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unit 5 HyperDoc — Area of Polygons (6.G.A.1)</title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Shared activity kit -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <style>
+      body {
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        font-size: 19px;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0 16px 64px;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      header.hero {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 28px 24px;
+        margin: 24px 0;
+      }
+      header.hero h1 {
+        margin: 0 0 6px;
+        font-size: 32px;
+        line-height: 1.2;
+      }
+      .pill {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: #fff;
+        font-weight: 700;
+        font-size: 15px;
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+      .lede {
+        color: var(--nt-muted);
+        font-size: 18px;
+        margin: 10px 0 0;
+      }
+      section {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px 24px;
+        margin: 20px 0;
+      }
+      section h2 {
+        font-size: 25px;
+        margin: 0 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .step {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--nt-accent);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .do {
+        background: var(--nt-bg);
+        border-left: 5px solid var(--nt-accent);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 14px 0;
+        font-weight: 600;
+      }
+      .links {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+        display: grid;
+        gap: 12px;
+      }
+      .links a {
+        display: block;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        color: var(--nt-accent);
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .links a:hover,
+      .links a:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .links a small {
+        display: block;
+        color: var(--nt-muted);
+        font-weight: 500;
+        margin-top: 2px;
+      }
+      .example {
+        background: var(--nt-bg);
+        border: 1px dashed var(--nt-border);
+        border-radius: 10px;
+        padding: 16px;
+        margin-top: 14px;
+      }
+      .example b {
+        color: var(--nt-accent);
+      }
+      .vocab {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 12px;
+      }
+      .vocab div {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .vocab b {
+        color: var(--nt-accent);
+      }
+      .q {
+        margin: 18px 0;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--nt-border);
+      }
+      .q:last-child {
+        border-bottom: none;
+      }
+      .q .prompt {
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .figure {
+        font-size: 15px;
+        color: var(--nt-muted);
+        margin: 4px 0 8px;
+      }
+      label.opt {
+        display: block;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin: 6px 0;
+        cursor: pointer;
+      }
+      label.opt:focus-within {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      input[type="text"].txt {
+        font-size: 18px;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        width: 160px;
+      }
+      input[type="text"].txt:focus,
+      input[type="radio"]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      textarea {
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 90px;
+        font-size: 17px;
+        padding: 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      textarea:focus {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .checkbtn {
+        font-size: 19px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--nt-accent);
+        border: none;
+        border-radius: 10px;
+        padding: 14px 28px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .checkbtn:hover {
+        filter: brightness(1.08);
+      }
+      .checkbtn:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 3px;
+      }
+      .hint {
+        color: var(--nt-muted);
+        font-size: 16px;
+      }
+      @media (max-width: 560px) {
+        .vocab {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="hero">
+        <span class="pill">Unit 5 · HyperDoc</span>
+        <h1>Area of Polygons</h1>
+        <p class="lede">
+          Standard 6.G.A.1 — Find the area of rectangles, triangles, and shapes
+          you can break apart. Work through each step. Type your name in the box
+          before you start.
+        </p>
+      </header>
+
+      <!-- Student name / save bar -->
+      <div id="ntkit"></div>
+
+      <!-- ENGAGE -->
+      <section aria-labelledby="engage-h">
+        <span class="step">Step 1 · Engage</span>
+        <h2 id="engage-h">Think First</h2>
+        <p>
+          You are an <b>Area Architect</b>. You must cover a gold floor with
+          tiles. No gaps. No tiles on top of each other.
+        </p>
+        <p class="do">
+          Big question: How many square tiles fit inside a shape? That number is
+          the <b>area</b>.
+        </p>
+        <p class="hint">
+          Area is measured in <b>square units</b>, like square meters (m²).
+        </p>
+      </section>
+
+      <!-- EXPLORE -->
+      <section aria-labelledby="explore-h">
+        <span class="step">Step 2 · Explore</span>
+        <h2 id="explore-h">Play and Look</h2>
+        <p class="do">Open these. Build, watch, and read about area.</p>
+        <ul class="links">
+          <li>
+            <a href="/games/3d/unit-5/"
+              >🎮 Play: Area Architect (3D game)
+              <small
+                >Fill the gold shape with blocks. Area = length × width.</small
+              ></a
+            >
+          </li>
+          <li>
+            <a href="/math/unit-5/"
+              >📐 Unit 5 Math Hub
+              <small>Lessons and practice for area of polygons.</small></a
+            >
+          </li>
+          <li>
+            <a href="/novels/unit-5/"
+              >📖 Unit 5 Graphic Novel
+              <small>Read the area story with pictures.</small></a
+            >
+          </li>
+        </ul>
+      </section>
+
+      <!-- EXPLAIN -->
+      <section aria-labelledby="explain-h">
+        <span class="step">Step 3 · Explain</span>
+        <h2 id="explain-h">How It Works</h2>
+
+        <div class="vocab" aria-label="Key words">
+          <div>
+            <b>Area</b> — the space inside a flat shape. Use square units.
+          </div>
+          <div><b>Base (b)</b> — the bottom side you measure.</div>
+          <div><b>Height (h)</b> — how tall the shape is, straight up.</div>
+          <div>
+            <b>Composite</b> — a shape made of smaller shapes joined together.
+          </div>
+        </div>
+
+        <div class="example">
+          <p><b>Rectangle:</b> Area = base × height</p>
+          <p>A rug is 6 m long and 4 m wide. Area = 6 × 4 = <b>24 m²</b>.</p>
+          <hr style="border-color: var(--nt-border)" />
+          <p><b>Triangle:</b> Area = (base × height) ÷ 2</p>
+          <p>
+            A flag has base 8 m and height 5 m. Area = (8 × 5) ÷ 2 = 40 ÷ 2 =
+            <b>20 m²</b>.
+          </p>
+          <hr style="border-color: var(--nt-border)" />
+          <p><b>Composite (break it apart):</b></p>
+          <p>
+            Cut an L-shape into two rectangles. Find each area, then add them
+            together.
+          </p>
+        </div>
+      </section>
+
+      <!-- APPLY -->
+      <section aria-labelledby="apply-h">
+        <span class="step">Step 4 · Apply</span>
+        <h2 id="apply-h">Your Turn — Solve</h2>
+        <p class="do">
+          Answer all 6. Type numbers only (no units). Then press
+          <b>Check My Work</b> at the bottom.
+        </p>
+
+        <form id="apply-form">
+          <div class="q">
+            <p class="prompt">
+              1. A rectangle has base 7 m and height 3 m. What is the area?
+            </p>
+            <p class="figure">
+              Area = base × height. Type the number of square meters.
+            </p>
+            <label for="q1">Area (m²): </label>
+            <input
+              class="txt"
+              type="text"
+              id="q1"
+              inputmode="numeric"
+              aria-label="Question 1 answer"
+            />
+          </div>
+
+          <div class="q">
+            <p class="prompt">
+              2. A square tile floor is 9 m on each side. What is the area?
+            </p>
+            <p class="figure">A square has equal sides. Area = side × side.</p>
+            <label for="q2">Area (m²): </label>
+            <input
+              class="txt"
+              type="text"
+              id="q2"
+              inputmode="numeric"
+              aria-label="Question 2 answer"
+            />
+          </div>
+
+          <div class="q">
+            <p class="prompt">
+              3. A triangle has base 10 m and height 6 m. What is the area?
+            </p>
+            <p class="figure">Area = (base × height) ÷ 2.</p>
+            <label for="q3">Area (m²): </label>
+            <input
+              class="txt"
+              type="text"
+              id="q3"
+              inputmode="numeric"
+              aria-label="Question 3 answer"
+            />
+          </div>
+
+          <div class="q">
+            <p class="prompt">
+              4. An L-shape is made of two rectangles. One is 5 m × 4 m. The
+              other is 3 m × 2 m. What is the total area?
+            </p>
+            <p class="figure">Find each rectangle's area, then add them.</p>
+            <label for="q4">Total area (m²): </label>
+            <input
+              class="txt"
+              type="text"
+              id="q4"
+              inputmode="numeric"
+              aria-label="Question 4 answer"
+            />
+          </div>
+
+          <div class="q">
+            <p class="prompt">5. Which formula finds the area of a triangle?</p>
+            <label class="opt"
+              ><input type="radio" name="q5" value="a" /> base + height</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q5" value="b" /> base × height</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q5" value="c" /> (base × height) ÷
+              2</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q5" value="d" /> side × side ×
+              side</label
+            >
+          </div>
+
+          <div class="q">
+            <p class="prompt">
+              6. A garden is 12 m by 5 m. You cover it with 1 m × 1 m square
+              tiles. How many tiles do you need?
+            </p>
+            <p class="figure">
+              Number of unit squares = area. Type the number.
+            </p>
+            <label for="q6">Tiles: </label>
+            <input
+              class="txt"
+              type="text"
+              id="q6"
+              inputmode="numeric"
+              aria-label="Question 6 answer"
+            />
+          </div>
+
+          <button class="checkbtn" type="button" id="checkBtn">
+            Check My Work
+          </button>
+        </form>
+      </section>
+
+      <!-- REFLECT -->
+      <section aria-labelledby="reflect-h">
+        <span class="step">Step 5 · Reflect</span>
+        <h2 id="reflect-h">Think About It</h2>
+        <p class="do">
+          Write 1–2 sentences for each. Your words are saved in your PDF/DOC.
+        </p>
+        <p>
+          <label for="r1"
+            ><b>A.</b> How do you find the area of a triangle? Tell the
+            steps.</label
+          >
+        </p>
+        <textarea id="r1" aria-label="Reflection A"></textarea>
+        <p style="margin-top: 16px">
+          <label for="r2"
+            ><b>B.</b> Why do we break a composite shape into smaller
+            shapes?</label
+          >
+        </p>
+        <textarea id="r2" aria-label="Reflection B"></textarea>
+        <p class="hint" style="margin-top: 16px">
+          When you are done: scroll up to the name bar and press
+          <b>Save as PDF</b> or <b>Save as DOC</b> to turn in your HyperDoc.
+        </p>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        function start() {
+          if (!window.NTKit) {
+            return setTimeout(start, 50);
+          }
+          NTKit.mount("#ntkit");
+
+          document
+            .getElementById("checkBtn")
+            .addEventListener("click", function () {
+              function val(id) {
+                var n = document.getElementById(id);
+                return n ? n.value.trim() : "";
+              }
+              function radio(name) {
+                var n = document.querySelector(
+                  'input[name="' + name + '"]:checked',
+                );
+                return n ? n.value : "";
+              }
+
+              // Capture reflections so they are saved into the doc
+              var refA = val("r1");
+              var refB = val("r2");
+
+              NTKit.grade({
+                activityId: "hyperdoc-unit-5",
+                activityTitle: "Unit 5 HyperDoc — Area of Polygons",
+                standard: "6.G.A.1",
+                items: [
+                  {
+                    prompt: "1. Rectangle: base 7 m × height 3 m. Area?",
+                    studentAnswer: val("q1"),
+                    correctAnswer: "21",
+                    points: 1,
+                    skill: "Area of rectangles",
+                  },
+                  {
+                    prompt: "2. Square floor, side 9 m. Area?",
+                    studentAnswer: val("q2"),
+                    correctAnswer: "81",
+                    points: 1,
+                    skill: "Area of rectangles",
+                  },
+                  {
+                    prompt: "3. Triangle: base 10 m × height 6 m. Area?",
+                    studentAnswer: val("q3"),
+                    correctAnswer: "30",
+                    points: 1,
+                    skill: "Area of triangles",
+                  },
+                  {
+                    prompt: "4. L-shape: (5×4) + (3×2). Total area?",
+                    studentAnswer: val("q4"),
+                    correctAnswer: "26",
+                    points: 1,
+                    skill: "Composite figures",
+                  },
+                  {
+                    prompt: "5. Which formula finds a triangle's area?",
+                    studentAnswer: radio("q5"),
+                    correctAnswer: "c",
+                    points: 1,
+                    skill: "Area formulas",
+                  },
+                  {
+                    prompt: "6. Garden 12 m × 5 m. How many 1 m² tiles?",
+                    studentAnswer: val("q6"),
+                    correctAnswer: "60",
+                    points: 1,
+                    skill: "Area & unit squares",
+                  },
+                  {
+                    prompt: "Reflect A: Steps to find a triangle's area.",
+                    studentAnswer: refA,
+                    correctAnswer: "",
+                    points: 0,
+                    skill: "Reflection",
+                  },
+                  {
+                    prompt: "Reflect B: Why break a composite shape apart?",
+                    studentAnswer: refB,
+                    correctAnswer: "",
+                    points: 0,
+                    skill: "Reflection",
+                  },
+                ],
+              });
+
+              var results = document.getElementById("ntkit-results");
+              if (results) {
+                results.scrollIntoView({ behavior: "smooth", block: "start" });
+                results.focus && results.focus();
+              }
+            });
+        }
+        start();
+      })();
+    </script>
+  </body>
+</html>

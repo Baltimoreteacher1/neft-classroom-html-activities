@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unit 9 WebQuest — Chart the Star Map (Coordinate Plane)</title>
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+    <style>
+      body {
+        margin: 0;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+      }
+      header.hero {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 28px;
+      }
+      .badge {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: #fff;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 15px;
+        letter-spacing: 0.5px;
+      }
+      h1 {
+        font-size: 34px;
+        margin: 12px 0 6px;
+        line-height: 1.2;
+      }
+      h2 {
+        font-size: 26px;
+        margin: 36px 0 10px;
+        border-bottom: 3px solid var(--nt-accent);
+        padding-bottom: 6px;
+      }
+      h3 {
+        font-size: 20px;
+        margin: 18px 0 6px;
+      }
+      p,
+      li {
+        font-size: 18px;
+      }
+      .sub {
+        color: var(--nt-muted);
+        font-size: 17px;
+        margin: 0;
+      }
+      section {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 22px;
+      }
+      ol.steps {
+        padding-left: 22px;
+      }
+      ol.steps > li {
+        margin-bottom: 14px;
+      }
+      .tip {
+        background: var(--nt-bg);
+        border-left: 6px solid var(--nt-accent);
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin: 14px 0;
+        font-size: 17px;
+      }
+      a.reslink {
+        display: block;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin: 10px 0;
+        color: var(--nt-text);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      a.reslink:hover,
+      a.reslink:focus-visible {
+        border-color: var(--nt-accent);
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      a.reslink .what {
+        display: block;
+        font-weight: 400;
+        font-size: 16px;
+        color: var(--nt-muted);
+        margin-top: 2px;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 16px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric th {
+        background: var(--nt-accent);
+        color: #fff;
+      }
+      table.rubric tr:nth-child(even) td {
+        background: var(--nt-bg);
+      }
+      /* Quiz */
+      .q {
+        margin: 0 0 22px;
+        padding: 16px;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
+      }
+      .q legend {
+        font-weight: 700;
+        font-size: 18px;
+        padding: 0 6px;
+      }
+      .q .opt {
+        display: block;
+        padding: 8px 6px;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 8px;
+      }
+      .q .opt:hover {
+        background: var(--nt-surface);
+      }
+      .q input[type="radio"],
+      .q input[type="text"] {
+        margin-right: 8px;
+        transform: scale(1.25);
+      }
+      .q input[type="text"] {
+        transform: none;
+        font-size: 18px;
+        padding: 8px 10px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        min-width: 120px;
+      }
+      input:focus-visible,
+      .opt:focus-within {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .checkbtn {
+        background: var(--nt-accent);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 14px 26px;
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .checkbtn:hover {
+        filter: brightness(1.08);
+      }
+      .checkbtn:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 3px;
+      }
+      #ntkit {
+        margin-top: 18px;
+      }
+    </style>
+  </head>
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="hero">
+        <span class="badge">Unit 9 WebQuest</span>
+        <h1>Chart the Star Map: The Coordinate Plane</h1>
+        <p class="sub">
+          Grade 6 Math &middot; Standards 6.NS.C.6 &amp; 6.G.A.3
+        </p>
+      </header>
+
+      <!-- INTRODUCTION -->
+      <section aria-labelledby="intro-h">
+        <h2 id="intro-h">Introduction</h2>
+        <p>
+          You are a space navigator. Each star sits at an
+          <strong>ordered pair</strong> like <strong>(x, y)</strong> on a star
+          map. The map is a <strong>coordinate plane</strong> with four parts
+          called <strong>quadrants</strong>. Your job is to read points, plot
+          points, and draw shapes so your ship can reach every star.
+        </p>
+      </section>
+
+      <!-- TASK -->
+      <section aria-labelledby="task-h">
+        <h2 id="task-h">Your Task</h2>
+        <p>By the end you will:</p>
+        <ul>
+          <li>Name and plot points like (-3, 4) in all four quadrants.</li>
+          <li>Find which quadrant a point is in by its signs.</li>
+          <li>
+            Plot the corners of a shape and find a side length by counting
+            units.
+          </li>
+          <li>Pass a short Check (6 questions) and save it for grading.</li>
+        </ul>
+      </section>
+
+      <!-- PROCESS -->
+      <section aria-labelledby="proc-h">
+        <h2 id="proc-h">Process — Follow the Steps</h2>
+        <ol class="steps">
+          <li>
+            <strong>Learn the words.</strong> The <strong>x-axis</strong> goes
+            left and right. The <strong>y-axis</strong> goes up and down. They
+            cross at the <strong>origin</strong> (0, 0).
+          </li>
+          <li>
+            <strong>Read a point.</strong> In (x, y), the first number is x
+            (left/right). The second number is y (up/down). Right and up are
+            positive (+). Left and down are negative (-).
+          </li>
+          <li>
+            <strong>Know the quadrants.</strong> Quadrant I = (+, +), II = (-,
+            +), III = (-, -), IV = (+, -).
+          </li>
+          <li>
+            <strong>Play the 3D game</strong> below to plot stars and practice.
+          </li>
+          <li>
+            <strong>Draw a shape.</strong> Plot 4 corners on grid paper and
+            count units to find a side length.
+          </li>
+          <li>
+            <strong>Take the Check</strong> at the bottom. Type your name,
+            answer the 6 questions, press <em>Check My Answers</em>, then Save
+            as PDF or DOC.
+          </li>
+        </ol>
+        <div class="tip">
+          Tip: To find a side length on the grid, count the units between two
+          corners. If only the sign of x changes, add the two distances from 0.
+        </div>
+      </section>
+
+      <!-- RESOURCES -->
+      <section aria-labelledby="res-h">
+        <h2 id="res-h">Resources</h2>
+        <a class="reslink" href="/games/3d/unit-9/">
+          Coordinate Quest — 3D Game
+          <span class="what">Plot stars and move the beacon to (x, y).</span>
+        </a>
+        <a class="reslink" href="/math/">
+          Math Hub
+          <span class="what">Lessons and tools for Unit 9.</span>
+        </a>
+        <a class="reslink" href="/graphic-novels/unit-9/">
+          Unit 9 Graphic Novel
+          <span class="what">Read the coordinate-plane story.</span>
+        </a>
+      </section>
+
+      <!-- EVALUATION -->
+      <section aria-labelledby="eval-h">
+        <h2 id="eval-h">Evaluation — Rubric</h2>
+        <table class="rubric">
+          <thead>
+            <tr>
+              <th scope="col">Skill</th>
+              <th scope="col">4 — Expert</th>
+              <th scope="col">3 — Good</th>
+              <th scope="col">2 — Getting There</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Name &amp; plot points</td>
+              <td>All points correct in every quadrant</td>
+              <td>Most points correct</td>
+              <td>Some points correct</td>
+            </tr>
+            <tr>
+              <td>Identify quadrants</td>
+              <td>Always uses signs correctly</td>
+              <td>Usually correct</td>
+              <td>Mixes up some signs</td>
+            </tr>
+            <tr>
+              <td>Shapes &amp; side length</td>
+              <td>Counts units exactly right</td>
+              <td>Small counting slips</td>
+              <td>Needs help counting units</td>
+            </tr>
+            <tr>
+              <td>Check score</td>
+              <td>6/6 correct</td>
+              <td>4–5 correct</td>
+              <td>2–3 correct</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- CHECK YOUR UNDERSTANDING -->
+      <section aria-labelledby="check-h">
+        <h2 id="check-h">Check Your Understanding</h2>
+        <p class="sub">
+          Answer all 6. Choose one circle or type the answer. Then press the
+          button.
+        </p>
+
+        <form id="quiz">
+          <fieldset class="q">
+            <legend>
+              1. In the point (x, y), what does the first number tell you?
+            </legend>
+            <label class="opt"
+              ><input type="radio" name="q1" value="A" /> A. How far up or
+              down</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q1" value="B" /> B. How far left or
+              right</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q1" value="C" /> C. The color of the
+              star</label
+            >
+          </fieldset>
+
+          <fieldset class="q">
+            <legend>2. Which point is in Quadrant II ( -, + )?</legend>
+            <label class="opt"
+              ><input type="radio" name="q2" value="A" /> A. (4, 2)</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q2" value="B" /> B. (-5, 3)</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q2" value="C" /> C. (-2, -6)</label
+            >
+          </fieldset>
+
+          <fieldset class="q">
+            <legend>3. The point (0, 0) is called the —</legend>
+            <label class="opt"
+              ><input type="radio" name="q3" value="A" /> A. origin</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q3" value="B" /> B. quadrant</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q3" value="C" /> C. y-axis</label
+            >
+          </fieldset>
+
+          <fieldset class="q">
+            <legend>
+              4. Type the ordered pair that is 3 left and 4 down from the
+              origin. (Use this form: -3,-4 )
+            </legend>
+            <label class="opt"
+              ><input
+                type="text"
+                name="q4"
+                inputmode="text"
+                aria-label="Answer for question 4"
+                placeholder="-3,-4"
+            /></label>
+          </fieldset>
+
+          <fieldset class="q">
+            <legend>
+              5. Point A is at (-2, 5). Point B is at (6, 5). How many units
+              long is segment AB? (Type a number.)
+            </legend>
+            <label class="opt"
+              ><input
+                type="text"
+                name="q5"
+                inputmode="numeric"
+                aria-label="Answer for question 5"
+                placeholder="number"
+            /></label>
+          </fieldset>
+
+          <fieldset class="q">
+            <legend>
+              6. Which quadrant holds points where BOTH numbers are negative (
+              -, - )?
+            </legend>
+            <label class="opt"
+              ><input type="radio" name="q6" value="A" /> A. Quadrant I</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q6" value="B" /> B. Quadrant III</label
+            >
+            <label class="opt"
+              ><input type="radio" name="q6" value="C" /> C. Quadrant IV</label
+            >
+          </fieldset>
+
+          <button type="submit" class="checkbtn">Check My Answers</button>
+        </form>
+
+        <div id="ntkit"></div>
+      </section>
+
+      <!-- CONCLUSION -->
+      <section aria-labelledby="con-h">
+        <h2 id="con-h">Conclusion</h2>
+        <p>
+          Great work, navigator! You can now read and plot ordered pairs, name
+          quadrants by their signs, and use the grid to find side lengths. These
+          coordinate-plane skills help with maps, graphs, and geometry all year.
+        </p>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        function val(name) {
+          var el = document.querySelector('[name="' + name + '"]:checked');
+          if (el) return el.value;
+          var t = document.querySelector(
+            'input[name="' + name + '"][type="text"]',
+          );
+          return t ? t.value : "";
+        }
+        function ready() {
+          if (!window.NTKit) {
+            return setTimeout(ready, 50);
+          }
+          NTKit.mount("#ntkit");
+          var form = document.getElementById("quiz");
+          form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            NTKit.grade({
+              activityId: "webquest-unit-9",
+              activityTitle:
+                "Unit 9 WebQuest — Chart the Star Map (Coordinate Plane)",
+              standard: "6.NS.C.6 & 6.G.A.3",
+              items: [
+                {
+                  prompt: "1. In (x, y), the first number tells you...",
+                  studentAnswer: val("q1"),
+                  correctAnswer: "B",
+                  points: 1,
+                  skill: "Read points",
+                },
+                {
+                  prompt: "2. Which point is in Quadrant II ( -, + )?",
+                  studentAnswer: val("q2"),
+                  correctAnswer: "B",
+                  points: 1,
+                  skill: "Quadrants",
+                },
+                {
+                  prompt: "3. The point (0, 0) is called the...",
+                  studentAnswer: val("q3"),
+                  correctAnswer: "A",
+                  points: 1,
+                  skill: "Vocabulary",
+                },
+                {
+                  prompt: "4. Ordered pair 3 left and 4 down from the origin.",
+                  studentAnswer: val("q4").replace(/\s+/g, ""),
+                  correctAnswer: "-3,-4",
+                  points: 1,
+                  skill: "Plot points",
+                },
+                {
+                  prompt: "5. Length of segment AB from (-2,5) to (6,5).",
+                  studentAnswer: val("q5").replace(/\s+/g, ""),
+                  correctAnswer: "8",
+                  points: 1,
+                  skill: "Side length",
+                },
+                {
+                  prompt:
+                    "6. Quadrant where both numbers are negative ( -, - ).",
+                  studentAnswer: val("q6"),
+                  correctAnswer: "B",
+                  points: 1,
+                  skill: "Quadrants",
+                },
+              ],
+            });
+            document
+              .getElementById("ntkit")
+              .scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        }
+        ready();
+      })();
+    </script>
+  </body>
+</html>

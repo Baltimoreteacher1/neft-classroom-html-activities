@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 7 — Submarine Architect | Integers &amp; the Number Line (6.NS.C.5–7)
+    </title>
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 20px 18px 64px;
+      }
+      header.page {
+        margin: 8px 0 18px;
+      }
+      h1 {
+        font-size: 1.9rem;
+        margin: 0 0 6px;
+      }
+      .standard {
+        display: inline-block;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--nt-bg);
+        background: var(--nt-accent);
+        padding: 3px 12px;
+        border-radius: 999px;
+      }
+      .lead {
+        margin: 12px 0 0;
+        font-size: 1.1rem;
+        color: var(--nt-text);
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-left: 6px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 12px 16px;
+      }
+      .vocab {
+        margin: 14px 0 0;
+        padding: 12px 16px;
+        border: 1px dashed var(--nt-border);
+        border-radius: 10px;
+        background: var(--nt-surface);
+      }
+      .vocab b {
+        color: var(--nt-accent);
+      }
+      .progress-wrap {
+        margin: 18px 0 6px;
+      }
+      .progress-label {
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+      }
+      .progress-track {
+        height: 16px;
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0;
+        background: var(--nt-accent);
+        border-radius: 999px;
+        transition: width 0.3s ease;
+      }
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 18px 18px 20px;
+        margin: 18px 0;
+      }
+      .qhead {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin: 0 0 4px;
+      }
+      .qnum {
+        flex: none;
+        font-weight: 800;
+        color: var(--nt-bg);
+        background: var(--nt-accent);
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+      }
+      .qtitle {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+      }
+      .directions {
+        margin: 6px 0 14px;
+        color: var(--nt-muted);
+        font-size: 1.02rem;
+      }
+      .answer-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+      }
+      label.ans-label {
+        font-weight: 700;
+      }
+      input[type="number"] {
+        font-size: 1.2rem;
+        padding: 8px 12px;
+        width: 130px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      input[type="number"]:focus-visible,
+      select:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+
+      /* Submarine number line */
+      .sub-build {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: flex-start;
+      }
+      .nline {
+        position: relative;
+        width: 120px;
+        height: 460px;
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-accent);
+        border-radius: 12px;
+        touch-action: none;
+        user-select: none;
+      }
+      .nline .axis {
+        position: absolute;
+        left: 50%;
+        top: 12px;
+        bottom: 12px;
+        width: 3px;
+        transform: translateX(-50%);
+        background: var(--nt-border);
+      }
+      .tick {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 0;
+        border-top: 1px solid var(--nt-border);
+        display: flex;
+        align-items: center;
+      }
+      .tick.zero {
+        border-top: 3px solid var(--nt-accent);
+      }
+      .tick .tlabel {
+        position: absolute;
+        left: 8px;
+        transform: translateY(-50%);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--nt-text);
+      }
+      .sub {
+        position: absolute;
+        left: 50%;
+        width: 40px;
+        height: 26px;
+        transform: translate(-50%, -50%);
+        cursor: grab;
+        font-size: 26px;
+        line-height: 26px;
+        text-align: center;
+      }
+      .sub:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 4px;
+        border-radius: 6px;
+      }
+      .depth-readout {
+        font-size: 1.05rem;
+      }
+      .depth-readout b {
+        font-size: 1.5rem;
+        color: var(--nt-accent);
+      }
+      .controls {
+        margin-top: 12px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      button.btn {
+        font-size: 1rem;
+        font-weight: 700;
+        padding: 10px 16px;
+        border: 2px solid var(--nt-accent);
+        border-radius: 999px;
+        cursor: pointer;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+      }
+      button.btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      button.btn:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      /* Horizontal number line figure */
+      svg.fig {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 4px 0 14px;
+      }
+      .nl-axis {
+        stroke: var(--nt-text);
+        stroke-width: 2.5;
+      }
+      .nl-tick {
+        stroke: var(--nt-text);
+        stroke-width: 2;
+      }
+      .nl-dot {
+        fill: var(--nt-accent);
+        stroke: var(--nt-text);
+        stroke-width: 2;
+      }
+      text.lbl {
+        fill: var(--nt-text);
+        font-size: 15px;
+        font-weight: 700;
+      }
+      select {
+        font-size: 1.15rem;
+        padding: 8px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      .order-help {
+        font-weight: 700;
+        color: var(--nt-muted);
+      }
+      #submitBtn {
+        font-size: 1.25rem;
+        padding: 14px 28px;
+        margin: 8px 0 18px;
+      }
+      #ntkit {
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="page">
+        <span class="standard">CCSS 6.NS.C.5–7</span>
+        <h1>Submarine Architect — Integers &amp; the Number Line</h1>
+        <p class="lead">
+          <strong>What to do:</strong> Dive the submarine, place points, and
+          compare integers. Type or pick each answer. Then press
+          <strong>Check My Work</strong> at the bottom.
+        </p>
+      </header>
+
+      <div class="vocab">
+        <b>Integer</b> = a whole number that can be positive, negative, or 0
+        (like −3, 0, 5). &nbsp; <b>Opposite</b> = same distance from 0, other
+        side (opposite of 4 is −4). &nbsp; <b>Absolute value |n|</b> = distance
+        from 0, always 0 or more (|−7| = 7). &nbsp; On a number line, numbers
+        get <b>bigger</b> as you go up / right.
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          Progress: <span id="progTxt">0 of 7 answered</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progFill"></div>
+        </div>
+      </div>
+
+      <!-- Q1: Drive the submarine to a depth -->
+      <section class="card" aria-labelledby="q1t">
+        <div class="qhead">
+          <span class="qnum">1</span>
+          <h2 class="qtitle" id="q1t">Dive the submarine to −4</h2>
+        </div>
+        <p class="directions">
+          0 is sea level. Drag the submarine, or click it and press the
+          <strong>Up</strong> / <strong>Down</strong> arrow keys. Stop at
+          <strong>−4</strong>. The readout shows your depth.
+        </p>
+        <div class="sub-build">
+          <div
+            class="nline"
+            id="nline"
+            aria-label="Vertical number line from 6 at the top to negative 6 at the bottom"
+          >
+            <div class="axis"></div>
+            <div
+              class="sub"
+              id="sub"
+              role="slider"
+              tabindex="0"
+              aria-label="Submarine depth slider"
+              aria-valuemin="-6"
+              aria-valuemax="6"
+              aria-valuenow="0"
+              aria-valuetext="0, sea level"
+            >
+              🛥️
+            </div>
+          </div>
+          <div class="depth-readout">
+            Submarine depth: <b id="depthVal">0</b>
+            <div class="controls">
+              <button type="button" class="btn ghost" id="upBtn">▲ Up</button>
+              <button type="button" class="btn ghost" id="downBtn">
+                ▼ Down
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Q2: Opposite -->
+      <section class="card" aria-labelledby="q2t">
+        <div class="qhead">
+          <span class="qnum">2</span>
+          <h2 class="qtitle" id="q2t">What is the opposite of 7?</h2>
+        </div>
+        <p class="directions">
+          The opposite is the same distance from 0, on the other side. Type the
+          number.
+        </p>
+        <div class="answer-row">
+          <label class="ans-label" for="a2">Opposite of 7 =</label>
+          <input
+            type="number"
+            id="a2"
+            inputmode="numeric"
+            aria-label="Opposite of 7"
+          />
+        </div>
+      </section>
+
+      <!-- Q3: Absolute value -->
+      <section class="card" aria-labelledby="q3t">
+        <div class="qhead">
+          <span class="qnum">3</span>
+          <h2 class="qtitle" id="q3t">Find the absolute value |−9|</h2>
+        </div>
+        <p class="directions">
+          Absolute value is the distance from 0. Distance is never negative.
+        </p>
+        <div class="answer-row">
+          <label class="ans-label" for="a3">|−9| =</label>
+          <input
+            type="number"
+            id="a3"
+            inputmode="numeric"
+            aria-label="Absolute value of negative 9"
+          />
+        </div>
+      </section>
+
+      <!-- Q4: Plot / read a point on horizontal number line -->
+      <section class="card" aria-labelledby="q4t">
+        <div class="qhead">
+          <span class="qnum">4</span>
+          <h2 class="qtitle" id="q4t">What integer is the dot on?</h2>
+        </div>
+        <p class="directions">
+          Read the number line. The dot is on one mark. Type that integer.
+        </p>
+        <svg
+          class="fig"
+          width="520"
+          height="90"
+          viewBox="0 0 520 90"
+          role="img"
+          aria-label="Horizontal number line from negative 5 to 5, with a dot on negative 3"
+        >
+          <line class="nl-axis" x1="30" y1="45" x2="490" y2="45" />
+          <!-- ticks at x = 30 + (n+5)*46, n from -5..5 -->
+          <g id="nlTicks"></g>
+          <circle class="nl-dot" cx="122" cy="45" r="9" />
+        </svg>
+        <div class="answer-row">
+          <label class="ans-label" for="a4">The dot is on =</label>
+          <input
+            type="number"
+            id="a4"
+            inputmode="numeric"
+            aria-label="Integer the dot is on"
+          />
+        </div>
+      </section>
+
+      <!-- Q5: Compare two integers -->
+      <section class="card" aria-labelledby="q5t">
+        <div class="qhead">
+          <span class="qnum">5</span>
+          <h2 class="qtitle" id="q5t">Compare: −2 ___ −8</h2>
+        </div>
+        <p class="directions">
+          Pick the right sign. On a number line, the number farther right (or
+          up) is bigger.
+        </p>
+        <div class="answer-row">
+          <span class="ans-label">−2</span>
+          <label
+            class="ans-label"
+            for="a5"
+            style="position: absolute; left: -9999px"
+            >Compare negative 2 and negative 8</label
+          >
+          <select id="a5">
+            <option value="">choose…</option>
+            <option value="&gt;">&gt; (greater than)</option>
+            <option value="&lt;">&lt; (less than)</option>
+            <option value="=">= (equal)</option>
+          </select>
+          <span class="ans-label">−8</span>
+        </div>
+      </section>
+
+      <!-- Q6: Order integers -->
+      <section class="card" aria-labelledby="q6t">
+        <div class="qhead">
+          <span class="qnum">6</span>
+          <h2 class="qtitle" id="q6t">Order from least to greatest</h2>
+        </div>
+        <p class="directions">
+          Put these integers in order, smallest first:
+          <strong>3, −5, 0, −1</strong>. Type them with commas, like:
+          <em>−5, −1, 0, 3</em>.
+        </p>
+        <div class="answer-row">
+          <label class="ans-label" for="a6">Least → greatest:</label>
+          <input
+            type="text"
+            id="a6"
+            style="
+              font-size: 1.2rem;
+              padding: 8px 12px;
+              width: 220px;
+              border: 2px solid var(--nt-border);
+              border-radius: 8px;
+              background: var(--nt-bg);
+              color: var(--nt-text);
+            "
+            aria-label="Order the integers from least to greatest, separated by commas"
+            placeholder="−5, −1, 0, 3"
+          />
+        </div>
+      </section>
+
+      <!-- Q7: Real-world meaning -->
+      <section class="card" aria-labelledby="q7t">
+        <div class="qhead">
+          <span class="qnum">7</span>
+          <h2 class="qtitle" id="q7t">Use an integer for the depth</h2>
+        </div>
+        <p class="directions">
+          A diver is <strong>30 meters below</strong> sea level. Below sea level
+          is negative. Type the integer for this depth.
+        </p>
+        <div class="answer-row">
+          <label class="ans-label" for="a7">Depth =</label>
+          <input
+            type="number"
+            id="a7"
+            inputmode="numeric"
+            aria-label="Integer for 30 meters below sea level"
+          />
+          <span class="unit">meters</span>
+        </div>
+      </section>
+
+      <button type="button" class="btn" id="submitBtn">Check My Work</button>
+
+      <div id="ntkit"></div>
+    </div>
+
+    <script src="/assets/nt-activity-kit.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        // ---- Q4 number line ticks (-5..5) ----
+        var ticks = document.getElementById("nlTicks");
+        for (var n = -5; n <= 5; n++) {
+          var x = 30 + (n + 5) * 46;
+          var ln = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "line",
+          );
+          ln.setAttribute("class", "nl-tick");
+          ln.setAttribute("x1", x);
+          ln.setAttribute("y1", 38);
+          ln.setAttribute("x2", x);
+          ln.setAttribute("y2", 52);
+          ticks.appendChild(ln);
+          var tx = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text",
+          );
+          tx.setAttribute("class", "lbl");
+          tx.setAttribute("x", x);
+          tx.setAttribute("y", 72);
+          tx.setAttribute("text-anchor", "middle");
+          tx.textContent = n < 0 ? "−" + Math.abs(n) : String(n);
+          ticks.appendChild(tx);
+        }
+
+        // ---- Q1 submarine vertical number line ----
+        var MIN = -6,
+          MAX = 6;
+        var nline = document.getElementById("nline");
+        var sub = document.getElementById("sub");
+        var depthVal = document.getElementById("depthVal");
+        var depth = 0;
+        var PAD = 24; // px padding top/bottom inside the line
+
+        // build tick labels
+        for (var v = MAX; v >= MIN; v--) {
+          var t = document.createElement("div");
+          t.className = "tick" + (v === 0 ? " zero" : "");
+          t.style.top = valueToTop(v) + "px";
+          var lab = document.createElement("span");
+          lab.className = "tlabel";
+          lab.textContent = v < 0 ? "−" + Math.abs(v) : String(v);
+          t.appendChild(lab);
+          nline.appendChild(t);
+        }
+
+        function trackHeight() {
+          return nline.clientHeight - PAD * 2;
+        }
+        function valueToTop(val) {
+          var frac = (MAX - val) / (MAX - MIN);
+          return PAD + frac * trackHeight();
+        }
+        function setDepth(val) {
+          val = Math.max(MIN, Math.min(MAX, Math.round(val)));
+          depth = val;
+          sub.style.top = valueToTop(val) + "px";
+          depthVal.textContent = val;
+          sub.setAttribute("aria-valuenow", String(val));
+          sub.setAttribute(
+            "aria-valuetext",
+            val === 0
+              ? "0, sea level"
+              : val > 0
+                ? val + ", above sea level"
+                : Math.abs(val) + " below sea level",
+          );
+          updateProgress();
+        }
+        function topToValue(topPx) {
+          var frac = (topPx - PAD) / trackHeight();
+          return MAX - frac * (MAX - MIN);
+        }
+
+        // place after layout
+        function placeSub() {
+          setDepth(depth);
+        }
+        if (document.readyState === "complete") placeSub();
+        else window.addEventListener("load", placeSub);
+        window.addEventListener("resize", placeSub);
+
+        // drag
+        var dragging = false;
+        function pointerToDepth(e) {
+          var rect = nline.getBoundingClientRect();
+          var topPx = e.clientY - rect.top;
+          setDepth(topToValue(topPx));
+        }
+        sub.addEventListener("pointerdown", function (e) {
+          e.preventDefault();
+          dragging = true;
+          sub.setPointerCapture && sub.setPointerCapture(e.pointerId);
+        });
+        nline.addEventListener("pointermove", function (e) {
+          if (dragging) pointerToDepth(e);
+        });
+        nline.addEventListener("pointerdown", function (e) {
+          if (e.target === sub) return;
+          pointerToDepth(e);
+        });
+        window.addEventListener("pointerup", function () {
+          dragging = false;
+        });
+
+        // keyboard
+        sub.addEventListener("keydown", function (e) {
+          if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") {
+            e.preventDefault();
+            setDepth(depth + 1);
+          } else if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") {
+            e.preventDefault();
+            setDepth(depth - 1);
+          } else if (e.key === "Home") {
+            e.preventDefault();
+            setDepth(MAX);
+          } else if (e.key === "End") {
+            e.preventDefault();
+            setDepth(MIN);
+          }
+        });
+        document.getElementById("upBtn").addEventListener("click", function () {
+          setDepth(depth + 1);
+        });
+        document
+          .getElementById("downBtn")
+          .addEventListener("click", function () {
+            setDepth(depth - 1);
+          });
+
+        // ---- Progress ----
+        var fields = ["a2", "a3", "a4", "a5", "a6", "a7"];
+        function filledCount() {
+          var n = depth !== 0 ? 1 : 0; // moved submarine counts
+          fields.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el && String(el.value).trim() !== "") n++;
+          });
+          return n;
+        }
+        function updateProgress() {
+          var n = filledCount();
+          document.getElementById("progTxt").textContent = n + " of 7 answered";
+          document.getElementById("progFill").style.width = (n / 7) * 100 + "%";
+        }
+        fields.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) {
+            el.addEventListener("input", updateProgress);
+            el.addEventListener("change", updateProgress);
+          }
+        });
+        updateProgress();
+
+        // ---- Order answer normalizer (Q6) ----
+        function normOrder(str) {
+          return String(str || "")
+            .replace(/−/g, "-") // minus sign -> hyphen
+            .split(/[\s,]+/)
+            .filter(function (s) {
+              return s !== "";
+            })
+            .join(",");
+        }
+
+        // ---- Grade ----
+        NTKit.mount("#ntkit");
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", function () {
+            var orderStudent = normOrder(document.getElementById("a6").value);
+            NTKit.grade({
+              activityId: "architect-unit-7",
+              activityTitle:
+                "Unit 7 · Submarine Architect — Integers & the Number Line",
+              standard: "6.NS.C.5-7",
+              items: [
+                {
+                  prompt: "Dive the submarine to depth −4",
+                  studentAnswer: String(depth),
+                  correctAnswer: "-4",
+                  points: 1,
+                  skill: "Number line position",
+                },
+                {
+                  prompt: "Opposite of 7",
+                  studentAnswer: document.getElementById("a2").value,
+                  correctAnswer: "-7",
+                  points: 1,
+                  skill: "Opposites",
+                },
+                {
+                  prompt: "Absolute value |−9|",
+                  studentAnswer: document.getElementById("a3").value,
+                  correctAnswer: "9",
+                  points: 1,
+                  skill: "Absolute value",
+                },
+                {
+                  prompt: "Read the point on the number line",
+                  studentAnswer: document.getElementById("a4").value,
+                  correctAnswer: "-3",
+                  points: 1,
+                  skill: "Reading the number line",
+                },
+                {
+                  prompt: "Compare −2 ___ −8",
+                  studentAnswer: document.getElementById("a5").value,
+                  correctAnswer: ">",
+                  points: 1,
+                  skill: "Comparing integers",
+                },
+                {
+                  prompt: "Order 3, −5, 0, −1 from least to greatest",
+                  studentAnswer: orderStudent,
+                  correctAnswer: "-5,-1,0,3",
+                  points: 1,
+                  skill: "Ordering integers",
+                },
+                {
+                  prompt: "Integer for 30 meters below sea level",
+                  studentAnswer: document.getElementById("a7").value,
+                  correctAnswer: "-30",
+                  points: 1,
+                  skill: "Integers in context",
+                },
+              ],
+            });
+            document
+              .getElementById("ntkit")
+              .scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+      })();
+    </script>
+  </body>
+</html>

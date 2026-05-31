@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unit 10 — Volume Architect | Volume of Prisms (6.G.A.2)</title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+
+    <style>
+      :root {
+        --max: 860px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-size: 18px;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 18px 16px 64px;
+      }
+
+      header.hero {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      header.hero h1 {
+        margin: 0 0 6px;
+        font-size: 1.7rem;
+      }
+      .standard {
+        display: inline-block;
+        font-weight: 700;
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+        border-radius: 999px;
+        padding: 2px 12px;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+      }
+      .lead {
+        color: var(--nt-muted);
+        margin: 8px 0 0;
+      }
+
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 18px;
+        margin: 16px 0;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 1.25rem;
+      }
+      .qmeta {
+        color: var(--nt-muted);
+        font-size: 0.95rem;
+        margin: 0 0 10px;
+      }
+      .directions {
+        font-weight: 700;
+        margin: 0 0 12px;
+        padding: 10px 12px;
+        border-left: 5px solid var(--nt-accent);
+        border-radius: 6px;
+        background: color-mix(in srgb, var(--nt-accent) 9%, var(--nt-surface));
+      }
+
+      /* Cube-packing builder */
+      .builder {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .stage {
+        border: 2px dashed var(--nt-border);
+        border-radius: 10px;
+        padding: 10px;
+        background: var(--nt-bg);
+      }
+      .layer-label {
+        font-weight: 700;
+        color: var(--nt-muted);
+        font-size: 0.85rem;
+        margin: 0 0 4px;
+      }
+      .grid {
+        display: grid;
+        gap: 3px;
+      }
+      .cube {
+        width: 26px;
+        height: 26px;
+        border: 1px solid var(--nt-border);
+        border-radius: 4px;
+        background: var(--nt-surface);
+        padding: 0;
+        cursor: pointer;
+      }
+      .cube[aria-pressed="true"] {
+        background: var(--nt-accent);
+        border-color: var(--nt-accent);
+      }
+      .cube:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-top: 12px;
+      }
+      label.f {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+      input[type="number"] {
+        width: 92px;
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .countpill {
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
+      }
+      .dims {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      button.btn {
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: 1px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+      }
+      button.btn:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      button.btn.secondary {
+        background: var(--nt-surface);
+        color: var(--nt-accent);
+      }
+
+      .progress {
+        font-weight: 700;
+        color: var(--nt-muted);
+        margin: 0 0 8px;
+      }
+      .barwrap {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 999px;
+        height: 12px;
+        overflow: hidden;
+      }
+      .bar {
+        height: 100%;
+        width: 0;
+        background: var(--nt-accent);
+        transition: width 0.25s ease;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+    </style>
+  </head>
+
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="hero">
+        <span class="standard">CCSS 6.G.A.2 · Volume of Prisms</span>
+        <h1>Volume Architect — Pack the Prism</h1>
+        <p class="lead">
+          You are the architect of the Volume Vault. Pack each box with unit
+          cubes, then use <strong>V = length × width × height</strong> to find
+          the volume.
+        </p>
+      </header>
+
+      <!-- Activity kit mount: student name + Save PDF/DOC + results -->
+      <div id="ntkit"></div>
+
+      <section class="card" aria-label="Progress">
+        <p class="progress" id="progressText">Step 0 of 6 done</p>
+        <div class="barwrap"><div class="bar" id="bar"></div></div>
+      </section>
+
+      <!-- Q1: Cube builder -->
+      <section class="card" aria-labelledby="q1h">
+        <h2 id="q1h">1. Build one layer</h2>
+        <p class="qmeta">Skill: Cubes in one layer</p>
+        <p class="directions">
+          Click cubes to fill the floor. Make a layer with
+          <strong>12 cubes</strong> (length 4, width 3).
+        </p>
+        <div class="builder">
+          <div class="stage">
+            <p class="layer-label">Bottom layer (top view)</p>
+            <div
+              class="grid"
+              id="g1"
+              style="grid-template-columns: repeat(4, 26px)"
+            ></div>
+          </div>
+          <div>
+            <p class="countpill">Cubes placed: <span id="c1">0</span></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Q2: Multiply layer x height -->
+      <section class="card" aria-labelledby="q2h">
+        <h2 id="q2h">2. Stack the layers</h2>
+        <p class="qmeta">Skill: Layers × height</p>
+        <p class="directions">
+          One layer has 12 cubes. The box is 5 layers tall. How many unit cubes
+          fill the box? Type the total.
+        </p>
+        <label class="f"
+          >Total cubes (volume)
+          <input
+            type="number"
+            id="a2"
+            min="0"
+            inputmode="numeric"
+            aria-describedby="q2h"
+          />
+        </label>
+      </section>
+
+      <!-- Q3: Build dims, compute V -->
+      <section class="card" aria-labelledby="q3h">
+        <h2 id="q3h">3. Design your own box</h2>
+        <p class="qmeta">Skill: V = l × w × h</p>
+        <p class="directions">
+          Pick length, width, and height. The cube count updates. Type the
+          volume in cubic units.
+        </p>
+        <div class="controls dims">
+          <label class="f"
+            >Length <input type="number" id="dL" min="1" max="6" value="3"
+          /></label>
+          <label class="f"
+            >Width <input type="number" id="dW" min="1" max="6" value="2"
+          /></label>
+          <label class="f"
+            >Height <input type="number" id="dH" min="1" max="6" value="4"
+          /></label>
+        </div>
+        <div class="builder" style="margin-top: 12px">
+          <div class="stage">
+            <p class="layer-label">One layer (length × width)</p>
+            <div class="grid" id="g3"></div>
+          </div>
+          <p class="countpill" id="hint3">Cubes per layer: 6 · Layers: 4</p>
+        </div>
+        <div class="controls">
+          <label class="f"
+            >Volume (cubic units)
+            <input type="number" id="a3" min="0" inputmode="numeric" />
+          </label>
+        </div>
+      </section>
+
+      <!-- Q4: Given dims word -->
+      <section class="card" aria-labelledby="q4h">
+        <h2 id="q4h">4. Find the volume</h2>
+        <p class="qmeta">Skill: V = l × w × h</p>
+        <p class="directions">
+          A storage box is 7 cm long, 4 cm wide, and 5 cm tall. Type the volume
+          in cubic centimeters (cm³).
+        </p>
+        <label class="f"
+          >Volume (cm³)
+          <input type="number" id="a4" min="0" inputmode="numeric" />
+        </label>
+      </section>
+
+      <!-- Q5: Fractional edge -->
+      <section class="card" aria-labelledby="q5h">
+        <h2 id="q5h">5. A half-unit edge</h2>
+        <p class="qmeta">Skill: Fractional edge lengths</p>
+        <p class="directions">
+          A box is 3 units long, 2 units wide, and <strong>1½</strong> (1.5)
+          units tall. Type the volume in cubic units. You may type 9 or 9.0.
+        </p>
+        <label class="f"
+          >Volume (cubic units)
+          <input type="number" id="a5" min="0" step="0.5" inputmode="decimal" />
+        </label>
+      </section>
+
+      <!-- Q6: Missing edge -->
+      <section class="card" aria-labelledby="q6h">
+        <h2 id="q6h">6. Find the missing edge</h2>
+        <p class="qmeta">Skill: Solve for an edge</p>
+        <p class="directions">
+          A box has volume 48 cubic units. It is 4 units long and 2 units wide.
+          How tall is it? Type the height in units.
+        </p>
+        <label class="f"
+          >Height (units)
+          <input type="number" id="a6" min="0" inputmode="numeric" />
+        </label>
+      </section>
+
+      <section class="card">
+        <div class="actions">
+          <button type="button" class="btn" id="checkBtn">Check my work</button>
+          <button type="button" class="btn secondary" id="resetBtn">
+            Start over
+          </button>
+        </div>
+        <p class="qmeta" style="margin-top: 10px">
+          Your score and a per-skill report appear at the top. Use Save as PDF
+          or Save as DOC to turn it in.
+        </p>
+      </section>
+    </div>
+
+    <!-- Activity kit -->
+    <script src="/assets/nt-activity-kit.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---------- Q1 + Q3 interactive cube grids ---------- */
+        var cube1Count = 0;
+
+        function buildGrid(el, cols, rows, onChange) {
+          el.style.gridTemplateColumns = "repeat(" + cols + ", 26px)";
+          el.innerHTML = "";
+          for (var i = 0; i < cols * rows; i++) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "cube";
+            b.setAttribute("aria-pressed", "false");
+            b.setAttribute("aria-label", "cube " + (i + 1));
+            b.addEventListener("click", function () {
+              var on = this.getAttribute("aria-pressed") === "true";
+              this.setAttribute("aria-pressed", on ? "false" : "true");
+              if (onChange) onChange();
+            });
+            el.appendChild(b);
+          }
+        }
+
+        function countOn(el) {
+          return el.querySelectorAll('.cube[aria-pressed="true"]').length;
+        }
+
+        var g1 = document.getElementById("g1");
+        var c1 = document.getElementById("c1");
+        buildGrid(g1, 4, 3, function () {
+          cube1Count = countOn(g1);
+          c1.textContent = cube1Count;
+          updateProgress();
+        });
+
+        /* Q3 dynamic layer grid */
+        var dL = document.getElementById("dL");
+        var dW = document.getElementById("dW");
+        var dH = document.getElementById("dH");
+        var g3 = document.getElementById("g3");
+        var hint3 = document.getElementById("hint3");
+
+        function clampDim(input) {
+          var v = parseInt(input.value, 10);
+          if (isNaN(v) || v < 1) v = 1;
+          if (v > 6) v = 6;
+          input.value = v;
+          return v;
+        }
+        function refreshQ3() {
+          var L = clampDim(dL),
+            W = clampDim(dW),
+            H = clampDim(dH);
+          buildGrid(g3, L, W, null);
+          hint3.textContent = "Cubes per layer: " + L * W + " · Layers: " + H;
+        }
+        [dL, dW, dH].forEach(function (i) {
+          i.addEventListener("input", refreshQ3);
+        });
+        refreshQ3();
+
+        /* ---------- Progress ---------- */
+        var ids = ["a2", "a3", "a4", "a5", "a6"];
+        function updateProgress() {
+          var done = 0;
+          if (cube1Count > 0) done++;
+          ids.forEach(function (id) {
+            var v = document.getElementById(id).value;
+            if (v !== "" && v !== null) done++;
+          });
+          document.getElementById("progressText").textContent =
+            "Step " + done + " of 6 done";
+          document.getElementById("bar").style.width = (done / 6) * 100 + "%";
+        }
+        ids.forEach(function (id) {
+          document.getElementById(id).addEventListener("input", updateProgress);
+        });
+        updateProgress();
+
+        /* ---------- Grading ---------- */
+        var num = function (id) {
+          return document.getElementById(id).value;
+        };
+
+        document
+          .getElementById("checkBtn")
+          .addEventListener("click", function () {
+            var L = parseInt(dL.value, 10),
+              W = parseInt(dW.value, 10),
+              H = parseInt(dH.value, 10);
+            var q3Vol = L * W * H;
+
+            var result = NTKit.grade({
+              activityId: "architect-unit-10",
+              activityTitle: "Unit 10 · Volume Architect — Pack the Prism",
+              standard: "6.G.A.2",
+              items: [
+                {
+                  prompt: "Build a bottom layer with 12 cubes (4 × 3).",
+                  studentAnswer: String(cube1Count),
+                  correctAnswer: "12",
+                  points: 1,
+                  skill: "Cubes in one layer",
+                },
+                {
+                  prompt:
+                    "12 cubes per layer, 5 layers tall — total cubes (volume)?",
+                  studentAnswer: num("a2"),
+                  correctAnswer: "60",
+                  points: 1,
+                  skill: "Layers × height",
+                },
+                {
+                  prompt:
+                    "Volume of your box (" + L + " × " + W + " × " + H + ").",
+                  studentAnswer: num("a3"),
+                  correctAnswer: String(q3Vol),
+                  points: 1,
+                  skill: "V = l × w × h",
+                },
+                {
+                  prompt: "Box 7 cm × 4 cm × 5 cm — volume in cm³?",
+                  studentAnswer: num("a4"),
+                  correctAnswer: "140",
+                  points: 1,
+                  skill: "V = l × w × h",
+                },
+                {
+                  prompt: "Box 3 × 2 × 1.5 — volume in cubic units?",
+                  studentAnswer: num("a5"),
+                  correctAnswer: "9",
+                  points: 1,
+                  skill: "Fractional edge lengths",
+                },
+                {
+                  prompt: "Volume 48, length 4, width 2 — find the height.",
+                  studentAnswer: num("a6"),
+                  correctAnswer: "6",
+                  points: 1,
+                  skill: "Solve for an edge",
+                },
+              ],
+            });
+
+            document
+              .getElementById("ntkit")
+              .scrollIntoView({ behavior: "smooth", block: "start" });
+            return result;
+          });
+
+        /* ---------- Reset ---------- */
+        document
+          .getElementById("resetBtn")
+          .addEventListener("click", function () {
+            cube1Count = 0;
+            c1.textContent = "0";
+            g1.querySelectorAll(".cube").forEach(function (b) {
+              b.setAttribute("aria-pressed", "false");
+            });
+            ids.forEach(function (id) {
+              document.getElementById(id).value = "";
+            });
+            dL.value = 3;
+            dW.value = 2;
+            dH.value = 4;
+            refreshQ3();
+            updateProgress();
+          });
+
+        NTKit.mount("#ntkit");
+      })();
+    </script>
+  </body>
+</html>

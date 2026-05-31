@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 6 HyperDoc — Expressions (6.EE.A.1–4) | Neft Teacher</title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+
+    <!-- Shared activity kit -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+
+      body {
+        margin: 0;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family:
+          "Outfit",
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        font-size: 19px;
+        line-height: 1.6;
+      }
+
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+      }
+
+      header.hero {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin-bottom: 24px;
+      }
+      header.hero .eyebrow {
+        color: var(--nt-accent);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 15px;
+      }
+      header.hero h1 {
+        font-size: 34px;
+        margin: 6px 0 8px;
+        line-height: 1.2;
+      }
+      header.hero p {
+        margin: 0;
+        color: var(--nt-muted);
+        font-size: 18px;
+      }
+
+      section.card {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px 24px;
+        margin: 20px 0;
+      }
+      section.card h2 {
+        font-size: 26px;
+        margin: 0 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .step {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-size: 15px;
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 2px 12px;
+      }
+      .doit {
+        background: var(--nt-bg);
+        border: 2px dashed var(--nt-accent);
+        border-radius: 12px;
+        padding: 10px 14px;
+        margin: 12px 0;
+        font-weight: 700;
+      }
+
+      a.btnlink {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        text-decoration: none;
+        font-weight: 700;
+        padding: 11px 18px;
+        border-radius: 10px;
+        margin: 6px 8px 6px 0;
+        border: 2px solid transparent;
+      }
+      a.btnlink:hover {
+        filter: brightness(1.08);
+      }
+      a.btnlink:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      .example {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .example code,
+      .term {
+        font-family: "Consolas", "Courier New", monospace;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 6px;
+        padding: 1px 7px;
+        font-size: 0.95em;
+      }
+      table.vocab {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }
+      table.vocab th,
+      table.vocab td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.vocab th {
+        background: var(--nt-bg);
+      }
+
+      .q {
+        margin: 18px 0;
+      }
+      .q label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .q .hint {
+        color: var(--nt-muted);
+        font-weight: 400;
+        font-size: 16px;
+      }
+      .q input[type="text"],
+      .q textarea {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 18px;
+        padding: 11px 13px;
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        font-family: inherit;
+      }
+      .q input[type="text"]:focus,
+      .q textarea:focus {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 1px;
+        border-color: var(--nt-accent);
+      }
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      button.checkbtn {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-size: 19px;
+        font-weight: 800;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 13px 26px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      button.checkbtn:hover {
+        filter: brightness(1.08);
+      }
+      button.checkbtn:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      #ntkit {
+        margin: 22px 0;
+      }
+      ul.clean {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+      ul.clean li {
+        margin: 4px 0;
+      }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+    </style>
+  </head>
+
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="hero">
+        <div class="eyebrow">Unit 6 HyperDoc · 6.EE.A.1–4</div>
+        <h1>Expression Engine: Build &amp; Read Expressions</h1>
+        <p>
+          Feed numbers and letters into the machine. Learn to write, read, and
+          find the value of math expressions.
+        </p>
+      </header>
+
+      <!-- Student name bar + Save buttons + results live here -->
+      <div id="ntkit"></div>
+
+      <!-- ENGAGE -->
+      <section class="card" aria-labelledby="engage-h">
+        <h2 id="engage-h"><span class="step">1</span> Engage</h2>
+        <p>
+          You have <strong>3 boxes</strong>. Each box holds the same number of
+          marbles. You do not know how many! We can call that unknown number
+          <span class="term">b</span>.
+        </p>
+        <p>
+          <strong>Think:</strong> How can we write "3 boxes of
+          <span class="term">b</span> marbles" using math?
+        </p>
+        <div class="doit">
+          Do this: Say your idea out loud. You will check it in Step 4.
+        </div>
+      </section>
+
+      <!-- EXPLORE -->
+      <section class="card" aria-labelledby="explore-h">
+        <h2 id="explore-h"><span class="step">2</span> Explore</h2>
+        <p>Open the tools below to play and explore expressions.</p>
+        <a class="btnlink" href="/games/3d/unit-6/index.html"
+          >Play the 3D Expression Engine</a
+        >
+        <a class="btnlink" href="/math/unit-6/index.html">Unit 6 Math Hub</a>
+        <a class="btnlink" href="/novels/unit-6/index.html"
+          >Read the Math Novel</a
+        >
+        <p class="hint">
+          Tip: In the game, feed blocks into the machine to build expressions
+          like <span class="term">3 × b</span>.
+        </p>
+      </section>
+
+      <!-- EXPLAIN -->
+      <section class="card" aria-labelledby="explain-h">
+        <h2 id="explain-h"><span class="step">3</span> Explain</h2>
+
+        <p>Read these key words. Then read the worked example.</p>
+        <table class="vocab">
+          <thead>
+            <tr>
+              <th>Word</th>
+              <th>Easy meaning</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Expression</strong></td>
+              <td>Numbers and letters joined by math signs. No equals sign.</td>
+              <td><span class="term">3b + 5</span></td>
+            </tr>
+            <tr>
+              <td><strong>Variable</strong></td>
+              <td>A letter that stands for an unknown number.</td>
+              <td><span class="term">b</span></td>
+            </tr>
+            <tr>
+              <td><strong>Coefficient</strong></td>
+              <td>The number multiplied by a variable.</td>
+              <td>
+                In <span class="term">3b</span>, it is
+                <span class="term">3</span>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Exponent</strong></td>
+              <td>Small number. It tells how many times to multiply.</td>
+              <td><span class="term">5² = 5 × 5 = 25</span></td>
+            </tr>
+            <tr>
+              <td><strong>Evaluate</strong></td>
+              <td>Put in a number for the letter and find the value.</td>
+              <td>
+                If <span class="term">b = 4</span>, then
+                <span class="term">3b = 12</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="example">
+          <strong>Worked example — write &amp; evaluate</strong>
+          <ul class="clean">
+            <li>
+              "3 boxes of <span class="term">b</span> marbles" &rarr; write it
+              as <span class="term">3b</span> (means 3 × b).
+            </li>
+            <li>
+              Now <span class="term">b = 4</span>. Evaluate:
+              <span class="term">3b = 3 × 4 = 12</span>.
+            </li>
+            <li>Exponent: <span class="term">4³ = 4 × 4 × 4 = 64</span>.</li>
+          </ul>
+        </div>
+        <p class="hint">
+          Rule: <span class="term">3b</span> always means
+          <span class="term">3 × b</span>. The number in front is the
+          coefficient.
+        </p>
+      </section>
+
+      <!-- APPLY -->
+      <section class="card" aria-labelledby="apply-h">
+        <h2 id="apply-h"><span class="step">4</span> Apply — Quick Check</h2>
+        <p>
+          Type your answer in each box. Then press
+          <strong>Check My Work</strong>.
+        </p>
+
+        <form id="applyform" novalidate>
+          <div class="q">
+            <label for="a1"
+              >1. Write "3 boxes of <span class="term">b</span> marbles" as an
+              expression.
+              <span class="hint"
+                >Use the coefficient and the letter, like 3b.</span
+              ></label
+            >
+            <input
+              type="text"
+              id="a1"
+              name="a1"
+              autocomplete="off"
+              inputmode="text"
+            />
+          </div>
+
+          <div class="q">
+            <label for="a2"
+              >2. Evaluate <span class="term">3b</span> when
+              <span class="term">b = 4</span>.
+              <span class="hint">Type only the number.</span></label
+            >
+            <input
+              type="text"
+              id="a2"
+              name="a2"
+              autocomplete="off"
+              inputmode="numeric"
+            />
+          </div>
+
+          <div class="q">
+            <label for="a3"
+              >3. Write <span class="term">5 × 5 × 5</span> using an exponent.
+              <span class="hint">Use the ^ key, like 5^3.</span></label
+            >
+            <input
+              type="text"
+              id="a3"
+              name="a3"
+              autocomplete="off"
+              inputmode="text"
+            />
+          </div>
+
+          <div class="q">
+            <label for="a4"
+              >4. In the expression <span class="term">7m</span>, what is the
+              coefficient?
+              <span class="hint">Type only the number.</span></label
+            >
+            <input
+              type="text"
+              id="a4"
+              name="a4"
+              autocomplete="off"
+              inputmode="numeric"
+            />
+          </div>
+
+          <div class="q">
+            <label for="a5"
+              >5. Evaluate <span class="term">2³</span> (two to the third
+              power).
+              <span class="hint">2 × 2 × 2. Type only the number.</span></label
+            >
+            <input
+              type="text"
+              id="a5"
+              name="a5"
+              autocomplete="off"
+              inputmode="numeric"
+            />
+          </div>
+
+          <button type="submit" class="checkbtn" id="checkbtn">
+            Check My Work
+          </button>
+        </form>
+      </section>
+
+      <!-- REFLECT -->
+      <section class="card" aria-labelledby="reflect-h">
+        <h2 id="reflect-h"><span class="step">5</span> Reflect</h2>
+        <p>
+          Write 1–2 sentences for each. Your words are saved in your PDF and
+          DOC.
+        </p>
+        <div class="q">
+          <label for="r1"
+            >A. In your own words, what is a <strong>variable</strong>?</label
+          >
+          <textarea id="r1" name="r1"></textarea>
+        </div>
+        <div class="q">
+          <label for="r2"
+            >B. What was the trickiest part for you today? Why?</label
+          >
+          <textarea id="r2" name="r2"></textarea>
+        </div>
+        <p class="hint">
+          When you finish, use <strong>Save as PDF</strong> or
+          <strong>Save as DOC</strong> at the top to turn in your work.
+        </p>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        NTKit.mount("#ntkit");
+
+        var form = document.getElementById("applyform");
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          var r1 = (document.getElementById("r1").value || "").trim();
+          var r2 = (document.getElementById("r2").value || "").trim();
+
+          NTKit.grade({
+            activityId: "hyperdoc-unit-6",
+            activityTitle: "Unit 6 · Expressions — HyperDoc Quick Check",
+            standard: "6.EE.A.1-4",
+            items: [
+              {
+                prompt: "Write “3 boxes of b marbles” as an expression.",
+                studentAnswer: document.getElementById("a1").value,
+                correctAnswer: "3b",
+                points: 1,
+                skill: "Write expressions (6.EE.A.2)",
+              },
+              {
+                prompt: "Evaluate 3b when b = 4.",
+                studentAnswer: document.getElementById("a2").value,
+                correctAnswer: "12",
+                points: 1,
+                skill: "Evaluate expressions (6.EE.A.2)",
+              },
+              {
+                prompt: "Write 5 × 5 × 5 using an exponent.",
+                studentAnswer: document.getElementById("a3").value,
+                correctAnswer: "5^3",
+                points: 1,
+                skill: "Exponents (6.EE.A.1)",
+              },
+              {
+                prompt: "Coefficient in 7m.",
+                studentAnswer: document.getElementById("a4").value,
+                correctAnswer: "7",
+                points: 1,
+                skill: "Parts of an expression (6.EE.A.2b)",
+              },
+              {
+                prompt: "Evaluate 2³.",
+                studentAnswer: document.getElementById("a5").value,
+                correctAnswer: "8",
+                points: 1,
+                skill: "Exponents (6.EE.A.1)",
+              },
+              {
+                prompt: "Reflect A: What is a variable?",
+                studentAnswer: r1,
+                correctAnswer: r1,
+                points: 0,
+                skill: "Reflection",
+              },
+              {
+                prompt: "Reflect B: Trickiest part and why?",
+                studentAnswer: r2,
+                correctAnswer: r2,
+                points: 0,
+                skill: "Reflection",
+              },
+            ],
+          });
+
+          var panel = document.getElementById("ntkit");
+          if (panel && panel.scrollIntoView)
+            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      })();
+    </script>
+  </body>
+</html>

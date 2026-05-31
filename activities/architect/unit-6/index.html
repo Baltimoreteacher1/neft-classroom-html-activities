@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 6 — Expression Architect | Expressions (6.EE.A.1–4)</title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+
+    <!-- Activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        font-size: 18px;
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 20px 16px 64px;
+      }
+
+      header.hero {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-bottom: 18px;
+      }
+      .badge {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 700;
+        font-size: 14px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        letter-spacing: 0.3px;
+      }
+      h1 {
+        font-size: 30px;
+        margin: 10px 0 6px;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--nt-text);
+        margin: 0;
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+
+      .progress-wrap {
+        margin: 14px 0 0;
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 999px;
+        height: 16px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--nt-accent);
+        transition: width 0.25s ease;
+      }
+      .progress-label {
+        font-size: 15px;
+        margin-top: 6px;
+        color: var(--nt-muted);
+      }
+
+      .card {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 16px 0;
+      }
+      .card h2 {
+        font-size: 21px;
+        margin: 0 0 4px;
+      }
+      .task {
+        font-size: 18px;
+        margin: 0 0 12px;
+      }
+      .task strong {
+        color: var(--nt-accent);
+      }
+
+      /* ---- Block bank / build area (Architect feel) ---- */
+      .bank-label,
+      .build-label {
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--nt-muted);
+        margin: 4px 0;
+      }
+      .bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .build-zone {
+        min-height: 64px;
+        border: 2px dashed var(--nt-border);
+        border-radius: 12px;
+        padding: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        background: var(--nt-bg);
+      }
+      .build-zone.over {
+        border-color: var(--nt-accent);
+      }
+      .build-zone:empty::before {
+        content: "Click blocks below to build here";
+        color: var(--nt-muted);
+        font-size: 16px;
+      }
+      .block {
+        font-size: 19px;
+        font-weight: 700;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        cursor: pointer;
+      }
+      .block:hover,
+      .block:focus-visible {
+        border-color: var(--nt-accent);
+      }
+      .block:focus-visible,
+      .block-built:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .block-built {
+        font-size: 19px;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        cursor: pointer;
+      }
+      .block-built::after {
+        content: " ✕";
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      /* ---- Inputs ---- */
+      label.q {
+        display: block;
+        font-size: 18px;
+        margin: 6px 0 4px;
+        font-weight: 600;
+      }
+      input[type="text"],
+      input[type="number"],
+      select {
+        font-size: 19px;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        min-width: 120px;
+      }
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 1px;
+        border-color: var(--nt-accent);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: flex-end;
+      }
+
+      /* term-match builder */
+      .match-grid {
+        display: grid;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .match-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        align-items: center;
+      }
+      .chip {
+        font-size: 19px;
+        font-weight: 700;
+        text-align: center;
+        padding: 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        background: var(--nt-bg);
+      }
+
+      .hint {
+        font-size: 15px;
+        color: var(--nt-muted);
+        margin-top: 8px;
+      }
+
+      .check-btn {
+        font-size: 20px;
+        font-weight: 800;
+        padding: 14px 28px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        margin: 8px 0;
+      }
+      .check-btn:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .check-btn:hover {
+        filter: brightness(1.05);
+      }
+
+      #results-anchor {
+        scroll-margin-top: 20px;
+      }
+    </style>
+  </head>
+
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="hero">
+        <span class="badge">Unit 6 · 6.EE.A.1–4</span>
+        <h1>Expression Architect</h1>
+        <p class="lead">
+          Build math expressions, write powers, and match equal expressions.
+          Click blocks and fill the boxes. Then press
+          <strong>Check My Work</strong>.
+        </p>
+        <div class="progress-wrap" aria-hidden="true">
+          <div class="progress-bar" id="pbar"></div>
+        </div>
+        <div
+          class="progress-label"
+          id="plabel"
+          role="status"
+          aria-live="polite"
+        >
+          0 of 6 tasks done
+        </div>
+      </header>
+
+      <!-- Student name bar + Save buttons + results panel -->
+      <div id="ntkit"></div>
+
+      <!-- ============ TASK 1: Build an exponent (6.EE.A.1) ============ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">Task 1 — Build a Power</h2>
+        <p class="task">
+          Build <strong>5 to the 3rd power</strong> (5 used as a factor 3
+          times). Click blocks to add them. Click a built block to remove it.
+        </p>
+        <div class="bank-label">Block bank</div>
+        <div
+          class="bank"
+          id="bank1"
+          role="group"
+          aria-label="Blocks for task 1"
+        ></div>
+        <div class="build-label">Your build</div>
+        <div
+          class="build-zone"
+          id="zone1"
+          aria-label="Build area for task 1"
+        ></div>
+        <p class="hint">Tip: a power looks like base, then ^, then exponent.</p>
+      </section>
+
+      <!-- ============ TASK 2: Evaluate a power (6.EE.A.1) ============ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">Task 2 — Find the Value</h2>
+        <p class="task">
+          What is the value of <strong>2⁴</strong>? (2 × 2 × 2 × 2)
+        </p>
+        <div class="row">
+          <div>
+            <label class="q" for="a2">2⁴ =</label>
+            <input
+              type="number"
+              id="a2"
+              inputmode="numeric"
+              aria-label="Value of 2 to the 4th power"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TASK 3: Write an expression (6.EE.A.2a) ============ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">Task 3 — Write the Expression</h2>
+        <p class="task">
+          Write an expression: <strong>“7 more than a number n.”</strong> Build
+          it with blocks in the right order.
+        </p>
+        <div class="bank-label">Block bank</div>
+        <div
+          class="bank"
+          id="bank3"
+          role="group"
+          aria-label="Blocks for task 3"
+        ></div>
+        <div class="build-label">Your build</div>
+        <div
+          class="build-zone"
+          id="zone3"
+          aria-label="Build area for task 3"
+        ></div>
+        <p class="hint">“More than” means add.</p>
+      </section>
+
+      <!-- ============ TASK 4: Parts of an expression (6.EE.A.2b) ============ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">Task 4 — Name the Parts</h2>
+        <p class="task">
+          Look at the expression <strong>4x + 9</strong>. Pick the correct word
+          for each part.
+        </p>
+        <div class="match-grid">
+          <div class="match-row">
+            <div class="chip">The <strong>4</strong> in 4x is the…</div>
+            <select id="a4a" aria-label="What is the 4 in 4x">
+              <option value="">Choose…</option>
+              <option value="coefficient">coefficient</option>
+              <option value="variable">variable</option>
+              <option value="constant">constant</option>
+            </select>
+          </div>
+          <div class="match-row">
+            <div class="chip">The <strong>x</strong> is the…</div>
+            <select id="a4b" aria-label="What is the x">
+              <option value="">Choose…</option>
+              <option value="coefficient">coefficient</option>
+              <option value="variable">variable</option>
+              <option value="constant">constant</option>
+            </select>
+          </div>
+          <div class="match-row">
+            <div class="chip">The <strong>9</strong> is the…</div>
+            <select id="a4c" aria-label="What is the 9">
+              <option value="">Choose…</option>
+              <option value="coefficient">coefficient</option>
+              <option value="variable">variable</option>
+              <option value="constant">constant</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TASK 5: Evaluate with a value (6.EE.A.2c) ============ -->
+      <section class="card" aria-labelledby="t5h">
+        <h2 id="t5h">Task 5 — Plug In and Solve</h2>
+        <p class="task">
+          Evaluate <strong>3x + 5</strong> when <strong>x = 4</strong>.
+        </p>
+        <div class="row">
+          <div>
+            <label class="q" for="a5">Answer:</label>
+            <input
+              type="number"
+              id="a5"
+              inputmode="numeric"
+              aria-label="Value of 3x plus 5 when x equals 4"
+            />
+          </div>
+        </div>
+        <p class="hint">First multiply 3 × 4, then add 5.</p>
+      </section>
+
+      <!-- ============ TASK 6: Equivalent expressions (6.EE.A.3-4) ============ -->
+      <section class="card" aria-labelledby="t6h">
+        <h2 id="t6h">Task 6 — Match Equal Expressions</h2>
+        <p class="task">
+          Use the distributive property. Which expression is
+          <strong>equal to 2(x + 3)</strong>?
+        </p>
+        <div class="row">
+          <div style="flex: 1; min-width: 240px">
+            <label class="q" for="a6">2(x + 3) is the same as…</label>
+            <select
+              id="a6"
+              aria-label="Choose the expression equal to 2 times x plus 3"
+              style="width: 100%"
+            >
+              <option value="">Choose…</option>
+              <option value="2x+6">2x + 6</option>
+              <option value="2x+3">2x + 3</option>
+              <option value="x+6">x + 6</option>
+              <option value="2x+5">2x + 5</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint">Multiply 2 by each part inside the parentheses.</p>
+      </section>
+
+      <button class="check-btn" id="checkBtn">Check My Work</button>
+      <div id="results-anchor"></div>
+    </div>
+
+    <script>
+      /* ---------- Theme awareness ---------- */
+      document.body.classList.add("nt-theme-aware");
+
+      /* ---------- Mount activity kit ---------- */
+      NTKit.mount("#ntkit");
+
+      /* ---------- Block builder helper ---------- */
+      function makeBuilder(bankId, zoneId, blocks) {
+        var bank = document.getElementById(bankId);
+        var zone = document.getElementById(zoneId);
+
+        blocks.forEach(function (txt) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "block";
+          b.textContent = txt;
+          b.setAttribute("aria-label", "Add block " + txt);
+          b.addEventListener("click", function () {
+            addBlock(txt);
+          });
+          bank.appendChild(b);
+        });
+
+        function addBlock(txt) {
+          var bb = document.createElement("button");
+          bb.type = "button";
+          bb.className = "block-built";
+          bb.textContent = txt;
+          bb.dataset.val = txt;
+          bb.setAttribute("aria-label", "Remove block " + txt);
+          bb.addEventListener("click", function () {
+            bb.remove();
+            updateProgress();
+          });
+          zone.appendChild(bb);
+          updateProgress();
+        }
+
+        return function read() {
+          return Array.prototype.map
+            .call(zone.querySelectorAll(".block-built"), function (n) {
+              return n.dataset.val;
+            })
+            .join("");
+        };
+      }
+
+      var readT1 = makeBuilder("bank1", "zone1", [
+        "5",
+        "^",
+        "3",
+        "2",
+        "4",
+        "+",
+      ]);
+      var readT3 = makeBuilder("bank3", "zone3", ["n", "+", "7", "-", "×"]);
+
+      /* ---------- Progress tracking ---------- */
+      function taskDone() {
+        var done = 0;
+        if (readT1().length) done++;
+        if (document.getElementById("a2").value.trim() !== "") done++;
+        if (readT3().length) done++;
+        if (
+          document.getElementById("a4a").value &&
+          document.getElementById("a4b").value &&
+          document.getElementById("a4c").value
+        )
+          done++;
+        if (document.getElementById("a5").value.trim() !== "") done++;
+        if (document.getElementById("a6").value) done++;
+        return done;
+      }
+      function updateProgress() {
+        var d = taskDone();
+        document.getElementById("pbar").style.width = (d / 6) * 100 + "%";
+        document.getElementById("plabel").textContent = d + " of 6 tasks done";
+      }
+      ["a2", "a4a", "a4b", "a4c", "a5", "a6"].forEach(function (id) {
+        document.getElementById(id).addEventListener("input", updateProgress);
+        document.getElementById(id).addEventListener("change", updateProgress);
+      });
+      updateProgress();
+
+      /* ---------- Check / submit ---------- */
+      document
+        .getElementById("checkBtn")
+        .addEventListener("click", function () {
+          var t1 = readT1();
+          var t3 = readT3();
+
+          NTKit.grade({
+            activityId: "architect-unit-6",
+            activityTitle: "Unit 6 · Expression Architect — Expressions",
+            standard: "6.EE.A.1-4",
+            items: [
+              {
+                prompt: "Build 5 to the 3rd power (5 used as a factor 3 times)",
+                studentAnswer: t1,
+                correctAnswer: "5^3",
+                points: 1,
+                skill: "Write exponents (6.EE.A.1)",
+              },
+              {
+                prompt: "Find the value of 2 to the 4th power",
+                studentAnswer: document.getElementById("a2").value,
+                correctAnswer: "16",
+                points: 1,
+                skill: "Evaluate exponents (6.EE.A.1)",
+              },
+              {
+                prompt: "Write an expression: 7 more than a number n",
+                studentAnswer: t3,
+                correctAnswer: "n+7",
+                points: 1,
+                skill: "Write expressions (6.EE.A.2a)",
+              },
+              {
+                prompt: "In 4x + 9, the 4 is the…",
+                studentAnswer: document.getElementById("a4a").value,
+                correctAnswer: "coefficient",
+                points: 1,
+                skill: "Parts of an expression (6.EE.A.2b)",
+              },
+              {
+                prompt: "In 4x + 9, the x is the…",
+                studentAnswer: document.getElementById("a4b").value,
+                correctAnswer: "variable",
+                points: 1,
+                skill: "Parts of an expression (6.EE.A.2b)",
+              },
+              {
+                prompt: "In 4x + 9, the 9 is the…",
+                studentAnswer: document.getElementById("a4c").value,
+                correctAnswer: "constant",
+                points: 1,
+                skill: "Parts of an expression (6.EE.A.2b)",
+              },
+              {
+                prompt: "Evaluate 3x + 5 when x = 4",
+                studentAnswer: document.getElementById("a5").value,
+                correctAnswer: "17",
+                points: 1,
+                skill: "Evaluate expressions (6.EE.A.2c)",
+              },
+              {
+                prompt: "Which expression equals 2(x + 3)?",
+                studentAnswer: document.getElementById("a6").value,
+                correctAnswer: "2x+6",
+                points: 1,
+                skill: "Equivalent expressions (6.EE.A.3-4)",
+              },
+            ],
+          });
+
+          document
+            .getElementById("results-anchor")
+            .scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unit 2 HyperDoc — Dividing Fractions (6.NS.A.1)</title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+
+    <!-- Shared activity kit -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <style>
+      /* Style ONLY with the --nt-* theme variables. */
+      body {
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          Arial,
+          sans-serif;
+        font-size: 19px;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0 0 4rem;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 1.25rem;
+      }
+
+      header.hero {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 1.5rem 1.5rem 1.25rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .hero .kicker {
+        color: var(--nt-accent);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.95rem;
+      }
+      h1 {
+        font-size: 2rem;
+        margin: 0.3rem 0 0.4rem;
+        line-height: 1.2;
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin: 0 0 0.6rem;
+      }
+      .standard {
+        display: inline-block;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        color: var(--nt-muted);
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      section.card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 1.4rem 1.5rem;
+        margin: 0 0 1.5rem;
+      }
+      .step-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 800;
+        margin-right: 0.55rem;
+        flex: 0 0 auto;
+      }
+      .sec-head {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+      .sec-head h2 {
+        margin: 0;
+      }
+
+      .do-this {
+        background: var(--nt-bg);
+        border-left: 5px solid var(--nt-accent);
+        border-radius: 8px;
+        padding: 0.7rem 1rem;
+        margin: 0.5rem 0 1rem;
+        font-weight: 600;
+      }
+      .do-this::before {
+        content: "👉 Do this: ";
+      }
+
+      a.btn-link {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        text-decoration: none;
+        font-weight: 700;
+        padding: 0.7rem 1.1rem;
+        border-radius: 10px;
+        margin: 0.35rem 0.5rem 0.35rem 0;
+        border: 2px solid transparent;
+      }
+      a.btn-link:hover {
+        text-decoration: underline;
+      }
+
+      .example {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+      }
+      .frac {
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .big-eq {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0.6rem 0;
+      }
+      .accent {
+        color: var(--nt-accent);
+      }
+
+      ul.vocab {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0;
+      }
+      ul.vocab li {
+        padding: 0.4rem 0;
+        border-bottom: 1px solid var(--nt-border);
+      }
+      ul.vocab li:last-child {
+        border-bottom: 0;
+      }
+      ul.vocab b {
+        color: var(--nt-accent);
+      }
+
+      .q {
+        margin: 1.1rem 0;
+      }
+      .q label.qprompt {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+      }
+      .hint {
+        color: var(--nt-muted);
+        font-size: 0.95rem;
+        font-weight: 400;
+      }
+      input[type="text"],
+      textarea {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 1.1rem;
+        padding: 0.6rem 0.7rem;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      input[type="text"]:focus,
+      textarea:focus {
+        border-color: var(--nt-accent);
+      }
+      textarea {
+        min-height: 5rem;
+        resize: vertical;
+      }
+
+      button.check {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-size: 1.15rem;
+        font-weight: 800;
+        border: none;
+        border-radius: 12px;
+        padding: 0.85rem 1.6rem;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      button.check:hover {
+        filter: brightness(1.08);
+      }
+
+      #results-anchor {
+        scroll-margin-top: 1rem;
+      }
+      .skip-link {
+        position: absolute;
+        left: -999px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        z-index: 50;
+      }
+      .skip-link:focus {
+        left: 1rem;
+        top: 1rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--nt-muted);
+        font-size: 0.9rem;
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+
+  <body class="nt-theme-aware">
+    <a href="#apply" class="skip-link">Skip to the activity</a>
+    <div class="wrap">
+      <header class="hero">
+        <div class="kicker">Neft Teacher · HyperDoc</div>
+        <h1>Unit 2 — Dividing Fractions 🍰</h1>
+        <p class="standard">CCSS 6.NS.A.1 · Grade 6 Math</p>
+        <p style="margin: 0.6rem 0 0">
+          Welcome to the <b class="accent">Fraction Kitchen</b>! Bakers split
+          dough and share recipes every day. Today you will learn how to
+          <b>divide fractions</b>. Work through each step in order:
+          <b>Engage → Explore → Explain → Apply → Reflect</b>.
+        </p>
+      </header>
+
+      <!-- 1. ENGAGE -->
+      <section class="card">
+        <div class="sec-head">
+          <span class="step-num">1</span>
+          <h2>Engage — Think About It</h2>
+        </div>
+        <p>
+          A baker has <span class="frac">3/4</span> of a pan of brownies. Each
+          serving is <span class="frac">1/8</span> of a pan.
+        </p>
+        <p class="big-eq">How many servings can the baker cut? 🤔</p>
+        <div class="do-this">
+          Picture the pan in your head, or sketch it. Make a guess before you
+          learn the rule.
+        </div>
+      </section>
+
+      <!-- 2. EXPLORE -->
+      <section class="card">
+        <div class="sec-head">
+          <span class="step-num">2</span>
+          <h2>Explore — Play & Discover</h2>
+        </div>
+        <p>
+          Open these to explore dividing fractions in the bakery before the
+          lesson.
+        </p>
+        <div class="do-this">
+          Click a button. Try the game, then come back to this page.
+        </div>
+        <p>
+          <a
+            class="btn-link"
+            href="/games/3d/unit-2/"
+            target="_blank"
+            rel="noopener"
+            >🎮 Play: Fraction Kitchen (3D Game)</a
+          >
+          <a class="btn-link" href="/math/" target="_blank" rel="noopener"
+            >📚 Math Hub</a
+          >
+          <a class="btn-link" href="/novels/" target="_blank" rel="noopener"
+            >📖 Math Graphic Novels</a
+          >
+        </p>
+      </section>
+
+      <!-- 3. EXPLAIN -->
+      <section class="card">
+        <div class="sec-head">
+          <span class="step-num">3</span>
+          <h2>Explain — Learn the Rule</h2>
+        </div>
+
+        <p>
+          <b>Key idea:</b> To divide by a fraction,
+          <b class="accent">flip the second fraction and multiply</b>. The
+          flipped fraction is called the <b>reciprocal</b>.
+        </p>
+
+        <ul class="vocab">
+          <li>
+            <b>Dividing fractions</b> — splitting a fraction into equal parts.
+          </li>
+          <li>
+            <b>Reciprocal</b> — flip a fraction. The reciprocal of
+            <span class="frac">1/8</span> is <span class="frac">8/1</span> = 8.
+          </li>
+          <li><b>Quotient</b> — the answer to a division problem.</li>
+          <li>
+            <b>Keep–Flip–Multiply</b> — Keep the first fraction. Flip the
+            second. Multiply.
+          </li>
+        </ul>
+
+        <div class="example">
+          <p style="margin: 0 0 0.4rem">
+            <b>Worked example</b> — the brownie question from Step 1:
+          </p>
+          <p class="big-eq">
+            <span class="frac">3/4</span> ÷ <span class="frac">1/8</span>
+          </p>
+          <p>
+            <b>Keep:</b> <span class="frac">3/4</span> &nbsp; <b>Flip:</b>
+            <span class="frac">1/8</span> → <span class="frac">8/1</span> &nbsp;
+            <b>Multiply:</b>
+          </p>
+          <p class="big-eq accent">
+            <span class="frac">3/4</span> × <span class="frac">8/1</span> =
+            <span class="frac">24/4</span> = <b>6</b>
+          </p>
+          <p style="margin: 0.2rem 0 0">
+            The baker can cut <b>6 servings</b>. ✅
+          </p>
+        </div>
+      </section>
+
+      <!-- 4. APPLY -->
+      <section class="card" id="apply">
+        <div class="sec-head">
+          <span class="step-num">4</span>
+          <h2>Apply — Your Turn (Auto-Graded)</h2>
+        </div>
+
+        <!-- NTKit identity bar + export buttons + results panel mount here -->
+        <div id="ntkit"></div>
+
+        <p class="do-this" style="border-left-color: var(--nt-accent)">
+          Type your name above. Answer all 6 problems. Use
+          <b>Keep–Flip–Multiply</b>. Write fractions like <b>3/4</b>. Then press
+          <b>Check My Answers</b>.
+        </p>
+
+        <form id="quiz" novalidate>
+          <div class="q">
+            <label class="qprompt" for="q1"
+              >1. <span class="frac">1/2</span> ÷
+              <span class="frac">1/4</span> = ?
+              <span class="hint"
+                >(How many 1/4 cups fit in 1/2 cup?) Answer as a whole
+                number.</span
+              ></label
+            >
+            <input
+              type="text"
+              id="q1"
+              inputmode="numeric"
+              autocomplete="off"
+              aria-describedby="q1"
+            />
+          </div>
+
+          <div class="q">
+            <label class="qprompt" for="q2"
+              >2. <span class="frac">3/4</span> ÷
+              <span class="frac">1/8</span> = ?
+              <span class="hint"
+                >(Whole number — like the brownie example.)</span
+              ></label
+            >
+            <input type="text" id="q2" inputmode="numeric" autocomplete="off" />
+          </div>
+
+          <div class="q">
+            <label class="qprompt" for="q3"
+              >3. <span class="frac">2/3</span> ÷
+              <span class="frac">1/6</span> = ?
+              <span class="hint">(Whole number.)</span></label
+            >
+            <input type="text" id="q3" inputmode="numeric" autocomplete="off" />
+          </div>
+
+          <div class="q">
+            <label class="qprompt" for="q4"
+              >4. <span class="frac">4/5</span> ÷
+              <span class="frac">2/5</span> = ?
+              <span class="hint">(Whole number.)</span></label
+            >
+            <input type="text" id="q4" inputmode="numeric" autocomplete="off" />
+          </div>
+
+          <div class="q">
+            <label class="qprompt" for="q5"
+              >5. <span class="frac">1/2</span> ÷
+              <span class="frac">3/4</span> = ?
+              <span class="hint"
+                >(Answer is a fraction. Write it as 2/3.)</span
+              ></label
+            >
+            <input type="text" id="q5" autocomplete="off" />
+          </div>
+
+          <div class="q">
+            <label class="qprompt" for="q6"
+              >6. <span class="frac">5/6</span> ÷
+              <span class="frac">1/3</span> = ?
+              <span class="hint"
+                >(Answer is a fraction. Write it as 5/2.)</span
+              ></label
+            >
+            <input type="text" id="q6" autocomplete="off" />
+          </div>
+
+          <button type="submit" class="check">✅ Check My Answers</button>
+        </form>
+        <div id="results-anchor"></div>
+      </section>
+
+      <!-- 5. REFLECT -->
+      <section class="card">
+        <div class="sec-head">
+          <span class="step-num">5</span>
+          <h2>Reflect — In Your Own Words</h2>
+        </div>
+        <div class="do-this">
+          Write 1–2 sentences for each. Your answers are saved in your PDF and
+          DOC.
+        </div>
+
+        <div class="q">
+          <label class="qprompt" for="r1"
+            >A. Explain <b>Keep–Flip–Multiply</b> to a friend who was
+            absent.</label
+          >
+          <textarea id="r1"></textarea>
+        </div>
+        <div class="q">
+          <label class="qprompt" for="r2"
+            >B. When might a baker or cook need to divide fractions in real
+            life?</label
+          >
+          <textarea id="r2"></textarea>
+        </div>
+      </section>
+
+      <footer>Neft Teacher · Unit 2 · Dividing Fractions · 6.NS.A.1</footer>
+    </div>
+
+    <script>
+      // Mount the shared activity kit (name bar, Save-as-PDF/DOC, results panel).
+      NTKit.mount("#ntkit");
+
+      var form = document.getElementById("quiz");
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var v = function (id) {
+          return document.getElementById(id).value;
+        };
+
+        var result = NTKit.grade({
+          activityId: "hyperdoc-unit-2",
+          activityTitle: "Unit 2 · Dividing Fractions — HyperDoc",
+          standard: "6.NS.A.1",
+          items: [
+            {
+              prompt: "1/2 ÷ 1/4",
+              studentAnswer: v("q1"),
+              correctAnswer: "2",
+              points: 1,
+              skill: "Whole-number quotient",
+            },
+            {
+              prompt: "3/4 ÷ 1/8",
+              studentAnswer: v("q2"),
+              correctAnswer: "6",
+              points: 1,
+              skill: "Whole-number quotient",
+            },
+            {
+              prompt: "2/3 ÷ 1/6",
+              studentAnswer: v("q3"),
+              correctAnswer: "4",
+              points: 1,
+              skill: "Whole-number quotient",
+            },
+            {
+              prompt: "4/5 ÷ 2/5",
+              studentAnswer: v("q4"),
+              correctAnswer: "2",
+              points: 1,
+              skill: "Whole-number quotient",
+            },
+            {
+              prompt: "1/2 ÷ 3/4",
+              studentAnswer: v("q5"),
+              correctAnswer: "2/3",
+              points: 1,
+              skill: "Fraction quotient",
+            },
+            {
+              prompt: "5/6 ÷ 1/3",
+              studentAnswer: v("q6"),
+              correctAnswer: "5/2",
+              points: 1,
+              skill: "Fraction quotient",
+            },
+            {
+              prompt: "Reflect A: explain Keep–Flip–Multiply",
+              studentAnswer: document.getElementById("r1").value,
+              correctAnswer: "",
+              points: 0,
+              skill: "Reflection",
+            },
+            {
+              prompt: "Reflect B: real-life use",
+              studentAnswer: document.getElementById("r2").value,
+              correctAnswer: "",
+              points: 0,
+              skill: "Reflection",
+            },
+          ],
+        });
+
+        var anchor = document.getElementById("ntkit");
+        if (anchor && anchor.scrollIntoView)
+          anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+        return result;
+      });
+    </script>
+  </body>
+</html>

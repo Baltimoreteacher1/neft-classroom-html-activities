@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unit 7 HyperDoc — Integers &amp; the Number Line (6.NS.C.5–7)</title>
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <script src="/assets/nt-activity-kit.js"></script>
+    <style>
+      /* Style ONLY with --nt-* theme variables */
+      body {
+        margin: 0;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        line-height: 1.6;
+        font-size: 19px;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+      }
+      header.hero {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+      header.hero h1 {
+        margin: 0 0 6px;
+        font-size: 30px;
+        color: var(--nt-text);
+      }
+      .standard {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 15px;
+      }
+      section {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px;
+        margin: 0 0 22px;
+      }
+      section h2 {
+        margin-top: 0;
+        font-size: 24px;
+        color: var(--nt-text);
+        border-bottom: 3px solid var(--nt-accent);
+        padding-bottom: 8px;
+      }
+      .step {
+        color: var(--nt-accent);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 14px;
+      }
+      .hint {
+        background: var(--nt-bg);
+        border: 2px dashed var(--nt-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin: 12px 0;
+        font-size: 18px;
+      }
+      .links a {
+        display: inline-block;
+        margin: 6px 10px 6px 0;
+        padding: 12px 18px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 18px;
+      }
+      .links a:focus-visible,
+      a:focus-visible {
+        outline: 4px solid var(--nt-focus);
+        outline-offset: 3px;
+      }
+      .vocab {
+        display: grid;
+        gap: 10px;
+      }
+      .vocab div {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 10px 14px;
+      }
+      .vocab b {
+        color: var(--nt-accent);
+      }
+      .numline {
+        font-size: 22px;
+        font-weight: 700;
+        text-align: center;
+        background: var(--nt-bg);
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 14px;
+        letter-spacing: 0.12em;
+        margin: 14px 0;
+      }
+      .q {
+        margin: 18px 0;
+        padding: 16px;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 12px;
+      }
+      .q label,
+      .q legend {
+        display: block;
+        font-weight: 700;
+        font-size: 19px;
+        margin-bottom: 8px;
+      }
+      .q .num {
+        color: var(--nt-accent);
+      }
+      input[type="text"],
+      textarea,
+      select {
+        font-size: 19px;
+        padding: 10px 12px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      input[type="text"]:focus,
+      textarea:focus,
+      select:focus {
+        outline: 4px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-color: var(--nt-accent);
+      }
+      fieldset {
+        border: none;
+        padding: 0;
+        margin: 0;
+      }
+      .opts label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        margin: 6px 16px 6px 0;
+        font-size: 19px;
+        cursor: pointer;
+      }
+      .opts input {
+        width: auto;
+        transform: scale(1.4);
+        margin-right: 4px;
+      }
+      textarea {
+        min-height: 90px;
+      }
+      .checkbtn {
+        font-size: 21px;
+        font-weight: 800;
+        padding: 14px 28px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .checkbtn:focus-visible {
+        outline: 4px solid var(--nt-focus);
+        outline-offset: 3px;
+      }
+      .muted {
+        color: var(--nt-muted);
+        font-size: 16px;
+      }
+      .worked {
+        background: var(--nt-bg);
+        border-left: 6px solid var(--nt-accent);
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin: 14px 0;
+      }
+    </style>
+  </head>
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="hero">
+        <span class="standard">CCSS 6.NS.C.5–7</span>
+        <h1>Unit 7 — Integers &amp; the Number Line</h1>
+        <p class="muted">
+          Dive the number line like a submarine. 0 is sea level. Going up is
+          positive (+). Going down is negative (−).
+        </p>
+      </header>
+
+      <!-- ENGAGE -->
+      <section>
+        <span class="step">Engage · Think</span>
+        <h2>A submarine dives below the sea</h2>
+        <p>
+          A submarine sits at <b>0</b> (sea level). It dives to
+          <b>−30</b> meters. A bird flies <b>+30</b> meters above the sea.
+        </p>
+        <p>
+          <b>Question:</b> Are −30 and +30 the same distance from 0? Which one
+          is lower? You will find out in this HyperDoc.
+        </p>
+        <div
+          class="numline"
+          aria-label="Number line from negative 4 to positive 4"
+        >
+          −4 −3 −2 −1 &nbsp;0&nbsp; +1 +2 +3 +4
+        </div>
+      </section>
+
+      <!-- EXPLORE -->
+      <section>
+        <span class="step">Explore · Play</span>
+        <h2>Try the Unit 7 tools</h2>
+        <p>Open a link in a new tab. Play, then come back to finish.</p>
+        <div class="links">
+          <a href="/games/3d/unit-7/" target="_blank" rel="noopener"
+            >3D Game: Submarine Dive</a
+          >
+          <a href="/math/" target="_blank" rel="noopener">Math Hub</a>
+          <a href="/novels/" target="_blank" rel="noopener">Graphic Novels</a>
+        </div>
+      </section>
+
+      <!-- EXPLAIN -->
+      <section>
+        <span class="step">Explain · Learn</span>
+        <h2>What you need to know</h2>
+        <div class="vocab">
+          <div>
+            <b>Integer:</b> a whole number that can be positive, negative, or
+            zero. Like −3, 0, or +5.
+          </div>
+          <div>
+            <b>Negative number:</b> a number less than 0. It has a minus sign
+            (−). Like −7.
+          </div>
+          <div>
+            <b>Opposite:</b> the same distance from 0, but the other side. The
+            opposite of +6 is −6.
+          </div>
+          <div>
+            <b>Absolute value:</b> how far a number is from 0. We write it like
+            |−8| = 8. It is never negative.
+          </div>
+        </div>
+        <div class="worked">
+          <p><b>Worked example:</b> Order −2, 3, −5 from least to greatest.</p>
+          <p>
+            On a number line, numbers on the <b>left are smaller</b>. So:
+            <b>−5, −2, 3</b>.
+          </p>
+          <p>Absolute value: |−5| = 5 because −5 is 5 steps from 0.</p>
+        </div>
+        <p class="hint">
+          Rule: the more negative a number is, the smaller it is. −5 is less
+          than −2.
+        </p>
+      </section>
+
+      <!-- APPLY -->
+      <section>
+        <span class="step">Apply · Do</span>
+        <h2>Show what you know</h2>
+        <p>
+          Type your answers. Use a minus sign (−) or a dash (-) for negatives.
+          Then press <b>Check my answers</b>.
+        </p>
+        <p class="muted">
+          First, write your name in the box below so your work can be saved.
+        </p>
+
+        <!-- NTKit identity bar + actions + results mount here -->
+        <div id="ntkit"></div>
+
+        <form id="apply" novalidate>
+          <div class="q">
+            <label for="q1"
+              ><span class="num">1.</span> A diver is at −12 meters. Write the
+              integer for "8 meters lower than −12". (6.NS.C.5)</label
+            >
+            <input type="text" id="q1" inputmode="text" autocomplete="off" />
+          </div>
+
+          <div class="q">
+            <label for="q2"
+              ><span class="num">2.</span> What is the opposite of +9?
+              (6.NS.C.6a)</label
+            >
+            <input type="text" id="q2" inputmode="text" autocomplete="off" />
+          </div>
+
+          <div class="q">
+            <label for="q3"
+              ><span class="num">3.</span> Find the absolute value: |−15| = ?
+              (6.NS.C.7c)</label
+            >
+            <input type="text" id="q3" inputmode="text" autocomplete="off" />
+          </div>
+
+          <div class="q">
+            <fieldset>
+              <legend>
+                <span class="num">4.</span> Which number is the smallest?
+                (6.NS.C.7a)
+              </legend>
+              <div class="opts">
+                <label><input type="radio" name="q4" value="-8" /> −8</label>
+                <label><input type="radio" name="q4" value="-3" /> −3</label>
+                <label><input type="radio" name="q4" value="0" /> 0</label>
+                <label><input type="radio" name="q4" value="5" /> 5</label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="q">
+            <fieldset>
+              <legend>
+                <span class="num">5.</span> Which comparison is TRUE?
+                (6.NS.C.7a–b)
+              </legend>
+              <div class="opts">
+                <label
+                  ><input type="radio" name="q5" value="a" /> −6 &gt; −2</label
+                >
+                <label
+                  ><input type="radio" name="q5" value="b" /> −2 &gt; −6</label
+                >
+                <label
+                  ><input type="radio" name="q5" value="c" /> −6 = −2</label
+                >
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="q">
+            <label for="q6"
+              ><span class="num">6.</span> A temperature is −4°C. It gets 4
+              degrees colder. Write the new temperature as an integer.
+              (6.NS.C.5)</label
+            >
+            <input type="text" id="q6" inputmode="text" autocomplete="off" />
+          </div>
+
+          <button type="submit" class="checkbtn" id="checkBtn">
+            Check my answers
+          </button>
+        </form>
+      </section>
+
+      <!-- REFLECT -->
+      <section>
+        <span class="step">Reflect · Write</span>
+        <h2>Think back</h2>
+        <div class="q">
+          <label for="r1"
+            >1. In your own words, what does absolute value mean? Give one
+            example.</label
+          >
+          <textarea id="r1"></textarea>
+        </div>
+        <div class="q">
+          <label for="r2"
+            >2. Why is −5 less than −2? Use the number line idea to
+            explain.</label
+          >
+          <textarea id="r2"></textarea>
+        </div>
+        <p class="muted">
+          Your reflection is saved when you press "Save as PDF" or "Save as DOC"
+          above.
+        </p>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        function start() {
+          if (!window.NTKit) {
+            setTimeout(start, 60);
+            return;
+          }
+          NTKit.mount("#ntkit");
+
+          function val(id) {
+            var e = document.getElementById(id);
+            return e ? e.value : "";
+          }
+          function radio(name) {
+            var r = document.querySelector(
+              'input[name="' + name + '"]:checked',
+            );
+            return r ? r.value : "";
+          }
+
+          document
+            .getElementById("apply")
+            .addEventListener("submit", function (e) {
+              e.preventDefault();
+              // Capture reflections into the saved doc via hidden NTKit fields is not needed;
+              // reflections live in the textareas which the DOC/PDF export reads from the page.
+              NTKit.grade({
+                activityId: "hyperdoc-unit-7",
+                activityTitle: "Unit 7 HyperDoc — Integers & the Number Line",
+                standard: "6.NS.C.5-7",
+                items: [
+                  {
+                    prompt: "8 meters lower than −12",
+                    studentAnswer: val("q1"),
+                    correctAnswer: "-20",
+                    points: 1,
+                    skill: "6.NS.C.5 Real-world integers",
+                  },
+                  {
+                    prompt: "Opposite of +9",
+                    studentAnswer: val("q2"),
+                    correctAnswer: "-9",
+                    points: 1,
+                    skill: "6.NS.C.6a Opposites",
+                  },
+                  {
+                    prompt: "|−15|",
+                    studentAnswer: val("q3"),
+                    correctAnswer: "15",
+                    points: 1,
+                    skill: "6.NS.C.7c Absolute value",
+                  },
+                  {
+                    prompt: "Smallest number",
+                    studentAnswer: radio("q4"),
+                    correctAnswer: "-8",
+                    points: 1,
+                    skill: "6.NS.C.7a Order integers",
+                  },
+                  {
+                    prompt: "True comparison",
+                    studentAnswer: radio("q5"),
+                    correctAnswer: "b",
+                    points: 1,
+                    skill: "6.NS.C.7b Compare integers",
+                  },
+                  {
+                    prompt: "−4°C, 4 degrees colder",
+                    studentAnswer: val("q6"),
+                    correctAnswer: "-8",
+                    points: 1,
+                    skill: "6.NS.C.5 Real-world integers",
+                  },
+                ],
+              });
+              var res = document.getElementById("ntkit-results");
+              if (res && res.scrollIntoView)
+                res.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+        }
+        start();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 4 — Factory Line Architect | GCF, LCM, Decimals &amp; Distributive
+      Property (6.NS.B.2–4)
+    </title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 20px 16px 72px;
+      }
+      header.hero {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px 22px 18px;
+        margin-bottom: 18px;
+      }
+      header.hero .tag {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--nt-accent);
+        margin-bottom: 6px;
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 30px;
+        line-height: 1.2;
+      }
+      .lede {
+        color: var(--nt-muted);
+        margin: 0;
+        font-size: 18px;
+      }
+      .progress {
+        margin-top: 14px;
+        font-weight: 700;
+      }
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: var(--nt-border);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: var(--nt-accent);
+        transition: width 0.3s ease;
+      }
+
+      .station {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      .station h2 {
+        margin: 0 0 4px;
+        font-size: 22px;
+      }
+      .station .skill {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--nt-accent);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
+      }
+      .directions {
+        background: var(--nt-bg);
+        border: 1px dashed var(--nt-border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin: 10px 0 14px;
+        font-size: 17px;
+      }
+      .directions strong {
+        color: var(--nt-accent);
+      }
+
+      /* chip pickers */
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .chip {
+        font: inherit;
+        font-weight: 700;
+        font-size: 18px;
+        min-width: 52px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        cursor: pointer;
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--nt-accent);
+        border-color: var(--nt-accent);
+        color: #fff;
+      }
+      .picked-label {
+        font-weight: 700;
+        margin-top: 4px;
+      }
+
+      /* number / dial controls */
+      .dial {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+      }
+      .dial input[type="number"],
+      .dial input[type="text"] {
+        font: inherit;
+        font-weight: 700;
+        font-size: 22px;
+        width: 130px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      label.q {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .hint {
+        color: var(--nt-muted);
+        font-size: 15px;
+        margin-top: 8px;
+      }
+
+      /* distributive builder */
+      .build-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-size: 22px;
+        font-weight: 700;
+        margin: 12px 0;
+      }
+      .build-row input {
+        font: inherit;
+        width: 90px;
+        text-align: center;
+        padding: 8px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 19px;
+        padding: 14px 26px;
+        border-radius: 12px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.secondary {
+        background: var(--nt-surface);
+        color: var(--nt-accent);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+
+      #ntkit {
+        margin-top: 18px;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
+    </style>
+  </head>
+
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="hero">
+        <span class="tag">Unit 4 · Factory Line Architect</span>
+        <h1>Build the Order: Factors, Multiples &amp; Decimals</h1>
+        <p class="lede">
+          You run the packing plant. Set each machine correctly to fill every
+          order. Standard 6.NS.B.2–4.
+        </p>
+        <div class="directions" style="margin-top: 14px">
+          <strong>What to do:</strong> Work through the 6 stations. Click chips
+          or type numbers to set each machine, then press
+          <strong>Check My Factory</strong> at the bottom to grade your work.
+        </div>
+        <div class="progress" aria-live="polite">
+          Stations set: <span id="pcount">0</span> / 6
+          <div class="bar"><span id="pbar"></span></div>
+        </div>
+      </header>
+
+      <!-- STATION 1: GCF chip picker -->
+      <section class="station" data-station>
+        <span class="skill">Greatest Common Factor</span>
+        <h2>Station 1 · Box Stacker</h2>
+        <div class="directions">
+          We pack <strong>24</strong> red parts and <strong>36</strong> blue
+          parts into <em>equal boxes</em>. Click the
+          <strong>biggest</strong> number that divides BOTH 24 and 36 (the GCF).
+        </div>
+        <div
+          class="chips"
+          id="s1"
+          role="group"
+          aria-label="Greatest common factor of 24 and 36"
+        >
+          <button type="button" class="chip" data-v="4">4</button>
+          <button type="button" class="chip" data-v="6">6</button>
+          <button type="button" class="chip" data-v="12">12</button>
+          <button type="button" class="chip" data-v="18">18</button>
+        </div>
+        <div class="picked-label">Your GCF: <span id="s1pick">—</span></div>
+      </section>
+
+      <!-- STATION 2: LCM chip picker -->
+      <section class="station" data-station>
+        <span class="skill">Least Common Multiple</span>
+        <h2>Station 2 · Belt Timer</h2>
+        <div class="directions">
+          Belt A beeps every <strong>4</strong> seconds. Belt B beeps every
+          <strong>6</strong> seconds. Click the <strong>smallest</strong> time
+          when they beep <em>together</em> (the LCM).
+        </div>
+        <div
+          class="chips"
+          id="s2"
+          role="group"
+          aria-label="Least common multiple of 4 and 6"
+        >
+          <button type="button" class="chip" data-v="10">10</button>
+          <button type="button" class="chip" data-v="12">12</button>
+          <button type="button" class="chip" data-v="24">24</button>
+          <button type="button" class="chip" data-v="2">2</button>
+        </div>
+        <div class="picked-label">Your LCM: <span id="s2pick">—</span></div>
+      </section>
+
+      <!-- STATION 3: Decimal multiply -->
+      <section class="station" data-station>
+        <span class="skill">Multiply Decimals</span>
+        <h2>Station 3 · Weigh Station</h2>
+        <div class="directions">
+          Each part weighs <strong>1.4</strong> kg. You pack
+          <strong>2.5</strong> boxes of them. Type the total weight:
+          <strong>1.4 × 2.5</strong>.
+        </div>
+        <div class="dial">
+          <label class="q" for="s3">Total weight (kg)</label>
+          <input
+            id="s3"
+            type="text"
+            inputmode="decimal"
+            placeholder="e.g. 3.5"
+            aria-label="Answer for 1.4 times 2.5"
+          />
+        </div>
+        <p class="hint">Tip: 14 × 25 = 350, then place the decimal point.</p>
+      </section>
+
+      <!-- STATION 4: Decimal divide -->
+      <section class="station" data-station>
+        <span class="skill">Divide Decimals</span>
+        <h2>Station 4 · Splitter</h2>
+        <div class="directions">
+          A <strong>9.6</strong> kg crate is split into <strong>4</strong> equal
+          bags. Type the weight of one bag: <strong>9.6 ÷ 4</strong>.
+        </div>
+        <div class="dial">
+          <label class="q" for="s4">One bag (kg)</label>
+          <input
+            id="s4"
+            type="text"
+            inputmode="decimal"
+            placeholder="e.g. 2.1"
+            aria-label="Answer for 9.6 divided by 4"
+          />
+        </div>
+      </section>
+
+      <!-- STATION 5: Distributive builder -->
+      <section class="station" data-station>
+        <span class="skill">Distributive Property</span>
+        <h2>Station 5 · Order Splitter</h2>
+        <div class="directions">
+          Rewrite <strong>8 × (5 + 2)</strong> as the SUM of two products. Fill
+          the boxes so it equals <strong>8 × 5 + 8 × ?</strong>.
+        </div>
+        <div class="build-row" aria-label="Distributive property builder">
+          8 × (5 + 2) = 8 × 5 + 8 ×
+          <input
+            id="s5"
+            type="number"
+            min="0"
+            step="1"
+            aria-label="Missing number in distributive property"
+          />
+        </div>
+        <p class="hint">
+          The distributive property keeps the <strong>+ 2</strong> on the
+          outside number.
+        </p>
+      </section>
+
+      <!-- STATION 6: GCF + Distributive combo -->
+      <section class="station" data-station>
+        <span class="skill">GCF + Distributive Property</span>
+        <h2>Station 6 · Master Pack</h2>
+        <div class="directions">
+          Factor out the GCF of <strong>18 + 24</strong>. The GCF is
+          <strong>6</strong>. Type the two numbers inside the parentheses so it
+          equals <strong>6 × (? + ?)</strong>.
+        </div>
+        <div class="build-row" aria-label="Factor out GCF builder">
+          18 + 24 = 6 × (
+          <input
+            id="s6a"
+            type="number"
+            min="0"
+            step="1"
+            aria-label="First number in parentheses"
+          />
+          +
+          <input
+            id="s6b"
+            type="number"
+            min="0"
+            step="1"
+            aria-label="Second number in parentheses"
+          />
+          )
+        </div>
+        <p class="hint">18 ÷ 6 = ?, and 24 ÷ 6 = ?</p>
+      </section>
+
+      <div class="actions">
+        <button type="button" class="btn" id="check">Check My Factory</button>
+        <button type="button" class="btn secondary" id="reset">Reset</button>
+      </div>
+
+      <!-- Activity kit: student name, grading, save, results -->
+      <div id="ntkit"></div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // ---- chip-picker state (single select per group) ----
+        var picks = { s1: null, s2: null };
+
+        function wireChips(groupId, labelId) {
+          var group = document.getElementById(groupId);
+          var label = document.getElementById(labelId);
+          group.addEventListener("click", function (e) {
+            var btn = e.target.closest(".chip");
+            if (!btn) return;
+            group.querySelectorAll(".chip").forEach(function (c) {
+              c.setAttribute("aria-pressed", c === btn ? "true" : "false");
+            });
+            picks[groupId] = btn.getAttribute("data-v");
+            label.textContent = btn.textContent;
+            updateProgress();
+          });
+        }
+        wireChips("s1", "s1pick");
+        wireChips("s2", "s2pick");
+
+        var s3 = document.getElementById("s3");
+        var s4 = document.getElementById("s4");
+        var s5 = document.getElementById("s5");
+        var s6a = document.getElementById("s6a");
+        var s6b = document.getElementById("s6b");
+
+        function setOf(el) {
+          return el && String(el.value).trim() !== "";
+        }
+        function stationDone() {
+          var c = 0;
+          if (picks.s1) c++;
+          if (picks.s2) c++;
+          if (setOf(s3)) c++;
+          if (setOf(s4)) c++;
+          if (setOf(s5)) c++;
+          if (setOf(s6a) && setOf(s6b)) c++;
+          return c;
+        }
+        function updateProgress() {
+          var c = stationDone();
+          document.getElementById("pcount").textContent = c;
+          document.getElementById("pbar").style.width = (c / 6) * 100 + "%";
+        }
+        [s3, s4, s5, s6a, s6b].forEach(function (el) {
+          el.addEventListener("input", updateProgress);
+        });
+
+        // ---- grade ----
+        function norm(v) {
+          return String(v == null ? "" : v).trim();
+        }
+        document.getElementById("check").addEventListener("click", function () {
+          var items = [
+            {
+              prompt: "GCF of 24 and 36",
+              studentAnswer: norm(picks.s1),
+              correctAnswer: "12",
+              points: 1,
+              skill: "Greatest Common Factor",
+            },
+            {
+              prompt: "LCM of 4 and 6",
+              studentAnswer: norm(picks.s2),
+              correctAnswer: "12",
+              points: 1,
+              skill: "Least Common Multiple",
+            },
+            {
+              prompt: "1.4 × 2.5",
+              studentAnswer: norm(s3.value),
+              correctAnswer: "3.5",
+              points: 1,
+              skill: "Multiply Decimals",
+            },
+            {
+              prompt: "9.6 ÷ 4",
+              studentAnswer: norm(s4.value),
+              correctAnswer: "2.4",
+              points: 1,
+              skill: "Divide Decimals",
+            },
+            {
+              prompt: "8 × (5 + 2) = 8 × 5 + 8 × ?",
+              studentAnswer: norm(s5.value),
+              correctAnswer: "2",
+              points: 1,
+              skill: "Distributive Property",
+            },
+            {
+              prompt: "18 + 24 = 6 × (? + ?)  [first box]",
+              studentAnswer: norm(s6a.value),
+              correctAnswer: "3",
+              points: 1,
+              skill: "GCF + Distributive Property",
+            },
+            {
+              prompt: "18 + 24 = 6 × (? + ?)  [second box]",
+              studentAnswer: norm(s6b.value),
+              correctAnswer: "4",
+              points: 1,
+              skill: "GCF + Distributive Property",
+            },
+          ];
+
+          NTKit.grade({
+            activityId: "architect-unit-4",
+            activityTitle:
+              "Unit 4 · Factory Line Architect — GCF, LCM, Decimals & Distributive Property",
+            standard: "6.NS.B.2-4",
+            items: items,
+          });
+
+          var panel = document.getElementById("ntkit");
+          if (panel && panel.scrollIntoView)
+            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        // ---- reset ----
+        document.getElementById("reset").addEventListener("click", function () {
+          picks.s1 = null;
+          picks.s2 = null;
+          document.querySelectorAll(".chip").forEach(function (c) {
+            c.setAttribute("aria-pressed", "false");
+          });
+          document.getElementById("s1pick").textContent = "—";
+          document.getElementById("s2pick").textContent = "—";
+          [s3, s4, s5, s6a, s6b].forEach(function (el) {
+            el.value = "";
+          });
+          updateProgress();
+        });
+
+        // ---- mount kit ----
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+        updateProgress();
+      })();
+    </script>
+  </body>
+</html>

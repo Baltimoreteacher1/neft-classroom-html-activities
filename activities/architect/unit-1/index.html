@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 1 — Smoothie Stand Architect | Ratios &amp; Unit Rates (6.RP.A.1–3)
+    </title>
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 20px 16px 64px;
+      }
+      header.hero {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 20px 22px;
+        margin-bottom: 18px;
+      }
+      header.hero h1 {
+        margin: 0 0 6px;
+        font-size: 1.6rem;
+      }
+      .standard {
+        display: inline-block;
+        font-size: 0.85rem;
+        color: var(--nt-bg);
+        background: var(--nt-accent);
+        border-radius: 999px;
+        padding: 3px 12px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .todo {
+        color: var(--nt-muted);
+        margin: 0;
+      }
+
+      .progress-bar {
+        height: 12px;
+        background: var(--nt-border);
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 14px 0 4px;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--nt-accent);
+        transition: width 0.25s ease;
+      }
+      .progress-text {
+        font-size: 0.85rem;
+        color: var(--nt-muted);
+      }
+
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 16px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 1.15rem;
+      }
+      .qnum {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--nt-accent);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .direction {
+        color: var(--nt-muted);
+        margin: 4px 0 14px;
+      }
+
+      /* Smoothie builder */
+      .builder {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+      }
+      .glass {
+        width: 120px;
+        min-height: 150px;
+        border: 3px solid var(--nt-border);
+        border-top: none;
+        border-radius: 6px 6px 40px 40px;
+        display: flex;
+        flex-direction: column-reverse;
+        overflow: hidden;
+        background: var(--nt-bg);
+      }
+      .layer {
+        width: 100%;
+        transition: height 0.2s;
+      }
+      .layer.fruit {
+        background: #e8554e;
+      }
+      .layer.juice {
+        background: #f2b134;
+      }
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .stepper label {
+        min-width: 86px;
+        font-weight: 600;
+      }
+      .stepper .swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 4px;
+        border: 1px solid var(--nt-border);
+      }
+      button.step {
+        width: 40px;
+        height: 40px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-surface);
+        color: var(--nt-accent);
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      button.step:hover {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+      }
+      .count {
+        min-width: 30px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+      }
+      .ratio-readout {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-top: 6px;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        display: inline-block;
+      }
+
+      label.field {
+        display: block;
+        font-weight: 600;
+        margin: 10px 0 6px;
+      }
+      input[type="text"],
+      input[type="number"],
+      select {
+        font-size: 1.05rem;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        width: 100%;
+        max-width: 280px;
+      }
+      input:focus,
+      select:focus,
+      button:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .chip {
+        font-size: 1rem;
+        padding: 10px 16px;
+        border: 2px solid var(--nt-border);
+        border-radius: 999px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        cursor: pointer;
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border-color: var(--nt-accent);
+      }
+
+      .hint {
+        font-size: 0.9rem;
+        color: var(--nt-muted);
+        margin-top: 8px;
+      }
+      .price-table {
+        width: 100%;
+        border-collapse: collapse;
+        max-width: 420px;
+      }
+      .price-table th,
+      .price-table td {
+        border: 1px solid var(--nt-border);
+        padding: 8px 12px;
+        text-align: left;
+      }
+      .price-table th {
+        background: var(--nt-bg);
+      }
+
+      .submit-row {
+        margin: 8px 0 22px;
+      }
+      button.check {
+        font-size: 1.15rem;
+        font-weight: 700;
+        padding: 14px 28px;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      button.check:hover {
+        filter: brightness(1.08);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+  </head>
+
+  <body class="nt-theme-aware">
+    <div class="wrap">
+      <header class="hero">
+        <span class="standard">CCSS 6.RP.A.1–3</span>
+        <h1>🥤 Smoothie Stand Architect</h1>
+        <p class="todo">
+          <strong>What to do:</strong> You run a smoothie stand. Use ratios and
+          unit rates to build recipes, find prices, and fill orders. Answer all
+          6 tasks, then press <em>Check My Work</em>.
+        </p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="pfill"></div>
+        </div>
+        <p class="progress-text" id="ptext">0 of 6 tasks answered</p>
+      </header>
+
+      <!-- Q1: Build a ratio with the smoothie glass -->
+      <section class="card" data-q="1">
+        <span class="qnum">Task 1 · Build a Ratio</span>
+        <h2>Make a 3 : 1 smoothie</h2>
+        <p class="direction">
+          Tap <strong>+</strong> and <strong>–</strong> to add scoops. Make the
+          ratio of <strong>fruit to juice</strong> equal
+          <strong>3 to 1</strong>.
+        </p>
+        <div class="builder">
+          <div class="glass" aria-hidden="true">
+            <div class="layer juice" id="g-juice" style="height: 0"></div>
+            <div class="layer fruit" id="g-fruit" style="height: 0"></div>
+          </div>
+          <div class="controls">
+            <div class="stepper">
+              <button
+                type="button"
+                class="step"
+                data-act="dec"
+                data-t="fruit"
+                aria-label="Remove one fruit scoop"
+              >
+                –
+              </button>
+              <span class="count" id="c-fruit" aria-live="polite">0</span>
+              <button
+                type="button"
+                class="step"
+                data-act="inc"
+                data-t="fruit"
+                aria-label="Add one fruit scoop"
+              >
+                +
+              </button>
+              <label
+                ><span class="swatch" style="background: #e8554e"></span
+                >Fruit</label
+              >
+            </div>
+            <div class="stepper">
+              <button
+                type="button"
+                class="step"
+                data-act="dec"
+                data-t="juice"
+                aria-label="Remove one juice scoop"
+              >
+                –
+              </button>
+              <span class="count" id="c-juice" aria-live="polite">0</span>
+              <button
+                type="button"
+                class="step"
+                data-act="inc"
+                data-t="juice"
+                aria-label="Add one juice scoop"
+              >
+                +
+              </button>
+              <label
+                ><span class="swatch" style="background: #f2b134"></span
+                >Juice</label
+              >
+            </div>
+            <div class="ratio-readout" id="ratio-readout" aria-live="polite">
+              Fruit : Juice = 0 : 0
+            </div>
+          </div>
+        </div>
+        <p class="hint">Tip: a 3 : 1 ratio means 3 fruit for every 1 juice.</p>
+      </section>
+
+      <!-- Q2: Write the ratio of a given mix -->
+      <section class="card" data-q="2">
+        <span class="qnum">Task 2 · Write the Ratio</span>
+        <h2>Berry Blast recipe</h2>
+        <p class="direction">
+          A Berry Blast uses <strong>6 berries</strong> and
+          <strong>2 bananas</strong>. Write the ratio of
+          <strong>berries to bananas</strong> in lowest terms (like
+          <em>3:1</em>).
+        </p>
+        <label class="field" for="q2">Berries : Bananas =</label>
+        <input
+          type="text"
+          id="q2"
+          inputmode="numeric"
+          placeholder="e.g. 3:1"
+          autocomplete="off"
+        />
+      </section>
+
+      <!-- Q3: Unit rate -->
+      <section class="card" data-q="3">
+        <span class="qnum">Task 3 · Unit Rate</span>
+        <h2>Price per smoothie</h2>
+        <p class="direction">
+          <strong>4 smoothies cost $12.</strong> How much is
+          <strong>1 smoothie</strong>? Type just the number of dollars.
+        </p>
+        <label class="field" for="q3">$ per smoothie</label>
+        <input type="number" id="q3" min="0" step="0.01" placeholder="e.g. 5" />
+      </section>
+
+      <!-- Q4: Better buy / compare unit rates -->
+      <section class="card" data-q="4">
+        <span class="qnum">Task 4 · Better Buy</span>
+        <h2>Which juice is cheaper per cup?</h2>
+        <p class="direction">
+          Compare the unit rates. Tap the carton with the
+          <strong>lower price per cup</strong>.
+        </p>
+        <table class="price-table" aria-hidden="true">
+          <tr>
+            <th>Carton</th>
+            <th>Cups</th>
+            <th>Price</th>
+          </tr>
+          <tr>
+            <td>Sunny</td>
+            <td>3</td>
+            <td>$6</td>
+          </tr>
+          <tr>
+            <td>Fresh</td>
+            <td>5</td>
+            <td>$8</td>
+          </tr>
+        </table>
+        <div
+          class="chips"
+          id="q4"
+          role="group"
+          aria-label="Pick the cheaper juice per cup"
+          style="margin-top: 12px"
+        >
+          <button
+            type="button"
+            class="chip"
+            data-val="Sunny"
+            aria-pressed="false"
+          >
+            Sunny — 3 cups / $6
+          </button>
+          <button
+            type="button"
+            class="chip"
+            data-val="Fresh"
+            aria-pressed="false"
+          >
+            Fresh — 5 cups / $8
+          </button>
+        </div>
+        <p class="hint">
+          Find dollars per cup for each, then pick the smaller one.
+        </p>
+      </section>
+
+      <!-- Q5: Scale up a recipe (ratio table) -->
+      <section class="card" data-q="5">
+        <span class="qnum">Task 5 · Scale the Recipe</span>
+        <h2>Make a bigger batch</h2>
+        <p class="direction">
+          The recipe is <strong>2 cups fruit for every 5 cups water</strong>. If
+          you use <strong>10 cups of water</strong>, how many
+          <strong>cups of fruit</strong> do you need?
+        </p>
+        <label class="field" for="q5">Cups of fruit</label>
+        <input type="number" id="q5" min="0" step="1" placeholder="cups" />
+        <p class="hint">10 cups of water is 2 times the recipe.</p>
+      </section>
+
+      <!-- Q6: Percent as rate per 100 -->
+      <section class="card" data-q="6">
+        <span class="qnum">Task 6 · Percent Rate</span>
+        <h2>Today's discount</h2>
+        <p class="direction">
+          A $20 smoothie pack is <strong>25% off</strong>. 25% means 25 per 100.
+          How many <strong>dollars do you save</strong>?
+        </p>
+        <label class="field" for="q6">$ saved</label>
+        <input
+          type="number"
+          id="q6"
+          min="0"
+          step="0.01"
+          placeholder="dollars"
+        />
+      </section>
+
+      <div class="submit-row">
+        <button type="button" class="check" id="checkBtn">
+          Check My Work ✓
+        </button>
+      </div>
+
+      <!-- Activity kit mounts here: student name, save PDF/DOC, results -->
+      <div id="ntkit"></div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ---- Task 1: smoothie builder ---- */
+        var counts = { fruit: 0, juice: 0 };
+        var UNIT = 26; // px per scoop for the glass visual
+        function renderBuilder() {
+          document.getElementById("c-fruit").textContent = counts.fruit;
+          document.getElementById("c-juice").textContent = counts.juice;
+          document.getElementById("g-fruit").style.height =
+            counts.fruit * UNIT + "px";
+          document.getElementById("g-juice").style.height =
+            counts.juice * UNIT + "px";
+          document.getElementById("ratio-readout").textContent =
+            "Fruit : Juice = " + counts.fruit + " : " + counts.juice;
+          updateProgress();
+        }
+        document.querySelectorAll(".step").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var t = b.getAttribute("data-t");
+            var d = b.getAttribute("data-act") === "inc" ? 1 : -1;
+            counts[t] = Math.max(0, Math.min(9, counts[t] + d));
+            renderBuilder();
+          });
+        });
+
+        /* ---- Task 4: chip choice ---- */
+        var q4val = "";
+        var chips = document.querySelectorAll("#q4 .chip");
+        chips.forEach(function (c) {
+          c.addEventListener("click", function () {
+            q4val = c.getAttribute("data-val");
+            chips.forEach(function (x) {
+              x.setAttribute("aria-pressed", x === c ? "true" : "false");
+            });
+            updateProgress();
+          });
+        });
+
+        /* ---- Progress ---- */
+        function answered() {
+          var n = 0;
+          if (counts.fruit > 0 || counts.juice > 0) n++;
+          if (val("q2")) n++;
+          if (val("q3")) n++;
+          if (q4val) n++;
+          if (val("q5")) n++;
+          if (val("q6")) n++;
+          return n;
+        }
+        function updateProgress() {
+          var n = answered();
+          document.getElementById("pfill").style.width = (n / 6) * 100 + "%";
+          document.getElementById("ptext").textContent =
+            n + " of 6 tasks answered";
+        }
+        function val(id) {
+          var e = document.getElementById(id);
+          return e ? e.value.trim() : "";
+        }
+        ["q2", "q3", "q5", "q6"].forEach(function (id) {
+          document.getElementById(id).addEventListener("input", updateProgress);
+        });
+
+        /* ---- Normalize a ratio answer like "6:2" -> "3:1" ---- */
+        function gcd(a, b) {
+          return b === 0 ? a : gcd(b, a % b);
+        }
+        function normRatio(s) {
+          var m = String(s)
+            .replace(/\s/g, "")
+            .match(/^(\d+)[:\/](\d+)$/);
+          if (!m) return "";
+          var a = parseInt(m[1], 10),
+            b = parseInt(m[2], 10);
+          if (b === 0) return "";
+          var g = gcd(a, b) || 1;
+          return a / g + ":" + b / g;
+        }
+        function num(s) {
+          var n = parseFloat(String(s).replace(/[^0-9.\-]/g, ""));
+          return isNaN(n) ? "" : n;
+        }
+
+        /* ---- Mount kit & grade ---- */
+        NTKit.mount("#ntkit");
+
+        document
+          .getElementById("checkBtn")
+          .addEventListener("click", function () {
+            var t1Ratio = normRatio(counts.fruit + ":" + counts.juice); // student-built ratio
+            var items = [
+              {
+                prompt:
+                  "Task 1 — Build a smoothie with a 3:1 ratio of fruit to juice.",
+                studentAnswer: t1Ratio,
+                correctAnswer: "3:1",
+                points: 1,
+                skill: "Ratios (6.RP.A.1)",
+              },
+              {
+                prompt:
+                  "Task 2 — Ratio of 6 berries to 2 bananas in lowest terms.",
+                studentAnswer: normRatio(val("q2")),
+                correctAnswer: "3:1",
+                points: 1,
+                skill: "Ratios (6.RP.A.1)",
+              },
+              {
+                prompt:
+                  "Task 3 — Unit rate: 4 smoothies cost $12, price of 1 smoothie.",
+                studentAnswer: num(val("q3")),
+                correctAnswer: 3,
+                points: 1,
+                skill: "Unit Rate (6.RP.A.2)",
+              },
+              {
+                prompt:
+                  "Task 4 — Which juice is cheaper per cup (Sunny $2/cup vs Fresh $1.60/cup)?",
+                studentAnswer: q4val,
+                correctAnswer: "Fresh",
+                points: 1,
+                skill: "Compare Unit Rates (6.RP.A.2)",
+              },
+              {
+                prompt:
+                  "Task 5 — Scale 2 cups fruit : 5 cups water up to 10 cups water.",
+                studentAnswer: num(val("q5")),
+                correctAnswer: 4,
+                points: 1,
+                skill: "Ratio Reasoning (6.RP.A.3)",
+              },
+              {
+                prompt: "Task 6 — Dollars saved on a $20 pack at 25% off.",
+                studentAnswer: num(val("q6")),
+                correctAnswer: 5,
+                points: 1,
+                skill: "Percent as Rate (6.RP.A.3)",
+              },
+            ];
+
+            NTKit.grade({
+              activityId: "architect-unit-1",
+              activityTitle: "Smoothie Stand Architect — Ratios & Unit Rates",
+              standard: "6.RP.A.1-3",
+              items: items,
+            });
+
+            var res = document.getElementById("ntkit");
+            if (res) res.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+
+        renderBuilder();
+      })();
+    </script>
+  </body>
+</html>
