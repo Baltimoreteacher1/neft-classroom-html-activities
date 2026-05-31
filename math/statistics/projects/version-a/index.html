@@ -703,7 +703,7 @@
         var sorted = sortNums(nums);
         var minVal = sorted[0];
         var maxVal = sorted[sorted.length - 1];
-        var range = maxVal - minVal || 1;
+        var range = maxVal - minVal;
 
         // Count frequency of each value
         var freq = {};
@@ -718,14 +718,14 @@
 
         var W = 600, dotR = 10, pad = 40, axisY = 40 + maxFreq * (dotR * 2 + 4);
         var H = axisY + 50;
-        var xScale = range > 0 ? (W - pad * 2) / range : 1;
+        var xScale = range > 0 ? (W - pad * 2) / range : 0;
 
         var dots = "";
         var labels = "";
         var uniqueVals = Object.keys(freq).map(parseFloat).sort(function(a,b){return a-b;});
         for (var u = 0; u < uniqueVals.length; u++) {
           var val = uniqueVals[u];
-          var cx = pad + (val - minVal) * xScale;
+          var cx = range > 0 ? pad + (val - minVal) * xScale : W / 2;
           var count = freq[val];
           for (var c = 0; c < count; c++) {
             var cy = axisY - dotR - c * (dotR * 2 + 4);

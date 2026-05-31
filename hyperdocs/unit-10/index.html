@@ -525,7 +525,7 @@
         <p>Open these to see volume in action. Come back here after.</p>
         <a class="link-btn" href="/games/3d/unit-10/" target="_blank" rel="noopener">Play: Volume Vault (3D game)</a>
         <a class="link-btn" href="/math/" target="_blank" rel="noopener">Math Hub</a>
-        <a class="link-btn" href="/novels/" target="_blank" rel="noopener">Math Graphic Novels</a>
+        <a class="link-btn" href="/graphic-novels/" target="_blank" rel="noopener">Math Graphic Novels</a>
         <div class="do-this">
           Do this: In the game, pack the prism with unit cubes. Watch the cubes add up to the volume. Try a prism with a fractional side length — what changes?
         </div>
@@ -867,8 +867,9 @@
 
           /* Accept 9/4, 2.25, or 2 1/4 for Q6 */
           function normVol(s) {
-            var v = s.replace(/\s+/g, "").toLowerCase();
-            if (v === "9/4" || v === "21/4" || v === "2and1/4") return "2.25";
+            var v = s.trim().toLowerCase().replace(/\s+/g, " ");
+            if (v === "9/4" || v === "2 1/4" || v === "2and1/4") return "2.25";
+            v = v.replace(/\s+/g, "");
             var n = parseFloat(v);
             if (!isNaN(n)) return String(Math.round(n * 100) / 100);
             return v;
