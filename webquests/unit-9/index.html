@@ -652,7 +652,7 @@
             <label class="opt"><input type="radio" name="q6" value="C" /> C. Quadrant IV</label>
           </fieldset>
 
-          <button type="submit" class="checkbtn">Check My Answers</button>
+          <button type="button" class="checkbtn" id="checkBtnQuiz">Check My Answers</button>
         </form>
 
         <div id="ntkit"></div>
@@ -694,6 +694,37 @@
     </div>
 
     <script>
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — tolerant of common formatting variants.
+         For coordinate answers like (-3,-4) or (-3, -4):
+         strip spaces but preserve minus signs.
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        s = s.replace(/\s+/g, '');
+        s = s.replace(/^\$/, '');
+        s = s.replace(/%$/, '');
+        /* Strip outer parentheses from coordinate pairs like (3,2) or (-3,-4) */
+        s = s.replace(/^\((.+)\)$/, '$1');
+        s = s.replace(/,(\d{3})/g, '$1');
+        s = s.replace(/(cubicunits?|cubicinches?|units?|dollars?|hours?|minutes?)$/, '');
+        return s;
+      }
+
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        return numericMatch(s, c);
+      }
+
       /* ── Self-Check logic ── */
       (function () {
         function checkSC(qNum, correctVal, displayCorrect, explanation) {
@@ -718,8 +749,8 @@
           var input = document.getElementById('sc' + qNum + '-input');
           var fb = document.getElementById('sc-fb' + qNum);
           if (!input) return;
-          var answer = input.value.trim().replace(/\s+/g, '');
-          if (answer === correctVal) {
+          var raw = input.value;
+          if (answersMatch(raw, correctVal)) {
             fb.className = 'q-feedback correct';
             fb.innerHTML = '&#10003; Correct! ' + explanation;
           } else {
@@ -760,13 +791,15 @@
         function ready() {
           if (!window.NTKit) { return setTimeout(ready, 50); }
           NTKit.mount('#ntkit');
-          var form = document.getElementById('quiz');
-          form.addEventListener('submit', function (e) {
-            e.preventDefault();
+          var btn = document.getElementById('checkBtnQuiz');
+          btn.addEventListener('click', function () {
             NTKit.grade({
               activityId: 'webquest-unit-9',
               activityTitle: 'Unit 9 WebQuest — Chart the Star Map (Coordinate Plane)',
               standard: '6.NS.C.6 & 6.G.A.3',
+              gradeItem: function(studentRaw, correctRaw) {
+                return answersMatch(studentRaw, correctRaw);
+              },
               items: [
                 {
                   prompt: '1. In (x, y), the first number tells you...',
@@ -791,14 +824,14 @@
                 },
                 {
                   prompt: '4. Ordered pair 3 left and 4 down from the origin.',
-                  studentAnswer: val('q4').replace(/\s+/g, ''),
+                  studentAnswer: val('q4'),
                   correctAnswer: '-3,-4',
                   points: 1,
                   skill: 'Plot points'
                 },
                 {
                   prompt: '5. Length of segment AB from (−2, 5) to (6, 5).',
-                  studentAnswer: val('q5').replace(/\s+/g, ''),
+                  studentAnswer: val('q5'),
                   correctAnswer: '8',
                   points: 1,
                   skill: 'Distance / side length'

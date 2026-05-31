@@ -740,7 +740,45 @@
     <script>
       NTKit.mount("#ntkit");
 
-      /* ── Self-check helper ── */
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — tolerant of common formatting
+         variations. NOTE: negative signs are PRESERVED so that
+         "-7" stays −7 (integers unit requires this).
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        // Collapse internal spaces (but keep leading minus for negatives)
+        s = s.replace(/\s+/g, "");
+        // Strip leading dollar sign
+        s = s.replace(/^\$/, "");
+        // Strip trailing percent sign
+        s = s.replace(/%$/, "");
+        // Strip commas in numbers (1,000 → 1000)
+        s = s.replace(/,(\d{3})/g, "$1");
+        // Strip common trailing unit words
+        s = s.replace(/(feet|foot|ft|meters?|m|units?|degrees?|°f|°c)$/, "");
+        return s;
+      }
+
+      /* Numeric equality with epsilon — preserves negative sign */
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw, questionType) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        if (questionType === "numeric") {
+          return numericMatch(s, c);
+        }
+        return false;
+      }
+
+      /* ── Self-check helper (radio buttons — exact match) ── */
       function checkSC(id, correct, explanation) {
         var chosen = null;
         var radios = document.getElementsByName(id);
@@ -768,7 +806,7 @@
       /* ── NTKit graded quiz ── */
       function val(id) {
         var n = document.getElementById(id);
-        return n ? n.value : "";
+        return n ? n.value.trim() : "";
       }
 
       document.getElementById("checkBtn").addEventListener("click", function () {
@@ -776,6 +814,9 @@
           activityId: "webquest-unit-7",
           activityTitle: "Unit 7 · Integers & the Number Line — WebQuest Check",
           standard: "6.NS.C.5-7",
+          gradeAnswer: function(student, correct) {
+            return answersMatch(student, correct, "numeric");
+          },
           items: [
             {
               prompt: "Which is colder: −5°F or 3°F?",

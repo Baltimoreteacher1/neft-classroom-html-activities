@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reading + Math: The Class Garden (ESOL) | Neft Teacher</title>
+    <meta name="description" content="ESOL reading-comprehension lesson with area of rectangles, triangles, and composite figures woven into a garden-design story. Embedded questions, Solve-It problems, leveled writing. 6.G.1." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root { --navy:#0f2b3c; --blue:#1a6fb5; --blue-l:#e8f2fc; --teal:#0e8a7d; --teal-l:#e4f5f3; --gold:#d4952a; --gold-l:#fdf3e0; --coral:#c45a3c; --coral-l:#fdeee9; --green:#2d874b; --green-l:#e6f4eb; --ink:#1a2633; --muted:#5e6e7e; --line:#e2e7ec; --bg:#f7f9fb; --font:"Segoe UI",system-ui,-apple-system,sans-serif; }
+      * { box-sizing:border-box; }
+      body { margin:0; font-family:var(--font); color:var(--ink); background:var(--bg); line-height:1.7; font-size:18px; }
+      .wrap { max-width:760px; margin:0 auto; padding:0 20px 70px; }
+      .phero { background:linear-gradient(135deg,#2d874b,#0e8a7d); color:#fff; padding:34px 22px 28px; text-align:center; }
+      .phero .deco { font-size:50px; }
+      .phero h1 { margin:8px 0 6px; font-size:clamp(24px,5vw,34px); }
+      .phero p { margin:0 auto; max-width:560px; color:rgba(255,255,255,.9); font-size:17px; }
+      .tags { margin-top:14px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+      .tag { background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); border-radius:50px; padding:5px 13px; font-size:13px; font-weight:700; }
+      .tag.gold { background:var(--gold); border-color:var(--gold); color:#2a1c00; }
+      .breadcrumb { font-size:13px; padding:14px 0 0; color:var(--muted); }
+      .breadcrumb a { color:var(--blue); text-decoration:none; font-weight:600; }
+      .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin:18px 0 6px; }
+      .toolbtn { background:var(--navy); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-weight:700; font-size:14px; cursor:pointer; font-family:inherit; }
+      .toolbtn.alt { background:var(--teal); }
+      .card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:22px 22px; margin:18px 0; box-shadow:0 3px 14px rgba(15,43,60,.07); }
+      .card h2 { margin:0 0 6px; font-size:21px; }
+      .lvl-note { font-size:13px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:.04em; }
+      .vocab { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+      @media (max-width:560px){ .vocab{ grid-template-columns:1fr; } }
+      .vword { background:var(--blue-l); border-radius:10px; padding:10px 12px; font-size:15px; }
+      .vword b { color:var(--navy); }
+      .story p { margin:0 0 14px; }
+      .story .mathline { background:var(--gold-l); border-left:4px solid var(--gold); padding:10px 14px; border-radius:8px; font-weight:600; }
+      .gloss { border-bottom:2px dotted var(--blue); cursor:help; font-weight:700; color:var(--navy); }
+      svg.fig { display:block; margin:8px auto; max-width:100%; height:auto; background:#fff; }
+      .q { background:var(--teal-l); border:1px solid #bfe6e0; border-radius:12px; padding:16px 18px; margin:18px 0; }
+      .q .qlabel { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--teal); }
+      .q p.qtext { font-weight:700; margin:4px 0 12px; }
+      .opt { display:block; width:100%; text-align:left; padding:11px 14px; border:2px solid var(--line); border-radius:10px; background:#fff; font-family:inherit; font-size:16px; cursor:pointer; margin:7px 0; }
+      .opt:hover { border-color:var(--blue); }
+      .opt.right { border-color:var(--green); background:var(--green-l); }
+      .opt.wrong { border-color:var(--coral); background:var(--coral-l); }
+      .solve label { display:block; font-weight:700; font-size:15px; margin:6px 0; }
+      .solve input { width:150px; padding:10px 12px; border:2px solid var(--line); border-radius:10px; font-size:16px; font-family:inherit; }
+      .checkbtn { background:var(--blue); color:#fff; border:none; border-radius:10px; padding:10px 18px; font-weight:800; cursor:pointer; font-family:inherit; margin-left:8px; }
+      .fb { margin-top:10px; font-weight:700; min-height:22px; }
+      .fb.ok { color:var(--green); } .fb.no { color:var(--coral); }
+      .starters { background:var(--gold-l); border-radius:10px; padding:12px 16px; margin:10px 0; font-size:15px; }
+      .starters b { color:var(--navy); }
+      textarea { width:100%; min-height:90px; padding:12px; border:2px solid var(--line); border-radius:10px; font-family:inherit; font-size:16px; resize:vertical; }
+      table.rubric { width:100%; border-collapse:collapse; font-size:14px; margin-top:8px; }
+      table.rubric th, table.rubric td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+      table.rubric th { background:var(--navy); color:#fff; }
+      details.akey summary { cursor:pointer; font-weight:800; color:var(--blue); }
+      details.akey { background:#fff; border:1px dashed var(--blue); border-radius:12px; padding:14px 18px; margin:18px 0; }
+      .footer { text-align:center; color:var(--muted); font-size:14px; margin-top:30px; }
+      @media print { .toolbtn,.checkbtn { display:none !important; } body{ background:#fff; font-size:15px; } .phero{ color:#000; background:#fff; } .card{ box-shadow:none; break-inside:avoid; } details.akey{ display:none; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🌻</div>
+      <h1>The Class Garden</h1>
+      <p>Mr. Lopez's class designs a school garden. Area helps them plan every bed and buy the right amount of soil.</p>
+      <div class="tags">
+        <span class="tag gold">ESOL Reading + Math</span>
+        <span class="tag">Area of Polygons</span>
+        <span class="tag">6.G.1</span>
+        <span class="tag">Levels: Beginner &amp; Intermediate</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> / <a href="/math/reading/">Reading + Math</a> / The Class Garden (ESOL)
+      </nav>
+
+      <div class="toolbar" aria-label="Tools">
+        <button class="toolbtn alt" type="button" id="readBtn">🔊 Read aloud</button>
+        <button class="toolbtn" type="button" onclick="window.print()">🖨️ Print</button>
+        <button class="toolbtn" type="button" id="docBtn">⬇️ Download as DOC</button>
+      </div>
+
+      <div id="doc-content">
+        <section class="card">
+          <span class="lvl-note">Before You Read</span>
+          <h2>Key Words</h2>
+          <p style="font-size:15px;color:var(--muted);margin:4px 0 8px;">Read these words first. You will see them in the story.</p>
+          <div class="vocab">
+            <div class="vword"><b>area</b> — the amount of flat space inside a shape. We measure it in <b>square units</b> (like square feet).</div>
+            <div class="vword"><b>length &amp; width</b> — how long and how wide a rectangle is.</div>
+            <div class="vword"><b>base &amp; height</b> — for a triangle, the bottom (base) and the straight-up distance (height).</div>
+            <div class="vword"><b>composite figure</b> — a shape made of two or more simple shapes joined together.</div>
+            <div class="vword"><b>formula</b> — a math rule. Rectangle area = length × width. Triangle area = ½ × base × height.</div>
+            <div class="vword"><b>coverage</b> — how much space one bag of soil can fill.</div>
+          </div>
+        </section>
+
+        <section class="card story">
+          <span class="lvl-note">Part 1 — The First Bed</span>
+          <p>Mr. Lopez smiled at his class. "We have permission to build a <b>school garden</b>! But first, we must <span class="gloss" title="plan using math">plan with math</span>. We need to know the <span class="gloss" title="the flat space inside a shape">area</span> of each bed so we buy the right amount of soil."</p>
+          <p>The first bed is a <b>rectangle</b>, 6 feet long and 4 feet wide.</p>
+          <svg class="fig" width="220" height="150" viewBox="0 0 220 150" role="img" aria-label="A rectangle 6 feet long and 4 feet wide">
+            <rect x="30" y="30" width="150" height="90" fill="#e6f4eb" stroke="#2d874b" stroke-width="3"/>
+            <text x="105" y="20" text-anchor="middle" font-size="14" fill="#1a2633">6 ft</text>
+            <text x="16" y="80" text-anchor="middle" font-size="14" fill="#1a2633" transform="rotate(-90 16 80)">4 ft</text>
+            <text x="105" y="80" text-anchor="middle" font-size="15" font-weight="700" fill="#2d874b">Area = ?</text>
+          </svg>
+          <p class="mathline">Rectangle area = length × width = 6 × 4 = <b>24 square feet</b>.</p>
+
+          <div class="q" aria-label="Comprehension question 1">
+            <span class="qlabel">Check Your Reading — Q1</span>
+            <p class="qtext">Why does the class need to find the area of each bed?</p>
+            <button class="opt" type="button" onclick="mc(this,'q1',false)">To know how tall the plants will grow.</button>
+            <button class="opt" type="button" onclick="mc(this,'q1',true)">To buy the right amount of soil for the space.</button>
+            <button class="opt" type="button" onclick="mc(this,'q1',false)">To choose the color of the flowers.</button>
+            <div class="fb" id="fb-q1" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="q solve" aria-label="Solve it 1">
+            <span class="qlabel">Solve It — #1</span>
+            <p class="qtext">A second rectangle bed is <b>5 ft</b> long and <b>3 ft</b> wide. What is its area in square feet?</p>
+            <label for="s1">Area (square feet):</label>
+            <input type="text" id="s1" inputmode="numeric" placeholder="number" autocomplete="off" />
+            <button class="checkbtn" type="button" onclick="checkText('s1','15','fb-s1','15 square feet. Area = length × width = 5 × 3 = 15.')">Check</button>
+            <div class="fb" id="fb-s1" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card story">
+          <span class="lvl-note">Part 2 — A Triangle Corner</span>
+          <p>In one corner, there was space for a <b>triangle</b> herb bed. "A triangle is half of a rectangle," Mr. Lopez explained. "So we multiply, then take half."</p>
+          <svg class="fig" width="220" height="150" viewBox="0 0 220 150" role="img" aria-label="A triangle with base 8 feet and height 3 feet">
+            <polygon points="30,120 190,120 30,40" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="3"/>
+            <text x="110" y="138" text-anchor="middle" font-size="14" fill="#1a2633">base = 8 ft</text>
+            <text x="16" y="80" text-anchor="middle" font-size="14" fill="#1a2633" transform="rotate(-90 16 80)">height = 3 ft</text>
+          </svg>
+          <p class="mathline">Triangle area = ½ × base × height = ½ × 8 × 3 = <b>12 square feet</b>.</p>
+
+          <div class="q" aria-label="Comprehension question 2">
+            <span class="qlabel">Check Your Reading — Q2</span>
+            <p class="qtext">Mr. Lopez says a triangle is "half of a rectangle." What does the formula do to show this?</p>
+            <button class="opt" type="button" onclick="mc(this,'q2',true)">It multiplies base × height, then takes one half (× ½).</button>
+            <button class="opt" type="button" onclick="mc(this,'q2',false)">It adds the base and the height together.</button>
+            <button class="opt" type="button" onclick="mc(this,'q2',false)">It doubles the base.</button>
+            <div class="fb" id="fb-q2" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="q solve" aria-label="Solve it 2">
+            <span class="qlabel">Solve It — #2</span>
+            <p class="qtext">Another triangle bed has a <b>base of 6 ft</b> and a <b>height of 4 ft</b>. What is its area?</p>
+            <label for="s2">Area (square feet):</label>
+            <input type="text" id="s2" inputmode="numeric" placeholder="number" autocomplete="off" />
+            <button class="checkbtn" type="button" onclick="checkText('s2','12','fb-s2','12 square feet. ½ × 6 × 4 = 12.')">Check</button>
+            <div class="fb" id="fb-s2" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card story">
+          <span class="lvl-note">Part 3 — A Bigger Shape</span>
+          <p>The biggest bed was an <b>L-shape</b>. "Do not panic," said Mr. Lopez. "We break a <span class="gloss" title="a shape made of two or more simple shapes">composite figure</span> into simple rectangles, find each area, then add them."</p>
+          <p>They split the L into two rectangles: one was <b>8 ft × 5 ft</b>, and the other was <b>4 ft × 3 ft</b>.</p>
+          <p class="mathline">Big rectangle: 8 × 5 = 40. Small rectangle: 4 × 3 = 12. Total area = 40 + 12 = <b>52 square feet</b>.</p>
+
+          <div class="q" aria-label="Comprehension question 3">
+            <span class="qlabel">Check Your Reading — Q3</span>
+            <p class="qtext">What is the smart strategy for finding the area of a composite (L-shaped) figure?</p>
+            <button class="opt" type="button" onclick="mc(this,'q3',true)">Break it into simple shapes, find each area, then add them.</button>
+            <button class="opt" type="button" onclick="mc(this,'q3',false)">Measure only the longest side.</button>
+            <button class="opt" type="button" onclick="mc(this,'q3',false)">Multiply all four numbers together.</button>
+            <div class="fb" id="fb-q3" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="q solve" aria-label="Solve it 3">
+            <span class="qlabel">Solve It — #3</span>
+            <p class="qtext">A composite bed splits into a <b>6 ft × 4 ft</b> rectangle and a <b>2 ft × 3 ft</b> rectangle. What is the total area?</p>
+            <label for="s3">Total area (square feet):</label>
+            <input type="text" id="s3" inputmode="numeric" placeholder="number" autocomplete="off" />
+            <button class="checkbtn" type="button" onclick="checkText('s3','30','fb-s3','30 square feet. 6×4 = 24 and 2×3 = 6, so 24 + 6 = 30.')">Check</button>
+            <div class="fb" id="fb-s3" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card story">
+          <span class="lvl-note">Part 4 — Buying the Soil</span>
+          <p>Finally, the class needed soil. Each bag covers <b>10 square feet</b>. "If a bed is 30 square feet," asked Mr. Lopez, "how many bags do we need?" Maria raised her hand: "Thirty divided by ten is three bags!"</p>
+          <p class="mathline">Bags = area ÷ <span class="gloss" title="how much one bag fills">coverage</span> = 30 ÷ 10 = <b>3 bags</b>.</p>
+
+          <div class="q solve" aria-label="Solve it 4">
+            <span class="qlabel">Solve It — #4</span>
+            <p class="qtext">A 24-square-foot bed needs soil. Each bag covers <b>6 square feet</b>. How many bags are needed?</p>
+            <label for="s4">Number of bags:</label>
+            <input type="text" id="s4" inputmode="numeric" placeholder="number" autocomplete="off" />
+            <button class="checkbtn" type="button" onclick="checkText('s4','4','fb-s4','4 bags. 24 ÷ 6 = 4.')">Check</button>
+            <div class="fb" id="fb-s4" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <span class="lvl-note">After You Read — Write About It</span>
+          <h2>Explain the Math in the Story</h2>
+          <p style="font-size:16px;">Pick your level. Use the sentence starters to write 2–4 sentences.</p>
+          <div class="starters">
+            <b>Level 1 — Beginner (finish each sentence):</b>
+            <ul style="margin:8px 0 0;">
+              <li>To find the area of a rectangle, I multiply ______.</li>
+              <li>To find the area of a triangle, I ______.</li>
+              <li>For an L-shaped bed, the class first ______ and then ______.</li>
+            </ul>
+          </div>
+          <div class="starters">
+            <b>Level 2 — Intermediate (use these to start):</b>
+            <ul style="margin:8px 0 0;">
+              <li>Area helped the class because ______.</li>
+              <li>A composite figure is easier to measure when you ______, because ______.</li>
+              <li>I could use area in real life when I ______.</li>
+            </ul>
+          </div>
+          <label for="writing" style="font-weight:700;font-size:15px;">Write your answer here (included when you print or download):</label>
+          <textarea id="writing" placeholder="Start with one of the sentence starters above..."></textarea>
+        </section>
+
+        <section class="card">
+          <span class="lvl-note">How You Are Scored</span>
+          <h2>Rubric</h2>
+          <table class="rubric">
+            <tr><th>Category</th><th>4 — Strong</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+            <tr><td>Reading comprehension</td><td>All 3 reading questions correct with details</td><td>2 correct</td><td>1 correct</td></tr>
+            <tr><td>Math (Solve It)</td><td>All 4 area answers correct (rectangle, triangle, composite, coverage)</td><td>3 correct</td><td>2 correct</td></tr>
+            <tr><td>Writing</td><td>Explains area clearly using vocabulary (area, base, height, composite)</td><td>Uses some vocabulary; mostly clear</td><td>Begins with a starter</td></tr>
+          </table>
+        </section>
+      </div><!-- /doc-content -->
+
+      <details class="akey">
+        <summary>🔑 Teacher Answer Key (click to expand)</summary>
+        <ol>
+          <li>Q1 — <b>To buy the right amount of soil for the space.</b></li>
+          <li>Solve It #1 — <b>15 sq ft</b> (5 × 3).</li>
+          <li>Q2 — <b>Multiplies base × height, then takes one half.</b></li>
+          <li>Solve It #2 — <b>12 sq ft</b> (½ × 6 × 4).</li>
+          <li>Q3 — <b>Break it into simple shapes, find each area, then add.</b></li>
+          <li>Solve It #3 — <b>30 sq ft</b> (24 + 6).</li>
+          <li>Solve It #4 — <b>4 bags</b> (24 ÷ 6).</li>
+        </ol>
+        <p style="font-size:14px;color:var(--muted);">Grading accepts common formats (e.g., 24, 24.0, "24 sq ft").</p>
+      </details>
+
+      <p class="footer">Neft Teacher · Reading + Math (ESOL) · Area of Polygons · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      function normalize(raw){
+        var s = String(raw).trim().toLowerCase().replace(/\s+/g,"");
+        s = s.replace(/^\$/,"").replace(/%$/,"").replace(/,(\d{3})/g,"$1");
+        s = s.replace(/(squarefeet|squarefoot|sqft|sq|ft|bags?|cups?)$/,"");
+        return s;
+      }
+      function checkText(id, correct, fbId, why){
+        var raw=document.getElementById(id).value, fb=document.getElementById(fbId);
+        if(raw.trim()===""){ fb.textContent="⚠ Please type an answer first."; fb.className="fb no"; return; }
+        var s=normalize(raw), c=normalize(correct), ns=parseFloat(s), nc=parseFloat(c), ok;
+        ok = (!isNaN(ns)&&!isNaN(nc)) ? Math.abs(ns-nc)<1e-9 : (s===c);
+        fb.textContent = ok ? ("✓ Correct! "+why) : ("✗ Not yet — try again. Hint: "+why);
+        fb.className = "fb " + (ok?"ok":"no");
+      }
+      function mc(btn, key, correct){
+        var parent=btn.closest(".q");
+        Array.prototype.forEach.call(parent.querySelectorAll(".opt"),function(b){ b.classList.remove("right","wrong"); });
+        var fb=document.getElementById("fb-"+key);
+        if(correct){ btn.classList.add("right"); fb.textContent="✓ Correct!"; fb.className="fb ok"; }
+        else { btn.classList.add("wrong"); fb.textContent="✗ Not quite — read that part again and try another answer."; fb.className="fb no"; }
+      }
+      (function(){
+        var btn=document.getElementById("readBtn");
+        if(!("speechSynthesis" in window)){ btn.disabled=true; btn.textContent="🔊 (not supported)"; return; }
+        var speaking=false;
+        btn.addEventListener("click",function(){
+          if(speaking){ speechSynthesis.cancel(); speaking=false; btn.textContent="🔊 Read aloud"; return; }
+          var text=[].slice.call(document.querySelectorAll(".story p")).map(function(n){return n.textContent;}).join(". ");
+          var u=new SpeechSynthesisUtterance(text); u.lang="en-US"; u.rate=0.92;
+          u.onend=function(){ speaking=false; btn.textContent="🔊 Read aloud"; };
+          speechSynthesis.cancel(); speechSynthesis.speak(u); speaking=true; btn.textContent="⏹ Stop reading";
+        });
+      })();
+      document.getElementById("docBtn").addEventListener("click",function(){
+        var clone=document.getElementById("doc-content").cloneNode(true);
+        var writeVal=document.getElementById("writing").value || "________________________________________";
+        Array.prototype.forEach.call(clone.querySelectorAll("textarea"),function(t){ var p=document.createElement("p"); p.textContent=writeVal; t.parentNode.replaceChild(p,t); });
+        Array.prototype.forEach.call(clone.querySelectorAll("input"),function(i){ var s=document.createElement("span"); s.textContent="________________"; i.parentNode.replaceChild(s,i); });
+        Array.prototype.forEach.call(clone.querySelectorAll(".fb"),function(n){ n.parentNode.removeChild(n); });
+        Array.prototype.forEach.call(clone.querySelectorAll(".opt"),function(b){ var d=document.createElement("div"); d.textContent="☐ "+b.textContent; b.parentNode.replaceChild(d,b); });
+        Array.prototype.forEach.call(clone.querySelectorAll(".checkbtn, .toolbtn"),function(n){ n.parentNode.removeChild(n); });
+        var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>The Class Garden (ESOL)</title></head><body style="font-family:Calibri,Arial,sans-serif;">'
+          +'<h1>The Class Garden — Reading + Math (ESOL)</h1><p><b>Name: ___________________________  Date: ____________</b></p>'
+          +clone.innerHTML+'</body></html>';
+        var blob=new Blob(['﻿',html],{type:"application/msword"});
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement("a"); a.href=url; a.download="The-Class-Garden-ESOL.doc";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      });
+    </script>
+  </body>
+</html>

@@ -709,6 +709,50 @@
       /* ── NTKit mount ── */
       NTKit.mount('#ntkit');
 
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — tolerant of common formatting variants.
+         Strips spaces, leading $, trailing %, commas in numbers,
+         and trailing unit words (including cubic/cm/cm³ etc.).
+         Fractional volume: "9/4" and "2.25" both accepted.
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        s = s.replace(/\s+/g, '');
+        s = s.replace(/^\$/, '');
+        s = s.replace(/%$/, '');
+        s = s.replace(/,(\d{3})/g, '$1');
+        s = s.replace(/(cubicunits?|cubicinches?|cubicfeet?|cubiccm|cm3|cm³|cm2|cm²|cm|m3|m³|m2|m²|mph|km|units?|dollars?|inches?|feet?|hours?|minutes?)$/, '');
+        return s;
+      }
+
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      /* Evaluate a simple fraction string like "9/4" or "1/2" to a decimal */
+      function fractionToDecimal(s) {
+        var m = s.match(/^(-?\d+)\/(\d+)$/);
+        if (m) { return parseFloat(m[1]) / parseFloat(m[2]); }
+        return NaN;
+      }
+
+      function answersMatch(studentRaw, correctRaw) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        if (numericMatch(s, c)) { return true; }
+        /* Accept fractional form: "9/4" == "2.25" */
+        var sd = fractionToDecimal(s);
+        var cd = fractionToDecimal(c);
+        if (!isNaN(sd) && numericMatch(sd, parseFloat(c))) { return true; }
+        if (!isNaN(cd) && numericMatch(parseFloat(s), cd)) { return true; }
+        if (!isNaN(sd) && !isNaN(cd) && Math.abs(sd - cd) < 1e-9) { return true; }
+        return false;
+      }
+
       /* ── Self-Check logic ── */
       (function () {
         function checkSCmc(qNum, correctVal, displayCorrect, explanation) {
@@ -733,8 +777,8 @@
           var input = document.getElementById('sc' + qNum + '-input');
           var fb = document.getElementById('sc-fb' + qNum);
           if (!input) return;
-          var answer = input.value.trim().replace(/\s+/g, '');
-          if (answer === correctVal) {
+          var raw = input.value;
+          if (answersMatch(raw, correctVal)) {
             fb.className = 'q-feedback correct';
             fb.innerHTML = '&#10003; Correct! ' + explanation;
           } else {
@@ -774,6 +818,9 @@
           activityId: 'webquest-unit-10',
           activityTitle: 'WebQuest · Unit 10 — Volume of Prisms (Volume Vault)',
           standard: '6.G.A.2',
+          gradeItem: function(studentRaw, correctRaw) {
+            return answersMatch(studentRaw, correctRaw);
+          },
           items: [
             {
               prompt: 'Q1. Volume of a 5 × 3 × 2 box (cubic units).',

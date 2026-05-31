@@ -622,7 +622,36 @@
     <script src="/assets/nt-activity-kit.js"></script>
     <script>
       (function () {
-        /* ── Self-check helper ── */
+
+        /* ─────────────────────────────────────────────────────────
+           Answer normaliser — tolerant of common formatting
+           variations without changing any correct answer.
+           ───────────────────────────────────────────────────────── */
+        function normalise(raw) {
+          var s = String(raw).trim().toLowerCase();
+          s = s.replace(/\s+/g, '');
+          s = s.replace(/^\$/, '');
+          s = s.replace(/%$/, '');
+          s = s.replace(/,(\d{3})/g, '$1');
+          s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|sq)$/, '');
+          return s;
+        }
+
+        function numericMatch(a, b) {
+          var na = parseFloat(a);
+          var nb = parseFloat(b);
+          if (isNaN(na) || isNaN(nb)) { return false; }
+          return Math.abs(na - nb) < 1e-9;
+        }
+
+        function answersMatch(studentRaw, correctRaw) {
+          var s = normalise(studentRaw);
+          var c = normalise(correctRaw);
+          if (s === c) { return true; }
+          return numericMatch(s, c);
+        }
+
+        /* ── Self-check helper (radio buttons only — compare letter values) ── */
         function checkSC(itemId, correctVal, correctMsg, wrongMsg) {
           var radios = document.querySelectorAll('input[name="' + itemId + '"]');
           var selected = null;
@@ -654,7 +683,13 @@
 
         function val(id) {
           var n = document.getElementById(id);
-          return n ? n.value : '';
+          return n ? n.value.trim() : '';
+        }
+
+        /* Normalise a student answer for NTKit submission so tolerant
+           matching works regardless of trailing units or decimal format. */
+        function norm(id) {
+          return normalise(val(id));
         }
 
         document.getElementById('checkBtn').addEventListener('click', function () {
@@ -665,35 +700,35 @@
             items: [
               {
                 prompt: 'GCF of 24 and 36',
-                studentAnswer: val('q1'),
+                studentAnswer: norm('q1'),
                 correctAnswer: '12',
                 points: 1,
                 skill: 'GCF'
               },
               {
                 prompt: 'LCM of 4 and 6',
-                studentAnswer: val('q2'),
+                studentAnswer: norm('q2'),
                 correctAnswer: '12',
                 points: 1,
                 skill: 'LCM'
               },
               {
                 prompt: '1.4 + 0.75',
-                studentAnswer: val('q3'),
+                studentAnswer: norm('q3'),
                 correctAnswer: '2.15',
                 points: 1,
                 skill: 'Decimal addition'
               },
               {
                 prompt: '0.4 × 0.3',
-                studentAnswer: val('q4'),
+                studentAnswer: norm('q4'),
                 correctAnswer: '0.12',
                 points: 1,
                 skill: 'Decimal multiplication'
               },
               {
                 prompt: '6 × 47 using the Distributive Property',
-                studentAnswer: val('q5'),
+                studentAnswer: norm('q5'),
                 correctAnswer: '282',
                 points: 1,
                 skill: 'Distributive Property'

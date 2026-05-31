@@ -475,30 +475,36 @@
         <div class="q">
           <label for="q1">1. A car goes 150 miles in 3 hours. What is the unit rate?
             <span class="hint">(miles per hour — type just the number)</span></label>
-          <input type="text" id="q1" inputmode="numeric" autocomplete="off" aria-describedby="q1-hint" />
+          <input type="text" id="q1" inputmode="numeric" autocomplete="off" aria-describedby="q1-fb" />
+          <div class="sc-feedback" id="q1-fb" role="alert" aria-live="polite"></div>
         </div>
         <div class="q">
           <label for="q2">2. 8 apples cost $4. What is the price for 1 apple?
             <span class="hint">(type like 0.5)</span></label>
-          <input type="text" id="q2" inputmode="decimal" autocomplete="off" />
+          <input type="text" id="q2" inputmode="decimal" autocomplete="off" aria-describedby="q2-fb" />
+          <div class="sc-feedback" id="q2-fb" role="alert" aria-live="polite"></div>
         </div>
         <div class="q">
           <label for="q3">3. The ratio 2 : 5 is equal to 4 : ___ ?
             <span class="hint">(type the missing number)</span></label>
-          <input type="text" id="q3" inputmode="numeric" autocomplete="off" />
+          <input type="text" id="q3" inputmode="numeric" autocomplete="off" aria-describedby="q3-fb" />
+          <div class="sc-feedback" id="q3-fb" role="alert" aria-live="polite"></div>
         </div>
         <div class="q">
           <label for="q4">4. What is 50% of 60?
             <span class="hint">(type just the number)</span></label>
-          <input type="text" id="q4" inputmode="numeric" autocomplete="off" />
+          <input type="text" id="q4" inputmode="numeric" autocomplete="off" aria-describedby="q4-fb" />
+          <div class="sc-feedback" id="q4-fb" role="alert" aria-live="polite"></div>
         </div>
         <div class="q">
           <label for="q5">5. What is 20% of 200?
             <span class="hint">(type just the number)</span></label>
-          <input type="text" id="q5" inputmode="numeric" autocomplete="off" />
+          <input type="text" id="q5" inputmode="numeric" autocomplete="off" aria-describedby="q5-fb" />
+          <div class="sc-feedback" id="q5-fb" role="alert" aria-live="polite"></div>
         </div>
 
         <button type="button" class="check-btn" id="checkBtn">Check My Answers</button>
+        <div id="score-banner" style="display:none;margin-top:14px;background:#dbeafe;border:2px solid var(--nt-accent);border-radius:12px;padding:14px 18px;font-size:18px;font-weight:700;color:var(--nt-accent);" aria-live="polite"></div>
       </section>
 
       <!-- RUBRIC -->
@@ -589,7 +595,7 @@
     <script src="/assets/nt-activity-kit.js"></script>
     <script>
       (function () {
-        /* ── Self-check helper ── */
+        /* ── Self-check helper (radio questions) ── */
         function checkSC(itemId, correctVal, correctMsg, wrongMsg) {
           var radios = document.querySelectorAll('input[name="' + itemId + '"]');
           var selected = null;
@@ -616,6 +622,41 @@
         /* expose for inline onclick */
         window.checkSC = checkSC;
 
+        /* ── Tolerant normaliser ── */
+        function normalise(raw) {
+          var s = String(raw).trim().toLowerCase();
+          s = s.replace(/\s+/g, '');
+          s = s.replace(/^\$/, '');
+          s = s.replace(/%$/, '');
+          s = s.replace(/,(\d{3})/g, '$1');
+          s = s.replace(/(mph|km|miles?|apples?|hours?|minutes?|units?|dollars?)$/, '');
+          return s;
+        }
+
+        /* Numeric equality with epsilon */
+        function numericMatch(a, b) {
+          var na = parseFloat(a);
+          var nb = parseFloat(b);
+          if (isNaN(na) || isNaN(nb)) { return false; }
+          return Math.abs(na - nb) < 1e-9;
+        }
+
+        function answersMatch(studentRaw, correctRaw) {
+          var s = normalise(studentRaw);
+          var c = normalise(correctRaw);
+          if (s === c) { return true; }
+          return numericMatch(s, c);
+        }
+
+        /* ── Graded questions config ── */
+        var gradedAnswers = {
+          q1: { correct: '50',  explanation: '150 miles ÷ 3 hours = 50 miles per hour.' },
+          q2: { correct: '0.5', explanation: '$4 ÷ 8 apples = $0.50 per apple.' },
+          q3: { correct: '10',  explanation: '2 × 2 = 4, so 5 × 2 = 10. The missing number is 10.' },
+          q4: { correct: '30',  explanation: '50% = 0.50, and 0.50 × 60 = 30.' },
+          q5: { correct: '40',  explanation: '20% = 0.20, and 0.20 × 200 = 40.' }
+        };
+
         /* ── NTKit graded section ── */
         if (typeof NTKit === 'undefined') return;
         NTKit.mount('#ntkit');
@@ -626,6 +667,28 @@
         }
 
         document.getElementById('checkBtn').addEventListener('click', function () {
+          var score = 0;
+          var total = Object.keys(gradedAnswers).length;
+
+          for (var k in gradedAnswers) {
+            var studentRaw = val(k);
+            var cfg = gradedAnswers[k];
+            var correct = answersMatch(studentRaw, cfg.correct);
+            if (correct) score++;
+            var fb = document.getElementById(k + '-fb');
+            if (fb) {
+              fb.className = 'sc-feedback ' + (correct ? 'correct' : 'wrong');
+              fb.textContent = (correct ? '✓ Correct! ' : '✗ Not quite. ') + cfg.explanation;
+              fb.style.display = 'block';
+            }
+          }
+
+          var banner = document.getElementById('score-banner');
+          if (banner) {
+            banner.style.display = 'block';
+            banner.textContent = 'You got ' + score + ' out of ' + total + ' correct!';
+          }
+
           NTKit.grade({
             activityId: 'hyperdoc-unit-3',
             activityTitle: 'Unit 3 · Rates, Unit Rates & Percent — HyperDoc',

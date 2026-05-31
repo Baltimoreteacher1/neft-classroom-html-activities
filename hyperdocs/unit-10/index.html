@@ -865,13 +865,59 @@
             return e ? e.value.trim() : "";
           }
 
-          /* Accept 9/4, 2.25, or 2 1/4 for Q6 */
+          /* ─────────────────────────────────────────────────────────
+             Tolerant answer normaliser
+             - trim, lowercase, collapse whitespace
+             - strip leading "$", trailing "%"
+             - strip commas used as thousands separators
+             - strip trailing unit words (units, cubic, cm, cm3, cm³, etc.)
+             - numeric answers compared by value (epsilon)
+             ───────────────────────────────────────────────────────── */
+          function norm(raw) {
+            var s = String(raw == null ? "" : raw).trim().toLowerCase();
+            s = s.replace(/\s+/g, " ");
+            s = s.replace(/^\$/, "");
+            s = s.replace(/%$/, "");
+            s = s.replace(/,(\d{3})/g, "$1");
+            s = s.replace(/\b(units?|cubic|cm3|cm³|cm|m2|m²|mph|km|ft|in|degrees?)\s*$/g, "");
+            s = s.trim();
+            return s;
+          }
+
+          /* Numeric equality with epsilon */
+          function numEq(a, b) {
+            var na = parseFloat(a);
+            var nb = parseFloat(b);
+            if (isNaN(na) || isNaN(nb)) return false;
+            return Math.abs(na - nb) < 1e-9;
+          }
+
+          /*
+           * normVol — normalise a volume answer to a canonical decimal string.
+           * Accepts: whole numbers, decimals, simple fractions (9/4),
+           * mixed numbers (2 1/4), and strips trailing unit words.
+           * Used for Q6 (fractional edge answer 9/4 = 2.25).
+           */
           function normVol(s) {
-            var v = s.trim().toLowerCase().replace(/\s+/g, " ");
-            if (v === "9/4" || v === "2 1/4" || v === "2and1/4") return "2.25";
-            v = v.replace(/\s+/g, "");
+            var v = norm(s);
+            /* mixed number: "2 1/4" */
+            var mixedMatch = v.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
+            if (mixedMatch) {
+              var whole = parseFloat(mixedMatch[1]);
+              var num   = parseFloat(mixedMatch[2]);
+              var den   = parseFloat(mixedMatch[3]);
+              var val2  = whole + num / den;
+              return String(Math.round(val2 * 10000) / 10000);
+            }
+            /* simple fraction: "9/4" */
+            var fracMatch = v.match(/^(-?\d+)\/(\d+)$/);
+            if (fracMatch) {
+              var val3 = parseFloat(fracMatch[1]) / parseFloat(fracMatch[2]);
+              return String(Math.round(val3 * 10000) / 10000);
+            }
+            /* plain number */
             var n = parseFloat(v);
-            if (!isNaN(n)) return String(Math.round(n * 100) / 100);
+            if (!isNaN(n)) return String(Math.round(n * 10000) / 10000);
             return v;
           }
 
@@ -886,35 +932,35 @@
                 items: [
                   {
                     prompt: "Box 2×3×4 cm. Volume?",
-                    studentAnswer: val("q1"),
+                    studentAnswer: norm(val("q1")),
                     correctAnswer: "24",
                     points: 1,
                     skill: "Volume of a prism (l×w×h)"
                   },
                   {
                     prompt: "Cube with side 5 in. Volume?",
-                    studentAnswer: val("q2"),
+                    studentAnswer: norm(val("q2")),
                     correctAnswer: "125",
                     points: 1,
                     skill: "Volume of a cube"
                   },
                   {
                     prompt: "Unit cubes packed 6×2×3. How many?",
-                    studentAnswer: val("q3"),
+                    studentAnswer: norm(val("q3")),
                     correctAnswer: "36",
                     points: 1,
                     skill: "Packing unit cubes"
                   },
                   {
                     prompt: "Tank 10×4×5 cm. Volume?",
-                    studentAnswer: val("q4"),
+                    studentAnswer: norm(val("q4")),
                     correctAnswer: "200",
                     points: 1,
                     skill: "Volume of a prism (l×w×h)"
                   },
                   {
                     prompt: "Base area 12 cm², height 3 cm. Volume?",
-                    studentAnswer: val("q5"),
+                    studentAnswer: norm(val("q5")),
                     correctAnswer: "36",
                     points: 1,
                     skill: "Volume using V = B×h"

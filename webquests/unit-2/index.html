@@ -624,19 +624,77 @@
     <script>
       NTKit.mount("#ntkit");
 
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — makes grading tolerant of common
+         formatting variations without changing any correct answer.
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        // Collapse / strip whitespace
+        s = s.replace(/\s+/g, "");
+        // Strip leading dollar sign
+        s = s.replace(/^\$/, "");
+        // Strip trailing percent sign
+        s = s.replace(/%$/, "");
+        // Strip commas in numbers (1,000 → 1000)
+        s = s.replace(/,(\d{3})/g, "$1");
+        // Strip common trailing unit words (only at the end, whole-word)
+        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|tarts?|cups?|hours?|minutes?)$/, "");
+        return s;
+      }
+
+      /* Numeric equality with small epsilon (handles 3 vs 3.0 vs 3.00) */
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      /* Ratio / fraction equivalence: "3/2" ↔ "3:2" (same numeric fraction) */
+      function ratioMatch(a, b) {
+        function toDecimal(s) {
+          var colonForm = s.match(/^(\d+):(\d+)$/);
+          if (colonForm) { return parseFloat(colonForm[1]) / parseFloat(colonForm[2]); }
+          var slashForm = s.match(/^(\d+)\/(\d+)$/);
+          if (slashForm) { return parseFloat(slashForm[1]) / parseFloat(slashForm[2]); }
+          return NaN;
+        }
+        var da = toDecimal(a);
+        var db = toDecimal(b);
+        if (isNaN(da) || isNaN(db)) { return false; }
+        return Math.abs(da - db) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw, questionType) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        // Numeric questions: tolerate 2 vs 2.0 vs 2.00
+        if (questionType === "numeric") {
+          return numericMatch(s, c);
+        }
+        // Fraction/ratio questions: tolerate slash ↔ colon and equivalent fractions
+        if (questionType === "fraction") {
+          return ratioMatch(s, c);
+        }
+        return false;
+      }
+
       /* ── Self-check configuration ── */
       var SC = {
         1: {
           type: "text",
+          subtype: "numeric",
           inputId: "sc-a1",
           correct: "2",
           explanation: "1/2 ÷ 1/4 = 1/2 × 4/1 = 4/2 = 2. Two quarter-cups fit inside a half-cup."
         },
         2: {
           type: "text",
+          subtype: "fraction",
           inputId: "sc-a2",
           correct: "3/2",
-          altCorrect: ["3/2"],
           explanation: "To find the reciprocal, flip numerator and denominator: 2/3 becomes 3/2."
         },
         3: {
@@ -647,12 +705,14 @@
         },
         4: {
           type: "text",
+          subtype: "numeric",
           inputId: "sc-a4",
           correct: "6",
           explanation: "3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6. Six tarts can be filled."
         },
         5: {
           type: "text",
+          subtype: "numeric",
           inputId: "sc-a5",
           correct: "4",
           explanation: "2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4."
@@ -664,22 +724,24 @@
         var studentAnswer = "";
         if (cfg.type === "text") {
           var el = document.getElementById(cfg.inputId);
-          studentAnswer = el ? el.value.trim().toLowerCase().replace(/\s+/g, "") : "";
+          studentAnswer = el ? el.value : "";
         } else if (cfg.type === "radio") {
           var checked = document.querySelector('input[name="' + cfg.name + '"]:checked');
           studentAnswer = checked ? checked.value : "";
         }
         var fb = document.getElementById("sc-fb" + num);
         if (!fb) { return; }
-        var correct = cfg.correct.toLowerCase().replace(/\s+/g, "");
-        var isCorrect = (studentAnswer === correct);
+        var trimmed = studentAnswer.trim();
+        var isCorrect = (cfg.type === "radio")
+          ? (normalise(trimmed) === normalise(cfg.correct))
+          : answersMatch(trimmed, cfg.correct, cfg.subtype || "text");
         fb.className = "sc-feedback " + (isCorrect ? "correct" : "incorrect");
         fb.style.display = "block";
-        if (isCorrect) {
-          fb.textContent = "✔ Correct! " + cfg.explanation;
-        } else if (studentAnswer === "") {
+        if (trimmed === "") {
           fb.textContent = "⚠ Please enter or select an answer first.";
           fb.className = "sc-feedback incorrect";
+        } else if (isCorrect) {
+          fb.textContent = "✔ Correct! " + cfg.explanation;
         } else {
           fb.textContent = "✘ Not quite. " + cfg.explanation;
         }

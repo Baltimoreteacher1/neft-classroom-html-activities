@@ -710,13 +710,72 @@
     <script>
       NTKit.mount("#ntkit");
 
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — tolerant of common formatting
+         variations without changing any correct answer.
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        // Collapse / strip whitespace
+        s = s.replace(/\s+/g, "");
+        // Strip leading dollar sign
+        s = s.replace(/^\$/, "");
+        // Strip trailing percent sign
+        s = s.replace(/%$/, "");
+        // Strip commas in numbers (1,000 → 1000)
+        s = s.replace(/,(\d{3})/g, "$1");
+        // Strip common trailing unit words (only at the end, whole-word)
+        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|cups?|hours?|minutes?)$/, "");
+        return s;
+      }
+
+      /* Numeric equality with small epsilon (handles 9 vs 9.0 vs 9.00) */
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      /* Ratio equivalence: "2/3" ↔ "2:3" (same numeric fraction) */
+      function ratioMatch(a, b) {
+        function toDecimal(s) {
+          var colonForm = s.match(/^(\d+):(\d+)$/);
+          if (colonForm) { return parseFloat(colonForm[1]) / parseFloat(colonForm[2]); }
+          var slashForm = s.match(/^(\d+)\/(\d+)$/);
+          if (slashForm) { return parseFloat(slashForm[1]) / parseFloat(slashForm[2]); }
+          return NaN;
+        }
+        var da = toDecimal(a);
+        var db = toDecimal(b);
+        if (isNaN(da) || isNaN(db)) { return false; }
+        return Math.abs(da - db) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw, questionType) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        // Numeric questions: tolerate 9 vs 9.0 vs 9.00
+        if (questionType === "numeric") {
+          return numericMatch(s, c);
+        }
+        // Ratio questions: tolerate colon ↔ slash form
+        if (questionType === "ratio") {
+          return ratioMatch(s, c);
+        }
+        return false;
+      }
+
       /* ── Self-Check: numeric / text match ── */
       function checkSC(inputId, correct, okMsg, wrongMsg) {
         var inp = document.getElementById(inputId);
         var fb  = document.getElementById(inputId + "-fb");
         if (!inp || !fb) return;
-        var answer = inp.value.trim().replace(/\s/g, "");
-        var isRight = (answer === correct);
+        var raw = inp.value.trim();
+        // Detect if correct answer is purely numeric
+        var subtype = (correct.match(/^\d+(\.\d+)?$/) ? "numeric" : "text");
+        var isRight = answersMatch(raw, correct, subtype);
         fb.textContent = isRight ? ("✓ " + okMsg) : ("✗ " + wrongMsg);
         fb.className = "sc-feedback " + (isRight ? "correct" : "wrong");
         fb.style.display = "block";
@@ -728,8 +787,8 @@
         var inp = document.getElementById("sc2");
         var fb  = document.getElementById("sc2-fb");
         if (!inp || !fb) return;
-        var raw = inp.value.trim().toLowerCase().replace(/\s/g, "");
-        var ok  = (raw === "y-8");
+        // normalise strips all whitespace and lowercases
+        var ok  = (normalise(inp.value) === "y-8");
         fb.textContent = ok
           ? "✓ Correct! y − 8 means start with y and subtract 8. 'Less than' always means subtract."
           : "✗ Not quite. 'Less than a number y' → start with y and subtract 8 → y − 8.";
@@ -760,6 +819,9 @@
           activityId: "webquest-unit-6",
           activityTitle: "WebQuest · Unit 6 — Expressions (Expression Engine)",
           standard: "6.EE.A.1-4",
+          gradeAnswer: function(student, correct) {
+            return answersMatch(student, correct, "text");
+          },
           items: [
             {
               prompt: "Q1. Write 4 · 4 · 4 using an exponent.",
@@ -778,7 +840,7 @@
             {
               prompt: "Q3. Expression for \"3 more than a number n\".",
               studentAnswer: val("q3"),
-              correctAnswer: "n + 3",
+              correctAnswer: "n+3",
               points: 1,
               skill: "Writing expressions"
             },

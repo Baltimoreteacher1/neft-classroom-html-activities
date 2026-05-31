@@ -802,6 +802,56 @@
             console.error("NTKit not loaded");
           }
 
+          /* ─────────────────────────────────────────────────────────
+             Tolerant answer normaliser
+             - trim, lowercase, collapse whitespace
+             - strip leading "$", trailing "%"
+             - strip commas used as thousands separators
+             - strip trailing unit words (units, cubic, cm, cm3, cm³, etc.)
+             - for coordinate answers: remove parens but KEEP minus signs
+             ───────────────────────────────────────────────────────── */
+          function norm(raw) {
+            var s = String(raw == null ? "" : raw).trim().toLowerCase();
+            s = s.replace(/\s+/g, " ");
+            s = s.replace(/^\$/, "");
+            s = s.replace(/%$/, "");
+            s = s.replace(/,(\d{3})/g, "$1");
+            s = s.replace(/\b(units?|cubic|cm3|cm³|cm|m2|m²|mph|km|ft|in|degrees?)\s*$/g, "");
+            s = s.trim();
+            return s;
+          }
+
+          /* Normalise a coordinate string: remove parens + spaces, keep "-" */
+          function normCoord(raw) {
+            var s = norm(raw);
+            /* remove parens */
+            s = s.replace(/[()]/g, "");
+            /* collapse spaces around comma: "5, -2" → "5,-2" */
+            s = s.replace(/\s*,\s*/g, ",");
+            s = s.trim();
+            return s;
+          }
+
+          /* Numeric equality with epsilon */
+          function numEq(a, b) {
+            var na = parseFloat(a);
+            var nb = parseFloat(b);
+            if (isNaN(na) || isNaN(nb)) return false;
+            return Math.abs(na - nb) < 1e-9;
+          }
+
+          /* General match: try exact normalised, then numeric */
+          function answersMatch(studentRaw, correctRaw, type) {
+            if (type === "coord") {
+              return normCoord(studentRaw) === normCoord(correctRaw);
+            }
+            var s = norm(studentRaw);
+            var c = norm(correctRaw);
+            if (s === c) return true;
+            if (type === "numeric") return numEq(s, c);
+            return false;
+          }
+
           /* ── Self-check feedback ── */
           var SC_EXPLANATIONS = {
             sc1: {
@@ -846,14 +896,6 @@
           }
 
           /* ── NTKit graded form ── */
-          var norm = function (s) {
-            return String(s == null ? "" : s)
-              .toLowerCase()
-              .replace(/\s+/g, "")
-              .replace(/[()]/g, "")
-              .trim();
-          };
-
           var form = document.getElementById("apply-form");
           if (form) {
             form.addEventListener("submit", function (e) {
@@ -870,6 +912,13 @@
                 return el.value || "";
               };
 
+              /*
+               * For NTKit.grade the comparison is studentAnswer === correctAnswer,
+               * so we pre-normalise both sides to the same canonical form.
+               * Coordinate answers: strip parens/spaces, keep "-".
+               * Numeric answers: pass as plain number string.
+               * Text/radio: normalise lightly (trim + lowercase).
+               */
               var items = [
                 {
                   prompt: "1. Name the point (0, 0) where the axes cross.",
@@ -880,8 +929,8 @@
                 },
                 {
                   prompt: "2. Move 4 right and 1 up from the origin. Ordered pair?",
-                  studentAnswer: norm(f("q2")),
-                  correctAnswer: norm("(4, 1)"),
+                  studentAnswer: normCoord(f("q2")),
+                  correctAnswer: normCoord("(4, 1)"),
                   points: 1,
                   skill: "6.NS.C.6 plot point"
                 },
@@ -894,15 +943,15 @@
                 },
                 {
                   prompt: "4. Reflect (5, 2) over the x-axis.",
-                  studentAnswer: norm(f("q4")),
-                  correctAnswer: norm("(5, -2)"),
+                  studentAnswer: normCoord(f("q4")),
+                  correctAnswer: normCoord("(5, -2)"),
                   points: 1,
                   skill: "6.NS.C.6 reflection"
                 },
                 {
                   prompt: "5. 4th corner of rectangle (1,1)(1,4)(6,1).",
-                  studentAnswer: norm(f("q5")),
-                  correctAnswer: norm("(6, 4)"),
+                  studentAnswer: normCoord(f("q5")),
+                  correctAnswer: normCoord("(6, 4)"),
                   points: 1,
                   skill: "6.G.A.3 polygon vertices"
                 },

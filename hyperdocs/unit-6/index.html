@@ -656,7 +656,7 @@
             <input type="text" id="a6" name="a6" autocomplete="off" inputmode="text" />
           </div>
 
-          <button type="submit" class="checkbtn" id="checkbtn">Check My Work</button>
+          <button type="button" class="checkbtn" id="checkbtn">Check My Work</button>
         </form>
       </section>
 
@@ -747,9 +747,37 @@
     </div><!-- /.wrap -->
 
     <script>
-      /* ── Self-check handler ── */
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — tolerant of common formatting
+         variations without changing any correct answer.
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        s = s.replace(/\s+/g, '');
+        s = s.replace(/^\$/, '');
+        s = s.replace(/%$/, '');
+        s = s.replace(/,(\d{3})/g, '$1');
+        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|sq)$/, '');
+        return s;
+      }
+
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        return numericMatch(s, c);
+      }
+
+      /* ── Self-check handler (radio buttons only — compare letter values) ── */
       function checkSC(id, correct, explanation) {
-        var chosen = document.querySelector('input[name="' + id + '"]:checked');
+        var chosen = document.querySelector('input[name=”' + id + '”]:checked');
         var fb = document.getElementById(id + '-fb');
         if (!chosen) {
           fb.className = 'sc-feedback wrong';
@@ -769,18 +797,17 @@
       (function () {
         NTKit.mount('#ntkit');
 
-        var form = document.getElementById('applyform');
+        function val(id) {
+          var n = document.getElementById(id);
+          return n ? n.value.trim() : '';
+        }
+        function norm(id) {
+          return normalise(val(id));
+        }
 
-        form.addEventListener('submit', function (e) {
-          e.preventDefault();
-
-          var r1 = (document.getElementById('r1').value || '').trim();
-          var r2 = (document.getElementById('r2').value || '').trim();
-
-          /* Normalize A6: strip spaces for comparison */
-          var raw6 = (document.getElementById('a6').value || '').trim();
-          var norm6 = raw6.replace(/\s+/g, '').toLowerCase();
-          var ans6 = (norm6 === '5x+15') ? '5x+15' : raw6;
+        document.getElementById('checkbtn').addEventListener('click', function () {
+          var r1 = val('r1');
+          var r2 = val('r2');
 
           NTKit.grade({
             activityId: 'hyperdoc-unit-6',
@@ -789,42 +816,42 @@
             items: [
               {
                 prompt: 'Write “3 boxes of b marbles” as an expression.',
-                studentAnswer: document.getElementById('a1').value,
+                studentAnswer: norm('a1'),
                 correctAnswer: '3b',
                 points: 1,
                 skill: 'Write expressions (6.EE.A.2)'
               },
               {
                 prompt: 'Evaluate 3b when b = 4.',
-                studentAnswer: document.getElementById('a2').value,
+                studentAnswer: norm('a2'),
                 correctAnswer: '12',
                 points: 1,
                 skill: 'Evaluate expressions (6.EE.A.2)'
               },
               {
                 prompt: 'Write 5 × 5 × 5 using an exponent.',
-                studentAnswer: document.getElementById('a3').value,
+                studentAnswer: norm('a3'),
                 correctAnswer: '5^3',
                 points: 1,
                 skill: 'Exponents (6.EE.A.1)'
               },
               {
                 prompt: 'Coefficient in 7m.',
-                studentAnswer: document.getElementById('a4').value,
+                studentAnswer: norm('a4'),
                 correctAnswer: '7',
                 points: 1,
                 skill: 'Parts of an expression (6.EE.A.2b)'
               },
               {
                 prompt: 'Evaluate 2³.',
-                studentAnswer: document.getElementById('a5').value,
+                studentAnswer: norm('a5'),
                 correctAnswer: '8',
                 points: 1,
                 skill: 'Exponents (6.EE.A.1)'
               },
               {
                 prompt: 'Distributive property: 5(x + 3) = ?',
-                studentAnswer: ans6,
+                studentAnswer: norm('a6'),
                 correctAnswer: '5x+15',
                 points: 1,
                 skill: 'Distributive property (6.EE.A.3)'

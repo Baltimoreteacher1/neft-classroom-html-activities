@@ -416,7 +416,7 @@
           </li>
           <li>
             <h3>Step 2 — Play the 3D game</h3>
-            <p>Open the Smoothie Stand 3D game and mix smoothies using ratios. Try to fill at least 3 orders.</p>
+            <p>Open the Smoothie Stand 3D game and mix smoothies using ratios. Fill at least 3 orders. <strong>As you play, notice:</strong> when the recipe says "2 parts berries : 3 parts milk," what happens if you add too much of one ingredient? That mismatch is a ratio error — keep both numbers in proportion.</p>
           </li>
           <li>
             <h3>Step 3 — Build a ratio table</h3>
@@ -491,7 +491,7 @@
               </tr>
               <tr>
                 <td><strong>Self-check score</strong></td>
-                <td>90–100 % (4–5 correct)</td>
+                <td>90–100 % (5 correct)</td>
                 <td>75–89 % (4 correct)</td>
                 <td>50–74 % (2–3 correct)</td>
                 <td>Below 50 % (0–1 correct)</td>
@@ -615,9 +615,9 @@
       <section class="card">
         <h2>8. Reflection</h2>
         <p>Answer this in 2–3 sentences in the box below:</p>
-        <p><strong>How could you use ratios or unit rates outside of school? Give a real-life example from your own life.</strong></p>
+        <p><strong>Describe a real situation from <em>your own life</em> where you compared two amounts (a ratio) or needed to find a "per one" value (a unit rate). What numbers would you use, and what would the answer tell you?</strong></p>
         <label for="reflection" class="muted" style="font-size:16px;">Type your reflection here (it will be included when you save as PDF):</label>
-        <textarea class="reflection-area" id="reflection" rows="4" placeholder="Example: I could use unit rates when comparing prices at the grocery store to find the best deal..."></textarea>
+        <textarea class="reflection-area" id="reflection" rows="4" placeholder="Think about: comparing prices, speeds, recipes, scores, distance traveled — give specific numbers if you can."></textarea>
       </section>
 
     </div><!-- /wrap -->
@@ -625,16 +625,75 @@
     <script>
       NTKit.mount("#ntkit");
 
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — makes grading tolerant of common
+         formatting variations without changing any correct answer.
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        // Collapse / strip whitespace
+        s = s.replace(/\s+/g, "");
+        // Strip leading dollar sign
+        s = s.replace(/^\$/, "");
+        // Strip trailing percent sign
+        s = s.replace(/%$/, "");
+        // Strip commas in numbers (1,000 → 1000)
+        s = s.replace(/,(\d{3})/g, "$1");
+        // Strip common trailing unit words (only at the end, whole-word)
+        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|bananas?|smoothies?|tarts?|cups?|hours?|minutes?)$/, "");
+        return s;
+      }
+
+      /* Numeric equality with small epsilon (handles 3 vs 3.0 vs 3.00) */
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      /* Ratio equivalence: "2/3" ↔ "2:3" (same numeric fraction) */
+      function ratioMatch(a, b) {
+        function toDecimal(s) {
+          var colonForm = s.match(/^(\d+):(\d+)$/);
+          if (colonForm) { return parseFloat(colonForm[1]) / parseFloat(colonForm[2]); }
+          var slashForm = s.match(/^(\d+)\/(\d+)$/);
+          if (slashForm) { return parseFloat(slashForm[1]) / parseFloat(slashForm[2]); }
+          return NaN;
+        }
+        var da = toDecimal(a);
+        var db = toDecimal(b);
+        if (isNaN(da) || isNaN(db)) { return false; }
+        return Math.abs(da - db) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw, questionType) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        // Numeric questions: tolerate 3 vs 3.0 vs 3.00
+        if (questionType === "numeric") {
+          return numericMatch(s, c);
+        }
+        // Ratio questions: tolerate colon ↔ slash form
+        if (questionType === "ratio") {
+          return ratioMatch(s, c);
+        }
+        return false;
+      }
+
       /* ── Self-check configuration ── */
       var SC = {
         1: {
           type: "text",
+          subtype: "ratio",       // colon ↔ slash tolerance
           inputId: "sc-q1",
           correct: "2:3",
           explanation: "Berries (2) to milk (3) written with a colon = 2:3."
         },
         2: {
           type: "text",
+          subtype: "numeric",
           inputId: "sc-q2",
           correct: "3",
           explanation: "$12 divided by 4 smoothies = $3 per smoothie."
@@ -647,12 +706,14 @@
         },
         4: {
           type: "text",
+          subtype: "numeric",
           inputId: "sc-q4",
           correct: "10",
           explanation: "Ratio is 1 smoothie : 2 bananas. For 5 smoothies: 5 × 2 = 10 bananas."
         },
         5: {
           type: "text",
+          subtype: "numeric",
           inputId: "sc-q5",
           correct: "30",
           explanation: "60 miles ÷ 2 hours = 30 miles per hour (unit rate)."
@@ -664,22 +725,24 @@
         var studentAnswer = "";
         if (cfg.type === "text") {
           var el = document.getElementById(cfg.inputId);
-          studentAnswer = el ? el.value.trim().toLowerCase().replace(/\s+/g, "") : "";
+          studentAnswer = el ? el.value : "";
         } else if (cfg.type === "radio") {
           var checked = document.querySelector('input[name="' + cfg.name + '"]:checked');
           studentAnswer = checked ? checked.value : "";
         }
         var fb = document.getElementById("sc-fb" + num);
         if (!fb) { return; }
-        var correct = cfg.correct.toLowerCase().replace(/\s+/g, "");
-        var isCorrect = (studentAnswer === correct);
+        var trimmed = studentAnswer.trim();
+        var isCorrect = (cfg.type === "radio")
+          ? (normalise(trimmed) === normalise(cfg.correct))
+          : answersMatch(trimmed, cfg.correct, cfg.subtype || "text");
         fb.className = "sc-feedback " + (isCorrect ? "correct" : "incorrect");
         fb.style.display = "block";
-        if (isCorrect) {
-          fb.textContent = "✔ Correct! " + cfg.explanation;
-        } else if (studentAnswer === "") {
+        if (trimmed === "") {
           fb.textContent = "⚠ Please enter or select an answer first.";
           fb.className = "sc-feedback incorrect";
+        } else if (isCorrect) {
+          fb.textContent = "✔ Correct! " + cfg.explanation;
         } else {
           fb.textContent = "✘ Not quite. " + cfg.explanation;
         }
