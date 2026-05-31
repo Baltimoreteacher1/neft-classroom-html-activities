@@ -449,6 +449,40 @@
             stroke: var(--primary);
             fill: rgba(139, 92, 246, 0.08);
         }
+
+        /* 5. Print-Ready Worksheet styling */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            header, .sidebar, footer, .diagnostics-overlay, .btn, .drawing-toolbar, #btn-speak-quest, .sentence-hub, #lbl-click-target, label[style*="cursor"], input[type="radio"], button, [onclick] {
+                display: none !important;
+            }
+            .app-grid {
+                grid-template-columns: 1fr !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .work-card {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                color: black !important;
+            }
+            .svg-viewport {
+                border: 1px solid #000 !important;
+                box-shadow: none !important;
+            }
+            .equation-panel {
+                background: none !important;
+                border: 1px solid #000 !important;
+                color: black !important;
+            }
+            .drag-pool {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -509,6 +543,20 @@
                     Scale balanced: ??
                 </div>
 
+                <!-- Target selector toggle for click-to-place snapping -->
+                <div style="display: flex; gap: 12px; justify-content: center; align-items: center; background: rgba(255,255,255,0.02); padding: 8px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05); margin-top: 8px; flex-wrap: wrap;">
+                    <span id="lbl-click-target" style="font-size: 0.85rem; color: var(--gray-400);">Click tile to place on:</span>
+                    <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem; cursor: pointer; margin: 0;">
+                        <input type="radio" name="click-pan-target" value="left" checked style="width: auto; min-height: auto; accent-color: var(--primary);">
+                        <span id="lbl-left-pan-opt" style="color: var(--primary); font-weight: bold;">Left Pan</span>
+                    </label>
+                    <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem; cursor: pointer; margin: 0;">
+                        <input type="radio" name="click-pan-target" value="right" style="width: auto; min-height: auto; accent-color: var(--accent);">
+                        <span id="lbl-right-pan-opt" style="color: var(--accent); font-weight: bold;">Right Pan</span>
+                    </label>
+                    <button class="btn btn-secondary" onclick="clearPans()" style="padding: 4px 10px; font-size: 0.75rem; min-height: auto;">🧹 Clear Pans</button>
+                </div>
+
                 <!-- Interactive Drag Pool -->
                 <div class="drag-pool" id="drag-tiles-pool">
                     <!-- Dynamic tiles mapped here -->
@@ -522,6 +570,21 @@
                     <span id="esol-starter">Hover over algebraic terms or place weights on the balance scale!</span>
                     <div class="translation-sub" id="esol-starter-trans">¡Arrastre pesas a la balanza para comenzar!</div>
                 </div>
+                <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                    <button id="btn-speak-quest" onclick="speakActiveQuest()" style="background: rgba(139, 92, 246, 0.15); color: #d8b4fe; border: 1px solid rgba(139, 92, 246, 0.3); border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-weight: 700;">
+                        🔊 Read Aloud / Leer en voz alta
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alchemical Journal Card -->
+            <div class="card" style="margin-top: 8px;">
+                <h2 style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 16px;">
+                    <span id="lbl-journal-title">📝 Journal & Reflections</span>
+                    <span id="journal-status" style="font-size: 0.8rem; font-weight: normal; color: var(--secondary); opacity: 0; transition: opacity 0.3s;">Saved!</span>
+                </h2>
+                <p style="font-size: 0.85rem; color: var(--gray-400); margin-bottom: 12px;" id="lbl-journal-prompt">Write down the steps you take to isolate the variable x and balance each alchemical quest.</p>
+                <textarea id="journal-input" placeholder="Type your observation here... / Escriba su observación aquí..." style="width: 100%; min-height: 90px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: white; padding: 12px; font-family: var(--font-main); font-size: 0.9rem; resize: vertical;" oninput="saveJournal()"></textarea>
             </div>
         </div>
     </main>
@@ -630,7 +693,14 @@
                 'quest2-starter': 'The story describes "two bottles of elixir (2x) balance 6 crystals." This translates to the equation 2x = 6. Drag 2 x-blocks to the Left Pan and 6 units to the Right Pan. Balance the scale by sliding x!',
                 'quest2-trans': 'La historia describe "dos frascos (2x) equilibran 6 cristales". Arrastre 2 x-bloques a la izquierda y 6 a la derecha.',
                 'quest3-starter': 'The story describes "three shields (3x) and 1 shield balance 10 shields." This represents 3x + 1 = 10. Drag 3 x-blocks and 1 unit to the Left Pan, and 10 units to the Right Pan.',
-                'quest3-trans': 'Representa la ecuación 3x + 1 = 10. Arrastre los elementos a las balanzas y equilibre.'
+                'quest3-trans': 'The story describes "three shields (3x) and 1 shield balance 10 shields." This represents 3x + 1 = 10. Drag 3 x-blocks and 1 unit to the Left Pan, and 10 units to the Right Pan.',
+                'journal-title': '📝 Journal & Reflections',
+                'journal-prompt': 'Write down the steps you take to isolate the variable x and balance each alchemical quest.',
+                'journal-saved': 'Saved!',
+                'journal-placeholder': 'Type your observation here...',
+                'click-target': 'Click tile to place on:',
+                'left-pan-opt': 'Left Pan',
+                'right-pan-opt': 'Right Pan'
             },
             es: {
                 'quest-log': '🛰️ Registro de Misiones',
@@ -643,7 +713,14 @@
                 'quest2-starter': 'La historia describe "dos frascos de elixir (2x) equilibran 6 cristales". Esto se traduce en la ecuación 2x = 6. Arrastre 2 bloques x a la izquierda y 6 unidades a la derecha.',
                 'quest2-trans': 'The story describes "two bottles of elixir (2x) balance 6 crystals." This translates to the equation 2x = 6. Drag 2 x-blocks to the Left Pan and 6 units to the Right Pan. Balance the scale by sliding x!',
                 'quest3-starter': 'Representa la ecuación 3x + 1 = 10. Arrastre 3 bloques x y 1 unidad a la izquierda, y 10 unidades a la derecha.',
-                'quest3-trans': 'The story describes "three shields (3x) and 1 shield balance 10 shields." This represents 3x + 1 = 10. Drag 3 x-blocks and 1 unit to the Left Pan, and 10 units to the Right Pan.'
+                'quest3-trans': 'The story describes "three shields (3x) and 1 shield balance 10 shields." This represents 3x + 1 = 10. Drag 3 x-blocks and 1 unit to the Left Pan, and 10 units to the Right Pan.',
+                'journal-title': '📝 Diario de Alquimia y Reflexiones',
+                'journal-prompt': 'Escriba los pasos que sigue para aislar la variable x y equilibrar cada misión de alquimia.',
+                'journal-saved': '¡Guardado!',
+                'journal-placeholder': 'Escriba su observación aquí...',
+                'click-target': 'Haga clic en la ficha para colocar en:',
+                'left-pan-opt': 'Platillo Izquierdo',
+                'right-pan-opt': 'Platillo Derecho'
             }
         };
 
@@ -742,6 +819,23 @@
                     STATE.activeDragTile = { id: t.id, type: t.type, weight: t.weight };
                 });
 
+                // Touchscreen click-to-place snapping
+                el.addEventListener('click', () => {
+                    const selectedPan = document.querySelector('input[name="click-pan-target"]:checked').value;
+                    const type = t.type;
+                    const lPan = { ...STATE.leftPan };
+                    const rPan = { ...STATE.rightPan };
+                    
+                    if (selectedPan === 'left') {
+                        lPan[type] += 1;
+                    } else {
+                        rPan[type] += 1;
+                    }
+                    
+                    AudioSynth.playSnapClick();
+                    transitionState({ leftPan: lPan, rightPan: rPan });
+                });
+
                 container.appendChild(el);
             });
         }
@@ -765,6 +859,12 @@
             document.getElementById('lbl-val-x').innerText = t['val-x'];
             document.getElementById('lbl-card-workbench').innerText = t['card-workbench'];
             document.getElementById('lbl-esol-title').innerText = t['esol-title'];
+            document.getElementById('lbl-journal-title').innerText = t['journal-title'];
+            document.getElementById('lbl-journal-prompt').innerText = t['journal-prompt'];
+            document.getElementById('journal-input').placeholder = t['journal-placeholder'];
+            document.getElementById('lbl-click-target').innerText = t['click-target'];
+            document.getElementById('lbl-left-pan-opt').innerText = t['left-pan-opt'];
+            document.getElementById('lbl-right-pan-opt').innerText = t['right-pan-opt'];
         }
 
         function renderQuestList() {
@@ -867,15 +967,15 @@
             const leftItemStart = lStringX - 25;
             for (let i = 0; i < STATE.leftPan.x; i++) {
                 svg.innerHTML += `
-                    <rect x="${leftItemStart + leftItemOffset}" y="${lStringY - 14}" width="14" height="14" rx="2" fill="var(--primary)" stroke="var(--white)" stroke-width="1" />
-                    <text x="${leftItemStart + leftItemOffset + 7}" y="${lStringY - 5}" font-family="var(--font-display)" font-size="8" font-weight="900" fill="var(--white)" text-anchor="middle">x</text>
+                    <rect onclick="removePanItem('left', 'x')" style="cursor: pointer;" x="${leftItemStart + leftItemOffset}" y="${lStringY - 14}" width="14" height="14" rx="2" fill="var(--primary)" stroke="var(--white)" stroke-width="1" />
+                    <text onclick="removePanItem('left', 'x')" style="cursor: pointer;" x="${leftItemStart + leftItemOffset + 7}" y="${lStringY - 5}" font-family="var(--font-display)" font-size="8" font-weight="900" fill="var(--white)" text-anchor="middle">x</text>
                 `;
                 leftItemOffset += 16;
             }
             for (let i = 0; i < STATE.leftPan.unit; i++) {
                 svg.innerHTML += `
-                    <circle cx="${leftItemStart + leftItemOffset + 5}" cy="${lStringY - 7}" r="5" fill="var(--accent)" />
-                    <text x="${leftItemStart + leftItemOffset + 5}" y="${lStringY - 4.5}" font-family="var(--font-display)" font-size="6" font-weight="900" fill="var(--alchemy-dark)" text-anchor="middle">1</text>
+                    <circle onclick="removePanItem('left', 'unit')" style="cursor: pointer;" cx="${leftItemStart + leftItemOffset + 5}" cy="${lStringY - 7}" r="5" fill="var(--accent)" />
+                    <text onclick="removePanItem('left', 'unit')" style="cursor: pointer;" x="${leftItemStart + leftItemOffset + 5}" y="${lStringY - 4.5}" font-family="var(--font-display)" font-size="6" font-weight="900" fill="var(--alchemy-dark)" text-anchor="middle">1</text>
                 `;
                 leftItemOffset += 12;
             }
@@ -885,15 +985,15 @@
             const rightItemStart = rStringX - 25;
             for (let i = 0; i < STATE.rightPan.x; i++) {
                 svg.innerHTML += `
-                    <rect x="${rightItemStart + rightItemOffset}" y="${rStringY - 14}" width="14" height="14" rx="2" fill="var(--primary)" stroke="var(--white)" stroke-width="1" />
-                    <text x="${rightItemStart + rightItemOffset + 7}" y="${rStringY - 5}" font-family="var(--font-display)" font-size="8" font-weight="900" fill="var(--white)" text-anchor="middle">x</text>
+                    <rect onclick="removePanItem('right', 'x')" style="cursor: pointer;" x="${rightItemStart + rightItemOffset}" y="${rStringY - 14}" width="14" height="14" rx="2" fill="var(--primary)" stroke="var(--white)" stroke-width="1" />
+                    <text onclick="removePanItem('right', 'x')" style="cursor: pointer;" x="${rightItemStart + rightItemOffset + 7}" y="${rStringY - 5}" font-family="var(--font-display)" font-size="8" font-weight="900" fill="var(--white)" text-anchor="middle">x</text>
                 `;
                 rightItemOffset += 16;
             }
             for (let i = 0; i < STATE.rightPan.unit; i++) {
                 svg.innerHTML += `
-                    <circle cx="${rightItemStart + rightItemOffset + 5}" cy="${rStringY - 7}" r="5" fill="var(--accent)" />
-                    <text x="${rightItemStart + rightItemOffset + 5}" y="${rStringY - 4.5}" font-family="var(--font-display)" font-size="6" font-weight="900" fill="var(--alchemy-dark)" text-anchor="middle">1</text>
+                    <circle onclick="removePanItem('right', 'unit')" style="cursor: pointer;" cx="${rightItemStart + rightItemOffset + 5}" cy="${rStringY - 7}" r="5" fill="var(--accent)" />
+                    <text onclick="removePanItem('right', 'unit')" style="cursor: pointer;" x="${rightItemStart + rightItemOffset + 5}" y="${rStringY - 4.5}" font-family="var(--font-display)" font-size="6" font-weight="900" fill="var(--alchemy-dark)" text-anchor="middle">1</text>
                 `;
                 rightItemOffset += 12;
             }
@@ -924,6 +1024,109 @@
             const activeQuestKey = `quest${STATE.currentQuestId}`;
             starter.innerText = t[`${activeQuestKey}-starter`] || t['starter-default'];
             trans.innerText = t[`${activeQuestKey}-trans`] || t['starter-default-trans'];
+        }
+
+        // ==========================================
+        // PREMIUM TRIAD UPGRADES ADDITIONS
+        // ==========================================
+
+        // 1. programmatic Web Audio Click/Snap Synthesizer
+        const AudioSynth = {
+            ctx: null,
+            init() {
+                if (this.ctx) return;
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                } catch (e) {
+                    console.warn("Web Audio not supported", e);
+                }
+            },
+            playSnapClick() {
+                this.init();
+                if (!this.ctx) return;
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1000, now); // short high pitch click
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
+                
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.05);
+            }
+        };
+
+        // 2. Touch-Safe Click-to-Place Pan methods
+        function removePanItem(pan, type) {
+            const lPan = { ...STATE.leftPan };
+            const rPan = { ...STATE.rightPan };
+            if (pan === 'left') {
+                if (lPan[type] > 0) lPan[type] -= 1;
+            } else {
+                if (rPan[type] > 0) rPan[type] -= 1;
+            }
+            AudioSynth.playSnapClick();
+            transitionState({ leftPan: lPan, rightPan: rPan });
+        }
+
+        function clearPans() {
+            AudioSynth.playSnapClick();
+            transitionState({
+                leftPan: { x: 0, unit: 0 },
+                rightPan: { x: 0, unit: 0 }
+            });
+        }
+
+        // 3. slow Bilingual Speech Synthesizer vocalizer for Quests
+        function speakActiveQuest() {
+            if (!('speechSynthesis' in window)) {
+                alert("Speech synthesis not supported in this browser.");
+                return;
+            }
+            
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+            
+            const currentQuest = CONFIG.quests.find(q => q.id === STATE.currentQuestId);
+            const textToSpeak = STATE.language === 'en' ? currentQuest.desc : currentQuest.descEs;
+            const langTag = STATE.language === 'en' ? 'en-US' : 'es-ES';
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = langTag;
+            utterance.rate = 0.8; // accessibility slow pace
+            utterance.pitch = 1.0;
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 4. Alchemical Reflections Notepad sync
+        function saveJournal() {
+            const text = document.getElementById('journal-input').value;
+            localStorage.setItem('word_to_equations_notes', text);
+            
+            const status = document.getElementById('journal-status');
+            status.style.opacity = '1';
+            if (window.journalTimeout) clearTimeout(window.journalTimeout);
+            window.journalTimeout = setTimeout(() => {
+                status.style.opacity = '0';
+            }, 1500);
+        }
+
+        function loadJournal() {
+            const saved = localStorage.getItem('word_to_equations_notes');
+            if (saved !== null) {
+                document.getElementById('journal-input').value = saved;
+            }
         }
 
         // ==========================================
@@ -985,6 +1188,19 @@
                     throw new Error("Assertion failed: Equation solver checks failed.");
                 }
 
+                // Assert 5: Reflections journal sync
+                localStorage.setItem('word_to_equations_notes', 'Alchemical quest self-check notes');
+                const notes = localStorage.getItem('word_to_equations_notes');
+                logDiag(`✓ Checked alchemical journal reflections state sync: ${notes}`);
+                if (notes !== 'Alchemical quest self-check notes') {
+                    throw new Error("Assertion failed: journal local storage state sync failed.");
+                }
+                localStorage.removeItem('word_to_equations_notes');
+
+                // Assert 6: Speech Synthesis compatibility
+                const tts = 'speechSynthesis' in window;
+                logDiag(`✓ Checked Web Speech API speech synthesis vocalizer support: ${tts}`);
+
                 // Reset back to original
                 selectQuest(1);
                 logDiag("✓ Restored state variables back to defaults.");
@@ -998,7 +1214,9 @@
         // Initialize application on load
         window.addEventListener('DOMContentLoaded', () => {
             renderUI();
+            loadJournal();
         });
     </script>
-</body>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
 </html>

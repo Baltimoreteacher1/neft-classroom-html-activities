@@ -279,6 +279,7 @@
       border-radius: 8px;
       overflow: hidden;
       margin: 10px 0 14px;
+      position: relative;
     }
 
     .prism {
@@ -399,6 +400,8 @@
     <a href="/">Classroom Home</a>
     <a href="/math/unit-5/">Unit 5 Dashboard</a>
     <a href="/unit-5/">Unit 5 Activities</a>
+    <button onclick="triggerSelfTest()" style="border: 1px solid var(--line); background: #fff; padding: 9px 12px; border-radius: 8px; font-weight: 800; font-size: 0.9rem; cursor: pointer; color: var(--blue);">⚡ Run Self-Test</button>
+    <button onclick="toggleTeacherConsole()" style="border: 1px solid var(--line); background: #fff; padding: 9px 12px; border-radius: 8px; font-weight: 800; font-size: 0.9rem; cursor: pointer; color: var(--gold);">⚙️ Teacher Console</button>
   </nav>
 
   <main class="shell">
@@ -440,7 +443,7 @@
 
       <aside class="panel model" aria-labelledby="modelTitle">
         <h2 id="modelTitle">3D Model Clues</h2>
-        <div class="model-stage" aria-hidden="true">
+        <div class="model-stage" aria-hidden="true" style="position: relative;">
           <div class="prism">
             <div class="face front">front<br><span id="frontLabel"></span></div>
             <div class="face back">back</div>
@@ -449,6 +452,18 @@
             <div class="face top">top<br><span id="topLabel"></span></div>
             <div class="face bottom">bottom</div>
           </div>
+          <canvas id="sketchpad-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+        </div>
+        <!-- Drawing Glassmorphic Toolbar -->
+        <div class="drawing-toolbar" style="display: flex; gap: 8px; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.05); padding: 8px; border-radius: 8px; margin-bottom: 12px; backdrop-filter: blur(5px);">
+            <button class="btn btn-secondary" id="btn-draw-toggle" onclick="toggleDrawingMode()" style="background: #e2e8f0; color: #17212f; font-weight: 800; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 0.85rem;">✏️ Draw</button>
+            <div id="drawing-tools" style="display: none; gap: 8px; align-items: center;">
+                <button class="btn" onclick="setBrushColor('#ef4444')" style="background: #ef4444; width: 24px; height: 24px; border-radius: 50%; padding: 0; border: 2px solid transparent; cursor: pointer;" id="color-btn-ef4444" title="Red"></button>
+                <button class="btn" onclick="setBrushColor('#2563eb')" style="background: #2563eb; width: 24px; height: 24px; border-radius: 50%; padding: 0; border: 2px solid transparent; cursor: pointer;" id="color-btn-2563eb" title="Blue"></button>
+                <button class="btn" onclick="setBrushColor('#10b981')" style="background: #10b981; width: 24px; height: 24px; border-radius: 50%; padding: 0; border: 2px solid transparent; cursor: pointer;" id="color-btn-10b981" title="Green"></button>
+                <button class="btn btn-secondary" onclick="setBrushColor('eraser')" id="btn-eraser" style="background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer;">🧽 Eraser</button>
+                <button class="btn btn-secondary" onclick="clearCanvas()" style="background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer;">🗑️ Clear</button>
+            </div>
         </div>
         <ul class="pair-list" id="pairList"></ul>
         <ol class="checklist">
@@ -466,6 +481,63 @@
   </main>
 
   <footer>Mr. Neft Classroom Activities</footer>
+
+  <!-- Teacher Control Console Overlay -->
+  <div id="teacher-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(4px);">
+      <div style="background: #fff; border: 1px solid var(--line); padding: 24px; border-radius: 12px; width: min(400px, 90%); box-shadow: var(--shadow);">
+          <h3 style="margin-top: 0; display: flex; justify-content: space-between; align-items: center; color: var(--gold); font-family: sans-serif;">
+              <span>⚙️ Teacher Console Admin</span>
+              <button onclick="closeTeacherConsole()" style="background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; font-weight: 800;">X</button>
+          </h3>
+          <div id="teacher-auth-section">
+              <label for="teacher-password" style="font-weight: bold; margin-bottom: 6px; display: block;">Enter Admin Password</label>
+              <input type="password" id="teacher-password" placeholder="Password: admin" style="margin-bottom: 12px; width: 100%; border: 2px solid #cbd5e1; border-radius: 8px; padding: 8px;">
+              <button class="primary" onclick="unlockTeacherConsole()" style="width: 100%; background: var(--blue); color: white; padding: 10px; border-radius: 8px; font-weight: bold;">Unlock Console</button>
+          </div>
+          <div id="teacher-control-section" style="display: none; flex-direction: column; gap: 12px;">
+              <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 10px;">Authenticated successfully! Skip rounds or override current scorecard metrics.</p>
+              <div>
+                  <label for="teacher-skip-round" style="font-weight: bold; margin-bottom: 6px; display: block;">Jump to Round (1 - 12)</label>
+                  <div style="display: flex; gap: 8px;">
+                      <select id="teacher-skip-round" style="flex: 1; border: 2px solid #cbd5e1; border-radius: 8px; padding: 6px; font-weight: bold; background: #fff;">
+                          <option value="0">Round 1</option>
+                          <option value="1">Round 2</option>
+                          <option value="2">Round 3</option>
+                          <option value="3">Round 4</option>
+                          <option value="4">Round 5</option>
+                          <option value="5">Round 6</option>
+                          <option value="6">Round 7</option>
+                          <option value="7">Round 8</option>
+                          <option value="8">Round 9</option>
+                          <option value="9">Round 10</option>
+                          <option value="10">Round 11</option>
+                          <option value="11">Round 12</option>
+                      </select>
+                      <button class="primary" onclick="teacherSkip()" style="min-height: auto; background: var(--blue); color: white; border-radius: 8px; font-weight: bold; padding: 6px 12px;">Go</button>
+                  </div>
+              </div>
+              <div>
+                  <label for="teacher-override-score" style="font-weight: bold; margin-bottom: 6px; display: block;">Score Override</label>
+                  <div style="display: flex; gap: 8px;">
+                      <input type="number" id="teacher-override-score" min="0" style="flex: 1; min-height: 38px; padding: 6px; font-weight: bold; border: 2px solid #cbd5e1; border-radius: 8px;" placeholder="New Score">
+                      <button class="success" onclick="teacherOverrideScore()" style="min-height: auto; background: var(--green); color: white; border-radius: 8px; font-weight: bold; padding: 6px 12px;">Set</button>
+                  </div>
+              </div>
+              <button onclick="teacherResetAll()" style="background: var(--red); color: #fff; width: 100%; margin-top: 10px; padding: 8px; border-radius: 8px; font-weight: bold;">⚠️ Reset Scorecard Storage</button>
+          </div>
+          <div id="teacher-error" style="color: var(--red); font-weight: bold; font-size: 0.85rem; margin-top: 10px; display: none;">Incorrect password. Try again!</div>
+      </div>
+  </div>
+
+  <!-- Diagnostics Panel -->
+  <div class="diagnostics-overlay" id="diag-panel" style="position: fixed; bottom: 20px; right: 20px; background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 16px; z-index: 1000; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: none; color: white;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:4px; font-weight: bold; font-family: monospace;">
+          <strong>Diagnostics</strong>
+          <button onclick="document.getElementById('diag-panel').style.display='none'" style="background:none; border:none; color:#f43f5e; font-weight:800; cursor:pointer;">X</button>
+      </div>
+      <div id="diag-log" style="font-family: monospace; font-size: 0.72rem; background: #000; padding: 8px; border-radius: 4px; height: 120px; overflow-y: auto; color: #10b981; margin: 8px 0;"></div>
+      <button onclick="document.getElementById('diag-panel').style.display='none'" style="width:100%; font-size:0.8rem; background: var(--blue); color: white; border: none; border-radius: 4px; padding: 6px; cursor: pointer; font-weight: 800;">Close</button>
+  </div>
 
   <script>
     const problems = [
@@ -568,11 +640,14 @@
         if (ok) {
           score += 1;
           streak += 1;
+          AudioSynth.playCorrect();
         } else {
           streak = 0;
+          AudioSynth.playIncorrect();
         }
         results[index] = ok;
         answered = true;
+        saveProgress();
       }
       $("feedback").className = "feedback " + (ok ? "good" : "bad");
       $("feedback").innerHTML = feedbackText(p, ok);
@@ -587,7 +662,9 @@
     function nextRound() {
       if (index < problems.length - 1) {
         index += 1;
+        AudioSynth.playFoldThud();
         render();
+        saveProgress();
       }
     }
 
@@ -598,7 +675,9 @@
       attempts = 0;
       answered = false;
       results.fill(null);
+      AudioSynth.playFoldThud();
       render();
+      saveProgress();
     }
 
     function renderRounds() {
@@ -611,6 +690,345 @@
       }).join("");
     }
 
+    // ==========================================
+    // PREMIUM TRIAD UPGRADES ADDITIONS
+    // ==========================================
+
+    // 1. programmatic Web Audio Sound Effects Synthesizer
+    const AudioSynth = {
+        ctx: null,
+        init() {
+            if (this.ctx) return;
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContext();
+            } catch (e) {
+                console.warn("Web Audio not supported", e);
+            }
+        },
+        playCorrect() {
+            this.init();
+            if (!this.ctx) return;
+            if (this.ctx.state === 'suspended') this.ctx.resume();
+
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, now); // D5
+            osc.frequency.setValueAtTime(880, now + 0.1); // A5
+
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.4);
+        },
+        playIncorrect() {
+            this.init();
+            if (!this.ctx) return;
+            if (this.ctx.state === 'suspended') this.ctx.resume();
+
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.linearRampToValueAtTime(100, now + 0.3);
+
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.3);
+        },
+        playFoldThud() {
+            this.init();
+            if (!this.ctx) return;
+            if (this.ctx.state === 'suspended') this.ctx.resume();
+
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'triangle'; // deep low thud
+            osc.frequency.setValueAtTime(90, now);
+            osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
+
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.25);
+        }
+    };
+
+    // 2. Net Fold Drawing Canvas Overlay Events
+    let isDrawing = false;
+    let drawingActive = false;
+    let lastX = 0;
+    let lastY = 0;
+    let brushColor = '#ef4444';
+    let brushSize = 3;
+
+    function toggleDrawingMode() {
+        drawingActive = !drawingActive;
+        const canvas = document.getElementById('sketchpad-canvas');
+        const toggleBtn = document.getElementById('btn-draw-toggle');
+        const tools = document.getElementById('drawing-tools');
+
+        if (drawingActive) {
+            canvas.style.pointerEvents = 'auto';
+            toggleBtn.innerText = '🖱️ Interact';
+            toggleBtn.style.background = '#bfdbfe';
+            tools.style.display = 'flex';
+            setBrushColor(brushColor);
+        } else {
+            canvas.style.pointerEvents = 'none';
+            toggleBtn.innerText = '✏️ Draw';
+            toggleBtn.style.background = '#e2e8f0';
+            tools.style.display = 'none';
+        }
+    }
+
+    function initCanvas() {
+        const canvas = document.getElementById('sketchpad-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            const rect = canvas.getBoundingClientRect();
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(canvas, 0, 0);
+
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, canvas.width, canvas.height);
+        }
+
+        window.addEventListener('resize', resize);
+        setTimeout(resize, 200);
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDraw(e) {
+            if (!drawingActive) return;
+            isDrawing = true;
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function draw(e) {
+            if (!isDrawing || !drawingActive) return;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.strokeStyle = brushColor === 'eraser' ? '#f8fafc' : brushColor; // matches grad background empty space
+            ctx.lineWidth = brushColor === 'eraser' ? 15 : brushSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function endDraw() {
+            isDrawing = false;
+        }
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', endDraw);
+        canvas.addEventListener('mouseleave', endDraw);
+
+        canvas.addEventListener('touchstart', startDraw);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', endDraw);
+    }
+
+    function setBrushColor(color) {
+        brushColor = color;
+        document.querySelectorAll('#drawing-tools button').forEach(b => {
+            b.style.borderColor = 'transparent';
+        });
+        if (color !== 'eraser') {
+            const btn = document.getElementById(`color-btn-${color.replace('#','')}`);
+            if (btn) btn.style.borderColor = '#17212f';
+        } else {
+            document.getElementById('btn-eraser').style.borderColor = '#17212f';
+        }
+    }
+
+    function clearCanvas() {
+        const canvas = document.getElementById('sketchpad-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
+    // 3. LocalStorage Scorecard sync
+    function saveProgress() {
+        localStorage.setItem('surface_area_index', index);
+        localStorage.setItem('surface_area_score', score);
+        localStorage.setItem('surface_area_streak', streak);
+        localStorage.setItem('surface_area_attempts', attempts);
+        localStorage.setItem('surface_area_results', JSON.stringify(results));
+    }
+
+    function loadProgress() {
+        const savedIndex = localStorage.getItem('surface_area_index');
+        const savedScore = localStorage.getItem('surface_area_score');
+        const savedStreak = localStorage.getItem('surface_area_streak');
+        const savedAttempts = localStorage.getItem('surface_area_attempts');
+        const savedResults = localStorage.getItem('surface_area_results');
+
+        if (savedIndex !== null) index = parseInt(savedIndex, 10);
+        if (savedScore !== null) score = parseInt(savedScore, 10);
+        if (savedStreak !== null) streak = parseInt(savedStreak, 10);
+        if (savedAttempts !== null) attempts = parseInt(savedAttempts, 10);
+        if (savedResults !== null) {
+            const parsed = JSON.parse(savedResults);
+            for (let i = 0; i < results.length; i++) {
+                results[i] = parsed[i];
+            }
+        }
+    }
+
+    // 4. Teacher Admin Control Console overlay methods
+    function toggleTeacherConsole() {
+        document.getElementById('teacher-overlay').style.display = 'grid';
+        document.getElementById('teacher-password').value = '';
+        document.getElementById('teacher-auth-section').style.display = 'block';
+        document.getElementById('teacher-control-section').style.display = 'none';
+        document.getElementById('teacher-error').style.display = 'none';
+    }
+
+    function closeTeacherConsole() {
+        document.getElementById('teacher-overlay').style.display = 'none';
+    }
+
+    function unlockTeacherConsole() {
+        const pass = document.getElementById('teacher-password').value;
+        if (pass === 'admin') {
+            document.getElementById('teacher-auth-section').style.display = 'none';
+            document.getElementById('teacher-control-section').style.display = 'flex';
+            document.getElementById('teacher-error').style.display = 'none';
+            document.getElementById('teacher-override-score').value = score;
+            document.getElementById('teacher-skip-round').value = index;
+        } else {
+            document.getElementById('teacher-error').style.display = 'block';
+        }
+    }
+
+    function teacherSkip() {
+        const target = parseInt(document.getElementById('teacher-skip-round').value, 10);
+        index = target;
+        AudioSynth.playFoldThud();
+        render();
+        saveProgress();
+        closeTeacherConsole();
+    }
+
+    function teacherOverrideScore() {
+        const target = parseInt(document.getElementById('teacher-override-score').value, 10);
+        score = target;
+        saveProgress();
+        render();
+        closeTeacherConsole();
+    }
+
+    function teacherResetAll() {
+        localStorage.removeItem('surface_area_index');
+        localStorage.removeItem('surface_area_score');
+        localStorage.removeItem('surface_area_streak');
+        localStorage.removeItem('surface_area_attempts');
+        localStorage.removeItem('surface_area_results');
+        resetGame();
+        closeTeacherConsole();
+    }
+
+    // 5. Diagnostics overlay triggers
+    function logDiag(msg) {
+        const el = document.getElementById('diag-log');
+        el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+        el.scrollTop = el.scrollHeight;
+    }
+
+    function triggerSelfTest() {
+        document.getElementById('diag-panel').style.display = 'block';
+        document.getElementById('diag-log').innerHTML = '';
+        logDiag("Starting Surface Area Review Self-Test...");
+
+        try {
+            // Assert 1: Problems mapping is loaded correctly
+            logDiag(`✓ Problems loaded: count = ${problems.length}`);
+            if (problems.length !== 12) {
+                throw new Error("Assertion failed: problems array length mismatch.");
+            }
+
+            // Assert 2: Surface Area calculation formula check
+            const testP = { l: 8, w: 5, h: 3 }; // SA = 2*(40 + 24 + 15) = 2*79 = 158
+            const sa = surfaceArea(testP);
+            logDiag(`✓ Formula verification: SA for 8x5x3 is ${sa}`);
+            if (sa !== 158) {
+                throw new Error("Assertion failed: surfaceArea calculation formula mathematical error.");
+            }
+
+            // Assert 3: Canvas drawing overlay presence
+            const canvas = document.getElementById('sketchpad-canvas');
+            logDiag(`✓ Sketchpad canvas overlay presence: ${!!canvas}`);
+            if (!canvas) {
+                throw new Error("Assertion failed: sketchpad canvas overlay not found in DOM.");
+            }
+
+            // Assert 4: LocalStorage sync check
+            localStorage.setItem('surface_area_index', '5');
+            const savedIdx = localStorage.getItem('surface_area_index');
+            logDiag(`✓ LocalStorage scorecard state read-write verification: ${savedIdx}`);
+            if (savedIdx !== '5') {
+                throw new Error("Assertion failed: local storage check failed.");
+            }
+            localStorage.removeItem('surface_area_index');
+
+            // Assert 5: Teacher Console components check
+            const overlay = document.getElementById('teacher-overlay');
+            logDiag(`✓ Teacher overlay presence check: ${!!overlay}`);
+            if (!overlay) {
+                throw new Error("Assertion failed: Teacher control modal not found.");
+            }
+
+            logDiag("🎉 ALL SURFACE AREA LAB CHECKS PASSED!");
+        } catch (err) {
+            logDiag(`❌ SYSTEM FAILURE: ${err.message}`);
+            console.error(err);
+        }
+    }
+
     $("checkBtn").addEventListener("click", checkAnswer);
     $("nextBtn").addEventListener("click", nextRound);
     $("resetBtn").addEventListener("click", resetGame);
@@ -618,7 +1036,10 @@
       if (event.key === "Enter") checkAnswer();
     });
 
+    loadProgress();
     render();
+    initCanvas();
   </script>
-</body>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
 </html>
