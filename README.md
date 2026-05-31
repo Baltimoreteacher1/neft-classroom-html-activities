@@ -53,6 +53,10 @@ Folder structure:
     index.html
     unit-1/
       index.html
+      projects/
+        index.html        (unit projects hub)
+        version-a/index.html  (Design & Build culminating project)
+        version-b/index.html  (Real-World Investigation culminating project)
     ...unit-folders/
   lessons/
     1-1/
@@ -91,6 +95,21 @@ Shared files:
 - `assets/shared.css` provides the classroom design system.
 - `assets/app.js` provides small shared behavior, currently the footer year.
 - `source-repos.md` maps source repository names to their organized target folders.
+
+## Culminating Projects
+
+Each Grade 6 math unit (`math/unit-1` through `math/unit-10`) includes a
+`projects/` folder with two creative, interactive end-of-unit projects:
+
+- **Version A — Design & Build:** an open-ended maker challenge.
+- **Version B — Real-World Investigation:** a data-and-decision challenge.
+
+Both versions assess the same unit standards through different contexts, so
+they double as choice-board options, differentiated assignments, or A/B class
+sets. Each project is a self-contained HTML page with live calculators,
+scaffolded hints, a progress bar, a written deliverable, a student checklist, a
+3-point rubric, and a print button. Projects are linked from each unit's
+`index.html` and from the math hub at `math/index.html`.
 
 ## Adding A New Activity
 

@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App Pricing Engine — Unit 6 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 6 Expressions culminating project. Investigate app subscription pricing using equivalent expressions, the distributive property, and order of operations."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --emerald: #0a7c5e;
+        --emerald-light: #e3f5f0;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #052a1f 0%, #0a7c5e 60%, #1a6fb5 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--emerald);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--emerald); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--blue); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--emerald-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--navy); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--emerald); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      .btn {
+        background: var(--emerald); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.12); }
+      .btn.alt { background: var(--blue); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--emerald-light); border: 1px solid #a0d8ca; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--emerald); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--emerald), var(--teal)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">📱</div>
+      <h1>App Pricing Engine</h1>
+      <p>You are a junior analyst at a tech startup. Use the mathematics of equivalent expressions, the distributive property, and order of operations to investigate two app subscription plans — then write a memo recommending the better deal.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 6 · Expressions</span>
+        <span class="tag">6.EE.2</span>
+        <span class="tag">6.EE.3</span>
+        <span class="tag">6.EE.4</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-6/">Unit 6</a> / <a href="/math/unit-6/projects/">Projects</a> / App Pricing Engine
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>📊 Your Mission</h2>
+        <p class="scenario">
+          Two streaming apps — <strong>StreamPro</strong> and <strong>StreamBasic</strong> — are competing for customers.
+          Your manager asked you to investigate their pricing expressions, prove which expressions are equivalent,
+          apply the distributive property, and calculate real costs for a chosen number of months.
+          Work through four phases, fill every box, and finish with a pricing memo.
+        </p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Equivalent Expressions · 6.EE.4</div>
+            <h2>Are These Pricing Expressions Equal?</h2>
+          </div>
+        </div>
+        <p>StreamPro advertises its family plan two ways: <strong>2(x + 3)</strong> and <strong>2x + 6</strong>. Your job is to verify these are equivalent by testing any value of x. If both expressions always give the same result, they are equivalent!</p>
+        <div class="task">
+          <strong>Test it:</strong> Enter any value for x (number of extra features). The calculator evaluates both expressions and confirms whether they are equal.
+        </div>
+        <label class="fld" for="equiv-x">Value of x (try several!)</label>
+        <input type="number" id="equiv-x" value="5" />
+        <button class="btn" onclick="checkEquiv()">Test both expressions</button>
+        <div class="readout" id="equiv-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>For x = 5: &nbsp; 2(5 + 3) = 2 × 8 = 16. &nbsp; 2(5) + 6 = 10 + 6 = 16. They match! Try x = 0, x = 10, x = 100 — they will always match because these expressions are equivalent (that is what 6.EE.4 means).</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Distributive Property · 6.EE.3</div>
+            <h2>Expand the Discount Expression</h2>
+          </div>
+        </div>
+        <p>StreamBasic offers a discount: <strong>a(b + c)</strong> where a is the discount rate, b is the base price, and c is a service fee. Use the distributive property to expand and simplify. Enter your own values for a, b, and c.</p>
+        <div class="task">
+          <strong>Distributive property:</strong> a(b + c) = a·b + a·c<br />
+          Multiply the factor outside the parentheses by each term inside.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="dist-a">Factor a (discount multiplier, 1–5)</label>
+            <input type="number" id="dist-a" value="3" min="1" max="5" />
+          </div>
+          <div>
+            <label class="fld" for="dist-b">Term b (base price)</label>
+            <input type="number" id="dist-b" value="8" min="1" />
+          </div>
+        </div>
+        <label class="fld" for="dist-c">Term c (service fee)</label>
+        <input type="number" id="dist-c" value="4" min="0" />
+        <button class="btn alt" onclick="calcDistrib()">Apply distributive property</button>
+        <div class="readout" id="dist-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>For a = 3, b = 8, c = 4: &nbsp; 3(8 + 4) = 3·8 + 3·4 = 24 + 12 = 36. You distribute the 3 to each term inside the parentheses. Both ways give the same answer: 3 × 12 = 36. ✓</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Evaluate a Cost Expression · 6.EE.2c</div>
+            <h2>Calculate the Real Cost</h2>
+          </div>
+        </div>
+        <p>StreamPro costs <strong>9.99n + 4.50</strong> dollars, where n is the number of months subscribed. The 4.50 is a one-time setup fee. Substitute your chosen n and evaluate — respecting order of operations (multiply before adding).</p>
+        <div class="task">
+          <strong>Order of operations:</strong> In 9.99n + 4.50, multiply 9.99 × n first, then add the setup fee 4.50.
+        </div>
+        <label class="fld" for="cost-n">Number of months (n, 1–24)</label>
+        <input type="number" id="cost-n" value="6" min="1" max="24" />
+        <button class="btn" onclick="calcCost()">Calculate total cost</button>
+        <div class="readout" id="cost-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>At n = 6: first, 9.99 × 6 = 59.94 (multiplication first!). Then 59.94 + 4.50 = 64.44. The setup fee is added only once at the end. Total cost = $64.44 for 6 months.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Compare Plans &amp; Quick Check · 6.EE.2c · 6.EE.4</div>
+            <h2>Which Plan Costs Less?</h2>
+          </div>
+        </div>
+        <p>Compare StreamPro (<strong>9.99n + 4.50</strong>) vs StreamBasic (<strong>7.50n + 12.00</strong>) for the same number of months. Which is cheaper in the short term? Which is cheaper long-term? Then pass the quick-check.</p>
+        <div class="task">
+          <strong>StreamPro:</strong> 9.99n + 4.50 &nbsp;|&nbsp; <strong>StreamBasic:</strong> 7.50n + 12.00<br />
+          Enter the same n for both to compare.
+        </div>
+        <label class="fld" for="plan-n">Number of months n (1–24)</label>
+        <input type="number" id="plan-n" value="6" min="1" max="24" />
+        <button class="btn" onclick="comparePlans()">Compare both plans</button>
+        <div class="readout" id="plan-out"></div>
+
+        <div class="task" style="margin-top: 18px;">
+          <strong>Quick check:</strong> Using the distributive property, evaluate <strong>3(4 + 2)</strong>. What is the answer?
+        </div>
+        <label class="fld" for="check-dist">Your answer (3(4 + 2))</label>
+        <input type="number" id="check-dist" placeholder="Type a number" />
+        <button class="btn alt" onclick="checkDist()">Check answer</button>
+        <div class="feedback" id="dist-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Pricing Memo</h2>
+          </div>
+        </div>
+        <p>Write a 3–5 sentence pricing memo to your manager. Explain your findings using real numbers and expressions from your calculations above.</p>
+        <textarea id="pitch" placeholder="Manager, I verified that 2(x + 3) and 2x + 6 are equivalent expressions — for example, when x = ___, both equal ___. Using the distributive property, ___(___ + ___) expands to ___ + ___ = ___. StreamPro costs $___ for ___ months (9.99 × ___ + 4.50). I recommend ___ because ..."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Analyst Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I tested 2(x + 3) and 2x + 6 for the same x and confirmed they are equivalent.</li>
+          <li><input type="checkbox" /> I applied the distributive property to expand a(b + c) step by step.</li>
+          <li><input type="checkbox" /> I evaluated 9.99n + 4.50 using correct order of operations (multiply before adding).</li>
+          <li><input type="checkbox" /> I compared both plans for the same n and identified which costs less.</li>
+          <li><input type="checkbox" /> My pricing memo gives a clear recommendation backed by real numbers.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print my memo</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Equivalent Expressions (6.EE.4)</td><td>Equivalence verified for multiple x values with reasoning</td><td>Equivalence confirmed for one x value</td><td>Attempted but result was incorrect</td></tr>
+          <tr><td>Distributive Property (6.EE.3)</td><td>Expansion shown step by step and result verified both ways</td><td>Expansion is correct</td><td>Minor distribution error</td></tr>
+          <tr><td>Evaluating &amp; Order of Operations (6.EE.2c)</td><td>Cost calculated correctly; order of operations explained</td><td>Cost value is correct</td><td>Attempted but operation order wrong</td></tr>
+          <tr><td>Communication</td><td>Memo clearly recommends a plan using every computed value</td><td>Memo uses most computed values</td><td>Memo is vague or missing key numbers</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 6 Culminating Project · Version B · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function show(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      function checkEquiv() {
+        const x = +document.getElementById("equiv-x").value;
+        if (isNaN(x)) return;
+        const formA = 2 * (x + 3);
+        const formB = 2 * x + 6;
+        const match = formA === formB;
+        show("equiv-out",
+          '<div class="big">' + formA + (match ? ' = ' : ' ≠ ') + formB + '</div>' +
+          '<strong>2(x + 3)</strong> at x = ' + x + ': 2 × (' + x + ' + 3) = 2 × ' + (x + 3) + ' = <strong>' + formA + '</strong><br>' +
+          '<strong>2x + 6</strong> at x = ' + x + ': 2 × ' + x + ' + 6 = ' + (2*x) + ' + 6 = <strong>' + formB + '</strong><br>' +
+          (match
+            ? '✅ Both equal <strong>' + formA + '</strong> — the expressions are equivalent! Try another x value to keep confirming.'
+            : '⚠️ Something does not match — check your input.'));
+      }
+
+      function calcDistrib() {
+        const a = +document.getElementById("dist-a").value;
+        const b = +document.getElementById("dist-b").value;
+        const c = +document.getElementById("dist-c").value;
+        if (!a || isNaN(b) || isNaN(c)) return;
+        const factored = a * (b + c);
+        const expanded = a * b + a * c;
+        show("dist-out",
+          '<div class="big">' + factored + '</div>' +
+          'Factored form: <strong>' + a + '(' + b + ' + ' + c + ')</strong> = ' + a + ' × ' + (b + c) + ' = <strong>' + factored + '</strong><br>' +
+          'Expanded form: <strong>' + a + '·' + b + ' + ' + a + '·' + c + '</strong> = ' + (a*b) + ' + ' + (a*c) + ' = <strong>' + expanded + '</strong><br>' +
+          (factored === expanded
+            ? '✅ Both forms give <strong>' + factored + '</strong> — distributive property confirmed!'
+            : '⚠️ Check your values.'));
+      }
+
+      function calcCost() {
+        const n = +document.getElementById("cost-n").value;
+        if (!n || n < 1) return;
+        const monthly = 9.99 * n;
+        const total = monthly + 4.50;
+        show("cost-out",
+          '<div class="big">$' + total.toFixed(2) + '</div>' +
+          'Evaluating <strong>9.99n + 4.50</strong> at n = ' + n + ':<br>' +
+          'Step 1 (multiply): 9.99 × ' + n + ' = <strong>$' + monthly.toFixed(2) + '</strong><br>' +
+          'Step 2 (add): $' + monthly.toFixed(2) + ' + $4.50 = <strong>$' + total.toFixed(2) + '</strong><br>' +
+          '✅ StreamPro total for ' + n + ' month' + (n === 1 ? '' : 's') + ': $' + total.toFixed(2) + '.');
+      }
+
+      function comparePlans() {
+        const n = +document.getElementById("plan-n").value;
+        if (!n || n < 1) return;
+        const pro = 9.99 * n + 4.50;
+        const basic = 7.50 * n + 12.00;
+        const cheaper = pro < basic ? "StreamPro" : basic < pro ? "StreamBasic" : "tied";
+        const diff = Math.abs(pro - basic).toFixed(2);
+        show("plan-out",
+          '<div class="big">n = ' + n + ' month' + (n === 1 ? '' : 's') + '</div>' +
+          '<strong>StreamPro</strong> (9.99n + 4.50): 9.99 × ' + n + ' + 4.50 = <strong>$' + pro.toFixed(2) + '</strong><br>' +
+          '<strong>StreamBasic</strong> (7.50n + 12.00): 7.50 × ' + n + ' + 12.00 = <strong>$' + basic.toFixed(2) + '</strong><br>' +
+          (cheaper === "tied"
+            ? '🤝 Both plans cost <strong>$' + pro.toFixed(2) + '</strong> — it is a tie at n = ' + n + '!'
+            : '💰 <strong>' + cheaper + '</strong> is cheaper by $' + diff + ' at n = ' + n + '. Try a larger n — does the answer change?'));
+      }
+
+      function checkDist() {
+        const v = +document.getElementById("check-dist").value;
+        const fb = document.getElementById("dist-fb");
+        if (v === 18) {
+          fb.textContent = "✅ Correct! 3(4 + 2) = 3 × 6 = 18, or 3·4 + 3·2 = 12 + 6 = 18.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not yet. Try: add inside the parentheses first — 4 + 2 = 6, then 3 × 6. Or use distribution: 3·4 + 3·2.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // max 4
+        const distOk = document.getElementById("dist-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length; // max 5
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        // max: 4 readouts + 1 dist + 5 checks + 1 pitch = 11
+        const total = readouts + distOk + checks + pitch;
+        const pct = Math.min(100, Math.round((total / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

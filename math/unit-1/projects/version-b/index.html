@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Build-a-Bot Budget Lab — Unit 1 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 1 Number Sense culminating project. Outfit a robotics team using decimal multiplication, multi-digit division, and factor reasoning."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633; --muted: #5e6e7e;
+        --line: #e2e7ec; --bg: #f7f9fb; --card: #ffffff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#0e8a7d 0%, #0f2b3c 100%); color: #fff; padding: 40px 24px 34px; text-align: center; }
+      .phero .deco { font-size: 56px; }
+      .phero h1 { font-size: clamp(26px,5vw,40px); margin: 10px 0 8px; letter-spacing: -0.02em; }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .intro-card { background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--teal); border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow); }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .phase { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px; background: var(--teal); color: #fff; font-weight: 800; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+      .phase:nth-of-type(2) .phase-num { background: var(--blue); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+      .task { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0; }
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea { width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; background: #fff; }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit; margin-top: 14px; }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--blue); }
+      .readout { margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px; background: var(--teal-light); border: 1px solid #bfe6e0; display: none; }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); } .feedback.no { color: var(--coral); }
+      .hintbox { margin-top: 12px; } .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      table.parts { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+      table.parts th, table.parts td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; }
+      table.parts th { background: var(--blue-light); }
+      @media print { .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; } .phase, .intro-card { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🤖</div>
+      <h1>Build-a-Bot Budget Lab</h1>
+      <p>Your robotics club qualified for the state competition. You are the team's purchasing engineer — order the parts, split the costs, and bring the team in under budget using sharp number sense.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 1 · Number Sense</span>
+        <span class="tag">6.NS.2</span>
+        <span class="tag">6.NS.3</span>
+        <span class="tag">6.NS.4</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-1/">Unit 1</a> / <a href="/math/unit-1/projects/">Projects</a> / Build-a-Bot Budget Lab
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🧰 Your Mission</h2>
+        <p>The club has a <strong>$500 parts budget</strong> and 8 team members. Move through four phases that put decimal multiplication, multi-digit division, and factor reasoning to work. Calculate, check, and finish with a recommendation memo to your coach.</p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div><div class="skill">Decimal Multiplication · 6.NS.3</div><h2>Price the Parts Order</h2></div>
+        </div>
+        <p>Each part has a unit price. Multiply price × quantity for each line, then read your subtotal.</p>
+        <table class="parts">
+          <tr><th>Part</th><th>Unit price</th><th>Quantity</th></tr>
+          <tr><td>Motor</td><td>$<input type="number" id="p1" value="18.75" step="0.01" style="width:90px;padding:6px;"/></td><td><input type="number" id="q1" value="4" style="width:70px;padding:6px;"/></td></tr>
+          <tr><td>Wheel set</td><td>$<input type="number" id="p2" value="6.40" step="0.01" style="width:90px;padding:6px;"/></td><td><input type="number" id="q2" value="6" style="width:70px;padding:6px;"/></td></tr>
+          <tr><td>Sensor</td><td>$<input type="number" id="p3" value="12.25" step="0.01" style="width:90px;padding:6px;"/></td><td><input type="number" id="q3" value="3" style="width:70px;padding:6px;"/></td></tr>
+        </table>
+        <button class="btn" onclick="calcParts()">Calculate parts subtotal</button>
+        <div class="readout" id="parts-out"></div>
+        <details class="hintbox"><summary>Need a hint?</summary><p>Count decimal places: 18.75 (2 places) × 4 (0 places) = 75.00 (2 places). Add all three line totals.</p></details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div><div class="skill">Multi-Digit Division · 6.NS.2</div><h2>Split the Cost Fairly</h2></div>
+        </div>
+        <p>Eight teammates split the shared cost equally. Divide to find each person's fair share.</p>
+        <div class="grid2">
+          <div><label class="fld" for="s-total">Total shared cost ($)</label><input type="number" id="s-total" value="384.00" step="0.01"/></div>
+          <div><label class="fld" for="s-members">Team members</label><input type="number" id="s-members" value="8"/></div>
+        </div>
+        <button class="btn alt" onclick="calcSplit()">Find each share</button>
+        <div class="readout" id="split-out"></div>
+        <details class="hintbox"><summary>Need a hint?</summary><p>Divide the total by the number of members. $384.00 ÷ 8 = $48.00 each.</p></details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div><div class="skill">Factors &amp; Packaging · 6.NS.4</div><h2>Organize the Toolkit</h2></div>
+        </div>
+        <p>You have screws and bolts to sort into identical kits with none left over. The number of kits is the GCF of the two counts.</p>
+        <div class="grid2">
+          <div><label class="fld" for="f-screws">Screws</label><input type="number" id="f-screws" value="72"/></div>
+          <div><label class="fld" for="f-bolts">Bolts</label><input type="number" id="f-bolts" value="54"/></div>
+        </div>
+        <button class="btn" onclick="calcKits()">Make the most kits</button>
+        <div class="readout" id="kits-out"></div>
+        <details class="hintbox"><summary>Need a hint?</summary><p>GCF(72, 54): both divide by 18 → 4 kits would be wrong; 18 is the GCF, so 18 kits with 4 screws and 3 bolts each.</p></details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div><div class="skill">Budget Decision · 6.NS.3</div><h2>Are You Under $500?</h2></div>
+        </div>
+        <p>Combine your parts subtotal with travel and snacks, then check the budget.</p>
+        <div class="grid2">
+          <div><label class="fld" for="b-parts">Parts subtotal ($)</label><input type="number" id="b-parts" value="160.75" step="0.01"/></div>
+          <div><label class="fld" for="b-travel">Travel ($)</label><input type="number" id="b-travel" value="210.50" step="0.01"/></div>
+          <div><label class="fld" for="b-snacks">Snacks ($)</label><input type="number" id="b-snacks" value="64.80" step="0.01"/></div>
+        </div>
+        <button class="btn alt" onclick="calcBudget()">Check the budget</button>
+        <div class="readout" id="budget-out"></div>
+
+        <div class="task" style="margin-top:18px;"><strong>Quick check:</strong> A reel of 96 zip ties is shared among 6 robots. How many per robot?</div>
+        <label class="fld" for="check-ties">Your answer</label>
+        <input type="number" id="check-ties" placeholder="Type a number"/>
+        <button class="btn" onclick="checkTies()">Check answer</button>
+        <div class="feedback" id="ties-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head"><div class="phase-num" style="background:var(--green);">★</div><div><div class="skill">Final Deliverable</div><h2>Write the Coach's Memo</h2></div></div>
+        <p>Write a 3–5 sentence memo recommending whether the team should approve this order. Use your real numbers.</p>
+        <textarea id="pitch" placeholder="Coach, our parts subtotal is $___. Split among 8 members, each person owes $___. We can build ___ identical toolkits. Our full trip total is $___, which is under/over the $500 budget. I recommend that we ___."></textarea>
+        <h3 style="margin:22px 0 6px;">Engineering Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I multiplied price × quantity for every part.</li>
+          <li><input type="checkbox" /> I divided to find each teammate's fair share.</li>
+          <li><input type="checkbox" /> I used the GCF to build identical toolkits.</li>
+          <li><input type="checkbox" /> I confirmed the full total is at or under $500.</li>
+          <li><input type="checkbox" /> My memo gives a clear recommendation with numbers.</li>
+        </ul>
+        <button class="btn" style="background:var(--navy);" onclick="window.print()">🖨️ Print my memo</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head"><div class="phase-num" style="background:var(--navy);">✓</div><div><div class="skill">How You Are Scored</div><h2>Project Rubric</h2></div></div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Decimal Multiplication</td><td>All line totals accurate; place value perfect</td><td>Subtotal accurate</td><td>Minor decimal errors</td></tr>
+          <tr><td>Division</td><td>Fair share correct and division check correct</td><td>Fair share correct</td><td>Attempted with one error</td></tr>
+          <tr><td>Factors (GCF)</td><td>Correct number of kits with contents explained</td><td>Correct GCF</td><td>Partial factor reasoning</td></tr>
+          <tr><td>Communication</td><td>Memo justifies recommendation with every number</td><td>Memo uses most numbers</td><td>Memo unclear or missing data</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 1 Culminating Project · Version B · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+      function show(id, html) { const el = document.getElementById(id); el.innerHTML = html; el.classList.add("show"); updateProgress(); }
+
+      function calcParts() {
+        let total = 0, rows = "";
+        for (let i = 1; i <= 3; i++) {
+          const p = +document.getElementById("p" + i).value || 0;
+          const q = +document.getElementById("q" + i).value || 0;
+          const line = p * q; total += line;
+          rows += "Line " + i + ": $" + p.toFixed(2) + " × " + q + " = <strong>$" + line.toFixed(2) + "</strong><br>";
+        }
+        show("parts-out", '<div class="big">$' + total.toFixed(2) + '</div>' + rows + '✅ That is your parts subtotal.');
+      }
+      function calcSplit() {
+        const t = +document.getElementById("s-total").value, m = +document.getElementById("s-members").value;
+        if (!t || !m) return;
+        show("split-out", '<div class="big">$' + (t / m).toFixed(2) + ' each</div>$' + t.toFixed(2) + ' ÷ ' + m + ' members = <strong>$' + (t / m).toFixed(2) + '</strong> per teammate.');
+      }
+      function calcKits() {
+        const s = +document.getElementById("f-screws").value, b = +document.getElementById("f-bolts").value;
+        if (!s || !b) return;
+        const g = gcd(s, b);
+        show("kits-out", '<div class="big">' + g + ' toolkits</div>Each kit gets <strong>' + (s / g) + ' screws</strong> and <strong>' + (b / g) + ' bolts</strong>. GCF(' + s + ', ' + b + ') = ' + g + (g === 1 ? ' ⚠️ try counts that share a bigger factor.' : '.'));
+      }
+      function calcBudget() {
+        const t = ["b-parts", "b-travel", "b-snacks"].map(id => +document.getElementById(id).value || 0).reduce((a, c) => a + c, 0);
+        const left = 500 - t;
+        show("budget-out", '<div class="big">$' + t.toFixed(2) + ' total</div>' + (left >= 0 ? '✅ <strong>$' + left.toFixed(2) + '</strong> under the $500 budget.' : '⚠️ <strong>$' + Math.abs(left).toFixed(2) + ' over budget</strong> — trim a category.'));
+      }
+      function checkTies() {
+        const v = +document.getElementById("check-ties").value, fb = document.getElementById("ties-fb");
+        if (v === 16) { fb.textContent = "✅ Correct! 96 ÷ 6 = 16 zip ties per robot."; fb.className = "feedback ok"; }
+        else { fb.textContent = "❌ Not yet. Try 96 ÷ 6 again."; fb.className = "feedback no"; }
+        updateProgress();
+      }
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length;
+        const tiesOk = document.getElementById("ties-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length;
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        const pct = Math.min(100, Math.round(((readouts + tiesOk + checks + pitch) / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

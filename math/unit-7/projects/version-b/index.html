@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submarine Mission Control — Unit 7 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 7 Integers &amp; Coordinate Plane culminating project. Operate a submarine using integers, absolute value, and ordering on the number line."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ocean: #0a4f7a;
+        --ocean-light: #e0f0fa;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #031e33 0%, #0a4f7a 60%, #0e8a7d 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--ocean);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--ocean); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--ocean-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--ocean); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--ocean); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      .btn {
+        background: var(--ocean); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--teal); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--ocean-light); border: 1px solid #a0cce8; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--ocean); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--ocean); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--ocean), var(--teal)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+
+      .order-list { font-size: 16px; font-weight: 800; color: var(--ocean); margin: 10px 0; padding: 12px 16px; background: var(--ocean-light); border-radius: 10px; }
+
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🌊</div>
+      <h1>Submarine Mission Control</h1>
+      <p>You are the mission controller for a research submarine. Use integers to track depths and temperatures, calculate distances from sea level, and order sensor readings to keep the crew safe.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 7 · Integers &amp; Coordinate Plane</span>
+        <span class="tag">6.NS.5</span>
+        <span class="tag">6.NS.7</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-7/">Unit 7</a> / <a href="/math/unit-7/projects/">Projects</a> / Submarine Mission Control
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🔭 Your Mission</h2>
+        <p class="scenario">
+          The research submarine <em>Nereid IV</em> is collecting ocean data. You must
+          <strong>interpret positive and negative integers</strong> for depth and temperature,
+          compute absolute-value distances from sea level, order sensor readings from
+          coldest to deepest, and decide whether conditions are safe. Work through all four
+          phases, check your answers, fill the mission log, and print your report.
+        </p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Integers in Context · 6.NS.5</div>
+            <h2>Set Depth &amp; Surface Height</h2>
+          </div>
+        </div>
+        <p>In ocean science, depths below sea level are represented as <strong>negative integers</strong> and heights above sea level are <strong>positive integers</strong>. Sea level itself is 0 meters.</p>
+        <div class="task">
+          <strong>Enter values for the sub's current position and the height of a nearby island cliff.</strong> The depth must be a negative number. The cliff height must be positive.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="depth">Sub depth (meters, enter negative)</label>
+            <input type="number" id="depth" value="-85" max="-1" />
+          </div>
+          <div>
+            <label class="fld" for="cliff">Cliff height (meters, enter positive)</label>
+            <input type="number" id="cliff" value="34" min="1" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcContext()">Interpret these values</button>
+        <div class="readout" id="context-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Positive integers describe things above zero (sea level): floors above ground, temperatures above 0°C, heights. Negative integers describe things below zero: below sea level, below freezing, underground floors. Zero is the reference point — neither positive nor negative.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Absolute Value · 6.NS.7c</div>
+            <h2>Distance from Sea Level</h2>
+          </div>
+        </div>
+        <p>The <strong>absolute value</strong> of the depth tells you how many meters the submarine is from sea level — always a positive distance. Enter any depth and calculate.</p>
+        <div class="task">
+          <strong>Rule:</strong> Distance from sea level = |depth|. Example: a depth of −120 m means the sub is 120 meters below sea level. |−120| = 120.
+        </div>
+        <label class="fld" for="av-depth">Depth reading (meters)</label>
+        <input type="number" id="av-depth" value="-120" />
+        <button class="btn alt" onclick="calcAbsVal()">Calculate distance from sea level</button>
+        <div class="readout" id="absval-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Absolute value is always the distance from zero — never negative. |−45| = 45 because −45 is 45 units from 0 on the number line. |+30| = 30 for the same reason. Remove the sign, keep the number.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Compare &amp; Order Integers · 6.NS.7</div>
+            <h2>Order the Sensor Readings</h2>
+          </div>
+        </div>
+        <p>The sub's five temperature probes returned readings. Sort them from <strong>least to greatest</strong> to find the coldest and warmest zones. More negative = colder (farther left on the number line).</p>
+        <div class="task">
+          <strong>Enter five integer temperature readings (in °C). They can be negative, zero, or positive.</strong>
+        </div>
+        <div class="grid2">
+          <div><label class="fld" for="t1">Reading 1 (°C)</label><input type="number" id="t1" value="-3" /></div>
+          <div><label class="fld" for="t2">Reading 2 (°C)</label><input type="number" id="t2" value="0" /></div>
+          <div><label class="fld" for="t3">Reading 3 (°C)</label><input type="number" id="t3" value="-7" /></div>
+          <div><label class="fld" for="t4">Reading 4 (°C)</label><input type="number" id="t4" value="2" /></div>
+          <div><label class="fld" for="t5">Reading 5 (°C)</label><input type="number" id="t5" value="-1" /></div>
+        </div>
+        <button class="btn" onclick="orderReadings()">Sort readings least to greatest</button>
+        <div class="readout" id="order-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>On a number line, numbers to the left are less than numbers to the right. −7 &lt; −3 &lt; −1 &lt; 0 &lt; 2. The most negative number is the smallest (coldest). Place each number on a mental number line and read from left to right.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Safe-Depth Decision &amp; Quick Check · 6.NS.5 · 6.NS.7</div>
+            <h2>Decide: Is the Depth Safe?</h2>
+          </div>
+        </div>
+        <p>Mission rules say the sub must stay within 200 meters of sea level. Use absolute value to decide whether the current depth is safe, then pass the quick checks.</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="safe-depth">Current depth (meters, negative)</label>
+            <input type="number" id="safe-depth" value="-175" max="-1" />
+          </div>
+          <div>
+            <label class="fld" for="safe-limit">Safety limit (meters from sea level)</label>
+            <input type="number" id="safe-limit" value="200" min="1" />
+          </div>
+        </div>
+        <button class="btn alt" onclick="calcSafe()">Check safe depth</button>
+        <div class="readout" id="safe-out"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check 1:</strong> What is |−45|?
+        </div>
+        <label class="fld" for="qc1">Your answer</label>
+        <input type="number" id="qc1" placeholder="Type a number" />
+        <button class="btn" onclick="checkQC1()">Check answer</button>
+        <div class="feedback" id="qc1-fb"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check 2:</strong> Order these from least to greatest: −3, 0, −7, 2
+        </div>
+        <label class="fld" for="qc2">Your answer (write them separated by commas, e.g., −7, −3, 0, 2)</label>
+        <input type="text" id="qc2" placeholder="-7, -3, 0, 2" />
+        <button class="btn" onclick="checkQC2()">Check ordering</button>
+        <div class="feedback" id="qc2-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Mission Log Report</h2>
+          </div>
+        </div>
+        <p>Write a 3–5 sentence mission log entry. Describe the sub's depth using a negative integer, state the absolute-value distance from sea level, report the ordered temperature readings from coldest to warmest, and confirm whether the depth is within the safety limit.</p>
+        <textarea id="pitch" placeholder="Mission log: Nereid IV is currently at ___ meters (Quadrant/zone: below sea level). The sub is ___ meters from sea level because |___| = ___. Temperature readings ordered from coldest to warmest are: ___, ___, ___, ___, ___. The current depth is [safe/not safe] because |___| = ___, which is [within/beyond] the ___ meter limit. Recommendation: ___."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Mission Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I used a negative integer to represent the sub's depth below sea level.</li>
+          <li><input type="checkbox" /> I calculated the absolute value to find distance from sea level.</li>
+          <li><input type="checkbox" /> I ordered five integer readings from least to greatest correctly.</li>
+          <li><input type="checkbox" /> I used absolute value to determine whether the depth is safe.</li>
+          <li><input type="checkbox" /> My mission log uses my actual numbers and explains the meaning of each.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print my mission log</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Integers in Context</td><td>Correctly represents depth and height; explains why negative/positive applies</td><td>Both values correctly signed</td><td>One value correct or signs confused</td></tr>
+          <tr><td>Absolute Value</td><td>Correct distance with clear explanation of absolute value as distance from zero</td><td>Correct absolute value computed</td><td>Attempted; may confuse sign and value</td></tr>
+          <tr><td>Ordering Integers</td><td>All five readings correctly ordered with number-line reasoning shown</td><td>All five readings in correct order</td><td>Partial order; minor placement errors</td></tr>
+          <tr><td>Communication</td><td>Mission log justifies every integer used with its real-world meaning</td><td>Log uses most values with meaning</td><td>Log is unclear or missing real-world context</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 7 Culminating Project · Version B · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function show(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      function calcContext() {
+        const d = +document.getElementById("depth").value;
+        const c = +document.getElementById("cliff").value;
+
+        if (d >= 0) {
+          show("context-out", "⚠️ Depth must be negative (below sea level). Please enter a value like −85.");
+          return;
+        }
+        if (c <= 0) {
+          show("context-out", "⚠️ Cliff height must be positive (above sea level). Please enter a value like 34.");
+          return;
+        }
+
+        const totalSpan = Math.abs(d) + c;
+        show("context-out",
+          '<div class="big">' + d + ' m &nbsp;|&nbsp; +' + c + ' m</div>' +
+          '<strong>Sub depth:</strong> ' + d + ' meters means the submarine is <strong>' + Math.abs(d) + ' meters below sea level</strong>. Negative because it is below the zero reference (sea level).<br><br>' +
+          '<strong>Cliff height:</strong> +' + c + ' meters means the cliff top is <strong>' + c + ' meters above sea level</strong>. Positive because it is above zero.<br><br>' +
+          '📏 The total vertical span from the sub to the cliff top is ' + Math.abs(d) + ' + ' + c + ' = <strong>' + totalSpan + ' meters</strong>. ✅');
+      }
+
+      function calcAbsVal() {
+        const d = +document.getElementById("av-depth").value;
+        const abs = Math.abs(d);
+        const dir = d < 0 ? "below" : d > 0 ? "above" : "at";
+        show("absval-out",
+          '<div class="big">|' + d + '| = ' + abs + ' meters</div>' +
+          'The submarine is <strong>' + abs + ' meters ' + dir + ' sea level</strong>.<br>' +
+          'Absolute value strips the sign and gives only the <em>distance</em> from zero — it is always non-negative. ' +
+          (d < 0
+            ? '|' + d + '| = ' + abs + ' because ' + d + ' is ' + abs + ' units to the left of 0 on the number line.'
+            : d > 0
+              ? '|' + d + '| = ' + abs + ' because ' + d + ' is ' + abs + ' units to the right of 0.'
+              : '|0| = 0 — you are at sea level!') +
+          ' ✅');
+      }
+
+      function orderReadings() {
+        const ids = ["t1", "t2", "t3", "t4", "t5"];
+        const vals = ids.map(function(id) { return +document.getElementById(id).value; });
+        const sorted = vals.slice().sort(function(a, b) { return a - b; });
+        const original = vals.join(", ");
+        const orderedStr = sorted.join(", ");
+
+        let explanation = '<br><br>';
+        explanation += '<strong>Why this order?</strong> On the number line, numbers to the left are smaller. ';
+        explanation += 'More negative = colder = farther left. ';
+        explanation += 'The coldest reading is <strong>' + sorted[0] + '°C</strong> and the warmest is <strong>' + sorted[sorted.length - 1] + '°C</strong>.';
+
+        show("order-out",
+          '<div class="big">' + orderedStr + ' °C</div>' +
+          '<strong>Original readings:</strong> ' + original + ' °C<br>' +
+          '<strong>Least to greatest:</strong> ' + orderedStr + ' °C' +
+          explanation + ' ✅');
+      }
+
+      function calcSafe() {
+        const d = +document.getElementById("safe-depth").value;
+        const lim = +document.getElementById("safe-limit").value;
+        const dist = Math.abs(d);
+        const safe = dist <= lim;
+
+        show("safe-out",
+          '<div class="big">' + (safe ? "✅ SAFE" : "⚠️ UNSAFE") + '</div>' +
+          'Current depth: ' + d + ' m → distance from sea level = |' + d + '| = <strong>' + dist + ' m</strong>.<br>' +
+          'Safety limit: ' + lim + ' m from sea level.<br><br>' +
+          (safe
+            ? '<strong>' + dist + ' ≤ ' + lim + '</strong>: The sub is within the safety limit. Mission may continue! ✅'
+            : '<strong>' + dist + ' > ' + lim + '</strong>: The sub has exceeded the safety limit! ⚠️ Return to a depth closer to sea level.'));
+      }
+
+      function checkQC1() {
+        const v = +document.getElementById("qc1").value;
+        const fb = document.getElementById("qc1-fb");
+        if (v === 45) {
+          fb.textContent = "✅ Correct! |−45| = 45. Absolute value is the distance from zero, always positive.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not yet. |−45| means the distance from 0 to −45 on the number line. Count 45 steps — no sign.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function checkQC2() {
+        const raw = document.getElementById("qc2").value;
+        const fb = document.getElementById("qc2-fb");
+        // Parse: accept negative signs with or without space, commas or spaces as separators
+        const nums = raw.replace(/−/g, "-").split(/[\s,]+/).filter(function(s) { return s !== ""; }).map(Number);
+        const correct = [-7, -3, 0, 2];
+        const match = nums.length === 4 &&
+          nums[0] === -7 && nums[1] === -3 && nums[2] === 0 && nums[3] === 2;
+        if (match) {
+          fb.textContent = "✅ Correct! −7 < −3 < 0 < 2. The most negative value is the least (leftmost on the number line).";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not yet. Place each number on a number line: −7 is leftmost (least), then −3, then 0, then 2. Try: −7, −3, 0, 2";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length;
+        const qc1Ok = document.getElementById("qc1-fb").classList.contains("ok") ? 1 : 0;
+        const qc2Ok = document.getElementById("qc2-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length;
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        // max: 4 readouts + 2 quickchecks + 5 checklist + 1 pitch = 12
+        const total = readouts + qc1Ok + qc2Ok + checks + pitch;
+        const pct = Math.min(100, Math.round((total / 12) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

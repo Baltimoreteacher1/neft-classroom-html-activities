@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Package Design Challenge — Unit 10 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 10 Volume &amp; Surface Area culminating project. Design a shipping box using volume (6.G.2) and surface area from nets (6.G.4)."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--gold);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--blue); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--navy); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } .grid3 { grid-template-columns: 1fr; } }
+
+      .btn {
+        background: var(--blue); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--teal); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--teal-light); border: 1px solid #bfe6e0; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">📦</div>
+      <h1>Package Design Challenge</h1>
+      <p>You are a packaging engineer designing a new shipping box. Use volume and surface area to spec out the perfect box — then decide whether it costs less to build it bigger or more compact.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 10 · Volume &amp; Surface Area</span>
+        <span class="tag">6.G.2</span>
+        <span class="tag">6.G.4</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-10/">Unit 10</a> / <a href="/math/unit-10/projects/">Projects</a> / Package Design Challenge
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>📋 Your Mission</h2>
+        <p class="scenario">
+          A small business needs a <strong>custom shipping box</strong>. Your job is to design
+          it from scratch: compute the volume so the product fits, work with fractional edge
+          lengths to find the exact number of unit cubes that fill the box, unfold the net to
+          find the surface area, and then figure out the <strong>cost of the cardboard material</strong>.
+          Fill in every field, hit <em>Calculate</em> or <em>Check</em>, complete the checklist,
+          and write your package spec sheet.
+        </p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Volume of a Rectangular Prism · 6.G.2</div>
+            <h2>Calculate the Box Volume</h2>
+          </div>
+        </div>
+        <p>The volume of a rectangular prism is the amount of space inside. Use the formula <strong>V = l × w × h</strong> to find how many cubic units fill your box.</p>
+        <div class="task">
+          <strong>Formula:</strong> V = length × width × height. Enter your box dimensions below (decimals allowed).
+        </div>
+        <div class="grid3">
+          <div>
+            <label class="fld" for="v-length">Length (units)</label>
+            <input type="number" id="v-length" value="8" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="v-width">Width (units)</label>
+            <input type="number" id="v-width" value="5" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="v-height">Height (units)</label>
+            <input type="number" id="v-height" value="3" min="0.01" step="0.01" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcVolume()">Calculate volume</button>
+        <div class="readout" id="vol-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Multiply all three dimensions together. For a box that is 8 × 5 × 3, count how many 1-unit cubes fit along each edge, then multiply: 8 × 5 = 40 layers on the bottom, and 40 × 3 = 120 total cubic units.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Fractional Edge Lengths · 6.G.2</div>
+            <h2>Volume with Fractional Edges</h2>
+          </div>
+        </div>
+        <p>Real packages often have fractional measurements. The formula <strong>V = l × w × h</strong> works the same way with decimal (fractional) edge lengths — and we can still count unit cubes by thinking about fractional layers.</p>
+        <div class="task">
+          <strong>Challenge box:</strong> Enter edge lengths that include a decimal (for example, 2.5, 1.5, 3). You will compute the exact volume and explain how many unit cubes (including fractional cubes) fill the box.
+        </div>
+        <div class="grid3">
+          <div>
+            <label class="fld" for="fv-length">Length (e.g. 2.5)</label>
+            <input type="number" id="fv-length" value="2.5" min="0.01" step="0.5" />
+          </div>
+          <div>
+            <label class="fld" for="fv-width">Width (e.g. 1.5)</label>
+            <input type="number" id="fv-width" value="1.5" min="0.01" step="0.5" />
+          </div>
+          <div>
+            <label class="fld" for="fv-height">Height (e.g. 3)</label>
+            <input type="number" id="fv-height" value="3" min="0.01" step="0.5" />
+          </div>
+        </div>
+        <button class="btn alt" onclick="calcFracVolume()">Calculate fractional volume</button>
+        <div class="readout" id="fvol-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Treat the decimals as fractions: 2.5 = 5/2, 1.5 = 3/2, 3 = 3/1. Multiply: (5/2) × (3/2) × (3/1) = 45/4 = 11.25. Each full unit cube fills 1 cubic unit. A half-unit along one edge gives cubes that are each 1/2 a cubic unit. Count them all and they still total V = l × w × h.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Surface Area from the Net · 6.G.4</div>
+            <h2>Unfold the Net &amp; Find Surface Area</h2>
+          </div>
+        </div>
+        <p>A rectangular prism has <strong>6 faces</strong> that form three pairs: top/bottom, front/back, and two sides. Unfold them into a net and add the areas. Formula: <strong>SA = 2(lw + lh + wh)</strong>.</p>
+        <div class="task">
+          <strong>Net breakdown:</strong> Three pairs of rectangular faces — bottom &amp; top (l × w), front &amp; back (l × h), left &amp; right sides (w × h). Add all six face areas to get the total surface area.
+        </div>
+        <div class="grid3">
+          <div>
+            <label class="fld" for="sa-length">Length (units)</label>
+            <input type="number" id="sa-length" value="8" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="sa-width">Width (units)</label>
+            <input type="number" id="sa-width" value="5" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="sa-height">Height (units)</label>
+            <input type="number" id="sa-height" value="3" min="0.01" step="0.01" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcSA()">Calculate surface area</button>
+        <div class="readout" id="sa-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Step 1 — find each face pair: top/bottom = 2 × (l × w), front/back = 2 × (l × h), sides = 2 × (w × h). Step 2 — add all three results. For an 8 × 5 × 3 box: 2(40) + 2(24) + 2(15) = 80 + 48 + 30 = 158 square units.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Application &amp; Communication · 6.G.2 · 6.G.4</div>
+            <h2>Material Cost Decision</h2>
+          </div>
+        </div>
+        <p>Cardboard costs money per square unit. Multiply the surface area by the cost per square unit to find the total material cost for one box. Use your judgment — is the box worth the cost?</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="cost-sa">Surface area (sq units)</label>
+            <input type="number" id="cost-sa" value="158" min="0" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="cost-rate">Cost per square unit ($)</label>
+            <input type="number" id="cost-rate" value="0.05" min="0.001" step="0.001" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcCost()">Calculate material cost</button>
+        <div class="readout" id="cost-out"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check:</strong> A box measures 2 × 3 × 4 units. What is its volume?
+          (V = l × w × h)
+        </div>
+        <label class="fld" for="check-vol">Your answer (cubic units)</label>
+        <input type="number" id="check-vol" placeholder="Type a number" />
+        <button class="btn alt" onclick="checkVol()">Check answer</button>
+        <div class="feedback" id="vol-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Package Spec Sheet</h2>
+          </div>
+        </div>
+        <p>Write a short spec sheet (3–5 sentences) that uses your real numbers from above. Describe your box dimensions, volume, surface area, and material cost, and explain why this design is a good choice.</p>
+        <textarea id="pitch" placeholder="Our shipping box measures ___ × ___ × ___ units. Its volume is ___ cubic units, meaning it holds ___ unit cubes. The surface area is ___ square units (made of three face pairs: ___, ___, ___). At $___  per square unit, the cardboard costs $___. This design is a good choice because ___."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Design Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I used V = l × w × h to find the volume of my box.</li>
+          <li><input type="checkbox" /> I computed volume with fractional (decimal) edge lengths.</li>
+          <li><input type="checkbox" /> I identified all three face pairs and calculated the surface area.</li>
+          <li><input type="checkbox" /> I multiplied surface area by the cost rate to find material cost.</li>
+          <li><input type="checkbox" /> My spec sheet explains the design with real numbers.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print my spec sheet</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Volume (6.G.2)</td><td>V = l×w×h correct with unit label; unit-cube reasoning explained</td><td>Volume calculation correct</td><td>Formula used but computation error</td></tr>
+          <tr><td>Fractional Edge Volume (6.G.2)</td><td>Fractional edges computed correctly; fractional unit-cube explanation included</td><td>Fractional volume correct</td><td>Attempted with minor error on fractional arithmetic</td></tr>
+          <tr><td>Surface Area / Nets (6.G.4)</td><td>All three face pairs identified and SA = 2(lw+lh+wh) applied correctly</td><td>Surface area correct</td><td>One face pair missing or minor error</td></tr>
+          <tr><td>Application / Communication</td><td>Cost computed correctly; spec sheet justifies design with all numbers</td><td>Cost correct; spec sheet uses most numbers</td><td>Attempted; spec sheet unclear or missing numbers</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 10 Culminating Project · Version A · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function round2(n) { return Math.round(n * 100) / 100; }
+      function show(id, html) { const el = document.getElementById(id); el.innerHTML = html; el.classList.add("show"); updateProgress(); }
+
+      function calcVolume() {
+        const l = +document.getElementById("v-length").value;
+        const w = +document.getElementById("v-width").value;
+        const h = +document.getElementById("v-height").value;
+        if (!l || !w || !h) return;
+        const v = round2(l * w * h);
+        show("vol-out",
+          '<div class="big">' + v + ' cubic units</div>' +
+          'V = ' + l + ' × ' + w + ' × ' + h + ' = <strong>' + v + ' cubic units</strong>. ' +
+          'Imagine ' + l + ' × ' + w + ' = ' + round2(l * w) + ' unit cubes on the bottom layer, ' +
+          'then stack ' + h + ' layers high: ' + round2(l * w) + ' × ' + h + ' = ' + v + ' cubic units total.');
+      }
+
+      function calcFracVolume() {
+        const l = +document.getElementById("fv-length").value;
+        const w = +document.getElementById("fv-width").value;
+        const h = +document.getElementById("fv-height").value;
+        if (!l || !w || !h) return;
+        const v = round2(l * w * h);
+        const hasFrac = (l % 1 !== 0) || (w % 1 !== 0) || (h % 1 !== 0);
+        show("fvol-out",
+          '<div class="big">' + v + ' cubic units</div>' +
+          'V = ' + l + ' × ' + w + ' × ' + h + ' = <strong>' + v + ' cubic units</strong>. ' +
+          (hasFrac
+            ? 'Because at least one edge length is a fraction, some unit cubes are cut into fractional pieces — but when you count every whole and partial cube they still total exactly <strong>' + v + '</strong>. The formula V = l × w × h handles fractional edges automatically (6.G.2).'
+            : 'Try entering at least one decimal edge length (e.g., 2.5) to explore fractional unit cubes!'));
+      }
+
+      function calcSA() {
+        const l = +document.getElementById("sa-length").value;
+        const w = +document.getElementById("sa-width").value;
+        const h = +document.getElementById("sa-height").value;
+        if (!l || !w || !h) return;
+        const lw = round2(l * w);
+        const lh = round2(l * h);
+        const wh = round2(w * h);
+        const sa = round2(2 * (lw + lh + wh));
+        show("sa-out",
+          '<div class="big">' + sa + ' square units</div>' +
+          '📐 <strong>Three face pairs from the net:</strong><br>' +
+          '&nbsp;&nbsp;Top &amp; Bottom (l × w): 2 × ' + lw + ' = <strong>' + round2(2 * lw) + ' sq units</strong><br>' +
+          '&nbsp;&nbsp;Front &amp; Back (l × h): 2 × ' + lh + ' = <strong>' + round2(2 * lh) + ' sq units</strong><br>' +
+          '&nbsp;&nbsp;Left &amp; Right sides (w × h): 2 × ' + wh + ' = <strong>' + round2(2 * wh) + ' sq units</strong><br>' +
+          'SA = 2(' + lw + ' + ' + lh + ' + ' + wh + ') = <strong>' + sa + ' square units</strong> total.');
+      }
+
+      function calcCost() {
+        const sa = +document.getElementById("cost-sa").value;
+        const rate = +document.getElementById("cost-rate").value;
+        if (!sa || !rate) return;
+        const cost = round2(sa * rate);
+        show("cost-out",
+          '<div class="big">$' + cost.toFixed(2) + '</div>' +
+          sa + ' sq units × $' + rate.toFixed(3) + ' per sq unit = <strong>$' + cost.toFixed(2) + '</strong> of cardboard per box. ' +
+          'To cut costs, reduce the surface area by changing box dimensions.');
+      }
+
+      function checkVol() {
+        const v = +document.getElementById("check-vol").value;
+        const fb = document.getElementById("vol-fb");
+        if (v === 24) {
+          fb.textContent = "✅ Correct! V = 2 × 3 × 4 = 24 cubic units.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not quite. Multiply all three dimensions: 2 × 3 × 4. Try again.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length;
+        const checkOk = document.getElementById("vol-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length;
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + checkOk + checks + pitch; // max 4 + 1 + 5 + 1 = 11
+        const pct = Math.min(100, Math.round((total / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

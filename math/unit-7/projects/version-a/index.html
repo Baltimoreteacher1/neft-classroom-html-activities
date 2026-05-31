@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Theme Park Map Designer — Unit 7 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 7 Integers &amp; Coordinate Plane culminating project. Design a theme park map by plotting points, reflecting across axes, and computing distances."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --purple: #6d3fc0;
+        --purple-light: #f0eaff;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #1a1060 0%, #6d3fc0 55%, #c45a3c 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--purple);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--purple); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--purple-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--purple); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--purple); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } .grid4 { grid-template-columns: 1fr 1fr; } }
+
+      .btn {
+        background: var(--purple); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--teal); }
+      .btn.alt2 { background: var(--gold); color: #2a1c00; }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--purple-light); border: 1px solid #c9b6f0; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--purple); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--purple); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--purple), var(--coral)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+
+      /* SVG grid */
+      .grid-wrap { display: flex; justify-content: center; margin: 18px 0 0; }
+      .grid-wrap svg text { font-family: var(--font); }
+
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🎢</div>
+      <h1>Theme Park Map Designer</h1>
+      <p>You are the lead designer for a brand-new theme park. Use the coordinate plane to map out attractions, mirror rides across axes, and measure exact walking distances between them.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 7 · Integers &amp; Coordinate Plane</span>
+        <span class="tag">6.NS.6</span>
+        <span class="tag">6.NS.8</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-7/">Unit 7</a> / <a href="/math/unit-7/projects/">Projects</a> / Theme Park Map Designer
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🗺️ Your Mission</h2>
+        <p class="scenario">
+          The park spans all <strong>four quadrants</strong> of the coordinate plane. Work through four phases:
+          plot your attractions, reflect rides across axes to create mirrored sections,
+          calculate walking distances between attractions, and finalize your blueprint.
+          Fill in every box, hit <em>Calculate</em> or <em>Check</em>, then complete the checklist
+          and reflection before printing your park blueprint.
+        </p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Ordered Pairs &amp; Quadrants · 6.NS.6</div>
+            <h2>Plot Your Attractions</h2>
+          </div>
+        </div>
+        <p>Enter (x, y) coordinates for three park attractions — one per quadrant pair. The calculator will tell you which quadrant each attraction is in and plot a preview grid.</p>
+        <div class="task">
+          <strong>Rules:</strong> Use integers between −10 and 10. Place at least one attraction with a negative x, one with a negative y, and one in Quadrant I. Avoid (0, 0) — that is the park entrance!
+        </div>
+
+        <div style="margin-top:14px;">
+          <strong style="font-size:14px;">Attraction 1 — Roller Coaster</strong>
+          <div class="grid4" style="margin-top:8px;">
+            <div><label class="fld" for="a1x">x</label><input type="number" id="a1x" value="-4" min="-10" max="10" /></div>
+            <div><label class="fld" for="a1y">y</label><input type="number" id="a1y" value="6" min="-10" max="10" /></div>
+          </div>
+        </div>
+        <div style="margin-top:10px;">
+          <strong style="font-size:14px;">Attraction 2 — Water Slide</strong>
+          <div class="grid4" style="margin-top:8px;">
+            <div><label class="fld" for="a2x">x</label><input type="number" id="a2x" value="5" min="-10" max="10" /></div>
+            <div><label class="fld" for="a2y">y</label><input type="number" id="a2y" value="-3" min="-10" max="10" /></div>
+          </div>
+        </div>
+        <div style="margin-top:10px;">
+          <strong style="font-size:14px;">Attraction 3 — Haunted Mansion</strong>
+          <div class="grid4" style="margin-top:8px;">
+            <div><label class="fld" for="a3x">x</label><input type="number" id="a3x" value="-7" min="-10" max="10" /></div>
+            <div><label class="fld" for="a3y">y</label><input type="number" id="a3y" value="-5" min="-10" max="10" /></div>
+          </div>
+        </div>
+
+        <button class="btn" onclick="plotAttractions()">Plot &amp; Identify Quadrants</button>
+        <div class="readout" id="plot-out"></div>
+        <div class="grid-wrap">
+          <svg id="park-svg" width="300" height="300" viewBox="-150 -150 300 300" style="background:#fff;border-radius:12px;border:1px solid var(--line);"></svg>
+        </div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Quadrant I: x positive, y positive (+, +). Quadrant II: x negative, y positive (−, +). Quadrant III: x negative, y negative (−, −). Quadrant IV: x positive, y negative (+, −). Points on the axes are not in any quadrant.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Reflections Across Axes · 6.NS.6b</div>
+            <h2>Mirror the Ride</h2>
+          </div>
+        </div>
+        <p>To save design time, you will mirror an attraction by reflecting it across an axis. Enter any point and choose which axis to reflect across. The calculator shows the new coordinates and explains what changed.</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="rx">Original x</label>
+            <input type="number" id="rx" value="3" min="-10" max="10" />
+          </div>
+          <div>
+            <label class="fld" for="ry">Original y</label>
+            <input type="number" id="ry" value="4" min="-10" max="10" />
+          </div>
+        </div>
+        <label class="fld" for="raxis">Reflect across which axis?</label>
+        <select id="raxis">
+          <option value="x">x-axis (horizontal line)</option>
+          <option value="y">y-axis (vertical line)</option>
+          <option value="both">Both axes</option>
+        </select>
+        <button class="btn alt" onclick="calcReflection()">Reflect the point</button>
+        <div class="readout" id="reflect-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Reflecting across the <strong>x-axis</strong>: keep x the same, negate y. Example: (3, 4) → (3, −4). Reflecting across the <strong>y-axis</strong>: negate x, keep y the same. Example: (3, 4) → (−3, 4). Reflecting across both: negate both. Example: (3, 4) → (−3, −4).</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Distance on the Coordinate Plane · 6.NS.8</div>
+            <h2>Measure Walking Distance</h2>
+          </div>
+        </div>
+        <p>Guests walk in straight lines between attractions. If two points share an x-coordinate, the distance is |y₂ − y₁|. If they share a y-coordinate, the distance is |x₂ − x₁|. Enter two points that share one coordinate and calculate the path length.</p>
+        <div class="task">
+          <strong>Tip:</strong> To get a valid distance, make sure both points share the same x <em>or</em> the same y (but not both). The calculator will tell you if they do not.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="d1x">Point A — x</label>
+            <input type="number" id="d1x" value="2" min="-10" max="10" />
+          </div>
+          <div>
+            <label class="fld" for="d1y">Point A — y</label>
+            <input type="number" id="d1y" value="3" min="-10" max="10" />
+          </div>
+          <div>
+            <label class="fld" for="d2x">Point B — x</label>
+            <input type="number" id="d2x" value="2" min="-10" max="10" />
+          </div>
+          <div>
+            <label class="fld" for="d2y">Point B — y</label>
+            <input type="number" id="d2y" value="-5" min="-10" max="10" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcDistance()">Calculate walking distance</button>
+        <div class="readout" id="dist-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Absolute value = distance, never negative. |3 − (−5)| = |3 + 5| = |8| = 8. So (2, 3) and (2, −5) are 8 units apart because they share x = 2 and the y-values differ by 8.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Decision &amp; Quick Check · 6.NS.6 · 6.NS.8</div>
+            <h2>Finalize the Blueprint</h2>
+          </div>
+        </div>
+        <p>Make a final layout decision, then pass the quick-check to confirm your understanding.</p>
+
+        <div class="task">
+          <strong>Quick check 1:</strong> What is the distance between (2, 3) and (2, 9)?
+        </div>
+        <label class="fld" for="qc1">Your answer (in units)</label>
+        <input type="number" id="qc1" placeholder="Type a number" />
+        <button class="btn alt" onclick="checkQC1()">Check answer</button>
+        <div class="feedback" id="qc1-fb"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check 2:</strong> What are the coordinates of (4, −5) reflected across the x-axis?
+        </div>
+        <div class="grid2">
+          <div><label class="fld" for="qc2x">Reflected x</label><input type="number" id="qc2x" placeholder="x" /></div>
+          <div><label class="fld" for="qc2y">Reflected y</label><input type="number" id="qc2y" placeholder="y" /></div>
+        </div>
+        <button class="btn" onclick="checkQC2()">Check reflection</button>
+        <div class="feedback" id="qc2-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Park Blueprint Reflection</h2>
+          </div>
+        </div>
+        <p>Write a 3–5 sentence blueprint summary. Describe where your attractions are located, explain one reflection you used, and state one walking distance. Use your actual coordinates and numbers.</p>
+        <textarea id="pitch" placeholder="My theme park spans all four quadrants. The Roller Coaster is at (__, __) in Quadrant __, and the Water Slide is at (__, __) in Quadrant __. I reflected the point (__, __) across the __-axis to get (__, __). The walking distance from (__, __) to (__, __) is __ units because they share the same __ and |__ − __| = __."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Blueprint Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I plotted three attractions and identified each quadrant.</li>
+          <li><input type="checkbox" /> I reflected a point across an axis and explained what changed.</li>
+          <li><input type="checkbox" /> I calculated a walking distance using absolute value.</li>
+          <li><input type="checkbox" /> I passed both quick checks.</li>
+          <li><input type="checkbox" /> My blueprint summary uses my real coordinates and numbers.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print my blueprint</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Plotting &amp; Quadrants</td><td>All three points correctly placed and quadrant identified with sign reasoning shown</td><td>All quadrants correctly identified</td><td>One or two quadrants correct; some sign errors</td></tr>
+          <tr><td>Reflections</td><td>Correct new coordinates and clear explanation of which value changed and why</td><td>Correct new coordinates</td><td>One coordinate correct or partial reasoning</td></tr>
+          <tr><td>Distance</td><td>Correct distance with absolute-value work shown; explains which coordinate is shared</td><td>Correct distance calculated</td><td>Attempted with a computation error</td></tr>
+          <tr><td>Communication</td><td>Blueprint summary clearly justifies every number and coordinate used</td><td>Summary uses most coordinates</td><td>Summary is unclear or missing values</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 7 Culminating Project · Version A · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function show(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      function quadrantName(x, y) {
+        if (x === 0 || y === 0) return "on an axis (not in any quadrant)";
+        if (x > 0 && y > 0) return "Quadrant I (+, +)";
+        if (x < 0 && y > 0) return "Quadrant II (−, +)";
+        if (x < 0 && y < 0) return "Quadrant III (−, −)";
+        return "Quadrant IV (+, −)";
+      }
+
+      function plotAttractions() {
+        const pts = [
+          { name: "Roller Coaster", x: +document.getElementById("a1x").value, y: +document.getElementById("a1y").value },
+          { name: "Water Slide",    x: +document.getElementById("a2x").value, y: +document.getElementById("a2y").value },
+          { name: "Haunted Mansion",x: +document.getElementById("a3x").value, y: +document.getElementById("a3y").value }
+        ];
+
+        let html = "";
+        pts.forEach(function(p) {
+          html += "<div style='margin:6px 0;'>🎯 <strong>" + p.name + "</strong> at (" + p.x + ", " + p.y + ") — <strong>" + quadrantName(p.x, p.y) + "</strong></div>";
+        });
+
+        // Draw SVG grid
+        const svg = document.getElementById("park-svg");
+        const scale = 13; // pixels per unit
+        const colors = ["#6d3fc0", "#0e8a7d", "#c45a3c"];
+        const labels = ["🎢", "💧", "👻"];
+
+        let svgContent = "";
+        // Grid lines
+        for (let i = -10; i <= 10; i++) {
+          const pos = i * scale;
+          const opacity = i === 0 ? "0.8" : "0.18";
+          const sw = i === 0 ? "2" : "1";
+          svgContent += '<line x1="' + pos + '" y1="-130" x2="' + pos + '" y2="130" stroke="#1a2633" stroke-width="' + sw + '" opacity="' + opacity + '"/>';
+          svgContent += '<line x1="-130" y1="' + pos + '" x2="130" y2="' + pos + '" stroke="#1a2633" stroke-width="' + sw + '" opacity="' + opacity + '"/>';
+        }
+        // Axis labels
+        svgContent += '<text x="135" y="5" font-size="12" font-weight="800" fill="#1a2633">x</text>';
+        svgContent += '<text x="3" y="-135" font-size="12" font-weight="800" fill="#1a2633">y</text>';
+        // Tick numbers
+        for (let i = -10; i <= 10; i += 2) {
+          if (i !== 0) {
+            svgContent += '<text x="' + (i * scale - 3) + '" y="14" font-size="9" fill="#5e6e7e" text-anchor="middle">' + i + '</text>';
+            svgContent += '<text x="-14" y="' + (-i * scale + 4) + '" font-size="9" fill="#5e6e7e" text-anchor="middle">' + i + '</text>';
+          }
+        }
+        svgContent += '<text x="-8" y="14" font-size="9" fill="#5e6e7e">0</text>';
+
+        // Points
+        pts.forEach(function(p, i) {
+          const cx = p.x * scale;
+          const cy = -p.y * scale; // SVG y is flipped
+          svgContent += '<circle cx="' + cx + '" cy="' + cy + '" r="7" fill="' + colors[i] + '"/>';
+          svgContent += '<text x="' + (cx + 10) + '" y="' + (cy - 8) + '" font-size="13" fill="' + colors[i] + '" font-weight="800">(' + p.x + ',' + p.y + ')</text>';
+        });
+
+        svg.innerHTML = svgContent;
+        show("plot-out", html + '<div style="margin-top:8px;color:var(--green);font-weight:700;">✅ Attractions plotted! Check the grid below.</div>');
+      }
+
+      function calcReflection() {
+        const x = +document.getElementById("rx").value;
+        const y = +document.getElementById("ry").value;
+        const axis = document.getElementById("raxis").value;
+        let nx, ny, explanation;
+
+        if (axis === "x") {
+          nx = x; ny = -y;
+          explanation = "Reflecting across the <strong>x-axis</strong> keeps x the same and negates y. " +
+            "The sign of y changed from " + (y >= 0 ? "positive" : "negative") + " to " + (ny >= 0 ? "positive" : "negative") + ".";
+        } else if (axis === "y") {
+          nx = -x; ny = y;
+          explanation = "Reflecting across the <strong>y-axis</strong> negates x and keeps y the same. " +
+            "The sign of x changed from " + (x >= 0 ? "positive" : "negative") + " to " + (nx >= 0 ? "positive" : "negative") + ".";
+        } else {
+          nx = -x; ny = -y;
+          explanation = "Reflecting across <strong>both axes</strong> negates both x and y — this is the same as a 180° rotation around the origin.";
+        }
+
+        show("reflect-out",
+          '<div class="big">(' + nx + ', ' + ny + ')</div>' +
+          '<strong>Original:</strong> (' + x + ', ' + y + ') → <strong>Reflected:</strong> (' + nx + ', ' + ny + ')<br><br>' +
+          explanation);
+      }
+
+      function calcDistance() {
+        const x1 = +document.getElementById("d1x").value;
+        const y1 = +document.getElementById("d1y").value;
+        const x2 = +document.getElementById("d2x").value;
+        const y2 = +document.getElementById("d2y").value;
+
+        if (x1 === x2 && y1 === y2) {
+          show("dist-out", "⚠️ Those are the same point! Distance = 0 units. Enter two different points.");
+          return;
+        }
+        if (x1 !== x2 && y1 !== y2) {
+          show("dist-out",
+            "⚠️ These points do <strong>not</strong> share an x or y coordinate (" + x1 + " ≠ " + x2 + " and " + y1 + " ≠ " + y2 + "). " +
+            "For this phase, adjust one coordinate so the points share a value. " +
+            "(Diagonal distances require the Pythagorean Theorem, which is a later topic.)");
+          return;
+        }
+
+        let dist, sharedLabel, diffLabel, formula;
+        if (x1 === x2) {
+          dist = Math.abs(y2 - y1);
+          sharedLabel = "x = " + x1;
+          diffLabel = "y-values";
+          formula = "|" + y2 + " − (" + y1 + ")| = |" + (y2 - y1) + "| = " + dist;
+        } else {
+          dist = Math.abs(x2 - x1);
+          sharedLabel = "y = " + y1;
+          diffLabel = "x-values";
+          formula = "|" + x2 + " − (" + x1 + ")| = |" + (x2 - x1) + "| = " + dist;
+        }
+
+        show("dist-out",
+          '<div class="big">' + dist + ' units</div>' +
+          'Points A(' + x1 + ', ' + y1 + ') and B(' + x2 + ', ' + y2 + ') share <strong>' + sharedLabel + '</strong>, ' +
+          'so the distance is the absolute difference of their <strong>' + diffLabel + '</strong>.<br>' +
+          'Distance = ' + formula + '.');
+      }
+
+      function checkQC1() {
+        const v = +document.getElementById("qc1").value;
+        const fb = document.getElementById("qc1-fb");
+        if (v === 6) {
+          fb.textContent = "✅ Correct! (2, 3) and (2, 9) share x = 2, so distance = |9 − 3| = 6 units.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not yet. Both points have x = 2, so use |9 − 3|. Try again.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function checkQC2() {
+        const x = +document.getElementById("qc2x").value;
+        const y = +document.getElementById("qc2y").value;
+        const fb = document.getElementById("qc2-fb");
+        if (x === 4 && y === 5) {
+          fb.textContent = "✅ Correct! Reflecting (4, −5) across the x-axis keeps x = 4 and negates y: (4, 5).";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not quite. Reflecting across the x-axis: keep x the same, negate y. So x stays 4 and y becomes 5.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length;
+        const qc1Ok = document.getElementById("qc1-fb").classList.contains("ok") ? 1 : 0;
+        const qc2Ok = document.getElementById("qc2-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length;
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        // max: 3 readouts + 2 quickchecks + 5 checklist + 1 pitch = 11
+        const total = readouts + qc1Ok + qc2Ok + checks + pitch;
+        const pct = Math.min(100, Math.round((total / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+
+      // Draw empty grid on load
+      (function() {
+        const svg = document.getElementById("park-svg");
+        const scale = 13;
+        let svgContent = "";
+        for (let i = -10; i <= 10; i++) {
+          const pos = i * scale;
+          const opacity = i === 0 ? "0.8" : "0.18";
+          const sw = i === 0 ? "2" : "1";
+          svgContent += '<line x1="' + pos + '" y1="-130" x2="' + pos + '" y2="130" stroke="#1a2633" stroke-width="' + sw + '" opacity="' + opacity + '"/>';
+          svgContent += '<line x1="-130" y1="' + pos + '" x2="130" y2="' + pos + '" stroke="#1a2633" stroke-width="' + sw + '" opacity="' + opacity + '"/>';
+        }
+        svgContent += '<text x="135" y="5" font-size="12" font-weight="800" fill="#1a2633">x</text>';
+        svgContent += '<text x="3" y="-135" font-size="12" font-weight="800" fill="#1a2633">y</text>';
+        for (let i = -10; i <= 10; i += 2) {
+          if (i !== 0) {
+            svgContent += '<text x="' + (i * scale - 3) + '" y="14" font-size="9" fill="#5e6e7e" text-anchor="middle">' + i + '</text>';
+            svgContent += '<text x="-14" y="' + (-i * scale + 4) + '" font-size="9" fill="#5e6e7e" text-anchor="middle">' + i + '</text>';
+          }
+        }
+        svgContent += '<text x="-8" y="14" font-size="9" fill="#5e6e7e">0</text>';
+        // Park entrance marker at origin
+        svgContent += '<circle cx="0" cy="0" r="5" fill="#d4952a"/>';
+        svgContent += '<text x="8" y="-8" font-size="10" fill="#d4952a" font-weight="700">Entrance</text>';
+        svg.innerHTML = svgContent;
+      })();
+    </script>
+  </body>
+</html>

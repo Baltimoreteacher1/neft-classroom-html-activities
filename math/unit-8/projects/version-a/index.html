@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escape Room Architect — Unit 8 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 8 Equations &amp; Inequalities culminating project. Design and build an escape room using one-step equations, inverse operations, and algebraic reasoning."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --purple: #6d3fa0;
+        --purple-light: #f0eafa;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #1a0533 0%, #6d3fa0 60%, #1a6fb5 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--purple);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--purple); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--blue); }
+      .phase:nth-of-type(3) .phase-num { background: var(--teal); }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--purple-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--purple); }
+
+      .eq-display {
+        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+        font-size: 22px; font-weight: 800; color: var(--navy); text-align: center; letter-spacing: .03em;
+      }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      .btn {
+        background: var(--purple); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--teal); }
+      .btn.blue { background: var(--blue); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--purple-light); border: 1px solid #c8a8e8; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--purple); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--purple), var(--blue)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🔐</div>
+      <h1>Escape Room Architect</h1>
+      <p>You are designing a math escape room. Write equations for your clues, solve them with inverse operations, and build an answer key — so players can only escape if their algebra is right.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 8 · Equations &amp; Inequalities</span>
+        <span class="tag">6.EE.6</span>
+        <span class="tag">6.EE.7</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-8/">Unit 8</a> / <a href="/math/unit-8/projects/">Projects</a> / Escape Room Architect
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🗝️ Your Mission</h2>
+        <p class="scenario">
+          An escape room company has hired you to design four puzzle locks. Each lock opens
+          only when a player solves a one-step equation. Work through four phases:
+          <strong>translate a clue into an equation</strong>, write and solve
+          <strong>addition/subtraction</strong> equations, write and solve
+          <strong>multiplication/division</strong> equations, and finally
+          <strong>sequence your puzzles and verify</strong> a known answer. Fill every box,
+          hit <em>Solve &amp; Verify</em>, and finish the blueprint checklist. Then print
+          your escape room answer key.
+        </p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Writing Equations · 6.EE.6</div>
+            <h2>Translate the Clue</h2>
+          </div>
+        </div>
+        <p>Good puzzle designers always start with a story clue and write it as an equation. Use a variable for the unknown combination number.</p>
+        <div class="task">
+          <strong>Puzzle Clue (Lock A):</strong> "The secret combination is a number. When you add 7 to it, you get 20. What is the combination?"<br><br>
+          Write this as an equation using <em>x</em> for the unknown combination.
+        </div>
+        <label class="fld" for="eq-written">Write your equation here (example format: x + 7 = 20)</label>
+        <input type="text" id="eq-written" placeholder="x + 7 = 20" />
+        <button class="btn" onclick="checkEquation()">Check my equation</button>
+        <div class="feedback" id="eq-fb"></div>
+
+        <div style="margin-top:18px;">
+          <label class="fld">Now customize your own clue for Lock B:</label>
+          <div class="grid2">
+            <div>
+              <label class="fld" for="clue-p">Starting value (p) — amount added or subtracted</label>
+              <input type="number" id="clue-p" value="9" min="1" max="50" />
+            </div>
+            <div>
+              <label class="fld" for="clue-q">Result (q) — what the clue totals</label>
+              <input type="number" id="clue-q" value="25" min="2" max="99" />
+            </div>
+          </div>
+          <button class="btn blue" onclick="buildClue()">Build Lock B clue</button>
+          <div class="readout" id="clue-out"></div>
+        </div>
+
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>A variable is a letter (like x) that stands for the unknown. "A number plus 7 equals 20" → <strong>x + 7 = 20</strong>. Your equation must have a variable, an operation, an equal sign, and a constant on the right side.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Addition &amp; Subtraction Equations · 6.EE.7</div>
+            <h2>Solve Lock C (Add/Subtract)</h2>
+          </div>
+        </div>
+        <p>Design a puzzle where a player must solve an addition or subtraction equation. The calculator below solves x + p = q (or x − p = q) and verifies by substitution — just like the escape room answer key.</p>
+        <div class="task">
+          <strong>Lock C — Addition Equation:</strong> Choose your own values for p and q. The equation is <em>x + p = q</em>, so <em>x = q − p</em>. The solution must be positive (use q &gt; p).
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="as-p">Value of p (added to x)</label>
+            <input type="number" id="as-p" value="8" min="1" max="99" />
+          </div>
+          <div>
+            <label class="fld" for="as-q">Value of q (right side)</label>
+            <input type="number" id="as-q" value="15" min="2" max="199" />
+          </div>
+        </div>
+        <button class="btn alt" onclick="solveAddSub()">Solve &amp; Verify</button>
+        <div class="readout" id="as-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Use the <strong>inverse operation</strong>: addition is undone by subtraction. For x + 8 = 15, subtract 8 from both sides: x = 15 − 8 = 7. Then verify: 7 + 8 = 15 ✓</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Multiplication &amp; Division Equations · 6.EE.7</div>
+            <h2>Solve Lock D (Multiply/Divide)</h2>
+          </div>
+        </div>
+        <p>Now design a trickier puzzle using multiplication. The equation is <em>p · x = q</em>, so <em>x = q ÷ p</em>. Pick values so the answer is a whole number — that keeps the escape room fair.</p>
+        <div class="task">
+          <strong>Lock D — Multiplication Equation:</strong> Choose p and q so that q is evenly divisible by p (no remainders). Example: p = 4, q = 28 → x = 7.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="md-p">Value of p (multiplied by x)</label>
+            <input type="number" id="md-p" value="4" min="2" max="20" />
+          </div>
+          <div>
+            <label class="fld" for="md-q">Value of q (right side, must be divisible by p)</label>
+            <input type="number" id="md-q" value="28" min="2" max="200" />
+          </div>
+        </div>
+        <button class="btn" onclick="solveMulDiv()">Solve &amp; Verify</button>
+        <div class="readout" id="md-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Use the <strong>inverse operation</strong>: multiplication is undone by division. For 4x = 28, divide both sides by 4: x = 28 ÷ 4 = 7. Then verify: 4 × 7 = 28 ✓. Make sure q ÷ p has no remainder!</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Sequence &amp; Verify · 6.EE.7</div>
+            <h2>Sequence the Puzzles &amp; Final Check</h2>
+          </div>
+        </div>
+        <p>Every escape room needs a logical order. Explain your puzzle sequence and verify a known answer to confirm your answer key is airtight.</p>
+        <div class="task">
+          <strong>Sequencing Decision:</strong> Which lock should come first, second, third, and fourth? Write your reasoning below — think about difficulty level (simpler equations first).
+        </div>
+        <label class="fld" for="sequence">Your puzzle sequence and reasoning (1–2 sentences)</label>
+        <textarea id="sequence" placeholder="I would place Lock A first because... Lock C second because... Lock D last because the multiplication is the hardest step."></textarea>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Final Quick-Check (known answer):</strong> Solve 3x = 21. You should get x = 7. Type your answer below to confirm your algebra is ready for the answer key.
+        </div>
+        <label class="fld" for="check-final">Your answer for 3x = 21</label>
+        <input type="number" id="check-final" placeholder="x = ?" />
+        <button class="btn alt" onclick="checkFinal()">Check answer</button>
+        <div class="feedback" id="final-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Complete the Escape Room Blueprint</h2>
+          </div>
+        </div>
+        <p>Write your escape room blueprint (3–5 sentences). Name each lock, give its equation, and state the combination (solution). A player reading this should know exactly what equation to solve for each lock.</p>
+        <textarea id="pitch" placeholder="My escape room has four locks. Lock A: x + 7 = 20, combination = 13. Lock B: x + ___ = ___, combination = ___. Lock C: x + ___ = ___, combination = ___. Lock D: ___x = ___, combination = ___. All combinations were verified by substitution."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Blueprint Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I translated a story clue into a correct equation using a variable.</li>
+          <li><input type="checkbox" /> I solved an addition/subtraction equation and verified by substitution.</li>
+          <li><input type="checkbox" /> I solved a multiplication/division equation and verified by substitution.</li>
+          <li><input type="checkbox" /> I explained a logical puzzle sequence for the escape room.</li>
+          <li><input type="checkbox" /> My blueprint names every lock's equation and solution.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print my blueprint</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Writing Equations (6.EE.6)</td><td>Equation correctly uses a variable; clue matches equation perfectly</td><td>Equation is correct</td><td>Variable used but equation has an error</td></tr>
+          <tr><td>Add/Sub Equations (6.EE.7)</td><td>Solution correct; substitution check shown and correct</td><td>Solution correct</td><td>Attempted with a computation error</td></tr>
+          <tr><td>Mult/Div Equations (6.EE.7)</td><td>Solution correct; substitution check shown and correct</td><td>Solution correct</td><td>Attempted with a computation error</td></tr>
+          <tr><td>Communication</td><td>Blueprint names all four locks with equations, solutions, and clear reasoning</td><td>Blueprint names most locks with equations and solutions</td><td>Blueprint is incomplete or missing solutions</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 8 Culminating Project · Version A · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function show(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      // Phase 1 — check written equation
+      function checkEquation() {
+        const raw = document.getElementById("eq-written").value.trim().toLowerCase().replace(/\s+/g, "");
+        const fb = document.getElementById("eq-fb");
+        // Accept x+7=20 in various forms
+        const valid = raw === "x+7=20" || raw === "7+x=20";
+        if (valid) {
+          fb.textContent = "✅ Correct! x + 7 = 20 uses a variable and matches the clue exactly.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not quite. The clue says 'a number plus 7 equals 20' → x + 7 = 20. Check spacing and symbols.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      // Phase 1 — build custom clue
+      function buildClue() {
+        const p = +document.getElementById("clue-p").value;
+        const q = +document.getElementById("clue-q").value;
+        if (!p || !q || q <= p) {
+          show("clue-out", "⚠️ Make sure q is greater than p so the combination is positive.");
+          return;
+        }
+        const x = q - p;
+        show("clue-out",
+          '<div class="big">Lock B: x + ' + p + ' = ' + q + '</div>' +
+          'Clue: "When you add <strong>' + p + '</strong> to the combination, you get <strong>' + q + '</strong>."<br>' +
+          'Equation: <strong>x + ' + p + ' = ' + q + '</strong><br>' +
+          'Combination (answer key): x = ' + q + ' − ' + p + ' = <strong>' + x + '</strong><br>' +
+          'Verify: ' + x + ' + ' + p + ' = ' + (x + p) + (x + p === q ? ' ✅' : ' ❌'));
+      }
+
+      // Phase 2 — solve addition equation x + p = q
+      function solveAddSub() {
+        const p = +document.getElementById("as-p").value;
+        const q = +document.getElementById("as-q").value;
+        if (!p || !q) return;
+        if (q <= p) {
+          show("as-out", "⚠️ Make sure q is greater than p so the solution is a positive number.");
+          return;
+        }
+        const x = q - p;
+        const verify = x + p;
+        show("as-out",
+          '<div class="big">x = ' + x + '</div>' +
+          'Equation: <strong>x + ' + p + ' = ' + q + '</strong><br>' +
+          'Step: Subtract ' + p + ' from both sides → x = ' + q + ' − ' + p + ' = <strong>' + x + '</strong><br>' +
+          'Substitution check: ' + x + ' + ' + p + ' = <strong>' + verify + '</strong>' +
+          (verify === q ? ' ✅ Verified! This is your Lock C combination.' : ' ❌ Something went wrong.'));
+      }
+
+      // Phase 3 — solve multiplication equation p·x = q
+      function solveMulDiv() {
+        const p = +document.getElementById("md-p").value;
+        const q = +document.getElementById("md-q").value;
+        if (!p || !q) return;
+        if (q % p !== 0) {
+          show("md-out", "⚠️ " + q + " is not evenly divisible by " + p + ". Choose values where q ÷ p has no remainder. Example: p = 4, q = 28.");
+          return;
+        }
+        const x = q / p;
+        const verify = p * x;
+        show("md-out",
+          '<div class="big">x = ' + x + '</div>' +
+          'Equation: <strong>' + p + 'x = ' + q + '</strong><br>' +
+          'Step: Divide both sides by ' + p + ' → x = ' + q + ' ÷ ' + p + ' = <strong>' + x + '</strong><br>' +
+          'Substitution check: ' + p + ' × ' + x + ' = <strong>' + verify + '</strong>' +
+          (verify === q ? ' ✅ Verified! This is your Lock D combination.' : ' ❌ Something went wrong.'));
+      }
+
+      // Phase 4 — quick-check 3x = 21 → x = 7
+      function checkFinal() {
+        const v = +document.getElementById("check-final").value;
+        const fb = document.getElementById("final-fb");
+        if (v === 7) {
+          fb.textContent = "✅ Correct! 3x = 21 → x = 21 ÷ 3 = 7. Verify: 3 × 7 = 21 ✓ Your answer key is ready!";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not yet. Divide both sides by 3: x = 21 ÷ 3. Try again.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // max 2 (clue-out, as-out/md-out)
+        const eqOk = document.getElementById("eq-fb").classList.contains("ok") ? 1 : 0;
+        const finalOk = document.getElementById("final-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length;
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        const seq = document.getElementById("sequence").value.trim().length > 20 ? 1 : 0;
+        // max: 2 readouts + 1 eqOk + 1 finalOk + 5 checks + 1 pitch + 1 seq = 11
+        const total = readouts + eqOk + finalOk + checks + pitch + seq;
+        const pct = Math.min(100, Math.round((total / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+      document.getElementById("sequence").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

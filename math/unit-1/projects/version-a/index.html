@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Block Party Planner — Unit 1 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 1 Number Sense culminating project. Plan a neighborhood block party using GCF, LCM, decimal operations, and multi-digit division."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--gold);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--blue); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--navy); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      .btn {
+        background: var(--blue); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--teal); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--teal-light); border: 1px solid #bfe6e0; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🎉</div>
+      <h1>Block Party Planner</h1>
+      <p>You are the lead organizer for your neighborhood block party. Use number sense to plan the goodie bags, the schedule, and the budget — without wasting a single dollar.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 1 · Number Sense</span>
+        <span class="tag">6.NS.2</span>
+        <span class="tag">6.NS.3</span>
+        <span class="tag">6.NS.4</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-1/">Unit 1</a> / <a href="/math/unit-1/projects/">Projects</a> / Block Party Planner
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🗺️ Your Mission</h2>
+        <p class="scenario">
+          The neighborhood council gave your team a <strong>$300 budget</strong> and a list of jobs.
+          Work through four phases. Each phase uses real number sense — greatest common factor,
+          least common multiple, decimal operations, and multi-digit division. Fill in every
+          box, hit <em>Calculate</em> or <em>Check</em>, and finish the planning checklist and
+          reflection at the end. Then print your plan for the council.
+        </p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Greatest Common Factor · 6.NS.4</div>
+            <h2>Build Identical Goodie Bags</h2>
+          </div>
+        </div>
+        <p>You have donated supplies and want to make the <strong>largest number of identical goodie bags</strong> with no leftovers. The number of bags is the GCF of your two supply counts.</p>
+        <div class="task">
+          <strong>Supplies on hand:</strong> stickers and granola bars. Choose your own donation amounts (use the suggested numbers or pick your own that share a factor).
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="g-stickers">Number of stickers</label>
+            <input type="number" id="g-stickers" value="48" min="1" />
+          </div>
+          <div>
+            <label class="fld" for="g-bars">Number of granola bars</label>
+            <input type="number" id="g-bars" value="36" min="1" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcGCF()">Calculate the most bags</button>
+        <div class="readout" id="gcf-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>List the factors of each number, or use prime factorization. The GCF is the biggest factor they share. Example: GCF(48, 36) = 12, so you can make 12 bags, each with 48÷12 = 4 stickers and 36÷12 = 3 bars.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Least Common Multiple · 6.NS.4</div>
+            <h2>Sync the Entertainment Schedule</h2>
+          </div>
+        </div>
+        <p>The DJ plays a hype song every few minutes and the bubble machine fires on its own cycle. When do they line up again at the <strong>same moment</strong>? That is the LCM.</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="l-dj">DJ hype song every (minutes)</label>
+            <input type="number" id="l-dj" value="6" min="1" />
+          </div>
+          <div>
+            <label class="fld" for="l-bubble">Bubble machine every (minutes)</label>
+            <input type="number" id="l-bubble" value="8" min="1" />
+          </div>
+        </div>
+        <button class="btn alt" onclick="calcLCM()">Find the next big moment</button>
+        <div class="readout" id="lcm-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>List the multiples of each number until you find the first one they share. Multiples of 6: 6, 12, 18, 24… Multiples of 8: 8, 16, 24… They meet at 24 minutes.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Decimal Operations · 6.NS.3</div>
+            <h2>Track the Budget to the Penny</h2>
+          </div>
+        </div>
+        <p>Add up your shopping cart with decimal addition, then see how much of the <strong>$300 budget</strong> is left. Stay in the green!</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="c-food">Food &amp; drinks ($)</label>
+            <input type="number" id="c-food" value="124.50" step="0.01" min="0" />
+          </div>
+          <div>
+            <label class="fld" for="c-decor">Decorations ($)</label>
+            <input type="number" id="c-decor" value="38.75" step="0.01" min="0" />
+          </div>
+          <div>
+            <label class="fld" for="c-games">Games &amp; prizes ($)</label>
+            <input type="number" id="c-games" value="67.20" step="0.01" min="0" />
+          </div>
+          <div>
+            <label class="fld" for="c-music">Music &amp; supplies ($)</label>
+            <input type="number" id="c-music" value="45.00" step="0.01" min="0" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcBudget()">Add it up</button>
+        <div class="readout" id="budget-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Line up the decimal points and add. Then subtract the total from 300.00. If your total is over 300, trim a category!</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Multi-Digit &amp; Decimal Division · 6.NS.2 · 6.NS.3</div>
+            <h2>Set a Fair Price Per Person</h2>
+          </div>
+        </div>
+        <p>You spent money — now split shared costs fairly. Divide the total cost by the number of guests to find the <strong>cost per person</strong>, then check your answer.</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="d-total">Total shared cost ($)</label>
+            <input type="number" id="d-total" value="275.40" step="0.01" min="0" />
+          </div>
+          <div>
+            <label class="fld" for="d-guests">Number of guests</label>
+            <input type="number" id="d-guests" value="36" min="1" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcPer()">Calculate cost per guest</button>
+        <div class="readout" id="per-out"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check:</strong> A pack of 144 cups is shared equally among 6 tables.
+          How many cups per table? (Multi-digit division)
+        </div>
+        <label class="fld" for="check-cups">Your answer (cups per table)</label>
+        <input type="number" id="check-cups" placeholder="Type a number" />
+        <button class="btn alt" onclick="checkCups()">Check answer</button>
+        <div class="feedback" id="cups-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Pitch Your Plan to the Council</h2>
+          </div>
+        </div>
+        <p>Write a short pitch (3–5 sentences) that uses your numbers from above. Convince the council your plan is smart and fair.</p>
+        <textarea id="pitch" placeholder="In our block party plan, we will make ___ goodie bags because the GCF of our supplies is ___. The DJ and bubble machine sync every ___ minutes. Our total cost is $___, which leaves $___ in the budget, and each guest's fair share is $___."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Planning Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I found the GCF to make equal goodie bags with no leftovers.</li>
+          <li><input type="checkbox" /> I found the LCM for when the entertainment syncs up.</li>
+          <li><input type="checkbox" /> My budget total is at or under $300.00.</li>
+          <li><input type="checkbox" /> I divided to find a fair cost per guest and checked my division.</li>
+          <li><input type="checkbox" /> I wrote a clear pitch that uses my real numbers.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print my plan</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Factors &amp; Multiples (GCF/LCM)</td><td>GCF and LCM both correct with reasoning shown</td><td>Both answers correct</td><td>One answer correct or partial reasoning</td></tr>
+          <tr><td>Decimal Operations</td><td>Budget is accurate to the penny and under $300</td><td>Budget total is accurate</td><td>Minor decimal/place-value errors</td></tr>
+          <tr><td>Division</td><td>Cost per guest correct and division check correct</td><td>Cost per guest correct</td><td>Attempted with a computation error</td></tr>
+          <tr><td>Communication</td><td>Pitch clearly justifies every number used</td><td>Pitch uses most numbers</td><td>Pitch is unclear or missing numbers</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 1 Culminating Project · Version A · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+      function lcm(a, b) { return Math.abs(a * b) / gcd(a, b); }
+      function show(id, html) { const el = document.getElementById(id); el.innerHTML = html; el.classList.add("show"); updateProgress(); }
+
+      function calcGCF() {
+        const s = +document.getElementById("g-stickers").value;
+        const b = +document.getElementById("g-bars").value;
+        if (!s || !b) return;
+        const g = gcd(s, b);
+        show("gcf-out",
+          '<div class="big">' + g + ' goodie bags</div>' +
+          'Each bag gets <strong>' + (s / g) + ' stickers</strong> and <strong>' + (b / g) + ' granola bars</strong>, with nothing left over. ' +
+          (g === 1 ? '⚠️ These numbers only share a factor of 1 — try amounts that share a bigger factor for more bags!' : '✅ GCF(' + s + ', ' + b + ') = ' + g + '.'));
+      }
+
+      function calcLCM() {
+        const d = +document.getElementById("l-dj").value;
+        const b = +document.getElementById("l-bubble").value;
+        if (!d || !b) return;
+        const l = lcm(d, b);
+        show("lcm-out",
+          '<div class="big">Every ' + l + ' minutes</div>' +
+          'The DJ song and the bubble machine line up at the same moment every <strong>' + l + ' minutes</strong>. ' +
+          'Plan your biggest crowd moment then! LCM(' + d + ', ' + b + ') = ' + l + '.');
+      }
+
+      function calcBudget() {
+        const vals = ["c-food", "c-decor", "c-games", "c-music"].map(id => +document.getElementById(id).value || 0);
+        const total = vals.reduce((a, c) => a + c, 0);
+        const left = 300 - total;
+        const ok = left >= 0;
+        show("budget-out",
+          '<div class="big">$' + total.toFixed(2) + ' spent</div>' +
+          (ok
+            ? '✅ You have <strong>$' + left.toFixed(2) + '</strong> left of your $300.00 budget. Nice planning!'
+            : '⚠️ You are <strong>$' + Math.abs(left).toFixed(2) + ' over budget</strong>. Trim a category and recalculate.'));
+      }
+
+      function calcPer() {
+        const t = +document.getElementById("d-total").value;
+        const g = +document.getElementById("d-guests").value;
+        if (!t || !g) return;
+        const per = t / g;
+        show("per-out",
+          '<div class="big">$' + per.toFixed(2) + ' per guest</div>' +
+          'Dividing $' + t.toFixed(2) + ' ÷ ' + g + ' guests gives a fair share of <strong>$' + per.toFixed(2) + '</strong> each.');
+      }
+
+      function checkCups() {
+        const v = +document.getElementById("check-cups").value;
+        const fb = document.getElementById("cups-fb");
+        if (v === 24) { fb.textContent = "✅ Correct! 144 ÷ 6 = 24 cups per table."; fb.className = "feedback ok"; }
+        else { fb.textContent = "❌ Not yet. Divide 144 ÷ 6 carefully and try again."; fb.className = "feedback no"; }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length;
+        const cupsOk = document.getElementById("cups-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length;
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + cupsOk + checks + pitch; // max 4 + 1 + 5 + 1 = 11
+        const pct = Math.min(100, Math.round((total / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>
