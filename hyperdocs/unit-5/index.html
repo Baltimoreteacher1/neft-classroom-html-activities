@@ -743,7 +743,35 @@
     </div><!-- /.wrap -->
 
     <script>
-      /* ── Self-check handler ── */
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — tolerant of common formatting
+         variations without changing any correct answer.
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        s = s.replace(/\s+/g, '');
+        s = s.replace(/^\$/, '');
+        s = s.replace(/%$/, '');
+        s = s.replace(/,(\d{3})/g, '$1');
+        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|sq)$/, '');
+        return s;
+      }
+
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        return numericMatch(s, c);
+      }
+
+      /* ── Self-check handler (radio buttons only — compare letter values) ── */
       function checkSC(id, correct, explanation) {
         var chosen = document.querySelector('input[name="' + id + '"]:checked');
         var fb = document.getElementById(id + '-fb');
@@ -772,6 +800,9 @@
               var n = document.getElementById(id);
               return n ? n.value.trim() : '';
             }
+            function norm(id) {
+              return normalise(val(id));
+            }
             function radio(name) {
               var n = document.querySelector('input[name="' + name + '"]:checked');
               return n ? n.value : '';
@@ -787,28 +818,28 @@
               items: [
                 {
                   prompt: '1. Rectangle: base 7 m × height 3 m. Area?',
-                  studentAnswer: val('q1'),
+                  studentAnswer: norm('q1'),
                   correctAnswer: '21',
                   points: 1,
                   skill: 'Area of rectangles'
                 },
                 {
                   prompt: '2. Square floor, side 9 m. Area?',
-                  studentAnswer: val('q2'),
+                  studentAnswer: norm('q2'),
                   correctAnswer: '81',
                   points: 1,
                   skill: 'Area of rectangles'
                 },
                 {
                   prompt: '3. Triangle: base 10 m × height 6 m. Area?',
-                  studentAnswer: val('q3'),
+                  studentAnswer: norm('q3'),
                   correctAnswer: '30',
                   points: 1,
                   skill: 'Area of triangles'
                 },
                 {
                   prompt: '4. L-shape: (5×4) + (3×2). Total area?',
-                  studentAnswer: val('q4'),
+                  studentAnswer: norm('q4'),
                   correctAnswer: '26',
                   points: 1,
                   skill: 'Composite figures'
@@ -822,7 +853,7 @@
                 },
                 {
                   prompt: '6. Garden 12 m × 5 m. How many 1 m² tiles?',
-                  studentAnswer: val('q6'),
+                  studentAnswer: norm('q6'),
                   correctAnswer: '60',
                   points: 1,
                   skill: 'Area & unit squares'

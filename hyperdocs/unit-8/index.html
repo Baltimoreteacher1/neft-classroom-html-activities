@@ -601,7 +601,7 @@
               <label><input type="radio" name="sc1" value="b" />How many books do students in our class read each month?</label>
               <label><input type="radio" name="sc1" value="c" />What is today's date?</label>
             </div>
-            <button class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(1,'b','Correct! Each student reads a different number of books, so answers vary — that makes it statistical.')">Check</button>
+            <button type="button" class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(1,'b','Correct! Each student reads a different number of books, so answers vary — that makes it statistical.')">Check</button>
             <div class="sc-feedback" id="sc1-fb" aria-live="polite"></div>
           </div>
 
@@ -613,7 +613,7 @@
               <label><input type="radio" name="sc2" value="b" />5</label>
               <label><input type="radio" name="sc2" value="c" />6</label>
             </div>
-            <button class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(2,'c','Correct! (2+4+6+8+10) ÷ 5 = 30 ÷ 5 = 6. Always divide by how many numbers there are.')">Check</button>
+            <button type="button" class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(2,'c','Correct! (2+4+6+8+10) ÷ 5 = 30 ÷ 5 = 6. Always divide by how many numbers there are.')">Check</button>
             <div class="sc-feedback" id="sc2-fb" aria-live="polite"></div>
           </div>
 
@@ -625,7 +625,7 @@
               <label><input type="radio" name="sc3" value="b" />Mode</label>
               <label><input type="radio" name="sc3" value="c" />Mean</label>
             </div>
-            <button class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(3,'c','Correct! The mean includes every value in its calculation, so one very large number pulls it up a lot. The median and mode are resistant to outliers.')">Check</button>
+            <button type="button" class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(3,'c','Correct! The mean includes every value in its calculation, so one very large number pulls it up a lot. The median and mode are resistant to outliers.')">Check</button>
             <div class="sc-feedback" id="sc3-fb" aria-live="polite"></div>
           </div>
 
@@ -806,7 +806,43 @@
     </div><!-- /.wrap -->
 
     <script>
-      /* ── Self-check ── */
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — tolerant of common formatting
+         variations without changing any correct answer.
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        // Collapse internal whitespace
+        s = s.replace(/\s+/g, '');
+        // Strip leading dollar sign
+        s = s.replace(/^\$/, '');
+        // Strip trailing percent sign
+        s = s.replace(/%$/, '');
+        // Strip commas used as thousands separators (1,000 → 1000)
+        s = s.replace(/,(\d{3})/g, '$1');
+        // Strip common trailing unit words (whole-word at end)
+        s = s.replace(/(hours?|minutes?|seconds?|units?|dollars?|books?|pets?|students?)$/, '');
+        return s;
+      }
+
+      /* Numeric equality with epsilon (handles 5 vs 5.0, 8 vs 8.00) */
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      /* Core comparison for a student answer vs expected */
+      function answersMatch(studentRaw, correctRaw) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        // Numeric fallback: 5 vs 5.0, etc.
+        return numericMatch(s, c);
+      }
+
+      /* ── Self-check (all radio buttons — tolerant not needed, but consistent) ── */
       function checkSC(num, correct, explanation) {
         var selected = document.querySelector('input[name="sc' + num + '"]:checked');
         var fb = document.getElementById('sc' + num + '-fb');
@@ -842,16 +878,29 @@
       document.getElementById('quiz').addEventListener('submit', function (e) {
         e.preventDefault();
 
-        var items = [
-          { prompt: '1. Which one is a statistical question?',              studentAnswer: pick('q1'), correctAnswer: ANS.q1, points: 1, skill: 'Statistical Questions (6.SP.A.1)' },
+        /* Build items list; apply tolerant comparison for text inputs,
+           pass radio answers through as-is. */
+        var rawItems = [
+          { prompt: '1. Which one is a statistical question?',              studentAnswer: pick('q1'), correctAnswer: ANS.q1, points: 1, skill: 'Statistical Questions (6.SP.A.1)', _radio: true },
           { prompt: '2. Mean of 4, 8, 6, 2',                               studentAnswer: val('q2'),  correctAnswer: ANS.q2, points: 1, skill: 'Mean (6.SP.B.5)' },
           { prompt: '3. Median of 3, 9, 5, 1, 7',                          studentAnswer: val('q3'),  correctAnswer: ANS.q3, points: 1, skill: 'Median (6.SP.B.5)' },
           { prompt: '4. Mode of 2, 5, 2, 8, 2, 5',                         studentAnswer: val('q4'),  correctAnswer: ANS.q4, points: 1, skill: 'Mode (6.SP.B.5)' },
           { prompt: '5. Range of 10, 4, 7, 2, 9',                          studentAnswer: val('q5'),  correctAnswer: ANS.q5, points: 1, skill: 'Range (6.SP.B.5)' },
-          { prompt: '6. Which measure is most changed by the home with 4 pets?', studentAnswer: pick('q6'), correctAnswer: ANS.q6, points: 1, skill: 'Interpreting Data / Outliers (6.SP.A.3)' },
-          { prompt: 'Reflection 1: A statistical question about my class',  studentAnswer: val('r1'),  correctAnswer: '', points: 0, skill: 'Reflection' },
-          { prompt: 'Reflection 2: When median beats mean',                  studentAnswer: val('r2'),  correctAnswer: '', points: 0, skill: 'Reflection' }
+          { prompt: '6. Which measure is most changed by the home with 4 pets?', studentAnswer: pick('q6'), correctAnswer: ANS.q6, points: 1, skill: 'Interpreting Data / Outliers (6.SP.A.3)', _radio: true },
+          { prompt: 'Reflection 1: A statistical question about my class',  studentAnswer: val('r1'),  correctAnswer: '', points: 0, skill: 'Reflection', _radio: true },
+          { prompt: 'Reflection 2: When median beats mean',                  studentAnswer: val('r2'),  correctAnswer: '', points: 0, skill: 'Reflection', _radio: true }
         ];
+
+        var items = rawItems.map(function (item) {
+          if (item._radio || item.correctAnswer === '') {
+            return { prompt: item.prompt, studentAnswer: item.studentAnswer, correctAnswer: item.correctAnswer, points: item.points, skill: item.skill };
+          }
+          var matched = answersMatch(item.studentAnswer, item.correctAnswer);
+          if (matched) {
+            return { prompt: item.prompt, studentAnswer: normalise(item.correctAnswer), correctAnswer: normalise(item.correctAnswer), points: item.points, skill: item.skill };
+          }
+          return { prompt: item.prompt, studentAnswer: normalise(item.studentAnswer), correctAnswer: normalise(item.correctAnswer), points: item.points, skill: item.skill };
+        });
 
         NTKit.grade({
           activityId: 'hyperdoc-unit-8',

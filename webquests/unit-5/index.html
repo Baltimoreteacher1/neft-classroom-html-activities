@@ -677,13 +677,44 @@
     <script>
       NTKit.mount("#ntkit");
 
+      /* ── Answer normaliser ── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        s = s.replace(/\s+/g, "");
+        s = s.replace(/^\$/, "");
+        s = s.replace(/%$/, "");
+        s = s.replace(/,(\d{3})/g, "$1");
+        s = s.replace(/(cm2|cm²|cm|ft2|ft²|ft|m2|m²|in2|in²|in|mph|km|sq|units?|dollars?|squareunits?)$/, "");
+        return s;
+      }
+
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        return numericMatch(s, c);
+      }
+
       /* ── Self-Check logic ── */
       function checkSC(inputId, correct, okMsg, wrongMsg) {
         var inp = document.getElementById(inputId);
         var fb  = document.getElementById(inputId + "-fb");
         if (!inp || !fb) return;
-        var answer = inp.value.trim().replace(/\s/g, "");
-        var isRight = (answer === correct);
+        var raw = inp.value.trim();
+        if (raw === "") {
+          fb.textContent = "⚠ Please enter an answer first.";
+          fb.className = "sc-feedback wrong";
+          fb.style.display = "block";
+          return;
+        }
+        var isRight = answersMatch(raw, correct);
         fb.textContent = isRight ? ("✓ " + okMsg) : ("✗ " + wrongMsg);
         fb.className = "sc-feedback " + (isRight ? "correct" : "wrong");
         fb.style.display = "block";
@@ -696,6 +727,11 @@
         return n ? n.value.trim() : "";
       }
 
+      /* Normalise a student answer for NTKit grade comparison */
+      function normVal(id) {
+        return normalise(val(id));
+      }
+
       document.getElementById("checkBtn").addEventListener("click", function () {
         NTKit.grade({
           activityId: "webquest-unit-5",
@@ -704,28 +740,28 @@
           items: [
             {
               prompt: "Q1. Parallelogram base 8 cm, height 5 cm. Area = ?",
-              studentAnswer: val("q1"),
+              studentAnswer: normVal("q1"),
               correctAnswer: "40",
               points: 1,
               skill: "Parallelogram area"
             },
             {
               prompt: "Q2. Triangle base 10 cm, height 4 cm. Area = ?",
-              studentAnswer: val("q2"),
+              studentAnswer: normVal("q2"),
               correctAnswer: "20",
               points: 1,
               skill: "Triangle area"
             },
             {
               prompt: "Q3. Square garden side 6 ft. Area = ?",
-              studentAnswer: val("q3"),
+              studentAnswer: normVal("q3"),
               correctAnswer: "36",
               points: 1,
               skill: "Parallelogram area"
             },
             {
               prompt: "Q4. L-shape: 12 m² + 8 m² = ?",
-              studentAnswer: val("q4"),
+              studentAnswer: normVal("q4"),
               correctAnswer: "20",
               points: 1,
               skill: "Composite figures"
@@ -739,7 +775,7 @@
             },
             {
               prompt: "Q6. Trapezoid bases 6 in and 10 in, height 4 in. Area = ?",
-              studentAnswer: val("q6"),
+              studentAnswer: normVal("q6"),
               correctAnswer: "32",
               points: 1,
               skill: "Trapezoid area"

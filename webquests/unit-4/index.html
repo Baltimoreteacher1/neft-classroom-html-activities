@@ -738,6 +738,31 @@
     <script>
       NTKit.mount("#ntkit");
 
+      /* ── Answer normaliser ── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        s = s.replace(/\s+/g, "");
+        s = s.replace(/^\$/, "");
+        s = s.replace(/%$/, "");
+        s = s.replace(/,(\d{3})/g, "$1");
+        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|items?|boxes?|cups?|hours?|minutes?)$/, "");
+        return s;
+      }
+
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        return numericMatch(s, c);
+      }
+
       /* ── Self-Check Logic ── */
       (function () {
         var btns = document.querySelectorAll(".sc-check-btn");
@@ -750,8 +775,14 @@
             var fb       = document.getElementById(targetId + "-fb");
             if (!el || !fb) { return; }
             var raw = (el.tagName === "SELECT") ? el.value : (el.value || "").trim();
-            var student = raw.replace(/\s/g, "").toLowerCase();
-            var isCorrect = (student === String(correct).toLowerCase());
+            if (raw === "") {
+              fb.className = "sc-feedback incorrect";
+              fb.innerHTML = "&#9888; Please enter or select an answer first.";
+              return;
+            }
+            var isCorrect = (el.tagName === "SELECT")
+              ? (normalise(raw) === normalise(correct))
+              : answersMatch(raw, correct);
             fb.className = "sc-feedback " + (isCorrect ? "correct" : "incorrect");
             fb.innerHTML = (isCorrect ? "&#10003; Correct! " : "&#10007; Not quite. ") + explain;
           });
@@ -763,6 +794,12 @@
         return (document.getElementById(id).value || "").trim();
       }
 
+      /* Normalise a student answer for NTKit grade comparison */
+      function normVal(id) {
+        var raw = val(id);
+        return normalise(raw);
+      }
+
       document.getElementById("checkBtn").addEventListener("click", function () {
         NTKit.grade({
           activityId: "webquest-unit-4",
@@ -771,42 +808,42 @@
           items: [
             {
               prompt: "GCF of 12 and 18",
-              studentAnswer: val("q1"),
+              studentAnswer: normVal("q1"),
               correctAnswer: "6",
               points: 1,
               skill: "GCF"
             },
             {
               prompt: "LCM of 4 and 6",
-              studentAnswer: val("q2"),
+              studentAnswer: normVal("q2"),
               correctAnswer: "12",
               points: 1,
               skill: "LCM"
             },
             {
               prompt: "24 + 36 = 12 × ( ? )",
-              studentAnswer: val("q3"),
+              studentAnswer: normVal("q3"),
               correctAnswer: "5",
               points: 1,
               skill: "Distributive Property"
             },
             {
               prompt: "3 boxes × $4.25 = ?",
-              studentAnswer: val("q4"),
+              studentAnswer: normVal("q4"),
               correctAnswer: "12.75",
               points: 1,
               skill: "Decimal Operations"
             },
             {
               prompt: "$20.00 − $13.40 = ? (change)",
-              studentAnswer: val("q5"),
+              studentAnswer: normVal("q5"),
               correctAnswer: "6.60",
               points: 1,
               skill: "Decimal Operations"
             },
             {
               prompt: "Largest equal group from 12 and 18 items (GCF)",
-              studentAnswer: val("q6"),
+              studentAnswer: normVal("q6"),
               correctAnswer: "6",
               points: 1,
               skill: "GCF"

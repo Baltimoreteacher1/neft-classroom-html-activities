@@ -541,7 +541,7 @@
               <label><input type="radio" name="sc1" value="b" />−13</label>
               <label><input type="radio" name="sc1" value="c" />+13</label>
             </div>
-            <button class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(1,'b','Correct! Deeper means more negative. −8 − 5 = −13.')">Check</button>
+            <button type="button" class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(1,'b','Correct! Deeper means more negative. −8 − 5 = −13.')">Check</button>
             <div class="sc-feedback" id="sc1-fb" aria-live="polite"></div>
           </div>
 
@@ -553,7 +553,7 @@
               <label><input type="radio" name="sc2" value="b" />0</label>
               <label><input type="radio" name="sc2" value="c" />22</label>
             </div>
-            <button class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(2,'c','Correct! Absolute value is the distance from 0, always positive. |−22| = 22.')">Check</button>
+            <button type="button" class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(2,'c','Correct! Absolute value is the distance from 0, always positive. |−22| = 22.')">Check</button>
             <div class="sc-feedback" id="sc2-fb" aria-live="polite"></div>
           </div>
 
@@ -565,7 +565,7 @@
               <label><input type="radio" name="sc3" value="b" />−4, −1, 0, 3</label>
               <label><input type="radio" name="sc3" value="c" />3, 0, −1, −4</label>
             </div>
-            <button class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(3,'b','Correct! On the number line, −4 is farthest left (smallest). Order: −4, −1, 0, 3.')">Check</button>
+            <button type="button" class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(3,'b','Correct! On the number line, −4 is farthest left (smallest). Order: −4, −1, 0, 3.')">Check</button>
             <div class="sc-feedback" id="sc3-fb" aria-live="polite"></div>
           </div>
 
@@ -723,7 +723,49 @@
 
     <script>
       (function () {
-        /* ── Self-check logic ── */
+
+        /* ─────────────────────────────────────────────────────────
+           Answer normaliser — tolerant of common formatting
+           variations without changing any correct answer.
+           Preserves leading minus sign (negative integers).
+           ───────────────────────────────────────────────────────── */
+        function normalise(raw) {
+          var s = String(raw).trim().toLowerCase();
+          // Preserve a leading minus before stripping whitespace
+          var neg = s.charAt(0) === '-';
+          // Collapse internal whitespace
+          s = s.replace(/\s+/g, '');
+          // Strip leading dollar sign
+          s = s.replace(/^\$/, '');
+          // Strip trailing percent sign
+          s = s.replace(/%$/, '');
+          // Strip commas used as thousands separators (1,000 → 1000)
+          s = s.replace(/,(\d{3})/g, '$1');
+          // Strip common trailing unit words (whole-word at end)
+          s = s.replace(/(°c|°f|meters?|m|cm|km|mph|kg|lbs?|hours?|minutes?|seconds?|units?|dollars?|degrees?)$/, '');
+          // Re-apply leading minus if it was present but got stripped
+          if (neg && s.charAt(0) !== '-') { s = '-' + s; }
+          return s;
+        }
+
+        /* Numeric equality with epsilon (handles −20 vs −20.0) */
+        function numericMatch(a, b) {
+          var na = parseFloat(a);
+          var nb = parseFloat(b);
+          if (isNaN(na) || isNaN(nb)) { return false; }
+          return Math.abs(na - nb) < 1e-9;
+        }
+
+        /* Core comparison for a student answer vs expected */
+        function answersMatch(studentRaw, correctRaw) {
+          var s = normalise(studentRaw);
+          var c = normalise(correctRaw);
+          if (s === c) { return true; }
+          // Numeric fallback: −20 vs −20.0, 15 vs 15.0, etc.
+          return numericMatch(s, c);
+        }
+
+        /* ── Self-check logic (radio buttons only — no change needed) ── */
         function checkSC(num, correct, explanation) {
           var selected = document.querySelector('input[name="sc' + num + '"]:checked');
           var fb = document.getElementById('sc' + num + '-fb');
@@ -758,22 +800,79 @@
             return r ? r.value : '';
           }
 
+          /* Wrap NTKit.grade to apply tolerant comparison for text inputs */
+          function gradeTolerantly(cfg) {
+            var items = cfg.items.map(function (item) {
+              if (item._radio) {
+                // Radio: exact match (value strings are already normalised tokens)
+                return item;
+              }
+              // Text input: apply tolerant match; pass pre-normalised strings so
+              // NTKit sees the same canonical form for both sides.
+              var matched = answersMatch(item.studentAnswer, item.correctAnswer);
+              return {
+                prompt:         item.prompt,
+                studentAnswer:  item.studentAnswer,
+                correctAnswer:  item.correctAnswer,
+                points:         item.points,
+                skill:          item.skill,
+                // NTKit compares studentAnswer === correctAnswer internally;
+                // override both to the same canonical string when correct.
+                _override:      matched
+              };
+            });
+            // Build items list NTKit can grade straight (override matched ones)
+            var ntItems = items.map(function (item) {
+              if (item._override === true) {
+                return {
+                  prompt:        item.prompt,
+                  studentAnswer: normalise(item.correctAnswer),
+                  correctAnswer: normalise(item.correctAnswer),
+                  points:        item.points,
+                  skill:         item.skill
+                };
+              }
+              if (item._radio) {
+                return {
+                  prompt:        item.prompt,
+                  studentAnswer: item.studentAnswer,
+                  correctAnswer: item.correctAnswer,
+                  points:        item.points,
+                  skill:         item.skill
+                };
+              }
+              return {
+                prompt:        item.prompt,
+                studentAnswer: normalise(item.studentAnswer),
+                correctAnswer: normalise(item.correctAnswer),
+                points:        item.points,
+                skill:         item.skill
+              };
+            });
+            NTKit.grade({
+              activityId:    cfg.activityId,
+              activityTitle: cfg.activityTitle,
+              standard:      cfg.standard,
+              items:         ntItems
+            });
+          }
+
           document.getElementById('apply').addEventListener('submit', function (e) {
             e.preventDefault();
-            NTKit.grade({
+            gradeTolerantly({
               activityId: 'hyperdoc-unit-7',
               activityTitle: 'Unit 7 HyperDoc — Integers & the Number Line',
               standard: '6.NS.C.5-7',
               items: [
-                { prompt: '8 meters lower than −12',       studentAnswer: val('q1'),    correctAnswer: '-20', points: 1, skill: '6.NS.C.5 Real-world integers' },
-                { prompt: 'Opposite of +9',                 studentAnswer: val('q2'),    correctAnswer: '-9',  points: 1, skill: '6.NS.C.6a Opposites' },
-                { prompt: '|−15|',                         studentAnswer: val('q3'),    correctAnswer: '15',  points: 1, skill: '6.NS.C.7c Absolute value' },
-                { prompt: 'Smallest number',               studentAnswer: radio('q4'),  correctAnswer: '-8',  points: 1, skill: '6.NS.C.7a Order integers' },
-                { prompt: 'True comparison',               studentAnswer: radio('q5'),  correctAnswer: 'b',   points: 1, skill: '6.NS.C.7b Compare integers' },
-                { prompt: '−4°C, 4 degrees colder',        studentAnswer: val('q6'),    correctAnswer: '-8',  points: 1, skill: '6.NS.C.5 Real-world integers' }
+                { prompt: '8 meters lower than −12',  studentAnswer: val('q1'),   correctAnswer: '-20', points: 1, skill: '6.NS.C.5 Real-world integers' },
+                { prompt: 'Opposite of +9',            studentAnswer: val('q2'),   correctAnswer: '-9',  points: 1, skill: '6.NS.C.6a Opposites' },
+                { prompt: '|−15|',                    studentAnswer: val('q3'),   correctAnswer: '15',  points: 1, skill: '6.NS.C.7c Absolute value' },
+                { prompt: 'Smallest number',          studentAnswer: radio('q4'), correctAnswer: '-8',  points: 1, skill: '6.NS.C.7a Order integers',  _radio: true },
+                { prompt: 'True comparison',          studentAnswer: radio('q5'), correctAnswer: 'b',   points: 1, skill: '6.NS.C.7b Compare integers', _radio: true },
+                { prompt: '−4°C, 4 degrees colder',   studentAnswer: val('q6'),   correctAnswer: '-8',  points: 1, skill: '6.NS.C.5 Real-world integers' }
               ]
             });
-            var res = document.getElementById('ntkit-results');
+            var res = document.getElementById('ntkit');
             if (res && res.scrollIntoView) res.scrollIntoView({ behavior: 'smooth', block: 'start' });
           });
         }

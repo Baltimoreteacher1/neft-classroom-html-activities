@@ -681,16 +681,63 @@
 
       // ── Self-check logic ──
       var answers = {
-        q1: { correct: ["2:3","2 to 3","2/3"], explanation: "The ratio of mango to ice is 2:3 — 2 cups of mango for every 3 cups of ice." },
-        q2: { correct: ["2"],                  explanation: "8 strawberries ÷ 4 smoothies = 2 strawberries per smoothie." },
-        q3: { correct: ["2","$2","2.00","$2.00"], explanation: "$12 ÷ 6 cups = $2.00 per cup." },
-        q4: { correct: ["6"],                  explanation: "2:3 = 4:? → multiply both by 2 → 4:6. You need 6 cups of ice." },
-        q5: { correct: ["2"],                  explanation: "10 cups ÷ 5 minutes = 2 cups per minute." },
-        q6: { correct: ["0.2","0.20","$0.20","$0.2","20"], explanation: "$3 ÷ 15 oranges = $0.20 per orange." }
+        q1: { type: "ratio",   correct: "2:3",  explanation: "The ratio of mango to ice is 2:3 — 2 cups of mango for every 3 cups of ice." },
+        q2: { type: "numeric", correct: "2",    explanation: "8 strawberries ÷ 4 smoothies = 2 strawberries per smoothie." },
+        q3: { type: "numeric", correct: "2",    explanation: "$12 ÷ 6 cups = $2.00 per cup." },
+        q4: { type: "radio",   correct: "6",    explanation: "2:3 = 4:? → multiply both by 2 → 4:6. You need 6 cups of ice." },
+        q5: { type: "radio",   correct: "2",    explanation: "10 cups ÷ 5 minutes = 2 cups per minute." },
+        q6: { type: "numeric", correct: "0.20", explanation: "$3 ÷ 15 oranges = $0.20 per orange." }
       };
 
-      function normalize(s) {
-        return String(s).trim().toLowerCase().replace(/\s+/g,"").replace(/^\$/, "");
+      /* ── Tolerant normaliser ── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        s = s.replace(/\s+/g, "");
+        s = s.replace(/^\$/, "");
+        s = s.replace(/%$/, "");
+        s = s.replace(/,(\d{3})/g, "$1");
+        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|bananas?|smoothies?|tarts?|cups?|hours?|minutes?|oranges?|strawberries?)$/, "");
+        return s;
+      }
+
+      /* Numeric equality with epsilon (handles 3 vs 3.0 vs $3) */
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      /* Ratio equivalence: "2/3" ↔ "2:3" ↔ "4:6" */
+      function ratioMatch(a, b) {
+        function toDecimal(s) {
+          var neg = s.charAt(0) === "-";
+          var t = neg ? s.slice(1) : s;
+          var colonForm = t.match(/^(\d+):(\d+)$/);
+          if (colonForm) {
+            var v = parseFloat(colonForm[1]) / parseFloat(colonForm[2]);
+            return neg ? -v : v;
+          }
+          var slashForm = t.match(/^(\d+)\/(\d+)$/);
+          if (slashForm) {
+            var v2 = parseFloat(slashForm[1]) / parseFloat(slashForm[2]);
+            return neg ? -v2 : v2;
+          }
+          return NaN;
+        }
+        var da = toDecimal(a);
+        var db = toDecimal(b);
+        if (isNaN(da) || isNaN(db)) { return false; }
+        return Math.abs(da - db) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw, qtype) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        if (qtype === "numeric") { return numericMatch(s, c); }
+        if (qtype === "ratio")   { return ratioMatch(s, c) || numericMatch(s, c); }
+        return false;
       }
 
       function getStudentAnswer(key) {
@@ -719,10 +766,13 @@
 
         for (var k in answers) {
           var studentRaw = getStudentAnswer(k);
-          var studentNorm = normalize(studentRaw);
-          var correct = answers[k].correct.some(function(a) {
-            return normalize(a) === studentNorm;
-          });
+          var cfg = answers[k];
+          var correct;
+          if (cfg.type === "radio") {
+            correct = normalise(studentRaw) === normalise(cfg.correct);
+          } else {
+            correct = answersMatch(studentRaw, cfg.correct, cfg.type);
+          }
           if (correct) score++;
           showFeedback(k, correct);
         }

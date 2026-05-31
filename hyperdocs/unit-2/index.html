@@ -758,16 +758,62 @@
 
       // ── Self-check answers ──
       var answers = {
-        q1: { correct: ["2"],       explanation: "1/2 ÷ 1/4: Keep 1/2, Flip 1/4 to 4/1, Multiply → 4/2 = 2. Two 1/4 cups fit in 1/2 cup." },
-        q2: { correct: ["6"],       explanation: "3/4 ÷ 1/8: Keep 3/4, Flip 1/8 to 8/1, Multiply → 24/4 = 6 servings." },
-        q3: { correct: ["4"],       explanation: "2/3 ÷ 1/6: Keep 2/3, Flip 1/6 to 6/1, Multiply → 12/3 = 4." },
-        q4: { correct: ["2"],       explanation: "4/5 ÷ 2/5: Keep 4/5, Flip 2/5 to 5/2, Multiply → 20/10 = 2." },
-        q5: { correct: ["2/3"],     explanation: "1/2 ÷ 3/4: Keep 1/2, Flip 3/4 to 4/3, Multiply → 4/6 = 2/3. (Simplify 4/6 by dividing by 2.)" },
-        q6: { correct: ["5/2","2.5","2 1/2"], explanation: "5/6 ÷ 1/3: Keep 5/6, Flip 1/3 to 3/1, Multiply → 15/6 = 5/2 (or 2.5 or 2 1/2)." }
+        q1: { type: "numeric",  correct: "2",   explanation: "1/2 ÷ 1/4: Keep 1/2, Flip 1/4 to 4/1, Multiply → 4/2 = 2. Two 1/4 cups fit in 1/2 cup." },
+        q2: { type: "numeric",  correct: "6",   explanation: "3/4 ÷ 1/8: Keep 3/4, Flip 1/8 to 8/1, Multiply → 24/4 = 6 servings." },
+        q3: { type: "radio",    correct: "4",   explanation: "2/3 ÷ 1/6: Keep 2/3, Flip 1/6 to 6/1, Multiply → 12/3 = 4." },
+        q4: { type: "radio",    correct: "2",   explanation: "4/5 ÷ 2/5: Keep 4/5, Flip 2/5 to 5/2, Multiply → 20/10 = 2." },
+        q5: { type: "fraction", correct: "2/3", explanation: "1/2 ÷ 3/4: Keep 1/2, Flip 3/4 to 4/3, Multiply → 4/6 = 2/3. (Simplify 4/6 by dividing by 2.)" },
+        q6: { type: "fraction", correct: "5/2", explanation: "5/6 ÷ 1/3: Keep 5/6, Flip 1/3 to 3/1, Multiply → 15/6 = 5/2 (or 2.5 or 2 1/2)." }
       };
 
-      function normalize(s) {
-        return String(s).trim().toLowerCase().replace(/\s+/g, "").replace(/×/g, "x");
+      /* ── Tolerant normaliser ── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        s = s.replace(/\s+/g, "");
+        s = s.replace(/^\$/, "");
+        s = s.replace(/%$/, "");
+        s = s.replace(/,(\d{3})/g, "$1");
+        s = s.replace(/(cups?|servings?|units?|hours?|minutes?)$/, "");
+        return s;
+      }
+
+      /* Numeric equality with epsilon */
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      /* Fraction/ratio equivalence: "2/3" ↔ "4/6" ↔ "0.666..." */
+      function fractionMatch(a, b) {
+        function toDecimal(s) {
+          /* mixed number like "2 1/2" → already collapsed to "21/2" after normalise,
+             so handle slash form and plain decimal */
+          var neg = s.charAt(0) === "-";
+          var t = neg ? s.slice(1) : s;
+          var slashForm = t.match(/^(\d+)\/(\d+)$/);
+          if (slashForm) {
+            var v = parseFloat(slashForm[1]) / parseFloat(slashForm[2]);
+            return neg ? -v : v;
+          }
+          var plain = parseFloat(t);
+          if (!isNaN(plain)) { return neg ? -plain : plain; }
+          return NaN;
+        }
+        var da = toDecimal(a);
+        var db = toDecimal(b);
+        if (isNaN(da) || isNaN(db)) { return false; }
+        return Math.abs(da - db) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw, qtype) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        if (qtype === "numeric")  { return numericMatch(s, c); }
+        if (qtype === "fraction") { return fractionMatch(s, c); }
+        return false;
       }
 
       function getStudentAnswer(key) {
@@ -797,10 +843,13 @@
 
         for (var k in answers) {
           var studentRaw = getStudentAnswer(k);
-          var studentNorm = normalize(studentRaw);
-          var correct = answers[k].correct.some(function (a) {
-            return normalize(a) === studentNorm;
-          });
+          var cfg = answers[k];
+          var correct;
+          if (cfg.type === "radio") {
+            correct = normalise(studentRaw) === normalise(cfg.correct);
+          } else {
+            correct = answersMatch(studentRaw, cfg.correct, cfg.type);
+          }
           if (correct) score++;
           showFeedback(k, correct);
         }

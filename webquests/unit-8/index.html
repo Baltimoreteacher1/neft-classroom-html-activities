@@ -857,7 +857,34 @@
     <script>
       NTKit.mount("#ntkit");
 
-      /* ── Self-check helper ── */
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — tolerant of common formatting variants
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        s = s.replace(/\s+/g, "");
+        s = s.replace(/^\$/, "");
+        s = s.replace(/%$/, "");
+        s = s.replace(/,(\d{3})/g, "$1");
+        s = s.replace(/(cubicunits?|cubicinches?|cubicfeet?|cubiccm|cm3|cm³|cm2|cm²|cm|m3|m³|m2|m²|mph|km|units?|dollars?|students?|hours?|minutes?)$/, "");
+        return s;
+      }
+
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        return numericMatch(s, c);
+      }
+
+      /* ── Self-check helper (radio) ── */
       function checkSC(id, correct, explanation) {
         var chosen = null;
         var radios = document.getElementsByName(id);
@@ -893,6 +920,9 @@
           activityId: "webquest-unit-8",
           activityTitle: "WebQuest · Unit 8 — Statistics (Data Lab)",
           standard: "6.SP.A-B",
+          gradeItem: function(studentRaw, correctRaw) {
+            return answersMatch(studentRaw, correctRaw);
+          },
           items: [
             {
               prompt: "Q1. Which one is a statistical question?",

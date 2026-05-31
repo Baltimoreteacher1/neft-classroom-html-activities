@@ -491,7 +491,7 @@
             <label for="sc1">1. A train travels 240 miles in 4 hours. What is the unit rate in miles per 1 hour?</label>
             <span class="hint" id="sc1-hint">Divide total miles by total hours. Type a number only.</span>
             <input type="text" id="sc1" inputmode="numeric" autocomplete="off" aria-describedby="sc1-hint" aria-label="Answer for question 1" />
-            <button type="button" class="sc-check-btn" data-target="sc1" data-answer="60" data-explanation="240 ÷ 4 = 60. The unit rate is 60 miles per 1 hour.">Check</button>
+            <button type="button" class="sc-check-btn" data-target="sc1" data-answer="60" data-type="numeric" data-explanation="240 ÷ 4 = 60. The unit rate is 60 miles per 1 hour.">Check</button>
             <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
           </div>
 
@@ -514,7 +514,7 @@
             <label for="sc3">3. What is 30% of 50?</label>
             <span class="hint" id="sc3-hint">Change 30% to a decimal (0.30), then multiply by 50. Type a number only.</span>
             <input type="text" id="sc3" inputmode="numeric" autocomplete="off" aria-describedby="sc3-hint" aria-label="Answer for question 3" />
-            <button type="button" class="sc-check-btn" data-target="sc3" data-answer="15" data-explanation="0.30 × 50 = 15. So 30% of 50 is 15.">Check</button>
+            <button type="button" class="sc-check-btn" data-target="sc3" data-answer="15" data-type="numeric" data-explanation="0.30 × 50 = 15. So 30% of 50 is 15.">Check</button>
             <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
           </div>
 
@@ -684,6 +684,63 @@
     <script>
       NTKit.mount("#ntkit");
 
+      /* ─────────────────────────────────────────────────────────
+         Answer normaliser — makes grading tolerant of common
+         formatting variations without changing any correct answer.
+         ───────────────────────────────────────────────────────── */
+      function normalise(raw) {
+        var s = String(raw).trim().toLowerCase();
+        // Collapse / strip whitespace
+        s = s.replace(/\s+/g, "");
+        // Strip leading dollar sign
+        s = s.replace(/^\$/, "");
+        // Strip trailing percent sign
+        s = s.replace(/%$/, "");
+        // Strip commas in numbers (1,000 → 1000)
+        s = s.replace(/,(\d{3})/g, "$1");
+        // Strip common trailing unit words (only at the end, whole-word)
+        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|bottles?|liters?|apples?|cups?|hours?|minutes?)$/, "");
+        return s;
+      }
+
+      /* Numeric equality with small epsilon (handles 60 vs 60.0 vs 60.00) */
+      function numericMatch(a, b) {
+        var na = parseFloat(a);
+        var nb = parseFloat(b);
+        if (isNaN(na) || isNaN(nb)) { return false; }
+        return Math.abs(na - nb) < 1e-9;
+      }
+
+      /* Ratio / fraction equivalence: "2/3" ↔ "2:3" (same numeric fraction) */
+      function ratioMatch(a, b) {
+        function toDecimal(s) {
+          var colonForm = s.match(/^(\d+):(\d+)$/);
+          if (colonForm) { return parseFloat(colonForm[1]) / parseFloat(colonForm[2]); }
+          var slashForm = s.match(/^(\d+)\/(\d+)$/);
+          if (slashForm) { return parseFloat(slashForm[1]) / parseFloat(slashForm[2]); }
+          return NaN;
+        }
+        var da = toDecimal(a);
+        var db = toDecimal(b);
+        if (isNaN(da) || isNaN(db)) { return false; }
+        return Math.abs(da - db) < 1e-9;
+      }
+
+      function answersMatch(studentRaw, correctRaw, questionType) {
+        var s = normalise(studentRaw);
+        var c = normalise(correctRaw);
+        if (s === c) { return true; }
+        // Numeric questions: tolerate 60 vs 60.0 vs 60.00
+        if (questionType === "numeric") {
+          return numericMatch(s, c);
+        }
+        // Fraction/ratio questions: tolerate slash ↔ colon and equivalent fractions
+        if (questionType === "fraction") {
+          return ratioMatch(s, c);
+        }
+        return false;
+      }
+
       /* ── Self-Check Logic ── */
       (function () {
         var btns = document.querySelectorAll(".sc-check-btn");
@@ -692,12 +749,18 @@
             var targetId = btn.getAttribute("data-target");
             var correct  = btn.getAttribute("data-answer");
             var explain  = btn.getAttribute("data-explanation");
+            var qtype    = btn.getAttribute("data-type") || "numeric";
             var el       = document.getElementById(targetId);
             var fb       = document.getElementById(targetId + "-fb");
             if (!el || !fb) { return; }
             var raw = (el.tagName === "SELECT") ? el.value : (el.value || "").trim();
-            var student = raw.replace(/\s/g, "").toLowerCase();
-            var isCorrect = (student === String(correct).toLowerCase());
+            var isCorrect;
+            if (el.tagName === "SELECT") {
+              // Select elements: exact normalised match only
+              isCorrect = (normalise(raw) === normalise(correct));
+            } else {
+              isCorrect = answersMatch(raw, correct, qtype);
+            }
             fb.className = "sc-feedback " + (isCorrect ? "correct" : "incorrect");
             fb.innerHTML = (isCorrect ? "&#10003; Correct! " : "&#10007; Not quite. ") + explain;
           });
