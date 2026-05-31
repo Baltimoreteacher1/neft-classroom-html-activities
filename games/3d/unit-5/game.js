@@ -231,7 +231,7 @@ export default {
       COLORS.gridLine,
     );
     gridHelper.position.y = 0.1;
-    gridHelper.material.opacity = 0.6;
+    gridHelper.material.opacity = 0.8;
     gridHelper.material.transparent = true;
     track(gridHelper.material);
     track(gridHelper.geometry);
@@ -414,11 +414,10 @@ export default {
 
     // ---- Problem card / objective text --------------------------------------
     function cardText() {
-      const goal = `Area = ${targetArea} sq units`;
       if (round.kind === "triangle") {
-        return `Build ${describeRound(round)}\n${goal}  (leg × leg ÷ 2)`;
+        return `Fill the gold triangle.\nArea = ${targetArea} sq units\n(leg × leg ÷ 2)`;
       }
-      return `Build ${describeRound(round)}\n${goal}`;
+      return `Fill the gold shape.\nArea = ${targetArea} sq units`;
     }
 
     function startRound() {
@@ -455,17 +454,14 @@ export default {
 
       updateLabel(cardLabel, cardText());
 
-      const tri = cfg.allowTriangle
-        ? " Press Enter to read the triangle rule or cancel a corner."
-        : "";
       announce(
-        `Round ${roundIndex + 1} of ${cfg.rounds.length}. Build ${describeRound(round)} with area ${targetArea} square units.${tri}`,
+        `Round ${roundIndex + 1} of ${cfg.rounds.length}. Fill the gold shape. The area is ${targetArea} square units.`,
       );
-      feel.sfx("select", "New structure to build.");
+      feel.sfx("select", "New shape to fill.");
       updateLive();
       refreshGhost();
       if (cfg.hints) {
-        hud.message("Move the cursor, set a corner, then stretch a piece.", {
+        hud.message("Set a corner, then drop a block to fill the gold shape.", {
           tone: "info",
           duration: 2800,
         });
@@ -483,9 +479,9 @@ export default {
     function updateLive() {
       const area = liveArea();
       hud.setObjective(
-        `Build ${describeRound(round)} — area ${targetArea} sq units. ` +
-          `Covered ${area} of ${targetArea}. ` +
-          (anchor ? "Set the far corner." : "Place a corner."),
+        `Fill the gold shape: ${targetArea} sq units. ` +
+          `Filled ${area} of ${targetArea}. ` +
+          (anchor ? "Move, then drop the block." : "Press to set a corner."),
       );
     }
 
@@ -614,9 +610,7 @@ export default {
           { vx: ti.a.vx, vy: ti.cv.vy },
         ];
         if (ti.w === 0 || ti.h === 0 || !triangleMatchesTarget(verts)) {
-          rejectPiece(
-            "That triangle does not match the outline. Match both legs and the square corner.",
-          );
+          rejectPiece("Not a match. Make it fit the gold triangle.");
           return;
         }
         const mesh = buildTriangleShapeMesh(verts, pieceColor(), 1);
@@ -641,9 +635,7 @@ export default {
 
       const rc = rectFromCells(anchor, cursor);
       if (!rectValid(rc)) {
-        rejectPiece(
-          "That piece spills outside or overlaps. Try a smaller piece.",
-        );
+        rejectPiece("Block goes outside the gold shape. Try a smaller one.");
         return;
       }
       const mesh = buildRectMesh(rc);
@@ -657,8 +649,8 @@ export default {
         const center = cellCenter((rc.c0 + rc.c1) / 2, (rc.r0 + rc.r1) / 2);
         const label = makeLabel(`${rc.w}×${rc.h}=${a}`, {
           THREE,
-          fontSize: 52,
-          scale: 0.8,
+          fontSize: 64,
+          scale: 0.95,
         });
         label.position.set(center.x, 1.2, center.z);
         group.add(label);
@@ -682,8 +674,8 @@ export default {
       const w = vertexWorld(cx, cy);
       const label = makeLabel(`${ti.w}×${ti.h}÷2=${ti.area}`, {
         THREE,
-        fontSize: 52,
-        scale: 0.8,
+        fontSize: 64,
+        scale: 0.95,
       });
       label.position.set(w.x, 1.2, w.z);
       group.add(label);
@@ -797,9 +789,9 @@ export default {
     }
 
     function finishGame() {
-      updateLabel(cardLabel, `All structures built!\nGreat work, Architect.`);
+      updateLabel(cardLabel, `You filled every shape!\nGreat work!`);
       hud.setObjective(
-        `All structures built — ${solvedCount} of ${cfg.rounds.length} shapes, best streak ${bestStreak}. Great work, Architect!`,
+        `Done! You filled ${solvedCount} of ${cfg.rounds.length} shapes. Best streak ${bestStreak}. Great work!`,
       );
       hud.message("All rounds complete!", { tone: "ok", duration: 0 });
       feel.sfx("fanfare", "All rounds complete!");
@@ -857,7 +849,7 @@ export default {
         if (triangleMode) {
           if (cursor.col !== round.cx || cursor.row !== round.cy) {
             hud.message("Start at the square corner of the triangle.", {
-              tone: "warn",
+              tone: "info",
               duration: 1800,
             });
             feel.sfx("wrong");
@@ -866,7 +858,7 @@ export default {
           }
           anchor = { vx: cursor.col, vy: cursor.row };
           feel.sfx("pop");
-          announce("Corner set. Move to the opposite point, then place again.");
+          announce("Corner set. Move to the far point, then press again.");
         } else {
           if (!target.has(cursor.col + "," + cursor.row)) {
             hud.message("Start your corner inside the outline.", {
@@ -879,9 +871,7 @@ export default {
           }
           anchor = { col: cursor.col, row: cursor.row };
           feel.sfx("pop");
-          announce(
-            "First corner set. Move to the opposite corner, then place again.",
-          );
+          announce("Corner set. Move to the far corner, then press again.");
         }
         updateLive();
         refreshGhost();

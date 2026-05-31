@@ -44,12 +44,12 @@ function makeLevel(level) {
         // 12 miles in 3 hours -> 12 ÷ 3 = 4 mph.
         {
           type: "unitrate",
-          prompt: "12 miles in 3 hours. Dial the speed in miles per hour.",
+          prompt: "12 miles in 3 hours. Speed for 1 hour? Set mph.",
           table: [
             ["miles", "hours"],
             ["12", "3"],
           ],
-          help: "Unit rate = distance ÷ time = 12 ÷ 3 = 4.",
+          help: "12 ÷ 3 = 4. The answer is 4 mph.",
           answer: 4,
           unit: "mph",
           min: 0,
@@ -58,12 +58,12 @@ function makeLevel(level) {
         // $10 for 2 cars -> 10 ÷ 2 = $5 each.
         {
           type: "unitrate",
-          prompt: "$10 buys 2 toy cars. Dial the price for 1 car.",
+          prompt: "$10 for 2 cars. Price for 1 car? Set dollars.",
           table: [
             ["dollars", "cars"],
             ["10", "2"],
           ],
-          help: "Unit rate = dollars ÷ cars = 10 ÷ 2 = 5.",
+          help: "10 ÷ 2 = 5. The answer is $5.",
           answer: 5,
           unit: "$/car",
           min: 0,
@@ -72,13 +72,13 @@ function makeLevel(level) {
         // Equivalent ratio 4:1 -> 4 × 5 = 20 miles in 5 hours.
         {
           type: "equiv",
-          prompt: "At 4 miles per hour, how far in 5 hours? Dial the miles.",
+          prompt: "4 miles each hour. How far in 5 hours? Set miles.",
           table: [
             ["miles", "hours"],
             ["4", "1"],
             ["?", "5"],
           ],
-          help: "Equivalent ratio: multiply both by 5. 4 × 5 = 20.",
+          help: "4 × 5 = 20. The answer is 20 miles.",
           answer: 20,
           unit: "miles",
           min: 0,
@@ -87,14 +87,13 @@ function makeLevel(level) {
         // Equivalent ratio 3:2 -> for 6 laps, fuel = 3 × 3 = 9.
         {
           type: "equiv",
-          prompt:
-            "3 liters fuel every 2 laps. How much for 6 laps? Dial liters.",
+          prompt: "3 liters every 2 laps. How much for 6 laps? Set liters.",
           table: [
             ["liters", "laps"],
             ["3", "2"],
             ["?", "6"],
           ],
-          help: "6 ÷ 2 = 3, so multiply both by 3. 3 × 3 = 9.",
+          help: "6 ÷ 2 = 3, then 3 × 3 = 9. The answer is 9 liters.",
           answer: 9,
           unit: "L",
           min: 0,
@@ -103,13 +102,13 @@ function makeLevel(level) {
         // Conversion: 2 min = 120 s. 2 × 60.
         {
           type: "conversion",
-          prompt: "Pit stop: 2 minutes equals how many seconds? Dial seconds.",
+          prompt: "2 minutes is how many seconds? Set seconds.",
           table: [
             ["minutes", "seconds"],
             ["1", "60"],
             ["2", "?"],
           ],
-          help: "1 minute = 60 seconds, so 2 × 60 = 120.",
+          help: "1 minute = 60 seconds. 2 × 60 = 120. The answer is 120.",
           answer: 120,
           unit: "sec",
           min: 60,
@@ -119,8 +118,8 @@ function makeLevel(level) {
         // Compare: lowest price per liter. A 2.00, B 1.60 (best), C 2.50.
         {
           type: "compare",
-          prompt: "Steer to the fuel with the best (lowest) price per liter.",
-          help: "Find each unit rate: dollars ÷ liters. Smallest wins.",
+          prompt: "Pick the cheapest fuel. Lowest price per liter wins.",
+          help: "Each lane shows price per liter. Pick the smallest.",
           lanes: [
             { label: "$6 / 3 L", dollars: 6, liters: 3 }, // 2.00
             { label: "$8 / 5 L", dollars: 8, liters: 5 }, // 1.60 best
@@ -137,9 +136,8 @@ function makeLevel(level) {
       // 150 miles in 3 hours -> 50 mph; then 50 × 4 = 200 miles.
       {
         type: "multistep",
-        prompt:
-          "150 miles in 3 hours. At that rate, how far in 4 hours? Dial miles.",
-        help: "Unit rate 150 ÷ 3 = 50 mph, then 50 × 4 = 200.",
+        prompt: "150 miles in 3 hours. How far in 4 hours? Set miles.",
+        help: "150 ÷ 3 = 50 mph. Then 50 × 4 = 200. The answer is 200.",
         answer: 200,
         unit: "miles",
         min: 120,
@@ -149,9 +147,8 @@ function makeLevel(level) {
       // Percent: 20% of 40 = 8.
       {
         type: "percent",
-        prompt:
-          "Base speed 40 mph. A 20% boost adds how many mph? Dial the boost.",
-        help: "20% of 40 = 0.20 × 40 = 8.",
+        prompt: "What is 20% of 40 mph? Set the boost.",
+        help: "20% of 40 = 0.20 × 40 = 8. The answer is 8 mph.",
         answer: 8,
         unit: "mph",
         min: 0,
@@ -160,9 +157,8 @@ function makeLevel(level) {
       // Percent: 15% of 80 = 12.
       {
         type: "percent",
-        prompt:
-          "A tank holds 80 L. 15% is reserve fuel — how many liters? Dial it.",
-        help: "15% of 80 = 0.15 × 80 = 12.",
+        prompt: "What is 15% of 80 liters? Set liters.",
+        help: "15% of 80 = 0.15 × 80 = 12. The answer is 12 liters.",
         answer: 12,
         unit: "L",
         min: 0,
@@ -172,8 +168,8 @@ function makeLevel(level) {
       // give 7 mi per 2 h; for 10 h, 10 ÷ 2 = 5, 7 × 5 = 35.
       {
         type: "multistep",
-        prompt: "7 miles every 2 hours. How far in 10 hours? Dial the miles.",
-        help: "10 ÷ 2 = 5, so multiply both by 5. 7 × 5 = 35.",
+        prompt: "7 miles every 2 hours. How far in 10 hours? Set miles.",
+        help: "10 ÷ 2 = 5, then 7 × 5 = 35. The answer is 35 miles.",
         answer: 35,
         unit: "miles",
         min: 0,
@@ -183,8 +179,8 @@ function makeLevel(level) {
       // Conversion: 3 minutes 30 s = 210 s. 3×60 + 30.
       {
         type: "conversion",
-        prompt: "Lap time 3 min 30 s equals how many seconds? Dial seconds.",
-        help: "3 × 60 = 180, plus 30 = 210.",
+        prompt: "3 min 30 s is how many seconds? Set seconds.",
+        help: "3 × 60 = 180, plus 30 = 210. The answer is 210.",
         answer: 210,
         unit: "sec",
         min: 120,
@@ -194,8 +190,8 @@ function makeLevel(level) {
       // Compare: A 1.80, B 1.50 (best), C 1.75.
       {
         type: "compare",
-        prompt: "Steer to the best (lowest) price per liter.",
-        help: "Compare each unit rate: dollars ÷ liters. Smallest wins.",
+        prompt: "Pick the cheapest fuel. Lowest price per liter wins.",
+        help: "Each lane shows price per liter. Pick the smallest.",
         lanes: [
           { label: "$9 / 5 L", dollars: 9, liters: 5 }, // 1.80
           { label: "$12 / 8 L", dollars: 12, liters: 8 }, // 1.50 best
@@ -205,8 +201,8 @@ function makeLevel(level) {
       // Multi-step percent: $50 part costs, 30% off -> save 15.
       {
         type: "percent",
-        prompt: "A $50 part is 30% off. How many dollars do you save? Dial it.",
-        help: "30% of 50 = 0.30 × 50 = 15.",
+        prompt: "What is 30% of $50? Set the savings.",
+        help: "30% of 50 = 0.30 × 50 = 15. You save $15.",
         answer: 15,
         unit: "$",
         min: 0,
@@ -445,10 +441,10 @@ export default {
 
     // Live dial / readout sprite below the card.
     const dialSprite = makeLabel("", {
-      fontSize: 64,
-      scale: 1.3,
+      fontSize: 72,
+      scale: 1.5,
       color: "#0c1a33",
-      background: "rgba(242,193,91,0.96)",
+      background: "rgba(242,193,91,0.98)",
       THREE,
     });
     dialSprite.position.set(0, 3.0, -TRACK_LEN / 2 + 6);
@@ -465,10 +461,10 @@ export default {
     let laneTags = []; // active compare tags
     function makeTag(text, highlight) {
       const spr = makeLabel(text, {
-        fontSize: 40,
-        scale: 0.95,
+        fontSize: 52,
+        scale: 1.1,
         color: highlight ? "#0c1a33" : "#ffffff",
-        background: highlight ? "rgba(242,193,91,0.96)" : "rgba(20,35,63,0.92)",
+        background: highlight ? "rgba(242,193,91,0.98)" : "rgba(20,35,63,0.94)",
         THREE,
       });
       return spr;
@@ -524,7 +520,7 @@ export default {
       if (isCompare()) {
         hud.setObjective(`${problem.prompt} ▶ ${readout()}`);
       } else {
-        hud.setObjective(`${problem.prompt} ▶ Dial: ${readout()}${tableHint}`);
+        hud.setObjective(`${problem.prompt} ▶ You: ${readout()}${tableHint}`);
       }
       // Mirror onto the 3D dial sprite + scale-pop.
       updateLabel(dialSprite, isCompare() ? readout() : readout());
@@ -589,12 +585,12 @@ export default {
         laneSel = 0;
         buildCompareTags();
         announce(
-          `Round ${problemIndex + 1} of ${total}. ${problem.prompt} Use left and right to choose a lane, then press the action button.`,
+          `Round ${problemIndex + 1}. ${problem.prompt} Use left and right to pick a lane.`,
         );
       } else {
         dial = problem.min;
         announce(
-          `Round ${problemIndex + 1} of ${total}. ${problem.prompt} Use up and down to change the dial, then press the action button to lock it in.`,
+          `Round ${problemIndex + 1}. ${problem.prompt} Use up and down to set the number.`,
         );
       }
       updateHud();
@@ -602,8 +598,8 @@ export default {
 
       if (cfg.hints) {
         const tip = isCompare()
-          ? "Compare the unit rates — lowest price per liter wins."
-          : problem.help || "Set the dial, then lock it in.";
+          ? "Pick the lowest price per liter."
+          : problem.help || "Set the number, then press Space.";
         hud.message(tip, { tone: "info", duration: 3400 });
       }
     }
@@ -737,7 +733,7 @@ export default {
 
     function finishGame() {
       hud.setObjective(
-        `Checkered flag! ${solvedCount} of ${total} solved — best streak ${bestStreak}. Great tuning, racer!`,
+        `Finished! You solved ${solvedCount} of ${total}. Great job!`,
       );
       hud.message("🏁 All rounds complete!", { tone: "ok", duration: 0 });
       updateLabel(cardSprite, "🏁 RACE COMPLETE");
@@ -817,7 +813,7 @@ export default {
             else if (name === "action") commit();
           }
           if (name === "confirm") {
-            const h = problem.help || "Set the dial to the correct value.";
+            const h = problem.help || "Set the number, then press Space.";
             caption(h);
             announce(h);
             feel.sfx("pop");
@@ -848,7 +844,7 @@ export default {
           if (popAnim) {
             popAnim.t = Math.min(1, popAnim.t + dt / popAnim.dur);
             const k = 1 + Math.sin(popAnim.t * Math.PI) * 0.18;
-            dialSprite.scale.set(dialSprite.scale.x, 1.3 * k, 1);
+            dialSprite.scale.set(dialSprite.scale.x, 1.5 * k, 1);
             if (popAnim.t >= 1) popAnim = null;
           }
           // Subtle finish-line emissive pulse.

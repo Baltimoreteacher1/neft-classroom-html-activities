@@ -252,12 +252,13 @@ export default {
 
       const label = makeLabel(String(n), {
         THREE,
-        color: isZero ? "#ffffff" : "#bfe6ff",
-        background: null,
-        fontSize: isZero ? 80 : 60,
-        scale: isZero ? 0.5 : 0.4,
+        color: isZero ? "#ffffff" : "#eaf6ff",
+        // Dark high-contrast chip so every integer reads clearly against water.
+        background: isZero ? "rgba(20,60,100,0.95)" : "rgba(11,28,48,0.92)",
+        fontSize: isZero ? 96 : 84,
+        scale: isZero ? 1.1 : 0.95,
       });
-      label.position.set(-2.35, yFor(n), 0);
+      label.position.set(-2.55, yFor(n), 0);
       lineLabels.push(label);
       group.add(label);
     }
@@ -265,21 +266,32 @@ export default {
     const seaLabel = makeLabel("0 = sea level", {
       THREE,
       color: "#ffffff",
-      background: "rgba(15,34,56,0.7)",
-      fontSize: 46,
-      scale: 0.34,
+      background: "rgba(15,34,56,0.92)",
+      fontSize: 56,
+      scale: 0.5,
     });
-    seaLabel.position.set(1.0, 0.0, 1.8);
+    seaLabel.position.set(1.2, 0.0, 1.8);
     group.add(seaLabel);
+
+    // ---- Big live depth read-out that rides next to the submarine ----------
+    const depthLabel = makeLabel("0", {
+      THREE,
+      color: "#ffe08a",
+      background: "rgba(11,28,48,0.95)",
+      fontSize: 110,
+      scale: 1.05,
+    });
+    depthLabel.position.set(1.7, yFor(0), 0);
+    group.add(depthLabel);
 
     // ---- Floating 3D problem card (always shows the question) ---------------
     const cardLabel = makeLabel("...", {
       THREE,
       color: "#ffffff",
-      background: "rgba(11,40,66,0.9)",
-      fontSize: 56,
-      scale: 0.62,
-      maxWidth: 1024,
+      background: "rgba(11,40,66,0.95)",
+      fontSize: 72,
+      scale: 0.82,
+      maxWidth: 1280,
     });
     cardLabel.position.set(0, columnTopY + 1.4, 0);
     group.add(cardLabel);
@@ -393,6 +405,8 @@ export default {
 
     function setSubY(n, animate) {
       const toY = yFor(n);
+      depthLabel.position.y = toY;
+      updateLabel(depthLabel, String(n));
       if (animate && !reduced) {
         const fromY = subGroup.position.y;
         feel.tween({
@@ -412,19 +426,18 @@ export default {
       if (!round) return "Pilot the submarine";
       switch (round.kind) {
         case "move":
-          return `Dive to  ${round.target}`;
+          return `Dive the sub to ${round.target}`;
         case "opposite":
-          return `Opposite of ${round.value} = ?`;
+          return `Go to the opposite of ${round.value}. (Answer: ${-round.value})`;
         case "absolute":
-          return `${round.context}`;
         case "absDist":
-          return `${round.context}`;
+          return `Go to ${targetInt}`;
         case "compare":
-          return `${round.pick === "greater" ? "Greater" : "Less"}:  ${round.a}  or  ${round.b} ?`;
+          return `Go to the ${round.pick} one: ${round.a} or ${round.b}`;
         case "order":
-          return `${round.pick === "greatest" ? "Greatest" : "Least"} of  ${round.values.join("  ")}`;
+          return `Go to the ${round.pick}: ${round.values.join(", ")}`;
         default:
-          return "Pilot the submarine";
+          return "Move the sub";
       }
     }
 
@@ -432,19 +445,18 @@ export default {
       if (!round) return "Pilot the submarine";
       switch (round.kind) {
         case "move":
-          return `Pilot the submarine to ${round.target}, then press Space`;
+          return `Dive to ${round.target}. Press Space.`;
         case "opposite":
-          return `Pilot to the opposite of ${round.value}, then press Space`;
+          return `Go to ${-round.value} (opposite of ${round.value}). Press Space.`;
         case "absolute":
-          return `Pilot to the integer for "${round.context}", then press Space`;
         case "absDist":
-          return `Pilot to the integer ${round.context.toLowerCase()} then press Space`;
+          return `Go to ${targetInt}. Press Space.`;
         case "compare":
-          return `Pilot to the ${round.pick} of ${round.a} and ${round.b}, then press Space`;
+          return `Go to the ${round.pick}: ${round.a} or ${round.b}. Press Space.`;
         case "order":
-          return `Pilot to the ${round.pick} of ${round.values.join(", ")}, then press Space`;
+          return `Go to the ${round.pick}: ${round.values.join(", ")}. Press Space.`;
         default:
-          return "Pilot the submarine";
+          return "Move the sub.";
       }
     }
 
@@ -470,13 +482,7 @@ export default {
     }
 
     function updateHud() {
-      const depthTxt =
-        pos === 0
-          ? "Depth 0 m (sea level)"
-          : pos < 0
-            ? `Depth ${Math.abs(pos)} m below`
-            : `Height ${pos} m above`;
-      hud.setObjective(`${roundObjective()} — ${depthTxt} | now at ${pos}`);
+      hud.setObjective(`${roundObjective()} (You are at ${pos}.)`);
     }
 
     function startRound() {
@@ -515,35 +521,33 @@ export default {
       let intro;
       switch (round.kind) {
         case "move":
-          intro = `Round ${roundIndex + 1}. Pilot the submarine to ${depthWord(round.target)}.`;
+          intro = `Dive the sub to ${round.target}.`;
           break;
         case "opposite":
-          intro = `Round ${roundIndex + 1}. Travel to the opposite of ${round.value}. Opposites are the same distance from 0 on the other side.`;
+          intro = `Go to the opposite of ${round.value}. The answer is ${-round.value}.`;
           break;
         case "absolute":
         case "absDist":
-          intro = `Round ${roundIndex + 1}. ${round.context} Travel to that integer. Its absolute value is the distance from the surface.`;
+          intro = `${round.context} Go to ${targetInt}.`;
           break;
         case "compare":
-          intro = `Round ${roundIndex + 1}. Which is ${round.pick}, ${round.a} or ${round.b}? Pilot to it. Higher on the line is greater.`;
+          intro = `Which is ${round.pick}, ${round.a} or ${round.b}? Go to it. Higher is greater.`;
           break;
         case "order":
-          intro = `Round ${roundIndex + 1}. Of ${round.values.join(", ")}, pilot to the ${round.pick}.`;
+          intro = `Go to the ${round.pick} number: ${round.values.join(", ")}.`;
           break;
         default:
-          intro = `Round ${roundIndex + 1}.`;
+          intro = `Move the sub.`;
       }
       announce(intro);
       caption(cardText());
       updateHud();
       feel.sfx("select");
 
-      hud.message(
-        cfg.hints
-          ? "Use Up/Down (or the d-pad) to move. Press Space when you arrive. Enter reads your depth."
-          : "Up/Down to move. Space to confirm. Enter for a depth read-out.",
-        { tone: "info", duration: cfg.hints ? 3000 : 2200 },
-      );
+      hud.message("Up/Down to move. Space when you arrive.", {
+        tone: "info",
+        duration: cfg.hints ? 3000 : 2200,
+      });
     }
 
     function move(dir) {
@@ -567,14 +571,14 @@ export default {
           life: 0.45,
         },
       );
-      announce(`Now at ${depthWord(pos)}.`);
+      announce(`You are at ${pos}.`);
       updateHud();
     }
 
     function readOut() {
       if (!started) return;
       const av = Math.abs(pos);
-      const msg = `Position ${pos}. Absolute value ${av}. That is ${av} meter${av === 1 ? "" : "s"} from the surface.`;
+      const msg = `You are at ${pos}. It is ${av} away from 0.`;
       caption(msg);
       announce(msg);
       feel.sfx("pop");
@@ -593,17 +597,8 @@ export default {
           markerMat.color.setHex(COLORS.target);
           markerMat.emissive.setHex(COLORS.target);
         }, 500);
-        const hint =
-          round.kind === "opposite"
-            ? ` The opposite of ${round.value} is the same distance from 0 on the other side.`
-            : round.kind === "absolute" || round.kind === "absDist"
-              ? ` Distance from the surface is |${targetInt}| = ${Math.abs(targetInt)}.`
-              : round.kind === "compare"
-                ? ` Higher on the line means greater.`
-                : round.kind === "order"
-                  ? ` Compare them on the line — higher is greater.`
-                  : "";
-        const msg = `Not there yet. You are at ${pos}.${cfg.hints ? hint : ""}`;
+        const hint = ` Go to ${targetInt}.`;
+        const msg = `Not yet. You are at ${pos}.${cfg.hints ? hint : ""}`;
         streak = 0;
         if (typeof hud.setStreak === "function") hud.setStreak(0);
         if (typeof hud.feedback === "function") hud.feedback(false, msg);
@@ -651,7 +646,7 @@ export default {
           break;
         case "absolute":
         case "absDist":
-          why = `|${targetInt}| = ${Math.abs(targetInt)}, the distance from the surface.`;
+          why = `${targetInt} is ${Math.abs(targetInt)} away from 0.`;
           break;
         case "compare":
           why = `${targetInt} is the ${round.pick} of ${round.a} and ${round.b}.`;
@@ -666,7 +661,7 @@ export default {
       if (typeof hud.feedback === "function")
         hud.feedback(true, okMsg, { duration: 2600 });
       else hud.message(okMsg, { tone: "ok", duration: 2600 });
-      announce(`Correct. ${why} You earned ${pts} points.`);
+      announce(`Correct! ${why} +${pts} points.`);
 
       later(() => {
         if (roundIndex < cfg.rounds.length - 1) {
@@ -798,7 +793,7 @@ export default {
         scene.remove(group);
         disposables.forEach((d) => d.dispose && d.dispose());
         // makeLabel sprites: dispose their textures + materials.
-        const sprites = [cardLabel, seaLabel, ...lineLabels];
+        const sprites = [cardLabel, seaLabel, depthLabel, ...lineLabels];
         sprites.forEach((sp) => {
           if (sp.material) {
             if (sp.material.map) sp.material.map.dispose();

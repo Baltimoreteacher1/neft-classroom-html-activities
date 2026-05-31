@@ -286,32 +286,62 @@ export default {
       c.arcTo(x, y, x + w, y, r);
       c.closePath();
     }
+    // Wrap a string to fit a max canvas width at the given font.
+    function wrapLines(c, str, font, maxW) {
+      c.font = font;
+      const words = String(str).split(" ");
+      const out = [];
+      let line = "";
+      for (const w of words) {
+        const test = line ? line + " " + w : w;
+        if (c.measureText(test).width > maxW && line) {
+          out.push(line);
+          line = w;
+        } else {
+          line = test;
+        }
+      }
+      if (line) out.push(line);
+      return out;
+    }
     function makeCard(lines, accent = "#1fa6a2") {
       const cv = document.createElement("canvas");
-      cv.width = 512;
-      cv.height = 200;
+      cv.width = 768;
+      cv.height = 300;
       const c = cv.getContext("2d");
-      c.fillStyle = "rgba(10,28,52,0.95)";
-      roundRect(c, 6, 6, 500, 188, 26);
+      c.fillStyle = "rgba(8,22,42,0.97)";
+      roundRect(c, 8, 8, 752, 284, 32);
       c.fill();
-      c.lineWidth = 6;
+      c.lineWidth = 9;
       c.strokeStyle = accent;
-      roundRect(c, 6, 6, 500, 188, 26);
+      roundRect(c, 8, 8, 752, 284, 32);
       c.stroke();
       c.textAlign = "center";
       c.textBaseline = "middle";
       const arr = Array.isArray(lines) ? lines : [lines];
+      const drawCrisp = (txt, x, y, fill) => {
+        c.lineJoin = "round";
+        c.lineWidth = 8;
+        c.strokeStyle = "rgba(0,0,0,0.85)";
+        c.strokeText(txt, x, y);
+        c.fillStyle = fill;
+        c.fillText(txt, x, y);
+      };
       if (arr.length === 1) {
-        c.fillStyle = "#ffffff";
-        c.font = "bold 64px system-ui, sans-serif";
-        c.fillText(arr[0], 256, 100);
+        c.font = "bold 92px system-ui, sans-serif";
+        drawCrisp(arr[0], 384, 150, "#ffffff");
       } else {
-        c.fillStyle = accent === "#1fa6a2" ? "#bfe2ff" : "#ffe6a0";
-        c.font = "600 32px system-ui, sans-serif";
-        c.fillText(arr[0], 256, 64);
-        c.fillStyle = "#ffffff";
-        c.font = "bold 58px system-ui, sans-serif";
-        c.fillText(arr[1], 256, 134);
+        // Top line = prompt (wrapped, smaller). Bottom line = the answer (huge).
+        const promptFont = "600 40px system-ui, sans-serif";
+        const wrapped = wrapLines(c, arr[0], promptFont, 700).slice(0, 2);
+        c.font = promptFont;
+        const promptColor = accent === "#1fa6a2" ? "#bfe2ff" : "#ffe6a0";
+        const startY = wrapped.length > 1 ? 70 : 88;
+        wrapped.forEach((ln, i) =>
+          drawCrisp(ln, 384, startY + i * 48, promptColor),
+        );
+        c.font = "bold 104px system-ui, sans-serif";
+        drawCrisp(arr[1], 384, 222, "#ffffff");
       }
       const tex = track(new THREE.CanvasTexture(cv));
       tex.minFilter = THREE.LinearFilter;
@@ -323,7 +353,7 @@ export default {
         }),
       );
       const spr = new THREE.Sprite(mat);
-      spr.scale.set(5.2, 2.0, 1);
+      spr.scale.set(6.6, 2.6, 1);
       spr.renderOrder = 10;
       return spr;
     }
@@ -407,7 +437,7 @@ export default {
       }
       feel.sfx("add");
       announce(
-        `Added ${FRUIT[fruit].name}. Mixture is ${counts.strawberry} strawberry to ${counts.banana} banana.`,
+        `Added ${FRUIT[fruit].name}. You have ${counts.strawberry} red and ${counts.banana} yellow.`,
       );
       updateRatioLive();
     }
@@ -444,14 +474,14 @@ export default {
       feel.sfx("remove");
       restack();
       announce(
-        `Removed a ${FRUIT[s.fruit].name} scoop. Mixture is ${counts.strawberry} strawberry to ${counts.banana} banana.`,
+        `Removed a ${FRUIT[s.fruit].name} scoop. You have ${counts.strawberry} red and ${counts.banana} yellow.`,
       );
       updateRatioLive();
     }
 
     function updateRatioLive() {
       hud.setObjective(
-        `Order ${round.a} : ${round.b} (strawberry : banana) — your mixture ${ratioText()}. Add scoops, then Serve.`,
+        `Make ${round.a} red : ${round.b} yellow. You have ${ratioText()}. Then tap Serve.`,
       );
     }
 
@@ -465,14 +495,14 @@ export default {
       if (solved) return;
       if (!ratioMatches()) {
         const [ta, tb] = simplify(round.a, round.b);
-        hud.message(`Not equivalent yet. Match ${ta} : ${tb}.`, {
+        hud.message(`Not a match yet. Make it like ${ta} : ${tb}.`, {
           tone: "warn",
           duration: 2400,
         });
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.16);
         announce(
-          `That mixture is not equivalent to the order yet. Keep the same comparison.`,
+          `Not a match yet. Add or remove scoops to make ${ta} red to ${tb} yellow.`,
         );
         return;
       }
@@ -482,7 +512,7 @@ export default {
     // ---- Unit-rate rounds ---------------------------------------------------
     function rateObjective() {
       hud.setObjective(
-        `${round.prompt}  Your answer: ${round.unit}${rateGuess}. Use +/− then Serve.`,
+        `Find ${round.total} ÷ ${round.count}. Use + and −, then tap Serve. Now: ${round.unit}${rateGuess}`,
       );
     }
     function buildRate() {
@@ -490,10 +520,10 @@ export default {
       setCard([round.prompt, `${round.unit}${rateGuess}`], "#4f8fd0");
       rateObjective();
       announce(
-        `Unit rate round. ${round.prompt} Use up and down to change your answer, then serve to lock it in.`,
+        `New problem. Find ${round.total} divided by ${round.count}. Use plus and minus, then tap Serve.`,
       );
       if (cfg.hints)
-        hud.message("Divide the total by the number of servings.", {
+        hud.message(`Try ${round.total} ÷ ${round.count}.`, {
           tone: "info",
           duration: 2600,
         });
@@ -509,15 +539,13 @@ export default {
     function serveRate() {
       if (solved) return;
       if (rateGuess !== round.answer) {
-        hud.message(
-          `${round.unit}${rateGuess} is not the unit rate. Try ${round.total} ÷ ${round.count}.`,
-          { tone: "warn", duration: 2400 },
-        );
+        hud.message(`Not yet. Try ${round.total} ÷ ${round.count}.`, {
+          tone: "warn",
+          duration: 2400,
+        });
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.16);
-        announce(
-          `That is not the unit rate. Divide ${round.total} by ${round.count}.`,
-        );
+        announce(`Not yet. Find ${round.total} divided by ${round.count}.`);
         return;
       }
       win();
@@ -556,20 +584,20 @@ export default {
         });
       }
       if (round.kind === "rate") {
-        hud.message(`Correct! ${round.unit}${round.answer} per one. +${pts}`, {
+        hud.message(`Correct! ${round.unit}${round.answer} for one. +${pts}`, {
           tone: "ok",
           duration: 2400,
         });
         announce(
-          `Correct! The unit rate is ${round.unit}${round.answer}. You earned ${pts} points.`,
+          `Correct! The answer is ${round.unit}${round.answer}. You got ${pts} points.`,
         );
       } else {
-        hud.message(`Served! ${ratioText()} matches the order. +${pts}`, {
+        hud.message(`Match! You served ${ratioText()}. +${pts}`, {
           tone: "ok",
           duration: 2400,
         });
         announce(
-          `Smoothie served. ${counts.strawberry} to ${counts.banana} is equivalent to the order. You earned ${pts} points.`,
+          `Match! You served ${counts.strawberry} red to ${counts.banana} yellow. You got ${pts} points.`,
         );
       }
       later(() => {
@@ -583,9 +611,9 @@ export default {
     }
 
     function finish() {
-      hud.setObjective("Stand closed — every customer served. Great work!");
-      hud.message("All orders complete! 🎉", { tone: "ok", duration: 0 });
-      setCard(["Smoothie Stand", "All complete! 🎉"], "#4aa978");
+      hud.setObjective("Done! You served every order. Great work!");
+      hud.message("All done! 🎉", { tone: "ok", duration: 0 });
+      setCard(["Smoothie Stand", "All done! 🎉"], "#4aa978");
       feel.sfx("fanfare");
       if (!reduced) {
         [0, 200, 420].forEach((ms, i) =>
@@ -621,11 +649,11 @@ export default {
         round.baseLabel != null
           ? `${round.a} : ${round.b}  (${round.baseLabel})`
           : `${round.a} : ${round.b}`;
-      setCard(["Order — strawberry : banana", targetTxt], "#1fa6a2");
+      setCard(["Order — red : yellow", targetTxt], "#1fa6a2");
       updateRatioLive();
       announce(
-        `New customer. Order is ${round.a} parts strawberry to ${round.b} parts banana. ` +
-          `Add scoops to match the ratio, then serve.`,
+        `New order: ${round.a} red to ${round.b} yellow. ` +
+          `Add scoops to match, then tap Serve.`,
       );
       if (cfg.hints)
         hud.message(`Order: ${targetTxt}. Add scoops to match.`, {

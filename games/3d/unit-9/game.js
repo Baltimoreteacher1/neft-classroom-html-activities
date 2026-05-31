@@ -198,25 +198,27 @@ export default {
     function addTickLabels() {
       for (let c = cfg.minCoord; c <= cfg.maxCoord; c++) {
         if (c === 0) continue;
-        const lx = makeLabel(String(c), { scale: 0.5 });
+        // X-axis numbers: nudged just below the x-axis so they don't sit on it.
+        const lx = makeLabel(String(c), { scale: 0.9, fontSize: 80 });
         const wx = coordToWorld(c, 0);
-        lx.position.set(wx.x, 0.45, wx.z);
+        lx.position.set(wx.x, 0.55, wx.z + 0.5);
         grid.group.add(lx);
         labels.push(lx);
-        const ly = makeLabel(String(c), { scale: 0.5 });
+        // Y-axis numbers: nudged just left of the y-axis to avoid overlap.
+        const ly = makeLabel(String(c), { scale: 0.9, fontSize: 80 });
         const wy = coordToWorld(0, c);
-        ly.position.set(wy.x, 0.45, wy.z);
+        ly.position.set(wy.x - 0.5, 0.55, wy.z);
         grid.group.add(ly);
         labels.push(ly);
       }
-      const ox = makeLabel("x", { scale: 0.6, color: "#9fd0ff" });
+      const ox = makeLabel("x", { scale: 1.0, color: "#9fd0ff" });
       const wox = coordToWorld(cfg.maxCoord, 0);
-      ox.position.set(wox.x + 0.6, 0.5, wox.z);
+      ox.position.set(wox.x + 0.7, 0.6, wox.z);
       grid.group.add(ox);
       labels.push(ox);
-      const oy = makeLabel("y", { scale: 0.6, color: "#9fd0ff" });
+      const oy = makeLabel("y", { scale: 1.0, color: "#9fd0ff" });
       const woy = coordToWorld(0, cfg.maxCoord);
-      oy.position.set(woy.x, 0.5, woy.z - 0.6);
+      oy.position.set(woy.x, 0.6, woy.z - 0.7);
       grid.group.add(oy);
       labels.push(oy);
     }
@@ -293,9 +295,13 @@ export default {
     }
 
     function addPointLabel(x, y, color) {
-      const lbl = makeLabel(`(${x}, ${y})`, { scale: 0.55, color });
+      const lbl = makeLabel(`(${x}, ${y})`, {
+        scale: 0.95,
+        fontSize: 84,
+        color,
+      });
       const w = coordToWorld(x, y);
-      lbl.position.set(w.x, 0.92, w.z);
+      lbl.position.set(w.x, 1.05, w.z);
       scene.add(lbl);
       persistentMarkers.push(lbl);
       return lbl;
@@ -354,21 +360,23 @@ export default {
     function objectiveText() {
       if (!task) return "";
       if (task.kind === "plot")
-        return `Plot the ordered pair (${task.x}, ${task.y}).`;
+        return `Move the beacon to (${task.x}, ${task.y}). Then place it.`;
       if (task.kind === "identify")
-        return "Move to the ringed point and name its coordinates.";
-      if (task.kind === "reflect")
-        return `Reflect (${task.x}, ${task.y}) across the ${task.axis}-axis. Plot the image.`;
+        return "Move to the gold ring. Then place it.";
+      if (task.kind === "reflect") {
+        const want = reflectTarget(task);
+        return `Flip (${task.x}, ${task.y}) over the ${task.axis}-axis. Move to (${want.x}, ${want.y}) and place it.`;
+      }
       if (task.kind === "distance")
-        return `Find the distance from (${task.a.x}, ${task.a.y}) to (${task.b.x}, ${task.b.y}). Step onto the second point.`;
+        return `Move the beacon to (${task.b.x}, ${task.b.y}) to measure the distance.`;
       return "";
     }
 
     function updateHud() {
       hud.setObjective(
-        `${objectiveText()}  •  Beacon: (${cursor.x}, ${cursor.y})`,
+        `${objectiveText()}   Beacon now at (${cursor.x}, ${cursor.y})`,
       );
-      setCard(`${objectiveText()}\n  →  at (${cursor.x}, ${cursor.y})`);
+      setCard(`${objectiveText()}\nBeacon: (${cursor.x}, ${cursor.y})`);
     }
 
     function reflectTarget(t) {
@@ -390,20 +398,19 @@ export default {
           targetRing.position.set(w.x, 0.1, w.z);
         }
         announce(
-          `Task ${taskIndex + 1}. Plot the ordered pair ${task.x}, ${task.y}. Move right or left for x, then up or down for y, then place.`,
+          `Move the beacon to ${task.x}, ${task.y}. Go ${task.x} on x, then ${task.y} on y. Then place it.`,
         );
       } else if (task.kind === "identify") {
         targetRing.visible = true;
         const w = coordToWorld(task.x, task.y);
         targetRing.position.set(w.x, 0.1, w.z);
-        announce(
-          `Task ${taskIndex + 1}. Move the beacon onto the ringed point, then place to name its coordinates.`,
-        );
+        announce(`Move the beacon onto the gold ring. Then place it.`);
       } else if (task.kind === "reflect") {
         placeMarker(task.x, task.y, COLORS.plotted);
         addPointLabel(task.x, task.y, "#9fc4f0");
+        const want = reflectTarget(task);
         announce(
-          `Task ${taskIndex + 1}. The point ${task.x}, ${task.y} is shown. Reflect it across the ${task.axis}-axis and plot the image.`,
+          `Flip the point ${task.x}, ${task.y} over the ${task.axis}-axis. Move to ${want.x}, ${want.y} and place it.`,
         );
       } else if (task.kind === "distance") {
         placeMarker(task.a.x, task.a.y, COLORS.plotted);
@@ -411,10 +418,8 @@ export default {
         placeMarker(task.b.x, task.b.y, COLORS.distance);
         addPointLabel(task.b.x, task.b.y, "#f0c08a");
         setCursor(task.a.x, task.a.y);
-        const along =
-          task.a.y === task.b.y ? "row (same y)" : "column (same x)";
         announce(
-          `Task ${taskIndex + 1}. These two points share a ${along}. Step the beacon from the first point to the second to measure the distance.`,
+          `Move the beacon to ${task.b.x}, ${task.b.y}. Count the steps. That is the distance.`,
         );
       }
       feel.sfx("select", `Task ${taskIndex + 1} of ${cfg.tasks.length}.`);
@@ -471,7 +476,7 @@ export default {
     function finish() {
       hud.setProgress(cfg.tasks.length, cfg.tasks.length);
       hud.setObjective(
-        `Quest complete — ${solvedCount} of ${cfg.tasks.length} points mapped, best streak ${bestStreak}. You charted the whole plane!`,
+        `Done! You plotted ${solvedCount} of ${cfg.tasks.length} points. Best streak: ${bestStreak}.`,
       );
       setCard(
         `Quest complete!\n${solvedCount}/${cfg.tasks.length} points • streak ${bestStreak}`,
@@ -525,7 +530,7 @@ export default {
           );
         } else {
           reject(
-            `Not yet. Remember (x, y): x is right/left, y is up/down. You are at (${cursor.x}, ${cursor.y}).`,
+            `Not there yet. Go to (${task.x}, ${task.y}). You are at (${cursor.x}, ${cursor.y}).`,
           );
         }
         return;
@@ -542,7 +547,7 @@ export default {
           );
         } else {
           reject(
-            `That is (${cursor.x}, ${cursor.y}). Move onto the ringed point first.`,
+            `Not there yet. Move onto the gold ring. You are at (${cursor.x}, ${cursor.y}).`,
           );
         }
         return;
@@ -564,7 +569,7 @@ export default {
           );
         } else {
           reject(
-            `Not the mirror image. Across the ${task.axis}-axis, flip the sign of ${task.axis === "x" ? "y" : "x"}. You are at (${cursor.x}, ${cursor.y}).`,
+            `Not the flip. Over the ${task.axis}-axis, go to (${want.x}, ${want.y}). You are at (${cursor.x}, ${cursor.y}).`,
           );
         }
         return;
@@ -578,7 +583,8 @@ export default {
               : Math.abs(task.b.y - task.a.y);
           drawDistanceBar(task.a, task.b);
           const lbl = makeLabel(`distance = ${dist}`, {
-            scale: 0.6,
+            scale: 0.9,
+            fontSize: 80,
             color: "#f0c08a",
           });
           const mx = (task.a.x + task.b.x) / 2;
@@ -598,7 +604,7 @@ export default {
           );
         } else {
           reject(
-            `Keep stepping toward (${task.b.x}, ${task.b.y}). You are at (${cursor.x}, ${cursor.y}).`,
+            `Keep going to (${task.b.x}, ${task.b.y}). You are at (${cursor.x}, ${cursor.y}).`,
           );
         }
         return;

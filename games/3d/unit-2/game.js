@@ -332,12 +332,12 @@ export default {
       if (!orderLabel) {
         orderLabel = makeLabel(text, {
           THREE,
-          scale: 1.05,
-          fontSize: 56,
-          background: "rgba(18,53,91,0.92)",
-          color: "#ffffff",
+          scale: 1.35,
+          fontSize: 72,
+          background: "rgba(18,53,91,0.95)",
+          color: "#ffe9a8",
         });
-        orderLabel.position.set(0, 4.4, -1.4);
+        orderLabel.position.set(0, 4.5, -1.4);
         group.add(orderLabel);
         ownedTex.add(orderLabel.material.map);
         ownedMat.add(orderLabel.material);
@@ -392,11 +392,11 @@ export default {
     function addToolLabel(text, x, z) {
       const l = makeLabel(text, {
         THREE,
-        scale: 0.6,
-        fontSize: 44,
-        background: "rgba(18,53,91,0.9)",
+        scale: 0.85,
+        fontSize: 56,
+        background: "rgba(18,53,91,0.92)",
       });
-      l.position.set(x, 2.05, z);
+      l.position.set(x, 2.15, z);
       group.add(l);
       propMeshes.push(l);
       ownedTex.add(l.material.map);
@@ -444,17 +444,17 @@ export default {
       announce(
         "Order " +
           (roundIndex + 1) +
-          ": build " +
+          ". Build " +
           orderTxt +
-          " of a " +
-          round.good +
-          " using one over " +
+          ". Add 1 over " +
           round.denom +
-          " slices. Add slices onto the plate, then serve.",
+          " slices, then serve. Answer: " +
+          orderTxt +
+          ".",
       );
       if (cfg.hints)
         hud.message(
-          "Add 1/" + round.denom + " slices until the plate matches the order.",
+          "Add 1/" + round.denom + " slices. Make " + orderTxt + ".",
           {
             tone: "info",
             duration: 3000,
@@ -495,19 +495,15 @@ export default {
       announce(
         "Order " +
           (roundIndex + 1) +
-          ": make " +
-          round.a.n +
-          " over " +
-          round.a.d +
-          " plus " +
-          round.b.n +
-          " over " +
-          round.b.d +
-          ". Add slices of each size until they total " +
+          ". Add both slice sizes to make " +
           sum.n +
           " over " +
           sum.d +
-          ", then serve.",
+          ", then serve. Answer: " +
+          sum.n +
+          " over " +
+          sum.d +
+          ".",
       );
     }
 
@@ -530,11 +526,11 @@ export default {
         popIn(bowl, 1, 60 + i * 60);
         const bl = makeLabel("1 cup", {
           THREE,
-          scale: 0.5,
-          fontSize: 40,
-          background: "rgba(18,53,91,0.9)",
+          scale: 0.8,
+          fontSize: 52,
+          background: "rgba(18,53,91,0.92)",
         });
-        bl.position.set(-5.2 + i * 1.9, 1.7, -2.0);
+        bl.position.set(-5.2 + i * 1.9, 1.85, -2.0);
         group.add(bl);
         propMeshes.push(bl);
         ownedTex.add(bl.material.map);
@@ -578,22 +574,17 @@ export default {
       addToolLabel("Scoop 1/" + round.unitDenom, 3.4, 1.2);
       addToolLabel("Put back", 5.6, 1.2);
 
-      setOrderLabel(
-        round.whole +
-          " ÷ 1/" +
-          round.unitDenom +
-          " = ?   (servings in " +
-          round.whole +
-          " cups)",
-      );
+      setOrderLabel(round.whole + " ÷ 1/" + round.unitDenom + " = ?");
       announce(
         "Order " +
           (roundIndex + 1) +
-          ": how many one over " +
+          ". How many 1 over " +
           round.unitDenom +
-          " cup servings fit in " +
+          " scoops fill " +
           round.whole +
-          " cups? Scoop one serving at a time, then serve your count.",
+          " cups? Scoop them all, then serve. Answer: " +
+          round._answer +
+          ".",
       );
     }
 
@@ -615,33 +606,32 @@ export default {
     function updateLive() {
       if (round.type === "divide") {
         hud.setObjective(
-          "Scoop 1/" +
+          round.whole +
+            " ÷ 1/" +
             round.unitDenom +
-            "-cup servings from " +
-            round.whole +
-            " cups, then SERVE. Scooped: " +
+            " = " +
+            round._answer +
+            ". Scoop " +
+            round._answer +
+            ", then SERVE. Scooped: " +
             scoopCount +
             ".",
         );
       } else if (round.type === "combine") {
         hud.setObjective(
           "Make " +
-            round._orderTxt +
-            " = " +
             round._sum.n +
             "/" +
             round._sum.d +
-            ", then SERVE. On the plate: " +
+            ", then SERVE. Plate: " +
             currentFraction().text +
             ".",
         );
       } else {
         hud.setObjective(
-          "Add 1/" +
-            round.denom +
-            " slices to make " +
+          "Make " +
             round._orderTxt +
-            ", then SERVE. On the plate: " +
+            ", then SERVE. Plate: " +
             currentFraction().text +
             ".",
         );
@@ -817,12 +807,8 @@ export default {
       if (!correct) {
         const msg =
           round.type === "divide"
-            ? "Not yet — count the 1/" +
-              round.unitDenom +
-              " servings in " +
-              round.whole +
-              " whole cups."
-            : "Not quite — the plate does not match the order yet.";
+            ? "Not yet. The answer is " + round._answer + " scoops. Keep going."
+            : "Not yet. The plate does not match the order.";
         streak = 0;
         hud.setStreak(0);
         hud.message(msg, { tone: "warn", duration: 2200 });
@@ -952,7 +938,7 @@ export default {
         }
 
         startRound();
-        caption("Fraction Kitchen ready. Fill the orders!");
+        caption("Match the gold order, then tap green SERVE.");
 
         unbinders.push(
           input.onPress((name) => {

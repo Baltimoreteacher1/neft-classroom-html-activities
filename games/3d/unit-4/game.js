@@ -49,43 +49,39 @@ function makeLevel(level) {
           kind: "gcf",
           a: 12,
           b: 8,
-          prompt:
-            "Pack 12 gears and 8 bolts into identical kits with none left over. How many kits?",
+          prompt: "Find the GCF of 12 and 8. Set the dial to that number.",
         },
         {
           kind: "gcf",
           a: 9,
           b: 6,
-          prompt:
-            "9 red parts and 6 blue parts go into matching kits, nothing left over. How many kits?",
+          prompt: "Find the GCF of 9 and 6. Set the dial to that number.",
         },
         {
           kind: "lcm",
           a: 4,
           b: 6,
-          prompt:
-            "Gear trays hold 4, bolt trays hold 6. What is the smallest run where both finish together?",
+          prompt: "Find the LCM of 4 and 6. Set the dial to that number.",
         },
         {
           kind: "lcm",
           a: 3,
           b: 5,
-          prompt:
-            "Press A fires every 3 s, press B every 5 s. When do they first sync?",
+          prompt: "Find the LCM of 3 and 5. Set the dial to that number.",
         },
         {
           kind: "decimal-sum",
           a: 3.5,
           b: 2.25,
           op: "+",
-          prompt: "Two parcels weigh 3.5 kg and 2.25 kg. Total weight?",
+          prompt: "Add 3.5 + 2.25. Set the dial to the sum.",
         },
         {
           kind: "decimal-sum",
           a: 9.4,
           b: 3.7,
           op: "-",
-          prompt: "A 9.4 kg bin loses a 3.7 kg parcel. Remaining weight?",
+          prompt: "Subtract 9.4 − 3.7. Set the dial to the answer.",
         },
       ],
     };
@@ -98,40 +94,38 @@ function makeLevel(level) {
         a: 2.4,
         b: 1.5,
         op: "×",
-        prompt: "Each crate is 2.4 kg. A pallet holds 1.5 crate-loads. Mass?",
+        prompt: "Multiply 2.4 × 1.5. Set the dial to the answer.",
       },
       {
         kind: "decimal-prod",
         a: 7.2,
         b: 0.6,
         op: "÷",
-        prompt: "Split 7.2 kg of resin into 0.6 kg cartridges. How many?",
+        prompt: "Divide 7.2 ÷ 0.6. Set the dial to the answer.",
       },
       {
         kind: "distributive",
         a: 36,
         b: 8,
-        prompt: "Factor the order 36 + 8 as factor × (sum). Use the GCF.",
+        prompt: "Set the dial to the GCF of 36 and 8. That is the factor.",
       },
       {
         kind: "distributive",
         a: 18,
         b: 30,
-        prompt: "Factor 18 + 30 as factor × (sum) using the GCF.",
+        prompt: "Set the dial to the GCF of 18 and 30. That is the factor.",
       },
       {
         kind: "lcm",
         a: 8,
         b: 12,
-        prompt:
-          "Press A finishes every 8 s, press B every 12 s. When do they sync?",
+        prompt: "Find the LCM of 8 and 12. Set the dial to that number.",
       },
       {
         kind: "gcf",
         a: 24,
         b: 36,
-        prompt:
-          "24 motors and 36 cables pack into identical crates, none left over. How many crates?",
+        prompt: "Find the GCF of 24 and 36. Set the dial to that number.",
       },
     ],
   };
@@ -315,17 +309,17 @@ export default {
     group.add(dial);
 
     // ---- Floating problem card + answer readout ----------------------------
-    const cardLabel = makeLabel("", { scale: 1.0, fontSize: 70 });
-    cardLabel.position.set(0, 4.1, 0);
+    const cardLabel = makeLabel("", { scale: 1.1, fontSize: 76 });
+    cardLabel.position.set(0, 4.2, 0);
     group.add(cardLabel);
 
     const readoutLabel = makeLabel("", {
-      scale: 0.7,
-      fontSize: 64,
+      scale: 0.95,
+      fontSize: 72,
       background: "rgba(15,34,56,0.92)",
       color: "#ffe6a8",
     });
-    readoutLabel.position.set(0, 2.95, 0);
+    readoutLabel.position.set(0, 2.9, 0);
     group.add(readoutLabel);
 
     // ---- Visual crate grouping (spawned per round) -------------------------
@@ -417,16 +411,15 @@ export default {
     function hintFor(r) {
       switch (r.kind) {
         case "gcf":
-          return "Find the largest number that divides BOTH amounts evenly.";
+          return "GCF: the biggest number that goes into both.";
         case "lcm":
-          return "Count up multiples of each until they first match.";
+          return "LCM: the first number both go into.";
         case "decimal-sum":
           return (
-            "Line up the decimal points, then " +
-            (r.op === "+" ? "add." : "subtract.")
+            "Line up the dots. Then " + (r.op === "+" ? "add." : "subtract.")
           );
         default:
-          return "Use Up/Down to set the dial, then Space to ship the order.";
+          return "Up/Down sets the dial. Space ships it.";
       }
     }
 
@@ -549,8 +542,8 @@ export default {
           value > 0 &&
           round.a % value === 0 &&
           round.b % value === 0
-            ? "That factor works, but it is not the GREATEST common factor — pull out more."
-            : "Not quite — adjust the dial and try again.";
+            ? "Close! Find a bigger factor that fits both."
+            : "Not yet. Move the dial and try again.";
         streak = 0;
         hud.setStreak(0);
         hud.feedback(false, tip);
@@ -583,9 +576,9 @@ export default {
       );
       if (!reduced) feel.shake(0.28);
 
-      const msg = `Order shipped! ${equationText()}  +${pts}`;
+      const msg = `Correct! ${equationText()}  +${pts}`;
       hud.feedback(true, msg);
-      announce(`Correct. ${equationText()}. You earned ${pts} points.`);
+      announce(`Correct! ${equationText()}. +${pts} points.`);
 
       // Ship the crates off down the belt.
       if (!reduced) {
@@ -620,16 +613,16 @@ export default {
       updateLabel(readoutLabel, `${solvedCount}/${cfg.rounds.length} shipped`);
       hud.setProgress(cfg.rounds.length, cfg.rounds.length);
       hud.setObjective(
-        `Factory shift complete — ${solvedCount} of ${cfg.rounds.length} orders packaged, best streak ${bestStreak}. Great work, Operator!`,
+        `Done! You packed ${solvedCount} of ${cfg.rounds.length}. Best streak: ${bestStreak}.`,
       );
-      hud.message("All orders packaged! 🏭", { tone: "ok", duration: 0 });
+      hud.message("All orders packed! 🏭", { tone: "ok", duration: 0 });
       feel.sfx("fanfare");
       feel.burst(
         { x: 0, y: 1.8, z: 0 },
         { color: PALETTE.dial, count: 70, spread: 6 },
       );
       announce(
-        `All orders packaged. You completed ${solvedCount} with a best streak of ${bestStreak}. Great work, Operator.`,
+        `Done. You packed ${solvedCount} orders. Best streak ${bestStreak}.`,
       );
     }
 

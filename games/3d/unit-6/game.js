@@ -77,14 +77,14 @@ function makeRounds(level) {
           x: 5,
           expr: [numTok(2), opTok("×"), varTok(), opTok("+"), numTok(3)],
           target: 13,
-          prompt: "Evaluate 2x + 3 when x = 5.",
-          hint: "Multiply first: 2 × 5 = 10. Then add 3 → 13.",
+          prompt: "Find 2x + 3 when x = 5. Answer: 13.",
+          hint: "Multiply first: 2 × 5 = 10. Then add 3 = 13.",
         },
         {
           mode: "build",
           x: 4,
           target: 14,
-          prompt: "Build an expression equal to 14 when x = 4.",
+          prompt: "Build blocks that equal 14 when x = 4.",
           hint: "Try 3 × x + 2.  3·4 = 12, then 12 + 2 = 14.",
         },
         {
@@ -92,14 +92,14 @@ function makeRounds(level) {
           x: 6,
           expr: [varTok(), opTok("+"), varTok()],
           target: 12,
-          prompt: "Evaluate x + x when x = 6.",
+          prompt: "Find x + x when x = 6. Answer: 12.",
           hint: "x + x is the same as 2x. 6 + 6 = 12.",
         },
         {
           mode: "build",
           x: 3,
           target: 10,
-          prompt: "Build an expression equal to 10 when x = 3.",
+          prompt: "Build blocks that equal 10 when x = 3.",
           hint: "Try 3 × x + 1.  3·3 = 9, then + 1 = 10.",
         },
         {
@@ -107,14 +107,14 @@ function makeRounds(level) {
           x: 4,
           expr: [numTok(5), opTok("×"), varTok(), opTok("-"), numTok(2)],
           target: 18,
-          prompt: "Evaluate 5x − 2 when x = 4.",
-          hint: "Multiply first: 5 × 4 = 20. Then subtract 2 → 18.",
+          prompt: "Find 5x − 2 when x = 4. Answer: 18.",
+          hint: "Multiply first: 5 × 4 = 20. Then subtract 2 = 18.",
         },
         {
           mode: "build",
           x: 5,
           target: 16,
-          prompt: "Build an expression equal to 16 when x = 5.",
+          prompt: "Build blocks that equal 16 when x = 5.",
           hint: "Try 3 × x + 1.  3·5 = 15, then + 1 = 16.",
         },
         {
@@ -122,8 +122,8 @@ function makeRounds(level) {
           x: 2,
           expr: [numTok(4), opTok("×"), varTok(), opTok("+"), numTok(4)],
           target: 12,
-          prompt: "Evaluate 4x + 4 when x = 2.",
-          hint: "Multiply first: 4 × 2 = 8. Then add 4 → 12.",
+          prompt: "Find 4x + 4 when x = 2. Answer: 12.",
+          hint: "Multiply first: 4 × 2 = 8. Then add 4 = 12.",
         },
       ],
     };
@@ -143,7 +143,7 @@ function makeRounds(level) {
           parenTok(")"),
         ],
         target: 18,
-        prompt: "Evaluate 3(x + 2) when x = 4.",
+        prompt: "Find 3(x + 2) when x = 4. Answer: 18.",
         hint: "Parentheses first: 4 + 2 = 6, then 3 × 6 = 18.",
       },
       {
@@ -157,14 +157,14 @@ function makeRounds(level) {
           numTok(3),
           parenTok(")"),
         ],
-        prompt: "Build an expression equivalent to 2(x + 3) for every x.",
+        prompt: "Build blocks equal to 2(x + 3) for any x. Answer: 2x + 6.",
         hint: "Distribute: 2·x + 2·3 = 2x + 6.",
       },
       {
         mode: "build",
         x: 2,
         target: 12,
-        prompt: "Build an expression equal to 12 when x = 2 using an exponent.",
+        prompt: "Build blocks that equal 12 when x = 2. Use an exponent.",
         hint: "x^3 means x·x·x = 8, then + 4 = 12 (order of operations).",
       },
       {
@@ -172,7 +172,7 @@ function makeRounds(level) {
         x: 3,
         expr: [varTok(), opTok("^"), numTok(2), opTok("+"), numTok(5)],
         target: 14,
-        prompt: "Evaluate x² + 5 when x = 3.",
+        prompt: "Find x² + 5 when x = 3. Answer: 14.",
         hint: "Exponent first: 3² = 9, then + 5 = 14.",
       },
       {
@@ -186,7 +186,7 @@ function makeRounds(level) {
           numTok(1),
           parenTok(")"),
         ],
-        prompt: "Build an expression equivalent to 4(x − 1) for every x.",
+        prompt: "Build blocks equal to 4(x − 1) for any x. Answer: 4x − 4.",
         hint: "Distribute: 4·x − 4·1 = 4x − 4.",
       },
       {
@@ -203,14 +203,14 @@ function makeRounds(level) {
           varTok(),
         ],
         target: 17,
-        prompt: "Evaluate 2(x + 1) + x when x = 5.",
+        prompt: "Find 2(x + 1) + x when x = 5. Answer: 17.",
         hint: "Parentheses: 5 + 1 = 6, then 2 × 6 = 12, then + 5 = 17.",
       },
       {
         mode: "build",
         x: 3,
         target: 20,
-        prompt: "Build an expression equal to 20 when x = 3 (multi-step).",
+        prompt: "Build blocks that equal 20 when x = 3.",
         hint: "Try 6 × x + 2.  6·3 = 18, then + 2 = 20.",
       },
     ],
@@ -488,9 +488,9 @@ export default {
     // ---- Problem card (3D, always shows the math) ---------------------------
     const problemSprite = makeLabel("", {
       THREE,
-      scale: 1.0,
-      fontSize: 72,
-      background: "rgba(13,27,51,0.92)",
+      scale: 1.15,
+      fontSize: 80,
+      background: "rgba(13,27,51,0.96)",
       color: "#ffffff",
     });
     problemSprite.position.set(0, 2.1, -2.3);
@@ -499,10 +499,10 @@ export default {
 
     const liveSprite = makeLabel("", {
       THREE,
-      scale: 0.72,
-      fontSize: 60,
-      background: "rgba(31,166,162,0.22)",
-      color: "#cdeff0",
+      scale: 0.9,
+      fontSize: 72,
+      background: "rgba(31,166,162,0.55)",
+      color: "#eafdff",
     });
     liveSprite.position.set(0, 1.15, -2.3);
     group.add(liveSprite);
@@ -675,11 +675,11 @@ export default {
     function updateObjective() {
       const str = exprString(currentTokens());
       if (round.mode === "equivalent") {
-        hud.setObjective(`${round.prompt}  Your build: ${str} — then submit.`);
+        hud.setObjective(`${round.prompt}  You built: ${str}. Press Enter.`);
       } else {
         const v = liveValue();
         hud.setObjective(
-          `${round.prompt}  Build: ${str} = ${v == null ? "?" : v} | Target ${round.target} — then submit.`,
+          `${round.prompt}  You have: ${str} = ${v == null ? "?" : v}. Goal: ${round.target}. Press Enter.`,
         );
       }
       refreshLive();
@@ -736,7 +736,7 @@ export default {
       updateObjective();
       feel.sfx("select");
 
-      let intro = `Round ${roundIndex + 1} of ${cfg.rounds.length}. ${round.prompt}`;
+      let intro = `Round ${roundIndex + 1}. ${round.prompt}`;
       if (round.mode === "eval" && round.expr) {
         intro += ` The engine shows ${exprString(round.expr)}.`;
       }
@@ -766,7 +766,7 @@ export default {
     function placeToken(token) {
       if (solved || finished) return;
       if (placed.length >= MAX_SLOTS) {
-        hud.message("The engine is full. Submit or remove a block.", {
+        hud.message("Engine full. Press Enter to check, or ↓ to remove.", {
           tone: "warn",
           duration: 1800,
         });
@@ -821,7 +821,7 @@ export default {
       if (solved || finished) return;
       const toks = currentTokens();
       if (!toks.length) {
-        hud.message("Place some blocks first.", {
+        hud.message("Add some blocks first.", {
           tone: "warn",
           duration: 1600,
         });
@@ -832,26 +832,23 @@ export default {
       if (round.mode === "equivalent") {
         const r0 = evaluate(toks, 0);
         if (!r0.ok) {
-          rejectExpr(
-            "That is not a complete expression. Check operations and parentheses.",
-          );
+          rejectExpr("Not finished. Check your blocks and try again.");
           return;
         }
         if (equivalent(toks, round.targetExpr)) win("equivalent");
-        else
-          rejectExpr("Not equivalent yet. Distribute and combine like terms.");
+        else rejectExpr("Not equal yet. Try again.");
         return;
       }
 
       const r = evaluate(toks, round.x);
       if (!r.ok) {
-        rejectExpr("That is not a complete expression. Check your operations.");
+        rejectExpr("Not finished. Check your blocks and try again.");
         return;
       }
       if (r.value === round.target) win("value");
       else
         rejectExpr(
-          `That evaluates to ${r.value}, not ${round.target}. Remember order of operations.`,
+          `You got ${r.value}. You need ${round.target}. Do × before +. Try again.`,
         );
     }
 
@@ -912,8 +909,8 @@ export default {
 
       const detail =
         kind === "equivalent"
-          ? "The expressions are equivalent for every x."
-          : `It evaluates to exactly ${round.target} when x = ${round.x}.`;
+          ? "Your blocks equal the target for any x."
+          : `It equals ${round.target} when x = ${round.x}.`;
       announce(`Correct! ${detail} You earned ${pts} points.`);
 
       later(() => {
@@ -935,9 +932,9 @@ export default {
       finished = true;
       hud.setProgress(cfg.rounds.length, cfg.rounds.length);
       hud.setObjective(
-        `All expressions built — ${solvedCount} of ${cfg.rounds.length} correct, best streak ${bestStreak}. Great work, Engineer!`,
+        `Done! ${solvedCount} of ${cfg.rounds.length} correct. Best streak ${bestStreak}. Great work!`,
       );
-      hud.message("All rounds complete! 🎉", { tone: "ok", duration: 0 });
+      hud.message("All rounds done! 🎉", { tone: "ok", duration: 0 });
       updateLabel(problemSprite, "ENGINE COMPLETE");
       updateLabel(
         liveSprite,
@@ -1017,7 +1014,7 @@ export default {
         unbinders.push(input.onTap(() => pointerPick()));
 
         caption(
-          "Build the expression with ←/→ and Space (or tap blocks). Submit with Enter. Use × before + (order of operations).",
+          "← → to pick a block. Space to drop it. Enter to check. ↓ to remove. Do × before +.",
         );
         later(() => caption(""), 6000);
 

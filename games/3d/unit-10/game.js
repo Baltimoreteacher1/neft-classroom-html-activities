@@ -206,8 +206,8 @@ export default {
 
     // 3D problem card — always shows the current question above the vault.
     const problemCard = makeLabel("", {
-      scale: 0.92,
-      fontSize: 60,
+      scale: 1.05,
+      fontSize: 72,
       background: "rgba(12,28,51,0.92)",
       color: "#ffe6a8",
     });
@@ -330,27 +330,19 @@ export default {
         )} = ${fracLabel(targetVol)} cubic units`,
       );
 
-      const cubeWord =
-        frac === 1
-          ? "unit cubes"
-          : `${fracLabel(step)}-unit cubes (each ${fracLabel(
-              step * step * step,
-            )} cubic unit)`;
       announce(
-        `Round ${roundIndex + 1}. Fill the vault with ${cubeWord}. ` +
+        `Round ${roundIndex + 1}. Fill the box with cubes. ` +
           `It is ${fracLabel(round.l)} long, ${fracLabel(
             round.w,
-          )} wide, and ${fracLabel(round.h)} tall. ` +
-          `Volume equals length times width times height, which is ${fracLabel(
-            targetVol,
-          )} cubic units.`,
+          )} wide, ${fracLabel(round.h)} tall. ` +
+          `The answer is ${fracLabel(targetVol)} cubic units.`,
       );
 
       if (cfg.hints) {
-        hud.message(
-          "Tap or press the action button to drop a cube. Arrow keys / WASD nudge the glowing cursor.",
-          { tone: "info", duration: 3600 },
-        );
+        hud.message("Tap to drop a cube. Use arrows to move.", {
+          tone: "info",
+          duration: 3600,
+        });
       }
       feel.sfx("select");
       refreshCursor();
@@ -364,9 +356,8 @@ export default {
     function updateFillObjective() {
       const targetVol = prismVolume(round.l, round.w, round.h);
       hud.setObjective(
-        `Fill the vault: ${fracLabel(placedVolume())} / ${fracLabel(
-          targetVol,
-        )} cubic units  (${placedCount} / ${targetCount} cubes)`,
+        `Fill the box. Answer = ${fracLabel(targetVol)} cubic units.  ` +
+          `Cubes: ${placedCount} / ${targetCount}`,
       );
     }
 
@@ -516,19 +507,17 @@ export default {
       group.add(base);
       frameMeshes.push(base);
 
-      hud.setObjective(
-        `Find the missing height. Use up / down (or tap action) then press to check.`,
-      );
+      hud.setObjective(`Find the height. Use up / down, then tap to check.`);
       announce(
-        `Round ${roundIndex + 1}. A vault has volume ${fracLabel(
+        `Round ${roundIndex + 1}. The box holds ${fracLabel(
           round.volume,
-        )} cubic units. Its length is ${fracLabel(
-          round.l,
-        )} and its width is ${fracLabel(round.w)}. ` +
-          `Find the missing height. Use up and down to change it, then place to check.`,
+        )} cubic units. It is ${fracLabel(round.l)} long and ${fracLabel(
+          round.w,
+        )} wide. ` +
+          `Find the height. Use up and down to change it, then tap to check.`,
       );
       if (cfg.hints) {
-        hud.message("Volume ÷ (length × width) gives the missing edge.", {
+        hud.message("Height = volume ÷ (length × width).", {
           tone: "info",
           duration: 3400,
         });
@@ -571,9 +560,8 @@ export default {
         )}`,
       );
       hud.setObjective(
-        `Height = ${fracLabel(guess)} → V = ${fracLabel(vol)} / ${fracLabel(
-          round.volume,
-        )} cubic units`,
+        `Height = ${fracLabel(guess)}. Your volume = ${fracLabel(vol)}. ` +
+          `Goal = ${fracLabel(round.volume)} cubic units.`,
       );
     }
 
@@ -643,26 +631,21 @@ export default {
           `${idx === 0 ? "A" : "B"}:  ${fracLabel(spec.l)}×${fracLabel(
             spec.w,
           )}×${fracLabel(spec.h)} = ${fracLabel(vol)}`,
-          { scale: 0.6, color: "#ffe6a8" },
+          { scale: 0.85, fontSize: 64, color: "#ffe6a8" },
         );
         lbl.position.set(cx, spec.h + 0.8, 0);
         group.add(lbl);
         labels.push(lbl);
       });
       compareChoice = 0;
-      setProblemCard("Which vault holds MORE?  Compute l × w × h for each.");
+      setProblemCard("Which box is BIGGER?  Find l × w × h for each.");
       hud.setObjective(
-        "Use left / right to pick the larger vault, then press action to confirm.",
+        "Use left / right to pick the bigger box. Then tap to check.",
       );
       announce(
-        `Round ${roundIndex + 1}. Two vaults. ` +
-          `Vault A is ${fracLabel(round.a.l)} by ${fracLabel(
-            round.a.w,
-          )} by ${fracLabel(round.a.h)}. ` +
-          `Vault B is ${fracLabel(round.b.l)} by ${fracLabel(
-            round.b.w,
-          )} by ${fracLabel(round.b.h)}. ` +
-          `Compute each volume and choose the one with the greater volume.`,
+        `Round ${roundIndex + 1}. Two boxes. ` +
+          `Find the volume of each one. ` +
+          `Pick the box with the bigger volume. Use left and right, then tap to check.`,
       );
       feel.sfx("select");
       updateCompareCursor();

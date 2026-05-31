@@ -86,32 +86,32 @@ function makeLevel(level) {
       rounds: [
         {
           target: [3, 4, 4, 5],
-          prompt: "Build the data set 3, 4, 4, 5.",
+          prompt: "Make: 3, 4, 4, 5.",
           ask: "mode",
         },
         {
           target: [2, 2, 3, 4, 4, 4],
-          prompt: "Build the data set 2, 2, 3, 4, 4, 4.",
+          prompt: "Make: 2, 2, 3, 4, 4, 4.",
           ask: "mode",
         },
         {
           target: [1, 3, 3, 5, 5, 5, 6],
-          prompt: "Build the data set 1, 3, 3, 5, 5, 5, 6.",
+          prompt: "Make: 1, 3, 3, 5, 5, 5, 6.",
           ask: "median",
         },
         {
           target: [2, 4, 4, 6],
-          prompt: "Build the data set 2, 4, 4, 6.",
+          prompt: "Make: 2, 4, 4, 6.",
           ask: "median",
         },
         {
           target: [2, 3, 4, 5, 6],
-          prompt: "Build the data set 2, 3, 4, 5, 6.",
+          prompt: "Make: 2, 3, 4, 5, 6.",
           ask: "range",
         },
         {
           target: [1, 2, 2, 3, 3, 3, 4],
-          prompt: "Build the data set 1, 2, 2, 3, 3, 3, 4.",
+          prompt: "Make: 1, 2, 2, 3, 3, 3, 4.",
           ask: "mean",
         },
       ],
@@ -125,37 +125,37 @@ function makeLevel(level) {
     rounds: [
       {
         target: [2, 4, 4, 6, 9],
-        prompt: "Build the data set 2, 4, 4, 6, 9.",
+        prompt: "Make: 2, 4, 4, 6, 9.",
         ask: "mean",
       },
       {
         target: [3, 5, 5, 6, 8, 9],
-        prompt: "Build the data set 3, 5, 5, 6, 8, 9.",
+        prompt: "Make: 3, 5, 5, 6, 8, 9.",
         ask: "range",
       },
       {
         target: [2, 2, 3, 3, 3, 9],
-        prompt: "Build it, then reason about the outlier: 2, 2, 3, 3, 3, 9.",
+        prompt: "Make: 2, 2, 3, 3, 3, 9.",
         ask: "outlier",
       },
       {
         target: [4, 4, 6, 6],
-        prompt: "Build the data set 4, 4, 6, 6. Find the spread.",
+        prompt: "Make: 4, 4, 6, 6.",
         ask: "mad",
       },
       {
         target: [2, 4, 6, 8],
-        prompt: "Build the data set 2, 4, 6, 8. Find the spread.",
+        prompt: "Make: 2, 4, 6, 8.",
         ask: "mad",
       },
       {
         target: [1, 3, 5, 7, 9],
-        prompt: "Build the data set 1, 3, 5, 7, 9.",
+        prompt: "Make: 1, 3, 5, 7, 9.",
         ask: "median",
       },
       {
         target: [3, 3, 5, 7, 8, 8],
-        prompt: "Build the data set 3, 3, 5, 7, 8, 8.",
+        prompt: "Make: 3, 3, 5, 7, 8, 8.",
         ask: "mean",
       },
     ],
@@ -191,52 +191,52 @@ function buildQuestion(data, ask) {
 
   if (ask === "mode") {
     return {
-      q: "What is the MODE (most frequent value)?",
+      q: "Mode = the number you see most. Pick it.",
       correct: mo,
       choices: uniqueChoices(mo, [md, data[0], data[data.length - 1]]),
-      explain: `${fmt(mo)} appears most often, so the mode is ${fmt(mo)}.`,
+      explain: `${fmt(mo)} shows up the most. Mode = ${fmt(mo)}.`,
     };
   }
   if (ask === "median") {
     return {
-      q: "What is the MEDIAN (middle of the ordered set)?",
+      q: "Median = the middle number. Pick it.",
       correct: md,
       choices: uniqueChoices(md, [mo, mn, data[0]]),
-      explain: `Order the values and take the middle: the median is ${fmt(md)}.`,
+      explain: `Put them in order. The middle is ${fmt(md)}.`,
     };
   }
   if (ask === "mean") {
     return {
-      q: "What is the MEAN (sum ÷ count)?",
+      q: "Mean = add them, then divide. Pick it.",
       correct: mn,
       choices: uniqueChoices(mn, [md, rg, mo]),
-      explain: `Sum = ${sum(data)}, count = ${data.length}, so mean = ${fmt(mn)}.`,
+      explain: `${sum(data)} ÷ ${data.length} = ${fmt(mn)}. Mean = ${fmt(mn)}.`,
     };
   }
   if (ask === "range") {
     return {
-      q: "What is the RANGE (max − min)?",
+      q: "Range = biggest − smallest. Pick it.",
       correct: rg,
       choices: uniqueChoices(rg, [md, mn, Math.max(...data)]),
-      explain: `Max ${Math.max(...data)} − min ${Math.min(...data)} = ${rg}.`,
+      explain: `${Math.max(...data)} − ${Math.min(...data)} = ${rg}. Range = ${rg}.`,
     };
   }
   if (ask === "mad") {
     return {
-      q: "What is the MAD (mean absolute deviation = average distance from the mean)?",
+      q: "MAD = how far numbers sit from the mean, on average. Pick it.",
       correct: md1,
       choices: uniqueChoices(md1, [round1(mn), rg, round1(md1 + 1)]),
-      explain: `Mean = ${fmt(mn)}. Average the distances of each value from ${fmt(mn)}: MAD = ${fmt(md1)}.`,
+      explain: `Mean = ${fmt(mn)}. Average distance from it = ${fmt(md1)}. MAD = ${fmt(md1)}.`,
     };
   }
   // outlier reasoning
   return {
-    q: "One value is an outlier. Which center best describes the data?",
+    q: "One number is far from the rest. Which center fits best?",
     correct: "median",
     choices: ["mean", "median", "range"],
     labels: { mean: "Mean", median: "Median", range: "Range" },
     explain:
-      "The outlier pulls the mean upward, so the median best describes the typical value.",
+      "The far number pulls the mean up. Median fits best. Answer: Median.",
   };
 }
 
@@ -352,17 +352,27 @@ export default {
       cv.width = 128;
       cv.height = 128;
       const c = cv.getContext("2d");
-      c.fillStyle = "#ffffff";
-      c.font = "bold 80px system-ui, sans-serif";
+      c.font = "bold 92px system-ui, sans-serif";
       c.textAlign = "center";
       c.textBaseline = "middle";
+      // Dark outline first → crisp, high-contrast digit even over bright floor.
+      c.lineJoin = "round";
+      c.lineWidth = 14;
+      c.strokeStyle = "rgba(0,0,0,0.85)";
+      c.strokeText(String(text), 64, 70);
+      c.fillStyle = "#ffffff";
       c.fillText(String(text), 64, 70);
       const tex = new THREE.CanvasTexture(cv);
       tex.minFilter = THREE.LinearFilter;
       const spr = new THREE.Sprite(
-        new THREE.SpriteMaterial({ map: tex, transparent: true }),
+        new THREE.SpriteMaterial({
+          map: tex,
+          transparent: true,
+          depthTest: false,
+        }),
       );
-      spr.scale.set(0.85, 0.85, 1);
+      spr.renderOrder = 999;
+      spr.scale.set(0.95, 0.95, 1);
       return spr;
     }
 
@@ -423,11 +433,15 @@ export default {
       c.stroke();
       c.textAlign = "center";
       c.fillStyle = "#f2c15b";
-      c.font = "bold 56px system-ui, sans-serif";
-      c.fillText(title, cv.width / 2, 84);
+      c.font = "bold 60px system-ui, sans-serif";
+      c.fillText(title, cv.width / 2, 80);
+      c.font = "bold 52px system-ui, sans-serif";
+      c.lineJoin = "round";
+      c.lineWidth = 8;
+      c.strokeStyle = "rgba(0,0,0,0.7)";
+      c.strokeText(body, cv.width / 2, 172);
       c.fillStyle = "#ffffff";
-      c.font = "bold 44px system-ui, sans-serif";
-      c.fillText(body, cv.width / 2, 168);
+      c.fillText(body, cv.width / 2, 172);
       problemCard.material.map.needsUpdate = true;
     }
     const problemCard = makeProblemCard();
@@ -576,15 +590,15 @@ export default {
       if (phase === "build") {
         const need = round.target.length;
         hud.setObjective(
-          `${round.prompt} Drop blocks to match — ${data.length}/${need} placed. ${liveLine()}`,
+          `Stack blocks to make: ${round.prompt.replace(/^Make:\s*/, "")} (${data.length} of ${need} done)`,
         );
         drawCard(
-          `Round ${roundIndex + 1} — Build the Plot`,
-          `${data.length}/${need} blocks · ${liveLine()}`,
+          `Build it: ${data.length}/${need}`,
+          `${round.prompt.replace(/^Make:\s*/, "")}`,
         );
       } else if (phase === "answer") {
-        hud.setObjective(`${question.q}  Pick a pad. (${liveLine()})`);
-        drawCard(`Round ${roundIndex + 1}`, question.q);
+        hud.setObjective(`${question.q} Tap a pad.`);
+        drawCard(`${question.q}`, liveLine());
       }
     }
 
@@ -618,12 +632,13 @@ export default {
       moveCursor(0);
       updateObjective();
       feel.sfx("select");
-      const hintTxt = cfg.hints ? " The faint blocks show the goal." : "";
+      const nums = round.prompt.replace(/^Make:\s*/, "");
+      const hintTxt = cfg.hints ? " The faint blocks show where they go." : "";
       announce(
-        `Round ${roundIndex + 1}. ${round.prompt}${hintTxt} Move with left and right, drop a block with the action button.`,
+        `Round ${roundIndex + 1}. Stack blocks to make ${nums}.${hintTxt} Move left and right, then drop a block.`,
       );
       if (cfg.hints)
-        hud.message("Move left/right, then drop a block to match.", {
+        hud.message("Move, then drop a block.", {
           tone: "info",
           duration: 2600,
         });
@@ -675,7 +690,7 @@ export default {
       const v = valueOfCol(cursorCol);
       const goal = targetCounts.get(v) || 0;
       if (cfg.hints && countOf(v) >= goal) {
-        hud.message("That column already has enough. Try another value.", {
+        hud.message("This number has enough. Try another.", {
           tone: "warn",
           duration: 1500,
         });
@@ -684,7 +699,7 @@ export default {
         return;
       }
       if (!cfg.hints && data.length >= round.target.length) {
-        hud.message("You have placed enough blocks. Use ▼ to remove one.", {
+        hud.message("Enough blocks. Press ▼ to remove one.", {
           tone: "warn",
           duration: 1600,
         });
@@ -703,7 +718,7 @@ export default {
         },
       );
       moveCursor(0); // keep cursor above the new top
-      announce(`Dropped a block on ${v}. ${liveLine()}`);
+      announce(`Block on ${v}. ${liveLine()}`);
       updateObjective();
       if (buildMatches()) finishBuild();
     }
@@ -716,11 +731,11 @@ export default {
         { x: 0, y: 1.6, z: Z_DATA },
         { color: COLORS.target, count: 26 },
       );
-      hud.message("Plot built! Now answer the question.", {
+      hud.message("Built! Now pick the answer.", {
         tone: "ok",
         duration: 1800,
       });
-      announce(`Plot complete. ${liveLine()}.`);
+      announce(`All blocks placed. ${liveLine()}.`);
       later(startAnswer, 1300);
     }
 
@@ -734,10 +749,14 @@ export default {
       cv.width = 256;
       cv.height = 128;
       const c = cv.getContext("2d");
-      c.fillStyle = "#ffffff";
-      c.font = "bold 76px system-ui, sans-serif";
+      c.font = "bold 88px system-ui, sans-serif";
       c.textAlign = "center";
       c.textBaseline = "middle";
+      c.lineJoin = "round";
+      c.lineWidth = 14;
+      c.strokeStyle = "rgba(0,0,0,0.85)";
+      c.strokeText(text, 128, 72);
+      c.fillStyle = "#ffffff";
       c.fillText(text, 128, 72);
       const tex = new THREE.CanvasTexture(cv);
       tex.minFilter = THREE.LinearFilter;
@@ -748,7 +767,8 @@ export default {
           depthTest: false,
         }),
       );
-      spr.scale.set(1.4, 0.7, 1);
+      spr.renderOrder = 999;
+      spr.scale.set(1.9, 0.95, 1);
       return spr;
     }
 
@@ -758,14 +778,12 @@ export default {
       answerIndex = 0;
       buildPads();
       updateObjective();
-      const choiceText = question.choices
-        .map((c, i) => `${i + 1}: ${choiceLabel(c)}`)
-        .join(", ");
+      const choiceText = question.choices.map((c) => choiceLabel(c)).join(", ");
       announce(
-        `${question.q} Use left and right to pick, action to confirm. Choices: ${choiceText}.`,
+        `${question.q} Move left and right, then press the button. Choices: ${choiceText}.`,
       );
       if (cfg.hints)
-        hud.message("Use ◀ ▶ to choose, then press the action button.", {
+        hud.message("Move to a pad, then press the button.", {
           tone: "info",
           duration: 2600,
         });
@@ -840,8 +858,8 @@ export default {
         feel.shake(0.2);
         streak = 0;
         hud.setStreak(0);
-        hud.feedback(false, "Not quite — check the measure again.");
-        announce("Not quite. Try another choice.");
+        hud.feedback(false, "Not quite. Try again.");
+        announce("Not quite. Try another pad.");
         return;
       }
       solvedRound = true;
@@ -880,11 +898,11 @@ export default {
         clearGhosts();
         hud.setProgress(cfg.rounds.length, cfg.rounds.length);
         hud.setObjective(
-          `Lab complete — ${solvedCount} of ${cfg.rounds.length} questions correct, best streak ${bestStreak}. Great data work, Statistician!`,
+          `Done! You got ${solvedCount} of ${cfg.rounds.length}. Best streak: ${bestStreak}. Great work!`,
         );
         drawCard(
-          "Lab Complete!",
-          `${solvedCount}/${cfg.rounds.length} correct · best streak ${bestStreak}`,
+          "Done! Great work!",
+          `${solvedCount}/${cfg.rounds.length} right · streak ${bestStreak}`,
         );
         hud.message("All rounds complete!", { tone: "ok", duration: 0 });
         feel.sfx("fanfare");
