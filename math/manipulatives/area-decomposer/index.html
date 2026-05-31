@@ -220,7 +220,8 @@
 
       function getInt(id, fallback) {
         const v = parseInt(document.getElementById(id).value);
-        return isNaN(v) || v < 1 ? fallback : v;
+        if (isNaN(v) || v < 1) return fallback;
+        return v > 50 ? 50 : v;
       }
 
       function drawGrid(svg, maxCols, maxRows) {

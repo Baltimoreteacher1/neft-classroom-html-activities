@@ -413,9 +413,9 @@ function buildBank(){
 
   /* ── 2  6.RP.3a  Multiple Choice — equivalent ratios ── */
   (function(){
-    const a = rnd(2,5), b = rnd(3,6);
+    let a = rnd(2,5), b = rnd(3,6);
+    while (a === b) b = rnd(3,6);   // avoid a:b reducing to 1:1
     const k = rnd(2,5);
-    const wa = a*rnd(2,6), wb = b*rnd(2,6);
     bank.push({
       id:'rp3a', standard:'6.RP.3a', strand:'RP',
       type:'mc',
@@ -423,7 +423,7 @@ function buildBank(){
       choices:[
         `${a*k} : ${b*k}`,
         `${a+k} : ${b+k}`,
-        `${wa} : ${wb}`,
+        `${a*k} : ${b*k+1}`,
         `${a*k+1} : ${b*k}`
       ],
       correct: 0,

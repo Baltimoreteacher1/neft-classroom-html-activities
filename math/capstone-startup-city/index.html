@@ -1066,6 +1066,11 @@ My current cash balance is $___ which is a [profit/loss]."></textarea>
         var revenue = +document.getElementById("cf-revenue").value;
         var costs   = +document.getElementById("cf-costs").value;
 
+        if (isNaN(revenue) || isNaN(costs) || revenue < 0 || costs < 0) {
+          show("cf-out", "<p>⚠️ Please enter valid non-negative numbers for revenue and costs.</p>");
+          return;
+        }
+
         var balance  = revenue - costs;
         var absVal   = Math.abs(balance);
         var isProfit = balance >= 0;

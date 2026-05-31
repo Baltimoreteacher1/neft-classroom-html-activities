@@ -192,8 +192,8 @@
       function applyRange() {
         const mn = parseFloat(document.getElementById('nl-min').value);
         const mx = parseFloat(document.getElementById('nl-max').value);
-        if (isNaN(mn) || isNaN(mx) || mn >= mx) {
-          alert('Please enter a valid range where minimum < maximum.'); return;
+        if (isNaN(mn) || isNaN(mx) || mn >= mx || mn < -100 || mx > 100) {
+          alert('Please enter a valid range between −100 and 100 where minimum < maximum.'); return;
         }
         nlMin = mn; nlMax = mx;
         points = { A: null, B: null };
