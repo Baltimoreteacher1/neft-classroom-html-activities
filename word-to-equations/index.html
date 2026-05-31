@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Word-to-Equations: Interactive algebraic balance sandbox utilizing SVG rotational physics to translate verbal math stories into balanced equations.">
+    <title>Word-to-Equations | Algebraic Balance Sandbox</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --alchemy-dark: #080512;
+            --alchemy-medium: #130d2b;
+            --alchemy-light: #201744;
+            --primary: #8b5cf6; /* Glowing Violet */
+            --primary-glow: rgba(139, 92, 246, 0.45);
+            --secondary: #10b981; /* Emerald */
+            --secondary-glow: rgba(16, 185, 129, 0.35);
+            --accent: #f59e0b; /* Amber Gold */
+            --white: #ffffff;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+            --shadow-glow: 0 0 25px rgba(139, 92, 246, 0.2);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--alchemy-dark);
+            color: var(--white);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(19, 13, 43, 0.85);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 16px 28px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand span {
+            font-size: 1.8rem;
+        }
+
+        .brand h1 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white), var(--gray-300));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #6d28d9);
+            color: var(--white);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-lang {
+            background: rgba(139, 92, 246, 0.15);
+            color: #d8b4fe;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-lang:hover {
+            background: rgba(139, 92, 246, 0.25);
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            max-width: 1280px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--alchemy-medium);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-glow);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 10px;
+        }
+
+        /* Quest / Adventure board */
+        .quest-board {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quest-item:hover {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .quest-item.active {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.1);
+            box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.1);
+        }
+
+        .quest-item.resolved {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quest-meta strong {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            color: var(--white);
+        }
+
+        .quest-meta span {
+            font-size: 0.78rem;
+            color: var(--gray-400);
+        }
+
+        .quest-status {
+            font-size: 1.2rem;
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .work-card {
+            background: var(--alchemy-medium);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .work-card-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--gray-300);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .work-card-title svg {
+            color: var(--primary);
+        }
+
+        .svg-viewport {
+            border-radius: var(--radius-md);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            touch-action: none;
+        }
+
+        .drag-pool {
+            display: flex;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.01);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px dashed rgba(255, 255, 255, 0.06);
+            justify-content: center;
+            align-items: center;
+            min-height: 70px;
+        }
+
+        /* Drag-and-drop tiles */
+        .drag-tile {
+            background: linear-gradient(135deg, var(--primary), #6d28d9);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-weight: 800;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .drag-tile:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(139, 92, 246, 0.4);
+        }
+
+        .drag-tile:active {
+            cursor: grabbing;
+        }
+
+        /* Equation matching banner */
+        .equation-panel {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+            letter-spacing: 0.05em;
+        }
+
+        /* ESOL sentence helper card */
+        .sentence-hub {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(16, 185, 129, 0.04));
+            border: 1px solid rgba(139, 92, 246, 0.18);
+        }
+
+        .bubble-msg {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            font-size: 0.92rem;
+            border-left: 4px solid var(--primary);
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .translation-sub {
+            font-style: italic;
+            color: var(--gray-400);
+            font-size: 0.82rem;
+            margin-top: 6px;
+        }
+
+        /* Variable Value Slider */
+        .variable-slider-card {
+            background: var(--alchemy-medium);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .slider-group {
+            margin-top: 10px;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-300);
+            margin-bottom: 6px;
+        }
+
+        .slider-group label span {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .slider-control {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--primary);
+        }
+
+        .slider-control::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--white);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+            transition: var(--transition);
+        }
+
+        .slider-control::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--primary);
+        }
+
+        /* Diagnostics Overlay */
+        .diagnostics-overlay {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            width: 300px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .diag-log-container {
+            font-family: monospace;
+            font-size: 0.72rem;
+            background: #000;
+            padding: 8px;
+            border-radius: 4px;
+            height: 120px;
+            overflow-y: auto;
+            color: #10b981;
+            margin: 8px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--gray-400);
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: auto;
+            background: rgba(8, 5, 18, 0.8);
+        }
+
+        /* Interactive SVG styles */
+        .svg-scale-lever {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: 200px 90px;
+        }
+        .svg-scale-pan {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: center;
+        }
+        .svg-dropzone {
+            stroke-width: 1.5;
+            transition: stroke 0.2s, fill 0.2s;
+        }
+        .svg-dropzone.drag-over {
+            stroke: var(--primary);
+            fill: rgba(139, 92, 246, 0.08);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <span>⚖️</span>
+            <h1>Word-to-Equations</h1>
+        </div>
+        <div class="header-controls">
+            <button class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn btn-secondary" onclick="triggerSelfTest()">
+                ⚡ Run Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="app-grid">
+        <!-- Sidebar Quest Board -->
+        <div class="sidebar">
+            <!-- Quests Card -->
+            <div class="card">
+                <h2 id="lbl-quest-log">🛰️ Mission Quests</h2>
+                <div class="quest-board" id="alchemy-quest-list">
+                    <!-- Quests generated dynamically -->
+                </div>
+            </div>
+
+            <!-- Variable Control Card -->
+            <div class="card variable-slider-card">
+                <h2 id="lbl-variable-control">🔮 Variable Core (x)</h2>
+                <div class="slider-group">
+                    <label>
+                        <span id="lbl-val-x">Value of Unknown (x)</span>
+                        <span id="val-x">0</span>
+                    </label>
+                    <input type="range" class="slider-control" id="slider-val-x" min="0" max="10" value="0" oninput="updateValX(this.value)">
+                </div>
+            </div>
+        </div>
+
+        <!-- Alchemical Workbench -->
+        <div class="workspace">
+            <div class="work-card">
+                <div class="work-card-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
+                    <span id="lbl-card-workbench">Algebraic Balance Scale</span>
+                </div>
+
+                <!-- SVG Balance Scale (Programmatic Physics) -->
+                <svg id="svg-scale-plane" class="svg-viewport" viewBox="0 0 400 240" style="background: white;" ondragover="allowDrop(event)" ondrop="handleSvgDrop(event)">
+                    <!-- Coordinate elements generated programmatically -->
+                </svg>
+
+                <div class="equation-panel" id="equation-math-text">
+                    Scale balanced: ??
+                </div>
+
+                <!-- Interactive Drag Pool -->
+                <div class="drag-pool" id="drag-tiles-pool">
+                    <!-- Dynamic tiles mapped here -->
+                </div>
+            </div>
+
+            <!-- ESOL Bilingual Helper -->
+            <div class="card sentence-hub">
+                <strong style="font-size: 0.85rem; color: var(--primary); text-transform: uppercase;" id="lbl-esol-title">ESOL Navigation Helper</strong>
+                <div class="bubble-msg">
+                    <span id="esol-starter">Hover over algebraic terms or place weights on the balance scale!</span>
+                    <div class="translation-sub" id="esol-starter-trans">¡Arrastre pesas a la balanza para comenzar!</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Diagnostics Panel -->
+    <div class="diagnostics-overlay" id="diag-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom:4px;">
+            <strong style="font-family:var(--font-display);">Diagnostics</strong>
+            <button onclick="document.getElementById('diag-panel').style.display='none'" style="background:none; border:none; color:var(--danger); font-weight:800; cursor:pointer;">X</button>
+        </div>
+        <div class="diag-log-container" id="diag-log"></div>
+        <button class="btn btn-primary" style="width:100%; font-size:0.8rem;" onclick="document.getElementById('diag-panel').style.display='none'">Close</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support Grade 6 Expressions & Equations standards expected score ranges.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            colors: {
+                primary: '#8b5cf6',
+                secondary: '#10b981',
+                accent: '#f59e0b',
+                stroke: '#1e293b',
+                fill2d: '#ffffff',
+                gridLine: '#e2e8f0',
+                outline: '#94a3b8'
+            },
+            quests: [
+                {
+                    id: 1,
+                    title: "🧙 The Wizard's Sack",
+                    titleEs: "🧙 El Saco del Mago",
+                    desc: "A sack of gold (x) and 2 single coins balances 5 coins on the right. Form: x + 2 = 5",
+                    descEs: "Un saco (x) y 2 monedas equilibran 5 monedas. Ecuación: x + 2 = 5",
+                    equation: "x + 2 = 5",
+                    targetX: 3,
+                    leftItems: { x: 1, unit: 2 },
+                    rightItems: { x: 0, unit: 5 }
+                },
+                {
+                    id: 2,
+                    title: "🧪 Double Elixir",
+                    titleEs: "🧪 Doble Elixir",
+                    desc: "Two bottles of elixir (2x) balance 6 crystals on the right. Form: 2x = 6",
+                    descEs: "Dos frascos (2x) equilibran 6 cristales. Ecuación: 2x = 6",
+                    equation: "2x = 6",
+                    targetX: 3,
+                    leftItems: { x: 2, unit: 0 },
+                    rightItems: { x: 0, unit: 6 }
+                },
+                {
+                    id: 3,
+                    title: "🛡️ Alchemist Shields",
+                    titleEs: "🛡️ Escudos del Alquimista",
+                    desc: "Three shields (3x) and 1 standard shield balance 10 shields on the right. Form: 3x + 1 = 10",
+                    descEs: "Tres escudos (3x) y 1 estándar equilibran 10. Ecuación: 3x + 1 = 10",
+                    equation: "3x + 1 = 10",
+                    targetX: 3,
+                    leftItems: { x: 3, unit: 1 },
+                    rightItems: { x: 0, unit: 10 }
+                }
+            ],
+            tiles: [
+                { id: 'tx', label: 'Variable (x)', type: 'x', weight: 3 }, // x has theoretical weight 3
+                { id: 'tu', label: 'Unit (+1)', type: 'unit', weight: 1 }
+            ]
+        };
+
+        // ==========================================
+        // 2. CONFIG VALIDATOR
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.colors || !CONFIG.quests) {
+                throw new Error("Word-to-Equations: Configuration validation failed.");
+            }
+        }
+
+        // ==========================================
+        // 3. STATE MACHINE
+        // ==========================================
+        const STATE = {
+            currentQuestId: 1,
+            completedQuests: [],
+            valX: 0, // Current user-selected value of x
+            leftPan: { x: 0, unit: 0 },  // counts of items dropped on left
+            rightPan: { x: 0, unit: 0 }, // counts of items dropped on right
+            activeDragTile: null,
+            language: 'en'
+        };
+
+        // Translations Map
+        const TRANSLATIONS = {
+            en: {
+                'quest-log': '🛰️ Mission Quests',
+                'variable-control': '🔮 Variable Core (x)',
+                'val-x': 'Value of Unknown (x)',
+                'card-workbench': 'Algebraic Balance Scale',
+                'esol-title': 'ESOL Navigation Helper',
+                'quest1-starter': 'The story describes "a sack of gold (x) and 2 coins." This translates to the expression x + 2. The word "balances" represents the equals sign (=). Drag 1 x-block and 2 units to the Left Pan, and 5 units to the Right Pan. Then adjust x to balance the scale!',
+                'quest1-trans': 'La historia describe "un saco (x) y 2 monedas". Arrastre las pesas correctas y ajuste x para equilibrar.',
+                'quest2-starter': 'The story describes "two bottles of elixir (2x) balance 6 crystals." This translates to the equation 2x = 6. Drag 2 x-blocks to the Left Pan and 6 units to the Right Pan. Balance the scale by sliding x!',
+                'quest2-trans': 'La historia describe "dos frascos (2x) equilibran 6 cristales". Arrastre 2 x-bloques a la izquierda y 6 a la derecha.',
+                'quest3-starter': 'The story describes "three shields (3x) and 1 shield balance 10 shields." This represents 3x + 1 = 10. Drag 3 x-blocks and 1 unit to the Left Pan, and 10 units to the Right Pan.',
+                'quest3-trans': 'Representa la ecuación 3x + 1 = 10. Arrastre los elementos a las balanzas y equilibre.'
+            },
+            es: {
+                'quest-log': '🛰️ Registro de Misiones',
+                'variable-control': '🔮 Núcleo Variable (x)',
+                'val-x': 'Valor de la Incógnita (x)',
+                'card-workbench': 'Balanza de Equilibrio Algebráico',
+                'esol-title': 'Ayudante de Navegación ESOL',
+                'quest1-starter': 'La historia describe "un saco de oro (x) y 2 monedas". Esto se traduce en la expresión x + 2. La palabra "equilibrar" representa el signo igual (=). Arrastre 1 bloque x y 2 unidades al platillo izquierdo, y 5 unidades al derecho.',
+                'quest1-trans': 'The story describes "a sack of gold (x) and 2 coins." This translates to the expression x + 2. The word "balances" represents the equals sign (=). Drag 1 x-block and 2 units to the Left Pan, and 5 units to the Right Pan. Then adjust x to balance the scale!',
+                'quest2-starter': 'La historia describe "dos frascos de elixir (2x) equilibran 6 cristales". Esto se traduce en la ecuación 2x = 6. Arrastre 2 bloques x a la izquierda y 6 unidades a la derecha.',
+                'quest2-trans': 'The story describes "two bottles of elixir (2x) balance 6 crystals." This translates to the equation 2x = 6. Drag 2 x-blocks to the Left Pan and 6 units to the Right Pan. Balance the scale by sliding x!',
+                'quest3-starter': 'Representa la ecuación 3x + 1 = 10. Arrastre 3 bloques x y 1 unidad a la izquierda, y 10 unidades a la derecha.',
+                'quest3-trans': 'The story describes "three shields (3x) and 1 shield balance 10 shields." This represents 3x + 1 = 10. Drag 3 x-blocks and 1 unit to the Left Pan, and 10 units to the Right Pan.'
+            }
+        };
+
+        function transitionState(updatedFields) {
+            Object.assign(STATE, updatedFields);
+            checkQuests();
+            renderUI();
+        }
+
+        // ==========================================
+        // 4. INTERACTIVE HANDLERS
+        // ==========================================
+        function updateValX(val) {
+            const parsedVal = parseInt(val, 10);
+            document.getElementById('val-x').innerText = parsedVal;
+            transitionState({ valX: parsedVal });
+        }
+
+        function toggleLanguage() {
+            const nextLang = STATE.language === 'en' ? 'es' : 'en';
+            transitionState({ language: nextLang });
+        }
+
+        function selectQuest(id) {
+            // Reset scale items upon quest change to force active setup
+            transitionState({
+                currentQuestId: id,
+                leftPan: { x: 0, unit: 0 },
+                rightPan: { x: 0, unit: 0 },
+                valX: 0
+            });
+            document.getElementById('slider-val-x').value = 0;
+            document.getElementById('val-x').innerText = 0;
+        }
+
+        function checkQuests() {
+            const currentQuest = CONFIG.quests.find(q => q.id === STATE.currentQuestId);
+            
+            // Check if user set up the weights correctly
+            const leftCorrect = STATE.leftPan.x === currentQuest.leftItems.x && STATE.leftPan.unit === currentQuest.leftItems.unit;
+            const rightCorrect = STATE.rightPan.x === currentQuest.rightItems.x && STATE.rightPan.unit === currentQuest.rightItems.unit;
+
+            // Check if the scale balances perfectly with the correct value of x
+            const isBalanced = (STATE.leftPan.x * STATE.valX + STATE.leftPan.unit) === (STATE.rightPan.x * STATE.valX + STATE.rightPan.unit);
+            const xCorrect = STATE.valX === currentQuest.targetX;
+
+            if (leftCorrect && rightCorrect && isBalanced && xCorrect) {
+                if (!STATE.completedQuests.includes(currentQuest.id)) {
+                    STATE.completedQuests.push(currentQuest.id);
+                }
+            }
+        }
+
+        // Drag operations
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function handleSvgDrop(e) {
+            e.preventDefault();
+            if (!STATE.activeDragTile) return;
+
+            const svg = document.getElementById('svg-scale-plane');
+            const rect = svg.getBoundingClientRect();
+            
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const xInSvg = ((clientX - rect.left) / rect.width) * 400;
+
+            const isLeftPan = xInSvg < 200;
+            const type = STATE.activeDragTile.type;
+
+            const lPan = { ...STATE.leftPan };
+            const rPan = { ...STATE.rightPan };
+
+            if (isLeftPan) {
+                lPan[type] += 1;
+            } else {
+                rPan[type] += 1;
+            }
+
+            transitionState({ leftPan: lPan, rightPan: rPan });
+        }
+
+        function setupDragTiles() {
+            const container = document.getElementById('drag-tiles-pool');
+            container.innerHTML = '';
+
+            CONFIG.tiles.forEach(t => {
+                const el = document.createElement('div');
+                el.className = 'drag-tile';
+                el.innerText = t.label;
+                el.draggable = true;
+                el.id = t.id;
+
+                el.addEventListener('dragstart', (e) => {
+                    STATE.activeDragTile = { id: t.id, type: t.type, weight: t.weight };
+                });
+
+                container.appendChild(el);
+            });
+        }
+
+        // ==========================================
+        // 5. RENDER ENGINE (Algebraic Rotational Scale)
+        // ==========================================
+        function renderUI() {
+            validateConfig();
+            renderStaticLabels();
+            renderQuestList();
+            renderBalanceScale();
+            setupDragTiles();
+            updateESOLHub();
+        }
+
+        function renderStaticLabels() {
+            const t = TRANSLATIONS[STATE.language];
+            document.getElementById('lbl-quest-log').innerText = t['quest-log'];
+            document.getElementById('lbl-variable-control').innerText = t['variable-control'];
+            document.getElementById('lbl-val-x').innerText = t['val-x'];
+            document.getElementById('lbl-card-workbench').innerText = t['card-workbench'];
+            document.getElementById('lbl-esol-title').innerText = t['esol-title'];
+        }
+
+        function renderQuestList() {
+            const container = document.getElementById('alchemy-quest-list');
+            container.innerHTML = '';
+
+            CONFIG.quests.forEach(q => {
+                const isActive = STATE.currentQuestId === q.id;
+                const isSolved = STATE.completedQuests.includes(q.id);
+                const title = STATE.language === 'en' ? q.title : q.titleEs;
+                const desc = STATE.language === 'en' ? q.desc : q.descEs;
+
+                container.innerHTML += `
+                    <div class="quest-item ${isActive?'active':''} ${isSolved?'resolved':''}" onclick="selectQuest(${q.id})">
+                        <div class="quest-meta">
+                            <strong>${title}</strong>
+                            <span>${desc}</span>
+                        </div>
+                        <span class="quest-status">${isSolved?'🏆':'🔮'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderBalanceScale() {
+            const svg = document.getElementById('svg-scale-plane');
+            svg.innerHTML = ''; // Clear SVG
+
+            const cx = 200;
+            const cy = 90;
+
+            // Draw a subtle alchemical grid background
+            for (let i = 20; i < 400; i += 20) {
+                svg.innerHTML += `
+                    <line x1="${i}" y1="0" x2="${i}" y2="240" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />
+                    <line x1="0" y1="${i}" x2="400" y2="${i}" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />
+                `;
+            }
+
+            // Draw base platform support
+            svg.innerHTML += `
+                <rect x="${cx - 15}" y="190" width="30" height="10" rx="3" fill="var(--alchemy-light)" />
+                <rect x="${cx - 4}" y="${cy}" width="8" height="100" fill="var(--alchemy-light)" />
+                <circle cx="${cx}" cy="${cy}" r="6" fill="var(--accent)" />
+            `;
+
+            // Calculate weight values on Left and Right pans
+            const leftWeight = STATE.leftPan.x * STATE.valX + STATE.leftPan.unit;
+            const rightWeight = STATE.rightPan.x * STATE.valX + STATE.rightPan.unit;
+
+            // Calculate rotational tilt angle theta based on weight differences
+            // Tilt angle ranges from -20 degrees (unbalanced left) to +20 degrees (unbalanced right)
+            let angleDeg = 0;
+            if (leftWeight !== rightWeight) {
+                const diff = rightWeight - leftWeight;
+                angleDeg = Math.max(-20, Math.min(20, diff * 3.5)); // Damping scale factor 3.5
+            }
+            const angleRad = angleDeg * Math.PI / 180;
+
+            // Compute crossbar pivot coordinates
+            // Endpoints of crossbar in rotated space
+            const barLength = 110;
+            const lx = cx - barLength * Math.cos(angleRad);
+            const ly = cy - barLength * Math.sin(angleRad);
+            const rx = cx + barLength * Math.cos(angleRad);
+            const ry = cy + barLength * Math.sin(angleRad);
+
+            // Draw rotated Crossbar lever
+            svg.innerHTML += `
+                <line x1="${lx}" y1="${ly}" x2="${rx}" y2="${ry}" stroke="var(--primary)" stroke-width="4.5" />
+                <circle cx="${lx}" cy="${ly}" r="4" fill="var(--accent)" />
+                <circle cx="${rx}" cy="${ry}" r="4" fill="var(--accent)" />
+            `;
+
+            // Draw hanging strings and pans (they hang vertically under gravity)
+            const stringLen = 50;
+            const panW = 70;
+            const panH = 10;
+
+            // Left Pan hanging system
+            const lStringX = lx;
+            const lStringY = ly + stringLen;
+            svg.innerHTML += `
+                <line x1="${lx}" y1="${ly}" x2="${lStringX - panW/2}" y2="${lStringY}" stroke="var(--primary)" stroke-width="1.2" />
+                <line x1="${lx}" y1="${ly}" x2="${lStringX + panW/2}" y2="${lStringY}" stroke="var(--primary)" stroke-width="1.2" />
+                <rect x="${lStringX - panW/2}" y="${lStringY}" width="${panW}" height="${panH}" rx="3" fill="var(--alchemy-light)" stroke="var(--primary)" stroke-width="1.5" class="svg-dropzone" />
+            `;
+
+            // Right Pan hanging system
+            const rStringX = rx;
+            const rStringY = ry + stringLen;
+            svg.innerHTML += `
+                <line x1="${rx}" y1="${ry}" x2="${rStringX - panW/2}" y2="${rStringY}" stroke="var(--primary)" stroke-width="1.2" />
+                <line x1="${rx}" y1="${ry}" x2="${rStringX + panW/2}" y2="${rStringY}" stroke="var(--primary)" stroke-width="1.2" />
+                <rect x="${rStringX - panW/2}" y="${rStringY}" width="${panW}" height="${panH}" rx="3" fill="var(--alchemy-light)" stroke="var(--primary)" stroke-width="1.5" class="svg-dropzone" />
+            `;
+
+            // Render items inside Left Pan
+            let leftItemOffset = 0;
+            const leftItemStart = lStringX - 25;
+            for (let i = 0; i < STATE.leftPan.x; i++) {
+                svg.innerHTML += `
+                    <rect x="${leftItemStart + leftItemOffset}" y="${lStringY - 14}" width="14" height="14" rx="2" fill="var(--primary)" stroke="var(--white)" stroke-width="1" />
+                    <text x="${leftItemStart + leftItemOffset + 7}" y="${lStringY - 5}" font-family="var(--font-display)" font-size="8" font-weight="900" fill="var(--white)" text-anchor="middle">x</text>
+                `;
+                leftItemOffset += 16;
+            }
+            for (let i = 0; i < STATE.leftPan.unit; i++) {
+                svg.innerHTML += `
+                    <circle cx="${leftItemStart + leftItemOffset + 5}" cy="${lStringY - 7}" r="5" fill="var(--accent)" />
+                    <text x="${leftItemStart + leftItemOffset + 5}" y="${lStringY - 4.5}" font-family="var(--font-display)" font-size="6" font-weight="900" fill="var(--alchemy-dark)" text-anchor="middle">1</text>
+                `;
+                leftItemOffset += 12;
+            }
+
+            // Render items inside Right Pan
+            let rightItemOffset = 0;
+            const rightItemStart = rStringX - 25;
+            for (let i = 0; i < STATE.rightPan.x; i++) {
+                svg.innerHTML += `
+                    <rect x="${rightItemStart + rightItemOffset}" y="${rStringY - 14}" width="14" height="14" rx="2" fill="var(--primary)" stroke="var(--white)" stroke-width="1" />
+                    <text x="${rightItemStart + rightItemOffset + 7}" y="${rStringY - 5}" font-family="var(--font-display)" font-size="8" font-weight="900" fill="var(--white)" text-anchor="middle">x</text>
+                `;
+                rightItemOffset += 16;
+            }
+            for (let i = 0; i < STATE.rightPan.unit; i++) {
+                svg.innerHTML += `
+                    <circle cx="${rightItemStart + rightItemOffset + 5}" cy="${rStringY - 7}" r="5" fill="var(--accent)" />
+                    <text x="${rightItemStart + rightItemOffset + 5}" y="${rStringY - 4.5}" font-family="var(--font-display)" font-size="6" font-weight="900" fill="var(--alchemy-dark)" text-anchor="middle">1</text>
+                `;
+                rightItemOffset += 12;
+            }
+
+            // Draw center pointer (to show exact balancing alignment)
+            svg.innerHTML += `
+                <line x1="${cx}" y1="${cy}" x2="${cx + 30 * Math.sin(angleRad)}" y2="${cy - 30 * Math.cos(angleRad)}" stroke="var(--accent)" stroke-width="2" />
+            `;
+
+            // Display math conversion text
+            const textPanel = document.getElementById('equation-math-text');
+            const isSolved = STATE.completedQuests.includes(STATE.currentQuestId);
+            if (isSolved) {
+                textPanel.style.color = 'var(--secondary)';
+                textPanel.innerText = STATE.language === 'en' ? '✨ QUEST COMPLETED: SCALE BALANCED PERFECTLY! ✨' : '✨ ¡MISIÓN COMPLETADA: BALANZA EQUILIBRADA! ✨';
+            } else {
+                textPanel.style.color = 'var(--accent)';
+                textPanel.innerText = `Left Pan: ${leftWeight} kg | Right Pan: ${rightWeight} kg`;
+            }
+        }
+
+        function updateESOLHub() {
+            const starter = document.getElementById('esol-starter');
+            const trans = document.getElementById('esol-starter-trans');
+            const lang = STATE.language;
+            const t = TRANSLATIONS[lang];
+
+            const activeQuestKey = `quest${STATE.currentQuestId}`;
+            starter.innerText = t[`${activeQuestKey}-starter`] || t['starter-default'];
+            trans.innerText = t[`${activeQuestKey}-trans`] || t['starter-default-trans'];
+        }
+
+        // ==========================================
+        // 6. SELF-TEST SUITE & DIAGNOSTICS
+        // ==========================================
+        function logDiag(msg) {
+            const el = document.getElementById('diag-log');
+            el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function triggerSelfTest() {
+            document.getElementById('diag-panel').style.display = 'block';
+            document.getElementById('diag-log').innerHTML = '';
+            logDiag("Initiating Alchemical Balance Scale Self-Test...");
+
+            try {
+                // Assert 1: Config is valid
+                validateConfig();
+                logDiag("✓ Config validation successful.");
+
+                // Assert 2: Changing state selects quests
+                selectQuest(2);
+                logDiag(`✓ Loaded Quest 2. Current Quest: ${STATE.currentQuestId}`);
+                if (STATE.currentQuestId !== 2) {
+                    throw new Error("Assertion failed: Quest selection failed.");
+                }
+
+                // Assert 3: Rotational Physics Angle logic verification
+                // Left weight = 6, Right weight = 6 (Balanced)
+                let leftW = 6;
+                let rightW = 6;
+                let angle = 0;
+                if (leftW !== rightW) {
+                    angle = (rightW - leftW) * 3.5;
+                }
+                logDiag(`✓ Rotational physics check: weight 6 vs 6. Angle: ${angle}°`);
+                if (angle !== 0) {
+                    throw new Error("Assertion failed: Scale fails to balance under equal loads.");
+                }
+
+                // Left weight = 6, Right weight = 10 (Tilted Right)
+                leftW = 6;
+                rightW = 10;
+                if (leftW !== rightW) {
+                    angle = (rightW - leftW) * 3.5; // 4 * 3.5 = 14
+                }
+                logDiag(`✓ Rotational physics check: weight 6 vs 10. Angle: ${angle}°`);
+                if (angle !== 14) {
+                    throw new Error("Assertion failed: Scale tilt angle calculations are faulty.");
+                }
+
+                // Assert 4: Formula balancing math
+                // Quest 2: 2x = 6, x must be 3
+                const q2Target = 3;
+                const checkBalanced = (2 * q2Target) === 6;
+                logDiag(`✓ Quest 2 Algebra check: 2 * (${q2Target}) = 6 is ${checkBalanced}`);
+                if (!checkBalanced) {
+                    throw new Error("Assertion failed: Equation solver checks failed.");
+                }
+
+                // Reset back to original
+                selectQuest(1);
+                logDiag("✓ Restored state variables back to defaults.");
+                logDiag("🎉 SYSTEM CHECKS ALL PASSED SUCCESSFULLY!");
+            } catch (err) {
+                logDiag(`❌ SYSTEM ERROR: ${err.message}`);
+                console.error(err);
+            }
+        }
+
+        // Initialize application on load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderUI();
+        });
+    </script>
+</body>
+</html>

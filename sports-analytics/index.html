@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Statistical Quest: Interactive sports analytics dashboard featuring draggable dot plots, dynamic mean balance lines, and a live box and whisker plot.">
+    <title>Statistical Quest | Sports Analytics Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sports-dark: #05070f;
+            --sports-medium: #0c0f1d;
+            --sports-light: #151930;
+            --primary: #f59e0b; /* Golden Jersey Gold */
+            --primary-glow: rgba(245, 158, 11, 0.4);
+            --secondary: #10b981; /* Emerald Field Green */
+            --secondary-glow: rgba(16, 185, 129, 0.3);
+            --cyan: #06b6d4; /* Stadium Blue */
+            --cyan-glow: rgba(6, 182, 212, 0.3);
+            --danger: #f43f5e;
+            --white: #ffffff;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+            --shadow-glow: 0 0 25px rgba(245, 158, 11, 0.15);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--sports-dark);
+            color: var(--white);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(12, 15, 29, 0.85);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px 28px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand span {
+            font-size: 1.8rem;
+        }
+
+        .brand h1 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white), var(--gray-300));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #d97706);
+            color: var(--sports-dark);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(245, 158, 11, 0.55);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-lang {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fde047;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-lang:hover {
+            background: rgba(245, 158, 11, 0.25);
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            max-width: 1280px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--sports-medium);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-glow);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 10px;
+        }
+
+        /* Quest Board list */
+        .quest-board {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quest-item:hover {
+            border-color: var(--primary);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .quest-item.active {
+            border-color: var(--primary);
+            background: rgba(245, 158, 11, 0.1);
+            box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.1);
+        }
+
+        .quest-item.resolved {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quest-meta strong {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            color: var(--white);
+        }
+
+        .quest-meta span {
+            font-size: 0.78rem;
+            color: var(--gray-400);
+        }
+
+        .quest-status {
+            font-size: 1.2rem;
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .work-card {
+            background: var(--sports-medium);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .work-card-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--gray-300);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .work-card-title svg {
+            color: var(--primary);
+        }
+
+        .svg-viewport {
+            border-radius: var(--radius-md);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            touch-action: none;
+        }
+
+        /* Stats Grid Scoreboard */
+        .scoreboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .score-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            text-align: center;
+        }
+
+        .score-box span {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .score-box strong {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--white);
+        }
+
+        .score-box.highlight strong {
+            color: var(--primary);
+        }
+
+        /* ESOL sentence helper card */
+        .sentence-hub {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(16, 185, 129, 0.04));
+            border: 1px solid rgba(245, 158, 11, 0.18);
+        }
+
+        .bubble-msg {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            font-size: 0.92rem;
+            border-left: 4px solid var(--primary);
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .translation-sub {
+            font-style: italic;
+            color: var(--gray-400);
+            font-size: 0.82rem;
+            margin-top: 6px;
+        }
+
+        /* Diagnostics Overlay */
+        .diagnostics-overlay {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            width: 300px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .diag-log-container {
+            font-family: monospace;
+            font-size: 0.72rem;
+            background: #000;
+            padding: 8px;
+            border-radius: 4px;
+            height: 120px;
+            overflow-y: auto;
+            color: #10b981;
+            margin: 8px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--gray-400);
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: auto;
+            background: rgba(5, 7, 15, 0.8);
+        }
+
+        /* Interactive dot dragging */
+        .svg-score-dot {
+            cursor: grab;
+            transition: r 0.2s, stroke-width 0.2s;
+        }
+
+        .svg-score-dot:hover {
+            cursor: grab;
+            fill: var(--cyan);
+            r: 9;
+        }
+
+        .svg-score-dot:active {
+            cursor: grabbing;
+        }
+
+        .axis-label {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 11px;
+            fill: var(--sports-light);
+        }
+
+        .tick-label {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 8px;
+            fill: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <span>🏀</span>
+            <h1>Statistical Quest</h1>
+        </div>
+        <div class="header-controls">
+            <button class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn btn-secondary" onclick="triggerSelfTest()">
+                ⚡ Run Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="app-grid">
+        <!-- Sidebar Quest Board -->
+        <div class="sidebar">
+            <!-- Quests Card -->
+            <div class="card">
+                <h2 id="lbl-quest-log">🛰️ Mission Control</h2>
+                <div class="quest-board" id="sports-quest-list">
+                    <!-- Quests generated dynamically -->
+                </div>
+            </div>
+
+            <!-- Stats Table Card -->
+            <div class="card">
+                <h2 id="lbl-statistics">📊 Live Statistics</h2>
+                <div class="scoreboard">
+                    <div class="score-box highlight">
+                        <span id="lbl-mean">Mean (Average)</span>
+                        <strong id="val-mean">0.0</strong>
+                    </div>
+                    <div class="score-box">
+                        <span id="lbl-median">Median</span>
+                        <strong id="val-median">0</strong>
+                    </div>
+                    <div class="score-box">
+                        <span id="lbl-range">Range</span>
+                        <strong id="val-range">0</strong>
+                    </div>
+                    <div class="score-box">
+                        <span id="lbl-mad">MAD</span>
+                        <strong id="val-mad">0.0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytical Workbench -->
+        <div class="workspace">
+            <!-- Dot Plot & Box Plot Work Card -->
+            <div class="work-card">
+                <div class="work-card-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span id="lbl-card-workbench">Sports Analytical Dot &amp; Box Plot</span>
+                </div>
+
+                <!-- Programmatic Drag Plot Canvas -->
+                <svg id="svg-analytics" class="svg-viewport" viewBox="0 0 400 250" style="background: white;">
+                    <!-- Coordinate elements generated programmatically -->
+                </svg>
+            </div>
+
+            <!-- ESOL Bilingual Helper -->
+            <div class="card sentence-hub">
+                <strong style="font-size: 0.85rem; color: var(--primary); text-transform: uppercase;" id="lbl-esol-title">ESOL Analysis Helper</strong>
+                <div class="bubble-msg">
+                    <span id="esol-starter">Drag the player score dots on the dot plot to explore changes in sports analytics metrics!</span>
+                    <div class="translation-sub" id="esol-starter-trans">¡Arrastre los puntos de puntaje en el gráfico para ver las métricas!</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Diagnostics Panel -->
+    <div class="diagnostics-overlay" id="diag-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom:4px;">
+            <strong style="font-family:var(--font-display);">Diagnostics</strong>
+            <button onclick="document.getElementById('diag-panel').style.display='none'" style="background:none; border:none; color:var(--danger); font-weight:800; cursor:pointer;">X</button>
+        </div>
+        <div class="diag-log-container" id="diag-log"></div>
+        <button class="btn btn-primary" style="width:100%; font-size:0.8rem;" onclick="document.getElementById('diag-panel').style.display='none'">Close</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support Grade 6 Statistics standards expected score ranges.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            colors: {
+                primary: '#f59e0b',   // Gold/Mean
+                secondary: '#10b981', // Green/Median
+                cyan: '#06b6d4',      // Cyan/Dots
+                stroke: '#1e293b',
+                fill2d: '#ffffff',
+                gridLine: '#f1f5f9',
+                outline: '#94a3b8'
+            },
+            limits: {
+                minVal: 0,
+                maxVal: 20
+            },
+            quests: [
+                {
+                    id: 1,
+                    title: '🎯 Equalize the Average',
+                    titleEs: '🎯 Igualar el Promedio',
+                    desc: 'Adjust athlete scores so the Mean score is exactly 10.0.',
+                    descEs: 'Ajuste los puntajes de modo que el Promedio sea exactamente 10.0.',
+                    validator: (state) => Math.round(state.calculated.mean * 10) / 10 === 10.0
+                },
+                {
+                    id: 2,
+                    title: '🚀 Launch an Outlier',
+                    titleEs: '🚀 Lanzar un Atípico',
+                    desc: 'Move player 7 to a score of 20. Note how the Mean rises, but the Median remains stable.',
+                    descEs: 'Mueva al jugador 7 a 20. Vea cómo el Promedio sube y la Mediana se mantiene estable.',
+                    validator: (state) => state.scores[6] === 20 && Math.abs(state.calculated.mean - state.calculated.median) >= 2.0
+                },
+                {
+                    id: 3,
+                    title: '📦 Minimize the Spread',
+                    titleEs: '📦 Minimizar la Dispersión',
+                    desc: 'Drag player scores close together to reduce the Range to 4 or less.',
+                    descEs: 'Arrastre los puntajes para reducir el Rango a 4 o menos.',
+                    validator: (state) => state.calculated.range <= 4
+                }
+            ]
+        };
+
+        // ==========================================
+        // 2. CONFIG VALIDATOR
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.colors || !CONFIG.quests || !CONFIG.limits) {
+                throw new Error("Statistical Quest: Config validation failed.");
+            }
+        }
+
+        // ==========================================
+        // 3. STATE MACHINE
+        // ==========================================
+        const STATE = {
+            scores: [4, 6, 8, 10, 12, 14, 16], // Initial athlete scores (always 7 elements for clean middle)
+            calculated: { mean: 10.0, median: 10.0, range: 12, mad: 3.42 },
+            activeQuestId: 1,
+            completedQuests: [],
+            activeDotIdx: -1,
+            language: 'en'
+        };
+
+        // Translations Map
+        const TRANSLATIONS = {
+            en: {
+                'quest-log': '🛰️ Mission Control',
+                'statistics': '📊 Live Statistics',
+                'mean': 'Mean (Average)',
+                'median': 'Median',
+                'range': 'Range',
+                'mad': 'MAD',
+                'card-workbench': 'Sports Analytical Dot & Box Plot',
+                'esol-title': 'ESOL Analysis Helper',
+                'starter-default': 'Drag score dots along the plot! Standard expected ranges show how data distributes. Mean is the balance point. Median is the middle.',
+                'starter-default-trans': '¡Arrastre los puntos de puntaje! El promedio es el punto de equilibrio y la mediana es el centro.',
+                'sentence-stats': 'The dataset of athlete scores has a mean of {mean} and a median of {median}. The spread is defined by a range of {range} and a Mean Absolute Deviation (MAD) of {mad}.',
+                'sentence-stats-trans': 'El conjunto de puntajes tiene un promedio de {mean} y una mediana de {median}. El rango de dispersión es de {range} y la desviación media absoluta es de {mad}.'
+            },
+            es: {
+                'quest-log': '🛰️ Control de Misiones',
+                'statistics': '📊 Estadísticas en Vivo',
+                'mean': 'Promedio (Media)',
+                'median': 'Mediana',
+                'range': 'Rango',
+                'mad': 'MAD',
+                'card-workbench': 'Gráfico de Caja e Histograma de Puntos',
+                'esol-title': 'Ayudante de Análisis ESOL',
+                'starter-default': '¡Arrastre los puntos de puntaje! El promedio es el punto de equilibrio y la mediana es el centro.',
+                'starter-default-trans': 'Drag score dots along the plot! Standard expected ranges show how data distributes. Mean is the balance point. Median is the middle.',
+                'sentence-stats': 'El conjunto de puntajes de los atletas tiene un promedio de {mean} y una mediana de {median}. El rango de dispersión es de {range} y la desviación media absoluta es de {mad}.',
+                'sentence-stats-trans': 'The dataset of athlete scores has a mean of {mean} and a median of {median}. The spread is defined by a range of {range} and a Mean Absolute Deviation (MAD) of {mad}.'
+            }
+        };
+
+        function transitionState(updatedFields) {
+            Object.assign(STATE, updatedFields);
+            calculateMetrics();
+            checkQuests();
+            renderUI();
+        }
+
+        // ==========================================
+        // 4. STATISTICAL CALCULATOR
+        // ==========================================
+        function calculateMetrics() {
+            // Sort scores to compute medians & quartiles accurately
+            const sorted = [ ...STATE.scores ].sort((a, b) => a - b);
+            
+            // Mean
+            const sum = sorted.reduce((acc, v) => acc + v, 0);
+            const mean = sum / sorted.length;
+
+            // Median (middle element of 7 elements is index 3)
+            const median = sorted[3];
+
+            // Range
+            const min = sorted[0];
+            const max = sorted[6];
+            const range = max - min;
+
+            // Mean Absolute Deviation (MAD)
+            const deviationsSum = sorted.reduce((acc, v) => acc + Math.abs(v - mean), 0);
+            const mad = deviationsSum / sorted.length;
+
+            STATE.calculated = {
+                mean: Math.round(mean * 10) / 10,
+                median: median,
+                range: range,
+                mad: Math.round(mad * 100) / 100
+            };
+        }
+
+        // ==========================================
+        // 5. INTERACTIVE HANDLERS
+        // ==========================================
+        function toggleLanguage() {
+            const nextLang = STATE.language === 'en' ? 'es' : 'en';
+            transitionState({ language: nextLang });
+        }
+
+        function selectQuest(id) {
+            transitionState({ activeQuestId: id });
+        }
+
+        function checkQuests() {
+            CONFIG.quests.forEach(q => {
+                if (q.validator(STATE)) {
+                    if (!STATE.completedQuests.includes(q.id)) {
+                        STATE.completedQuests.push(q.id);
+                    }
+                }
+            });
+        }
+
+        // Dot drag-and-drop operations
+        let isDragging = false;
+        let selectedDotIdx = -1;
+
+        function setupDragEvents() {
+            const svg = document.getElementById('svg-analytics');
+
+            const handleStart = (e) => {
+                const target = e.target;
+                if (target.classList.contains('svg-score-dot')) {
+                    isDragging = true;
+                    selectedDotIdx = parseInt(target.getAttribute('data-idx'), 10);
+                }
+            };
+
+            const handleMove = (e) => {
+                if (!isDragging || selectedDotIdx === -1) return;
+
+                const rect = svg.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const xInSvg = ((clientX - rect.left) / rect.width) * 400;
+
+                // Mapping horizontal: tick marks from 0 to 20 along X = 50 to X = 350
+                const startX = 50;
+                const endX = 350;
+                const totalSteps = 20;
+                const stepWidth = (endX - startX) / totalSteps;
+
+                // Find closest score integer step
+                let stepIdx = Math.round((xInSvg - startX) / stepWidth);
+                stepIdx = Math.max(0, Math.min(totalSteps, stepIdx));
+
+                const pts = [ ...STATE.scores ];
+                if (pts[selectedDotIdx] !== stepIdx) {
+                    pts[selectedDotIdx] = stepIdx;
+                    // Sort scores to preserve order sequence so they represent player 1 to 7 cleanly
+                    pts.sort((a, b) => a - b);
+                    transitionState({ scores: pts });
+                }
+            };
+
+            const handleEnd = () => {
+                isDragging = false;
+                selectedDotIdx = -1;
+            };
+
+            svg.addEventListener('mousedown', handleStart);
+            svg.addEventListener('mousemove', handleMove);
+            window.addEventListener('mouseup', handleEnd);
+
+            svg.addEventListener('touchstart', handleStart);
+            svg.addEventListener('touchmove', handleMove);
+            window.addEventListener('touchend', handleEnd);
+        }
+
+        // ==========================================
+        // 6. RENDER ENGINE (Programmatic SVGs)
+        // ==========================================
+        function renderUI() {
+            validateConfig();
+            renderStaticLabels();
+            renderQuestList();
+            renderScoreboard();
+            renderAnalyticsCanvas();
+            updateESOLHub();
+        }
+
+        function renderStaticLabels() {
+            const t = TRANSLATIONS[STATE.language];
+            document.getElementById('lbl-quest-log').innerText = t['quest-log'];
+            document.getElementById('lbl-statistics').innerText = t['statistics'];
+            document.getElementById('lbl-mean').innerText = t['mean'];
+            document.getElementById('lbl-median').innerText = t['median'];
+            document.getElementById('lbl-range').innerText = t['range'];
+            document.getElementById('lbl-mad').innerText = t['mad'];
+            document.getElementById('lbl-card-workbench').innerText = t['card-workbench'];
+            document.getElementById('lbl-esol-title').innerText = t['esol-title'];
+        }
+
+        function renderQuestList() {
+            const container = document.getElementById('sports-quest-list');
+            container.innerHTML = '';
+
+            CONFIG.quests.forEach(q => {
+                const isActive = STATE.activeQuestId === q.id;
+                const isSolved = STATE.completedQuests.includes(q.id);
+                const title = STATE.language === 'en' ? q.title : q.titleEs;
+                const desc = STATE.language === 'en' ? q.desc : q.descEs;
+
+                container.innerHTML += `
+                    <div class="quest-item ${isActive?'active':''} ${isSolved?'resolved':''}" onclick="selectQuest(${q.id})">
+                        <div class="quest-details">
+                            <span class="quest-title">${title}</span>
+                            <span class="quest-desc">${desc}</span>
+                        </div>
+                        <span class="quest-status">${isSolved?'🏆':'🏀'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderScoreboard() {
+            document.getElementById('val-mean').innerText = STATE.calculated.mean.toFixed(1);
+            document.getElementById('val-median').innerText = STATE.calculated.median;
+            document.getElementById('val-range').innerText = STATE.calculated.range;
+            document.getElementById('val-mad').innerText = STATE.calculated.mad.toFixed(2);
+        }
+
+        function renderAnalyticsCanvas() {
+            const svg = document.getElementById('svg-analytics');
+            svg.innerHTML = ''; // Clear SVG
+
+            const startX = 50;
+            const endX = 350;
+            const yLine = 120; // Horizontal axis position
+            const totalSteps = 20;
+            const stepWidth = (endX - startX) / totalSteps;
+
+            // Draw clean background grids
+            for (let i = 20; i < 400; i += 20) {
+                svg.innerHTML += `<line x1="${i}" y1="0" x2="${i}" y2="250" stroke="${CONFIG.colors.gridLine}" stroke-width="0.5" />`;
+            }
+
+            // Draw horizontal coordinate axis
+            svg.innerHTML += `
+                <line x1="${startX - 20}" y1="${yLine}" x2="${endX + 20}" y2="${yLine}" stroke="${CONFIG.colors.stroke}" stroke-width="2.5" />
+                <path d="M ${endX + 20} ${yLine - 5} L ${endX + 30} ${yLine} L ${endX + 20} ${yLine + 5} Z" fill="${CONFIG.colors.stroke}" />
+                <text x="390" y="${yLine + 12}" class="axis-label" text-anchor="end">Scores</text>
+            `;
+
+            // Draw Ticks & Labels on coordinate axis
+            for (let i = 0; i <= totalSteps; i++) {
+                const tickX = startX + i * stepWidth;
+                svg.innerHTML += `
+                    <line x1="${tickX}" y1="${yLine - 4}" x2="${tickX}" y2="${yLine + 4}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
+                `;
+                if (i % 2 === 0) {
+                    svg.innerHTML += `
+                        <text x="${tickX}" y="${yLine + 15}" class="tick-label" text-anchor="middle">${i}</text>
+                    `;
+                }
+            }
+
+            // Draw Mean Balance Indicator gold vertical dashed line
+            const meanX = startX + STATE.calculated.mean * stepWidth;
+            svg.innerHTML += `
+                <line x1="${meanX}" y1="20" x2="${meanX}" y2="${yLine + 30}" stroke="var(--primary)" stroke-width="2" stroke-dasharray="4, 3" />
+                <rect x="${meanX - 25}" y="8" width="50" height="15" rx="3" fill="var(--sports-dark)" stroke="var(--primary)" stroke-width="1" />
+                <text x="${meanX}" y="18" font-family="var(--font-display)" font-size="8.5" font-weight="950" fill="var(--primary)" text-anchor="middle">Mean: ${STATE.calculated.mean}</text>
+            `;
+
+            // Sort scores to plot stacked player dots correctly
+            const sortedScores = [ ...STATE.scores ].sort((a, b) => a - b);
+            const scoreCounts = {};
+
+            // Draw Dot Plot player dots
+            sortedScores.forEach((score, idx) => {
+                if (scoreCounts[score] === undefined) scoreCounts[score] = 0;
+                scoreCounts[score] += 1;
+
+                const dotX = startX + score * stepWidth;
+                // Stack dots vertically if they share the same score
+                const dotY = yLine - 10 - (scoreCounts[score] - 1) * 16;
+                const isMedianDot = idx === 3; // exact middle dot of 7 elements is index 3
+                const fillClr = isMedianDot ? 'var(--secondary)' : 'var(--cyan)';
+
+                svg.innerHTML += `
+                    <circle class="svg-score-dot" data-idx="${idx}" cx="${dotX}" cy="${dotY}" r="6.5" fill="${fillClr}" stroke="var(--white)" stroke-width="1.5" />
+                `;
+            });
+
+            // Draw Box Plot directly below the axis
+            // Box plot y center = 190
+            const yBox = 190;
+            const minScore = sortedScores[0];
+            const maxScore = sortedScores[6];
+            
+            // Computes Q1 (middle of lower half [idx 0,1,2] -> idx 1) and Q3 (middle of upper half [idx 4,5,6] -> idx 5)
+            const q1Val = sortedScores[1];
+            const q3Val = sortedScores[5];
+            const medianVal = STATE.calculated.median;
+
+            const minX = startX + minScore * stepWidth;
+            const maxX = startX + maxScore * stepWidth;
+            const q1X = startX + q1Val * stepWidth;
+            const q3X = startX + q3Val * stepWidth;
+            const medX = startX + medianVal * stepWidth;
+
+            // Draw Whisker lines
+            svg.innerHTML += `
+                <line x1="${minX}" y1="${yBox}" x2="${q1X}" y2="${yBox}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
+                <line x1="${q3X}" y1="${yBox}" x2="${maxX}" y2="${yBox}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
+                <line x1="${minX}" y1="${yBox - 8}" x2="${minX}" y2="${yBox + 8}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
+                <line x1="${maxX}" y1="${yBox - 8}" x2="${maxX}" y2="${yBox + 8}" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
+            `;
+
+            // Draw Quartile Box (Q1 to Q3)
+            svg.innerHTML += `
+                <rect x="${q1X}" y="${yBox - 12}" width="${q3X - q1X}" height="24" fill="rgba(6, 182, 212, 0.08)" stroke="${CONFIG.colors.stroke}" stroke-width="1.5" />
+            `;
+
+            // Draw Median line inside Box
+            svg.innerHTML += `
+                <line x1="${medX}" y1="${yBox - 12}" x2="${medX}" y2="${yBox + 12}" stroke="var(--secondary)" stroke-width="3" />
+            `;
+
+            // Draw Quartile labels inside box plot
+            svg.innerHTML += `
+                <text x="${q1X}" y="${yBox + 22}" class="tick-label" text-anchor="middle">Q1: ${q1Val}</text>
+                <text x="${q3X}" y="${yBox + 22}" class="tick-label" text-anchor="middle">Q3: ${q3Val}</text>
+            `;
+        }
+
+        function updateESOLHub() {
+            const starter = document.getElementById('esol-starter');
+            const trans = document.getElementById('esol-starter-trans');
+            const lang = STATE.language;
+            const t = TRANSLATIONS[lang];
+
+            const meanStr = STATE.calculated.mean.toFixed(1);
+            const medStr = STATE.calculated.median;
+            const rangeStr = STATE.calculated.range;
+            const madStr = STATE.calculated.mad.toFixed(2);
+
+            let frame = t['sentence-stats']
+                .replace('{mean}', meanStr)
+                .replace('{median}', medStr)
+                .replace('{range}', rangeStr)
+                .replace('{mad}', madStr);
+
+            let transFrame = t['sentence-stats-trans']
+                .replace('{mean}', meanStr)
+                .replace('{median}', medStr)
+                .replace('{range}', rangeStr)
+                .replace('{mad}', madStr);
+
+            starter.innerText = frame;
+            trans.innerText = transFrame;
+        }
+
+        // ==========================================
+        // 7. SELF-TEST SUITE & DIAGNOSTICS
+        // ==========================================
+        function logDiag(msg) {
+            const el = document.getElementById('diag-log');
+            el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function triggerSelfTest() {
+            document.getElementById('diag-panel').style.display = 'block';
+            document.getElementById('diag-log').innerHTML = '';
+            logDiag("Initiating Sports Analytics Self-Test...");
+
+            try {
+                // Assert 1: Config is valid
+                validateConfig();
+                logDiag("✓ Config validation successful.");
+
+                // Assert 2: Changing score values recalculates metrics
+                transitionState({ scores: [6, 8, 12, 14, 10, 10, 10] }); // Sorted: 6,8,10,10,10,12,14
+                logDiag(`✓ Loaded scores array [6, 8, 12, 14, 10, 10, 10].`);
+                
+                // Assert 3: Mean checking
+                logDiag(`✓ Calculated Mean: expected 10.0. Result: ${STATE.calculated.mean}`);
+                if (STATE.calculated.mean !== 10.0) {
+                    throw new Error("Assertion failed: Mean calculation is mathematically wrong.");
+                }
+
+                // Assert 4: Median checking
+                logDiag(`✓ Calculated Median: expected 10. Result: ${STATE.calculated.median}`);
+                if (STATE.calculated.median !== 10) {
+                    throw new Error("Assertion failed: Median calculation failed.");
+                }
+
+                // Assert 5: Box Plot Quartile checking
+                const sorted = [ ...STATE.scores ].sort((a, b) => a - b); // 6, 8, 10, 10, 10, 12, 14
+                const q1 = sorted[1]; // 8
+                const q3 = sorted[5]; // 12
+                logDiag(`✓ Box Plot Quartiles check: expected Q1=8, Q3=12. Result: Q1=${q1}, Q3=${q3}`);
+                if (q1 !== 8 || q3 !== 12) {
+                    throw new Error("Assertion failed: Quartile parsing is incorrect.");
+                }
+
+                // Reset back to original
+                transitionState({ scores: [4, 6, 8, 10, 12, 14, 16] });
+                logDiag("✓ Restored state variables back to defaults.");
+                logDiag("🎉 ALL SPORTS ANALYTIC CHECKS COMPLETED SUCCESSFULLY!");
+            } catch (err) {
+                logDiag(`❌ SYSTEM CHECKS FAIL: ${err.message}`);
+                console.error(err);
+            }
+        }
+
+        // Initialize application on load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderUI();
+            setupDragEvents();
+        });
+    </script>
+</body>
+</html>
