@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dream Room Designer — Unit 5 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 5 Area culminating project. Design a dream bedroom floor plan using parallelogram, triangle, and composite area formulas (6.G.1)."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #1a2c1a;
+        --blue: #2e7d32;
+        --blue-light: #e8f5e9;
+        --teal: #00796b;
+        --teal-light: #e0f2f1;
+        --gold: #f57c00;
+        --gold-light: #fff3e0;
+        --coral: #c62828;
+        --coral-light: #ffebee;
+        --green: #388e3c;
+        --green-light: #e8f5e9;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(26, 44, 26, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #1a2c1a 0%, #2e7d32 60%, #00796b 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--gold);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--blue); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--navy); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } .grid3 { grid-template-columns: 1fr; } }
+
+      .btn {
+        background: var(--blue); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--teal); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--teal-light); border: 1px solid #b2dfdb; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .formula-box {
+        background: var(--navy); color: #fff; border-radius: 10px;
+        padding: 10px 16px; margin: 12px 0; font-size: 14px; font-weight: 700;
+        display: inline-block;
+      }
+
+      .svg-sketch { display: block; margin: 12px auto; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🏠</div>
+      <h1>Dream Room Designer</h1>
+      <p>You are an interior designer planning your dream bedroom. Use area formulas to calculate every section of your floor plan — then price out the perfect flooring.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 5 · Area</span>
+        <span class="tag">6.G.1</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-5/">Unit 5</a> / <a href="/math/unit-5/projects/">Projects</a> / Dream Room Designer
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>📐 Your Mission</h2>
+        <p class="scenario">
+          Your family is renovating your bedroom and you get to design it! Work through four phases:
+          measure the main floor, plan a triangular reading nook, map an L-shaped composite room,
+          and then figure out the <strong>total flooring cost</strong>. Fill every calculator, hit
+          <em>Calculate</em> or <em>Check</em>, then complete the planning checklist and write your
+          floor-plan summary. Print it when you're done!
+        </p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Parallelogram &amp; Rectangle Area · 6.G.1</div>
+            <h2>Main Floor: Rectangular / Parallelogram Shape</h2>
+          </div>
+        </div>
+        <p>The main floor of your room is a parallelogram (a rectangle is a special parallelogram). Enter the base and height to find the area.</p>
+
+        <!-- SVG sketch of a parallelogram with labels -->
+        <svg class="svg-sketch" width="240" height="100" viewBox="0 0 240 100" aria-label="Parallelogram diagram with base and height labels">
+          <polygon points="30,85 210,85 190,15 10,15" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
+          <!-- height dashed line -->
+          <line x1="190" y1="15" x2="190" y2="85" stroke="#f57c00" stroke-width="2" stroke-dasharray="5,3"/>
+          <!-- base label -->
+          <text x="115" y="98" text-anchor="middle" font-size="13" fill="#1a2c1a" font-weight="bold">base (b)</text>
+          <!-- height label -->
+          <text x="205" y="55" font-size="13" fill="#f57c00" font-weight="bold">h</text>
+        </svg>
+
+        <div class="formula-box">Area = b × h</div>
+        <div class="task">
+          <strong>Your room's main floor:</strong> Enter the base and height in feet. Try b = 12 ft and h = 10 ft as a starting point, or design your own room!
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="p1-base">Base (b) in feet</label>
+            <input type="number" id="p1-base" value="12" min="1" step="0.1" />
+          </div>
+          <div>
+            <label class="fld" for="p1-height">Height (h) in feet</label>
+            <input type="number" id="p1-height" value="10" min="1" step="0.1" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcParallelogram()">Calculate main floor area</button>
+        <div class="readout" id="p1-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Multiply the base times the height. The height must be perpendicular (straight up) to the base — not the slanted side. Example: b = 12, h = 10 → Area = 12 × 10 = 120 sq ft.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Triangle Area · 6.G.1</div>
+            <h2>Reading Nook: Triangular Corner</h2>
+          </div>
+        </div>
+        <p>You want a cozy triangular reading nook in one corner. A triangle is exactly half of a parallelogram, so its area is half the base times the height.</p>
+
+        <!-- SVG sketch of a right triangle with labels -->
+        <svg class="svg-sketch" width="200" height="110" viewBox="0 0 200 110" aria-label="Triangle diagram with base and height labels">
+          <polygon points="20,90 170,90 20,15" fill="#e0f2f1" stroke="#00796b" stroke-width="2.5"/>
+          <!-- height dashed line -->
+          <line x1="20" y1="15" x2="20" y2="90" stroke="#f57c00" stroke-width="2" stroke-dasharray="5,3"/>
+          <!-- base label -->
+          <text x="95" y="106" text-anchor="middle" font-size="13" fill="#1a2c1a" font-weight="bold">base (b)</text>
+          <!-- height label -->
+          <text x="4" y="58" font-size="13" fill="#f57c00" font-weight="bold">h</text>
+        </svg>
+
+        <div class="formula-box">Area = ½ × b × h</div>
+        <div class="task">
+          <strong>Your reading nook:</strong> Enter the base and height of the triangular nook.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="p2-base">Base (b) in feet</label>
+            <input type="number" id="p2-base" value="6" min="1" step="0.1" />
+          </div>
+          <div>
+            <label class="fld" for="p2-height">Height (h) in feet</label>
+            <input type="number" id="p2-height" value="5" min="1" step="0.1" />
+          </div>
+        </div>
+        <button class="btn alt" onclick="calcTriangle()">Calculate nook area</button>
+        <div class="readout" id="p2-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>A triangle is half a parallelogram: Area = ½ × b × h. Example: b = 6, h = 4 → Area = ½ × 6 × 4 = 12 sq ft. The ½ means you divide by 2 at the end (or multiply first, then halve).</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Composite Area · 6.G.1</div>
+            <h2>L-Shaped Bonus Room: Composite Figure</h2>
+          </div>
+        </div>
+        <p>Your dream room has an L-shaped bonus section — like a closet extension. Split the L-shape into <strong>two separate rectangles</strong>, find each area, then add them together.</p>
+
+        <!-- SVG sketch of an L-shape with the two rectangle regions -->
+        <svg class="svg-sketch" width="260" height="130" viewBox="0 0 260 130" aria-label="L-shaped room split into two rectangles">
+          <!-- Rectangle A (wide bottom) -->
+          <rect x="10" y="65" width="200" height="55" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
+          <text x="108" y="97" text-anchor="middle" font-size="12" fill="#1a2c1a" font-weight="bold">Rectangle A</text>
+          <!-- Rectangle B (top portion) -->
+          <rect x="10" y="10" width="100" height="55" fill="#e0f2f1" stroke="#00796b" stroke-width="2.5"/>
+          <text x="60" y="42" text-anchor="middle" font-size="12" fill="#1a2c1a" font-weight="bold">Rectangle B</text>
+        </svg>
+
+        <div class="formula-box">Composite Area = Area A + Area B &nbsp;|&nbsp; Each part: b × h</div>
+        <div class="task">
+          <strong>Split the L into two rectangles.</strong> Enter the base and height for each part.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="p3-a-base">Rectangle A — Base (ft)</label>
+            <input type="number" id="p3-a-base" value="10" min="1" step="0.1" />
+          </div>
+          <div>
+            <label class="fld" for="p3-a-height">Rectangle A — Height (ft)</label>
+            <input type="number" id="p3-a-height" value="8" min="1" step="0.1" />
+          </div>
+          <div>
+            <label class="fld" for="p3-b-base">Rectangle B — Base (ft)</label>
+            <input type="number" id="p3-b-base" value="6" min="1" step="0.1" />
+          </div>
+          <div>
+            <label class="fld" for="p3-b-height">Rectangle B — Height (ft)</label>
+            <input type="number" id="p3-b-height" value="5" min="1" step="0.1" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcComposite()">Calculate composite area</button>
+        <div class="readout" id="p3-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Find each rectangle separately: Area A = b × h, Area B = b × h. Then add the two areas. Example: Rectangle A = 10 × 8 = 80 sq ft. Rectangle B = 6 × 5 = 30 sq ft. Total = 80 + 30 = 110 sq ft.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Area Application · 6.G.1</div>
+            <h2>Flooring Cost Decision</h2>
+          </div>
+        </div>
+        <p>Now the big question: how much will it cost to cover your floor? Multiply the total floor area by the price per square foot. You choose between two flooring options!</p>
+        <div class="task">
+          <strong>Enter your total floor area</strong> (copy it from Phases 1–3 or use your own design), then pick a flooring type and price.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="p4-area">Total floor area (sq ft)</label>
+            <input type="number" id="p4-area" value="145" min="1" step="0.1" />
+          </div>
+          <div>
+            <label class="fld" for="p4-price">Price per sq ft ($)</label>
+            <input type="number" id="p4-price" value="3.50" min="0.01" step="0.01" />
+          </div>
+        </div>
+        <div class="task" style="margin-top: 4px;">
+          <strong>Flooring options to compare:</strong><br/>
+          Option 1 — Hardwood: $3.50/sq ft &nbsp;|&nbsp;
+          Option 2 — Carpet: $2.25/sq ft &nbsp;|&nbsp;
+          Option 3 — Vinyl: $1.80/sq ft
+        </div>
+        <button class="btn" onclick="calcFlooring()">Calculate flooring cost</button>
+        <div class="readout" id="p4-out"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check:</strong> A triangular reading nook has base = 6 ft and height = 4 ft.
+          What is its area in square feet? (Use the triangle formula.)
+        </div>
+        <label class="fld" for="check-tri">Your answer (sq ft)</label>
+        <input type="number" id="check-tri" placeholder="Type a number" />
+        <button class="btn alt" onclick="checkTriangle()">Check answer</button>
+        <div class="feedback" id="tri-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Your Floor-Plan Summary</h2>
+          </div>
+        </div>
+        <p>Write a 3–5 sentence summary that presents your design using real numbers from above. Explain what formula you used for each section and justify your flooring choice.</p>
+        <textarea id="pitch" placeholder="My dream room's main floor is a parallelogram with base ___ ft and height ___ ft, giving an area of ___ sq ft. The triangular reading nook has area ___ sq ft (½ × ___ × ___). The composite bonus room adds ___ sq ft, bringing the total room area to ___ sq ft. At $___ per sq ft, flooring will cost $___."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Planning Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I used Area = b × h to find the main floor (parallelogram/rectangle) area.</li>
+          <li><input type="checkbox" /> I used Area = ½ × b × h to find the triangular reading nook area.</li>
+          <li><input type="checkbox" /> I split the L-shape into two rectangles and added their areas together.</li>
+          <li><input type="checkbox" /> I multiplied total area × price to find the flooring cost.</li>
+          <li><input type="checkbox" /> My floor-plan summary uses all my real numbers and justifies my flooring choice.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print my floor plan</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Rectangle / Parallelogram Area</td><td>Correct area with formula shown; base and height clearly labeled</td><td>Area is correct</td><td>Minor arithmetic error or formula unclear</td></tr>
+          <tr><td>Triangle Area</td><td>Correct area using ½ × b × h with reasoning explained</td><td>Area is correct</td><td>Forgot the ½ or has a computational error</td></tr>
+          <tr><td>Composite Area</td><td>L-shape correctly split into two parts, each calculated and summed</td><td>Total composite area is correct</td><td>One part calculated or addition error</td></tr>
+          <tr><td>Application / Communication</td><td>Flooring cost correct; summary clearly ties all numbers together with full justification</td><td>Flooring cost correct; summary uses most numbers</td><td>Summary missing numbers or justification is unclear</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 5 Culminating Project · Version A · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function show(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      function calcParallelogram() {
+        const b = +document.getElementById("p1-base").value;
+        const h = +document.getElementById("p1-height").value;
+        if (isNaN(b) || b <= 0 || isNaN(h) || h <= 0) { show("p1-out", "<p>⚠️ Please enter valid positive values for base and height.</p>"); return; }
+        const area = b * h;
+        show("p1-out",
+          '<div class="big">' + area.toFixed(2) + ' sq ft</div>' +
+          'Area = b × h = <strong>' + b + ' × ' + h + ' = ' + area.toFixed(2) + ' sq ft</strong>. ' +
+          "That's your main floor area!");
+      }
+
+      function calcTriangle() {
+        const b = +document.getElementById("p2-base").value;
+        const h = +document.getElementById("p2-height").value;
+        if (isNaN(b) || b <= 0 || isNaN(h) || h <= 0) { show("p2-out", "<p>⚠️ Please enter valid positive values for base and height.</p>"); return; }
+        const area = 0.5 * b * h;
+        show("p2-out",
+          '<div class="big">' + area.toFixed(2) + ' sq ft</div>' +
+          'Area = ½ × b × h = ½ × <strong>' + b + ' × ' + h + ' = ' + area.toFixed(2) + ' sq ft</strong>. ' +
+          'Remember: a triangle is exactly half a parallelogram!');
+      }
+
+      function calcComposite() {
+        const ab = +document.getElementById("p3-a-base").value;
+        const ah = +document.getElementById("p3-a-height").value;
+        const bb = +document.getElementById("p3-b-base").value;
+        const bh = +document.getElementById("p3-b-height").value;
+        if (isNaN(ab) || ab <= 0 || isNaN(ah) || ah <= 0 || isNaN(bb) || bb <= 0 || isNaN(bh) || bh <= 0) { show("p3-out", "<p>⚠️ Please enter valid positive values for all four rectangle dimensions.</p>"); return; }
+        const areaA = ab * ah;
+        const areaB = bb * bh;
+        const total = areaA + areaB;
+        show("p3-out",
+          '<div class="big">' + total.toFixed(2) + ' sq ft total</div>' +
+          'Rectangle A: ' + ab + ' × ' + ah + ' = <strong>' + areaA.toFixed(2) + ' sq ft</strong><br>' +
+          'Rectangle B: ' + bb + ' × ' + bh + ' = <strong>' + areaB.toFixed(2) + ' sq ft</strong><br>' +
+          'Composite total: ' + areaA.toFixed(2) + ' + ' + areaB.toFixed(2) + ' = <strong>' + total.toFixed(2) + ' sq ft</strong>');
+      }
+
+      function calcFlooring() {
+        const area = +document.getElementById("p4-area").value;
+        const price = +document.getElementById("p4-price").value;
+        if (isNaN(area) || area <= 0 || isNaN(price) || price <= 0) { show("p4-out", "<p>⚠️ Please enter valid positive values for area and price per sq ft.</p>"); return; }
+        const cost = area * price;
+        show("p4-out",
+          '<div class="big">$' + cost.toFixed(2) + '</div>' +
+          'Flooring cost = ' + area + ' sq ft × $' + price.toFixed(2) + '/sq ft = <strong>$' + cost.toFixed(2) + '</strong>. ' +
+          'Compare this against the other flooring options to make the best choice for your budget!');
+      }
+
+      function checkTriangle() {
+        const v = +document.getElementById("check-tri").value;
+        const fb = document.getElementById("tri-fb");
+        if (isNaN(v) || document.getElementById("check-tri").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
+        // b=6, h=4 → ½×6×4 = 12
+        if (v === 12) {
+          fb.textContent = "✅ Correct! ½ × 6 × 4 = 12 sq ft.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not quite. Use ½ × b × h = ½ × 6 × 4 and try again.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length;       // max 4
+        const checkOk = document.getElementById("tri-fb").classList.contains("ok") ? 1 : 0; // max 1
+        const checks = document.querySelectorAll('#checklist input:checked').length;           // max 5
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;      // max 1
+        const total = readouts + checkOk + checks + pitch; // max 11
+        const pct = Math.min(100, Math.round((total / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

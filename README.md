@@ -53,6 +53,10 @@ Folder structure:
     index.html
     unit-1/
       index.html
+      projects/
+        index.html        (unit projects hub)
+        version-a/index.html  (Design & Build culminating project)
+        version-b/index.html  (Real-World Investigation culminating project)
     ...unit-folders/
   lessons/
     1-1/
@@ -91,6 +95,36 @@ Shared files:
 - `assets/shared.css` provides the classroom design system.
 - `assets/app.js` provides small shared behavior, currently the footer year.
 - `source-repos.md` maps source repository names to their organized target folders.
+
+## Culminating Projects
+
+Each Grade 6 math unit (`math/unit-1` through `math/unit-10`) includes a
+`projects/` folder with two creative, interactive end-of-unit projects:
+
+- **Version A — Design & Build:** an open-ended maker challenge.
+- **Version B — Real-World Investigation:** a data-and-decision challenge.
+
+Both versions assess the same unit standards through different contexts, so
+they double as choice-board options, differentiated assignments, or A/B class
+sets. Each project is a self-contained HTML page with live calculators,
+scaffolded hints, a progress bar, a written deliverable, a student checklist, a
+3-point rubric, and a print button. Projects are linked from each unit's
+`index.html` and from the math hub at `math/index.html`.
+
+## Math Remediation: Bridge to Grade 6
+
+`math/remediation/` is a Grades 7–8 remediation track that rebuilds the
+foundational skills students need to be ready for Grade 6 math. It has a top
+hub plus five units (`unit-r1` through `unit-r5`), each with its own hub and
+five interactive lessons:
+
+- R1 Whole Numbers & Operations, R2 Fraction Foundations, R3 Decimals & Money,
+  R4 Factors/Multiples/Patterns, R5 Pre-Algebra & Geometry Readiness.
+
+Every lesson is a self-contained interactive HTML page following the same path —
+**Learn It → Try It → Practice → Exit Ticket** — with self-checking items,
+instant feedback, hints, a progress bar, a "Why this matters for Grade 6"
+standard callout, and a print button. Linked from the math hub and sitemap.
 
 ## Adding A New Activity
 

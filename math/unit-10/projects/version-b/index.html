@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aquarium Build Lab — Unit 10 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 10 Volume &amp; Surface Area culminating project. Design a fish tank using volume (6.G.2) and open-top surface area from nets (6.G.4)."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #ffffff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1); --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg, #0e8a7d 0%, #0f2b3c 100%); color: #fff; padding: 40px 24px 34px; text-align: center; }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 { font-size: clamp(26px, 5vw, 40px); margin: 10px 0 8px; letter-spacing: -0.02em; }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .intro-card { background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--teal); border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow); }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .phase { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px; background: var(--teal); color: #fff; font-weight: 800; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+      .phase:nth-of-type(2) .phase-num { background: var(--blue); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+      .task { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0; }
+      .task strong { color: var(--navy); }
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea { width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; background: #fff; }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } .grid3 { grid-template-columns: 1fr; } }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit; margin-top: 14px; }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--blue); }
+      .readout { margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px; background: var(--teal-light); border: 1px solid #bfe6e0; display: none; }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      @media print { .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; } .phase, .intro-card { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🐠</div>
+      <h1>Aquarium Build Lab</h1>
+      <p>You are designing and building a custom fish tank. Use volume and surface area to figure out how much water it holds, how much glass is needed, and whether your budget can handle the build.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 10 · Volume &amp; Surface Area</span>
+        <span class="tag">6.G.2</span>
+        <span class="tag">6.G.4</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-10/">Unit 10</a> / <a href="/math/unit-10/projects/">Projects</a> / Aquarium Build Lab
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🐟 Your Mission</h2>
+        <p>Your community center wants a <strong>custom rectangular fish tank</strong>. You must figure out its total volume, how much water it holds at a certain fill level, how much glass is needed (the tank is open at the top — no top face!), and whether the glass cost fits the budget. Work through all four phases, then write your build plan.</p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Volume of a Rectangular Prism · 6.G.2</div>
+            <h2>Tank Volume: Full Capacity</h2>
+          </div>
+        </div>
+        <p>Find the <strong>total volume</strong> of the tank using V = l × w × h. This tells you the maximum amount the tank could hold if completely filled.</p>
+        <div class="task">
+          <strong>Formula:</strong> V = length × width × height. Enter your tank dimensions below.
+        </div>
+        <div class="grid3">
+          <div>
+            <label class="fld" for="t-length">Length (units)</label>
+            <input type="number" id="t-length" value="5" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="t-width">Width (units)</label>
+            <input type="number" id="t-width" value="2" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="t-height">Height (units)</label>
+            <input type="number" id="t-height" value="3" min="0.01" step="0.01" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcTankVol()">Calculate full volume</button>
+        <div class="readout" id="tankvol-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Multiply length × width to find how many unit cubes fit in one layer on the bottom of the tank. Then multiply by the height to count all the layers stacked up. For a 5 × 2 × 3 tank: 5 × 2 = 10 cubes per layer, 10 × 3 = 30 cubic units total.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Partial Fill Volume · 6.G.2</div>
+            <h2>Water Fill: Partial Height</h2>
+          </div>
+        </div>
+        <p>Tanks are never filled all the way to the top. Use the same formula with a <strong>fill height</strong> (less than the full tank height) to find the volume of water actually in the tank.</p>
+        <div class="task">
+          <strong>Water volume formula:</strong> V<sub>water</sub> = length × width × fill height. The fill height must be less than the full tank height.
+        </div>
+        <div class="grid3">
+          <div>
+            <label class="fld" for="f-length">Length (same as tank)</label>
+            <input type="number" id="f-length" value="5" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="f-width">Width (same as tank)</label>
+            <input type="number" id="f-width" value="2" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="f-fill">Fill height (units)</label>
+            <input type="number" id="f-fill" value="2" min="0.01" step="0.01" />
+          </div>
+        </div>
+        <button class="btn alt" onclick="calcWater()">Calculate water volume</button>
+        <div class="readout" id="water-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Use the same V = l × w × h formula, but replace h with your fill height. For the 5 × 2 tank filled to 2 units: V = 5 × 2 × 2 = 20 cubic units of water. That is 20/30 (about 67%) of the full tank.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Open-Top Surface Area from the Net · 6.G.4</div>
+            <h2>Glass Needed: Open-Top Tank</h2>
+          </div>
+        </div>
+        <p>A fish tank is <strong>open at the top</strong> — there is no glass lid. So you only need glass for the <strong>bottom</strong> and the <strong>four sides</strong>. This is different from a closed box!</p>
+        <div class="task">
+          <strong>Open-top net formula:</strong><br>
+          SA<sub>open-top</sub> = (l × w) + 2(l × h) + 2(w × h)<br>
+          <em>Only 1 bottom face, 2 long sides, and 2 short sides — NO top face.</em>
+        </div>
+        <div class="grid3">
+          <div>
+            <label class="fld" for="g-length">Length (units)</label>
+            <input type="number" id="g-length" value="5" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="g-width">Width (units)</label>
+            <input type="number" id="g-width" value="2" min="0.01" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="g-height">Height (units)</label>
+            <input type="number" id="g-height" value="3" min="0.01" step="0.01" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcGlass()">Calculate glass needed</button>
+        <div class="readout" id="glass-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Compare open-top vs. closed box: a closed box with SA = 2(lw + lh + wh) has 6 faces. An open-top tank removes the top face (one l × w panel). So SA<sub>open</sub> = 2(lw + lh + wh) − lw = lw + 2lh + 2wh. For a 5 × 2 × 3 tank: (5×2) + 2(5×3) + 2(2×3) = 10 + 30 + 12 = 52 square units.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Cost Decision · 6.G.4</div>
+            <h2>Glass Cost &amp; Budget Check</h2>
+          </div>
+        </div>
+        <p>Now that you know how many square units of glass are needed, multiply by the price per square unit to find the total glass cost for your tank.</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="gc-area">Glass area (sq units)</label>
+            <input type="number" id="gc-area" value="52" min="0" step="0.01" />
+          </div>
+          <div>
+            <label class="fld" for="gc-rate">Glass price per sq unit ($)</label>
+            <input type="number" id="gc-rate" value="3.50" min="0.01" step="0.01" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcGlassCost()">Calculate glass cost</button>
+        <div class="readout" id="glasscost-out"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check:</strong> A tank measures 5 × 2 × 3 units (open at the top). What is its full volume? (V = l × w × h)
+        </div>
+        <label class="fld" for="check-tank">Your answer (cubic units)</label>
+        <input type="number" id="check-tank" placeholder="Type a number" />
+        <button class="btn alt" onclick="checkTank()">Check answer</button>
+        <div class="feedback" id="tank-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Build Plan</h2>
+          </div>
+        </div>
+        <p>Write a 3–5 sentence build plan using your real numbers. Describe the tank dimensions, its volume, the water volume at fill height, the glass area needed (open-top), and the total glass cost.</p>
+        <textarea id="pitch" placeholder="Our aquarium measures ___ × ___ × ___ units. Its total volume is ___ cubic units, but filled to ___ units high it holds ___ cubic units of water. Because the tank is open at the top, the glass needed covers ___ square units (bottom + four sides). At $___ per square unit, the total glass cost is $___. I recommend this design because ___."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Build Plan Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I used V = l × w × h to find the full tank volume.</li>
+          <li><input type="checkbox" /> I calculated the water volume at a partial fill height.</li>
+          <li><input type="checkbox" /> I identified that an open-top tank has 5 faces (no top) and computed the glass area.</li>
+          <li><input type="checkbox" /> I multiplied the glass area by the price per square unit to find total cost.</li>
+          <li><input type="checkbox" /> My build plan explains the design with real numbers.</li>
+        </ul>
+        <button class="btn" style="background:var(--navy);" onclick="window.print()">🖨️ Print my build plan</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Volume (6.G.2)</td><td>Full and partial fill volumes both correct with unit labels; unit-cube reasoning explained</td><td>Both volume calculations correct</td><td>Formula applied but computation error</td></tr>
+          <tr><td>Partial Fill (6.G.2)</td><td>Fill height correctly substituted; fraction of full volume noted</td><td>Water volume correct</td><td>Formula used but incorrect fill height applied</td></tr>
+          <tr><td>Open-Top Surface Area (6.G.4)</td><td>5-face net correctly identified; SA = lw + 2lh + 2wh applied; distinction from closed box explained</td><td>Open-top surface area correct</td><td>Used closed-box formula (included top face) or one face missing</td></tr>
+          <tr><td>Application / Communication</td><td>Glass cost correct; build plan justifies design with all numbers</td><td>Cost correct; build plan uses most numbers</td><td>Attempted; plan unclear or missing numbers</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 10 Culminating Project · Version B · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function round2(n) { return Math.round(n * 100) / 100; }
+      function show(id, html) { const el = document.getElementById(id); el.innerHTML = html; el.classList.add("show"); updateProgress(); }
+
+      function calcTankVol() {
+        const l = +document.getElementById("t-length").value;
+        const w = +document.getElementById("t-width").value;
+        const h = +document.getElementById("t-height").value;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          show("tankvol-out", "<p>⚠️ Please enter valid positive numbers for all three dimensions.</p>");
+          return;
+        }
+        const v = round2(l * w * h);
+        show("tankvol-out",
+          '<div class="big">' + v + ' cubic units</div>' +
+          'V = ' + l + ' × ' + w + ' × ' + h + ' = <strong>' + v + ' cubic units</strong>. ' +
+          'This is the maximum capacity if the tank were filled completely to the top.');
+      }
+
+      function calcWater() {
+        const l = +document.getElementById("f-length").value;
+        const w = +document.getElementById("f-width").value;
+        const fill = +document.getElementById("f-fill").value;
+        if (isNaN(l) || isNaN(w) || isNaN(fill) || l <= 0 || w <= 0 || fill <= 0) {
+          show("water-out", "<p>⚠️ Please enter valid positive numbers for length, width, and fill height.</p>");
+          return;
+        }
+        const vw = round2(l * w * fill);
+        show("water-out",
+          '<div class="big">' + vw + ' cubic units of water</div>' +
+          'V<sub>water</sub> = ' + l + ' × ' + w + ' × ' + fill + ' (fill height) = <strong>' + vw + ' cubic units</strong>. ' +
+          'The tank only needs to be filled to <strong>' + fill + ' units</strong> high to hold this much water.');
+      }
+
+      function calcGlass() {
+        const l = +document.getElementById("g-length").value;
+        const w = +document.getElementById("g-width").value;
+        const h = +document.getElementById("g-height").value;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          show("glass-out", "<p>⚠️ Please enter valid positive numbers for all three dimensions.</p>");
+          return;
+        }
+        const bottom = round2(l * w);
+        const lhFace = round2(l * h);
+        const whFace = round2(w * h);
+        const sa = round2(bottom + 2 * lhFace + 2 * whFace);
+        const closedSA = round2(2 * (bottom + lhFace + whFace));
+        show("glass-out",
+          '<div class="big">' + sa + ' sq units of glass</div>' +
+          '🐠 <strong>Open-top tank net (5 faces — no top!):</strong><br>' +
+          '&nbsp;&nbsp;Bottom (l × w): ' + bottom + ' sq units<br>' +
+          '&nbsp;&nbsp;2 long sides (l × h): 2 × ' + lhFace + ' = <strong>' + round2(2 * lhFace) + ' sq units</strong><br>' +
+          '&nbsp;&nbsp;2 short sides (w × h): 2 × ' + whFace + ' = <strong>' + round2(2 * whFace) + ' sq units</strong><br>' +
+          'SA<sub>open-top</sub> = ' + bottom + ' + ' + round2(2 * lhFace) + ' + ' + round2(2 * whFace) + ' = <strong>' + sa + ' sq units</strong><br>' +
+          '<em>Note: a closed box would be ' + closedSA + ' sq units — we save ' + round2(closedSA - sa) + ' sq units by removing the top face.</em>');
+      }
+
+      function calcGlassCost() {
+        const a = +document.getElementById("gc-area").value;
+        const r = +document.getElementById("gc-rate").value;
+        if (isNaN(a) || isNaN(r) || a <= 0 || r <= 0) {
+          show("glasscost-out", "<p>⚠️ Please enter valid positive numbers for glass area and price.</p>");
+          return;
+        }
+        const cost = round2(a * r);
+        show("glasscost-out",
+          '<div class="big">$' + cost.toFixed(2) + '</div>' +
+          a + ' sq units × $' + r.toFixed(2) + ' per sq unit = <strong>$' + cost.toFixed(2) + '</strong> total glass cost.');
+      }
+
+      function checkTank() {
+        const v = +document.getElementById("check-tank").value;
+        const fb = document.getElementById("tank-fb");
+        if (document.getElementById("check-tank").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
+        if (v === 30) {
+          fb.textContent = "✅ Correct! V = 5 × 2 × 3 = 30 cubic units.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not quite. Multiply all three dimensions: 5 × 2 × 3. Try again.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length;
+        const checkOk = document.getElementById("tank-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length;
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + checkOk + checks + pitch; // max 4 + 1 + 5 + 1 = 11
+        const pct = Math.min(100, Math.round((total / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

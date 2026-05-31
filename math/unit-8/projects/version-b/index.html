@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fundraiser Goal Tracker — Unit 8 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 8 Equations &amp; Inequalities culminating project. Track a school fundraiser using one-step equations and inequalities to hit the goal."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-light: #e8f2fc;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --emerald: #0d7a4e;
+        --emerald-light: #e2f5ed;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #0d7a4e 0%, #0e8a7d 55%, #1a6fb5 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--emerald);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--emerald); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--blue); }
+      .phase:nth-of-type(3) .phase-num { background: var(--teal); }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--emerald-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--emerald); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      .btn {
+        background: var(--emerald); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--teal); }
+      .btn.blue { background: var(--blue); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--emerald-light); border: 1px solid #9fd5bc; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--emerald); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      /* Number line SVG wrapper */
+      .nline-wrap { margin-top: 16px; overflow-x: auto; }
+      .nline-wrap svg { display: block; margin: 0 auto; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--emerald), var(--teal)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🎯</div>
+      <h1>Fundraiser Goal Tracker</h1>
+      <p>Your class is raising money for a field trip. Use equations and inequalities to track progress, plan sales, and decide whether your fundraiser will hit the goal — before it's too late.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 8 · Equations &amp; Inequalities</span>
+        <span class="tag">6.EE.7</span>
+        <span class="tag">6.EE.8</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-8/">Unit 8</a> / <a href="/math/unit-8/projects/">Projects</a> / Fundraiser Goal Tracker
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>💰 Your Mission</h2>
+        <p class="scenario">
+          Your class wants to raise money for a field trip that costs <strong>$300</strong>.
+          So far you have raised some money, but you need more. Work through four phases:
+          write and solve an equation to find <strong>how much more you need</strong>,
+          solve a multiplication equation for your <strong>sales plan</strong>,
+          write an inequality to describe the <strong>goal condition</strong>, and finally
+          decide whether your plan will work. Fill every box, hit <em>Solve &amp; Verify</em>,
+          and finish the planning checklist. Then print your fundraiser plan.
+        </p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Addition Equation · 6.EE.7</div>
+            <h2>How Much More Do We Need?</h2>
+          </div>
+        </div>
+        <p>Write and solve an addition equation: amount already raised + x = fundraiser goal. Solve for x to find how much more you need to collect.</p>
+        <div class="task">
+          <strong>Equation model:</strong> raised + x = goal &rarr; x = goal &minus; raised<br>
+          Enter your numbers below and hit <em>Solve &amp; Verify</em>.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="f1-raised">Amount already raised ($)</label>
+            <input type="number" id="f1-raised" value="85" min="0" max="299" />
+          </div>
+          <div>
+            <label class="fld" for="f1-goal">Fundraiser goal ($)</label>
+            <input type="number" id="f1-goal" value="300" min="1" max="9999" />
+          </div>
+        </div>
+        <button class="btn" onclick="solvePhase1()">Solve &amp; Verify</button>
+        <div class="readout" id="p1-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>The equation is: <strong>raised + x = goal</strong>. Use the inverse operation: subtract <em>raised</em> from both sides. For $85 + x = $300 → x = $300 − $85 = $215. Then verify: $85 + $215 = $300 ✓</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Multiplication Equation · 6.EE.7</div>
+            <h2>Plan the Sales</h2>
+          </div>
+        </div>
+        <p>Your class will sell baked goods. You know the price per item and the total you need from sales. Solve a multiplication equation to find how many items to sell.</p>
+        <div class="task">
+          <strong>Equation model:</strong> items × price = sales target &rarr; solve for items<br>
+          Pick a price per item and your sales target. The target must be divisible by the price so the answer is a whole number of items.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="f2-price">Price per item ($, whole number)</label>
+            <input type="number" id="f2-price" value="5" min="1" max="50" />
+          </div>
+          <div>
+            <label class="fld" for="f2-target">Sales target ($, must be divisible by price)</label>
+            <input type="number" id="f2-target" value="150" min="1" max="9999" />
+          </div>
+        </div>
+        <button class="btn alt" onclick="solvePhase2()">Solve &amp; Verify</button>
+        <div class="readout" id="p2-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>The equation is: <strong>n × price = target</strong> (n is the number of items). Divide both sides by price: n = target ÷ price. For 5n = 150 → n = 150 ÷ 5 = 30. Verify: 5 × 30 = 150 ✓. Make sure target ÷ price has no remainder!</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Writing &amp; Graphing Inequalities · 6.EE.8</div>
+            <h2>Set the Goal Condition</h2>
+          </div>
+        </div>
+        <p>An inequality describes many possible values at once. Write the condition "we need to raise at least G dollars" as an inequality, describe the solution set, and see sample values that work.</p>
+        <div class="task">
+          <strong>Condition:</strong> The total amount raised (x) must be <strong>at least</strong> the goal amount. Write: <em>x &ge; goal</em>.<br>
+          Enter a minimum goal and see the inequality, its solution set, and a number-line diagram.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="f3-goal">Minimum goal amount ($)</label>
+            <input type="number" id="f3-goal" value="300" min="1" max="9999" />
+          </div>
+          <div>
+            <label class="fld" for="f3-symbol">Inequality symbol</label>
+            <select id="f3-symbol">
+              <option value=">=" selected>≥ (greater than or equal to)</option>
+              <option value=">">&#62; (strictly greater than)</option>
+              <option value="<=">≤ (less than or equal to)</option>
+              <option value="<">&#60; (strictly less than)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn blue" onclick="solvePhase3()">Write &amp; Graph Inequality</button>
+        <div class="readout" id="p3-out"></div>
+        <div class="nline-wrap" id="nline-wrap" style="display:none;"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>For "at least $300", use ≥. The inequality is x ≥ 300. The solution set is all numbers 300 or greater: 300, 301, 310, 400, 500 … On a number line, draw a <strong>closed circle</strong> at 300 (closed = includes 300) and shade to the right. If the symbol were strictly >, use an open circle.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Decision &amp; Verify · 6.EE.7 · 6.EE.8</div>
+            <h2>Will the Plan Hit the Goal?</h2>
+          </div>
+        </div>
+        <p>Use your numbers from Phases 1–3 to decide whether the plan works. Then verify a known inequality answer to prove your algebra is solid.</p>
+        <div class="task">
+          <strong>Decision:</strong> Based on your Phase 1 equation and Phase 2 sales plan, explain in 1–2 sentences whether the fundraiser will meet or exceed the goal. Show the total and compare it to the goal.
+        </div>
+        <label class="fld" for="decision">Your decision and reasoning</label>
+        <textarea id="decision" placeholder="We have raised $85. Our sales plan will earn $150, giving a total of $235. Since 235 &lt; 300, we will not meet the goal and must sell more items or find another source of income."></textarea>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Final Quick-Check (known answer):</strong> Solve 5x = 60. You should get x = 12. Type your answer below to confirm your multiplication equation skills.
+        </div>
+        <label class="fld" for="check-final">Your answer for 5x = 60</label>
+        <input type="number" id="check-final" placeholder="x = ?" />
+        <button class="btn alt" onclick="checkFinal()">Check answer</button>
+        <div class="feedback" id="final-fb"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Inequality quick-check:</strong> Does x = 8 satisfy x &ge; 8? Does x = 5 satisfy x &ge; 8? Explain why or why not in the box below.
+        </div>
+        <label class="fld" for="ineq-check">Your inequality check explanation</label>
+        <textarea id="ineq-check" placeholder="x = 8 satisfies x ≥ 8 because 8 ≥ 8 is true. x = 5 does not satisfy x ≥ 8 because 5 is less than 8."></textarea>
+        <button class="btn blue" onclick="checkIneq()">Check inequality reasoning</button>
+        <div class="feedback" id="ineq-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Submit Your Fundraiser Plan</h2>
+          </div>
+        </div>
+        <p>Write your complete fundraiser plan (3–5 sentences). Include the equation for how much more is needed, the sales equation and item count, the inequality condition, and your conclusion about whether the plan meets the goal.</p>
+        <textarea id="pitch" placeholder="Our fundraiser goal is $___. We have raised $___, so the equation $___ + x = $___ gives x = $___. To reach our sales target of $___, we must sell ___ items at $___ each (equation: ___x = ___). The condition for success is x ≥ $___, meaning we need to raise at least that amount. Based on our plan, we [will / will not] meet the goal because ___."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Planning Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I wrote and solved an addition equation to find how much more is needed.</li>
+          <li><input type="checkbox" /> I wrote and solved a multiplication equation for the sales plan.</li>
+          <li><input type="checkbox" /> I wrote an inequality and described its solution set correctly.</li>
+          <li><input type="checkbox" /> I tested sample values to check my inequality.</li>
+          <li><input type="checkbox" /> My fundraiser plan clearly states the conclusion with real numbers.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print my plan</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Add/Sub Equations (6.EE.7)</td><td>Equation correct; solution verified by substitution with work shown</td><td>Solution correct</td><td>Attempted with a computation error</td></tr>
+          <tr><td>Mult/Div Equations (6.EE.7)</td><td>Equation correct; solution verified by substitution with work shown</td><td>Solution correct</td><td>Attempted with a computation error</td></tr>
+          <tr><td>Inequalities (6.EE.8)</td><td>Correct symbol, solution set described, number line correct, sample values tested</td><td>Correct inequality and solution set</td><td>Correct inequality symbol but solution set incomplete</td></tr>
+          <tr><td>Communication</td><td>Plan gives a clear conclusion supported by all equation and inequality work</td><td>Plan uses most numbers and reaches a conclusion</td><td>Plan is unclear or missing key numbers</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 8 Culminating Project · Version B · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function show(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      // Phase 1 — addition equation: raised + x = goal
+      function solvePhase1() {
+        const raised = +document.getElementById("f1-raised").value;
+        const goal = +document.getElementById("f1-goal").value;
+        if (isNaN(raised) || isNaN(goal) || raised < 0 || goal <= 0) {
+          show("p1-out", "<p>⚠️ Please enter valid amounts — raised must be 0 or more, goal must be positive.</p>");
+          return;
+        }
+        if (raised >= goal) {
+          show("p1-out", '<div class="big">Already met!</div>You have already raised $' + raised.toFixed(2) + ', which meets or exceeds the goal of $' + goal.toFixed(2) + '. x = 0 (or less). ✅');
+          return;
+        }
+        const x = goal - raised;
+        const verify = raised + x;
+        show("p1-out",
+          '<div class="big">x = $' + x.toFixed(2) + ' more needed</div>' +
+          'Equation: <strong>$' + raised.toFixed(2) + ' + x = $' + goal.toFixed(2) + '</strong><br>' +
+          'Step: Subtract $' + raised.toFixed(2) + ' from both sides → x = $' + goal.toFixed(2) + ' − $' + raised.toFixed(2) + ' = <strong>$' + x.toFixed(2) + '</strong><br>' +
+          'Substitution check: $' + raised.toFixed(2) + ' + $' + x.toFixed(2) + ' = <strong>$' + verify.toFixed(2) + '</strong>' +
+          (Math.abs(verify - goal) < 0.001 ? ' ✅ Verified!' : ' ❌ Something went wrong.'));
+      }
+
+      // Phase 2 — multiplication equation: n × price = target
+      function solvePhase2() {
+        const price = +document.getElementById("f2-price").value;
+        const target = +document.getElementById("f2-target").value;
+        if (isNaN(price) || isNaN(target) || price <= 0 || target <= 0) {
+          show("p2-out", "<p>⚠️ Please enter valid positive amounts for price and sales target.</p>");
+          return;
+        }
+        if (target % price !== 0) {
+          show("p2-out", "⚠️ $" + target + " is not evenly divisible by $" + price + ". Choose a target that divides evenly. For example, with price = $" + price + ", try target = $" + (price * Math.round(target / price)) + ".");
+          return;
+        }
+        const n = target / price;
+        const verify = n * price;
+        show("p2-out",
+          '<div class="big">' + n + ' items to sell</div>' +
+          'Equation: <strong>n × $' + price + ' = $' + target + '</strong><br>' +
+          'Step: Divide both sides by $' + price + ' → n = $' + target + ' ÷ $' + price + ' = <strong>' + n + '</strong><br>' +
+          'Substitution check: ' + n + ' × $' + price + ' = <strong>$' + verify + '</strong>' +
+          (verify === target ? ' ✅ Verified! Sell ' + n + ' items at $' + price + ' each.' : ' ❌ Something went wrong.'));
+      }
+
+      // Phase 3 — inequality and number line
+      function solvePhase3() {
+        const goal = +document.getElementById("f3-goal").value;
+        const sym = document.getElementById("f3-symbol").value;
+        if (isNaN(goal) || goal <= 0) {
+          show("p3-out", "<p>⚠️ Please enter a valid positive goal amount.</p>");
+          return;
+        }
+
+        const symDisplay = sym === ">=" ? "≥" : sym === ">" ? ">" : sym === "<=" ? "≤" : "<";
+        const isClosed = sym === ">=" || sym === "<=";
+        const isRight = sym === ">=" || sym === ">";
+
+        // Generate sample values
+        const samples = [];
+        for (let i = 0; i < 5; i++) {
+          const v = goal - 2 + i * 2; // span from goal-2 to goal+6
+          let satisfies = false;
+          if (sym === ">=") satisfies = v >= goal;
+          else if (sym === ">") satisfies = v > goal;
+          else if (sym === "<=") satisfies = v <= goal;
+          else satisfies = v < goal;
+          samples.push({ v, satisfies });
+        }
+
+        const sampleHtml = samples.map(s =>
+          'x = ' + s.v + ': ' + s.v + ' ' + symDisplay + ' ' + goal + ' → ' +
+          (s.satisfies ? '<span style="color:var(--green)">✅ True (satisfies)</span>' : '<span style="color:var(--coral)">❌ False (does not satisfy)</span>')
+        ).join('<br>');
+
+        show("p3-out",
+          '<div class="big">x ' + symDisplay + ' ' + goal + '</div>' +
+          'Solution set: all values of x that are ' +
+          (sym === ">=" ? 'greater than or equal to ' + goal :
+           sym === ">" ? 'strictly greater than ' + goal :
+           sym === "<=" ? 'less than or equal to ' + goal :
+           'strictly less than ' + goal) + '.<br>' +
+          'That is an infinite set: ' +
+          (isRight ? goal + ', ' + (goal+1) + ', ' + (goal+5) + ', ' + (goal+10) + ' … and on forever to the right.' :
+                     goal + ', ' + (goal-1) + ', ' + (goal-5) + ', ' + (goal-10) + ' … and on forever to the left.') +
+          '<br><br><strong>Sample value check:</strong><br>' + sampleHtml);
+
+        // Draw number-line SVG
+        drawNumberLine(goal, sym, symDisplay, isClosed, isRight);
+        document.getElementById("nline-wrap").style.display = "block";
+        updateProgress();
+      }
+
+      function drawNumberLine(goal, sym, symDisplay, isClosed, isRight) {
+        const W = 520, H = 80;
+        const cx = W / 2; // center x = goal on number line
+        const y = 44;
+        const tickH = 10;
+        const labelY = y + 22;
+        const arrowLen = 18;
+
+        // We show ticks from goal-4 to goal+4 (spacing 50px per unit up to max 4 ticks each side)
+        const tickSpacing = 50;
+        const ticks = [];
+        for (let i = -4; i <= 4; i++) {
+          ticks.push({ val: goal + i, x: cx + i * tickSpacing });
+        }
+
+        // Shaded region
+        const shadeColor = "#0d7a4e";
+        const shadeOpacity = "0.18";
+        let shadeX, shadeW;
+        if (isRight) {
+          shadeX = cx;
+          shadeW = cx + 4 * tickSpacing + arrowLen;
+        } else {
+          shadeX = cx - 4 * tickSpacing - arrowLen;
+          shadeW = cx;
+        }
+
+        // Circle fill
+        const circleFill = isClosed ? shadeColor : "#fff";
+        const circleStroke = shadeColor;
+
+        let svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Number line showing x ' + symDisplay + ' ' + goal + '">';
+
+        // Shade
+        svg += '<rect x="' + shadeX + '" y="' + (y - 6) + '" width="' + Math.abs(shadeW - shadeX) + '" height="12" fill="' + shadeColor + '" opacity="' + shadeOpacity + '"/>';
+
+        // Main line
+        svg += '<line x1="' + (cx - 4 * tickSpacing - arrowLen) + '" y1="' + y + '" x2="' + (cx + 4 * tickSpacing + arrowLen) + '" y2="' + y + '" stroke="#1a2633" stroke-width="2.5"/>';
+
+        // Arrow heads
+        svg += '<polygon points="' + (cx + 4 * tickSpacing + arrowLen) + ',' + y + ' ' + (cx + 4 * tickSpacing + arrowLen - 10) + ',' + (y - 5) + ' ' + (cx + 4 * tickSpacing + arrowLen - 10) + ',' + (y + 5) + '" fill="#1a2633"/>';
+        svg += '<polygon points="' + (cx - 4 * tickSpacing - arrowLen) + ',' + y + ' ' + (cx - 4 * tickSpacing - arrowLen + 10) + ',' + (y - 5) + ' ' + (cx - 4 * tickSpacing - arrowLen + 10) + ',' + (y + 5) + '" fill="#1a2633"/>';
+
+        // Ticks and labels (show only goal-2, goal, goal+2 to avoid crowding)
+        ticks.forEach(function(t) {
+          if (Math.abs(t.val - goal) <= 2) {
+            svg += '<line x1="' + t.x + '" y1="' + (y - tickH) + '" x2="' + t.x + '" y2="' + (y + tickH) + '" stroke="#1a2633" stroke-width="1.5"/>';
+            svg += '<text x="' + t.x + '" y="' + labelY + '" text-anchor="middle" font-size="13" font-family="sans-serif" fill="#1a2633">' + t.val + '</text>';
+          }
+        });
+
+        // Circle at goal
+        svg += '<circle cx="' + cx + '" cy="' + y + '" r="7" fill="' + circleFill + '" stroke="' + circleStroke + '" stroke-width="2.5"/>';
+
+        // Label above circle
+        svg += '<text x="' + cx + '" y="' + (y - 14) + '" text-anchor="middle" font-size="13" font-weight="700" font-family="sans-serif" fill="' + shadeColor + '">x ' + symDisplay + ' ' + goal + '</text>';
+
+        svg += '</svg>';
+        document.getElementById("nline-wrap").innerHTML = svg;
+      }
+
+      // Phase 4 — quick-check 5x = 60 → x = 12
+      function checkFinal() {
+        const v = +document.getElementById("check-final").value;
+        const fb = document.getElementById("final-fb");
+        if (document.getElementById("check-final").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
+        if (v === 12) {
+          fb.textContent = "✅ Correct! 5x = 60 → x = 60 ÷ 5 = 12. Verify: 5 × 12 = 60 ✓";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not yet. Divide both sides by 5: x = 60 ÷ 5. Try again.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      // Phase 4 — inequality reasoning check (keyword-based)
+      function checkIneq() {
+        const val = document.getElementById("ineq-check").value.trim().toLowerCase();
+        const fb = document.getElementById("ineq-fb");
+        if (val === "") {
+          fb.textContent = "⚠️ Please write your explanation before checking.";
+          fb.className = "feedback no";
+          return;
+        }
+        // Must mention both 8 and 5, and words like "true", "satisfies", "not", "false", "less"
+        const mentions8 = val.includes("8");
+        const mentions5 = val.includes("5");
+        const mentionsSatisfy = val.includes("satisf") || val.includes("true") || val.includes("yes");
+        const mentionsNot = val.includes("not") || val.includes("false") || val.includes("no") || val.includes("less");
+        if (mentions8 && mentions5 && mentionsSatisfy && mentionsNot) {
+          fb.textContent = "✅ Great reasoning! x = 8 satisfies x ≥ 8 (8 ≥ 8 is true), but x = 5 does not (5 < 8).";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Be more specific. Address both x = 8 and x = 5 and say whether each satisfies x ≥ 8.";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length; // max 3
+        const finalOk = document.getElementById("final-fb").classList.contains("ok") ? 1 : 0;
+        const ineqOk = document.getElementById("ineq-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length;
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        const decision = document.getElementById("decision").value.trim().length > 20 ? 1 : 0;
+        // max: 3 readouts + 1 finalOk + 1 ineqOk + 5 checks + 1 pitch + 1 decision = 12 → use 12
+        const total = readouts + finalOk + ineqOk + checks + pitch + decision;
+        const pct = Math.min(100, Math.round((total / 12) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+      document.getElementById("decision").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R2 · Lesson 1: Understand Fractions — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: understand numerator and denominator, model fractions as parts of a whole, and locate fractions on a number line. Builds toward 6.NS.1." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#c45a3c 0%, #d4952a 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      /* Fraction bar visuals */
+      .fbar-wrap { margin: 12px 0; }
+      .fbar-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+      .fbar { display: flex; height: 36px; border-radius: 8px; overflow: hidden; border: 2px solid var(--navy); width: 100%; max-width: 400px; }
+      .fbar-filled { background: var(--coral); }
+      .fbar-empty { background: #fff; }
+      .fbar > div { flex: 1; border-right: 1px solid var(--navy); }
+      .fbar > div:last-child { border-right: none; }
+      /* Number line */
+      .nline-wrap { margin: 14px 0; overflow-x: auto; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🍕</div>
+      <h1>Understand Fractions</h1>
+      <p>Learn what numerator and denominator mean, model fractions as parts of a whole, and place fractions on a number line.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R2 · Lesson 1</span>
+        <span class="tag">Builds 6.NS.1</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/remediation/">Bridge to Grade 6</a> /
+        <a href="/math/remediation/unit-r2/">Unit R2</a> / Lesson 1
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> In Grade 6 you will
+        divide fractions by fractions (6.NS.1) — for example, 3/4 ÷ 1/2.
+        Before you can divide them, you must understand what a fraction
+        <em>means</em>: the numerator counts pieces, and the denominator says
+        how many equal pieces make one whole.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>What Is a Fraction?</h2></div></div>
+
+        <p>A <strong>fraction</strong> names part of a whole. It is written as:</p>
+        <div style="text-align:center;font-size:28px;font-weight:800;margin:10px 0;">
+          <span style="display:inline-block;border-bottom:3px solid var(--navy);padding:2px 12px;">numerator</span>
+          <br>
+          <span style="display:inline-block;padding:2px 12px;">denominator</span>
+        </div>
+        <p>
+          <strong>Denominator</strong> = total number of equal parts the whole is cut into.<br>
+          <strong>Numerator</strong> = how many of those parts you are counting.
+        </p>
+
+        <div class="example">
+          <strong>Example 1 — 3/4 of a pizza</strong><br>
+          The pizza is cut into <strong>4</strong> equal slices (denominator = 4).
+          You have <strong>3</strong> slices (numerator = 3).<br>
+          <div class="fbar-wrap">
+            <div class="fbar-label">3 out of 4 parts shaded = 3/4</div>
+            <div class="fbar">
+              <div class="fbar-filled"></div>
+              <div class="fbar-filled"></div>
+              <div class="fbar-filled"></div>
+              <div class="fbar-empty"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <strong>Example 2 — Special fractions</strong><br>
+          • 5/5 = 1 whole (all 5 parts shaded — you have the entire thing).<br>
+          • 0/4 = 0 (zero parts shaded — you have nothing).<br>
+          • 4/4 = 1 &nbsp;|&nbsp; 3/3 = 1 &nbsp;|&nbsp; Any number over itself = 1.<br><br>
+          <strong>Fractions on a number line</strong> — place 3/4 between 0 and 1 by dividing the space into 4 equal jumps:
+          <div class="nline-wrap">
+            <svg width="380" height="56" viewBox="0 0 380 56" aria-label="Number line from 0 to 1 showing 3/4">
+              <!-- line -->
+              <line x1="20" y1="28" x2="360" y2="28" stroke="#0f2b3c" stroke-width="2.5"/>
+              <!-- ticks at 0, 1/4, 1/2, 3/4, 1 -->
+              <line x1="20"  y1="18" x2="20"  y2="38" stroke="#0f2b3c" stroke-width="2"/>
+              <line x1="105" y1="22" x2="105" y2="34" stroke="#5e6e7e" stroke-width="1.5"/>
+              <line x1="190" y1="22" x2="190" y2="34" stroke="#5e6e7e" stroke-width="1.5"/>
+              <line x1="275" y1="18" x2="275" y2="38" stroke="#c45a3c" stroke-width="2.5"/>
+              <line x1="360" y1="18" x2="360" y2="38" stroke="#0f2b3c" stroke-width="2"/>
+              <!-- labels -->
+              <text x="20"  y="52" text-anchor="middle" font-size="13" fill="#0f2b3c" font-weight="700">0</text>
+              <text x="105" y="52" text-anchor="middle" font-size="12" fill="#5e6e7e">1/4</text>
+              <text x="190" y="52" text-anchor="middle" font-size="12" fill="#5e6e7e">1/2</text>
+              <text x="275" y="14" text-anchor="middle" font-size="13" fill="#c45a3c" font-weight="800">3/4</text>
+              <text x="360" y="52" text-anchor="middle" font-size="13" fill="#0f2b3c" font-weight="700">1</text>
+              <!-- dot at 3/4 -->
+              <circle cx="275" cy="28" r="6" fill="#c45a3c"/>
+            </svg>
+          </div>
+          3/4 is 3 jumps out of 4 from 0 to 1.
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. The fraction bar below has some parts shaded. Which fraction does it show?</p>
+          <div class="fbar-wrap">
+            <div class="fbar">
+              <div class="fbar-filled"></div>
+              <div class="fbar-filled"></div>
+              <div class="fbar-empty"></div>
+              <div class="fbar-empty"></div>
+              <div class="fbar-empty"></div>
+            </div>
+          </div>
+          <div class="opts" data-mc="t1" data-ans="b">
+            <button class="opt" data-v="a">3/5</button>
+            <button class="opt" data-v="b">2/5</button>
+            <button class="opt" data-v="c">2/3</button>
+            <button class="opt" data-v="d">5/2</button>
+          </div>
+          <button class="btn" onclick="checkMC('t1')">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>Count the total parts (denominator) and the shaded parts (numerator). 2 parts are shaded out of 5 total → 2/5.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. Which point on the number line is at <strong>1/2</strong>?</p>
+          <div class="nline-wrap">
+            <svg width="340" height="56" viewBox="0 0 340 56" aria-label="Number line with labeled points A B C">
+              <line x1="20" y1="28" x2="320" y2="28" stroke="#0f2b3c" stroke-width="2.5"/>
+              <line x1="20"  y1="18" x2="20"  y2="38" stroke="#0f2b3c" stroke-width="2"/>
+              <line x1="320" y1="18" x2="320" y2="38" stroke="#0f2b3c" stroke-width="2"/>
+              <!-- A at 1/4 -->
+              <circle cx="95" cy="28" r="6" fill="#1a6fb5"/>
+              <text x="95" y="16" text-anchor="middle" font-size="13" fill="#1a6fb5" font-weight="800">A</text>
+              <!-- B at 1/2 -->
+              <circle cx="170" cy="28" r="6" fill="#0e8a7d"/>
+              <text x="170" y="16" text-anchor="middle" font-size="13" fill="#0e8a7d" font-weight="800">B</text>
+              <!-- C at 3/4 -->
+              <circle cx="245" cy="28" r="6" fill="#d4952a"/>
+              <text x="245" y="16" text-anchor="middle" font-size="13" fill="#d4952a" font-weight="800">C</text>
+              <text x="20"  y="50" text-anchor="middle" font-size="13" fill="#0f2b3c" font-weight="700">0</text>
+              <text x="320" y="50" text-anchor="middle" font-size="13" fill="#0f2b3c" font-weight="700">1</text>
+            </svg>
+          </div>
+          <div class="opts" data-mc="t2" data-ans="b">
+            <button class="opt" data-v="a">Point A</button>
+            <button class="opt" data-v="b">Point B</button>
+            <button class="opt" data-v="c">Point C</button>
+          </div>
+          <button class="btn" onclick="checkMC('t2')">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>1/2 is exactly halfway between 0 and 1. Point B sits right in the middle.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. A chocolate bar is broken into 8 equal pieces. Maria eats 3 pieces. What fraction of the bar did she eat?</p>
+          <div class="opts" data-mc="p3" data-ans="b">
+            <button class="opt" data-v="a">8/3</button>
+            <button class="opt" data-v="b">3/8</button>
+            <button class="opt" data-v="c">3/5</button>
+            <button class="opt" data-v="d">5/8</button>
+          </div>
+          <button class="btn" onclick="checkMC('p3')">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>Pieces eaten = numerator (3). Total pieces = denominator (8). Fraction eaten = 3/8.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. What is the value of the fraction where the numerator equals the denominator? (For example, 6/6 = ?)</p>
+          <div class="opts" data-mc="p4" data-ans="c">
+            <button class="opt" data-v="a">0</button>
+            <button class="opt" data-v="b">1/2</button>
+            <button class="opt" data-v="c">1</button>
+            <button class="opt" data-v="d">6</button>
+          </div>
+          <button class="btn" onclick="checkMC('p4')">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>6/6 means all 6 parts out of 6 total — that is the whole thing, which equals 1.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. How many equal parts does a number line from 0 to 1 need to show the fraction <strong>1/6</strong>?</p>
+          <input type="number" id="p5" placeholder="?" />
+          <button class="btn" onclick="checkNum('p5', 6)">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>The denominator tells you how many equal parts to divide the number line into. For 1/6, divide into 6 equal parts.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. A ribbon is cut into <strong>5</strong> equal pieces. You use <strong>4</strong> pieces. Which fraction shows how much ribbon you used?</p>
+          <div class="opts" data-mc="x6" data-ans="c">
+            <button class="opt" data-v="a">1/5</button>
+            <button class="opt" data-v="b">5/4</button>
+            <button class="opt" data-v="c">4/5</button>
+            <button class="opt" data-v="d">4/1</button>
+          </div>
+          <button class="btn" onclick="checkMC('x6')">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>Used = 4 (numerator). Total = 5 (denominator). Fraction used = 4/5.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. On a number line from 0 to 1, the fraction 3/4 is located how many equal jumps from 0 (out of 4 total jumps)?</p>
+          <input type="number" id="x7" placeholder="?" />
+          <button class="btn" onclick="checkNum('x7', 3)">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>3/4 means 3 jumps out of 4 equal jumps from 0 to 1. The numerator = the number of jumps.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r2/">← Unit R2 Home</a>
+        <a href="/math/remediation/unit-r2/lesson-2/">Next: Equivalent Fractions →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R2 · Lesson 1 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          b.classList.remove("right");
+          b.classList.remove("wrong");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+  </body>
+</html>

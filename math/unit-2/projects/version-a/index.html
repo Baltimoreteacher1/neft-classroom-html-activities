@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipe Remix Bakery — Unit 2 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 2 Fraction Division culminating project. Run a mini bakery by dividing fractions, whole numbers by fractions, and mixed numbers by fractions."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #2b1a0f;
+        --blue: #b5521a;
+        --blue-light: #fceee8;
+        --teal: #0e8a7d;
+        --teal-light: #e4f5f3;
+        --gold: #d4952a;
+        --gold-light: #fdf3e0;
+        --coral: #c45a3c;
+        --coral-light: #fdeee9;
+        --green: #2d874b;
+        --green-light: #e6f4eb;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 18px rgba(43, 26, 15, 0.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+
+      .phero {
+        background: linear-gradient(135deg, #7c2d12 0%, #b5521a 60%, #d4952a 100%);
+        color: #fff;
+        padding: 40px 24px 34px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 {
+        font-size: clamp(26px, 5vw, 40px);
+        margin: 10px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag {
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+      }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+      .intro-card {
+        background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--gold);
+        border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow);
+      }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .intro-card .scenario { font-size: 16px; color: var(--ink); }
+
+      .phase {
+        background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px; margin: 22px 0; box-shadow: var(--shadow);
+      }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num {
+        flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px;
+        background: var(--blue); color: #fff; font-weight: 800; font-size: 20px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .phase:nth-of-type(2) .phase-num { background: var(--teal); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+
+      .task {
+        background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0;
+      }
+      .task strong { color: var(--navy); }
+
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea {
+        width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px;
+        font-family: inherit; font-size: 15px; background: #fff;
+      }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; align-items: end; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } .grid4 { grid-template-columns: 1fr 1fr; } }
+
+      .frac-label { font-size: 13px; font-weight: 700; color: var(--muted); text-align: center; margin-bottom: 4px; }
+      .frac-divider { text-align: center; font-size: 22px; font-weight: 800; color: var(--ink); align-self: center; }
+
+      .btn {
+        background: var(--blue); color: #fff; border: none; border-radius: 10px;
+        padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--teal); }
+
+      .readout {
+        margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px;
+        background: var(--teal-light); border: 1px solid #bfe6e0; display: none;
+      }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      .printbtn { background: var(--navy); }
+      @media print {
+        .phero .deco, .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; }
+        .phase, .intro-card { box-shadow: none; break-inside: avoid; }
+        body { background: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🧁</div>
+      <h1>Recipe Remix Bakery</h1>
+      <p>You just opened a mini bakery and need to figure out portions, servings, and cuts — all using fraction division. Get your math right and the baked goods come out perfectly!</p>
+      <div class="tags">
+        <span class="tag gold">Unit 2 · Fraction Division</span>
+        <span class="tag">6.NS.1</span>
+        <span class="tag">Version A · Design &amp; Build</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-2/">Unit 2</a> / <a href="/math/unit-2/projects/">Projects</a> / Recipe Remix Bakery
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>🗺️ Your Mission</h2>
+        <p class="scenario">
+          Your bakery gets dough, ribbon, and pans in different amounts. To fill every order exactly,
+          you need to <strong>divide fractions</strong>. Work through four phases: fraction ÷ fraction
+          for mini-loaves, whole number ÷ fraction for servings, mixed number ÷ fraction for roll cuts,
+          and a real decision with a quick-check. Fill every box, hit <em>Calculate</em> or <em>Check</em>,
+          finish the menu card reflection and checklist — then print for your teacher.
+        </p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Fraction ÷ Fraction · 6.NS.1</div>
+            <h2>Portion Control: Mini-Loaf Pans</h2>
+          </div>
+        </div>
+        <p>A batch of dough fills a fraction of the pan. Each mini-loaf uses a smaller fraction of the pan. Divide to find how many mini-loaves you can bake.</p>
+        <div class="task">
+          <strong>Setup:</strong> You have <em>a/b</em> of a pan of dough. Each mini-loaf uses <em>c/d</em> of the pan.
+          How many mini-loaves? Use the rule: (a/b) ÷ (c/d) = (a×d) / (b×c), then simplify.
+        </div>
+        <div class="grid4">
+          <div>
+            <div class="frac-label">Dough — numerator (a)</div>
+            <input type="number" id="p1a" value="3" min="1" />
+          </div>
+          <div>
+            <div class="frac-label">Dough — denominator (b)</div>
+            <input type="number" id="p1b" value="4" min="1" />
+          </div>
+          <div>
+            <div class="frac-label">Per loaf — numerator (c)</div>
+            <input type="number" id="p1c" value="1" min="1" />
+          </div>
+          <div>
+            <div class="frac-label">Per loaf — denominator (d)</div>
+            <input type="number" id="p1d" value="8" min="1" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcPhase1()">Calculate mini-loaves</button>
+        <div class="readout" id="p1-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>To divide fractions, multiply by the reciprocal: (a/b) ÷ (c/d) = (a/b) × (d/c) = (a×d)/(b×c). Then find the GCF of the numerator and denominator to simplify. Example: (3/4) ÷ (1/8) = (3×8)/(4×1) = 24/4 = 6 mini-loaves.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Whole Number ÷ Unit Fraction · 6.NS.1</div>
+            <h2>Scaling Down: How Many Servings?</h2>
+          </div>
+        </div>
+        <p>A large batch makes a whole number of cups. Each serving is a unit fraction of a cup. Divide to find total servings — remember, dividing by a fraction means multiplying by its reciprocal!</p>
+        <div class="task">
+          <strong>Setup:</strong> You made a whole number of cups of frosting. Each cupcake gets
+          1/(d) cup. How many cupcakes can you frost?
+          Formula: whole ÷ (1/d) = whole × d.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="p2-cups">Total cups of frosting</label>
+            <input type="number" id="p2-cups" value="4" min="1" />
+          </div>
+          <div>
+            <label class="fld" for="p2-denom">Each cupcake uses 1 / (this number) cup</label>
+            <input type="number" id="p2-denom" value="3" min="1" />
+          </div>
+        </div>
+        <button class="btn alt" onclick="calcPhase2()">Calculate servings</button>
+        <div class="readout" id="p2-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>When you divide by a unit fraction 1/d, it is the same as multiplying by d. Think: how many 1/3-cup scoops fit in 4 cups? Each cup holds 3 scoops → 4 × 3 = 12. So 4 ÷ (1/3) = 12.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Mixed Number ÷ Fraction · 6.NS.1</div>
+            <h2>Roll Cuts: Mixed-Number Dough</h2>
+          </div>
+        </div>
+        <p>A roll of dough is a mixed number of feet long. You cut it into equal pieces of a given fraction of a foot each. Convert the mixed number to an improper fraction first, then divide.</p>
+        <div class="task">
+          <strong>Setup:</strong> A dough roll is <em>whole whole_num + frac_num/frac_den</em> feet long.
+          Each piece is cut to <em>c/d</em> of a foot. How many pieces?
+          Step 1: Convert mixed number → improper fraction. Step 2: Divide fraction by fraction.
+        </div>
+        <div class="grid4">
+          <div>
+            <div class="frac-label">Whole part</div>
+            <input type="number" id="p3w" value="2" min="0" />
+          </div>
+          <div>
+            <div class="frac-label">Fraction numerator</div>
+            <input type="number" id="p3n" value="1" min="0" />
+          </div>
+          <div>
+            <div class="frac-label">Fraction denominator</div>
+            <input type="number" id="p3d" value="2" min="1" />
+          </div>
+          <div>
+            <div class="frac-label">&nbsp;</div>
+            <div style="padding: 11px 0; font-weight:700; color: var(--muted);">feet total</div>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:10px;">
+          <div>
+            <label class="fld" for="p3cn">Cut size — numerator</label>
+            <input type="number" id="p3cn" value="3" min="1" />
+          </div>
+          <div>
+            <label class="fld" for="p3cd">Cut size — denominator</label>
+            <input type="number" id="p3cd" value="4" min="1" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcPhase3()">Calculate pieces</button>
+        <div class="readout" id="p3-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Convert the mixed number: multiply whole part by the denominator, add the numerator. Example: 2 1/2 → (2×2+1)/2 = 5/2. Then divide: (5/2) ÷ (3/4) = (5/2) × (4/3) = 20/6 = 10/3 = 3 R 1/3. You get 3 full pieces with 1/3 of a piece left over.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Real Decision + Quick Check · 6.NS.1</div>
+            <h2>Best Deal Decision</h2>
+          </div>
+        </div>
+        <p>Two supplier options — figure out which gives you more servings per cup, then prove your math with a quick-check problem.</p>
+        <div class="task">
+          <strong>Decision:</strong> Supplier A gives you 6 cups of batter and each muffin uses 2/3 cup.
+          How many muffins can you make? Type your answer below, then calculate to verify.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="p4-cups">Total cups (Supplier A)</label>
+            <input type="number" id="p4-cups" value="6" min="1" />
+          </div>
+          <div>
+            <label class="fld" for="p4-denom">Each muffin uses 2 / (denominator) cup</label>
+            <input type="number" id="p4-denom" value="3" min="1" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcPhase4()">Calculate Supplier A muffins</button>
+        <div class="readout" id="p4-out"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check:</strong> A jar holds 6 cups of batter. Each muffin uses 2/3 cup.
+          How many muffins can you make? (Hint: 6 ÷ 2/3 = ?)
+        </div>
+        <label class="fld" for="check-muffins">Your answer (number of muffins)</label>
+        <input type="number" id="check-muffins" placeholder="Type a number" />
+        <button class="btn alt" onclick="checkMuffins()">Check answer</button>
+        <div class="feedback" id="muffins-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Menu Card</h2>
+          </div>
+        </div>
+        <p>Write a short menu card (3–5 sentences) describing your bakery's production plan. Use the real numbers you calculated above to show you understand fraction division.</p>
+        <textarea id="pitch" placeholder="At the Recipe Remix Bakery, I can bake ___ mini-loaves from 3/4 of a pan of dough (3/4 ÷ 1/8 = ___). With ___ cups of frosting I can frost ___ cupcakes because ___ ÷ 1/___ = ___. My ___ feet of dough roll cuts into ___ full pieces of 3/4 ft each. From 6 cups of batter I can make ___ muffins because 6 ÷ 2/3 = ___."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Bakery Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I divided a fraction by a fraction to find mini-loaf portions.</li>
+          <li><input type="checkbox" /> I divided a whole number by a unit fraction to find servings.</li>
+          <li><input type="checkbox" /> I converted a mixed number to an improper fraction before dividing.</li>
+          <li><input type="checkbox" /> I answered the quick-check problem (6 ÷ 2/3 = 9).</li>
+          <li><input type="checkbox" /> My menu card uses all four calculated results.</li>
+        </ul>
+        <button class="btn printbtn" onclick="window.print()">🖨️ Print my menu card</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Fraction ÷ Fraction</td><td>Correct answer, simplified fraction, and decimal shown with reasoning</td><td>Correct answer and simplified fraction</td><td>Set up correctly but computation error</td></tr>
+          <tr><td>Whole ÷ Fraction</td><td>Correct servings with explanation of why multiplying by reciprocal works</td><td>Correct number of servings</td><td>Attempted with a minor error</td></tr>
+          <tr><td>Mixed Numbers</td><td>Converted to improper fraction correctly, divided correctly, interpreted remainder</td><td>Correct number of pieces</td><td>Conversion or division has an error</td></tr>
+          <tr><td>Communication</td><td>Menu card justifies every calculation with real numbers and units</td><td>Menu card uses most numbers correctly</td><td>Menu card is unclear or missing key values</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 2 Culminating Project · Version A · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function gcd(a, b) { a = Math.abs(Math.round(a)); b = Math.abs(Math.round(b)); while (b) { [a, b] = [b, a % b]; } return a || 1; }
+
+      function simplify(num, den) {
+        if (den === 0) return { num: 0, den: 1 };
+        const g = gcd(Math.abs(num), Math.abs(den));
+        return { num: num / g, den: den / g };
+      }
+
+      function fracStr(num, den) {
+        const s = simplify(num, den);
+        if (s.den === 1) return String(s.num);
+        return s.num + "/" + s.den;
+      }
+
+      function mixedStr(num, den) {
+        const s = simplify(num, den);
+        if (s.den === 1) return String(s.num);
+        const whole = Math.floor(s.num / s.den);
+        const rem = s.num % s.den;
+        if (whole === 0) return s.num + "/" + s.den;
+        if (rem === 0) return String(whole);
+        return whole + " and " + rem + "/" + s.den;
+      }
+
+      function show(id, html) { const el = document.getElementById(id); el.innerHTML = html; el.classList.add("show"); updateProgress(); }
+
+      function calcPhase1() {
+        const a = +document.getElementById("p1a").value;
+        const b = +document.getElementById("p1b").value;
+        const c = +document.getElementById("p1c").value;
+        const d = +document.getElementById("p1d").value;
+        if (isNaN(a) || a <= 0 || isNaN(b) || b <= 0 || isNaN(c) || c <= 0 || isNaN(d) || d <= 0) { show("p1-out", "<p>⚠️ Please enter valid positive whole numbers for all four fraction parts.</p>"); return; }
+        // (a/b) ÷ (c/d) = (a*d)/(b*c)
+        const rNum = a * d;
+        const rDen = b * c;
+        const decimal = rNum / rDen;
+        const frac = fracStr(rNum, rDen);
+        const mixed = mixedStr(rNum, rDen);
+        show("p1-out",
+          '<div class="big">' + mixed + ' mini-loaves</div>' +
+          '(' + a + '/' + b + ') ÷ (' + c + '/' + d + ') = (' + a + '×' + d + ') / (' + b + '×' + c + ') = ' + rNum + '/' + rDen +
+          (frac !== rNum + '/' + rDen ? ' = <strong>' + frac + '</strong>' : '') +
+          ' = <strong>' + mixed + '</strong>' +
+          '<br>As a decimal: <strong>' + decimal.toFixed(4).replace(/\.?0+$/, '') + '</strong> mini-loaves' +
+          (Number.isInteger(decimal) ? ' ✅ A perfect whole number — no dough left over!' : ' (you get ' + Math.floor(decimal) + ' full loaves with a little dough remaining)'));
+      }
+
+      function calcPhase2() {
+        const cups = +document.getElementById("p2-cups").value;
+        const d = +document.getElementById("p2-denom").value;
+        if (isNaN(cups) || cups <= 0 || isNaN(d) || d <= 0) { show("p2-out", "<p>⚠️ Please enter valid positive numbers for cups and denominator.</p>"); return; }
+        // whole ÷ (1/d) = whole * d
+        const result = cups * d;
+        show("p2-out",
+          '<div class="big">' + result + ' cupcakes</div>' +
+          cups + ' ÷ (1/' + d + ') = ' + cups + ' × ' + d + ' = <strong>' + result + '</strong> cupcakes. ' +
+          'Each cup holds ' + d + ' servings of 1/' + d + ' cup each, and you have ' + cups + ' cups, so ' + cups + ' × ' + d + ' = ' + result + ' cupcakes total. ✅');
+      }
+
+      function calcPhase3() {
+        const w = +document.getElementById("p3w").value;
+        const n = +document.getElementById("p3n").value;
+        const d = +document.getElementById("p3d").value;
+        const cn = +document.getElementById("p3cn").value;
+        const cd = +document.getElementById("p3cd").value;
+        if (isNaN(w) || w < 0 || isNaN(n) || n < 0 || isNaN(d) || d <= 0 || isNaN(cn) || cn <= 0 || isNaN(cd) || cd <= 0) { show("p3-out", "<p>⚠️ Please enter valid numbers (whole/fraction parts ≥ 0, denominators and cut size must be positive).</p>"); return; }
+        // Mixed number: (w*d + n) / d
+        const mixNum = w * d + n;
+        const mixDen = d;
+        // Divide: (mixNum/mixDen) ÷ (cn/cd) = (mixNum*cd)/(mixDen*cn)
+        const rNum = mixNum * cd;
+        const rDen = mixDen * cn;
+        const decimal = rNum / rDen;
+        const fullPieces = Math.floor(decimal);
+        const remainNum = rNum - fullPieces * rDen;
+        const s = simplify(rNum, rDen);
+        show("p3-out",
+          '<div class="big">' + mixedStr(rNum, rDen) + ' pieces</div>' +
+          'Step 1 — Convert mixed number: ' + w + ' and ' + n + '/' + d + ' = (' + w + '×' + d + '+' + n + ')/' + d + ' = <strong>' + mixNum + '/' + mixDen + '</strong><br>' +
+          'Step 2 — Divide: (' + mixNum + '/' + mixDen + ') ÷ (' + cn + '/' + cd + ') = (' + mixNum + '×' + cd + ')/(' + mixDen + '×' + cn + ') = ' + rNum + '/' + rDen +
+          (fracStr(rNum, rDen) !== rNum + '/' + rDen ? ' = <strong>' + fracStr(rNum, rDen) + '</strong>' : '') +
+          '<br>You get <strong>' + fullPieces + ' full pieces</strong>' +
+          (remainNum > 0 ? ' with <strong>' + fracStr(remainNum, rDen) + '</strong> of a piece left over.' : ' exactly — no waste! ✅'));
+      }
+
+      function calcPhase4() {
+        const cups = +document.getElementById("p4-cups").value;
+        const d = +document.getElementById("p4-denom").value;
+        if (isNaN(cups) || cups <= 0 || isNaN(d) || d <= 0) { show("p4-out", "<p>⚠️ Please enter valid positive numbers for cups and denominator.</p>"); return; }
+        // cups ÷ (2/d) = cups * d / 2
+        const rNum = cups * d;
+        const rDen = 2;
+        const decimal = rNum / rDen;
+        const frac = fracStr(rNum, rDen);
+        show("p4-out",
+          '<div class="big">' + frac + ' muffins</div>' +
+          cups + ' ÷ (2/' + d + ') = ' + cups + ' × (' + d + '/2) = ' + rNum + '/2 = <strong>' + frac + '</strong> = <strong>' + decimal + '</strong> muffins. ' +
+          (Number.isInteger(decimal) ? '✅ That is a whole number — every cup of batter is used!' : '(' + Math.floor(decimal) + ' full muffins with some batter left over)'));
+      }
+
+      function checkMuffins() {
+        const v = +document.getElementById("check-muffins").value;
+        const fb = document.getElementById("muffins-fb");
+        if (isNaN(v) || document.getElementById("check-muffins").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
+        if (v === 9) { fb.textContent = "✅ Correct! 6 ÷ (2/3) = 6 × (3/2) = 18/2 = 9 muffins."; fb.className = "feedback ok"; }
+        else { fb.textContent = "❌ Not yet. Try: 6 ÷ (2/3) = 6 × (3/2) = 18/2 = ?"; fb.className = "feedback no"; }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length;
+        const muffinsOk = document.getElementById("muffins-fb").classList.contains("ok") ? 1 : 0;
+        const checks = document.querySelectorAll('#checklist input:checked').length;
+        const pitch = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        const total = readouts + muffinsOk + checks + pitch; // max 4 + 1 + 5 + 1 = 11
+        const pct = Math.min(100, Math.round((total / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

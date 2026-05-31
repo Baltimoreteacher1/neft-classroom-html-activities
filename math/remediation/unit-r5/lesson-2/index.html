@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R5 · Lesson 2: Rates &amp; Unit Rates — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: find unit rates (miles per hour, cost per item) and use them to make better-buy comparisons. Builds toward Grade 6 ratio and rate concepts (6.RP.2)." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#0e8a7d 0%, #1a6fb5 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+      .compare-card { border: 2px solid var(--line); border-radius: 12px; padding: 14px; background: #fff; text-align: center; }
+      .compare-card.winner { border-color: var(--green); background: var(--green-light); }
+      .compare-card .price { font-size: 28px; font-weight: 800; color: var(--navy); }
+      .compare-card .unit { font-size: 13px; color: var(--muted); margin-top: 4px; }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">📐</div>
+      <h1>Rates &amp; Unit Rates</h1>
+      <p>Find unit rates like miles per hour and cost per item, then use them to make better-buy decisions.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R5 · Lesson 2</span>
+        <span class="tag">Builds 6.RP.2</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/remediation/">Bridge to Grade 6</a> /
+        <a href="/math/remediation/unit-r5/">Unit R5</a> / Lesson 2
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> In Grade 6 you work with
+        unit rates like unit pricing and constant speed (6.RP.2) and use ratio and
+        rate reasoning to solve real-world problems (6.RP.3). Finding a unit rate
+        — dividing to get "per 1" — is the key skill behind all of that.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>Rates &amp; Unit Rates</h2></div></div>
+
+        <p>A <strong>rate</strong> compares two quantities with <em>different units</em>. A <strong>unit rate</strong> tells you the amount for exactly <em>1</em> of one quantity — found by dividing.</p>
+
+        <div class="example">
+          <strong>Example 1 — Speed:</strong><br>
+          A car travels 120 miles in 2 hours. What is the unit rate (miles per 1 hour)?<br><br>
+          Unit rate = total miles ÷ total hours = 120 ÷ 2 = <strong>60 miles per hour</strong>
+        </div>
+
+        <div class="example">
+          <strong>Example 2 — Unit Price:</strong><br>
+          A pack of 3 pens costs $6.00. What is the cost per pen?<br><br>
+          Unit price = $6.00 ÷ 3 pens = <strong>$2.00 per pen</strong>
+        </div>
+
+        <p><strong>Better-buy comparisons:</strong> Find the unit price for each option. The smaller unit price is the better deal.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div>Store A</div>
+            <div class="price">$8</div>
+            <div>for 4 items</div>
+            <div class="unit">$8 ÷ 4 = $2.00 each</div>
+          </div>
+          <div class="compare-card winner">
+            <div>Store B ✅ Better Deal</div>
+            <div class="price">$9</div>
+            <div>for 6 items</div>
+            <div class="unit">$9 ÷ 6 = $1.50 each</div>
+          </div>
+        </div>
+        <p>Store B's unit price ($1.50) is lower, so it's the better buy even though the total is higher.</p>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. A cyclist rides 45 miles in 3 hours. What is the unit rate in miles per hour?</p>
+          <input type="number" id="t1" placeholder="?" />
+          <button class="btn" onclick="checkNum('t1', 15)">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>Unit rate = total miles ÷ total hours = 45 ÷ 3 = 15 miles per hour.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. A store sells 5 notebooks for $10.00. What is the cost per notebook (in dollars)?</p>
+          <input type="number" id="t2" placeholder="?" />
+          <button class="btn" onclick="checkNum('t2', 2)">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>Cost per notebook = $10.00 ÷ 5 = $2.00 each.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. A car drives 180 miles in 3 hours. What is the unit rate in miles per hour?</p>
+          <input type="number" id="p3" placeholder="?" />
+          <button class="btn" onclick="checkNum('p3', 60)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>180 ÷ 3 = 60 miles per hour.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. A pack of 8 juice boxes costs $4.00. What is the cost per juice box (in dollars)?</p>
+          <input type="number" id="p4" placeholder="?" />
+          <button class="btn" onclick="checkNum('p4', 0.5)">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>$4.00 ÷ 8 = $0.50 per juice box.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. Store X: 6 apples for $3.00. Store Y: 9 apples for $3.60. Which store has the better unit price?</p>
+          <div class="opts" data-mc="p5" data-ans="b">
+            <button class="opt" data-v="a">Store X ($0.50 per apple)</button>
+            <button class="opt" data-v="b">Store Y ($0.40 per apple)</button>
+            <button class="opt" data-v="c">They are the same price</button>
+          </div>
+          <button class="btn" onclick="checkMC('p5')">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>Store X: $3.00 ÷ 6 = $0.50 each. Store Y: $3.60 ÷ 9 = $0.40 each. $0.40 &lt; $0.50, so Store Y is cheaper per apple.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. A printer prints 56 pages in 8 minutes. How many pages does it print per minute?</p>
+          <input type="number" id="x6" placeholder="?" />
+          <button class="btn" onclick="checkNum('x6', 7)">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>56 ÷ 8 = 7 pages per minute.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. Brand A: 4 granola bars for $2.00. Brand B: 6 granola bars for $2.40. Which brand is the better buy?</p>
+          <div class="opts" data-mc="x7" data-ans="b">
+            <button class="opt" data-v="a">Brand A ($0.50 per bar)</button>
+            <button class="opt" data-v="b">Brand B ($0.40 per bar)</button>
+            <button class="opt" data-v="c">Both cost the same per bar</button>
+          </div>
+          <button class="btn" onclick="checkMC('x7')">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>Brand A: $2.00 ÷ 4 = $0.50 each. Brand B: $2.40 ÷ 6 = $0.40 each. Brand B is cheaper per bar.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r5/lesson-1/">← Lesson 1: Ratios</a>
+        <a href="/math/remediation/unit-r5/lesson-3/">Next: Perimeter &amp; Area →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R5 · Lesson 2 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          b.classList.remove("right");
+          b.classList.remove("wrong");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phone Plan Showdown — Unit 9 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 9 Two-Variable Relationships culminating project. Investigate phone plans using dependent/independent variables, equations y = kx, tables, and comparisons."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb;
+        --ink: #1a2633; --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #ffffff;
+        --radius: 16px; --shadow: 0 4px 18px rgba(15,43,60,.1);
+        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg, #0e8a7d 0%, #1a3a6b 100%); color: #fff; padding: 40px 24px 34px; text-align: center; position: relative; overflow: hidden; }
+      .phero .deco { font-size: 56px; line-height: 1; }
+      .phero h1 { font-size: clamp(26px,5vw,40px); margin: 10px 0 8px; letter-spacing: -0.02em; }
+      .phero p { max-width: 620px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 17px; }
+      .tags { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .intro-card { background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--teal); border-radius: var(--radius); padding: 22px 24px; margin: 26px 0; box-shadow: var(--shadow); }
+      .intro-card h2 { margin: 0 0 8px; font-size: 20px; }
+      .phase { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+      .phase-num { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px; background: var(--teal); color: #fff; font-weight: 800; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+      .phase:nth-of-type(2) .phase-num { background: var(--blue); }
+      .phase:nth-of-type(3) .phase-num { background: var(--gold); color: #2a1c00; }
+      .phase:nth-of-type(4) .phase-num { background: var(--coral); }
+      .phase h2 { margin: 0; font-size: 21px; }
+      .phase .skill { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .phase > p { color: var(--muted); }
+      .task { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 16px 0; }
+      .task strong { color: var(--navy); }
+      label.fld { display: block; font-weight: 700; font-size: 14px; margin: 14px 0 6px; }
+      input[type="number"], input[type="text"], select, textarea { width: 100%; padding: 11px 13px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; background: #fff; }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
+      textarea { resize: vertical; min-height: 80px; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 11px 20px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit; margin-top: 14px; }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.alt { background: var(--blue); }
+      .readout { margin-top: 16px; border-radius: 12px; padding: 16px 18px; font-size: 15px; background: var(--teal-light); border: 1px solid #bfe6e0; display: none; }
+      .readout.show { display: block; }
+      .readout .big { font-size: 28px; font-weight: 800; color: var(--teal); }
+      .feedback { margin-top: 10px; font-weight: 700; min-height: 22px; }
+      .feedback.ok { color: var(--green); }
+      .feedback.no { color: var(--coral); }
+      .hintbox { margin-top: 12px; }
+      .hintbox summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .hintbox p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-size: 13px; }
+      .rubric td:first-child { font-weight: 700; width: 30%; }
+      .checklist { list-style: none; padding: 0; margin: 12px 0 0; }
+      .checklist li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+      .checklist input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--green)); transition: width .4s; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 40px; }
+      table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 15px; }
+      table.data-table th, table.data-table td { border: 1px solid var(--line); padding: 9px 14px; text-align: center; }
+      table.data-table th { background: var(--teal-light); font-weight: 700; color: var(--navy); }
+      table.data-table tr:nth-child(even) td { background: #f0faf8; }
+      @media print { .progress-wrap, .btn, .breadcrumb, .hintbox { display: none !important; } .phase, .intro-card { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">📱</div>
+      <h1>Phone Plan Showdown</h1>
+      <p>Your family is choosing between two phone plans. Use two-variable relationships to model the total cost over time, compare the plans with equations, and recommend the better deal.</p>
+      <div class="tags">
+        <span class="tag gold">Unit 9 · Two-Variable Relationships</span>
+        <span class="tag">6.EE.9</span>
+        <span class="tag">Version B · Real-World Investigation</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/unit-9/">Unit 9</a> / <a href="/math/unit-9/projects/">Projects</a> / Phone Plan Showdown
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Project progress: <span id="pct">0</span>% complete</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="intro-card">
+        <h2>📋 Your Mission</h2>
+        <p>Your family is comparing two monthly phone plans — Plan A and Plan B. Both charge the same amount every month (no activation fees), making this a proportional relationship perfect for y = kx. Work through four phases: identify the variables, write equations, build a cost table, and compare the plans to give a recommendation. Use your real numbers throughout.</p>
+      </div>
+
+      <!-- PHASE 1 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">1</div>
+          <div>
+            <div class="skill">Independent &amp; Dependent Variables · 6.EE.9</div>
+            <h2>Identify Your Variables</h2>
+          </div>
+        </div>
+        <p>Before writing any equation, decide what changes and what depends on what. Set Plan A's monthly cost and write its equation.</p>
+        <div class="task">
+          <strong>Think it through:</strong> Months is the <em>independent variable</em> — you choose how many months to subscribe. Total cost is the <em>dependent variable</em> — it depends on how many months you pay.
+        </div>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="k-plan">Plan A monthly cost in $ (this is k)</label>
+            <input type="number" id="k-plan" value="25" min="1" max="500" />
+          </div>
+          <div>
+            <label class="fld" for="start-cost">Cost at month 0 (no months paid)</label>
+            <input type="number" id="start-cost" value="0" min="0" readonly style="background:#f0f4f8;color:var(--muted);" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcEquation()">Write Plan A's equation</button>
+        <div class="readout" id="eq-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>The independent variable x = months. The dependent variable y = total cost in dollars. If the monthly charge is constant, that amount is k. The equation y = kx means: total cost = monthly rate × number of months. At month 0, you have paid $0 (y = k × 0 = 0).</p>
+        </details>
+      </section>
+
+      <!-- PHASE 2 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">2</div>
+          <div>
+            <div class="skill">Tables of Values · 6.EE.9</div>
+            <h2>Build a Cost Table</h2>
+          </div>
+        </div>
+        <p>A table lets you see the total cost at a glance for each month. Generate Plan A's cost table for months 1 through 6 using your rate from Phase 1.</p>
+        <div class="task">
+          <strong>Remember:</strong> For y = kx, substitute each month number for x and multiply. The total cost grows by k every month — that constant increase is what makes this proportional.
+        </div>
+        <button class="btn alt" onclick="calcTable()">Generate cost table</button>
+        <div class="readout" id="table-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>If k = 25: month 1 → 25 × 1 = $25; month 2 → 25 × 2 = $50; month 3 → 25 × 3 = $75, and so on. Each row increases by $25 because k = 25.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 3 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">3</div>
+          <div>
+            <div class="skill">Compare Two Relationships · 6.EE.9</div>
+            <h2>Compare Plan A vs. Plan B</h2>
+          </div>
+        </div>
+        <p>Enter Plan B's monthly rate and choose a number of months to compare. The calculator will show the total cost for each plan and tell you which is cheaper — and by how much.</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="k-plan-a2">Plan A monthly cost ($)</label>
+            <input type="number" id="k-plan-a2" value="25" min="1" />
+          </div>
+          <div>
+            <label class="fld" for="k-plan-b">Plan B monthly cost ($)</label>
+            <input type="number" id="k-plan-b" value="18" min="1" />
+          </div>
+          <div>
+            <label class="fld" for="compare-months">Compare at month (x)</label>
+            <input type="number" id="compare-months" value="6" min="1" />
+          </div>
+        </div>
+        <button class="btn" onclick="calcCompare()">Compare the plans</button>
+        <div class="readout" id="compare-out"></div>
+        <details class="hintbox">
+          <summary>Need a hint?</summary>
+          <p>Calculate each plan's cost at x months: Plan A total = k<sub>A</sub> × x, Plan B total = k<sub>B</sub> × x. Subtract to find the difference. The lower total is the cheaper plan at that point in time.</p>
+        </details>
+      </section>
+
+      <!-- PHASE 4 -->
+      <section class="phase" data-phase>
+        <div class="phase-head">
+          <div class="phase-num">4</div>
+          <div>
+            <div class="skill">Decision &amp; Equation Check · 6.EE.9</div>
+            <h2>Make Your Recommendation</h2>
+          </div>
+        </div>
+        <p>Think about the long-term picture. Use the equations to find the total cost at 12 months and decide which plan your family should choose.</p>
+        <div class="grid2">
+          <div>
+            <label class="fld" for="rec-a">Plan A monthly cost ($)</label>
+            <input type="number" id="rec-a" value="25" min="1" />
+          </div>
+          <div>
+            <label class="fld" for="rec-b">Plan B monthly cost ($)</label>
+            <input type="number" id="rec-b" value="18" min="1" />
+          </div>
+        </div>
+        <button class="btn alt" onclick="calcRecommend()">Calculate 12-month totals</button>
+        <div class="readout" id="rec-out"></div>
+
+        <div class="task" style="margin-top:18px;">
+          <strong>Quick check:</strong> If y = 12x, what is y when x = 5?
+        </div>
+        <label class="fld" for="check-quick">Your answer (total cost in $)</label>
+        <input type="number" id="check-quick" placeholder="Type a number" />
+        <button class="btn" onclick="checkQuick()">Check answer</button>
+        <div class="feedback" id="quick-fb"></div>
+      </section>
+
+      <!-- DELIVERABLE -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--green);">★</div>
+          <div>
+            <div class="skill">Final Deliverable</div>
+            <h2>Write Your Plan Recommendation</h2>
+          </div>
+        </div>
+        <p>Write a 3–5 sentence recommendation memo to your family. Use your equations, table values, and comparison numbers to support your choice.</p>
+        <textarea id="pitch" placeholder="The independent variable in this situation is ___ (months) and the dependent variable is ___ (total cost). Plan A's equation is y = ___x and Plan B's equation is y = ___x. After ___ months, Plan A costs $___ and Plan B costs $___. I recommend Plan ___ because ___..."></textarea>
+
+        <h3 style="margin:22px 0 6px;">Investigation Checklist</h3>
+        <ul class="checklist" id="checklist">
+          <li><input type="checkbox" /> I identified the independent variable (months, x) and dependent variable (total cost, y).</li>
+          <li><input type="checkbox" /> I wrote the equation y = kx for Plan A using the monthly rate k.</li>
+          <li><input type="checkbox" /> I completed the cost table for months 1 through 6.</li>
+          <li><input type="checkbox" /> I compared both plans at a specific number of months using equations.</li>
+          <li><input type="checkbox" /> My recommendation clearly states which plan is better and why, using real numbers.</li>
+        </ul>
+        <button class="btn" style="background:var(--navy);" onclick="window.print()">🖨️ Print my recommendation</button>
+      </section>
+
+      <!-- RUBRIC -->
+      <section class="phase">
+        <div class="phase-head">
+          <div class="phase-num" style="background:var(--navy);">✓</div>
+          <div>
+            <div class="skill">How You Are Scored</div>
+            <h2>Project Rubric</h2>
+          </div>
+        </div>
+        <table class="rubric">
+          <tr><th>Category</th><th>4 — Expert</th><th>3 — Proficient</th><th>2 — Developing</th></tr>
+          <tr><td>Identifying Variables</td><td>Independent and dependent variables named correctly with real-world justification</td><td>Both variables correctly identified</td><td>One variable correct or labels swapped</td></tr>
+          <tr><td>Writing the Equation</td><td>Equation y = kx written correctly; k identified as monthly rate in context</td><td>Equation is correct</td><td>Equation has minor error or k not explained</td></tr>
+          <tr><td>Table &amp; Comparison</td><td>All cost table values correct; both plans compared accurately at chosen month</td><td>Table correct; comparison is accurate</td><td>Table partially correct or comparison attempted</td></tr>
+          <tr><td>Communication</td><td>Recommendation clearly justified with equations and specific dollar amounts</td><td>Recommendation uses most numbers</td><td>Recommendation unclear or missing key data</td></tr>
+        </table>
+      </section>
+
+      <p class="footer">Neft Teacher · Unit 9 Culminating Project · Version B · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function show(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add("show");
+        updateProgress();
+      }
+
+      function getK() {
+        return Math.max(1, +document.getElementById("k-plan").value || 25);
+      }
+
+      function calcEquation() {
+        const kRaw = +document.getElementById("k-plan").value;
+        if (isNaN(kRaw) || kRaw <= 0) {
+          show("eq-out", "<p>⚠️ Please enter a valid positive monthly cost.</p>");
+          return;
+        }
+        const k = getK();
+        show("eq-out",
+          '<div class="big">y = ' + k + 'x</div>' +
+          '<strong>Independent variable (x):</strong> months &nbsp;|&nbsp; <strong>Dependent variable (y):</strong> total cost ($)<br>' +
+          'Every month you pay <strong>$' + k + '</strong>. ' +
+          'After x months your total cost is y = ' + k + ' &times; x.');
+      }
+
+      function calcTable() {
+        const kRaw = +document.getElementById("k-plan").value;
+        if (isNaN(kRaw) || kRaw <= 0) {
+          show("table-out", "<p>⚠️ Please enter a valid positive monthly cost first.</p>");
+          return;
+        }
+        const k = getK();
+        let rows = '';
+        for (let x = 1; x <= 6; x++) {
+          const y = k * x;
+          rows += '<tr><td>' + x + '</td><td>y = ' + k + ' &times; ' + x + '</td><td><strong>$' + y.toFixed(2) + '</strong></td></tr>';
+        }
+        show("table-out",
+          '<table class="data-table">' +
+          '<tr><th>Month (x)</th><th>Equation</th><th>Total Cost (y)</th></tr>' +
+          rows +
+          '</table>' +
+          '<p style="margin:10px 0 0;font-size:13px;color:var(--muted);">&#x2705; Cost increases by <strong>$' + k + '</strong> each month — the constant rate of change.</p>');
+      }
+
+      function calcCompare() {
+        const kaRaw = +document.getElementById("k-plan-a2").value;
+        const kbRaw = +document.getElementById("k-plan-b").value;
+        const xRaw  = +document.getElementById("compare-months").value;
+        if (isNaN(kaRaw) || isNaN(kbRaw) || isNaN(xRaw) || kaRaw <= 0 || kbRaw <= 0 || xRaw <= 0) {
+          show("compare-out", "<p>⚠️ Please enter valid positive numbers for both plan costs and months.</p>");
+          return;
+        }
+        const ka = Math.max(1, +document.getElementById("k-plan-a2").value || 25);
+        const kb = Math.max(1, +document.getElementById("k-plan-b").value || 18);
+        const x  = Math.max(1, +document.getElementById("compare-months").value || 6);
+        const ya = ka * x;
+        const yb = kb * x;
+        const diff = Math.abs(ya - yb);
+        const cheaper = ya < yb ? 'Plan A' : ya > yb ? 'Plan B' : 'Both plans cost the same';
+        show("compare-out",
+          '<div class="big">' + cheaper + (ya !== yb ? ' is cheaper' : '') + '</div>' +
+          'At month ' + x + ':<br>' +
+          'Plan A (k = $' + ka + '/mo): &nbsp;y = ' + ka + ' &times; ' + x + ' = <strong>$' + ya.toFixed(2) + '</strong><br>' +
+          'Plan B (k = $' + kb + '/mo): &nbsp;y = ' + kb + ' &times; ' + x + ' = <strong>$' + yb.toFixed(2) + '</strong><br>' +
+          (ya !== yb ? cheaper + ' saves your family <strong>$' + diff.toFixed(2) + '</strong> at month ' + x + '.' : 'Both equations have the same k value, so costs are equal.'));
+      }
+
+      function calcRecommend() {
+        const kaRaw = +document.getElementById("rec-a").value;
+        const kbRaw = +document.getElementById("rec-b").value;
+        if (isNaN(kaRaw) || isNaN(kbRaw) || kaRaw <= 0 || kbRaw <= 0) {
+          show("rec-out", "<p>⚠️ Please enter valid positive monthly costs for both plans.</p>");
+          return;
+        }
+        const ka = Math.max(1, +document.getElementById("rec-a").value || 25);
+        const kb = Math.max(1, +document.getElementById("rec-b").value || 18);
+        const ya12 = ka * 12;
+        const yb12 = kb * 12;
+        const diff12 = Math.abs(ya12 - yb12);
+        const winner = ya12 < yb12 ? 'Plan A' : ya12 > yb12 ? 'Plan B' : 'Both plans';
+        show("rec-out",
+          '<div class="big">' + (ya12 !== yb12 ? winner + ' wins at 12 months!' : 'Same cost at 12 months') + '</div>' +
+          'Plan A over 12 months: y = ' + ka + ' &times; 12 = <strong>$' + ya12.toFixed(2) + '</strong><br>' +
+          'Plan B over 12 months: y = ' + kb + ' &times; 12 = <strong>$' + yb12.toFixed(2) + '</strong><br>' +
+          (ya12 !== yb12 ? winner + ' saves <strong>$' + diff12.toFixed(2) + '</strong> over a full year. On a graph, ' + winner.toLowerCase() + ' has the lower (flatter) line.' : 'The two lines on a graph would be identical.'));
+      }
+
+      function checkQuick() {
+        const v = +document.getElementById("check-quick").value;
+        const fb = document.getElementById("quick-fb");
+        if (document.getElementById("check-quick").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
+        if (v === 60) {
+          fb.textContent = "✅ Correct! y = 12 × 5 = $60.";
+          fb.className = "feedback ok";
+        } else {
+          fb.textContent = "❌ Not yet. Substitute x = 5 into y = 12x: 12 × 5 = ?";
+          fb.className = "feedback no";
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const readouts = document.querySelectorAll(".readout.show").length;
+        const quickOk = document.getElementById("quick-fb").classList.contains("ok") ? 1 : 0;
+        const checks  = document.querySelectorAll('#checklist input:checked').length;
+        const pitch   = document.getElementById("pitch").value.trim().length > 20 ? 1 : 0;
+        // max: 4 readouts + 1 quick check + 5 checklist + 1 pitch = 11
+        const total = readouts + quickOk + checks + pitch;
+        const pct = Math.min(100, Math.round((total / 11) * 100));
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+
+      document.getElementById("checklist").addEventListener("change", updateProgress);
+      document.getElementById("pitch").addEventListener("input", updateProgress);
+    </script>
+  </body>
+</html>

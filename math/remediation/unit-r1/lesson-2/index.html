@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R1 · Lesson 2: Add &amp; Subtract Multi-Digit Numbers — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: add and subtract multi-digit whole numbers with regrouping, and use estimation to check answers. Builds toward Grade 6 number sense (6.NS.2)." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#0f2b3c 0%, #0e8a7d 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .algo { font-family: "Courier New", monospace; font-size: 17px; line-height: 1.8; background: var(--teal-light); border-radius: 10px; padding: 12px 18px; display: inline-block; margin: 8px 0; }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🔢</div>
+      <h1>Add &amp; Subtract Multi-Digit Numbers</h1>
+      <p>Stack 'em, regroup, and check your answer with a quick estimate. These skills power every calculation in Grade 6.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R1 · Lesson 2</span>
+        <span class="tag">Builds 6.NS.2</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/remediation/">Bridge to Grade 6</a> /
+        <a href="/math/remediation/unit-r1/">Unit R1</a> / Lesson 2
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> Standard 6.NS.2 requires
+        fluency with multi-digit addition and subtraction as the foundation for
+        the division algorithm. You also need these skills to compute with decimals
+        (6.NS.3) and to evaluate algebraic expressions (6.EE.2).
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>Adding &amp; Subtracting — and Estimating</h2></div></div>
+
+        <p><strong>Addition with regrouping:</strong> Line up digits by place value and add from right to left. Regroup (carry) when any column's sum is 10 or more.</p>
+        <div class="example">
+          <strong>Example 1:</strong> 3,482 + 1,759<br>
+          <div class="algo">
+            &nbsp; 3,482<br>
+            +&nbsp;1,759<br>
+            ──────<br>
+            &nbsp; 5,241
+          </div>
+          <br>
+          <em>Step-by-step:</em> ones: 2+9=11, write 1 carry 1 · tens: 8+5+1=14, write 4 carry 1 · hundreds: 4+7+1=12, write 2 carry 1 · thousands: 3+1+1=5 → <strong>5,241</strong>
+        </div>
+
+        <p><strong>Subtraction with regrouping:</strong> Line up digits, subtract right to left. When the top digit is too small, regroup (borrow) from the next place.</p>
+        <div class="example">
+          <strong>Example 2:</strong> 6,005 − 2,387<br>
+          <div class="algo">
+            &nbsp; 6,005<br>
+            −&nbsp;2,387<br>
+            ──────<br>
+            &nbsp; 3,618
+          </div>
+          <br>
+          <em>Check:</em> 3,618 + 2,387 = 6,005 ✓<br>
+          <em>Ones:</em> can't do 5−7, borrow from tens (which is 0, so borrow from hundreds, which is also 0 — borrow from thousands). After regrouping: 15−7=8, tens: 9−8=1 (after giving 1 to ones), hundreds: 9−3=6 (after giving 1 to tens column chain), thousands: 5−2=3 → <strong>3,618</strong>
+        </div>
+
+        <p><strong>Estimation:</strong> Round each number to its lead digit, then add or subtract. A fast sanity check before you commit to an answer.</p>
+        <div class="example">
+          <strong>Example 3:</strong> Estimate 412 + 289<br>
+          Round to the nearest hundred: 400 + 300 = <strong>700</strong>.<br>
+          The exact answer (701) is close — the estimate worked!
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. What is <strong>4,316 + 2,578</strong>?</p>
+          <input type="number" id="t1" placeholder="?" />
+          <button class="btn" onclick="checkNum('t1', 6894)">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>Ones: 6+8=14, write 4 carry 1. Tens: 1+7+1=9. Hundreds: 3+5=8. Thousands: 4+2=6. Answer: 6,894.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. Which is the best estimate for <strong>597 + 314</strong>?</p>
+          <div class="opts" data-mc="t2" data-ans="b">
+            <button class="opt" data-v="a">800</button>
+            <button class="opt" data-v="b">900</button>
+            <button class="opt" data-v="c">1,000</button>
+            <button class="opt" data-v="d">700</button>
+          </div>
+          <button class="btn" onclick="checkMC('t2')">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>Round to the nearest hundred: 600 + 300 = 900.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. Subtract: <strong>8,000 − 3,456</strong></p>
+          <input type="number" id="p3" placeholder="?" />
+          <button class="btn" onclick="checkNum('p3', 4544)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>8,000 − 3,456: borrow across zeros. Regroup step by step: 8,000 → 7,999+1 at ones place. 10−6=4 ones, 9−5=4 tens, 9−4=5 hundreds, 7−3=4 thousands → 4,544.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. Solve: <strong>5,274 + 3,819</strong></p>
+          <input type="number" id="p4" placeholder="?" />
+          <button class="btn" onclick="checkNum('p4', 9093)">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>Ones: 4+9=13, write 3 carry 1. Tens: 7+1+1=9. Hundreds: 2+8=10, write 0 carry 1. Thousands: 5+3+1=9. Answer: 9,093.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. A school supply room has 2,450 pencils. Students use 876 during the week. How many pencils are left?</p>
+          <input type="number" id="p5" placeholder="?" />
+          <button class="btn" onclick="checkNum('p5', 1574)">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>2,450 − 876: ones: 0 &lt; 6, borrow → 10−6=4; tens: 4 (after lending) − 7, borrow → 14−7=7 (tens become 3); hundreds: 3 (after lending) − 8, borrow → 13−8=5; thousands: 1 − 0 = 1. Answer: 1,574.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. What is <strong>7,631 − 4,285</strong>?</p>
+          <input type="number" id="x6" placeholder="?" />
+          <button class="btn" onclick="checkNum('x6', 3346)">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>Ones: 1 &lt; 5, borrow → 11−5=6. Tens: 2 (after lending) &lt; 8, borrow → 12−8=4. Hundreds: 5 (after lending) − 2=3. Thousands: 7−4=3. Answer: 3,346.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. Which is the best estimate for <strong>712 − 289</strong>?</p>
+          <div class="opts" data-mc="x7" data-ans="b">
+            <button class="opt" data-v="a">300</button>
+            <button class="opt" data-v="b">400</button>
+            <button class="opt" data-v="c">500</button>
+            <button class="opt" data-v="d">200</button>
+          </div>
+          <button class="btn" onclick="checkMC('x7')">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>Round to hundreds: 700 − 300 = 400.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r1/lesson-1/">← Lesson 1: Place Value</a>
+        <a href="/math/remediation/unit-r1/lesson-3/">Next: Multiply →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R1 · Lesson 2 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          b.classList.remove("right");
+          b.classList.remove("wrong");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+  </body>
+</html>

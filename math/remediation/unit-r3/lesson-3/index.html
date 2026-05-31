@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R3 · Lesson 3: Multiply Decimals — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: multiply decimals by counting decimal places in the factors. Builds toward Grade 6 decimal fluency (6.NS.3)." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#2d874b 0%, #0e8a7d 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .work { font-family: monospace; font-size: 17px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 10px 0; line-height: 2; }
+      .steps { margin: 10px 0; padding-left: 20px; }
+      .steps li { margin-bottom: 6px; }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">💵</div>
+      <h1>Multiply Decimals</h1>
+      <p>Multiply like whole numbers, then count and place the decimal point. Great for finding the total cost of multiple items.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R3 · Lesson 3</span>
+        <span class="tag">Builds 6.NS.3</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/remediation/">Bridge to Grade 6</a> /
+        <a href="/math/remediation/unit-r3/">Unit R3</a> / Lesson 3
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> Grade 6 requires fluency
+        multiplying multi-digit decimals (6.NS.3). You need this every time you
+        scale a recipe, calculate sales tax, or find the total cost of several
+        items at the same price.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>Count Decimal Places</h2></div></div>
+        <p>The key rule for multiplying decimals:</p>
+        <ol class="steps">
+          <li><strong>Ignore</strong> the decimal points and multiply the numbers as whole numbers.</li>
+          <li><strong>Count</strong> the total number of decimal places in <em>both</em> factors combined.</li>
+          <li><strong>Place</strong> the decimal point in the product so it has that many decimal places.</li>
+        </ol>
+        <div class="example">
+          <strong>Example 1:</strong> 0.5 × 0.5<br>
+          Whole-number multiply: 5 × 5 = 25.<br>
+          Decimal places: 0.5 has 1, and 0.5 has 1 → total = 2 places.<br>
+          Place the decimal: 25 → <strong>0.25</strong>
+        </div>
+        <div class="example">
+          <strong>Example 2:</strong> 1.2 × 3<br>
+          Whole-number multiply: 12 × 3 = 36.<br>
+          Decimal places: 1.2 has 1, and 3 has 0 → total = 1 place.<br>
+          Place the decimal: 36 → <strong>3.6</strong>
+        </div>
+        <div class="example">
+          <strong>Example 3:</strong> 2.5 × 4<br>
+          Whole-number multiply: 25 × 4 = 100.<br>
+          Decimal places: 2.5 has 1, and 4 has 0 → total = 1 place.<br>
+          Place the decimal: 100 → <strong>10.0 = 10</strong>
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. One notebook costs $1.50. What is the cost of <strong>4 notebooks</strong>?</p>
+          <input type="number" id="t1" placeholder="?" step="0.01" />
+          <button class="btn" onclick="checkNum('t1', 6.0)">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>1.50 × 4. Whole-number: 150 × 4 = 600. 1.50 has 2 decimal places, 4 has 0 → 2 total. 600 → 6.00 = 6.00.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. Calculate: <strong>0.5 × 0.5</strong></p>
+          <input type="number" id="t2" placeholder="?" step="0.01" />
+          <button class="btn" onclick="checkNum('t2', 0.25)">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>5 × 5 = 25. Total decimal places = 1 + 1 = 2. Place: 0.25.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. Calculate: <strong>1.2 × 3</strong></p>
+          <input type="number" id="p3" placeholder="?" step="0.1" />
+          <button class="btn" onclick="checkNum('p3', 3.6)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>12 × 3 = 36. 1.2 has 1 decimal place, 3 has 0 → 1 total. 36 → 3.6.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. Calculate: <strong>2.5 × 4</strong></p>
+          <input type="number" id="p4" placeholder="?" step="0.1" />
+          <button class="btn" onclick="checkNum('p4', 10.0)">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>25 × 4 = 100. 2.5 has 1 decimal place, 4 has 0 → 1 total. 100 → 10.0 = 10.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. A pack of pencils costs $1.25. A teacher buys <strong>6 packs</strong>. What is the total cost?</p>
+          <input type="number" id="p5" placeholder="?" step="0.01" />
+          <button class="btn" onclick="checkNum('p5', 7.5)">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>1.25 × 6. Whole-number: 125 × 6 = 750. 1.25 has 2 decimal places → 7.50.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. How many decimal places does the product of <strong>0.4 × 0.3</strong> have?</p>
+          <div class="opts" data-mc="x6" data-ans="b">
+            <button class="opt" data-v="a">1</button>
+            <button class="opt" data-v="b">2</button>
+            <button class="opt" data-v="c">3</button>
+            <button class="opt" data-v="d">0</button>
+          </div>
+          <button class="btn" onclick="checkMC('x6')">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>0.4 has 1 decimal place and 0.3 has 1 decimal place. Total = 2. So 4 × 3 = 12 → 0.12.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. Calculate: <strong>0.4 × 0.3</strong></p>
+          <input type="number" id="x7" placeholder="?" step="0.01" />
+          <button class="btn" onclick="checkNum('x7', 0.12)">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>4 × 3 = 12. Two decimal places total → 0.12.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r3/lesson-2/">← Lesson 2: Add &amp; Subtract</a>
+        <a href="/math/remediation/unit-r3/lesson-4/">Next: Divide Decimals →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R3 · Lesson 3 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          b.classList.remove("right");
+          b.classList.remove("wrong");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (Math.abs(v - ans) < 0.005) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Algebra Tiles — Math Manipulatives | Neft Teacher</title>
+    <meta name="description" content="Interactive algebra tiles: add x and unit tiles, combine like terms, explore the distributive property." />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #0f766e;
+        --teal-dark: #115e59;
+        --teal-light: #e4f5f3;
+        --gold: #b7791f;
+        --gold-light: #fef7e0;
+        --coral: #c2410c;
+        --coral-light: #fdeee9;
+        --green: #0f7c4a;
+        --green-light: #e6f7ef;
+        --bg: #f6f7f2;
+        --surface: #ffffff;
+        --ink: #17202a;
+        --muted: #5b6773;
+        --line: #d8dfdc;
+        --radius: 10px;
+        --shadow: 0 4px 18px rgba(23,32,42,.1);
+        --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        /* Tile colors */
+        --tile-x-pos: #0f766e;
+        --tile-x-neg: #c2410c;
+        --tile-u-pos: #2563eb;
+        --tile-u-neg: #9333ea;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--ink); line-height: 1.55; }
+      .wrap { max-width: 900px; margin: 0 auto; padding: 0 18px 60px; }
+
+      .hero {
+        background: linear-gradient(135deg, #12355b 0%, #b7791f 100%);
+        color: #fff; padding: 36px 24px 30px; text-align: center;
+      }
+      .hero h1 { font-size: clamp(24px,5vw,38px); margin: 6px 0 8px; }
+      .hero p { max-width: 560px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 15px; }
+      .hero .icon { font-size: 48px; line-height: 1; }
+
+      .breadcrumb { font-size: 13px; padding: 12px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--teal); text-decoration: none; font-weight: 700; }
+
+      .card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 20px 22px; margin: 18px 0; box-shadow: var(--shadow);
+      }
+      .card h2 { margin: 0 0 14px; font-size: 18px; }
+
+      /* Tile button grid */
+      .tile-controls {
+        display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px;
+      }
+      .tile-btn {
+        display: flex; align-items: center; gap: 8px;
+        padding: 10px 16px; border: none; border-radius: 8px;
+        font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit;
+        color: #fff; transition: filter .12s;
+      }
+      .tile-btn:hover { filter: brightness(1.1); }
+      .tile-btn .preview {
+        display: inline-block; width: 24px; height: 24px; border-radius: 4px; border: 2px solid rgba(255,255,255,.4);
+        font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900;
+      }
+      .tbx-pos { background: var(--tile-x-pos); }
+      .tbx-neg { background: var(--tile-x-neg); }
+      .tbu-pos { background: var(--tile-u-pos); }
+      .tbu-neg { background: var(--tile-u-neg); }
+      .tbn-clear { background: var(--muted); }
+
+      /* Tile mat */
+      #tile-mat {
+        min-height: 120px; border: 2px dashed var(--line); border-radius: 10px;
+        padding: 14px; display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start;
+        background: #fafbfa;
+      }
+      .tile {
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 13px; color: #fff; border-radius: 5px;
+        cursor: pointer; user-select: none; position: relative;
+        transition: opacity .12s, transform .12s;
+        border: 2px solid rgba(0,0,0,.15);
+      }
+      .tile:hover { opacity: .8; transform: scale(.96); }
+      .tile.x-pos { width: 52px; height: 52px; background: var(--tile-x-pos); }
+      .tile.x-neg { width: 52px; height: 52px; background: var(--tile-x-neg); }
+      .tile.u-pos { width: 30px; height: 30px; background: var(--tile-u-pos); }
+      .tile.u-neg { width: 30px; height: 30px; background: var(--tile-u-neg); }
+      .tile .remove { position: absolute; top: 2px; right: 4px; font-size: 10px; opacity: .6; }
+      .mat-empty { color: var(--muted); font-size: 14px; align-self: center; margin: auto; }
+
+      /* Expression readout */
+      .expr-box {
+        margin-top: 14px; background: var(--teal-light); border: 1px solid #bfe6e0;
+        border-radius: 10px; padding: 14px 18px;
+      }
+      .expr-box .lbl { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+      .expr-box .expr { font-size: 24px; font-weight: 800; color: var(--teal-dark); margin-top: 4px; }
+      .expr-box .simplified { font-size: 14px; color: var(--green); font-weight: 700; margin-top: 6px; }
+
+      /* Legend */
+      .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+      .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+      .legend-swatch { width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(0,0,0,.15); }
+
+      /* Distributive section */
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      .fld-group { display: flex; flex-direction: column; gap: 4px; }
+      label { font-weight: 700; font-size: 14px; }
+      input[type="number"] {
+        padding: 8px 10px; border: 2px solid var(--line); border-radius: 8px;
+        font-family: inherit; font-size: 15px; background: #fff; width: 100%;
+      }
+      input[type="number"]:focus { outline: none; border-color: var(--teal); }
+
+      .btn {
+        background: var(--teal); color: #fff; border: none; border-radius: 8px;
+        padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit;
+        margin-top: 14px;
+      }
+      .btn:hover { filter: brightness(1.08); }
+      .btn.gold { background: var(--gold); }
+
+      .dist-result {
+        margin-top: 14px; background: var(--gold-light); border: 1px solid #e6c96e;
+        border-radius: 10px; padding: 14px 18px; font-size: 15px; display: none;
+      }
+      .dist-result.show { display: block; }
+      .dist-result .big { font-size: 22px; font-weight: 800; color: var(--gold); }
+      .dist-result .mat-preview { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+
+      .site-footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="icon">&#x1F9F1;</div>
+      <h1>Algebra Tiles</h1>
+      <p>Build expressions with x-tiles and unit tiles, then combine like terms. Try the distributive property demo below.</p>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/manipulatives/">Manipulatives</a> / Algebra Tiles
+      </nav>
+
+      <!-- TILE MAT -->
+      <div class="card">
+        <h2>Tile Mat</h2>
+
+        <div class="legend">
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--tile-x-pos)"></div> +x tile</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--tile-x-neg)"></div> −x tile</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--tile-u-pos)"></div> +1 unit</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:var(--tile-u-neg)"></div> −1 unit</div>
+          <div class="legend-item" style="color:var(--muted);font-weight:400;">Click a tile on the mat to remove it.</div>
+        </div>
+
+        <div class="tile-controls">
+          <button class="tile-btn tbx-pos" onclick="addTile('x-pos')"><div class="preview">x</div> Add +x</button>
+          <button class="tile-btn tbx-neg" onclick="addTile('x-neg')"><div class="preview">−x</div> Add −x</button>
+          <button class="tile-btn tbu-pos" onclick="addTile('u-pos')"><div class="preview">1</div> Add +1</button>
+          <button class="tile-btn tbu-neg" onclick="addTile('u-neg')"><div class="preview">−1</div> Add −1</button>
+          <button class="tile-btn tbn-clear" onclick="clearMat()"><div class="preview">✕</div> Clear Mat</button>
+        </div>
+
+        <div id="tile-mat">
+          <span class="mat-empty" id="mat-empty">Add tiles using the buttons above.</span>
+        </div>
+
+        <div class="expr-box" id="expr-box">
+          <div class="lbl">Current Expression</div>
+          <div class="expr" id="expr-display">—</div>
+          <div class="simplified" id="simplified-display"></div>
+        </div>
+      </div>
+
+      <!-- DISTRIBUTIVE PROPERTY DEMO -->
+      <div class="card">
+        <h2>Distributive Property Demo</h2>
+        <p style="color:var(--muted);font-size:14px;margin:0 0 14px;">
+          Enter values for <strong>a</strong>, <strong>b</strong> in a(x + b). The demo shows the expanded form and adds the tiles to a preview mat.
+        </p>
+        <div class="grid2">
+          <div class="fld-group">
+            <label for="dist-a">a (factor outside)</label>
+            <input type="number" id="dist-a" value="3" min="1" max="10" />
+          </div>
+          <div class="fld-group">
+            <label for="dist-b">b (constant inside)</label>
+            <input type="number" id="dist-b" value="2" min="-10" max="10" />
+          </div>
+        </div>
+        <button class="btn gold" onclick="showDistributive()">Show Distributive Property</button>
+        <div class="dist-result" id="dist-result">
+          <div class="lbl" style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);">Result</div>
+          <div class="big" id="dist-expr"></div>
+          <div id="dist-explanation" style="margin-top:8px;font-size:14px;color:var(--ink);"></div>
+          <div class="lbl" style="margin-top:10px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);">Tile Preview</div>
+          <div class="mat-preview" id="dist-mat"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">Neft Teacher · Manipulatives</footer>
+
+    <script>
+      // tiles array: each item is { type: 'x-pos'|'x-neg'|'u-pos'|'u-neg', id: number }
+      let tiles = [];
+      let nextId = 0;
+
+      function addTile(type) {
+        tiles.push({ type, id: nextId++ });
+        render();
+      }
+
+      function removeTile(id) {
+        tiles = tiles.filter(t => t.id !== id);
+        render();
+      }
+
+      function clearMat() {
+        tiles = [];
+        render();
+      }
+
+      function tileLabel(type) {
+        return { 'x-pos': '+x', 'x-neg': '−x', 'u-pos': '+1', 'u-neg': '−1' }[type];
+      }
+
+      function render() {
+        const mat = document.getElementById('tile-mat');
+        const empty = document.getElementById('mat-empty');
+        if (tiles.length === 0) {
+          mat.innerHTML = '<span class="mat-empty" id="mat-empty">Add tiles using the buttons above.</span>';
+          document.getElementById('expr-display').textContent = '—';
+          document.getElementById('simplified-display').textContent = '';
+          return;
+        }
+        mat.innerHTML = tiles.map(t =>
+          `<div class="tile ${t.type}" onclick="removeTile(${t.id})" title="Click to remove" aria-label="Remove tile ${tileLabel(t.type)}">
+            ${tileLabel(t.type)}<span class="remove">✕</span>
+          </div>`
+        ).join('');
+        updateExpression();
+      }
+
+      function updateExpression() {
+        let xPos = 0, xNeg = 0, uPos = 0, uNeg = 0;
+        for (const t of tiles) {
+          if (t.type === 'x-pos') xPos++;
+          else if (t.type === 'x-neg') xNeg++;
+          else if (t.type === 'u-pos') uPos++;
+          else uNeg++;
+        }
+
+        // Build the unsimplified expression string showing all tiles
+        const parts = [];
+        for (let i = 0; i < xPos; i++) parts.push('+x');
+        for (let i = 0; i < xNeg; i++) parts.push('−x');
+        for (let i = 0; i < uPos; i++) parts.push('+1');
+        for (let i = 0; i < uNeg; i++) parts.push('−1');
+        const rawExpr = parts.join(' ').replace(/^\+/, '');
+        document.getElementById('expr-display').textContent = rawExpr || '0';
+
+        // Simplified
+        const netX = xPos - xNeg;
+        const netU = uPos - uNeg;
+        let simplified = '';
+        if (netX === 0 && netU === 0) simplified = '0';
+        else {
+          const xPart = netX !== 0 ? (netX === 1 ? 'x' : netX === -1 ? '−x' : `${netX < 0 ? '−' : ''}${Math.abs(netX)}x`) : '';
+          const uPart = netU !== 0 ? (netU > 0 ? `+${netU}` : `${netU}`) : '';
+          simplified = (xPart + (xPart && uPart && netU > 0 ? ' ' : '') + uPart).replace(/^\+/, '').trim();
+          if (!simplified) simplified = '0';
+        }
+
+        // Zero pairs info
+        const zeroPairsX = Math.min(xPos, xNeg);
+        const zeroPairsU = Math.min(uPos, uNeg);
+        let hint = `Combined: <strong>${simplified}</strong>`;
+        if (zeroPairsX > 0 || zeroPairsU > 0) {
+          const notes = [];
+          if (zeroPairsX > 0) notes.push(`${zeroPairsX} x-zero pair${zeroPairsX > 1 ? 's' : ''} cancel`);
+          if (zeroPairsU > 0) notes.push(`${zeroPairsU} unit zero pair${zeroPairsU > 1 ? 's' : ''} cancel`);
+          hint += ` &nbsp;(${notes.join(', ')})`;
+        }
+        document.getElementById('simplified-display').innerHTML = hint;
+      }
+
+      function showDistributive() {
+        const a = parseInt(document.getElementById('dist-a').value);
+        const b = parseInt(document.getElementById('dist-b').value);
+        if (isNaN(a) || isNaN(b) || a < 1 || a > 10 || Math.abs(b) > 10) { alert('Enter valid values (a between 1 and 10, b between −10 and 10).'); return; }
+
+        const bSign = b >= 0 ? '+' : '−';
+        const bAbs = Math.abs(b);
+        const factored = `${a}(x ${bSign} ${bAbs})`;
+        const xCoeff = a;
+        const constant = a * b;
+        let expanded = '';
+        if (xCoeff === 1) expanded = 'x';
+        else if (xCoeff === -1) expanded = '−x';
+        else expanded = `${xCoeff}x`;
+        if (constant > 0) expanded += ` + ${constant}`;
+        else if (constant < 0) expanded += ` − ${Math.abs(constant)}`;
+        document.getElementById('dist-expr').textContent = `${factored} = ${expanded}`;
+
+        const steps = [];
+        steps.push(`Step 1: Distribute <strong>${a}</strong> to each term inside the parentheses.`);
+        steps.push(`Step 2: ${a} × x = <strong>${xCoeff}x</strong>`);
+        steps.push(`Step 3: ${a} × (${b}) = <strong>${constant}</strong>`);
+        steps.push(`Result: ${factored} = <strong>${expanded}</strong>`);
+        document.getElementById('dist-explanation').innerHTML = steps.join('<br>');
+
+        // Build visual tile mat preview
+        const matEl = document.getElementById('dist-mat');
+        let matHtml = '';
+        // x tiles (xCoeff)
+        const xSign = xCoeff >= 0 ? 'x-pos' : 'x-neg';
+        for (let i = 0; i < Math.abs(xCoeff); i++) {
+          matHtml += `<div class="tile ${xSign}" style="pointer-events:none;">${xCoeff >= 0 ? '+x' : '−x'}</div>`;
+        }
+        // unit tiles
+        if (constant !== 0) {
+          const uSign = constant > 0 ? 'u-pos' : 'u-neg';
+          for (let i = 0; i < Math.abs(constant); i++) {
+            matHtml += `<div class="tile ${uSign}" style="pointer-events:none;width:26px;height:26px;font-size:11px;">${constant > 0 ? '+1' : '−1'}</div>`;
+          }
+        }
+        matEl.innerHTML = matHtml || '<span style="color:var(--muted);font-size:13px;">No tiles (expression = 0)</span>';
+        document.getElementById('dist-result').classList.add('show');
+      }
+
+      render();
+    </script>
+  </body>
+</html>
