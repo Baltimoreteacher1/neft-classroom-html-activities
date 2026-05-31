@@ -37,6 +37,172 @@
         margin: 0 auto;
         padding: 20px 16px 72px;
       }
+
+      /* ── Learning Target box ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+
+      /* ── Teacher / Answer Key collapsibles ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      details.teacher-only summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-radius: 10px;
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+      .details-body li {
+        margin-bottom: 4px;
+      }
+
+      /* ── Rubric ── */
+      .rubric-wrap {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+        overflow-x: auto;
+      }
+      .rubric-wrap h2 {
+        margin: 0 0 12px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+      }
+      .rubric th,
+      .rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .rubric th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+      .rubric tr:nth-child(even) td {
+        background: var(--nt-bg);
+      }
+
+      /* ── Reflection & Deliverable ── */
+      .reflection-wrap {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-bottom: 18px;
+      }
+      .reflection-wrap h2 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .reflection-wrap label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .reflection-wrap textarea {
+        font: inherit;
+        font-size: 17px;
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        resize: vertical;
+      }
+      .deliverable {
+        margin-top: 14px;
+        font-size: 16px;
+        border-left: 4px solid var(--nt-accent);
+        padding-left: 12px;
+        color: var(--nt-muted);
+      }
+      .deliverable strong {
+        color: var(--nt-text);
+      }
+
+      /* Hero header */
       header.hero {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -200,6 +366,7 @@
         gap: 12px;
         flex-wrap: wrap;
         margin-top: 8px;
+        margin-bottom: 18px;
       }
       .btn {
         font: inherit;
@@ -233,11 +400,89 @@
         clip: rect(0 0 0 0);
         border: 0;
       }
+
+      /* Visible keyboard focus everywhere */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
+      /* ── Print styles ── */
+      @media print {
+        details.teacher-only,
+        .actions,
+        #ntkit .nt-kit-actions {
+          display: none !important;
+        }
+        .wrap {
+          padding-bottom: 0;
+        }
+      }
     </style>
   </head>
 
   <body class="nt-theme-aware">
     <div class="wrap">
+
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
+        <ul>
+          <li>I can find the Greatest Common Factor (GCF) of two numbers to split objects into equal groups.</li>
+          <li>I can find the Least Common Multiple (LCM) of two numbers to identify when events repeat together.</li>
+          <li>I can multiply and divide decimals using place-value strategies.</li>
+          <li>I can use the distributive property and GCF to rewrite sums as products.</li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standard: CCSS 6.NS.B.2–4</span>
+          <span>Time: ~35 min</span>
+          <span>Materials: This activity (device or printed)</span>
+          <span>Grade 6</span>
+        </div>
+      </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li><strong>Launch (5 min):</strong> Review factor vs. multiple with a quick call-and-response: "Name a factor of 12… name a multiple of 4."</li>
+            <li><strong>Station work (20–25 min):</strong> Students work through Stations 1–6 sequentially. Stations 5–6 (distributive property) typically take the longest.</li>
+            <li><strong>Debrief (5–10 min):</strong> Display Station 6 on board; ask: "How does factoring out the GCF connect to the distributive property?"</li>
+          </ul>
+          <h3>Grouping Suggestions</h3>
+          <ul>
+            <li><strong>Partners:</strong> Stations 1–2 (GCF/LCM) — students can verify by listing multiples/factors together.</li>
+            <li><strong>Individual:</strong> Stations 3–6 for decimal computation and algebraic reasoning accountability.</li>
+          </ul>
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>Provide a multiplication chart for Stations 3–4 (decimal operations).</li>
+            <li>For GCF (Station 1): scaffold with a factor rainbow or a Venn diagram for factors of 24 and 36.</li>
+            <li>For LCM (Station 2): let students list multiples of 4 and 6 up to 30 on paper.</li>
+            <li>Allow students to use grid paper for decimal placement in Stations 3–4.</li>
+          </ul>
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Ask: "Can you find the LCM of 4 and 6 using prime factorization? Compare your method."</li>
+            <li>Extension for Station 6: factor 30 + 45 using the GCF. What is the GCF? Write it in factored form.</li>
+            <li>Ask: "For Station 5, verify your answer by expanding: does 8×5 + 8×2 = 8×7?"</li>
+          </ul>
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Post a bilingual word wall: factor / factor, multiple / múltiplo, GCF / máximo común divisor, LCM / mínimo común múltiplo.</li>
+            <li>Use visual representations: draw factor pairs as rectangles for GCF; draw a number line for LCM jumps.</li>
+            <li>Allow the student to say the answer aloud or write it in their home language for the reflection.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ══ HERO ══ -->
       <header class="hero">
         <span class="tag">Unit 4 · Factory Line Architect</span>
         <h1>Build the Order: Factors, Multiples &amp; Decimals</h1>
@@ -250,16 +495,26 @@
           or type numbers to set each machine, then press
           <strong>Check My Factory</strong> at the bottom to grade your work.
         </div>
-        <div class="progress" aria-live="polite">
+        <div class="progress" aria-label="Activity progress" role="status">
           Stations set: <span id="pcount">0</span> / 6
-          <div class="bar"><span id="pbar"></span></div>
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="6"
+            aria-label="Stations completed"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
         </div>
       </header>
 
       <!-- STATION 1: GCF chip picker -->
-      <section class="station" data-station>
+      <section class="station" data-station aria-labelledby="s1heading">
         <span class="skill">Greatest Common Factor</span>
-        <h2>Station 1 · Box Stacker</h2>
+        <h2 id="s1heading">Station 1 · Box Stacker</h2>
         <div class="directions">
           We pack <strong>24</strong> red parts and <strong>36</strong> blue
           parts into <em>equal boxes</em>. Click the
@@ -271,18 +526,19 @@
           role="group"
           aria-label="Greatest common factor of 24 and 36"
         >
-          <button type="button" class="chip" data-v="4">4</button>
-          <button type="button" class="chip" data-v="6">6</button>
-          <button type="button" class="chip" data-v="12">12</button>
-          <button type="button" class="chip" data-v="18">18</button>
+          <button type="button" class="chip" data-v="4" aria-pressed="false">4</button>
+          <button type="button" class="chip" data-v="6" aria-pressed="false">6</button>
+          <button type="button" class="chip" data-v="12" aria-pressed="false">12</button>
+          <button type="button" class="chip" data-v="18" aria-pressed="false">18</button>
         </div>
-        <div class="picked-label">Your GCF: <span id="s1pick">—</span></div>
+        <div class="picked-label" aria-live="polite">Your GCF: <span id="s1pick">—</span></div>
+        <p class="hint">Hint: List the factors of 24 (1, 2, 3, 4, 6, 8, 12, 24) and 36 (1, 2, 3, 4, 6, 9, 12, 18, 36). The biggest shared factor is the GCF.</p>
       </section>
 
       <!-- STATION 2: LCM chip picker -->
-      <section class="station" data-station>
+      <section class="station" data-station aria-labelledby="s2heading">
         <span class="skill">Least Common Multiple</span>
-        <h2>Station 2 · Belt Timer</h2>
+        <h2 id="s2heading">Station 2 · Belt Timer</h2>
         <div class="directions">
           Belt A beeps every <strong>4</strong> seconds. Belt B beeps every
           <strong>6</strong> seconds. Click the <strong>smallest</strong> time
@@ -294,18 +550,19 @@
           role="group"
           aria-label="Least common multiple of 4 and 6"
         >
-          <button type="button" class="chip" data-v="10">10</button>
-          <button type="button" class="chip" data-v="12">12</button>
-          <button type="button" class="chip" data-v="24">24</button>
-          <button type="button" class="chip" data-v="2">2</button>
+          <button type="button" class="chip" data-v="10" aria-pressed="false">10</button>
+          <button type="button" class="chip" data-v="12" aria-pressed="false">12</button>
+          <button type="button" class="chip" data-v="24" aria-pressed="false">24</button>
+          <button type="button" class="chip" data-v="2" aria-pressed="false">2</button>
         </div>
-        <div class="picked-label">Your LCM: <span id="s2pick">—</span></div>
+        <div class="picked-label" aria-live="polite">Your LCM: <span id="s2pick">—</span></div>
+        <p class="hint">Hint: Multiples of 4: 4, 8, <strong>12</strong>, 16… Multiples of 6: 6, <strong>12</strong>, 18… The first number in both lists is the LCM.</p>
       </section>
 
       <!-- STATION 3: Decimal multiply -->
-      <section class="station" data-station>
+      <section class="station" data-station aria-labelledby="s3heading">
         <span class="skill">Multiply Decimals</span>
-        <h2>Station 3 · Weigh Station</h2>
+        <h2 id="s3heading">Station 3 · Weigh Station</h2>
         <div class="directions">
           Each part weighs <strong>1.4</strong> kg. You pack
           <strong>2.5</strong> boxes of them. Type the total weight:
@@ -318,16 +575,17 @@
             type="text"
             inputmode="decimal"
             placeholder="e.g. 3.5"
-            aria-label="Answer for 1.4 times 2.5"
+            aria-label="Answer for 1.4 times 2.5 in kg"
+            aria-describedby="s3hint"
           />
         </div>
-        <p class="hint">Tip: 14 × 25 = 350, then place the decimal point.</p>
+        <p class="hint" id="s3hint">Tip: 14 × 25 = 350, then place the decimal point (2 decimal places total → 3.50 = 3.5).</p>
       </section>
 
       <!-- STATION 4: Decimal divide -->
-      <section class="station" data-station>
+      <section class="station" data-station aria-labelledby="s4heading">
         <span class="skill">Divide Decimals</span>
-        <h2>Station 4 · Splitter</h2>
+        <h2 id="s4heading">Station 4 · Splitter</h2>
         <div class="directions">
           A <strong>9.6</strong> kg crate is split into <strong>4</strong> equal
           bags. Type the weight of one bag: <strong>9.6 ÷ 4</strong>.
@@ -339,64 +597,68 @@
             type="text"
             inputmode="decimal"
             placeholder="e.g. 2.1"
-            aria-label="Answer for 9.6 divided by 4"
+            aria-label="Answer for 9.6 divided by 4 in kg"
+            aria-describedby="s4hint"
           />
         </div>
+        <p class="hint" id="s4hint">Tip: Think 96 ÷ 4 = 24, then move the decimal one place left → 2.4.</p>
       </section>
 
       <!-- STATION 5: Distributive builder -->
-      <section class="station" data-station>
+      <section class="station" data-station aria-labelledby="s5heading">
         <span class="skill">Distributive Property</span>
-        <h2>Station 5 · Order Splitter</h2>
+        <h2 id="s5heading">Station 5 · Order Splitter</h2>
         <div class="directions">
           Rewrite <strong>8 × (5 + 2)</strong> as the SUM of two products. Fill
-          the boxes so it equals <strong>8 × 5 + 8 × ?</strong>.
+          the box so it equals <strong>8 × 5 + 8 × ?</strong>.
         </div>
         <div class="build-row" aria-label="Distributive property builder">
-          8 × (5 + 2) = 8 × 5 + 8 ×
+          <span>8 × (5 + 2) = 8 × 5 + 8 ×</span>
           <input
             id="s5"
             type="number"
             min="0"
             step="1"
-            aria-label="Missing number in distributive property"
+            aria-label="Missing number in distributive property: 8 × (5 + 2) = 8 × 5 + 8 × ?"
+            aria-describedby="s5hint"
           />
         </div>
-        <p class="hint">
-          The distributive property keeps the <strong>+ 2</strong> on the
-          outside number.
+        <p class="hint" id="s5hint">
+          The distributive property distributes the <strong>8</strong> to each term inside the parentheses. The second term inside is <strong>2</strong>.
         </p>
       </section>
 
       <!-- STATION 6: GCF + Distributive combo -->
-      <section class="station" data-station>
+      <section class="station" data-station aria-labelledby="s6heading">
         <span class="skill">GCF + Distributive Property</span>
-        <h2>Station 6 · Master Pack</h2>
+        <h2 id="s6heading">Station 6 · Master Pack</h2>
         <div class="directions">
           Factor out the GCF of <strong>18 + 24</strong>. The GCF is
           <strong>6</strong>. Type the two numbers inside the parentheses so it
           equals <strong>6 × (? + ?)</strong>.
         </div>
         <div class="build-row" aria-label="Factor out GCF builder">
-          18 + 24 = 6 × (
+          <span>18 + 24 = 6 × (</span>
           <input
             id="s6a"
             type="number"
             min="0"
             step="1"
-            aria-label="First number in parentheses"
+            aria-label="First number in parentheses: 18 divided by 6"
+            aria-describedby="s6hint"
           />
-          +
+          <span>+</span>
           <input
             id="s6b"
             type="number"
             min="0"
             step="1"
-            aria-label="Second number in parentheses"
+            aria-label="Second number in parentheses: 24 divided by 6"
+            aria-describedby="s6hint"
           />
-          )
+          <span>)</span>
         </div>
-        <p class="hint">18 ÷ 6 = ?, and 24 ÷ 6 = ?</p>
+        <p class="hint" id="s6hint">18 ÷ 6 = ? and 24 ÷ 6 = ?  Check: 6 × (your two numbers) should equal 42.</p>
       </section>
 
       <div class="actions">
@@ -406,6 +668,85 @@
 
       <!-- Activity kit: student name, grading, save, results -->
       <div id="ntkit"></div>
+
+      <!-- ══ RUBRIC ══ -->
+      <section class="rubric-wrap" aria-label="Scoring rubric">
+        <h2>Scoring Rubric</h2>
+        <table class="rubric" role="table">
+          <thead>
+            <tr>
+              <th scope="col">Level</th>
+              <th scope="col">Score</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>4 — Exceeds</strong></td>
+              <td>7 / 7</td>
+              <td>All 7 items correct. Fluently applies GCF, LCM, decimal operations, and the distributive property. Station 6 both boxes correct with precise factoring.</td>
+            </tr>
+            <tr>
+              <td><strong>3 — Meets</strong></td>
+              <td>5–6 / 7</td>
+              <td>GCF and LCM correct; decimal work mostly accurate; may have one error in distributive property (e.g., reverses the two terms in Station 6 or makes a small arithmetic slip).</td>
+            </tr>
+            <tr>
+              <td><strong>2 — Approaching</strong></td>
+              <td>3–4 / 7</td>
+              <td>Some GCF/LCM or decimal items correct, but errors indicate partial conceptual understanding (e.g., selects a common factor for GCF that is not the greatest, or misplaces the decimal in Station 3–4).</td>
+            </tr>
+            <tr>
+              <td><strong>1 — Beginning</strong></td>
+              <td>0–2 / 7</td>
+              <td>Attempts made but few correct answers. Student needs direct instruction on factor vs. multiple and decimal place-value concepts before re-attempt.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ══ ANSWER KEY (teacher only, hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Answer key">
+        <summary>Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>Station 1 — GCF of 24 and 36</h3>
+          <p><strong>Answer: 12.</strong> Factors of 24: 1, 2, 3, 4, 6, 8, 12, 24. Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36. Greatest shared factor = 12. (18 is a factor of 36 only, not of 24.)</p>
+
+          <h3>Station 2 — LCM of 4 and 6</h3>
+          <p><strong>Answer: 12.</strong> Multiples of 4: 4, 8, <strong>12</strong>. Multiples of 6: 6, <strong>12</strong>. First common multiple = 12. (24 is also a common multiple but not the <em>least</em>.)</p>
+
+          <h3>Station 3 — Decimal Multiplication: 1.4 × 2.5</h3>
+          <p><strong>Answer: 3.5.</strong> Method: 14 × 25 = 350. Count decimal places: 1 (in 1.4) + 1 (in 2.5) = 2 total. Place decimal two places from the right: 350 → 3.50 = 3.5.</p>
+
+          <h3>Station 4 — Decimal Division: 9.6 ÷ 4</h3>
+          <p><strong>Answer: 2.4.</strong> Method: 96 ÷ 4 = 24. Re-insert decimal (9.6 has one decimal place): 2.4. Check: 4 × 2.4 = 9.6. ✓</p>
+
+          <h3>Station 5 — Distributive Property: 8 × (5 + 2) = 8 × 5 + 8 × ?</h3>
+          <p><strong>Answer: 2.</strong> The distributive property: a(b + c) = ab + ac. Here, 8 × (5 + 2) = 8 × 5 + 8 × 2 = 40 + 16 = 56. Check: 8 × 7 = 56. ✓</p>
+
+          <h3>Station 6 — GCF + Distributive: 18 + 24 = 6 × (? + ?)</h3>
+          <p><strong>First box: 3. Second box: 4.</strong> GCF of 18 and 24 = 6. 18 ÷ 6 = 3. 24 ÷ 6 = 4. So 18 + 24 = 6 × (3 + 4) = 6 × 7 = 42. Check: 18 + 24 = 42. ✓</p>
+        </div>
+      </details>
+
+      <!-- ══ REFLECTION ══ -->
+      <section class="reflection-wrap" aria-label="Reflection">
+        <h2>Reflection</h2>
+        <label for="reflectionText">
+          Choose ONE station that was hard for you. Explain what you did and why the answer makes sense.
+          Use the words <em>factor</em>, <em>multiple</em>, or <em>decimal</em>.
+        </label>
+        <textarea
+          id="reflectionText"
+          name="reflection"
+          rows="5"
+          placeholder="I found Station ___ challenging because… I solved it by…"
+        ></textarea>
+        <p class="deliverable">
+          <strong>Deliverable:</strong> Enter your name in the field above, complete all 6 stations, write your reflection, then press <strong>Check My Factory</strong> to submit and save your score as a PDF or DOC.
+        </p>
+      </section>
+
     </div>
 
     <script>
@@ -425,7 +766,7 @@
               c.setAttribute("aria-pressed", c === btn ? "true" : "false");
             });
             picks[groupId] = btn.getAttribute("data-v");
-            label.textContent = btn.textContent;
+            label.textContent = btn.textContent.trim();
             updateProgress();
           });
         }
@@ -455,6 +796,7 @@
           var c = stationDone();
           document.getElementById("pcount").textContent = c;
           document.getElementById("pbar").style.width = (c / 6) * 100 + "%";
+          document.getElementById("progBar").setAttribute("aria-valuenow", c);
         }
         [s3, s4, s5, s6a, s6b].forEach(function (el) {
           el.addEventListener("input", updateProgress);
@@ -502,14 +844,14 @@
               skill: "Distributive Property",
             },
             {
-              prompt: "18 + 24 = 6 × (? + ?)  [first box]",
+              prompt: "18 + 24 = 6 × (? + ?)  [first box: 18 ÷ 6]",
               studentAnswer: norm(s6a.value),
               correctAnswer: "3",
               points: 1,
               skill: "GCF + Distributive Property",
             },
             {
-              prompt: "18 + 24 = 6 × (? + ?)  [second box]",
+              prompt: "18 + 24 = 6 × (? + ?)  [second box: 24 ÷ 6]",
               studentAnswer: norm(s6b.value),
               correctAnswer: "4",
               points: 1,

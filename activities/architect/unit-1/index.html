@@ -80,6 +80,101 @@
         color: var(--nt-muted);
       }
 
+      /* ── Learning Target ── */
+      .learning-target {
+        background: var(--nt-bg);
+        border: 3px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
+      }
+      .learning-target h2 {
+        margin: 0 0 12px;
+        font-size: 1.2rem;
+        border-bottom: 2px solid var(--nt-accent);
+        padding-bottom: 6px;
+      }
+      .learning-target ul {
+        margin: 0 0 14px 0;
+        padding-left: 22px;
+      }
+      .learning-target li {
+        margin: 6px 0;
+        font-size: 1rem;
+      }
+      .lt-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .lt-chip {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 0.92rem;
+      }
+      .lt-chip strong {
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--nt-muted);
+        margin-bottom: 3px;
+      }
+
+      /* ── Teacher Notes ── */
+      .teacher-notes {
+        background: var(--nt-surface);
+        border: 2px dashed var(--nt-accent);
+        border-radius: 14px;
+        margin-bottom: 20px;
+      }
+      .teacher-notes summary {
+        padding: 14px 18px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--nt-accent);
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .teacher-notes summary::before {
+        content: "▶";
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+      }
+      .teacher-notes[open] summary::before {
+        transform: rotate(90deg);
+      }
+      .teacher-notes summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-radius: 10px;
+      }
+      .tn-body {
+        padding: 0 18px 18px;
+      }
+      .tn-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 4px;
+        color: var(--nt-text);
+      }
+      .tn-body p,
+      .tn-body li {
+        font-size: 0.95rem;
+        color: var(--nt-text);
+        margin: 4px 0;
+      }
+      .tn-body ul {
+        padding-left: 20px;
+        margin: 6px 0;
+      }
+
+      /* ── Activity cards ── */
       .card {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -266,6 +361,97 @@
       button.check:hover {
         filter: brightness(1.08);
       }
+
+      /* ── Rubric ── */
+      .rubric-wrap {
+        overflow-x: auto;
+        margin-top: 10px;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+        min-width: 540px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 2px solid var(--nt-border);
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 700;
+      }
+      table.rubric tbody tr:nth-child(even) td {
+        background: var(--nt-bg);
+      }
+
+      /* ── Answer Key ── */
+      details.answer-key {
+        background: var(--nt-bg);
+        border: 2px dashed var(--nt-border);
+        border-radius: 12px;
+        padding: 0;
+        margin-top: 18px;
+      }
+      details.answer-key summary {
+        padding: 14px 18px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--nt-accent);
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      details.answer-key summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-radius: 10px;
+      }
+      .ak-body {
+        padding: 0 18px 18px;
+      }
+      .ak-body ol {
+        margin: 6px 0;
+        padding-left: 20px;
+      }
+      .ak-body li {
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+      }
+
+      /* ── Reflection / Deliverable ── */
+      .reflection-area {
+        width: 100%;
+        font-size: 1rem;
+        padding: 12px 14px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        min-height: 90px;
+        resize: vertical;
+        margin-top: 8px;
+        font-family: inherit;
+      }
+      .reflection-area:focus {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .deliverable {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-top: 14px;
+        font-size: 1rem;
+      }
+
       .sr-only {
         position: absolute;
         width: 1px;
@@ -276,6 +462,55 @@
         clip: rect(0, 0, 0, 0);
         white-space: nowrap;
         border: 0;
+      }
+
+      /* ── Print styles ── */
+      @media print {
+        body {
+          font-size: 13px;
+          line-height: 1.5;
+          background: #fff;
+          color: #000;
+        }
+        .wrap {
+          max-width: 100%;
+          padding: 0;
+        }
+        details.teacher-notes,
+        details.answer-key {
+          display: none !important;
+        }
+        .submit-row,
+        button.check,
+        button.step {
+          display: none !important;
+        }
+        header.hero,
+        .card,
+        .learning-target {
+          border: 1px solid #ccc !important;
+          border-radius: 0 !important;
+          break-inside: avoid;
+        }
+        .learning-target {
+          border-color: #555 !important;
+        }
+        table.rubric thead th {
+          background: #555 !important;
+          color: #fff !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .standard {
+          background: #555 !important;
+          color: #fff !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .progress-bar,
+        .progress-text {
+          display: none !important;
+        }
       }
     </style>
   </head>
@@ -290,11 +525,58 @@
           unit rates to build recipes, find prices, and fill orders. Answer all
           6 tasks, then press <em>Check My Work</em>.
         </p>
-        <div class="progress-bar">
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" aria-label="Activity progress">
           <div class="progress-fill" id="pfill"></div>
         </div>
-        <p class="progress-text" id="ptext">0 of 6 tasks answered</p>
+        <p class="progress-text" id="ptext" aria-live="polite">0 of 6 tasks answered</p>
       </header>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- LEARNING TARGET                            -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="learning-target" aria-label="Learning Target">
+        <h2>Learning Target</h2>
+        <ul>
+          <li><strong>I can</strong> write a ratio in two ways (6:2 and 3:1) and explain what it means.</li>
+          <li><strong>I can</strong> find a unit rate by dividing to get a "per one" answer.</li>
+          <li><strong>I can</strong> use equivalent ratios to scale a recipe up or down.</li>
+          <li><strong>I can</strong> connect percent to a rate per 100 to find discounts and savings.</li>
+        </ul>
+        <div class="lt-grid">
+          <div class="lt-chip"><strong>Standard</strong> CCSS 6.RP.A.1–3</div>
+          <div class="lt-chip"><strong>Estimated time</strong> 40–50 minutes</div>
+          <div class="lt-chip"><strong>Materials</strong> Pencil, scratch paper, this page</div>
+          <div class="lt-chip"><strong>Product</strong> Completed activity saved as PDF or DOC</div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- TEACHER NOTES (collapsible, print-hidden)  -->
+      <!-- ══════════════════════════════════════════ -->
+      <details class="teacher-notes">
+        <summary>Teacher Notes (click to expand — not for student assessment)</summary>
+        <div class="tn-body">
+          <h3>Pacing</h3>
+          <p>One 40–50 minute period. Suggested flow: introduce the smoothie context (2 min) → Tasks 1–3 together or in pairs (15 min) → Tasks 4–6 independently (15 min) → Check and discuss (10 min) → Reflection (5 min). Two-day option: Day 1 = Tasks 1–4; Day 2 = Tasks 5–6, reflection, and save deliverable.</p>
+
+          <h3>Grouping Suggestions</h3>
+          <p>Tasks 1–2 work well as pair activities to spark ratio conversation. Tasks 3–6 are best attempted individually before a brief class share-out. Use the "better buy" task (Task 4) as a whole-class discussion anchor.</p>
+
+          <h3>Differentiation</h3>
+          <ul>
+            <li><strong>Support:</strong> Provide a multiplication/division chart. For Task 4, have students draw tally marks for each cup and label the cost. For Task 6, prompt: "25 per 100 — what is 25 per 100 of $20?" Allow students to use a calculator for the arithmetic, focusing on the setup.</li>
+            <li><strong>Challenge / Extension:</strong> Ask students to find three different ratio pairs that are equivalent to 3:1 (e.g., 6:2, 9:3, 12:4) and explain the pattern. Have them write their own "better buy" scenario and solve it. Extend Task 6: if the discount is 10%, 25%, 50%, or 75%, which saves the most? Make a table.</li>
+          </ul>
+
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Pre-teach key vocabulary: <em>ratio, unit rate, equivalent, per, percent, discount</em>. Post a word wall with visual examples (e.g., a picture of juice cartons labeled with the ratio).</li>
+            <li>Sentence frames: "The ratio of ___ to ___ is ___:___." / "The unit rate is ___ per ___." / "I know Fresh is cheaper because ___."</li>
+            <li>The smoothie glass in Task 1 is a concrete visual model — encourage students to point and explain in their home language before writing in English.</li>
+            <li>Allow bilingual scratch paper. Accept correct numeric answers even if the written explanation uses limited English.</li>
+          </ul>
+        </div>
+      </details>
 
       <!-- Q1: Build a ratio with the smoothie glass -->
       <section class="card" data-q="1">
@@ -306,7 +588,7 @@
           <strong>3 to 1</strong>.
         </p>
         <div class="builder">
-          <div class="glass" aria-hidden="true">
+          <div class="glass" aria-hidden="true" role="img" aria-label="Smoothie glass visual">
             <div class="layer juice" id="g-juice" style="height: 0"></div>
             <div class="layer fruit" id="g-fruit" style="height: 0"></div>
           </div>
@@ -321,7 +603,7 @@
               >
                 –
               </button>
-              <span class="count" id="c-fruit" aria-live="polite">0</span>
+              <span class="count" id="c-fruit" aria-live="polite" aria-label="Fruit scoops">0</span>
               <button
                 type="button"
                 class="step"
@@ -331,10 +613,7 @@
               >
                 +
               </button>
-              <label
-                ><span class="swatch" style="background: #e8554e"></span
-                >Fruit</label
-              >
+              <label for="c-fruit"><span class="swatch" style="background: #e8554e" aria-hidden="true"></span>Fruit</label>
             </div>
             <div class="stepper">
               <button
@@ -346,7 +625,7 @@
               >
                 –
               </button>
-              <span class="count" id="c-juice" aria-live="polite">0</span>
+              <span class="count" id="c-juice" aria-live="polite" aria-label="Juice scoops">0</span>
               <button
                 type="button"
                 class="step"
@@ -356,12 +635,9 @@
               >
                 +
               </button>
-              <label
-                ><span class="swatch" style="background: #f2b134"></span
-                >Juice</label
-              >
+              <label for="c-juice"><span class="swatch" style="background: #f2b134" aria-hidden="true"></span>Juice</label>
             </div>
-            <div class="ratio-readout" id="ratio-readout" aria-live="polite">
+            <div class="ratio-readout" id="ratio-readout" aria-live="polite" role="status">
               Fruit : Juice = 0 : 0
             </div>
           </div>
@@ -386,7 +662,9 @@
           inputmode="numeric"
           placeholder="e.g. 3:1"
           autocomplete="off"
+          aria-describedby="q2-hint"
         />
+        <p class="hint" id="q2-hint">Divide both numbers by their greatest common factor.</p>
       </section>
 
       <!-- Q3: Unit rate -->
@@ -398,7 +676,8 @@
           <strong>1 smoothie</strong>? Type just the number of dollars.
         </p>
         <label class="field" for="q3">$ per smoothie</label>
-        <input type="number" id="q3" min="0" step="0.01" placeholder="e.g. 5" />
+        <input type="number" id="q3" min="0" step="0.01" placeholder="e.g. 5" aria-describedby="q3-hint" />
+        <p class="hint" id="q3-hint">Divide $12 by 4 to find the price for 1.</p>
       </section>
 
       <!-- Q4: Better buy / compare unit rates -->
@@ -409,22 +688,26 @@
           Compare the unit rates. Tap the carton with the
           <strong>lower price per cup</strong>.
         </p>
-        <table class="price-table" aria-hidden="true">
-          <tr>
-            <th>Carton</th>
-            <th>Cups</th>
-            <th>Price</th>
-          </tr>
-          <tr>
-            <td>Sunny</td>
-            <td>3</td>
-            <td>$6</td>
-          </tr>
-          <tr>
-            <td>Fresh</td>
-            <td>5</td>
-            <td>$8</td>
-          </tr>
+        <table class="price-table" aria-label="Juice carton prices">
+          <thead>
+            <tr>
+              <th scope="col">Carton</th>
+              <th scope="col">Cups</th>
+              <th scope="col">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sunny</td>
+              <td>3</td>
+              <td>$6</td>
+            </tr>
+            <tr>
+              <td>Fresh</td>
+              <td>5</td>
+              <td>$8</td>
+            </tr>
+          </tbody>
         </table>
         <div
           class="chips"
@@ -465,8 +748,8 @@
           <strong>cups of fruit</strong> do you need?
         </p>
         <label class="field" for="q5">Cups of fruit</label>
-        <input type="number" id="q5" min="0" step="1" placeholder="cups" />
-        <p class="hint">10 cups of water is 2 times the recipe.</p>
+        <input type="number" id="q5" min="0" step="1" placeholder="cups" aria-describedby="q5-hint" />
+        <p class="hint" id="q5-hint">10 cups of water is 2 times the recipe.</p>
       </section>
 
       <!-- Q6: Percent as rate per 100 -->
@@ -484,7 +767,9 @@
           min="0"
           step="0.01"
           placeholder="dollars"
+          aria-describedby="q6-hint"
         />
+        <p class="hint" id="q6-hint">25% of $20 = 25/100 × 20 = ?</p>
       </section>
 
       <div class="submit-row">
@@ -495,6 +780,121 @@
 
       <!-- Activity kit mounts here: student name, save PDF/DOC, results -->
       <div id="ntkit"></div>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- RUBRIC                                     -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="card" aria-label="Scoring Rubric">
+        <h2>Scoring Rubric — Ratios &amp; Unit Rates (6.RP.A.1–3)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th scope="col">Skill</th>
+                <th scope="col">Expert (4)</th>
+                <th scope="col">Proficient (3)</th>
+                <th scope="col">Developing (2)</th>
+                <th scope="col">Beginning (1)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Write &amp; Simplify Ratios</strong><br><span style="font-size:0.85rem;color:var(--nt-muted)">Tasks 1–2 · 6.RP.A.1</span></td>
+                <td>Writes ratio correctly and simplifies to lowest terms; explains what the ratio means in context.</td>
+                <td>Writes ratio correctly and simplifies to lowest terms with no explanation needed.</td>
+                <td>Writes the ratio correctly but does not simplify, or simplifies incorrectly.</td>
+                <td>Cannot write or simplify a ratio without significant help.</td>
+              </tr>
+              <tr>
+                <td><strong>Find Unit Rate</strong><br><span style="font-size:0.85rem;color:var(--nt-muted)">Tasks 3–4 · 6.RP.A.2</span></td>
+                <td>Correctly finds the unit rate for both cartons and clearly identifies the better buy with a written reason.</td>
+                <td>Correctly finds the unit rate and identifies the better buy.</td>
+                <td>Sets up the division correctly but makes a calculation error; or identifies one unit rate correctly.</td>
+                <td>Does not set up or compute unit rates correctly.</td>
+              </tr>
+              <tr>
+                <td><strong>Scale Ratios &amp; Ratio Tables</strong><br><span style="font-size:0.85rem;color:var(--nt-muted)">Task 5 · 6.RP.A.3</span></td>
+                <td>Correctly scales the recipe; explains the multiplicative relationship (×2) between the original and scaled recipe.</td>
+                <td>Correctly scales the recipe using equivalent ratios.</td>
+                <td>Attempts to scale but uses additive reasoning (adds 2 instead of multiplying).</td>
+                <td>Cannot scale the recipe; no clear strategy shown.</td>
+              </tr>
+              <tr>
+                <td><strong>Percent as Rate per 100</strong><br><span style="font-size:0.85rem;color:var(--nt-muted)">Task 6 · 6.RP.A.3c</span></td>
+                <td>Finds the correct dollar savings and connects percent to "per 100"; shows or explains setup.</td>
+                <td>Finds the correct dollar savings from the percent discount.</td>
+                <td>Sets up the percent correctly but makes an arithmetic error.</td>
+                <td>Does not connect percent to a rate; cannot compute the savings.</td>
+              </tr>
+              <tr>
+                <td><strong>Overall Completion &amp; Deliverable</strong></td>
+                <td>All 6 tasks answered correctly; work saved as PDF or DOC with student name.</td>
+                <td>5–6 tasks answered correctly; deliverable saved.</td>
+                <td>3–4 tasks answered; deliverable saved or partially completed.</td>
+                <td>Fewer than 3 tasks; no deliverable saved.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- ANSWER KEY (collapsible, print-hidden)     -->
+      <!-- ══════════════════════════════════════════ -->
+      <details class="answer-key">
+        <summary>Teacher Answer Key (click to expand)</summary>
+        <div class="ak-body">
+          <ol>
+            <li>
+              <strong>Task 1 — Build a 3:1 ratio:</strong>
+              Any combination where fruit scoops ÷ juice scoops = 3 is accepted (e.g., 3 fruit + 1 juice, 6 fruit + 2 juice, 9 fruit + 3 juice). The grader checks the reduced form <strong>3:1</strong>.
+            </li>
+            <li>
+              <strong>Task 2 — Berry Blast ratio:</strong>
+              6 berries : 2 bananas → GCF(6,2) = 2 → <strong>3:1</strong>. Accept "3:1" or "3/1".
+            </li>
+            <li>
+              <strong>Task 3 — Unit rate:</strong>
+              $12 ÷ 4 smoothies = <strong>$3 per smoothie</strong>. Answer: 3.
+            </li>
+            <li>
+              <strong>Task 4 — Better buy:</strong>
+              Sunny: $6 ÷ 3 cups = $2.00/cup. Fresh: $8 ÷ 5 cups = $1.60/cup. <strong>Fresh</strong> is cheaper per cup.
+            </li>
+            <li>
+              <strong>Task 5 — Scale the recipe:</strong>
+              Original ratio: 2 cups fruit : 5 cups water. 10 cups water = 5 × 2, so scale factor = 2. Fruit needed: 2 × 2 = <strong>4 cups</strong>.
+            </li>
+            <li>
+              <strong>Task 6 — Percent discount:</strong>
+              25% = 25/100 = 0.25. Savings: 0.25 × $20 = <strong>$5</strong>. Answer: 5.
+            </li>
+          </ol>
+          <p style="margin-top:12px;font-size:0.9rem;color:var(--nt-muted);">Sample reflection: "Ratios help me compare amounts. A unit rate like $3 per smoothie makes comparing prices easy because all the denominators are 1. I can use percent like a ratio — 25% means 25 out of 100."</p>
+        </div>
+      </details>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- REFLECTION + DELIVERABLE                  -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="card" aria-label="Reflection">
+        <h2>Reflection</h2>
+        <p>Answer in 2–3 sentences:</p>
+        <p><strong>Where in real life do people use ratios or unit rates? Give one example from your own life and explain what the ratio or unit rate would mean.</strong></p>
+        <label for="reflection" class="field">Type your reflection here (included when you save as PDF):</label>
+        <textarea
+          class="reflection-area"
+          id="reflection"
+          rows="4"
+          placeholder="Example: At the grocery store, my family compares price per ounce to find the best deal. That is a unit rate — cost divided by ounces gives a 'per one' price so we can compare different sizes..."
+          aria-label="Reflection response"
+        ></textarea>
+
+        <div class="deliverable">
+          <strong>Deliverable:</strong> Complete all 6 tasks above, then click <em>Check My Work</em>. After your results appear, click <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to download a copy with your name and score. Turn in that file.
+        </div>
+      </section>
+
     </div>
 
     <script>
@@ -513,6 +913,9 @@
             counts.juice * UNIT + "px";
           document.getElementById("ratio-readout").textContent =
             "Fruit : Juice = " + counts.fruit + " : " + counts.juice;
+          var bar = document.getElementById("pfill").parentElement;
+          var n = answered();
+          bar.setAttribute("aria-valuenow", n);
           updateProgress();
         }
         document.querySelectorAll(".step").forEach(function (b) {

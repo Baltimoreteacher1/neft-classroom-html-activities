@@ -38,6 +38,16 @@
         font-size: 1.9rem;
         margin: 0 0 6px;
       }
+      h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+      }
+      h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0 0 6px;
+      }
       .standard {
         display: inline-block;
         font-weight: 700;
@@ -57,6 +67,192 @@
         border-radius: 10px;
         padding: 12px 16px;
       }
+
+      /* ---- Learning Target ---- */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin: 16px 0;
+      }
+      .learning-target h2 {
+        font-size: 1.05rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--nt-accent);
+        margin: 0 0 10px;
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.92rem;
+        color: var(--nt-muted);
+        border-top: 1px solid var(--nt-border);
+        padding-top: 10px;
+        margin-top: 8px;
+      }
+      .lt-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* ---- Teacher Notes / Answer Key collapsibles ---- */
+      details.teacher-notes,
+      details.answer-key {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 12px;
+        padding: 0;
+        margin: 14px 0;
+        overflow: hidden;
+      }
+      details.teacher-notes > summary,
+      details.answer-key > summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 12px 16px;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--nt-surface);
+        border-radius: 12px;
+        user-select: none;
+      }
+      details.teacher-notes > summary::-webkit-details-marker,
+      details.answer-key > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-notes > summary::before,
+      details.answer-key > summary::before {
+        content: "▶";
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+        display: inline-block;
+      }
+      details[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      details.teacher-notes > summary:focus-visible,
+      details.answer-key > summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+      .details-body {
+        padding: 4px 18px 16px;
+        border-top: 1px solid var(--nt-border);
+      }
+      .details-body h3 {
+        margin-top: 12px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 6px 0 8px;
+        padding-left: 1.4em;
+      }
+      .details-body li {
+        margin-bottom: 3px;
+      }
+      .teacher-tag {
+        display: inline-block;
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* ---- Rubric ---- */
+      .rubric-wrap {
+        margin: 14px 0;
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.94rem;
+        min-width: 500px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      table.rubric tbody tr:nth-child(odd) {
+        background: var(--nt-surface);
+      }
+      table.rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg);
+      }
+
+      /* ---- Reflection ---- */
+      .reflection-block {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-left: 6px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 18px 0;
+      }
+      .reflection-block label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+      }
+      textarea#reflection {
+        width: 100%;
+        min-height: 90px;
+        font-size: 1rem;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        font-family: inherit;
+        resize: vertical;
+      }
+      textarea#reflection:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-color: var(--nt-accent);
+      }
+      .deliverable {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin: 14px 0;
+        font-size: 1rem;
+      }
+      .deliverable strong {
+        color: var(--nt-accent);
+      }
+
+      /* ---- Existing activity styles ---- */
       .progress-wrap {
         margin: 18px 0 6px;
       }
@@ -170,8 +366,6 @@
         color: var(--nt-muted);
         font-weight: 700;
       }
-
-      /* Builder */
       .builder {
         display: flex;
         flex-wrap: wrap;
@@ -245,9 +439,49 @@
       #ntkit {
         margin-top: 8px;
       }
+      /* aria-live feedback region */
+      #a11y-feedback {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      /* ---- Print polish ---- */
+      @media print {
+        details.teacher-notes,
+        details.answer-key {
+          display: none !important;
+        }
+        #submitBtn,
+        button.btn,
+        .controls {
+          display: none !important;
+        }
+        .wrap {
+          padding: 8px;
+        }
+        body {
+          font-size: 13px;
+        }
+        h1 {
+          font-size: 1.4rem;
+        }
+        .card {
+          break-inside: avoid;
+        }
+        .rubric-wrap {
+          break-inside: avoid;
+        }
+      }
     </style>
   </head>
   <body class="nt-theme-aware">
+    <!-- Accessible live region for screen reader feedback -->
+    <div id="a11y-feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+
     <div class="wrap">
       <header class="page">
         <span class="standard">CCSS 6.G.A.1</span>
@@ -259,26 +493,81 @@
         </p>
       </header>
 
-      <div class="vocab">
+      <!-- ===== LEARNING TARGET ===== -->
+      <section class="learning-target" aria-labelledby="lt-heading">
+        <h2 id="lt-heading">Learning Target</h2>
+        <ul>
+          <li>I can find the area of rectangles and parallelograms using the formula base × height.</li>
+          <li>I can find the area of triangles using the formula ½ × base × height.</li>
+          <li>I can find the area of trapezoids using the formula ½ × (base₁ + base₂) × height.</li>
+          <li>I can find the area of composite (combined) figures by splitting them into simpler shapes.</li>
+        </ul>
+        <div class="lt-meta">
+          <span><strong>Standard:</strong> CCSS 6.G.A.1</span>
+          <span><strong>Estimated time:</strong> 30–40 min</span>
+          <span><strong>Materials:</strong> This activity, pencil/scratch paper</span>
+        </div>
+      </section>
+
+      <!-- ===== TEACHER NOTES (hidden in print) ===== -->
+      <details class="teacher-notes" aria-label="Teacher notes — hidden in print">
+        <summary><span class="teacher-tag">Teacher</span> Notes &amp; Pacing</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li><strong>Whole class (5 min):</strong> Review the vocab box and the four area formulas together. Model Q2 (rectangle) as a think-aloud.</li>
+            <li><strong>Partner or independent work (20–25 min):</strong> Students complete Q1–Q6. Circulate and prompt with "Which formula matches this shape?"</li>
+            <li><strong>Debrief (5–10 min):</strong> Share Q5 (trapezoid) and Q6 (composite) strategies. Discuss why the height must be perpendicular.</li>
+          </ul>
+          <h3>Grouping</h3>
+          <ul>
+            <li>Works well as partner activity for Q1 (build a rectangle together, then each student answers Q2–Q6 independently).</li>
+            <li>For whole-class: display the build grid on a projector; call on students to click squares.</li>
+          </ul>
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>Provide a printed formula reference card (b×h, ½bh, ½(b1+b2)h).</li>
+            <li>Allow students to draw the split lines on Q6 before calculating.</li>
+            <li>Pre-fill the first step: for Q4 ask "8 × 5 = ?" then "now take half."</li>
+          </ul>
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Ask students to create their own composite figure with a given total area (e.g., 48 units²).</li>
+            <li>Have students verify Q1 by proving the filled area is rectangular (equal rows &amp; columns).</li>
+            <li>Extend Q6: "What if you removed a 2×2 square from a corner — what is the new area?"</li>
+          </ul>
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Key vocabulary is defined in the vocab box; point to it explicitly.</li>
+            <li>"Perpendicular height" — demonstrate with a right-angle corner; avoid "straight-up" if confusing.</li>
+            <li>Allow students to label diagrams in their home language before writing the numeric answer.</li>
+            <li>Pair sentence frames: "The base is ___ and the height is ___, so I multiply ___ × ___ = ___."</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ===== VOCAB BOX ===== -->
+      <div class="vocab" role="note" aria-label="Key vocabulary">
         <b>Area</b> = number of square units inside a shape (units²). &nbsp;
-        <b>Rectangle:</b> base × height. &nbsp; <b>Parallelogram:</b> base ×
-        height. &nbsp; <b>Triangle:</b> ½ × base × height. &nbsp;
+        <b>Rectangle / Parallelogram:</b> base × height. &nbsp;
+        <b>Triangle:</b> ½ × base × height. &nbsp;
         <b>Trapezoid:</b> ½ × (base₁ + base₂) × height.
       </div>
 
+      <!-- ===== PROGRESS BAR ===== -->
       <div class="progress-wrap">
         <div class="progress-label">
           Progress: <span id="progTxt">0 of 6 answered</span>
         </div>
-        <div class="progress-track">
+        <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6" aria-label="Activity progress" id="progBar">
           <div class="progress-fill" id="progFill"></div>
         </div>
       </div>
 
-      <!-- Q1: Build a rectangle -->
+      <!-- ===== Q1: Build a rectangle ===== -->
       <section class="card" aria-labelledby="q1t">
         <div class="qhead">
-          <span class="qnum">1</span>
+          <span class="qnum" aria-hidden="true">1</span>
           <h2 class="qtitle" id="q1t">
             Build a rectangle with area 24 square units
           </h2>
@@ -307,10 +596,10 @@
         </div>
       </section>
 
-      <!-- Q2: Rectangle area -->
+      <!-- ===== Q2: Rectangle area ===== -->
       <section class="card" aria-labelledby="q2t">
         <div class="qhead">
-          <span class="qnum">2</span>
+          <span class="qnum" aria-hidden="true">2</span>
           <h2 class="qtitle" id="q2t">Find the area of the rectangle</h2>
         </div>
         <p class="directions">
@@ -342,10 +631,10 @@
         </div>
       </section>
 
-      <!-- Q3: Parallelogram -->
+      <!-- ===== Q3: Parallelogram ===== -->
       <section class="card" aria-labelledby="q3t">
         <div class="qhead">
-          <span class="qnum">3</span>
+          <span class="qnum" aria-hidden="true">3</span>
           <h2 class="qtitle" id="q3t">Find the area of the parallelogram</h2>
         </div>
         <p class="directions">
@@ -387,10 +676,10 @@
         </div>
       </section>
 
-      <!-- Q4: Triangle -->
+      <!-- ===== Q4: Triangle ===== -->
       <section class="card" aria-labelledby="q4t">
         <div class="qhead">
-          <span class="qnum">4</span>
+          <span class="qnum" aria-hidden="true">4</span>
           <h2 class="qtitle" id="q4t">Find the area of the triangle</h2>
         </div>
         <p class="directions">
@@ -429,10 +718,10 @@
         </div>
       </section>
 
-      <!-- Q5: Trapezoid -->
+      <!-- ===== Q5: Trapezoid ===== -->
       <section class="card" aria-labelledby="q5t">
         <div class="qhead">
-          <span class="qnum">5</span>
+          <span class="qnum" aria-hidden="true">5</span>
           <h2 class="qtitle" id="q5t">Find the area of the trapezoid</h2>
         </div>
         <p class="directions">
@@ -477,10 +766,10 @@
         </div>
       </section>
 
-      <!-- Q6: Composite -->
+      <!-- ===== Q6: Composite ===== -->
       <section class="card" aria-labelledby="q6t">
         <div class="qhead">
-          <span class="qnum">6</span>
+          <span class="qnum" aria-hidden="true">6</span>
           <h2 class="qtitle" id="q6t">Find the area of the L-shaped floor</h2>
         </div>
         <p class="directions">
@@ -493,7 +782,7 @@
           height="200"
           viewBox="0 0 320 200"
           role="img"
-          aria-label="L-shaped figure made of two rectangles, total covering 7 by 6 minus a corner"
+          aria-label="L-shaped figure: top rectangle 8 wide by 3 tall; bottom-left rectangle 4 wide by 3 tall"
         >
           <polygon
             class="fig-poly"
@@ -524,6 +813,78 @@
         </div>
       </section>
 
+      <!-- ===== RUBRIC ===== -->
+      <section aria-labelledby="rubric-heading">
+        <h2 id="rubric-heading" style="font-size:1.1rem; margin: 18px 0 8px;">Performance Rubric — Area of Polygons (6.G.A.1)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th scope="col">Score</th>
+                <th scope="col">Level</th>
+                <th scope="col">Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>Expert</td>
+                <td>Correctly applies all four area formulas (rectangle/parallelogram, triangle, trapezoid) and accurately decomposes the composite figure. Can explain the strategy used in Q6 and justify why the height must be perpendicular.</td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>Proficient</td>
+                <td>Correctly answers 5–6 of 6 problems. Applies the correct formula for each shape with at most one arithmetic error. Reflection shows understanding of the "break-apart" strategy for composite figures.</td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>Developing</td>
+                <td>Correctly answers 3–4 of 6 problems. May confuse base × height with ½ × base × height, or incorrectly add the bases on the trapezoid. Q1 rectangle may not be a true rectangle (random cells filled).</td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>Emerging</td>
+                <td>Answers 0–2 problems correctly. May not apply the correct formula, or may measure the slanted side instead of the perpendicular height. Needs direct instruction on area formulas and grid models.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== ANSWER KEY (teacher only, hidden in print) ===== -->
+      <details class="answer-key" aria-label="Answer key — hidden in print">
+        <summary><span class="teacher-tag">Teacher</span> Answer Key</summary>
+        <div class="details-body">
+          <h3>Correct Answers</h3>
+          <ol>
+            <li><strong>Q1 — Build rectangle:</strong> Any true rectangle with exactly 24 filled cells. Accepted arrangements: 4×6, 6×4, 3×8, 8×3. Cells must form a solid rectangle (no gaps, no extra cells).</li>
+            <li><strong>Q2 — Rectangle:</strong> 9 × 4 = <strong>36 units²</strong></li>
+            <li><strong>Q3 — Parallelogram:</strong> 10 × 6 = <strong>60 units²</strong> (use perpendicular height 6, not the slant side)</li>
+            <li><strong>Q4 — Triangle:</strong> ½ × 8 × 5 = ½ × 40 = <strong>20 units²</strong></li>
+            <li><strong>Q5 — Trapezoid:</strong> ½ × (6 + 10) × 4 = ½ × 16 × 4 = ½ × 64 = <strong>32 units²</strong></li>
+            <li><strong>Q6 — L-shape (composite):</strong> Top rectangle: 8 × 3 = 24. Bottom-left rectangle: 4 × 3 = 12. Total: 24 + 12 = <strong>36 units²</strong></li>
+          </ol>
+          <h3>Common Errors to Watch For</h3>
+          <ul>
+            <li>Q3: Students may multiply 10 × slant side. Ask them which measurement goes straight up.</li>
+            <li>Q4: Students may forget to take half (answer 40). Remind them ½ means divide by 2.</li>
+            <li>Q5: Students may forget to add the two bases before multiplying (e.g., ½ × 6 × 4 + 10 = 22). Emphasize the parentheses: add first.</li>
+            <li>Q6: Students may multiply the full bounding box 8×6=48 without subtracting the missing corner (48 − 12 = 36 also gives correct answer via subtraction method).</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ===== REFLECTION ===== -->
+      <div class="reflection-block">
+        <label for="reflection">Reflection: In your own words, explain how you find the area of a trapezoid. Why do you add the two bases before multiplying?</label>
+        <textarea id="reflection" aria-label="Reflection — explain trapezoid area in your own words" placeholder="Write your thinking here…"></textarea>
+      </div>
+
+      <!-- ===== DELIVERABLE ===== -->
+      <div class="deliverable">
+        <strong>Deliverable:</strong> Complete all 6 problems and the reflection above, then press <strong>Check My Work</strong>. When your results appear, use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to submit your completed activity to your teacher.
+      </div>
+
       <button type="button" class="btn" id="submitBtn">Check My Work</button>
 
       <div id="ntkit"></div>
@@ -535,12 +896,10 @@
         "use strict";
 
         // ---- Build grid (8 cols x 6 rows) ----
-        var COLS = 8,
-          ROWS = 6;
+        var COLS = 8, ROWS = 6;
         var grid = document.getElementById("grid");
         grid.style.gridTemplateColumns = "repeat(" + COLS + ", 30px)";
-        var painting = false,
-          paintVal = true;
+        var painting = false, paintVal = true;
         for (var i = 0; i < COLS * ROWS; i++) {
           var c = document.createElement("div");
           c.className = "cell";
@@ -554,21 +913,21 @@
         function setCell(c, on) {
           c.classList.toggle("on", on);
           var n = cells.indexOf(c) + 1;
-          c.setAttribute(
-            "aria-label",
-            "square " + n + (on ? ", filled" : ", empty"),
-          );
+          c.setAttribute("aria-label", "square " + n + (on ? ", filled" : ", empty"));
           updateCount();
         }
         function toggleCell(c) {
           setCell(c, !c.classList.contains("on"));
         }
         function updateCount() {
-          document.getElementById("cellCount").textContent = cells.filter(
-            function (c) {
-              return c.classList.contains("on");
-            },
-          ).length;
+          var count = cells.filter(function (c) {
+            return c.classList.contains("on");
+          }).length;
+          document.getElementById("cellCount").textContent = count;
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) {
+            fb.textContent = count + " squares filled";
+          }
           updateProgress();
         }
         cells.forEach(function (c) {
@@ -591,17 +950,15 @@
         window.addEventListener("pointerup", function () {
           painting = false;
         });
-        document
-          .getElementById("clearGrid")
-          .addEventListener("click", function () {
-            cells.forEach(function (c) {
-              c.classList.remove("on");
-            });
-            cells.forEach(function (c, idx) {
-              c.setAttribute("aria-label", "square " + (idx + 1) + ", empty");
-            });
-            updateCount();
+        document.getElementById("clearGrid").addEventListener("click", function () {
+          cells.forEach(function (c) {
+            c.classList.remove("on");
           });
+          cells.forEach(function (c, idx) {
+            c.setAttribute("aria-label", "square " + (idx + 1) + ", empty");
+          });
+          updateCount();
+        });
 
         // ---- Progress ----
         var inputs = ["a2", "a3", "a4", "a5", "a6"].map(function (id) {
@@ -609,12 +966,7 @@
         });
         function filledCount() {
           var n = 0;
-          if (
-            cells.some(function (c) {
-              return c.classList.contains("on");
-            })
-          )
-            n++;
+          if (cells.some(function (c) { return c.classList.contains("on"); })) n++;
           inputs.forEach(function (inp) {
             if (inp.value.trim() !== "") n++;
           });
@@ -624,6 +976,8 @@
           var n = filledCount();
           document.getElementById("progTxt").textContent = n + " of 6 answered";
           document.getElementById("progFill").style.width = (n / 6) * 100 + "%";
+          var bar = document.getElementById("progBar");
+          if (bar) bar.setAttribute("aria-valuenow", n);
         }
         inputs.forEach(function (inp) {
           inp.addEventListener("input", updateProgress);
@@ -632,66 +986,61 @@
 
         // ---- Grade ----
         NTKit.mount("#ntkit");
-        document
-          .getElementById("submitBtn")
-          .addEventListener("click", function () {
-            var builtArea = cells.filter(function (c) {
-              return c.classList.contains("on");
-            }).length;
-            NTKit.grade({
-              activityId: "architect-unit-5",
-              activityTitle: "Unit 5 · Area Architect — Area of Polygons",
-              standard: "6.G.A.1",
-              items: [
-                {
-                  prompt:
-                    "Build a rectangle with area 24 square units (filled squares)",
-                  studentAnswer: String(builtArea),
-                  correctAnswer: "24",
-                  points: 1,
-                  skill: "Build area",
-                },
-                {
-                  prompt: "Area of rectangle: base 9 × height 4",
-                  studentAnswer: document.getElementById("a2").value,
-                  correctAnswer: "36",
-                  points: 1,
-                  skill: "Rectangle area",
-                },
-                {
-                  prompt: "Area of parallelogram: base 10 × height 6",
-                  studentAnswer: document.getElementById("a3").value,
-                  correctAnswer: "60",
-                  points: 1,
-                  skill: "Parallelogram area",
-                },
-                {
-                  prompt: "Area of triangle: ½ × base 8 × height 5",
-                  studentAnswer: document.getElementById("a4").value,
-                  correctAnswer: "20",
-                  points: 1,
-                  skill: "Triangle area",
-                },
-                {
-                  prompt: "Area of trapezoid: ½ × (6 + 10) × height 4",
-                  studentAnswer: document.getElementById("a5").value,
-                  correctAnswer: "32",
-                  points: 1,
-                  skill: "Trapezoid area",
-                },
-                {
-                  prompt: "Area of L-shape: (8×3) + (4×3)",
-                  studentAnswer: document.getElementById("a6").value,
-                  correctAnswer: "36",
-                  points: 1,
-                  skill: "Composite area",
-                },
-              ],
-            });
-            document
-              .getElementById("ntkit")
-              .scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("submitBtn").addEventListener("click", function () {
+          var builtArea = cells.filter(function (c) {
+            return c.classList.contains("on");
+          }).length;
+          NTKit.grade({
+            activityId: "architect-unit-5",
+            activityTitle: "Unit 5 · Area Architect — Area of Polygons",
+            standard: "6.G.A.1",
+            items: [
+              {
+                prompt: "Build a rectangle with area 24 square units (filled squares)",
+                studentAnswer: String(builtArea),
+                correctAnswer: "24",
+                points: 1,
+                skill: "Build area",
+              },
+              {
+                prompt: "Area of rectangle: base 9 × height 4",
+                studentAnswer: document.getElementById("a2").value,
+                correctAnswer: "36",
+                points: 1,
+                skill: "Rectangle area",
+              },
+              {
+                prompt: "Area of parallelogram: base 10 × height 6",
+                studentAnswer: document.getElementById("a3").value,
+                correctAnswer: "60",
+                points: 1,
+                skill: "Parallelogram area",
+              },
+              {
+                prompt: "Area of triangle: ½ × base 8 × height 5",
+                studentAnswer: document.getElementById("a4").value,
+                correctAnswer: "20",
+                points: 1,
+                skill: "Triangle area",
+              },
+              {
+                prompt: "Area of trapezoid: ½ × (6 + 10) × height 4",
+                studentAnswer: document.getElementById("a5").value,
+                correctAnswer: "32",
+                points: 1,
+                skill: "Trapezoid area",
+              },
+              {
+                prompt: "Area of L-shape: (8×3) + (4×3)",
+                studentAnswer: document.getElementById("a6").value,
+                correctAnswer: "36",
+                points: 1,
+                skill: "Composite area",
+              },
+            ],
           });
+          document.getElementById("ntkit").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
       })();
     </script>
   </body>

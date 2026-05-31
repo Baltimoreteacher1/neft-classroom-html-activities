@@ -33,42 +33,144 @@
         margin: 0 auto;
         padding: 20px 18px 64px;
       }
-      header.page {
-        margin: 8px 0 18px;
+
+      /* ---- Hero header ---- */
+      header.hero {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 20px 22px 16px;
+        margin-bottom: 4px;
       }
-      h1 {
-        font-size: 1.9rem;
-        margin: 0 0 6px;
-      }
-      .standard {
+      .badge {
         display: inline-block;
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: var(--nt-bg);
         background: var(--nt-accent);
-        padding: 3px 12px;
+        color: var(--nt-bg);
+        font-weight: 700;
+        font-size: 14px;
+        padding: 4px 12px;
         border-radius: 999px;
+        letter-spacing: 0.3px;
+      }
+      header.hero h1 {
+        font-size: 1.9rem;
+        margin: 10px 0 6px;
       }
       .lead {
-        margin: 12px 0 0;
         font-size: 1.1rem;
-        color: var(--nt-text);
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 12px 16px;
+        margin: 0 0 12px;
+        border-left: 5px solid var(--nt-accent);
+        padding-left: 12px;
       }
+
+      /* ---- Learning Target box ---- */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin: 14px 0;
+      }
+      .learning-target h2 {
+        font-size: 1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--nt-accent);
+        margin: 0 0 10px;
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target ul li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.88rem;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 6px;
+        padding: 2px 10px;
+      }
+
+      /* ---- Teacher notes (collapsible) ---- */
+      details.teacher-notes {
+        background: var(--nt-surface);
+        border: 2px dashed var(--nt-border);
+        border-radius: 14px;
+        padding: 0;
+        margin: 14px 0;
+      }
+      details.teacher-notes summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 12px 16px;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--nt-text);
+        border-radius: 14px;
+      }
+      details.teacher-notes summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-notes summary::before {
+        content: "▶";
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+        color: var(--nt-accent);
+      }
+      details.teacher-notes[open] summary::before {
+        transform: rotate(90deg);
+      }
+      details.teacher-notes summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-radius: 12px;
+      }
+      .teacher-notes-body {
+        padding: 0 16px 16px;
+        font-size: 0.95rem;
+      }
+      .teacher-notes-body h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--nt-accent);
+        margin: 14px 0 4px;
+      }
+      .teacher-notes-body p,
+      .teacher-notes-body ul {
+        margin: 0 0 8px;
+      }
+      .teacher-notes-body ul {
+        padding-left: 1.4em;
+      }
+
+      /* ---- Vocab bar ---- */
       .vocab {
         margin: 14px 0 0;
         padding: 12px 16px;
         border: 1px dashed var(--nt-border);
         border-radius: 10px;
         background: var(--nt-surface);
+        font-size: 1rem;
       }
       .vocab b {
         color: var(--nt-accent);
       }
+
+      /* ---- Progress ---- */
       .progress-wrap {
         margin: 18px 0 6px;
       }
@@ -91,6 +193,8 @@
         border-radius: 999px;
         transition: width 0.3s ease;
       }
+
+      /* ---- Question cards ---- */
       .card {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
@@ -145,17 +249,28 @@
         background: var(--nt-bg);
         color: var(--nt-text);
       }
+      input[type="text"] {
+        font-size: 1.2rem;
+        padding: 8px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 8px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
       input[type="number"]:focus-visible,
-      select:focus-visible {
+      input[type="text"]:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
+        border-color: var(--nt-accent);
       }
       .unit {
         color: var(--nt-muted);
         font-weight: 700;
       }
 
-      /* Submarine number line */
+      /* ---- Submarine number line ---- */
       .sub-build {
         display: flex;
         flex-wrap: wrap;
@@ -201,7 +316,7 @@
         font-weight: 700;
         color: var(--nt-text);
       }
-      .sub {
+      .sub-icon {
         position: absolute;
         left: 50%;
         width: 40px;
@@ -212,7 +327,7 @@
         line-height: 26px;
         text-align: center;
       }
-      .sub:focus-visible {
+      .sub-icon:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 4px;
         border-radius: 6px;
@@ -248,8 +363,14 @@
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
       }
+      .feedback-live {
+        font-size: 0.95rem;
+        min-height: 1.4em;
+        color: var(--nt-muted);
+        margin-top: 6px;
+      }
 
-      /* Horizontal number line figure */
+      /* ---- Horizontal number line figure ---- */
       svg.fig {
         display: block;
         max-width: 100%;
@@ -282,10 +403,7 @@
         background: var(--nt-bg);
         color: var(--nt-text);
       }
-      .order-help {
-        font-weight: 700;
-        color: var(--nt-muted);
-      }
+
       #submitBtn {
         font-size: 1.25rem;
         padding: 14px 28px;
@@ -294,12 +412,154 @@
       #ntkit {
         margin-top: 8px;
       }
+
+      /* ---- Rubric ---- */
+      .rubric-section {
+        margin: 24px 0;
+      }
+      .rubric-section h2 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--nt-accent);
+        margin: 0 0 10px;
+      }
+      .rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+      .rubric-table th,
+      .rubric-table td {
+        border: 1px solid var(--nt-border);
+        padding: 8px 12px;
+        vertical-align: top;
+        text-align: left;
+        background: var(--nt-surface);
+      }
+      .rubric-table th {
+        background: var(--nt-accent);
+        color: var(--nt-bg);
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .rubric-table tr:nth-child(even) td {
+        background: var(--nt-bg);
+      }
+
+      /* ---- Answer key (collapsible teacher) ---- */
+      details.answer-key {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-radius: 14px;
+        padding: 0;
+        margin: 14px 0;
+      }
+      details.answer-key summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        padding: 12px 16px;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--nt-text);
+      }
+      details.answer-key summary::-webkit-details-marker {
+        display: none;
+      }
+      details.answer-key summary::before {
+        content: "▶";
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+        color: var(--nt-accent);
+      }
+      details.answer-key[open] summary::before {
+        transform: rotate(90deg);
+      }
+      details.answer-key summary:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+        border-radius: 12px;
+      }
+      .answer-key-body {
+        padding: 0 16px 16px;
+        font-size: 0.95rem;
+      }
+      .answer-key-body ol {
+        margin: 0;
+        padding-left: 1.6em;
+      }
+      .answer-key-body ol li {
+        margin-bottom: 6px;
+      }
+      .answer-key-body strong {
+        color: var(--nt-accent);
+      }
+
+      /* ---- Reflection / Deliverable ---- */
+      .reflection-section {
+        margin: 24px 0;
+      }
+      .reflection-section h2 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--nt-accent);
+        margin: 0 0 8px;
+      }
+      .deliverable {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-border);
+        border-left: 6px solid var(--nt-accent);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.97rem;
+        margin-bottom: 14px;
+      }
+      .reflection-section label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      textarea.reflection-input {
+        width: 100%;
+        min-height: 100px;
+        font-size: 1rem;
+        padding: 10px 12px;
+        border: 2px solid var(--nt-border);
+        border-radius: 10px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        resize: vertical;
+        font-family: inherit;
+      }
+
+      /* ---- Print styles ---- */
+      @media print {
+        details.teacher-notes,
+        details.answer-key {
+          display: none !important;
+        }
+        button.btn,
+        #submitBtn {
+          display: none !important;
+        }
+        .progress-wrap {
+          display: none !important;
+        }
+      }
     </style>
   </head>
   <body class="nt-theme-aware">
     <div class="wrap">
-      <header class="page">
-        <span class="standard">CCSS 6.NS.C.5–7</span>
+
+      <!-- ============ HERO HEADER ============ -->
+      <header class="hero">
+        <span class="badge">CCSS 6.NS.C.5–7</span>
         <h1>Submarine Architect — Integers &amp; the Number Line</h1>
         <p class="lead">
           <strong>What to do:</strong> Dive the submarine, place points, and
@@ -308,7 +568,56 @@
         </p>
       </header>
 
-      <div class="vocab">
+      <!-- ============ LEARNING TARGET ============ -->
+      <section class="learning-target" aria-labelledby="lt-heading">
+        <h2 id="lt-heading">Learning Targets</h2>
+        <ul>
+          <li>I can place positive and negative integers on a number line.</li>
+          <li>I can find the opposite and absolute value of an integer.</li>
+          <li>I can compare and order integers using &lt; and &gt;.</li>
+          <li>I can use integers to represent real-world situations (above/below sea level).</li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standard: 6.NS.C.5, 6.NS.C.6, 6.NS.C.7</span>
+          <span>Time: ~35–45 min</span>
+          <span>Materials: This activity, pencil</span>
+        </div>
+      </section>
+
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-notes" aria-label="Teacher Notes">
+        <summary>Teacher Notes (collapse for students)</summary>
+        <div class="teacher-notes-body">
+          <h3>Pacing</h3>
+          <p>Plan 5 minutes for the vocabulary warm-up, 20–25 minutes for questions 1–7, and 5–10 minutes for the reflection. The submarine drag is the hook — give students a moment to explore before moving on.</p>
+
+          <h3>Grouping</h3>
+          <p>Works well individually or in pairs. Pairs are effective for Q5–Q6 (comparing/ordering) so students verbalize reasoning.</p>
+
+          <h3>Differentiation — Support</h3>
+          <ul>
+            <li>Provide a printed integer number line (−10 to 10) as a visual scaffold.</li>
+            <li>For Q6 (ordering), allow students to write each number on a sticky note and physically arrange them.</li>
+            <li>Chunking: assign Q1–Q4 first, debrief, then Q5–Q7.</li>
+          </ul>
+
+          <h3>Differentiation — Challenge</h3>
+          <ul>
+            <li>Ask: "What integer represents a gain of $15 and a loss of $8? What is the net result?"</li>
+            <li>Extension: Order six integers including fractions like −2.5 and discuss where they belong.</li>
+          </ul>
+
+          <h3>ESOL / Language Supports</h3>
+          <ul>
+            <li>Review the vocabulary box (integer, opposite, absolute value) in the student's home language if possible.</li>
+            <li>Use the submarine visual to anchor "above/below sea level" as a concrete model for positive/negative.</li>
+            <li>Accept equivalent expressions (e.g., "negative 7" written as "−7") and discuss notation.</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ============ VOCAB ============ -->
+      <div class="vocab" role="note" aria-label="Key vocabulary">
         <b>Integer</b> = a whole number that can be positive, negative, or 0
         (like −3, 0, 5). &nbsp; <b>Opposite</b> = same distance from 0, other
         side (opposite of 4 is −4). &nbsp; <b>Absolute value |n|</b> = distance
@@ -316,19 +625,20 @@
         get <b>bigger</b> as you go up / right.
       </div>
 
+      <!-- ============ PROGRESS ============ -->
       <div class="progress-wrap">
         <div class="progress-label">
-          Progress: <span id="progTxt">0 of 7 answered</span>
+          Progress: <span id="progTxt" role="status" aria-live="polite">0 of 7 answered</span>
         </div>
-        <div class="progress-track">
+        <div class="progress-track" aria-hidden="true">
           <div class="progress-fill" id="progFill"></div>
         </div>
       </div>
 
-      <!-- Q1: Drive the submarine to a depth -->
+      <!-- ============ Q1: Drive submarine to −4 ============ -->
       <section class="card" aria-labelledby="q1t">
         <div class="qhead">
-          <span class="qnum">1</span>
+          <span class="qnum" aria-hidden="true">1</span>
           <h2 class="qtitle" id="q1t">Dive the submarine to −4</h2>
         </div>
         <p class="directions">
@@ -344,7 +654,7 @@
           >
             <div class="axis"></div>
             <div
-              class="sub"
+              class="sub-icon"
               id="sub"
               role="slider"
               tabindex="0"
@@ -360,19 +670,18 @@
           <div class="depth-readout">
             Submarine depth: <b id="depthVal">0</b>
             <div class="controls">
-              <button type="button" class="btn ghost" id="upBtn">▲ Up</button>
-              <button type="button" class="btn ghost" id="downBtn">
-                ▼ Down
-              </button>
+              <button type="button" class="btn ghost" id="upBtn" aria-label="Move submarine up one unit">▲ Up</button>
+              <button type="button" class="btn ghost" id="downBtn" aria-label="Move submarine down one unit">▼ Down</button>
             </div>
+            <div class="feedback-live" id="q1feedback" aria-live="polite"></div>
           </div>
         </div>
       </section>
 
-      <!-- Q2: Opposite -->
+      <!-- ============ Q2: Opposite ============ -->
       <section class="card" aria-labelledby="q2t">
         <div class="qhead">
-          <span class="qnum">2</span>
+          <span class="qnum" aria-hidden="true">2</span>
           <h2 class="qtitle" id="q2t">What is the opposite of 7?</h2>
         </div>
         <p class="directions">
@@ -386,14 +695,16 @@
             id="a2"
             inputmode="numeric"
             aria-label="Opposite of 7"
+            aria-describedby="a2hint"
           />
         </div>
+        <div id="a2hint" class="feedback-live" aria-live="polite"></div>
       </section>
 
-      <!-- Q3: Absolute value -->
+      <!-- ============ Q3: Absolute value ============ -->
       <section class="card" aria-labelledby="q3t">
         <div class="qhead">
-          <span class="qnum">3</span>
+          <span class="qnum" aria-hidden="true">3</span>
           <h2 class="qtitle" id="q3t">Find the absolute value |−9|</h2>
         </div>
         <p class="directions">
@@ -406,14 +717,16 @@
             id="a3"
             inputmode="numeric"
             aria-label="Absolute value of negative 9"
+            aria-describedby="a3hint"
           />
         </div>
+        <div id="a3hint" class="feedback-live" aria-live="polite"></div>
       </section>
 
-      <!-- Q4: Plot / read a point on horizontal number line -->
+      <!-- ============ Q4: Plot / read a point ============ -->
       <section class="card" aria-labelledby="q4t">
         <div class="qhead">
-          <span class="qnum">4</span>
+          <span class="qnum" aria-hidden="true">4</span>
           <h2 class="qtitle" id="q4t">What integer is the dot on?</h2>
         </div>
         <p class="directions">
@@ -439,14 +752,16 @@
             id="a4"
             inputmode="numeric"
             aria-label="Integer the dot is on"
+            aria-describedby="a4hint"
           />
         </div>
+        <div id="a4hint" class="feedback-live" aria-live="polite"></div>
       </section>
 
-      <!-- Q5: Compare two integers -->
+      <!-- ============ Q5: Compare two integers ============ -->
       <section class="card" aria-labelledby="q5t">
         <div class="qhead">
-          <span class="qnum">5</span>
+          <span class="qnum" aria-hidden="true">5</span>
           <h2 class="qtitle" id="q5t">Compare: −2 ___ −8</h2>
         </div>
         <p class="directions">
@@ -455,26 +770,22 @@
         </p>
         <div class="answer-row">
           <span class="ans-label">−2</span>
-          <label
-            class="ans-label"
-            for="a5"
-            style="position: absolute; left: -9999px"
-            >Compare negative 2 and negative 8</label
-          >
-          <select id="a5">
+          <label class="ans-label" for="a5" style="position:absolute;left:-9999px">Compare negative 2 and negative 8</label>
+          <select id="a5" aria-label="Compare negative 2 and negative 8">
             <option value="">choose…</option>
-            <option value="&gt;">&gt; (greater than)</option>
-            <option value="&lt;">&lt; (less than)</option>
+            <option value=">">&gt; (greater than)</option>
+            <option value="<">&lt; (less than)</option>
             <option value="=">= (equal)</option>
           </select>
           <span class="ans-label">−8</span>
         </div>
+        <div class="feedback-live" id="a5hint" aria-live="polite"></div>
       </section>
 
-      <!-- Q6: Order integers -->
+      <!-- ============ Q6: Order integers ============ -->
       <section class="card" aria-labelledby="q6t">
         <div class="qhead">
-          <span class="qnum">6</span>
+          <span class="qnum" aria-hidden="true">6</span>
           <h2 class="qtitle" id="q6t">Order from least to greatest</h2>
         </div>
         <p class="directions">
@@ -487,25 +798,19 @@
           <input
             type="text"
             id="a6"
-            style="
-              font-size: 1.2rem;
-              padding: 8px 12px;
-              width: 220px;
-              border: 2px solid var(--nt-border);
-              border-radius: 8px;
-              background: var(--nt-bg);
-              color: var(--nt-text);
-            "
+            style="width:220px"
             aria-label="Order the integers from least to greatest, separated by commas"
+            aria-describedby="a6hint"
             placeholder="−5, −1, 0, 3"
           />
         </div>
+        <div id="a6hint" class="feedback-live" aria-live="polite"></div>
       </section>
 
-      <!-- Q7: Real-world meaning -->
+      <!-- ============ Q7: Real-world meaning ============ -->
       <section class="card" aria-labelledby="q7t">
         <div class="qhead">
-          <span class="qnum">7</span>
+          <span class="qnum" aria-hidden="true">7</span>
           <h2 class="qtitle" id="q7t">Use an integer for the depth</h2>
         </div>
         <p class="directions">
@@ -519,15 +824,90 @@
             id="a7"
             inputmode="numeric"
             aria-label="Integer for 30 meters below sea level"
+            aria-describedby="a7hint"
           />
           <span class="unit">meters</span>
         </div>
+        <div id="a7hint" class="feedback-live" aria-live="polite"></div>
       </section>
 
-      <button type="button" class="btn" id="submitBtn">Check My Work</button>
+      <!-- ============ SUBMIT ============ -->
+      <button type="button" class="btn" id="submitBtn" aria-label="Check my work and see score">Check My Work</button>
 
       <div id="ntkit"></div>
-    </div>
+
+      <!-- ============ RUBRIC ============ -->
+      <section class="rubric-section" aria-labelledby="rubric-heading">
+        <h2 id="rubric-heading">Scoring Rubric</h2>
+        <div style="overflow-x:auto">
+          <table class="rubric-table" role="table">
+            <thead>
+              <tr>
+                <th scope="col">Score (out of 7)</th>
+                <th scope="col">Level</th>
+                <th scope="col">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>6–7</td>
+                <td><strong>Exceeding</strong></td>
+                <td>Correctly places integers on the number line, finds opposites and absolute values, compares and orders integers, and interprets negative integers in context with no significant errors.</td>
+              </tr>
+              <tr>
+                <td>4–5</td>
+                <td><strong>Meeting</strong></td>
+                <td>Demonstrates understanding of positive and negative integers; may have one error in comparison or ordering. Connects integers to real-world context.</td>
+              </tr>
+              <tr>
+                <td>2–3</td>
+                <td><strong>Approaching</strong></td>
+                <td>Understands what integers are but makes consistent errors in direction (e.g., confuses "farther left = greater") or with absolute value sign. Needs guided practice.</td>
+              </tr>
+              <tr>
+                <td>0–1</td>
+                <td><strong>Beginning</strong></td>
+                <td>Difficulty placing integers on a number line or interpreting negative values. Requires direct instruction with concrete number-line tools.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ ANSWER KEY (teacher only, hidden in print) ============ -->
+      <details class="answer-key" aria-label="Answer Key">
+        <summary>Answer Key (Teacher Use Only)</summary>
+        <div class="answer-key-body">
+          <ol>
+            <li><strong>Q1 — Submarine depth:</strong> −4. Students must drag or click the submarine to position −4 on the vertical number line.</li>
+            <li><strong>Q2 — Opposite of 7:</strong> −7. Reflection across 0 on the number line; same distance, opposite direction.</li>
+            <li><strong>Q3 — Absolute value |−9|:</strong> 9. Distance from 0 is always non-negative; |−9| = 9.</li>
+            <li><strong>Q4 — Read the dot:</strong> −3. The dot is placed at x = 122 px. Tick formula: x = 30 + (n+5)×46, so n = (122−30)/46 − 5 = 2 − 5 = −3.</li>
+            <li><strong>Q5 — Compare −2 ___ −8:</strong> &gt; (greater than). On the number line −2 is to the right of −8, so −2 &gt; −8.</li>
+            <li><strong>Q6 — Order 3, −5, 0, −1:</strong> −5, −1, 0, 3. Ascending order from left to right on a number line.</li>
+            <li><strong>Q7 — 30 meters below sea level:</strong> −30. Below sea level is negative; "30 meters below" → −30.</li>
+          </ol>
+        </div>
+      </details>
+
+      <!-- ============ REFLECTION ============ -->
+      <section class="reflection-section" aria-labelledby="reflection-heading">
+        <h2 id="reflection-heading">Reflection</h2>
+        <div class="deliverable">
+          <strong>Deliverable:</strong> Complete all 7 questions and the reflection below. Press <em>Check My Work</em> to save your score. Your teacher will collect your score and this reflection.
+        </div>
+        <label for="reflectionInput">
+          In your own words: explain what a negative integer means and give ONE real-world example (other than the submarine). Write at least 2 sentences.
+        </label>
+        <textarea
+          id="reflectionInput"
+          class="reflection-input"
+          aria-label="Reflection: explain what a negative integer means in your own words"
+          placeholder="A negative integer means… For example…"
+        ></textarea>
+      </section>
+
+    </div><!-- /.wrap -->
 
     <script src="/assets/nt-activity-kit.js"></script>
     <script>
@@ -538,20 +918,14 @@
         var ticks = document.getElementById("nlTicks");
         for (var n = -5; n <= 5; n++) {
           var x = 30 + (n + 5) * 46;
-          var ln = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "line",
-          );
+          var ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
           ln.setAttribute("class", "nl-tick");
           ln.setAttribute("x1", x);
           ln.setAttribute("y1", 38);
           ln.setAttribute("x2", x);
           ln.setAttribute("y2", 52);
           ticks.appendChild(ln);
-          var tx = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "text",
-          );
+          var tx = document.createElementNS("http://www.w3.org/2000/svg", "text");
           tx.setAttribute("class", "lbl");
           tx.setAttribute("x", x);
           tx.setAttribute("y", 72);
@@ -561,13 +935,13 @@
         }
 
         // ---- Q1 submarine vertical number line ----
-        var MIN = -6,
-          MAX = 6;
+        var MIN = -6, MAX = 6;
         var nline = document.getElementById("nline");
         var sub = document.getElementById("sub");
         var depthVal = document.getElementById("depthVal");
+        var q1feedback = document.getElementById("q1feedback");
         var depth = 0;
-        var PAD = 24; // px padding top/bottom inside the line
+        var PAD = 24;
 
         // build tick labels
         for (var v = MAX; v >= MIN; v--) {
@@ -600,8 +974,16 @@
               ? "0, sea level"
               : val > 0
                 ? val + ", above sea level"
-                : Math.abs(val) + " below sea level",
+                : Math.abs(val) + " below sea level"
           );
+          // live feedback
+          if (val === -4) {
+            q1feedback.textContent = "Target reached! The submarine is at −4.";
+          } else if (val !== 0) {
+            q1feedback.textContent = "Current depth: " + val + ". Target is −4.";
+          } else {
+            q1feedback.textContent = "";
+          }
           updateProgress();
         }
         function topToValue(topPx) {
@@ -609,10 +991,7 @@
           return MAX - frac * (MAX - MIN);
         }
 
-        // place after layout
-        function placeSub() {
-          setDepth(depth);
-        }
+        function placeSub() { setDepth(depth); }
         if (document.readyState === "complete") placeSub();
         else window.addEventListener("load", placeSub);
         window.addEventListener("resize", placeSub);
@@ -627,7 +1006,7 @@
         sub.addEventListener("pointerdown", function (e) {
           e.preventDefault();
           dragging = true;
-          sub.setPointerCapture && sub.setPointerCapture(e.pointerId);
+          if (sub.setPointerCapture) sub.setPointerCapture(e.pointerId);
         });
         nline.addEventListener("pointermove", function (e) {
           if (dragging) pointerToDepth(e);
@@ -636,39 +1015,27 @@
           if (e.target === sub) return;
           pointerToDepth(e);
         });
-        window.addEventListener("pointerup", function () {
-          dragging = false;
-        });
+        window.addEventListener("pointerup", function () { dragging = false; });
 
         // keyboard
         sub.addEventListener("keydown", function (e) {
           if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") {
-            e.preventDefault();
-            setDepth(depth + 1);
+            e.preventDefault(); setDepth(depth + 1);
           } else if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") {
-            e.preventDefault();
-            setDepth(depth - 1);
+            e.preventDefault(); setDepth(depth - 1);
           } else if (e.key === "Home") {
-            e.preventDefault();
-            setDepth(MAX);
+            e.preventDefault(); setDepth(MAX);
           } else if (e.key === "End") {
-            e.preventDefault();
-            setDepth(MIN);
+            e.preventDefault(); setDepth(MIN);
           }
         });
-        document.getElementById("upBtn").addEventListener("click", function () {
-          setDepth(depth + 1);
-        });
-        document
-          .getElementById("downBtn")
-          .addEventListener("click", function () {
-            setDepth(depth - 1);
-          });
+        document.getElementById("upBtn").addEventListener("click", function () { setDepth(depth + 1); });
+        document.getElementById("downBtn").addEventListener("click", function () { setDepth(depth - 1); });
 
         // ---- Progress ----
         var fields = ["a2", "a3", "a4", "a5", "a6", "a7"];
         function filledCount() {
-          var n = depth !== 0 ? 1 : 0; // moved submarine counts
+          var n = depth !== 0 ? 1 : 0;
           fields.forEach(function (id) {
             var el = document.getElementById(id);
             if (el && String(el.value).trim() !== "") n++;
@@ -692,81 +1059,75 @@
         // ---- Order answer normalizer (Q6) ----
         function normOrder(str) {
           return String(str || "")
-            .replace(/−/g, "-") // minus sign -> hyphen
+            .replace(/−/g, "-")
+            .replace(/[^\d,\-\s]/g, "")
             .split(/[\s,]+/)
-            .filter(function (s) {
-              return s !== "";
-            })
+            .filter(function (s) { return s !== ""; })
             .join(",");
         }
 
         // ---- Grade ----
         NTKit.mount("#ntkit");
-        document
-          .getElementById("submitBtn")
-          .addEventListener("click", function () {
-            var orderStudent = normOrder(document.getElementById("a6").value);
-            NTKit.grade({
-              activityId: "architect-unit-7",
-              activityTitle:
-                "Unit 7 · Submarine Architect — Integers & the Number Line",
-              standard: "6.NS.C.5-7",
-              items: [
-                {
-                  prompt: "Dive the submarine to depth −4",
-                  studentAnswer: String(depth),
-                  correctAnswer: "-4",
-                  points: 1,
-                  skill: "Number line position",
-                },
-                {
-                  prompt: "Opposite of 7",
-                  studentAnswer: document.getElementById("a2").value,
-                  correctAnswer: "-7",
-                  points: 1,
-                  skill: "Opposites",
-                },
-                {
-                  prompt: "Absolute value |−9|",
-                  studentAnswer: document.getElementById("a3").value,
-                  correctAnswer: "9",
-                  points: 1,
-                  skill: "Absolute value",
-                },
-                {
-                  prompt: "Read the point on the number line",
-                  studentAnswer: document.getElementById("a4").value,
-                  correctAnswer: "-3",
-                  points: 1,
-                  skill: "Reading the number line",
-                },
-                {
-                  prompt: "Compare −2 ___ −8",
-                  studentAnswer: document.getElementById("a5").value,
-                  correctAnswer: ">",
-                  points: 1,
-                  skill: "Comparing integers",
-                },
-                {
-                  prompt: "Order 3, −5, 0, −1 from least to greatest",
-                  studentAnswer: orderStudent,
-                  correctAnswer: "-5,-1,0,3",
-                  points: 1,
-                  skill: "Ordering integers",
-                },
-                {
-                  prompt: "Integer for 30 meters below sea level",
-                  studentAnswer: document.getElementById("a7").value,
-                  correctAnswer: "-30",
-                  points: 1,
-                  skill: "Integers in context",
-                },
-              ],
-            });
-            document
-              .getElementById("ntkit")
-              .scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("submitBtn").addEventListener("click", function () {
+          var orderStudent = normOrder(document.getElementById("a6").value);
+          NTKit.grade({
+            activityId: "architect-unit-7",
+            activityTitle: "Unit 7 · Submarine Architect — Integers & the Number Line",
+            standard: "6.NS.C.5-7",
+            items: [
+              {
+                prompt: "Dive the submarine to depth −4",
+                studentAnswer: String(depth),
+                correctAnswer: "-4",
+                points: 1,
+                skill: "Number line position",
+              },
+              {
+                prompt: "Opposite of 7",
+                studentAnswer: document.getElementById("a2").value,
+                correctAnswer: "-7",
+                points: 1,
+                skill: "Opposites",
+              },
+              {
+                prompt: "Absolute value |−9|",
+                studentAnswer: document.getElementById("a3").value,
+                correctAnswer: "9",
+                points: 1,
+                skill: "Absolute value",
+              },
+              {
+                prompt: "Read the point on the number line",
+                studentAnswer: document.getElementById("a4").value,
+                correctAnswer: "-3",
+                points: 1,
+                skill: "Reading the number line",
+              },
+              {
+                prompt: "Compare −2 ___ −8",
+                studentAnswer: document.getElementById("a5").value,
+                correctAnswer: ">",
+                points: 1,
+                skill: "Comparing integers",
+              },
+              {
+                prompt: "Order 3, −5, 0, −1 from least to greatest",
+                studentAnswer: orderStudent,
+                correctAnswer: "-5,-1,0,3",
+                points: 1,
+                skill: "Ordering integers",
+              },
+              {
+                prompt: "Integer for 30 meters below sea level",
+                studentAnswer: document.getElementById("a7").value,
+                correctAnswer: "-30",
+                points: 1,
+                skill: "Integers in context",
+              },
+            ],
           });
+          document.getElementById("ntkit").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
       })();
     </script>
   </body>
