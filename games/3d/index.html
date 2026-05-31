@@ -1,427 +1,129 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Publisher-grade 3D Math Games Hub. Explore interactive 3D virtual math environments, ratio stands, bakeries, and geometry expeditions.">
-  <title>3D Virtual Mathematics &amp; World Architect Hub</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/shared.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D WebGL Unit Games | Neft Classroom</title>
   <style>
-    :root {
-      --navy: #12355b;
-      --navy-light: #1e3e6b;
-      --teal: #1fa6a2;
-      --teal-light: #dff2ee;
-      --amber: #f2c15b;
-      --amber-light: #fef0d8;
-      --cream: #f7f4ec;
-      --ink: #21313f;
-      --muted: #5f6f80;
-      --line: #d7e2ed;
-      --card-bg: #ffffff;
-      --shadow-premium: 0 12px 40px rgba(18, 53, 91, 0.08);
-      --shadow-glow: 0 0 25px rgba(31, 166, 162, 0.2);
-    }
-
-    body {
-      margin: 0;
-      background: var(--cream);
-      color: var(--ink);
-      font-family: 'Outfit', system-ui, sans-serif;
-      line-height: 1.5;
-    }
-
-    .hub-shell {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px 16px 64px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    header.hub-hero {
-      background: linear-gradient(135deg, var(--navy) 0%, #1e4b7b 60%, var(--teal) 100%);
-      color: #fff;
-      border-radius: 24px;
-      padding: 44px 40px 36px;
-      box-shadow: var(--shadow-premium);
-      position: relative;
-      overflow: hidden;
-    }
-
-    header.hub-hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
-      background-size: 24px 24px;
-      opacity: 0.5;
-    }
-
-    header.hub-hero h1 {
-      font-size: 2.8rem;
-      font-weight: 900;
-      margin: 8px 0 10px 0;
-      letter-spacing: -0.02em;
-    }
-
-    header.hub-hero h1 span {
-      color: var(--amber);
-    }
-
-    header.hub-hero p.tagline {
-      font-size: 1.15rem;
-      color: rgba(255, 255, 255, 0.85);
-      max-width: 72ch;
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    /* Spotlight Card */
-    .spotlight-section {
-      margin-top: 10px;
-    }
-
-    .spotlight-card {
-      background: var(--card-bg);
-      border: 2px solid var(--teal);
-      border-radius: 22px;
-      padding: 28px;
-      box-shadow: var(--shadow-glow), var(--shadow-premium);
-      display: grid;
-      grid-template-columns: 1.25fr 0.75fr;
-      gap: 32px;
-      align-items: center;
-      transition: transform 0.2s;
-    }
-
-    .spotlight-card:hover {
-      transform: translateY(-2px);
-    }
-
-    .spotlight-badge {
-      display: inline-block;
-      background: var(--teal-light);
-      color: var(--teal);
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 4px 12px;
-      border-radius: 999px;
-      margin-bottom: 12px;
-    }
-
-    .spotlight-title {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: var(--navy);
-      margin: 0 0 10px 0;
-    }
-
-    .spotlight-desc {
-      color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.6;
-      margin: 0 0 20px 0;
-    }
-
-    .spotlight-visual {
-      background: linear-gradient(135deg, var(--cream) 0%, var(--teal-light) 100%);
-      border: 1px dashed var(--teal);
-      border-radius: 16px;
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 5rem;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
-    }
-
-    /* Grid Section */
-    .grid-section {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .section-title {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--navy);
-      margin: 0;
-      border-bottom: 2px solid var(--line);
-      padding-bottom: 8px;
-    }
-
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .game-card {
-      background: var(--card-bg);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: var(--shadow-premium);
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 180px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .game-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--teal);
-      box-shadow: 0 16px 36px rgba(18, 53, 91, 0.12);
-    }
-
-    .game-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-
-    .game-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-
-    .unit-badge {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: var(--cream);
-      border: 1px solid var(--line);
-      color: var(--navy);
-    }
-
-    .game-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--navy);
-      margin: 0 0 6px 0;
-    }
-
-    .game-meta {
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1.45;
-      margin: 0 0 16px 0;
-      flex: 1;
-    }
-
-    .play-link {
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: var(--teal);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: auto;
-    }
-
-    .game-card:hover .play-link {
-      color: var(--navy);
-    }
-
-    @media (max-width: 800px) {
-      .spotlight-card {
-        grid-template-columns: 1fr;
-      }
-      header.hub-hero h1 {
-        font-size: 2.2rem;
-      }
-    }
+    :root { --ink:#0f172a; --muted:#475569; --line:#d7dee9; --paper:#f8fafc; --panel:#ffffff; --accent:#2563eb; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:var(--ink); background:linear-gradient(180deg,#eef6ff 0%,#f8fafc 45%,#fff 100%); }
+    .shell { width:min(1180px, calc(100% - 32px)); margin:0 auto; padding:24px 0 38px; }
+    .topbar { display:flex; justify-content:space-between; gap:16px; align-items:center; margin-bottom:22px; }
+    .brand { font-weight:900; letter-spacing:.02em; }
+    .home { color:var(--ink); text-decoration:none; border:1px solid var(--line); background:#fff; padding:10px 14px; border-radius:8px; font-weight:800; }
+    .hero { display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:stretch; margin-bottom:24px; }
+    .headline { padding:26px 0; }
+    h1 { font-size:clamp(2.2rem, 5vw, 4.8rem); line-height:.94; margin:0 0 16px; letter-spacing:0; }
+    .lead { color:var(--muted); font-size:1.12rem; line-height:1.55; max-width:780px; margin:0; }
+    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:24px; }
+    .stat { border:1px solid var(--line); border-radius:8px; padding:16px; background:#fff; }
+    .stat b { display:block; font-size:2rem; }
+    .stat span { color:var(--muted); font-weight:700; }
+    .preview { min-height:330px; border-radius:8px; overflow:hidden; border:1px solid #bfd4ee; background:#09111f; position:relative; }
+    .preview canvas { width:100%; height:100%; display:block; }
+    .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+    .unit-card { min-height:188px; display:flex; flex-direction:column; gap:10px; color:var(--ink); text-decoration:none; background:#fff; border:1px solid var(--line); border-top:5px solid var(--accent); border-radius:8px; padding:16px; box-shadow:0 16px 34px rgba(15,23,42,.08); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    .unit-card:hover, .unit-card:focus-visible { transform:translateY(-3px); box-shadow:0 22px 42px rgba(15,23,42,.12); border-color:var(--accent); outline:none; }
+    .unit-chip { width:max-content; border-radius:999px; padding:5px 9px; background:#eef2ff; color:#1e3a8a; font-weight:900; font-size:.8rem; }
+    .unit-card strong { font-size:1.08rem; line-height:1.18; }
+    .unit-card span:not(.unit-chip) { color:var(--muted); line-height:1.32; }
+    .unit-card small { margin-top:auto; color:#334155; font-weight:800; }
+    @media (max-width:980px) { .hero { grid-template-columns:1fr; } .grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:620px) { .shell { width:min(100% - 22px, 1180px); padding-top:16px; } .topbar { align-items:flex-start; flex-direction:column; } .stats { grid-template-columns:1fr; } .grid { grid-template-columns:1fr; } .preview { min-height:240px; } }
   </style>
 </head>
 <body>
-  <main class="hub-shell">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/">Home</a><span>/</span><span>3D Games &amp; Expedition</span>
-    </nav>
-
-    <header class="hub-hero">
-      <span style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--amber); letter-spacing:0.1em;">Mr. Neft's Classroom</span>
-      <h1>3D Virtual Math World <span>Hub</span></h1>
-      <p class="tagline">Explore immersive virtual spaces and geometry expeditions. Interact with Smoothie stands, fraction kitchens, area architects, and plot coordinates in high-fidelity 3D WebGL environments.</p>
-    </header>
-
-    <!-- Spotlight World Architect -->
-    <section class="spotlight-section">
-      <div class="spotlight-card">
-        <div>
-          <span class="spotlight-badge">🌍 Geometry Expedition</span>
-          <h2 class="spotlight-title">World Architect Math Project</h2>
-          <p class="spotlight-desc">Choose your landmark route across global landmarks (Taj Mahal, Giza Pyramids, Louvre, Himeji Castle). Open Google Earth and research links, calculate surface area and volume, and export a finalized Classroom report!</p>
-          <a class="primary-button" href="/world-architect-math-project/" style="text-decoration:none; display:inline-block;">✈️ Begin Expedition</a>
+  <main class="shell">
+    <nav class="topbar" aria-label="Classroom navigation"><div class="brand">Neft Classroom</div><a class="home" href="/">Classroom Home</a></nav>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="headline">
+        <h1 id="page-title">3D WebGL Unit Games</h1>
+        <p class="lead">Ten polished math games for the full unit sequence. Each game has clear mission prompts, standards-aligned problems, instant worked feedback, keyboard support, and a live 3D WebGL scene that responds to student progress.</p>
+        <div class="stats" aria-label="Game collection stats">
+          <div class="stat"><b>10</b><span>unit games</span></div>
+          <div class="stat"><b>80</b><span>math missions</span></div>
+          <div class="stat"><b>100%</b><span>static WebGL</span></div>
         </div>
-        <div class="spotlight-visual">🌍</div>
       </div>
+      <div class="preview" aria-label="Animated 3D preview"><canvas id="hub-canvas"></canvas></div>
     </section>
-
-    <!-- 3D Games Grid -->
-    <section class="grid-section">
-      <h2 class="section-title">🎮 3D WebGL Unit Games</h2>
-      <div class="games-grid">
-        
-        <!-- Unit 1 -->
-        <a href="/games/3d/unit-1/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#e0f2fe;">🥤</div>
-            <span class="unit-badge">Unit 1</span>
-          </div>
-          <div>
-            <h3 class="game-title">Smoothie Stand</h3>
-            <p class="game-meta">Mix strawberry &amp; banana cups to match ratios &amp; unit-rates (6.RP.A.1–3).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-        <!-- Unit 2 -->
-        <a href="/games/3d/unit-2/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#fef3c7;">🍰</div>
-            <span class="unit-badge">Unit 2</span>
-          </div>
-          <div>
-            <h3 class="game-title">Bakery Fraction Kitchen</h3>
-            <p class="game-meta">Divide visual fractions, mixed numbers, and serve bakery treats (6.NS.A.1).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-        <!-- Unit 3 -->
-        <a href="/games/3d/unit-3/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#dcfce7;">🏎️</div>
-            <span class="unit-badge">Unit 3</span>
-          </div>
-          <div>
-            <h3 class="game-title">Ratio Rally</h3>
-            <p class="game-meta">Navigate equivalence tracks by maintaining constant scaling ratios (6.RP.A.3).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-        <!-- Unit 4 -->
-        <a href="/games/3d/unit-4/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#e0e7ff;">🛍️</div>
-            <span class="unit-badge">Unit 4</span>
-          </div>
-          <div>
-            <h3 class="game-title">Discount Dash</h3>
-            <p class="game-meta">Calculate unit price, discount rates, and checkout cart percentages (6.RP.A.3).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-        <!-- Unit 5 -->
-        <a href="/games/3d/unit-5/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#fce7f3;">📐</div>
-            <span class="unit-badge">Unit 5</span>
-          </div>
-          <div>
-            <h3 class="game-title">Area Architect</h3>
-            <p class="game-meta">Construct triangles, parallelograms, and calculate composite area (6.G.A.1).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-        <!-- Unit 6 -->
-        <a href="/games/3d/unit-6/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#ffedd5;">🎼</div>
-            <span class="unit-badge">Unit 6</span>
-          </div>
-          <div>
-            <h3 class="game-title">Expression Engine</h3>
-            <p class="game-meta">Solve algebraic exponents and order of operations sound waves (6.EE.A.1).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-        <!-- Unit 7 -->
-        <a href="/games/3d/unit-7/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#f3e8ff;">🔓</div>
-            <span class="unit-badge">Unit 7</span>
-          </div>
-          <div>
-            <h3 class="game-title">Equation Escape</h3>
-            <p class="game-meta">Deduce linear equations &amp; solve inequalities to escape rooms (6.EE.B.5).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-        <!-- Unit 8 -->
-        <a href="/games/3d/unit-8/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#ccfbf1;">📊</div>
-            <span class="unit-badge">Unit 8</span>
-          </div>
-          <div>
-            <h3 class="game-title">Stats Slam</h3>
-            <p class="game-meta">Analyze soccer statistics, mean, median, mode, and data distributions (6.SP.A.1).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-        <!-- Unit 9 -->
-        <a href="/games/3d/unit-9/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#ffdfdf;">🗺️</div>
-            <span class="unit-badge">Unit 9</span>
-          </div>
-          <div>
-            <h3 class="game-title">Coordinate Quest</h3>
-            <p class="game-meta">Track coordinates &amp; integer quadrants on the 3D grid plane (6.NS.C.6).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-        <!-- Unit 10 -->
-        <a href="/games/3d/unit-10/" class="game-card">
-          <div class="game-top">
-            <div class="game-icon" style="background:#e5f4ec;">📦</div>
-            <span class="unit-badge">Unit 10</span>
-          </div>
-          <div>
-            <h3 class="game-title">Volume Vault</h3>
-            <p class="game-meta">Fill boxes with fractional unit cubes to analyze 3D volume (6.G.A.2).</p>
-          </div>
-          <span class="play-link">Play Game &rarr;</span>
-        </a>
-
-      </div>
+    <section class="grid" aria-label="Choose a unit game">
+      <a class="unit-card" href="/games/3d/unit-1/" style="--accent:#2dd4bf">
+      <span class="unit-chip">Unit 1</span>
+      <strong>Smoothie Stand Command</strong>
+      <span>Ratios, equivalent ratios, and unit rates</span>
+      <small>6.RP.A.1-3 - 8 missions</small>
+    </a>
+      <a class="unit-card" href="/games/3d/unit-2/" style="--accent:#f59e0b">
+      <span class="unit-chip">Unit 2</span>
+      <strong>Fraction Division Bakery</strong>
+      <span>Dividing fractions and mixed numbers</span>
+      <small>6.NS.A.1 - 8 missions</small>
+    </a>
+      <a class="unit-card" href="/games/3d/unit-3/" style="--accent:#22c55e">
+      <span class="unit-chip">Unit 3</span>
+      <strong>Percent and Rate Rally</strong>
+      <span>Percents, rates, and equivalent comparisons</span>
+      <small>6.RP.A.2-3 - 8 missions</small>
+    </a>
+      <a class="unit-card" href="/games/3d/unit-4/" style="--accent:#6366f1">
+      <span class="unit-chip">Unit 4</span>
+      <strong>Number System Factory</strong>
+      <span>Decimal operations, long division, GCF, and LCM</span>
+      <small>6.NS.B.2-4 - 8 missions</small>
+    </a>
+      <a class="unit-card" href="/games/3d/unit-5/" style="--accent:#06b6d4">
+      <span class="unit-chip">Unit 5</span>
+      <strong>Area Architect Studio</strong>
+      <span>Area of polygons and composed shapes</span>
+      <small>6.G.A.1 - 8 missions</small>
+    </a>
+      <a class="unit-card" href="/games/3d/unit-6/" style="--accent:#8b5cf6">
+      <span class="unit-chip">Unit 6</span>
+      <strong>Expression Machine Lab</strong>
+      <span>Expressions, exponents, and equivalent forms</span>
+      <small>6.EE.A.1-4 - 8 missions</small>
+    </a>
+      <a class="unit-card" href="/games/3d/unit-7/" style="--accent:#0ea5e9">
+      <span class="unit-chip">Unit 7</span>
+      <strong>Integer Submarine Mission</strong>
+      <span>Integers, opposites, absolute value, and ordering</span>
+      <small>6.NS.C.5-7 - 8 missions</small>
+    </a>
+      <a class="unit-card" href="/games/3d/unit-8/" style="--accent:#10b981">
+      <span class="unit-chip">Unit 8</span>
+      <strong>Data Lab Observatory</strong>
+      <span>Statistical questions, center, spread, and displays</span>
+      <small>6.SP.A-B - 8 missions</small>
+    </a>
+      <a class="unit-card" href="/games/3d/unit-9/" style="--accent:#ef4444">
+      <span class="unit-chip">Unit 9</span>
+      <strong>Coordinate Quest Arena</strong>
+      <span>Coordinate plane, distance, and reflections</span>
+      <small>6.NS.C.6, 6.NS.C.8 - 8 missions</small>
+    </a>
+      <a class="unit-card" href="/games/3d/unit-10/" style="--accent:#2563eb">
+      <span class="unit-chip">Unit 10</span>
+      <strong>Volume Vault Expedition</strong>
+      <span>Volume of rectangular prisms and fractional edge lengths</span>
+      <small>6.G.A.2 - 8 missions</small>
+    </a>
     </section>
-
-    <div class="button-row">
-      <a class="primary-button" href="/">Back to homepage</a>
-    </div>
   </main>
+  <script>
+    const canvas = document.getElementById('hub-canvas');
+    const gl = canvas.getContext('webgl', { antialias:true });
+    function size(){ const r=canvas.getBoundingClientRect(); const d=Math.min(devicePixelRatio||1,2); canvas.width=Math.max(1,Math.floor(r.width*d)); canvas.height=Math.max(1,Math.floor(r.height*d)); gl.viewport(0,0,canvas.width,canvas.height); }
+    function shader(t,s){ const sh=gl.createShader(t); gl.shaderSource(sh,s); gl.compileShader(sh); return sh; }
+    const vs='attribute vec3 p; attribute vec3 c; varying vec3 v; uniform float time; void main(){ vec3 q=p; q.y += sin(time + p.x*1.7 + p.z)*0.08; gl_Position=vec4(q,1.0); v=c; }';
+    const fs='precision mediump float; varying vec3 v; void main(){ gl_FragColor=vec4(v,1.0); }';
+    const pr=gl.createProgram(); gl.attachShader(pr,shader(gl.VERTEX_SHADER,vs)); gl.attachShader(pr,shader(gl.FRAGMENT_SHADER,fs)); gl.linkProgram(pr); gl.useProgram(pr);
+    const data=[]; for(let i=0;i<10;i++){ const x=-.86+i*.19; const h=.18+(i%5)*.085; const col=[.12+i*.055,.48,.9-i*.035]; data.push(x,-.72,0,...col, x+.13,-.72,0,...col, x+.13,-.72+h,0,...col, x,-.72,0,...col, x+.13,-.72+h,0,...col, x,-.72+h,0,...col); }
+    const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
+    const stride=24; const p=gl.getAttribLocation(pr,'p'); const c=gl.getAttribLocation(pr,'c'); gl.enableVertexAttribArray(p); gl.enableVertexAttribArray(c); gl.vertexAttribPointer(p,3,gl.FLOAT,false,stride,0); gl.vertexAttribPointer(c,3,gl.FLOAT,false,stride,12); const t=gl.getUniformLocation(pr,'time');
+    function draw(ms){ size(); gl.clearColor(.035,.067,.12,1); gl.clear(gl.COLOR_BUFFER_BIT); gl.uniform1f(t,ms*.001); gl.drawArrays(gl.TRIANGLES,0,data.length/6); requestAnimationFrame(draw); }
+    if(gl) requestAnimationFrame(draw);
+  </script>
 </body>
 </html>
