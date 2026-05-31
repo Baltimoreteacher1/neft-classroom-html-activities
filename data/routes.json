@@ -6,20 +6,22 @@
     "canonicalRoot": "/",
     "productionBranch": "main",
     "cloudflareBuildOutput": "/",
-    "privacyNote": "Use neutral public route names for personal practice pages. Avoid child-identifying or private family details in public paths."
+    "privacyNote": "Avoid child-identifying or private family details in public paths and in the public homepage nav. Routes marked \"visibility\":\"private\" must NOT be linked from the public student hub (index.html); they stay reachable by direct URL only. Fields: audience = student|teacher|family|admin, visibility = public|teacher|private."
   },
   "routes": [
     {
       "id": "neft-hub",
       "title": "Neft Hub",
       "path": "/",
-      "family": ["professional", "personal", "reading"],
+      "family": ["professional", "reading"],
       "group": "core",
       "kicker": "Home",
-      "description": "Single front door for professional teacher work, personal practice, reading resources, and recurring workflows.",
+      "audience": "student",
+      "visibility": "public",
+      "description": "Single front door for classroom math, reading, language practice, and teacher workflows.",
       "cta": "Open Neft Hub",
       "featured": true,
-      "search": "home hub neft professional personal reading"
+      "search": "home hub neft professional reading"
     },
     {
       "id": "professional-hub",
@@ -40,6 +42,8 @@
       "family": ["professional", "personal"],
       "group": "core",
       "kicker": "Command",
+      "audience": "admin",
+      "visibility": "private",
       "description": "Local-first command center for daily priorities, reusable prompts, QA checks, and project planning.",
       "cta": "Open command center",
       "featured": true,
@@ -136,6 +140,8 @@
       "family": ["personal"],
       "group": "personal",
       "kicker": "Personal",
+      "audience": "family",
+      "visibility": "private",
       "description": "Short routines, review links, confidence checks, and practice focus areas.",
       "cta": "Open practice page",
       "featured": true,
@@ -148,6 +154,8 @@
       "family": ["personal"],
       "group": "personal",
       "kicker": "Review",
+      "audience": "family",
+      "visibility": "private",
       "description": "Existing review page for vocabulary, decoding, and word reading practice.",
       "cta": "Open Hebrew review",
       "featured": false,
