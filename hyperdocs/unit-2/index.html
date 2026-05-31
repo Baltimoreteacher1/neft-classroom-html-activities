@@ -785,24 +785,33 @@
         return Math.abs(na - nb) < 1e-9;
       }
 
-      /* Fraction/ratio equivalence: "2/3" ↔ "4/6" ↔ "0.666..." */
-      function fractionMatch(a, b) {
-        function toDecimal(s) {
-          /* mixed number like "2 1/2" → already collapsed to "21/2" after normalise,
-             so handle slash form and plain decimal */
-          var neg = s.charAt(0) === "-";
-          var t = neg ? s.slice(1) : s;
-          var slashForm = t.match(/^(\d+)\/(\d+)$/);
-          if (slashForm) {
-            var v = parseFloat(slashForm[1]) / parseFloat(slashForm[2]);
-            return neg ? -v : v;
-          }
-          var plain = parseFloat(t);
-          if (!isNaN(plain)) { return neg ? -plain : plain; }
-          return NaN;
+      /* Fraction/ratio equivalence: "2/3" ↔ "4/6" ↔ "5/2" ↔ "2.5" ↔ "2 1/2" */
+      function fractionToDecimal(raw) {
+        /* Handle mixed number BEFORE whitespace collapse: "2 1/2" → 2.5 */
+        var trimmed = String(raw).trim();
+        var mixedForm = trimmed.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
+        if (mixedForm) {
+          var whole = parseFloat(mixedForm[1]);
+          var frac  = parseFloat(mixedForm[2]) / parseFloat(mixedForm[3]);
+          return (whole < 0) ? whole - frac : whole + frac;
         }
-        var da = toDecimal(a);
-        var db = toDecimal(b);
+        /* After normalise: slash form or plain decimal */
+        var s = normalise(trimmed);
+        var neg = s.charAt(0) === "-";
+        var t = neg ? s.slice(1) : s;
+        var slashForm = t.match(/^(\d+)\/(\d+)$/);
+        if (slashForm) {
+          var v = parseFloat(slashForm[1]) / parseFloat(slashForm[2]);
+          return neg ? -v : v;
+        }
+        var plain = parseFloat(t);
+        if (!isNaN(plain)) { return neg ? -plain : plain; }
+        return NaN;
+      }
+
+      function fractionMatch(a, b) {
+        var da = fractionToDecimal(a);
+        var db = fractionToDecimal(b);
         if (isNaN(da) || isNaN(db)) { return false; }
         return Math.abs(da - db) < 1e-9;
       }
@@ -812,7 +821,7 @@
         var c = normalise(correctRaw);
         if (s === c) { return true; }
         if (qtype === "numeric")  { return numericMatch(s, c); }
-        if (qtype === "fraction") { return fractionMatch(s, c); }
+        if (qtype === "fraction") { return fractionMatch(studentRaw, correctRaw); }
         return false;
       }
 
