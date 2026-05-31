@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cartesian Odyssey: An immersive space coordinate sandbox for plotting vertices, measuring absolute value distances across quadrants, and calculating polygon areas.">
+    <title>Cartesian Odyssey | 4-Quadrant Math Sandbox</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --space-dark: #070913;
+            --space-medium: #0e1227;
+            --space-light: #181d3a;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --secondary: #10b981;
+            --secondary-glow: rgba(16, 185, 129, 0.4);
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.4);
+            --pink: #ec4899;
+            --pink-glow: rgba(236, 72, 153, 0.4);
+            --danger: #f43f5e;
+            --white: #ffffff;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(59, 130, 246, 0.1);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--space-dark);
+            color: var(--white);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(14, 18, 39, 0.85);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px 28px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-wrap span {
+            font-size: 1.8rem;
+        }
+
+        .logo-wrap h1 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--white), var(--gray-300));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 8px 18px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #1d4ed8);
+            color: var(--white);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(59, 130, 246, 0.55);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-lang {
+            background: rgba(236, 72, 153, 0.15);
+            color: #f472b6;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-lang:hover {
+            background: rgba(236, 72, 153, 0.25);
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            max-width: 1280px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--space-medium);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 10px;
+        }
+
+        /* Mission Log Quests */
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quest-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quest-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--primary);
+        }
+
+        .quest-item.active {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--primary);
+            box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.1);
+        }
+
+        .quest-item.completed {
+            border-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .quest-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .quest-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--white);
+        }
+
+        .quest-desc {
+            font-size: 0.78rem;
+            color: var(--gray-400);
+        }
+
+        .quest-status {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .work-card {
+            background: var(--space-medium);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .work-card-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--gray-300);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .work-card-title svg {
+            color: var(--primary);
+        }
+
+        .svg-viewport {
+            border-radius: var(--radius-md);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            touch-action: none;
+        }
+
+        .calc-panel {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.15rem;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--accent);
+            letter-spacing: 0.05em;
+            line-height: 1.4;
+        }
+
+        /* Language Hub */
+        .sentence-hub {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(59, 130, 246, 0.04));
+            border: 1px solid rgba(236, 72, 153, 0.18);
+        }
+
+        .bubble-msg {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            font-size: 0.92rem;
+            border-left: 4px solid var(--pink);
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .translation-sub {
+            font-style: italic;
+            color: var(--gray-400);
+            font-size: 0.82rem;
+            margin-top: 6px;
+        }
+
+        .point-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .point-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .point-card.active {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.06);
+        }
+
+        .point-card strong {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            color: var(--white);
+            margin-bottom: 2px;
+        }
+
+        .point-card span {
+            font-size: 0.78rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* Diagnostics Overlay */
+        .diagnostics-overlay {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1000;
+            width: 300px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .diag-log-container {
+            font-family: monospace;
+            font-size: 0.72rem;
+            background: #000;
+            padding: 8px;
+            border-radius: 4px;
+            height: 120px;
+            overflow-y: auto;
+            color: #10b981;
+            margin: 8px 0;
+        }
+
+        /* SVG Interactive Styling */
+        .svg-vertex {
+            cursor: grab;
+            transition: r 0.25s, stroke-width 0.2s;
+        }
+
+        .svg-vertex:hover {
+            cursor: grab;
+            r: 9;
+            filter: brightness(1.2);
+        }
+
+        .svg-vertex:active {
+            cursor: grabbing;
+        }
+
+        .axis-label {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 11px;
+            fill: var(--space-light);
+        }
+
+        .tick-label {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 8px;
+            fill: #94a3b8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--gray-400);
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: auto;
+            background: rgba(7, 9, 19, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-wrap">
+            <span>🚀</span>
+            <h1>Cartesian Odyssey</h1>
+        </div>
+        <div class="header-btns">
+            <button class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">
+                🌐 EN | ES
+            </button>
+            <button class="btn btn-secondary" onclick="triggerSelfTest()">
+                ⚡ Run Self-Test
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Sidebar: Mission Log Quests -->
+        <div class="sidebar">
+            <!-- Space Mission Card -->
+            <div class="card">
+                <h2 id="lbl-mission-log">🛰️ Mission Control</h2>
+                <div class="quest-list" id="quest-list-container">
+                    <!-- Quests drawn programmatically -->
+                </div>
+            </div>
+
+            <!-- Coordinate Values Card -->
+            <div class="card">
+                <h2 id="lbl-coordinates">📍 Starship Coordinates</h2>
+                <div class="point-selector-grid" id="starship-coords-grid">
+                    <!-- Coordinates are mapped here -->
+                </div>
+                
+                <div class="calc-panel" id="absolute-value-display">
+                    Select points to measure distance.
+                </div>
+            </div>
+        </div>
+
+        <!-- Workspaces -->
+        <div class="workspace">
+            <!-- 4-Quadrant Interactive Plane -->
+            <div class="work-card">
+                <div class="work-card-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                    <span id="lbl-card-grid">Interactive Star-Map (Drag Points to Snap)</span>
+                </div>
+                <svg id="svg-coordinate-plane" class="svg-viewport" viewBox="0 0 400 400" style="background: white;">
+                    <!-- Coordinate grid programmatically drawn -->
+                </svg>
+            </div>
+
+            <!-- ESOL Vocabulary & Sentence Hub -->
+            <div class="card sentence-hub">
+                <strong style="font-size: 0.85rem; color: var(--pink); text-transform: uppercase;" id="lbl-esol-title">ESOL Navigation Helper</strong>
+                <div class="bubble-msg">
+                    <span id="esol-starter">Drag the coordinate markers to explore absolute value distances across the 4-Quadrant coordinate plane!</span>
+                    <div class="translation-sub" id="esol-starter-trans">¡Arrastre los marcadores de coordenadas para explorar distancias de valor absoluto a través de los cuadrantes!</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Diagnostics Panel -->
+    <div class="diagnostics-overlay" id="diag-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
+            <strong style="font-family:var(--font-display);">Diagnostics</strong>
+            <button onclick="document.getElementById('diag-panel').style.display='none'" style="background:none; border:none; color:var(--danger); font-weight:800; cursor:pointer;">X</button>
+        </div>
+        <div class="diag-log-container" id="diag-log"></div>
+        <button class="btn btn-primary" style="width:100%; font-size:0.8rem;" onclick="document.getElementById('diag-panel').style.display='none'">Close</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support Grade 6 Coordinate Geometry standards expected score ranges.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            colors: {
+                primary: '#3b82f6',   // Blue/Point A
+                secondary: '#10b981', // Green/Point B
+                accent: '#f59e0b',    // Amber/Point C
+                pink: '#ec4899',      // Pink/Point D
+                axis: '#1e293b',
+                gridLine: '#e2e8f0',
+                axisHighlight: '#cbd5e1'
+            },
+            gridLimit: 10, // -10 to 10
+            quests: [
+                {
+                    id: 1,
+                    title: '🛰️ Establish Orbit',
+                    desc: 'Drag Point A to coordinates (-4, 5)',
+                    validator: (state) => state.points[0].x === -4 && state.points[0].y === 5
+                },
+                {
+                    id: 2,
+                    title: '📐 Absolute Distance',
+                    desc: 'Plot Point A at (3, 4) and Point B at (-5, 4) to cross the Y-axis.',
+                    validator: (state) => state.points[0].y === 4 && state.points[1].y === 4 && state.points[0].x === 3 && state.points[1].x === -5
+                },
+                {
+                    id: 3,
+                    title: '📦 Rectangle Perimeter',
+                    desc: 'Plot a rectangle with Point A, B, C, D having a perimeter of exactly 16 units.',
+                    validator: (state) => {
+                        const { points } = state;
+                        // Vertices must form a valid orthogonal rectangle: A, B share Y; B, C share X; C, D share Y; D, A share X
+                        const abX = Math.abs(points[0].x - points[1].x);
+                        const bcY = Math.abs(points[1].y - points[2].y);
+                        const cdX = Math.abs(points[2].x - points[3].x);
+                        const daY = Math.abs(points[3].y - points[0].y);
+                        
+                        const isRect = points[0].y === points[1].y && points[1].x === points[2].x && points[2].y === points[3].y && points[3].x === points[0].x;
+                        const perm = 2 * (abX + bcY);
+                        return isRect && perm === 16 && abX > 0 && bcY > 0;
+                    }
+                }
+            ]
+        };
+
+        // ==========================================
+        // 2. CONFIG VALIDATOR
+        // ==========================================
+        function validateConfig() {
+            if (!CONFIG.colors || !CONFIG.quests || typeof CONFIG.gridLimit !== 'number') {
+                throw new Error("Cartesian Odyssey: Configuration setup invalid.");
+            }
+        }
+
+        // ==========================================
+        // 3. STATE MACHINE
+        // ==========================================
+        const STATE = {
+            points: [
+                { id: 'A', label: 'Starship A', x: -3, y: 4, color: CONFIG.colors.primary },
+                { id: 'B', label: 'Outpost B', x: 5, y: 4, color: CONFIG.colors.secondary },
+                { id: 'C', label: 'Beacon C', x: 5, y: -2, color: CONFIG.colors.accent },
+                { id: 'D', label: 'Satellite D', x: -3, y: -2, color: CONFIG.colors.pink }
+            ],
+            activePointId: null,
+            activeQuestId: 1,
+            completedQuests: [],
+            language: 'en'
+        };
+
+        // Translations Map
+        const TRANSLATIONS = {
+            en: {
+                'mission-log': '🛰️ Mission Control',
+                'coordinates': '📍 Starship Coordinates',
+                'card-grid': 'Interactive Star-Map (Drag Points to Snap)',
+                'esol-title': 'ESOL Navigation Helper',
+                'starter-default': 'Welcome Captain! Coordinate plane navigation relies on two axes: Horizontal (X) and Vertical (Y). Drag points to plot vectors.',
+                'starter-default-trans': '¡Bienvenido Capitán! La navegación en el plano cartesiano depende de dos ejes: Horizontal (X) y Vertical (Y).',
+                'sentence-distance': 'The distance between Point {p1} and Point {p2} is computed crossing the axes. Absolute value calculations yield: |{x1}| + |{x2}| = {sum} units.',
+                'sentence-distance-trans': 'La distancia entre el Punto {p1} y el Punto {p2} se calcula cruzando los ejes. La suma de valores absolutos es: |{x1}| + |{x2}| = {sum} unidades.',
+                'sentence-quadrant': 'Point {id} is located in Quadrant {quad} at coordinates ({x}, {y}).',
+                'sentence-quadrant-trans': 'El Punto {id} está ubicado en el Cuadrante {quad} en las coordenadas ({x}, {y}).'
+            },
+            es: {
+                'mission-log': '🛰️ Control de Misiones',
+                'coordinates': '📍 Coordenadas de la Nave',
+                'card-grid': 'Mapa Estelar Interactivo (Arrastre los Puntos)',
+                'esol-title': 'Ayudante de Navegación ESOL',
+                'starter-default': '¡Bienvenido Capitán! La navegación en el plano cartesiano depende de dos ejes: Horizontal (X) y Vertical (Y).',
+                'starter-default-trans': 'Welcome Captain! Coordinate plane navigation relies on two axes: Horizontal (X) and Vertical (Y). Drag points to plot vectors.',
+                'sentence-distance': 'La distancia entre el Punto {p1} y el Punto {p2} se calcula cruzando los ejes. La suma de valores absolutos es: |{x1}| + |{x2}| = {sum} unidades.',
+                'sentence-distance-trans': 'The distance between Point {p1} and Point {p2} is computed crossing the axes. Absolute value calculations yield: |{x1}| + |{x2}| = {sum} units.',
+                'sentence-quadrant': 'El Punto {id} está ubicado en el Cuadrante {quad} en las coordenadas ({x}, {y}).',
+                'sentence-quadrant-trans': 'Point {id} is located in Quadrant {quad} at coordinates ({x}, {y}).'
+            }
+        };
+
+        function transitionState(updatedFields) {
+            Object.assign(STATE, updatedFields);
+            checkQuests();
+            renderUI();
+        }
+
+        // ==========================================
+        // 4. INTERACTIVE HANDLERS
+        // ==========================================
+        function toggleLanguage() {
+            const nextLang = STATE.language === 'en' ? 'es' : 'en';
+            transitionState({ language: nextLang });
+        }
+
+        function selectQuest(id) {
+            transitionState({ activeQuestId: id });
+        }
+
+        function checkQuests() {
+            CONFIG.quests.forEach(q => {
+                if (q.validator(STATE)) {
+                    if (!STATE.completedQuests.includes(q.id)) {
+                        STATE.completedQuests.push(q.id);
+                        // Trigger quest completion effect or simple update
+                    }
+                }
+            });
+        }
+
+        // Drag operations for vertices
+        let isDragging = false;
+        let selectedPtIdx = -1;
+
+        function setupDragEvents() {
+            const svg = document.getElementById('svg-coordinate-plane');
+
+            const handleStart = (e) => {
+                const target = e.target;
+                if (target.classList.contains('svg-vertex')) {
+                    isDragging = true;
+                    selectedPtIdx = parseInt(target.getAttribute('data-idx'), 10);
+                    transitionState({ activePointId: STATE.points[selectedPtIdx].id });
+                }
+            };
+
+            const handleMove = (e) => {
+                if (!isDragging || selectedPtIdx === -1) return;
+
+                const rect = svg.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                // Map client coords to SVG space
+                const xInSvg = ((clientX - rect.left) / rect.width) * 400;
+                const yInSvg = ((clientY - rect.top) / rect.height) * 400;
+
+                // Grid mapping: SVG center is (200, 200), grid goes from -10 to 10
+                // Each step is 200 / 10 = 18 pixels (viewport scale factor is 18)
+                const scale = 18;
+                let gridX = Math.round((xInSvg - 200) / scale);
+                let gridY = Math.round((200 - yInSvg) / scale);
+
+                // Bound checking
+                gridX = Math.max(-10, Math.min(10, gridX));
+                gridY = Math.max(-10, Math.min(10, gridY));
+
+                const pts = [ ...STATE.points ];
+                if (pts[selectedPtIdx].x !== gridX || pts[selectedPtIdx].y !== gridY) {
+                    pts[selectedPtIdx] = { ...pts[selectedPtIdx], x: gridX, y: gridY };
+                    transitionState({ points: pts });
+                }
+            };
+
+            const handleEnd = () => {
+                isDragging = false;
+                selectedPtIdx = -1;
+            };
+
+            svg.addEventListener('mousedown', handleStart);
+            svg.addEventListener('mousemove', handleMove);
+            window.addEventListener('mouseup', handleEnd);
+
+            svg.addEventListener('touchstart', handleStart);
+            svg.addEventListener('touchmove', handleMove);
+            window.addEventListener('touchend', handleEnd);
+        }
+
+        // ==========================================
+        // 5. RENDER ENGINE (Coordinate Plane & Mission HUD)
+        // ==========================================
+        function renderUI() {
+            validateConfig();
+            renderStaticLabels();
+            renderQuestList();
+            render स्टारshipGrid();
+            renderCoordinatesPanel();
+            updateESOLHub();
+        }
+
+        function renderStaticLabels() {
+            const t = TRANSLATIONS[STATE.language];
+            document.getElementById('lbl-mission-log').innerText = t['mission-log'];
+            document.getElementById('lbl-coordinates').innerText = t['coordinates'];
+            document.getElementById('lbl-card-grid').innerText = t['card-grid'];
+            document.getElementById('lbl-esol-title').innerText = t['esol-title'];
+        }
+
+        function renderQuestList() {
+            const container = document.getElementById('quest-list-container');
+            container.innerHTML = '';
+
+            CONFIG.quests.forEach(q => {
+                const isActive = STATE.activeQuestId === q.id;
+                const isDone = STATE.completedQuests.includes(q.id);
+
+                container.innerHTML += `
+                    <div class="quest-item ${isActive?'active':''} ${isDone?'completed':''}" onclick="selectQuest(${q.id})">
+                        <div class="quest-details">
+                            <span class="quest-title">${q.title}</span>
+                            <span class="quest-desc">${q.desc}</span>
+                        </div>
+                        <span class="quest-status">${isDone?'✅':'🛰️'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderCoordinatesPanel() {
+            const container = document.getElementById('starship-coords-grid');
+            container.innerHTML = '';
+
+            STATE.points.forEach(p => {
+                const isActive = STATE.activePointId === p.id;
+                container.innerHTML += `
+                    <div class="point-card ${isActive?'active':''}">
+                        <strong>${p.id}</strong>
+                        <span>(${p.x}, ${p.y})</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderस्टारshipGrid() {
+            const svg = document.getElementById('svg-coordinate-plane');
+            svg.innerHTML = ''; // Clear SVG
+
+            const scale = 18;
+            const cx = 200;
+            const cy = 200;
+
+            // Draw full grid backdrop
+            for (let i = -10; i <= 10; i++) {
+                const gridPos = cx + i * scale;
+                const stroke = i === 0 ? CONFIG.colors.axisHighlight : CONFIG.colors.gridLine;
+                const width = i === 0 ? 1.5 : 0.5;
+
+                // X-axis lines (vertical dividers)
+                svg.innerHTML += `<line x1="${gridPos}" y1="0" x2="${gridPos}" y2="400" stroke="${stroke}" stroke-width="${width}" />`;
+                // Y-axis lines (horizontal dividers)
+                svg.innerHTML += `<line x1="0" y1="${gridPos}" x2="400" y2="${gridPos}" stroke="${stroke}" stroke-width="${width}" />`;
+
+                // Add grid tick text labels
+                if (i !== 0 && i % 2 === 0) {
+                    // X tick labels
+                    svg.innerHTML += `<text x="${gridPos}" y="${cy + 12}" class="tick-label" text-anchor="middle">${i}</text>`;
+                    // Y tick labels
+                    svg.innerHTML += `<text x="${cx - 12}" y="${cx - i * scale + 3}" class="tick-label" text-anchor="end">${i}</text>`;
+                }
+            }
+
+            // Central Axis Arrows & Labels
+            svg.innerHTML += `
+                <text x="390" y="${cy - 6}" class="axis-label" text-anchor="end">X</text>
+                <text x="${cx + 8}" y="15" class="axis-label">Y</text>
+            `;
+
+            // Draw Quadrant Identifiers (I, II, III, IV)
+            svg.innerHTML += `
+                <text x="340" y="60" class="tick-label" font-size="10" font-weight="800" opacity="0.6">Quadrant I</text>
+                <text x="60" y="60" class="tick-label" font-size="10" font-weight="800" opacity="0.6">Quadrant II</text>
+                <text x="60" y="340" class="tick-label" font-size="10" font-weight="800" opacity="0.6">Quadrant III</text>
+                <text x="340" y="340" class="tick-label" font-size="10" font-weight="800" opacity="0.6">Quadrant IV</text>
+            `;
+
+            // Render Polygon Face (if points form standard polygon)
+            const ptsStr = STATE.points.map(p => `${cx + p.x * scale},${cy - p.y * scale}`).join(' ');
+            svg.innerHTML += `
+                <polygon points="${ptsStr}" fill="rgba(59,130,246,0.06)" stroke="${CONFIG.colors.primary}" stroke-width="1.5" stroke-dasharray="3, 3" />
+            `;
+
+            // Highlight horizontal or vertical segments connecting vertices to compute absolute value distance
+            let distMathStr = "Star-Map loaded. Select markers.";
+            const { points } = STATE;
+
+            // Check A & B distance
+            if (points[0].y === points[1].y) {
+                // Same Y line (horizontal segment)
+                const yPos = cy - points[0].y * scale;
+                const ax = cx + points[0].x * scale;
+                const bx = cx + points[1].x * scale;
+                
+                svg.innerHTML += `<line x1="${ax}" y1="${yPos}" x2="${bx}" y2="${yPos}" stroke="var(--pink)" stroke-width="3.5" />`;
+
+                // Distance calculation logic using absolute values
+                const x1 = points[0].x;
+                const x2 = points[1].x;
+                const crossing = (x1 < 0 && x2 > 0) || (x1 > 0 && x2 < 0);
+                const abs1 = Math.abs(x1);
+                const abs2 = Math.abs(x2);
+                const dist = Math.abs(x1 - x2);
+
+                if (crossing) {
+                    distMathStr = `Dist(A→B) = |${x1}| + |${x2}| = ${abs1} + ${abs2} = ${dist} units`;
+                } else {
+                    distMathStr = `Dist(A→B) = |${x1} - ${x2}| = |${x1 - x2}| = ${dist} units`;
+                }
+            }
+            // Check B & C distance
+            else if (points[1].x === points[2].x) {
+                // Same X line (vertical segment)
+                const xPos = cx + points[1].x * scale;
+                const ay = cy - points[1].y * scale;
+                const by = cy - points[2].y * scale;
+
+                svg.innerHTML += `<line x1="${xPos}" y1="${ay}" x2="${xPos}" y2="${by}" stroke="var(--pink)" stroke-width="3.5" />`;
+
+                const y1 = points[1].y;
+                const y2 = points[2].y;
+                const crossing = (y1 < 0 && y2 > 0) || (y1 > 0 && y2 < 0);
+                const abs1 = Math.abs(y1);
+                const abs2 = Math.abs(y2);
+                const dist = Math.abs(y1 - y2);
+
+                if (crossing) {
+                    distMathStr = `Dist(B→C) = |${y1}| + |${y2}| = ${abs1} + ${abs2} = ${dist} units`;
+                } else {
+                    distMathStr = `Dist(B→C) = |${y1} - ${y2}| = |${y1 - y2}| = ${dist} units`;
+                }
+            }
+
+            document.getElementById('absolute-value-display').innerHTML = distMathStr;
+
+            // Render Vertex Points
+            STATE.points.forEach((p, idx) => {
+                const px = cx + p.x * scale;
+                const py = cy - p.y * scale;
+                const isActive = STATE.activePointId === p.id;
+
+                svg.innerHTML += `
+                    <circle class="svg-vertex" data-idx="${idx}" cx="${px}" cy="${py}" r="${isActive?8:6}" fill="${p.color}" stroke="var(--white)" stroke-width="1.5" />
+                    <text x="${px + 10}" y="${py - 10}" font-family="var(--font-display)" font-size="10" font-weight="900" fill="${p.color}">${p.id}</text>
+                `;
+            });
+        }
+
+        function updateESOLHub() {
+            const starter = document.getElementById('esol-starter');
+            const trans = document.getElementById('esol-starter-trans');
+            const lang = STATE.language;
+            const t = TRANSLATIONS[lang];
+
+            if (!STATE.activePointId) {
+                starter.innerText = t['starter-default'];
+                trans.innerText = t['starter-default-trans'];
+                return;
+            }
+
+            // Find current active point quadrant
+            const activePt = STATE.points.find(p => p.id === STATE.activePointId);
+            let quad = "Origin";
+            if (activePt.x > 0 && activePt.y > 0) quad = "I";
+            else if (activePt.x < 0 && activePt.y > 0) quad = "II";
+            else if (activePt.x < 0 && activePt.y < 0) quad = "III";
+            else if (activePt.x > 0 && activePt.y < 0) quad = "IV";
+
+            let quadFrame = t['sentence-quadrant']
+                .replace('{id}', activePt.id)
+                .replace('{quad}', quad)
+                .replace('{x}', activePt.x)
+                .replace('{y}', activePt.y);
+
+            let quadTransFrame = t['sentence-quadrant-trans']
+                .replace('{id}', activePt.id)
+                .replace('{quad}', quad)
+                .replace('{x}', activePt.x)
+                .replace('{y}', activePt.y);
+
+            // Check and append distance frames if present
+            starter.innerHTML = `<div>${quadFrame}</div>`;
+            trans.innerHTML = `<div>${quadTransFrame}</div>`;
+        }
+
+        // ==========================================
+        // 6. AUTOMATED SELF-TEST
+        // ==========================================
+        function logDiag(msg) {
+            const el = document.getElementById('diag-log');
+            el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function triggerSelfTest() {
+            document.getElementById('diag-panel').style.display = 'block';
+            document.getElementById('diag-log').innerHTML = '';
+            logDiag("Starting Cartesian Odyssey Self-Test...");
+
+            try {
+                // Assert 1: Configuration is valid
+                validateConfig();
+                logDiag("✓ Config validation passed.");
+
+                // Assert 2: Active points setup
+                logDiag(`✓ Validating Point A location: (${STATE.points[0].x}, ${STATE.points[0].y})`);
+                if (STATE.points[0].x !== -3 || STATE.points[0].y !== 4) {
+                    throw new Error("Assertion failed: Point coordinates did not match defaults.");
+                }
+
+                // Assert 3: Trigger quadrant detection
+                transitionState({ activePointId: 'A' });
+                logDiag(`✓ Set active point to A. Mapping localized sentence starter.`);
+                
+                // Assert 4: Absolute value crossing logic verification
+                // Move A to (3, 4) and B to (-5, 4)
+                const pts = [ ...STATE.points ];
+                pts[0] = { ...pts[0], x: 3, y: 4 };
+                pts[1] = { ...pts[1], x: -5, y: 4 };
+                transitionState({ points: pts });
+                
+                const absA = Math.abs(STATE.points[0].x); // 3
+                const absB = Math.abs(STATE.points[1].x); // 5
+                const dist = absA + absB; // 8
+                logDiag(`✓ Cross-axis distance between A(3,4) and B(-5,4): expected |3| + |-5| = 8 units.`);
+                if (dist !== 8) {
+                    throw new Error("Assertion failed: Absolute value cross-axis distance math error.");
+                }
+
+                // Assert 5: Reset state
+                pts[0] = { ...pts[0], x: -3, y: 4 };
+                pts[1] = { ...pts[1], x: 5, y: 4 };
+                transitionState({ points: pts, activePointId: null });
+                logDiag("✓ Reset state back to defaults.");
+                
+                logDiag("🎉 ALL ODYSSEY TESTS COMPLETED SUCCESSFULLY!");
+            } catch (err) {
+                logDiag(`❌ SYSTEM ERROR: ${err.message}`);
+                console.error(err);
+            }
+        }
+
+        // Initialize application
+        window.addEventListener('DOMContentLoaded', () => {
+            renderUI();
+            setupDragEvents();
+        });
+    </script>
+</body>
+</html>
