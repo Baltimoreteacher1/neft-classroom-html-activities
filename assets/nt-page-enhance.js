@@ -47,12 +47,10 @@
   try {
     saved = localStorage.getItem(LS_THEME);
   } catch (e) {}
-  if (!saved)
-    saved =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
+  // Default to LIGHT so every page looks as designed. The filter-based dark
+  // mode is a rough universal approximation that can look muddy on richly
+  // styled pages, so it is OPT-IN ONLY — never auto-applied from OS preference.
+  if (saved !== "dark") saved = "light";
 
   var btn = document.createElement("button");
   btn.className = "nt-pe-btn";
