@@ -126,6 +126,99 @@ function notesSection(launch = {}, explore = {}) {
 </section>`;
 }
 
+// Turn & Talk — Discussion Points. Driven by cfg.turnAndTalk[]. Renders a
+// leveled, partner-discussion section: Level 1 (support) gets a kernel,
+// bilingual sentence stems, a word bank, and a teacher "listen for" note;
+// Level 2 gets a deeper push question with stretch stems. Defensive about
+// every optional field so older configs still render.
+function ttBilingual(stem) {
+  // Accepts a string or { en, es } object; reuses the twr-frame bilingual look.
+  const en = typeof stem === "string" ? stem : stem && stem.en;
+  const es = typeof stem === "object" && stem ? stem.es : "";
+  if (!en) return "";
+  return `<p class="twr-frame"><span class="twr-en">${esc(en)}</span>${
+    es ? `<span class="twr-es">${esc(es)}</span>` : ""
+  }</p>`;
+}
+
+function turnAndTalkCard(item) {
+  const phaseRaw = String(item.phase || "").trim();
+  const phaseLabel = phaseRaw
+    ? phaseRaw.charAt(0).toUpperCase() + phaseRaw.slice(1)
+    : "Discuss";
+  const phaseBadge = `<span class="tt-phase">${esc(phaseLabel)}</span>`;
+  const question = item.question
+    ? `<p class="tt-question">${esc(item.question)}</p>`
+    : "";
+
+  // --- Level 1 (support) block ---
+  const kernel = item.kernel
+    ? `<p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> ${esc(item.kernel)}</p>`
+    : "";
+  const stems = Array.isArray(item.stems)
+    ? item.stems.map((s) => ttBilingual(s)).filter(Boolean).join("")
+    : "";
+  const stemsHtml = stems ? `<div class="tt-stems">${stems}</div>` : "";
+  const wordBank = Array.isArray(item.wordBank)
+    ? item.wordBank.filter(Boolean)
+    : [];
+  const wordBankHtml = wordBank.length
+    ? `<div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> ${wordBank
+        .map((w) => `<span class="tt-word">${esc(w)}</span>`)
+        .join("")}</div>`
+    : "";
+  const listenFor = item.listenFor
+    ? `<p class="tt-listen"><span class="tt-mini-label">Listen for:</span> ${esc(item.listenFor)}</p>`
+    : "";
+  const supportInner = [kernel, stemsHtml, wordBankHtml, listenFor]
+    .filter(Boolean)
+    .join("\n    ");
+  const support = supportInner
+    ? `<div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    ${supportInner}
+  </div>`
+    : "";
+
+  // --- Level 2 block ---
+  const extendQ = item.extend
+    ? `<p class="tt-extend-q">${esc(item.extend)}</p>`
+    : "";
+  const extendStems = Array.isArray(item.extendStems)
+    ? item.extendStems.filter(Boolean)
+    : [];
+  const extendStemsHtml = extendStems.length
+    ? `<ul class="tt-extend-stems">${extendStems
+        .map((s) => `<li>${esc(s)}</li>`)
+        .join("")}</ul>`
+    : "";
+  const extend =
+    extendQ || extendStemsHtml
+      ? `<div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    ${[extendQ, extendStemsHtml].filter(Boolean).join("\n    ")}
+  </div>`
+      : "";
+
+  return `<div class="tt-card">
+  ${phaseBadge}
+  ${question}
+  ${support}
+  ${extend}
+</div>`;
+}
+
+function turnAndTalkSection(cfg) {
+  const items = Array.isArray(cfg.turnAndTalk) ? cfg.turnAndTalk : [];
+  if (!items.length) return "";
+  const cards = items.map((it) => turnAndTalkCard(it)).join("\n");
+  return `<section class="section turn-and-talk">
+  <h2>Turn &amp; Talk — Discussion Points <span class="level-tag level-1">Level 1 support</span> <span class="level-tag level-2">Level 2</span></h2>
+  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
+  ${cards}
+</section>`;
+}
+
 // Build worked-example HTML for an MC / open-response / error-analysis item.
 function workedExample(item, n) {
   let body = "";
@@ -523,6 +616,30 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .twr-exp-lines{min-width:0;}
 .twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
 .twr-stems{margin:0 0 8px;}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -565,6 +682,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .twr-model{background:#fff;border:1px solid #000;}
   .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
   .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
   footer.packet{display:none;}
 }
 </style>`;
@@ -623,6 +748,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   ${missionBanner(cfg)}
   ${vocabSection(cfg.vocabulary)}
   ${notesSection(cfg.launch, cfg.explore)}
+  ${turnAndTalkSection(cfg)}
   ${examplesSection(cfg.practice)}
   ${twrSection(cfg)}
   ${tryItSection(cfg.practice)}
