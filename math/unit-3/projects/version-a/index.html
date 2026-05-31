@@ -389,7 +389,7 @@
       function calcRatio() {
         const f = +document.getElementById("r-fruit").value;
         const y = +document.getElementById("r-yogurt").value;
-        if (!f || !y) return;
+        if (isNaN(f) || f <= 0 || isNaN(y) || y <= 0) { show("ratio-out", "<p>⚠️ Please enter valid positive numbers for both fruit and yogurt cups.</p>"); return; }
         const g = gcd(f, y);
         const sf = f / g;
         const sy = y / g;
@@ -407,7 +407,7 @@
       function calcTable() {
         const f = +document.getElementById("t-fruit").value;
         const y = +document.getElementById("t-yogurt").value;
-        if (!f || !y) return;
+        if (isNaN(f) || f <= 0 || isNaN(y) || y <= 0) { show("table-out", "<p>⚠️ Please enter valid positive numbers for both base amounts.</p>"); return; }
         let rows = "";
         for (let x = 1; x <= 3; x++) {
           rows += "<tr><td>" + x + "&times; batch</td><td>" + (f * x) + " cups</td><td>" + (y * x) + " cups</td></tr>";
@@ -424,7 +424,7 @@
       function calcUnitRate() {
         const cost = +document.getElementById("u-cost").value;
         const sm = +document.getElementById("u-smoothies").value;
-        if (!cost || !sm) return;
+        if (isNaN(cost) || cost <= 0 || isNaN(sm) || sm <= 0) { show("unit-out", "<p>⚠️ Please enter a valid positive cost and a positive number of smoothies.</p>"); return; }
         const rate = cost / sm;
         show("unit-out",
           '<div class="big">$' + rate.toFixed(2) + ' per smoothie</div>' +
@@ -437,7 +437,7 @@
         const c1 = +document.getElementById("b-cups1").value;
         const p2 = +document.getElementById("b-price2").value;
         const c2 = +document.getElementById("b-cups2").value;
-        if (!p1 || !c1 || !p2 || !c2) return;
+        if (isNaN(p1) || p1 <= 0 || isNaN(c1) || c1 <= 0 || isNaN(p2) || p2 <= 0 || isNaN(c2) || c2 <= 0) { show("buy-out", "<p>⚠️ Please enter valid positive prices and cup counts for both packs.</p>"); return; }
         const r1 = p1 / c1;
         const r2 = p2 / c2;
         const winner = r1 < r2 ? "Pack A" : r2 < r1 ? "Pack B" : "Both packs cost the same per cup";

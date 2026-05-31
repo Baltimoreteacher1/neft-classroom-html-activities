@@ -352,7 +352,10 @@
 
       function checkEquiv() {
         const x = +document.getElementById("equiv-x").value;
-        if (isNaN(x)) return;
+        if (document.getElementById("equiv-x").value.trim() === "" || isNaN(x)) {
+          show("equiv-out", "<p>⚠️ Please enter a valid number for x.</p>");
+          return;
+        }
         const formA = 2 * (x + 3);
         const formB = 2 * x + 6;
         const match = formA === formB;
@@ -369,7 +372,10 @@
         const a = +document.getElementById("dist-a").value;
         const b = +document.getElementById("dist-b").value;
         const c = +document.getElementById("dist-c").value;
-        if (!a || isNaN(b) || isNaN(c)) return;
+        if (isNaN(a) || isNaN(b) || isNaN(c) || a <= 0 || b < 0 || c < 0) {
+          show("dist-out", "<p>⚠️ Please enter valid positive numbers for a and b, and a non-negative number for c.</p>");
+          return;
+        }
         const factored = a * (b + c);
         const expanded = a * b + a * c;
         show("dist-out",
@@ -383,7 +389,10 @@
 
       function calcCost() {
         const n = +document.getElementById("cost-n").value;
-        if (!n || n < 1) return;
+        if (isNaN(n) || n < 1) {
+          show("cost-out", "<p>⚠️ Please enter a number of months (1 or more).</p>");
+          return;
+        }
         const monthly = 9.99 * n;
         const total = monthly + 4.50;
         show("cost-out",
@@ -396,7 +405,10 @@
 
       function comparePlans() {
         const n = +document.getElementById("plan-n").value;
-        if (!n || n < 1) return;
+        if (isNaN(n) || n < 1) {
+          show("plan-out", "<p>⚠️ Please enter a number of months (1 or more).</p>");
+          return;
+        }
         const pro = 9.99 * n + 4.50;
         const basic = 7.50 * n + 12.00;
         const cheaper = pro < basic ? "StreamPro" : basic < pro ? "StreamBasic" : "tied";
@@ -413,6 +425,11 @@
       function checkDist() {
         const v = +document.getElementById("check-dist").value;
         const fb = document.getElementById("dist-fb");
+        if (document.getElementById("check-dist").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 18) {
           fb.textContent = "✅ Correct! 3(4 + 2) = 3 × 6 = 18, or 3·4 + 3·2 = 12 + 6 = 18.";
           fb.className = "feedback ok";

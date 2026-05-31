@@ -368,6 +368,11 @@
       }
 
       function calcEquation() {
+        const kRaw = +document.getElementById("k-rate").value;
+        if (isNaN(kRaw) || kRaw <= 0) {
+          show("eq-out", "<p>⚠️ Please enter a valid positive growth rate.</p>");
+          return;
+        }
         const k = getK();
         show("eq-out",
           '<div class="big">y = ' + k + 'x</div>' +
@@ -377,6 +382,11 @@
       }
 
       function calcTable() {
+        const kRaw = +document.getElementById("k-rate").value;
+        if (isNaN(kRaw) || kRaw <= 0) {
+          show("table-out", "<p>⚠️ Please enter a valid positive growth rate first.</p>");
+          return;
+        }
         const k = getK();
         let rows = '';
         for (let x = 0; x <= 5; x++) {
@@ -392,6 +402,18 @@
       }
 
       function calcGraph() {
+        const kRaw = +document.getElementById("k-rate").value;
+        const xRaw = +document.getElementById("find-x").value;
+        const yRaw = +document.getElementById("find-y").value;
+        if (isNaN(kRaw) || kRaw <= 0) {
+          show("graph-out", "<p>⚠️ Please enter a valid positive growth rate first.</p>");
+          return;
+        }
+        if (document.getElementById("find-x").value.trim() === "" || isNaN(xRaw) || xRaw < 0 ||
+            document.getElementById("find-y").value.trim() === "" || isNaN(yRaw) || yRaw < 0) {
+          show("graph-out", "<p>⚠️ Please enter valid non-negative values for week and subscriber count.</p>");
+          return;
+        }
         const k = getK();
         const xVal = Math.max(0, +document.getElementById("find-x").value || 0);
         const yVal = Math.max(0, +document.getElementById("find-y").value || 0);
@@ -441,6 +463,13 @@
       }
 
       function calcCompare() {
+        const kaRaw = +document.getElementById("ch-a").value;
+        const kbRaw = +document.getElementById("ch-b").value;
+        const wRaw  = +document.getElementById("ch-weeks").value;
+        if (isNaN(kaRaw) || isNaN(kbRaw) || isNaN(wRaw) || kaRaw <= 0 || kbRaw <= 0 || wRaw <= 0) {
+          show("compare-out", "<p>⚠️ Please enter valid positive numbers for both growth rates and weeks.</p>");
+          return;
+        }
         const ka = Math.max(1, +document.getElementById("ch-a").value || 50);
         const kb = Math.max(1, +document.getElementById("ch-b").value || 35);
         const w  = Math.max(1, +document.getElementById("ch-weeks").value || 10);
@@ -459,6 +488,11 @@
       function checkQuick() {
         const v = +document.getElementById("check-quick").value;
         const fb = document.getElementById("quick-fb");
+        if (document.getElementById("check-quick").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 120) {
           fb.textContent = "✅ Correct! y = 30 × 4 = 120 subscribers.";
           fb.className = "feedback ok";

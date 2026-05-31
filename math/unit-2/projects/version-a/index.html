@@ -424,11 +424,11 @@
       function show(id, html) { const el = document.getElementById(id); el.innerHTML = html; el.classList.add("show"); updateProgress(); }
 
       function calcPhase1() {
-        const a = +document.getElementById("p1a").value || 0;
-        const b = +document.getElementById("p1b").value || 1;
-        const c = +document.getElementById("p1c").value || 0;
-        const d = +document.getElementById("p1d").value || 1;
-        if (!a || !b || !c || !d) return;
+        const a = +document.getElementById("p1a").value;
+        const b = +document.getElementById("p1b").value;
+        const c = +document.getElementById("p1c").value;
+        const d = +document.getElementById("p1d").value;
+        if (isNaN(a) || a <= 0 || isNaN(b) || b <= 0 || isNaN(c) || c <= 0 || isNaN(d) || d <= 0) { show("p1-out", "<p>⚠️ Please enter valid positive whole numbers for all four fraction parts.</p>"); return; }
         // (a/b) ÷ (c/d) = (a*d)/(b*c)
         const rNum = a * d;
         const rDen = b * c;
@@ -445,9 +445,9 @@
       }
 
       function calcPhase2() {
-        const cups = +document.getElementById("p2-cups").value || 0;
-        const d = +document.getElementById("p2-denom").value || 1;
-        if (!cups || !d) return;
+        const cups = +document.getElementById("p2-cups").value;
+        const d = +document.getElementById("p2-denom").value;
+        if (isNaN(cups) || cups <= 0 || isNaN(d) || d <= 0) { show("p2-out", "<p>⚠️ Please enter valid positive numbers for cups and denominator.</p>"); return; }
         // whole ÷ (1/d) = whole * d
         const result = cups * d;
         show("p2-out",
@@ -457,12 +457,12 @@
       }
 
       function calcPhase3() {
-        const w = +document.getElementById("p3w").value || 0;
-        const n = +document.getElementById("p3n").value || 0;
-        const d = +document.getElementById("p3d").value || 1;
-        const cn = +document.getElementById("p3cn").value || 1;
-        const cd = +document.getElementById("p3cd").value || 1;
-        if (!d || !cn || !cd) return;
+        const w = +document.getElementById("p3w").value;
+        const n = +document.getElementById("p3n").value;
+        const d = +document.getElementById("p3d").value;
+        const cn = +document.getElementById("p3cn").value;
+        const cd = +document.getElementById("p3cd").value;
+        if (isNaN(w) || w < 0 || isNaN(n) || n < 0 || isNaN(d) || d <= 0 || isNaN(cn) || cn <= 0 || isNaN(cd) || cd <= 0) { show("p3-out", "<p>⚠️ Please enter valid numbers (whole/fraction parts ≥ 0, denominators and cut size must be positive).</p>"); return; }
         // Mixed number: (w*d + n) / d
         const mixNum = w * d + n;
         const mixDen = d;
@@ -483,9 +483,9 @@
       }
 
       function calcPhase4() {
-        const cups = +document.getElementById("p4-cups").value || 0;
-        const d = +document.getElementById("p4-denom").value || 1;
-        if (!cups || !d) return;
+        const cups = +document.getElementById("p4-cups").value;
+        const d = +document.getElementById("p4-denom").value;
+        if (isNaN(cups) || cups <= 0 || isNaN(d) || d <= 0) { show("p4-out", "<p>⚠️ Please enter valid positive numbers for cups and denominator.</p>"); return; }
         // cups ÷ (2/d) = cups * d / 2
         const rNum = cups * d;
         const rDen = 2;
@@ -500,6 +500,7 @@
       function checkMuffins() {
         const v = +document.getElementById("check-muffins").value;
         const fb = document.getElementById("muffins-fb");
+        if (isNaN(v) || document.getElementById("check-muffins").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
         if (v === 9) { fb.textContent = "✅ Correct! 6 ÷ (2/3) = 6 × (3/2) = 18/2 = 9 muffins."; fb.className = "feedback ok"; }
         else { fb.textContent = "❌ Not yet. Try: 6 ÷ (2/3) = 6 × (3/2) = 18/2 = ?"; fb.className = "feedback no"; }
         updateProgress();

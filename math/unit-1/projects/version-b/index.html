@@ -216,8 +216,9 @@
       function calcParts() {
         let total = 0, rows = "";
         for (let i = 1; i <= 3; i++) {
-          const p = +document.getElementById("p" + i).value || 0;
-          const q = +document.getElementById("q" + i).value || 0;
+          const p = +document.getElementById("p" + i).value;
+          const q = +document.getElementById("q" + i).value;
+          if (isNaN(p) || p < 0 || isNaN(q) || q < 0) { show("parts-out", "<p>⚠️ Please enter valid prices and quantities (0 or more) for all parts.</p>"); return; }
           const line = p * q; total += line;
           rows += "Line " + i + ": $" + p.toFixed(2) + " × " + q + " = <strong>$" + line.toFixed(2) + "</strong><br>";
         }
@@ -225,22 +226,25 @@
       }
       function calcSplit() {
         const t = +document.getElementById("s-total").value, m = +document.getElementById("s-members").value;
-        if (!t || !m) return;
+        if (isNaN(t) || t < 0 || isNaN(m) || m <= 0) { show("split-out", "<p>⚠️ Please enter a valid cost (0 or more) and a positive number of team members.</p>"); return; }
         show("split-out", '<div class="big">$' + (t / m).toFixed(2) + ' each</div>$' + t.toFixed(2) + ' ÷ ' + m + ' members = <strong>$' + (t / m).toFixed(2) + '</strong> per teammate.');
       }
       function calcKits() {
         const s = +document.getElementById("f-screws").value, b = +document.getElementById("f-bolts").value;
-        if (!s || !b) return;
+        if (isNaN(s) || s <= 0 || isNaN(b) || b <= 0) { show("kits-out", "<p>⚠️ Please enter valid positive counts for both screws and bolts.</p>"); return; }
         const g = gcd(s, b);
         show("kits-out", '<div class="big">' + g + ' toolkits</div>Each kit gets <strong>' + (s / g) + ' screws</strong> and <strong>' + (b / g) + ' bolts</strong>. GCF(' + s + ', ' + b + ') = ' + g + (g === 1 ? ' ⚠️ try counts that share a bigger factor.' : '.'));
       }
       function calcBudget() {
-        const t = ["b-parts", "b-travel", "b-snacks"].map(id => +document.getElementById(id).value || 0).reduce((a, c) => a + c, 0);
+        const rawVals = ["b-parts", "b-travel", "b-snacks"].map(id => +document.getElementById(id).value);
+        if (rawVals.some(v => isNaN(v) || v < 0)) { show("budget-out", "<p>⚠️ Please enter valid amounts (0 or more) for all cost fields.</p>"); return; }
+        const t = rawVals.reduce((a, c) => a + c, 0);
         const left = 500 - t;
         show("budget-out", '<div class="big">$' + t.toFixed(2) + ' total</div>' + (left >= 0 ? '✅ <strong>$' + left.toFixed(2) + '</strong> under the $500 budget.' : '⚠️ <strong>$' + Math.abs(left).toFixed(2) + ' over budget</strong> — trim a category.'));
       }
       function checkTies() {
         const v = +document.getElementById("check-ties").value, fb = document.getElementById("ties-fb");
+        if (isNaN(v) || document.getElementById("check-ties").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
         if (v === 16) { fb.textContent = "✅ Correct! 96 ÷ 6 = 16 zip ties per robot."; fb.className = "feedback ok"; }
         else { fb.textContent = "❌ Not yet. Try 96 ÷ 6 again."; fb.className = "feedback no"; }
         updateProgress();

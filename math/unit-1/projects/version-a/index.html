@@ -369,7 +369,7 @@
       function calcGCF() {
         const s = +document.getElementById("g-stickers").value;
         const b = +document.getElementById("g-bars").value;
-        if (!s || !b) return;
+        if (isNaN(s) || s <= 0 || isNaN(b) || b <= 0) { show("gcf-out", "<p>⚠️ Please enter valid positive numbers for both supplies.</p>"); return; }
         const g = gcd(s, b);
         show("gcf-out",
           '<div class="big">' + g + ' goodie bags</div>' +
@@ -380,7 +380,7 @@
       function calcLCM() {
         const d = +document.getElementById("l-dj").value;
         const b = +document.getElementById("l-bubble").value;
-        if (!d || !b) return;
+        if (isNaN(d) || d <= 0 || isNaN(b) || b <= 0) { show("lcm-out", "<p>⚠️ Please enter valid positive numbers for both intervals.</p>"); return; }
         const l = lcm(d, b);
         show("lcm-out",
           '<div class="big">Every ' + l + ' minutes</div>' +
@@ -389,7 +389,9 @@
       }
 
       function calcBudget() {
-        const vals = ["c-food", "c-decor", "c-games", "c-music"].map(id => +document.getElementById(id).value || 0);
+        const rawVals = ["c-food", "c-decor", "c-games", "c-music"].map(id => +document.getElementById(id).value);
+        if (rawVals.some(v => isNaN(v) || v < 0)) { show("budget-out", "<p>⚠️ Please enter valid amounts (0 or more) for all cost fields.</p>"); return; }
+        const vals = rawVals;
         const total = vals.reduce((a, c) => a + c, 0);
         const left = 300 - total;
         const ok = left >= 0;
@@ -403,7 +405,7 @@
       function calcPer() {
         const t = +document.getElementById("d-total").value;
         const g = +document.getElementById("d-guests").value;
-        if (!t || !g) return;
+        if (isNaN(t) || t < 0 || isNaN(g) || g <= 0) { show("per-out", "<p>⚠️ Please enter a valid cost (0 or more) and a positive number of guests.</p>"); return; }
         const per = t / g;
         show("per-out",
           '<div class="big">$' + per.toFixed(2) + ' per guest</div>' +
@@ -413,6 +415,7 @@
       function checkCups() {
         const v = +document.getElementById("check-cups").value;
         const fb = document.getElementById("cups-fb");
+        if (isNaN(v) || document.getElementById("check-cups").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
         if (v === 24) { fb.textContent = "✅ Correct! 144 ÷ 6 = 24 cups per table."; fb.className = "feedback ok"; }
         else { fb.textContent = "❌ Not yet. Divide 144 ÷ 6 carefully and try again."; fb.className = "feedback no"; }
         updateProgress();

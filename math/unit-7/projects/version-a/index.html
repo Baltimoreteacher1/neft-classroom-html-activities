@@ -413,6 +413,11 @@
           { name: "Water Slide",    x: +document.getElementById("a2x").value, y: +document.getElementById("a2y").value },
           { name: "Haunted Mansion",x: +document.getElementById("a3x").value, y: +document.getElementById("a3y").value }
         ];
+        const ids = ["a1x","a1y","a2x","a2y","a3x","a3y"];
+        if (ids.some(function(id) { return document.getElementById(id).value.trim() === "" || isNaN(+document.getElementById(id).value); })) {
+          show("plot-out", "<p>⚠️ Please enter valid integers for all six coordinates.</p>");
+          return;
+        }
 
         let html = "";
         pts.forEach(function(p) {
@@ -462,6 +467,10 @@
         const x = +document.getElementById("rx").value;
         const y = +document.getElementById("ry").value;
         const axis = document.getElementById("raxis").value;
+        if (document.getElementById("rx").value.trim() === "" || document.getElementById("ry").value.trim() === "" || isNaN(x) || isNaN(y)) {
+          show("reflect-out", "<p>⚠️ Please enter valid integers for both coordinates.</p>");
+          return;
+        }
         let nx, ny, explanation;
 
         if (axis === "x") {
@@ -488,6 +497,11 @@
         const y1 = +document.getElementById("d1y").value;
         const x2 = +document.getElementById("d2x").value;
         const y2 = +document.getElementById("d2y").value;
+        const distIds = ["d1x","d1y","d2x","d2y"];
+        if (distIds.some(function(id) { return document.getElementById(id).value.trim() === "" || isNaN(+document.getElementById(id).value); })) {
+          show("dist-out", "<p>⚠️ Please enter valid integers for all four coordinates.</p>");
+          return;
+        }
 
         if (x1 === x2 && y1 === y2) {
           show("dist-out", "⚠️ Those are the same point! Distance = 0 units. Enter two different points.");
@@ -524,6 +538,11 @@
       function checkQC1() {
         const v = +document.getElementById("qc1").value;
         const fb = document.getElementById("qc1-fb");
+        if (document.getElementById("qc1").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 6) {
           fb.textContent = "✅ Correct! (2, 3) and (2, 9) share x = 2, so distance = |9 − 3| = 6 units.";
           fb.className = "feedback ok";
@@ -538,6 +557,11 @@
         const x = +document.getElementById("qc2x").value;
         const y = +document.getElementById("qc2y").value;
         const fb = document.getElementById("qc2-fb");
+        if (document.getElementById("qc2x").value.trim() === "" || document.getElementById("qc2y").value.trim() === "" || isNaN(x) || isNaN(y)) {
+          fb.textContent = "⚠️ Please enter numbers for both coordinates.";
+          fb.className = "feedback no";
+          return;
+        }
         if (x === 4 && y === 5) {
           fb.textContent = "✅ Correct! Reflecting (4, −5) across the x-axis keeps x = 4 and negates y: (4, 5).";
           fb.className = "feedback ok";

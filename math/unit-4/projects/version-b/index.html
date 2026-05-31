@@ -456,7 +456,7 @@
         const au = +document.getElementById("a-units").value;
         const bp = +document.getElementById("b-price").value;
         const bu = +document.getElementById("b-units").value;
-        if (!ap || !au || !bp || !bu) return;
+        if (isNaN(ap) || ap <= 0 || isNaN(au) || au <= 0 || isNaN(bp) || bp <= 0 || isNaN(bu) || bu <= 0) { show("unit-out", "<p>⚠️ Please enter valid positive prices and unit counts for both packages.</p>"); return; }
         const upA = ap / au;
         const upB = bp / bu;
         let verdict;
@@ -475,7 +475,7 @@
         const d1 = +document.getElementById("s1-disc").value;
         const p2 = +document.getElementById("s2-price").value;
         const d2 = +document.getElementById("s2-disc").value;
-        if (!p1 || !p2) return;
+        if (isNaN(p1) || p1 <= 0 || isNaN(d1) || d1 < 0 || isNaN(p2) || p2 <= 0 || isNaN(d2) || d2 < 0) { show("store-out", "<p>⚠️ Please enter valid positive prices and discount percentages (0 or more) for both stores.</p>"); return; }
         const sale1 = p1 * (1 - d1 / 100);
         const sale2 = p2 * (1 - d2 / 100);
         let verdict;
@@ -492,7 +492,7 @@
       function calcTip() {
         const bill = +document.getElementById("bill").value;
         const tipP = +document.getElementById("tip-pct").value;
-        if (!bill) return;
+        if (isNaN(bill) || bill <= 0 || isNaN(tipP) || tipP < 0) { show("tip-out", "<p>⚠️ Please enter a valid positive bill amount and a tip percentage of 0 or more.</p>"); return; }
         const tipAmt = bill * (tipP / 100);
         const total  = bill + tipAmt;
         show("tip-out",
@@ -505,7 +505,7 @@
         const val  = +document.getElementById("conv-val").value;
         const from = document.getElementById("conv-from").value;
         const to   = document.getElementById("conv-to").value;
-        if (!val) return;
+        if (isNaN(val) || val <= 0) { show("conv-out", "<p>⚠️ Please enter a valid positive value to convert.</p>"); return; }
         if (from === to) { show("conv-out", '<div class="big">' + val + ' ' + to + '</div>Same unit — no conversion needed!'); return; }
         const row = CONV[from];
         if (!row || row[to] === undefined) {
@@ -525,6 +525,7 @@
       function checkUnit() {
         const v  = +document.getElementById("check-unit").value;
         const fb = document.getElementById("unit-fb");
+        if (isNaN(v) || document.getElementById("check-unit").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
         if (v === 3) {
           fb.textContent = "✅ Correct! $12.00 ÷ 4 bars = $3.00 per bar.";
           fb.className = "feedback ok";

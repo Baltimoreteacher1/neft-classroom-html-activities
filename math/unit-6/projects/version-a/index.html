@@ -366,7 +366,10 @@
       function calcExponent() {
         const base = +document.getElementById("exp-base").value;
         const exp = +document.getElementById("exp-level").value;
-        if (!base || !exp || base < 2 || exp < 2) return;
+        if (isNaN(base) || isNaN(exp) || base < 2 || exp < 2) {
+          show("exp-out", "<p>⚠️ Please enter a base (2–10) and a level (2–5).</p>");
+          return;
+        }
         const result = Math.pow(base, exp);
         const expanded = expandedForm(base, exp);
         show("exp-out",
@@ -377,7 +380,10 @@
 
       function calcCoinExpr() {
         const c = +document.getElementById("expr-coins").value;
-        if (isNaN(c) || c < 0) return;
+        if (isNaN(c) || c < 0) {
+          show("expr-out", "<p>⚠️ Please enter a valid number of coins (0 or more).</p>");
+          return;
+        }
         const result = 3 * c + 50;
         show("expr-out",
           '<div class="big">' + result + ' points</div>' +
@@ -402,7 +408,10 @@
 
       function calcEvalExpr() {
         const x = +document.getElementById("eval-x").value;
-        if (!x || x < 1 || x > 10) return;
+        if (isNaN(x) || x < 1 || x > 10) {
+          show("eval-out", "<p>⚠️ Please enter a power level between 1 and 10.</p>");
+          return;
+        }
         const xSq = x ** 2;
         const step2 = 2 * xSq;
         const result = step2 + 5;
@@ -417,7 +426,10 @@
 
       function compareFormulas() {
         const x = +document.getElementById("cmp-x").value;
-        if (!x || x < 1 || x > 10) return;
+        if (isNaN(x) || x < 1 || x > 10) {
+          show("cmp-out", "<p>⚠️ Please enter a player level between 1 and 10.</p>");
+          return;
+        }
         const a = x ** 2 + 10;
         const b = 4 * x + 6;
         const winner = a > b ? "A" : b > a ? "B" : "tie";
@@ -434,6 +446,11 @@
       function checkPow() {
         const v = +document.getElementById("check-pow").value;
         const fb = document.getElementById("pow-fb");
+        if (document.getElementById("check-pow").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 25) {
           fb.textContent = "✅ Correct! 5² = 5 × 5 = 25.";
           fb.className = "feedback ok";

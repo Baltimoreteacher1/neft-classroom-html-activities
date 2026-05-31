@@ -380,7 +380,10 @@
         const l = +document.getElementById("v-length").value;
         const w = +document.getElementById("v-width").value;
         const h = +document.getElementById("v-height").value;
-        if (!l || !w || !h) return;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          show("vol-out", "<p>⚠️ Please enter valid positive numbers for all three dimensions.</p>");
+          return;
+        }
         const v = round2(l * w * h);
         show("vol-out",
           '<div class="big">' + v + ' cubic units</div>' +
@@ -393,7 +396,10 @@
         const l = +document.getElementById("fv-length").value;
         const w = +document.getElementById("fv-width").value;
         const h = +document.getElementById("fv-height").value;
-        if (!l || !w || !h) return;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          show("fvol-out", "<p>⚠️ Please enter valid positive numbers for all three dimensions.</p>");
+          return;
+        }
         const v = round2(l * w * h);
         const hasFrac = (l % 1 !== 0) || (w % 1 !== 0) || (h % 1 !== 0);
         show("fvol-out",
@@ -408,7 +414,10 @@
         const l = +document.getElementById("sa-length").value;
         const w = +document.getElementById("sa-width").value;
         const h = +document.getElementById("sa-height").value;
-        if (!l || !w || !h) return;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          show("sa-out", "<p>⚠️ Please enter valid positive numbers for all three dimensions.</p>");
+          return;
+        }
         const lw = round2(l * w);
         const lh = round2(l * h);
         const wh = round2(w * h);
@@ -425,7 +434,10 @@
       function calcCost() {
         const sa = +document.getElementById("cost-sa").value;
         const rate = +document.getElementById("cost-rate").value;
-        if (!sa || !rate) return;
+        if (isNaN(sa) || isNaN(rate) || sa <= 0 || rate <= 0) {
+          show("cost-out", "<p>⚠️ Please enter valid positive numbers for surface area and cost rate.</p>");
+          return;
+        }
         const cost = round2(sa * rate);
         show("cost-out",
           '<div class="big">$' + cost.toFixed(2) + '</div>' +
@@ -436,6 +448,11 @@
       function checkVol() {
         const v = +document.getElementById("check-vol").value;
         const fb = document.getElementById("vol-fb");
+        if (document.getElementById("check-vol").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 24) {
           fb.textContent = "✅ Correct! V = 2 × 3 × 4 = 24 cubic units.";
           fb.className = "feedback ok";

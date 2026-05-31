@@ -388,7 +388,10 @@
       function solvePhase1() {
         const raised = +document.getElementById("f1-raised").value;
         const goal = +document.getElementById("f1-goal").value;
-        if (isNaN(raised) || isNaN(goal) || goal <= 0) return;
+        if (isNaN(raised) || isNaN(goal) || raised < 0 || goal <= 0) {
+          show("p1-out", "<p>⚠️ Please enter valid amounts — raised must be 0 or more, goal must be positive.</p>");
+          return;
+        }
         if (raised >= goal) {
           show("p1-out", '<div class="big">Already met!</div>You have already raised $' + raised.toFixed(2) + ', which meets or exceeds the goal of $' + goal.toFixed(2) + '. x = 0 (or less). ✅');
           return;
@@ -407,7 +410,10 @@
       function solvePhase2() {
         const price = +document.getElementById("f2-price").value;
         const target = +document.getElementById("f2-target").value;
-        if (!price || !target) return;
+        if (isNaN(price) || isNaN(target) || price <= 0 || target <= 0) {
+          show("p2-out", "<p>⚠️ Please enter valid positive amounts for price and sales target.</p>");
+          return;
+        }
         if (target % price !== 0) {
           show("p2-out", "⚠️ $" + target + " is not evenly divisible by $" + price + ". Choose a target that divides evenly. For example, with price = $" + price + ", try target = $" + (price * Math.round(target / price)) + ".");
           return;
@@ -426,7 +432,10 @@
       function solvePhase3() {
         const goal = +document.getElementById("f3-goal").value;
         const sym = document.getElementById("f3-symbol").value;
-        if (!goal) return;
+        if (isNaN(goal) || goal <= 0) {
+          show("p3-out", "<p>⚠️ Please enter a valid positive goal amount.</p>");
+          return;
+        }
 
         const symDisplay = sym === ">=" ? "≥" : sym === ">" ? ">" : sym === "<=" ? "≤" : "<";
         const isClosed = sym === ">=" || sym === "<=";
@@ -532,6 +541,11 @@
       function checkFinal() {
         const v = +document.getElementById("check-final").value;
         const fb = document.getElementById("final-fb");
+        if (document.getElementById("check-final").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 12) {
           fb.textContent = "✅ Correct! 5x = 60 → x = 60 ÷ 5 = 12. Verify: 5 × 12 = 60 ✓";
           fb.className = "feedback ok";
@@ -546,6 +560,11 @@
       function checkIneq() {
         const val = document.getElementById("ineq-check").value.trim().toLowerCase();
         const fb = document.getElementById("ineq-fb");
+        if (val === "") {
+          fb.textContent = "⚠️ Please write your explanation before checking.";
+          fb.className = "feedback no";
+          return;
+        }
         // Must mention both 8 and 5, and words like "true", "satisfies", "not", "false", "less"
         const mentions8 = val.includes("8");
         const mentions5 = val.includes("5");

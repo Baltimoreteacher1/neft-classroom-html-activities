@@ -283,6 +283,11 @@
       }
 
       function calcEquation() {
+        const kRaw = +document.getElementById("k-plan").value;
+        if (isNaN(kRaw) || kRaw <= 0) {
+          show("eq-out", "<p>⚠️ Please enter a valid positive monthly cost.</p>");
+          return;
+        }
         const k = getK();
         show("eq-out",
           '<div class="big">y = ' + k + 'x</div>' +
@@ -292,6 +297,11 @@
       }
 
       function calcTable() {
+        const kRaw = +document.getElementById("k-plan").value;
+        if (isNaN(kRaw) || kRaw <= 0) {
+          show("table-out", "<p>⚠️ Please enter a valid positive monthly cost first.</p>");
+          return;
+        }
         const k = getK();
         let rows = '';
         for (let x = 1; x <= 6; x++) {
@@ -307,6 +317,13 @@
       }
 
       function calcCompare() {
+        const kaRaw = +document.getElementById("k-plan-a2").value;
+        const kbRaw = +document.getElementById("k-plan-b").value;
+        const xRaw  = +document.getElementById("compare-months").value;
+        if (isNaN(kaRaw) || isNaN(kbRaw) || isNaN(xRaw) || kaRaw <= 0 || kbRaw <= 0 || xRaw <= 0) {
+          show("compare-out", "<p>⚠️ Please enter valid positive numbers for both plan costs and months.</p>");
+          return;
+        }
         const ka = Math.max(1, +document.getElementById("k-plan-a2").value || 25);
         const kb = Math.max(1, +document.getElementById("k-plan-b").value || 18);
         const x  = Math.max(1, +document.getElementById("compare-months").value || 6);
@@ -323,6 +340,12 @@
       }
 
       function calcRecommend() {
+        const kaRaw = +document.getElementById("rec-a").value;
+        const kbRaw = +document.getElementById("rec-b").value;
+        if (isNaN(kaRaw) || isNaN(kbRaw) || kaRaw <= 0 || kbRaw <= 0) {
+          show("rec-out", "<p>⚠️ Please enter valid positive monthly costs for both plans.</p>");
+          return;
+        }
         const ka = Math.max(1, +document.getElementById("rec-a").value || 25);
         const kb = Math.max(1, +document.getElementById("rec-b").value || 18);
         const ya12 = ka * 12;
@@ -339,6 +362,11 @@
       function checkQuick() {
         const v = +document.getElementById("check-quick").value;
         const fb = document.getElementById("quick-fb");
+        if (document.getElementById("check-quick").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 60) {
           fb.textContent = "✅ Correct! y = 12 × 5 = $60.";
           fb.className = "feedback ok";

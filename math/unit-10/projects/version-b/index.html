@@ -298,7 +298,10 @@
         const l = +document.getElementById("t-length").value;
         const w = +document.getElementById("t-width").value;
         const h = +document.getElementById("t-height").value;
-        if (!l || !w || !h) return;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          show("tankvol-out", "<p>⚠️ Please enter valid positive numbers for all three dimensions.</p>");
+          return;
+        }
         const v = round2(l * w * h);
         show("tankvol-out",
           '<div class="big">' + v + ' cubic units</div>' +
@@ -310,7 +313,10 @@
         const l = +document.getElementById("f-length").value;
         const w = +document.getElementById("f-width").value;
         const fill = +document.getElementById("f-fill").value;
-        if (!l || !w || !fill) return;
+        if (isNaN(l) || isNaN(w) || isNaN(fill) || l <= 0 || w <= 0 || fill <= 0) {
+          show("water-out", "<p>⚠️ Please enter valid positive numbers for length, width, and fill height.</p>");
+          return;
+        }
         const vw = round2(l * w * fill);
         show("water-out",
           '<div class="big">' + vw + ' cubic units of water</div>' +
@@ -322,7 +328,10 @@
         const l = +document.getElementById("g-length").value;
         const w = +document.getElementById("g-width").value;
         const h = +document.getElementById("g-height").value;
-        if (!l || !w || !h) return;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          show("glass-out", "<p>⚠️ Please enter valid positive numbers for all three dimensions.</p>");
+          return;
+        }
         const bottom = round2(l * w);
         const lhFace = round2(l * h);
         const whFace = round2(w * h);
@@ -341,7 +350,10 @@
       function calcGlassCost() {
         const a = +document.getElementById("gc-area").value;
         const r = +document.getElementById("gc-rate").value;
-        if (!a || !r) return;
+        if (isNaN(a) || isNaN(r) || a <= 0 || r <= 0) {
+          show("glasscost-out", "<p>⚠️ Please enter valid positive numbers for glass area and price.</p>");
+          return;
+        }
         const cost = round2(a * r);
         show("glasscost-out",
           '<div class="big">$' + cost.toFixed(2) + '</div>' +
@@ -351,6 +363,11 @@
       function checkTank() {
         const v = +document.getElementById("check-tank").value;
         const fb = document.getElementById("tank-fb");
+        if (document.getElementById("check-tank").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 30) {
           fb.textContent = "✅ Correct! V = 5 × 2 × 3 = 30 cubic units.";
           fb.className = "feedback ok";

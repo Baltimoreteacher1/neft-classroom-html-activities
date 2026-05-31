@@ -843,8 +843,20 @@ My current cash balance is $___ which is a [profit/loss]."></textarea>
         var discount = +document.getElementById("p-discount").value;
         var tax      = +document.getElementById("p-tax").value;
 
-        if (!cost || cost <= 0) {
+        if (isNaN(cost) || cost <= 0) {
           show("price-out", "<p>⚠️ Please enter a positive unit cost.</p>");
+          return;
+        }
+        if (isNaN(markup) || markup < 0) {
+          show("price-out", "<p>⚠️ Please enter a valid markup percentage (0 or more).</p>");
+          return;
+        }
+        if (isNaN(discount) || discount < 0) {
+          show("price-out", "<p>⚠️ Please enter a valid discount percentage (0 or more).</p>");
+          return;
+        }
+        if (isNaN(tax) || tax < 0) {
+          show("price-out", "<p>⚠️ Please enter a valid sales tax percentage (0 or more).</p>");
           return;
         }
 
@@ -879,8 +891,9 @@ My current cash balance is $___ which is a [profit/loss]."></textarea>
         var w2 = +document.getElementById("a-w2").value;
         var costPerSqFt = +document.getElementById("a-cost").value;
 
-        if (!l1 || !w1 || !l2 || !w2 || !costPerSqFt) {
-          show("area-out", "<p>⚠️ Please fill in all dimension and cost fields.</p>");
+        if (isNaN(l1) || isNaN(w1) || isNaN(l2) || isNaN(w2) || isNaN(costPerSqFt) ||
+            l1 <= 0 || w1 <= 0 || l2 <= 0 || w2 <= 0 || costPerSqFt <= 0) {
+          show("area-out", "<p>⚠️ Please enter valid positive numbers for all dimensions and flooring cost.</p>");
           return;
         }
 
@@ -916,8 +929,9 @@ My current cash balance is $___ which is a [profit/loss]."></textarea>
         var h   = +document.getElementById("v-h").value;
         var mat = +document.getElementById("v-mat").value;
 
-        if (!l || !w || !h || !mat) {
-          show("vol-out", "<p>⚠️ Please fill in all box dimensions and material cost.</p>");
+        if (isNaN(l) || isNaN(w) || isNaN(h) || isNaN(mat) ||
+            l <= 0 || w <= 0 || h <= 0 || mat <= 0) {
+          show("vol-out", "<p>⚠️ Please enter valid positive numbers for all box dimensions and material cost.</p>");
           return;
         }
 
@@ -951,8 +965,8 @@ My current cash balance is $___ which is a [profit/loss]."></textarea>
         var q = +document.getElementById("e-qty").value;
         var c = +document.getElementById("e-fixed").value;
 
-        if (!p || !q) {
-          show("expr-out", "<p>⚠️ Please enter a price and quantity.</p>");
+        if (isNaN(p) || isNaN(q) || isNaN(c) || p <= 0 || q <= 0 || c < 0) {
+          show("expr-out", "<p>⚠️ Please enter a positive price, a positive quantity, and a non-negative fixed cost.</p>");
           return;
         }
 

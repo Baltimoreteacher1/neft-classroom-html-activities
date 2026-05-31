@@ -399,7 +399,11 @@
       function buildClue() {
         const p = +document.getElementById("clue-p").value;
         const q = +document.getElementById("clue-q").value;
-        if (!p || !q || q <= p) {
+        if (isNaN(p) || isNaN(q) || p <= 0 || q <= 0) {
+          show("clue-out", "<p>⚠️ Please enter valid positive numbers for both values.</p>");
+          return;
+        }
+        if (q <= p) {
           show("clue-out", "⚠️ Make sure q is greater than p so the combination is positive.");
           return;
         }
@@ -416,7 +420,10 @@
       function solveAddSub() {
         const p = +document.getElementById("as-p").value;
         const q = +document.getElementById("as-q").value;
-        if (!p || !q) return;
+        if (isNaN(p) || isNaN(q) || p <= 0 || q <= 0) {
+          show("as-out", "<p>⚠️ Please enter valid positive numbers for p and q.</p>");
+          return;
+        }
         if (q <= p) {
           show("as-out", "⚠️ Make sure q is greater than p so the solution is a positive number.");
           return;
@@ -435,7 +442,10 @@
       function solveMulDiv() {
         const p = +document.getElementById("md-p").value;
         const q = +document.getElementById("md-q").value;
-        if (!p || !q) return;
+        if (isNaN(p) || isNaN(q) || p <= 0 || q <= 0) {
+          show("md-out", "<p>⚠️ Please enter valid positive numbers for p and q.</p>");
+          return;
+        }
         if (q % p !== 0) {
           show("md-out", "⚠️ " + q + " is not evenly divisible by " + p + ". Choose values where q ÷ p has no remainder. Example: p = 4, q = 28.");
           return;
@@ -454,6 +464,11 @@
       function checkFinal() {
         const v = +document.getElementById("check-final").value;
         const fb = document.getElementById("final-fb");
+        if (document.getElementById("check-final").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 7) {
           fb.textContent = "✅ Correct! 3x = 21 → x = 21 ÷ 3 = 7. Verify: 3 × 7 = 21 ✓ Your answer key is ready!";
           fb.className = "feedback ok";

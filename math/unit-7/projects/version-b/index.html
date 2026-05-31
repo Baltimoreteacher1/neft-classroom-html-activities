@@ -390,6 +390,10 @@
 
       function calcAbsVal() {
         const d = +document.getElementById("av-depth").value;
+        if (document.getElementById("av-depth").value.trim() === "" || isNaN(d)) {
+          show("absval-out", "<p>⚠️ Please enter a valid depth reading.</p>");
+          return;
+        }
         const abs = Math.abs(d);
         const dir = d < 0 ? "below" : d > 0 ? "above" : "at";
         show("absval-out",
@@ -406,6 +410,10 @@
 
       function orderReadings() {
         const ids = ["t1", "t2", "t3", "t4", "t5"];
+        if (ids.some(function(id) { return document.getElementById(id).value.trim() === "" || isNaN(+document.getElementById(id).value); })) {
+          show("order-out", "<p>⚠️ Please enter valid numbers for all five temperature readings.</p>");
+          return;
+        }
         const vals = ids.map(function(id) { return +document.getElementById(id).value; });
         const sorted = vals.slice().sort(function(a, b) { return a - b; });
         const original = vals.join(", ");
@@ -426,6 +434,14 @@
       function calcSafe() {
         const d = +document.getElementById("safe-depth").value;
         const lim = +document.getElementById("safe-limit").value;
+        if (document.getElementById("safe-depth").value.trim() === "" || document.getElementById("safe-limit").value.trim() === "" || isNaN(d) || isNaN(lim)) {
+          show("safe-out", "<p>⚠️ Please enter valid numbers for depth and safety limit.</p>");
+          return;
+        }
+        if (lim <= 0) {
+          show("safe-out", "<p>⚠️ Safety limit must be a positive number.</p>");
+          return;
+        }
         const dist = Math.abs(d);
         const safe = dist <= lim;
 
@@ -441,6 +457,11 @@
       function checkQC1() {
         const v = +document.getElementById("qc1").value;
         const fb = document.getElementById("qc1-fb");
+        if (document.getElementById("qc1").value.trim() === "" || isNaN(v)) {
+          fb.textContent = "⚠️ Please enter a number.";
+          fb.className = "feedback no";
+          return;
+        }
         if (v === 45) {
           fb.textContent = "✅ Correct! |−45| = 45. Absolute value is the distance from zero, always positive.";
           fb.className = "feedback ok";
@@ -454,6 +475,11 @@
       function checkQC2() {
         const raw = document.getElementById("qc2").value;
         const fb = document.getElementById("qc2-fb");
+        if (raw.trim() === "") {
+          fb.textContent = "⚠️ Please enter the ordered numbers.";
+          fb.className = "feedback no";
+          return;
+        }
         // Parse: accept negative signs with or without space, commas or spaces as separators
         const nums = raw.replace(/−/g, "-").split(/[\s,]+/).filter(function(s) { return s !== ""; }).map(Number);
         const correct = [-7, -3, 0, 2];

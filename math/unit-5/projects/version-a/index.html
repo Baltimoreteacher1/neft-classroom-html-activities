@@ -432,7 +432,7 @@
       function calcParallelogram() {
         const b = +document.getElementById("p1-base").value;
         const h = +document.getElementById("p1-height").value;
-        if (!b || !h) return;
+        if (isNaN(b) || b <= 0 || isNaN(h) || h <= 0) { show("p1-out", "<p>⚠️ Please enter valid positive values for base and height.</p>"); return; }
         const area = b * h;
         show("p1-out",
           '<div class="big">' + area.toFixed(2) + ' sq ft</div>' +
@@ -443,7 +443,7 @@
       function calcTriangle() {
         const b = +document.getElementById("p2-base").value;
         const h = +document.getElementById("p2-height").value;
-        if (!b || !h) return;
+        if (isNaN(b) || b <= 0 || isNaN(h) || h <= 0) { show("p2-out", "<p>⚠️ Please enter valid positive values for base and height.</p>"); return; }
         const area = 0.5 * b * h;
         show("p2-out",
           '<div class="big">' + area.toFixed(2) + ' sq ft</div>' +
@@ -456,7 +456,7 @@
         const ah = +document.getElementById("p3-a-height").value;
         const bb = +document.getElementById("p3-b-base").value;
         const bh = +document.getElementById("p3-b-height").value;
-        if (!ab || !ah || !bb || !bh) return;
+        if (isNaN(ab) || ab <= 0 || isNaN(ah) || ah <= 0 || isNaN(bb) || bb <= 0 || isNaN(bh) || bh <= 0) { show("p3-out", "<p>⚠️ Please enter valid positive values for all four rectangle dimensions.</p>"); return; }
         const areaA = ab * ah;
         const areaB = bb * bh;
         const total = areaA + areaB;
@@ -470,7 +470,7 @@
       function calcFlooring() {
         const area = +document.getElementById("p4-area").value;
         const price = +document.getElementById("p4-price").value;
-        if (!area || !price) return;
+        if (isNaN(area) || area <= 0 || isNaN(price) || price <= 0) { show("p4-out", "<p>⚠️ Please enter valid positive values for area and price per sq ft.</p>"); return; }
         const cost = area * price;
         show("p4-out",
           '<div class="big">$' + cost.toFixed(2) + '</div>' +
@@ -481,6 +481,7 @@
       function checkTriangle() {
         const v = +document.getElementById("check-tri").value;
         const fb = document.getElementById("tri-fb");
+        if (isNaN(v) || document.getElementById("check-tri").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
         // b=6, h=4 → ½×6×4 = 12
         if (v === 12) {
           fb.textContent = "✅ Correct! ½ × 6 × 4 = 12 sq ft.";

@@ -339,7 +339,7 @@
         const b1 = +document.getElementById("p1-b1").value;
         const b2 = +document.getElementById("p1-b2").value;
         const h  = +document.getElementById("p1-h").value;
-        if (!b1 || !b2 || !h) return;
+        if (isNaN(b1) || b1 <= 0 || isNaN(b2) || b2 <= 0 || isNaN(h) || h <= 0) { show("p1-out", "<p>⚠️ Please enter valid positive values for both bases and the height.</p>"); return; }
         const area = 0.5 * (b1 + b2) * h;
         show("p1-out",
           '<div class="big">' + area.toFixed(2) + ' sq ft</div>' +
@@ -351,7 +351,7 @@
         const b = +document.getElementById("p2-base").value;
         const h = +document.getElementById("p2-height").value;
         const cov = +document.getElementById("p2-coverage").value;
-        if (!b || !h || !cov) return;
+        if (isNaN(b) || b <= 0 || isNaN(h) || h <= 0 || isNaN(cov) || cov <= 0) { show("p2-out", "<p>⚠️ Please enter valid positive values for base, height, and coverage per can.</p>"); return; }
         const area = 0.5 * b * h;
         const cans = Math.ceil(area / cov);
         show("p2-out",
@@ -365,7 +365,7 @@
       function calcBanner() {
         const b = +document.getElementById("p3-base").value;
         const h = +document.getElementById("p3-height").value;
-        if (!b || !h) return;
+        if (isNaN(b) || b <= 0 || isNaN(h) || h <= 0) { show("p3-out", "<p>⚠️ Please enter valid positive values for base and height.</p>"); return; }
         const area = b * h;
         show("p3-out",
           '<div class="big">' + area.toFixed(2) + ' sq ft</div>' +
@@ -378,7 +378,7 @@
         const c1 = +document.getElementById("p4-price1").value;
         const a2 = +document.getElementById("p4-area2").value;
         const c2 = +document.getElementById("p4-price2").value;
-        if (!a1 || !c1 || !a2 || !c2) return;
+        if (isNaN(a1) || a1 <= 0 || isNaN(c1) || c1 <= 0 || isNaN(a2) || a2 <= 0 || isNaN(c2) || c2 <= 0) { show("p4-out", "<p>⚠️ Please enter valid positive values for all areas and costs per sq ft.</p>"); return; }
         const cost1 = a1 * c1;
         const cost2 = a2 * c2;
         const budget = 600;
@@ -399,6 +399,7 @@
       function checkTrap() {
         const v = +document.getElementById("check-trap").value;
         const fb = document.getElementById("trap-fb");
+        if (isNaN(v) || document.getElementById("check-trap").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
         // b1=4, b2=6, h=3 → ½×(4+6)×3 = ½×10×3 = 15
         if (v === 15) {
           fb.textContent = "✅ Correct! ½ × (4 + 6) × 3 = 15 sq ft.";

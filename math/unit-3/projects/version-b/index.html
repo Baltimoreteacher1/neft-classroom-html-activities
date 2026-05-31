@@ -399,7 +399,7 @@
         const gA = +document.getElementById("pa-games").value;
         const ptsB = +document.getElementById("pb-pts").value;
         const gB = +document.getElementById("pb-games").value;
-        if (!ptsA || !gA || !ptsB || !gB) return;
+        if (isNaN(ptsA) || ptsA < 0 || isNaN(gA) || gA <= 0 || isNaN(ptsB) || ptsB < 0 || isNaN(gB) || gB <= 0) { show("rates-out", "<p>⚠️ Please enter valid numbers (points ≥ 0, games played must be positive) for both players.</p>"); return; }
         const rA = ptsA / gA;
         const rB = ptsB / gB;
         const lead = rA > rB ? nameA : rB > rA ? nameB : "Both players";
@@ -419,7 +419,7 @@
         const ptsB = +document.getElementById("cmp-pts-b").value;
         const gB = +document.getElementById("cmp-games-b").value;
         const common = +document.getElementById("cmp-common").value;
-        if (!ptsA || !gA || !ptsB || !gB || !common) return;
+        if (isNaN(ptsA) || ptsA < 0 || isNaN(gA) || gA <= 0 || isNaN(ptsB) || ptsB < 0 || isNaN(gB) || gB <= 0 || isNaN(common) || common <= 0) { show("compare-out", "<p>⚠️ Please enter valid numbers (points ≥ 0, games and common target must be positive).</p>"); return; }
         const factorA = common / gA;
         const factorB = common / gB;
         const scaledA = ptsA * factorA;
@@ -438,7 +438,7 @@
       function calcProjection() {
         const rA = +document.getElementById("proj-rate-a").value;
         const rB = +document.getElementById("proj-rate-b").value;
-        if (!rA || !rB) return;
+        if (isNaN(rA) || rA <= 0 || isNaN(rB) || rB <= 0) { show("proj-out", "<p>⚠️ Please enter valid positive unit rates for both players.</p>"); return; }
         const games = [10, 20, 30];
         let rows = "";
         games.forEach(function(g) {
@@ -459,6 +459,7 @@
       function checkPPG() {
         const v = +document.getElementById("check-ppg").value;
         const fb = document.getElementById("ppg-fb");
+        if (isNaN(v) || document.getElementById("check-ppg").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
         // 20 points / 5 games = 4 points per game
         if (v === 4) {
           fb.textContent = "✅ Correct! 20 points ÷ 5 games = 4 points per game (unit rate).";

@@ -374,7 +374,7 @@
       function calcMarkup() {
         const cost = +document.getElementById("cost").value;
         const pct  = +document.getElementById("markup").value;
-        if (!cost || !pct) return;
+        if (isNaN(cost) || cost <= 0 || isNaN(pct) || pct <= 0) { show("markup-out", "<p>⚠️ Please enter a valid positive cost price and markup percentage.</p>"); return; }
         const amount = cost * (pct / 100);
         const sell   = cost + amount;
         show("markup-out",
@@ -387,7 +387,7 @@
       function calcDiscount() {
         const sell = +document.getElementById("sell-price").value;
         const pct  = +document.getElementById("discount").value;
-        if (!sell || !pct) return;
+        if (isNaN(sell) || sell <= 0 || isNaN(pct) || pct <= 0) { show("discount-out", "<p>⚠️ Please enter a valid positive selling price and discount percentage.</p>"); return; }
         const savings  = sell * (pct / 100);
         const salePrice = sell - savings;
         show("discount-out",
@@ -399,7 +399,7 @@
       function calcTax() {
         const saleP = +document.getElementById("sale-price-tax").value;
         const taxR  = +document.getElementById("tax-rate").value;
-        if (saleP <= 0) return;
+        if (isNaN(saleP) || saleP <= 0 || isNaN(taxR) || taxR < 0) { show("tax-out", "<p>⚠️ Please enter a valid positive sale price and a tax rate of 0 or more.</p>"); return; }
         const taxAmt = saleP * (taxR / 100);
         const total  = saleP + taxAmt;
         show("tax-out",
@@ -410,7 +410,7 @@
 
       function calcConvert() {
         const p = +document.getElementById("conv-pct").value;
-        if (!p) return;
+        if (isNaN(p) || p <= 0) { show("conv-out", "<p>⚠️ Please enter a valid positive percentage to convert.</p>"); return; }
         const dec = p / 100;
         const g   = gcd(p, 100);
         const num = p / g;
@@ -440,6 +440,7 @@
       function checkPct() {
         const v  = +document.getElementById("check-pct").value;
         const fb = document.getElementById("pct-fb");
+        if (isNaN(v) || document.getElementById("check-pct").value.trim() === "") { fb.textContent = "⚠️ Please enter a number to check."; fb.className = "feedback no"; return; }
         if (v === 20) {
           fb.textContent = "✅ Correct! 25% of 80 = 80 × 0.25 = 20.";
           fb.className = "feedback ok";
