@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R4 · Lesson 1: Factors &amp; Divisibility — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: list factors of a number, test divisibility, and apply divisibility rules for 2, 5, and 10. Builds toward Grade 6 standard 6.NS.4." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#1a6fb5 0%, #0f2b3c 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .factor-box { display: inline-block; background: var(--navy); color: #fff; border-radius: 8px; padding: 4px 12px; font-weight: 800; margin: 2px; font-size: 15px; }
+      .rule-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px; }
+      .rule-table th, .rule-table td { border: 1px solid var(--line); padding: 10px 12px; }
+      .rule-table th { background: var(--navy); color: #fff; font-size: 13px; text-align: left; }
+      .rule-table tr:nth-child(even) td { background: var(--blue-light); }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🧩</div>
+      <h1>Factors &amp; Divisibility</h1>
+      <p>List every factor of a whole number, test whether one number divides evenly into another, and use the shortcut divisibility rules for 2, 5, and 10.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R4 · Lesson 1</span>
+        <span class="tag">Builds 6.NS.4</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/remediation/">Bridge to Grade 6</a> /
+        <a href="/math/remediation/unit-r4/">Unit R4</a> / Lesson 1
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> Standard 6.NS.4 asks you
+        to find the GCF and LCM of two numbers and use the distributive
+        property. None of that is possible without first knowing how to list
+        every factor of a number — which is exactly what this lesson teaches.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>Factors &amp; Divisibility Rules</h2></div></div>
+
+        <p>A <strong>factor</strong> of a whole number divides into it evenly (no remainder). To find all factors, try every whole number starting at 1 and pair it up.</p>
+
+        <div class="example">
+          <strong>Example 1 — All factors of 12:</strong><br>
+          <br>
+          1 × 12 = 12 &nbsp;→&nbsp; factors <span class="factor-box">1</span> and <span class="factor-box">12</span><br>
+          2 × 6 = 12 &nbsp;→&nbsp; factors <span class="factor-box">2</span> and <span class="factor-box">6</span><br>
+          3 × 4 = 12 &nbsp;→&nbsp; factors <span class="factor-box">3</span> and <span class="factor-box">4</span><br>
+          5 × ? — 12 ÷ 5 = 2.4, not a whole number, so 5 is NOT a factor.<br>
+          <br>
+          <strong>Factors of 12 (in order): 1, 2, 3, 4, 6, 12</strong>
+        </div>
+
+        <div class="example">
+          <strong>Example 2 — Is 7 a factor of 21?</strong><br>
+          <br>
+          Divide: 21 ÷ 7 = <strong>3</strong> exactly (no remainder).<br>
+          Because 7 × 3 = 21, yes — <strong>7 is a factor of 21</strong>.<br>
+          <br>
+          Check: is 5 a factor of 21? &nbsp; 21 ÷ 5 = 4.2 — not a whole number, so <strong>no</strong>.
+        </div>
+
+        <p><strong>Shortcut — Divisibility Rules</strong> (test without dividing all the way):</p>
+        <table class="rule-table">
+          <tr><th>Divisible by</th><th>Rule</th><th>Example</th></tr>
+          <tr><td><strong>2</strong></td><td>Last digit is even (0, 2, 4, 6, or 8)</td><td>48 ✔ (last digit 8); 35 ✘</td></tr>
+          <tr><td><strong>5</strong></td><td>Last digit is 0 or 5</td><td>40 ✔; 35 ✔; 42 ✘</td></tr>
+          <tr><td><strong>10</strong></td><td>Last digit is 0</td><td>80 ✔; 75 ✘</td></tr>
+        </table>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. How many factors does <strong>12</strong> have?</p>
+          <div class="opts" data-mc="t1" data-ans="c">
+            <button class="opt" data-v="a">4</button>
+            <button class="opt" data-v="b">5</button>
+            <button class="opt" data-v="c">6</button>
+            <button class="opt" data-v="d">7</button>
+          </div>
+          <button class="btn" onclick="checkMC('t1')">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>Factors of 12: 1, 2, 3, 4, 6, 12. Count them: that is 6 factors.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. Is <strong>42</strong> divisible by <strong>2</strong>?</p>
+          <div class="opts" data-mc="t2" data-ans="a">
+            <button class="opt" data-v="a">Yes — its last digit is 2 (even)</button>
+            <button class="opt" data-v="b">No — 42 is odd</button>
+            <button class="opt" data-v="c">Yes — its last digit is 0</button>
+          </div>
+          <button class="btn" onclick="checkMC('t2')">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>The divisibility rule for 2: the last digit must be even. The last digit of 42 is 2, which is even, so yes.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. What is the <strong>largest</strong> factor of 12 that is less than 12?</p>
+          <input type="number" id="p3" placeholder="?" />
+          <button class="btn" onclick="checkNum('p3', 6)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>Factors of 12 in order: 1, 2, 3, 4, 6, 12. The largest one below 12 is 6.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. Which number is <strong>NOT</strong> divisible by 5?</p>
+          <div class="opts" data-mc="p4" data-ans="c">
+            <button class="opt" data-v="a">35</button>
+            <button class="opt" data-v="b">50</button>
+            <button class="opt" data-v="c">42</button>
+            <button class="opt" data-v="d">100</button>
+          </div>
+          <button class="btn" onclick="checkMC('p4')">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>Divisible by 5 means the last digit is 0 or 5. Check each: 35 (last digit 5 ✔), 50 (last digit 0 ✔), 42 (last digit 2 ✘), 100 (last digit 0 ✔).</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. Is <strong>7</strong> a factor of <strong>28</strong>? Type 1 for yes, 0 for no.</p>
+          <input type="number" id="p5" placeholder="?" />
+          <button class="btn" onclick="checkNum('p5', 1)">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>28 ÷ 7 = 4 exactly (no remainder), so yes, 7 is a factor of 28. Type 1.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. How many even factors does <strong>12</strong> have? (Hint: list all factors of 12, then count the even ones.)</p>
+          <input type="number" id="x6" placeholder="?" />
+          <button class="btn" onclick="checkNum('x6', 4)">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>Factors of 12: 1, 2, 3, 4, 6, 12. The even ones are 2, 4, 6, 12 — that is 4 even factors.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. Which number below is divisible by <strong>both</strong> 2 and 5?</p>
+          <div class="opts" data-mc="x7" data-ans="b">
+            <button class="opt" data-v="a">12</button>
+            <button class="opt" data-v="b">30</button>
+            <button class="opt" data-v="c">25</button>
+            <button class="opt" data-v="d">14</button>
+          </div>
+          <button class="btn" onclick="checkMC('x7')">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>To be divisible by both 2 and 5, the last digit must be 0 (that satisfies both rules). Only 30 ends in 0.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r4/">← Unit R4 Home</a>
+        <a href="/math/remediation/unit-r4/lesson-2/">Next: Prime &amp; Composite →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R4 · Lesson 1 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+  </body>
+</html>

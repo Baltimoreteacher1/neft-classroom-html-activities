@@ -111,6 +111,21 @@ scaffolded hints, a progress bar, a written deliverable, a student checklist, a
 3-point rubric, and a print button. Projects are linked from each unit's
 `index.html` and from the math hub at `math/index.html`.
 
+## Math Remediation: Bridge to Grade 6
+
+`math/remediation/` is a Grades 7–8 remediation track that rebuilds the
+foundational skills students need to be ready for Grade 6 math. It has a top
+hub plus five units (`unit-r1` through `unit-r5`), each with its own hub and
+five interactive lessons:
+
+- R1 Whole Numbers & Operations, R2 Fraction Foundations, R3 Decimals & Money,
+  R4 Factors/Multiples/Patterns, R5 Pre-Algebra & Geometry Readiness.
+
+Every lesson is a self-contained interactive HTML page following the same path —
+**Learn It → Try It → Practice → Exit Ticket** — with self-checking items,
+instant feedback, hints, a progress bar, a "Why this matters for Grade 6"
+standard callout, and a print button. Linked from the math hub and sitemap.
+
 ## Adding A New Activity
 
 1. Create a folder using a short lowercase URL-safe name under the correct unit or subject folder.

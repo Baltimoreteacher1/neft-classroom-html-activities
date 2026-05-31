@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R5 · Lesson 5: Coordinate Plane &amp; Intro to Integers — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: plot points in Quadrant I, read integers on a number line, compare integers, and find absolute value. Builds toward 6.NS.5 and 6.NS.6." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#0e8a7d 0%, #1a6fb5 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .svg-wrap { text-align: center; margin: 14px 0; }
+      .formula-box { background: var(--teal-light); border: 2px solid var(--teal); border-radius: 12px; padding: 14px 18px; margin: 14px 0; font-size: 17px; font-weight: 700; text-align: center; }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">📐</div>
+      <h1>Coordinate Plane &amp; Intro to Integers</h1>
+      <p>Plot points in Quadrant I, place integers on a number line, compare them, and find absolute value.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R5 · Lesson 5</span>
+        <span class="tag">Builds 6.NS.6 / 6.NS.5</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/remediation/">Bridge to Grade 6</a> /
+        <a href="/math/remediation/unit-r5/">Unit R5</a> / Lesson 5
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> In Grade 6 you extend the
+        number line to negative numbers (6.NS.5) and plot rational numbers on a
+        full four-quadrant coordinate plane (6.NS.6). This lesson builds those
+        exact skills: understanding positive and negative integers, reading a number
+        line with negatives, and plotting points in Quadrant I — the foundation
+        for all four quadrants.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>The Coordinate Plane &amp; Integers</h2></div></div>
+
+        <p><strong>Part 1: Plotting points in Quadrant I</strong></p>
+        <p>A <strong>coordinate plane</strong> has two number-line axes. To plot a point (x, y): go <em>across</em> (right) x units on the x-axis, then go <em>up</em> y units on the y-axis. Always: <strong>across first, then up</strong>.</p>
+
+        <div class="example">
+          <strong>Example — Plot (3, 2):</strong> Go 3 right, then 2 up.
+          <div class="svg-wrap">
+            <!-- Quadrant I grid 6×6 -->
+            <svg width="220" height="220" viewBox="0 0 220 220" aria-label="Coordinate grid Quadrant I with point at (3,2)">
+              <!-- grid lines -->
+              <line x1="30" y1="10" x2="30" y2="190" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="30" y1="190" x2="210" y2="190" stroke="#e2e7ec" stroke-width="1"/>
+              <!-- vertical grid -->
+              <line x1="60" y1="10" x2="60" y2="190" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="90" y1="10" x2="90" y2="190" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="120" y1="10" x2="120" y2="190" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="150" y1="10" x2="150" y2="190" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="180" y1="10" x2="180" y2="190" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="210" y1="10" x2="210" y2="190" stroke="#e2e7ec" stroke-width="1"/>
+              <!-- horizontal grid -->
+              <line x1="30" y1="160" x2="210" y2="160" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="30" y1="130" x2="210" y2="130" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="30" y1="100" x2="210" y2="100" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="30" y1="70" x2="210" y2="70" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="30" y1="40" x2="210" y2="40" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="30" y1="10" x2="210" y2="10" stroke="#e2e7ec" stroke-width="1"/>
+              <!-- axes -->
+              <line x1="30" y1="10" x2="30" y2="195" stroke="#0f2b3c" stroke-width="2.5"/>
+              <line x1="25" y1="190" x2="215" y2="190" stroke="#0f2b3c" stroke-width="2.5"/>
+              <!-- axis arrow heads -->
+              <polygon points="30,8 26,16 34,16" fill="#0f2b3c"/>
+              <polygon points="217,190 209,186 209,194" fill="#0f2b3c"/>
+              <!-- x-axis labels -->
+              <text x="30" y="205" text-anchor="middle" font-size="11" fill="#5e6e7e">0</text>
+              <text x="60" y="205" text-anchor="middle" font-size="11" fill="#5e6e7e">1</text>
+              <text x="90" y="205" text-anchor="middle" font-size="11" fill="#5e6e7e">2</text>
+              <text x="120" y="205" text-anchor="middle" font-size="11" fill="#5e6e7e">3</text>
+              <text x="150" y="205" text-anchor="middle" font-size="11" fill="#5e6e7e">4</text>
+              <text x="180" y="205" text-anchor="middle" font-size="11" fill="#5e6e7e">5</text>
+              <!-- y-axis labels -->
+              <text x="22" y="193" text-anchor="middle" font-size="11" fill="#5e6e7e">0</text>
+              <text x="22" y="163" text-anchor="middle" font-size="11" fill="#5e6e7e">1</text>
+              <text x="22" y="133" text-anchor="middle" font-size="11" fill="#5e6e7e">2</text>
+              <text x="22" y="103" text-anchor="middle" font-size="11" fill="#5e6e7e">3</text>
+              <text x="22" y="73" text-anchor="middle" font-size="11" fill="#5e6e7e">4</text>
+              <text x="22" y="43" text-anchor="middle" font-size="11" fill="#5e6e7e">5</text>
+              <!-- axis labels -->
+              <text x="218" y="194" font-size="12" fill="#0f2b3c" font-weight="700">x</text>
+              <text x="32" y="7" font-size="12" fill="#0f2b3c" font-weight="700">y</text>
+              <!-- dashed path to point (3,2): x=3→pixel 120, y=2→pixel 130 -->
+              <line x1="30" y1="130" x2="120" y2="130" stroke="#d4952a" stroke-width="2" stroke-dasharray="5,3"/>
+              <line x1="120" y1="190" x2="120" y2="130" stroke="#d4952a" stroke-width="2" stroke-dasharray="5,3"/>
+              <!-- point (3,2) -->
+              <circle cx="120" cy="130" r="7" fill="#c45a3c" stroke="#fff" stroke-width="2"/>
+              <text x="128" y="125" font-size="12" fill="#c45a3c" font-weight="800">(3, 2)</text>
+            </svg>
+          </div>
+          Step 1: Start at origin (0,0). Step 2: Move <strong>3 right</strong> (x = 3). Step 3: Move <strong>2 up</strong> (y = 2). Mark the point.
+        </div>
+
+        <p><strong>Part 2: Integers &amp; the Number Line</strong></p>
+        <p><strong>Integers</strong> include positive whole numbers, negative whole numbers, and zero: … −3, −2, −1, 0, 1, 2, 3 …<br>
+        Negative numbers are <em>to the left</em> of zero on a number line. The further right, the larger the number.</p>
+
+        <div class="example">
+          <strong>Integer Number Line:</strong>
+          <div class="svg-wrap">
+            <svg width="340" height="50" viewBox="0 0 340 50" aria-label="Number line from negative 5 to positive 5">
+              <line x1="10" y1="25" x2="330" y2="25" stroke="#0f2b3c" stroke-width="2.5"/>
+              <polygon points="332,25 324,21 324,29" fill="#0f2b3c"/>
+              <polygon points="8,25 16,21 16,29" fill="#0f2b3c"/>
+              <!-- tick marks and labels every 30px starting at x=30 for -5 -->
+              <line x1="30" y1="20" x2="30" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="30" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="700">−5</text>
+              <line x1="60" y1="20" x2="60" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="60" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c">−4</text>
+              <line x1="90" y1="20" x2="90" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="90" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c">−3</text>
+              <line x1="120" y1="20" x2="120" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="120" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c">−2</text>
+              <line x1="150" y1="20" x2="150" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="150" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c">−1</text>
+              <line x1="180" y1="18" x2="180" y2="32" stroke="#0f2b3c" stroke-width="3"/>
+              <text x="180" y="45" text-anchor="middle" font-size="13" fill="#0f2b3c" font-weight="800">0</text>
+              <line x1="210" y1="20" x2="210" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="210" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c">1</text>
+              <line x1="240" y1="20" x2="240" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="240" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c">2</text>
+              <line x1="270" y1="20" x2="270" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="270" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c">3</text>
+              <line x1="300" y1="20" x2="300" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="300" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c">4</text>
+              <line x1="320" y1="20" x2="320" y2="30" stroke="#0f2b3c" stroke-width="2"/>
+              <text x="320" y="45" text-anchor="middle" font-size="12" fill="#0f2b3c">5</text>
+            </svg>
+          </div>
+          Numbers to the right are <strong>greater</strong>. So <strong>−3 &lt; 2</strong> because −3 is to the left of 2.
+        </div>
+
+        <p><strong>Absolute value</strong> is the <em>distance</em> from zero on the number line — always a positive number (or zero).</p>
+        <div class="formula-box">
+          |−4| = 4 &nbsp;&nbsp; |4| = 4 &nbsp;&nbsp; |0| = 0
+        </div>
+        <p>Both −4 and 4 are 4 steps from zero, so they have the same absolute value.</p>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. To plot point (5, 3) on a coordinate grid, how far right do you move first?</p>
+          <div class="opts" data-mc="t1" data-ans="b">
+            <button class="opt" data-v="a">3 units right, then 5 up</button>
+            <button class="opt" data-v="b">5 units right, then 3 up</button>
+            <button class="opt" data-v="c">5 units up, then 3 right</button>
+            <button class="opt" data-v="d">3 units up, then 5 right</button>
+          </div>
+          <button class="btn" onclick="checkMC('t1')">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>For (x, y): x comes first — go across (right) by x, then up by y. (5, 3) → 5 right, 3 up.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. What is the absolute value of −7? (Type just the number.)</p>
+          <input type="number" id="t2" placeholder="?" />
+          <button class="btn" onclick="checkNum('t2', 7)">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>Absolute value = distance from zero. −7 is 7 steps from zero, so |−7| = 7.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. Which symbol makes this true? &nbsp; −3 ___ 2</p>
+          <div class="opts" data-mc="p3" data-ans="a">
+            <button class="opt" data-v="a">&lt; (less than)</button>
+            <button class="opt" data-v="b">&gt; (greater than)</button>
+            <button class="opt" data-v="c">= (equal)</button>
+          </div>
+          <button class="btn" onclick="checkMC('p3')">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>On a number line, −3 is to the left of 2. Numbers to the left are smaller, so −3 &lt; 2.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. What is |−9|?</p>
+          <input type="number" id="p4" placeholder="?" />
+          <button class="btn" onclick="checkNum('p4', 9)">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>Absolute value is distance from zero. −9 is 9 steps from zero, so |−9| = 9.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. A point is plotted by moving 4 units right and 6 units up from the origin. What is its ordered pair?</p>
+          <div class="opts" data-mc="p5" data-ans="b">
+            <button class="opt" data-v="a">(6, 4)</button>
+            <button class="opt" data-v="b">(4, 6)</button>
+            <button class="opt" data-v="c">(0, 4)</button>
+            <button class="opt" data-v="d">(6, 0)</button>
+          </div>
+          <button class="btn" onclick="checkMC('p5')">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>Across first (x), then up (y). 4 right → x = 4. 6 up → y = 6. Ordered pair: (4, 6).</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. Which integer is farthest from zero: −6, 4, or −2?</p>
+          <div class="opts" data-mc="x6" data-ans="a">
+            <button class="opt" data-v="a">−6 (absolute value 6)</button>
+            <button class="opt" data-v="b">4 (absolute value 4)</button>
+            <button class="opt" data-v="c">−2 (absolute value 2)</button>
+          </div>
+          <button class="btn" onclick="checkMC('x6')">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>|−6| = 6, |4| = 4, |−2| = 2. The largest absolute value is 6, so −6 is farthest from zero.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. On the coordinate grid below, a point is at (2, 5). What are its coordinates? (Enter the x-value — how far right from the origin.)</p>
+          <!-- small grid with point at (2,5) -->
+          <div class="svg-wrap">
+            <svg width="200" height="200" viewBox="0 0 200 200" aria-label="Coordinate grid with point at (2,5)">
+              <!-- grid -->
+              <line x1="20" y1="10" x2="20" y2="180" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="20" y1="180" x2="190" y2="180" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="50" y1="10" x2="50" y2="180" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="80" y1="10" x2="80" y2="180" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="110" y1="10" x2="110" y2="180" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="140" y1="10" x2="140" y2="180" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="170" y1="10" x2="170" y2="180" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="20" y1="150" x2="190" y2="150" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="20" y1="120" x2="190" y2="120" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="20" y1="90" x2="190" y2="90" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="20" y1="60" x2="190" y2="60" stroke="#e2e7ec" stroke-width="1"/>
+              <line x1="20" y1="30" x2="190" y2="30" stroke="#e2e7ec" stroke-width="1"/>
+              <!-- axes -->
+              <line x1="20" y1="10" x2="20" y2="185" stroke="#0f2b3c" stroke-width="2"/>
+              <line x1="15" y1="180" x2="195" y2="180" stroke="#0f2b3c" stroke-width="2"/>
+              <!-- labels -->
+              <text x="20" y="195" text-anchor="middle" font-size="10" fill="#5e6e7e">0</text>
+              <text x="50" y="195" text-anchor="middle" font-size="10" fill="#5e6e7e">1</text>
+              <text x="80" y="195" text-anchor="middle" font-size="10" fill="#5e6e7e">2</text>
+              <text x="110" y="195" text-anchor="middle" font-size="10" fill="#5e6e7e">3</text>
+              <text x="140" y="195" text-anchor="middle" font-size="10" fill="#5e6e7e">4</text>
+              <text x="170" y="195" text-anchor="middle" font-size="10" fill="#5e6e7e">5</text>
+              <text x="12" y="183" text-anchor="middle" font-size="10" fill="#5e6e7e">0</text>
+              <text x="12" y="153" text-anchor="middle" font-size="10" fill="#5e6e7e">1</text>
+              <text x="12" y="123" text-anchor="middle" font-size="10" fill="#5e6e7e">2</text>
+              <text x="12" y="93" text-anchor="middle" font-size="10" fill="#5e6e7e">3</text>
+              <text x="12" y="63" text-anchor="middle" font-size="10" fill="#5e6e7e">4</text>
+              <text x="12" y="33" text-anchor="middle" font-size="10" fill="#5e6e7e">5</text>
+              <!-- point at (2,5): x=2→pixel 80, y=5→pixel 30 -->
+              <circle cx="80" cy="30" r="7" fill="#c45a3c" stroke="#fff" stroke-width="2"/>
+              <text x="88" y="26" font-size="11" fill="#c45a3c" font-weight="800">?</text>
+            </svg>
+          </div>
+          <input type="number" id="x7" placeholder="x = ?" />
+          <button class="btn" onclick="checkNum('x7', 2)">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>The point is 2 units to the right of the origin, so x = 2. The full ordered pair is (2, 5).</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r5/lesson-4/">← Lesson 4: Area of Triangles</a>
+        <a href="/math/remediation/unit-r5/">← Unit R5 Home</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R5 · Lesson 5 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+  </body>
+</html>

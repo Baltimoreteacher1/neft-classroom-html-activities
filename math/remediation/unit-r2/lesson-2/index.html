@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R2 · Lesson 2: Equivalent Fractions &amp; Simplifying — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: find equivalent fractions and simplify to lowest terms. Builds toward Grade 6 fraction work (6.NS.1)." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#c45a3c 0%, #d4952a 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .fbar-wrap { margin: 10px 0; }
+      .fbar-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+      .fbar { display: flex; height: 36px; border-radius: 8px; overflow: hidden; border: 2px solid var(--navy); width: 100%; max-width: 400px; }
+      .fbar-filled { background: var(--coral); }
+      .fbar-empty { background: #fff; }
+      .fbar > div { flex: 1; border-right: 1px solid var(--navy); }
+      .fbar > div:last-child { border-right: none; }
+      .fbar-teal > div.fbar-filled { background: var(--teal); }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      .eq-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+      .arrow-step { color: var(--muted); font-weight: 700; font-size: 18px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🍕</div>
+      <h1>Equivalent Fractions &amp; Simplifying</h1>
+      <p>Find fractions that name the same amount, and reduce fractions to their simplest form.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R2 · Lesson 2</span>
+        <span class="tag">Builds 6.NS.1</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/remediation/">Bridge to Grade 6</a> /
+        <a href="/math/remediation/unit-r2/">Unit R2</a> / Lesson 2
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> Grade 6 division of
+        fractions (6.NS.1) requires you to find common denominators and
+        reduce answers to lowest terms. Equivalent fractions are the engine
+        behind all of that. If 1/2 = 2/4 = 4/8, you can always rewrite
+        fractions in a more useful form.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>Equivalent Fractions &amp; Simplifying</h2></div></div>
+
+        <p><strong>Equivalent fractions</strong> look different but represent the same amount.</p>
+        <p><strong>Rule:</strong> Multiply (or divide) both numerator and denominator by the <em>same number</em> and the fraction's value doesn't change.</p>
+
+        <div class="example">
+          <strong>Example 1 — Building up: 1/2 = 2/4 = 4/8</strong><br>
+          <div class="eq-row">
+            <span style="font-size:22px;font-weight:800;">1/2</span>
+            <span class="arrow-step">×2/×2 →</span>
+            <span style="font-size:22px;font-weight:800;">2/4</span>
+            <span class="arrow-step">×2/×2 →</span>
+            <span style="font-size:22px;font-weight:800;">4/8</span>
+          </div>
+          <div class="fbar-wrap">
+            <div class="fbar-label">1/2 — 1 out of 2 parts</div>
+            <div class="fbar">
+              <div class="fbar-filled"></div>
+              <div class="fbar-empty"></div>
+            </div>
+          </div>
+          <div class="fbar-wrap">
+            <div class="fbar-label">2/4 — 2 out of 4 parts (same amount!)</div>
+            <div class="fbar fbar-teal">
+              <div class="fbar-filled"></div>
+              <div class="fbar-filled"></div>
+              <div class="fbar-empty"></div>
+              <div class="fbar-empty"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <strong>Example 2 — Simplifying: 6/8 → 3/4</strong><br>
+          Find the <strong>Greatest Common Factor (GCF)</strong> of 6 and 8.<br>
+          Factors of 6: 1, 2, 3, 6 &nbsp;|&nbsp; Factors of 8: 1, 2, 4, 8 &nbsp;→ GCF = <strong>2</strong><br>
+          <div class="eq-row">
+            <span style="font-size:22px;font-weight:800;">6/8</span>
+            <span class="arrow-step">÷2/÷2 →</span>
+            <span style="font-size:22px;font-weight:800;color:var(--coral);">3/4</span>
+          </div>
+          Check: 3 and 4 share no common factor bigger than 1 → <strong>simplified!</strong><br><br>
+          <strong>Another: 4/12 → ?</strong> GCF of 4 and 12 = 4. &nbsp; 4÷4 = 1, 12÷4 = 3. &nbsp; Answer: <strong>1/3</strong>
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. Which fraction is equivalent to <strong>1/3</strong>?</p>
+          <div class="opts" data-mc="t1" data-ans="c">
+            <button class="opt" data-v="a">2/9</button>
+            <button class="opt" data-v="b">1/6</button>
+            <button class="opt" data-v="c">2/6</button>
+            <button class="opt" data-v="d">3/6</button>
+          </div>
+          <button class="btn" onclick="checkMC('t1')">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>Multiply both top and bottom by 2: 1×2=2, 3×2=6. So 1/3 = 2/6.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. Simplify <strong>8/12</strong> to its lowest terms. What is the simplified fraction?</p>
+          <div class="opts" data-mc="t2" data-ans="b">
+            <button class="opt" data-v="a">4/6</button>
+            <button class="opt" data-v="b">2/3</button>
+            <button class="opt" data-v="c">1/4</button>
+            <button class="opt" data-v="d">3/4</button>
+          </div>
+          <button class="btn" onclick="checkMC('t2')">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>GCF of 8 and 12 is 4. Divide both by 4: 8÷4=2, 12÷4=3. Answer: 2/3.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. Fill in the blank: 3/4 = ?/8 &nbsp; (What is the missing numerator?)</p>
+          <input type="number" id="p3" placeholder="?" />
+          <button class="btn" onclick="checkNum('p3', 6)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>To go from 4 to 8, multiply denominator by 2. Do the same to the numerator: 3×2 = 6. Answer: 6/8.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. Simplify <strong>10/15</strong>. What is the simplified fraction?</p>
+          <div class="opts" data-mc="p4" data-ans="b">
+            <button class="opt" data-v="a">1/2</button>
+            <button class="opt" data-v="b">2/3</button>
+            <button class="opt" data-v="c">3/5</button>
+            <button class="opt" data-v="d">5/6</button>
+          </div>
+          <button class="btn" onclick="checkMC('p4')">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>GCF of 10 and 15 is 5. Divide both by 5: 10÷5=2, 15÷5=3. Answer: 2/3.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. Which pair of fractions is <strong>equivalent</strong>?</p>
+          <div class="opts" data-mc="p5" data-ans="a">
+            <button class="opt" data-v="a">3/5 and 6/10</button>
+            <button class="opt" data-v="b">2/3 and 3/4</button>
+            <button class="opt" data-v="c">1/4 and 2/6</button>
+            <button class="opt" data-v="d">4/5 and 5/6</button>
+          </div>
+          <button class="btn" onclick="checkMC('p5')">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>Check 3/5 and 6/10: multiply 3/5 by 2/2 → 6/10. Yes, they are equivalent!</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. Simplify <strong>6/9</strong> to its lowest terms.</p>
+          <div class="opts" data-mc="x6" data-ans="b">
+            <button class="opt" data-v="a">1/3</button>
+            <button class="opt" data-v="b">2/3</button>
+            <button class="opt" data-v="c">3/6</button>
+            <button class="opt" data-v="d">4/6</button>
+          </div>
+          <button class="btn" onclick="checkMC('x6')">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>GCF of 6 and 9 is 3. Divide both by 3: 6÷3=2, 9÷3=3. Answer: 2/3.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. Fill in: 2/5 = ?/20 &nbsp; (What number goes in the blank?)</p>
+          <input type="number" id="x7" placeholder="?" />
+          <button class="btn" onclick="checkNum('x7', 8)">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>5 × 4 = 20, so multiply numerator by 4 too: 2 × 4 = 8. Answer: 8/20.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r2/lesson-1/">← Lesson 1: Understand Fractions</a>
+        <a href="/math/remediation/unit-r2/lesson-3/">Next: Compare &amp; Order →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R2 · Lesson 2 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+  </body>
+</html>

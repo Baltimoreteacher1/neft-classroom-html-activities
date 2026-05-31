@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R1 · Lesson 4: Long Division — Bridge to Grade 6</title>
+    <meta name="description" content="Remediation lesson: divide multi-digit whole numbers using long division, interpret remainders, and solve sharing-equally word problems. Builds toward Grade 6 (6.NS.2)." />
+    <style>
+      :root {
+        --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc; --teal: #0e8a7d;
+        --teal-light: #e4f5f3; --gold: #d4952a; --gold-light: #fdf3e0; --coral: #c45a3c;
+        --coral-light: #fdeee9; --green: #2d874b; --green-light: #e6f4eb; --ink: #1a2633;
+        --muted: #5e6e7e; --line: #e2e7ec; --bg: #f7f9fb; --card: #fff; --radius: 16px;
+        --shadow: 0 4px 18px rgba(15,43,60,.1); --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.55; }
+      .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+      .phero { background: linear-gradient(135deg,#0f2b3c 0%, #0e8a7d 100%); color: #fff; padding: 34px 24px 28px; text-align: center; }
+      .phero .deco { font-size: 48px; }
+      .phero h1 { font-size: clamp(22px,4.5vw,32px); margin: 8px 0 6px; letter-spacing: -0.02em; }
+      .phero p { max-width: 600px; margin: 0 auto; color: rgba(255,255,255,.85); font-size: 16px; }
+      .tags { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #2a1c00; }
+      .breadcrumb { font-size: 13px; padding: 14px 0 0; color: var(--muted); }
+      .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 600; }
+      .why { background: var(--gold-light); border-left: 6px solid var(--gold); border-radius: 12px; padding: 16px 18px; margin: 22px 0; }
+      .why strong { color: #7a5400; }
+      .progress-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+      .progress-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+      .progress-track { height: 12px; background: var(--line); border-radius: 50px; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--teal),var(--green)); transition: width .4s; }
+      .sec { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
+      .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .badge { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+      .b-learn { background: var(--blue); } .b-try { background: var(--teal); } .b-practice { background: var(--gold); color: #2a1c00; } .b-exit { background: var(--coral); }
+      .sec h2 { margin: 0; font-size: 20px; }
+      .sec .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .example { background: var(--blue-light); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+      .algo { font-family: "Courier New", monospace; font-size: 16px; line-height: 1.9; background: var(--teal-light); border-radius: 10px; padding: 12px 18px; display: inline-block; margin: 8px 0; white-space: pre; }
+      .steps { list-style: none; padding: 0; margin: 8px 0; counter-reset: step; }
+      .steps li { counter-increment: step; padding: 4px 0 4px 28px; position: relative; font-size: 14px; }
+      .steps li::before { content: counter(step) "."; position: absolute; left: 0; font-weight: 800; color: var(--blue); }
+      .q { margin: 16px 0; padding-top: 14px; border-top: 1px dashed var(--line); }
+      .q:first-of-type { border-top: none; padding-top: 0; }
+      .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+      input[type="text"], input[type="number"] { padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 15px; width: 160px; }
+      input:focus { outline: none; border-color: var(--blue); }
+      .opts { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+      .opt { display: block; padding: 11px 14px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; background: #fff; font-size: 15px; text-align: left; font-family: inherit; transition: .15s; }
+      .opt:hover { border-color: var(--blue); background: var(--blue-light); }
+      .opt.sel { border-color: var(--blue); background: var(--blue-light); }
+      .opt.right { border-color: var(--green); background: var(--green-light); }
+      .opt.wrong { border-color: var(--coral); background: var(--coral-light); }
+      .btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; margin-top: 10px; }
+      .btn:hover { filter: brightness(1.08); }
+      .fb { margin-top: 8px; font-weight: 700; min-height: 20px; font-size: 14px; }
+      .fb.ok { color: var(--green); } .fb.no { color: var(--coral); }
+      details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); font-size: 14px; }
+      details p { background: var(--gold-light); border-radius: 10px; padding: 12px 14px; margin: 8px 0 0; font-size: 14px; }
+      .nav-links { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; }
+      .nav-links a { color: var(--blue); text-decoration: none; font-weight: 700; }
+      .footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 36px; }
+      @media print { .progress-wrap, .btn, .breadcrumb { display: none !important; } .sec { box-shadow: none; break-inside: avoid; } body { background: #fff; } }
+    </style>
+  </head>
+  <body>
+    <header class="phero">
+      <div class="deco">🔢</div>
+      <h1>Long Division</h1>
+      <p>Divide, multiply, subtract, bring down — repeat. Master this loop and you'll be ready for Grade 6's standard algorithm.</p>
+      <div class="tags">
+        <span class="tag gold">Bridge to Grade 6</span>
+        <span class="tag">Unit R1 · Lesson 4</span>
+        <span class="tag">Builds 6.NS.2</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/remediation/">Bridge to Grade 6</a> /
+        <a href="/math/remediation/unit-r1/">Unit R1</a> / Lesson 4
+      </nav>
+
+      <div class="progress-wrap">
+        <div class="progress-label">Lesson progress: <span id="pct">0</span>%</div>
+        <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+      </div>
+
+      <div class="why">
+        <strong>Why this matters for Grade 6:</strong> Standard 6.NS.2 explicitly
+        requires fluency with the standard long-division algorithm for multi-digit
+        whole numbers. Every time you simplify fractions, convert a fraction to a
+        decimal, or find a unit rate in Grade 6, division is under the hood.
+      </div>
+
+      <!-- LEARN IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>The Long Division Loop</h2></div></div>
+
+        <p>Long division follows a four-step loop: <strong>Divide → Multiply → Subtract → Bring down</strong>. Repeat until there are no more digits to bring down.</p>
+
+        <div class="example">
+          <strong>Example 1:</strong> 936 ÷ 4<br>
+          <div class="algo">      234
+    ┌────────
+ 4  │  9 3 6
+      8         ← 4×2=8
+      ─
+      1 3
+      1 2       ← 4×3=12
+      ─
+        1 6
+        1 6     ← 4×4=16
+        ─
+          0
+          </div>
+          Answer: <strong>234</strong> &nbsp; Check: 234 × 4 = 936 ✓
+        </div>
+
+        <div class="example">
+          <strong>Example 2:</strong> 847 ÷ 7<br>
+          <div class="algo">      121
+    ┌────────
+ 7  │  8 4 7
+      7         ← 7×1=7
+      ─
+      1 4
+      1 4       ← 7×2=14
+      ─
+        0 7
+        0 7     ← 7×1=7
+        ─
+          0
+          </div>
+          Answer: <strong>121</strong> &nbsp; Check: 121 × 7 = 847 ✓
+        </div>
+
+        <p><strong>Remainders:</strong> When the dividend doesn't divide evenly, there is a <em>remainder</em> — a leftover amount less than the divisor.</p>
+        <div class="example">
+          <strong>Example 3:</strong> 100 ÷ 6<br>
+          <div class="algo">       16
+    ┌────────
+ 6  │  1 0 0
+      0         ← 6×1=6... wait: 10÷6=1
+      6
+      ─
+      4 0
+      3 6       ← 6×6=36
+      ─
+        4
+          </div>
+          Answer: <strong>16 remainder 4</strong>, written 16 R4<br>
+          Check: 16 × 6 = 96, then 96 + 4 = 100 ✓<br>
+          <em>In context:</em> If you share 100 stickers among 6 friends, each gets <strong>16 stickers</strong> and <strong>4 are left over</strong>.
+        </div>
+      </section>
+
+      <!-- TRY IT -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Try It · Guided</div><h2>Work These Together</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">1. Compute: <strong>936 ÷ 4</strong></p>
+          <input type="number" id="t1" placeholder="?" />
+          <button class="btn" onclick="checkNum('t1', 234)">Check</button>
+          <div class="fb" id="fb-t1"></div>
+          <details><summary>Hint</summary><p>9÷4=2 remainder 1 → bring down 3 → 13÷4=3 remainder 1 → bring down 6 → 16÷4=4. Answer: 234.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">2. What is the <strong>remainder</strong> when you divide <strong>85 ÷ 6</strong>?</p>
+          <div class="opts" data-mc="t2" data-ans="b">
+            <button class="opt" data-v="a">0</button>
+            <button class="opt" data-v="b">1</button>
+            <button class="opt" data-v="c">3</button>
+            <button class="opt" data-v="d">5</button>
+          </div>
+          <button class="btn" onclick="checkMC('t2')">Check</button>
+          <div class="fb" id="fb-t2"></div>
+          <details><summary>Hint</summary><p>6 × 14 = 84. 85 − 84 = 1. Remainder is 1.</p></details>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-practice">3</div><div><div class="kicker">Practice · On Your Own</div><h2>You Try</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">3. Compute: <strong>847 ÷ 7</strong></p>
+          <input type="number" id="p3" placeholder="?" />
+          <button class="btn" onclick="checkNum('p3', 121)">Check</button>
+          <div class="fb" id="fb-p3"></div>
+          <details><summary>Hint</summary><p>8÷7=1 R1 → bring down 4 → 14÷7=2 R0 → bring down 7 → 7÷7=1. Answer: 121.</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">4. Compute: <strong>675 ÷ 5</strong></p>
+          <input type="number" id="p4" placeholder="?" />
+          <button class="btn" onclick="checkNum('p4', 135)">Check</button>
+          <div class="fb" id="fb-p4"></div>
+          <details><summary>Hint</summary><p>6÷5=1 R1 → bring down 7 → 17÷5=3 R2 → bring down 5 → 25÷5=5. Answer: 135. Check: 135×5=675 ✓</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">5. A teacher has 98 crayons to share equally among 8 tables. How many crayons does each table get, and how many are left over?<br>Type the <strong>number each table gets</strong> (not the remainder).</p>
+          <input type="number" id="p5" placeholder="?" />
+          <button class="btn" onclick="checkNum('p5', 12)">Check</button>
+          <div class="fb" id="fb-p5"></div>
+          <details><summary>Hint</summary><p>98 ÷ 8: 8×12=96. 98−96=2. Each table gets 12 crayons; 2 crayons are left over.</p></details>
+        </div>
+      </section>
+
+      <!-- EXIT TICKET -->
+      <section class="sec">
+        <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show What You Know</h2></div></div>
+
+        <div class="q">
+          <p class="prompt">6. Compute: <strong>756 ÷ 4</strong></p>
+          <input type="number" id="x6" placeholder="?" />
+          <button class="btn" onclick="checkNum('x6', 189)">Check</button>
+          <div class="fb" id="fb-x6"></div>
+          <details><summary>Hint</summary><p>7÷4=1 R3 → bring down 5 → 35÷4=8 R3 → bring down 6 → 36÷4=9. Answer: 189. Check: 189×4=756 ✓</p></details>
+        </div>
+
+        <div class="q">
+          <p class="prompt">7. 100 ÷ 6 = 16 R?&nbsp; What is the remainder?</p>
+          <input type="number" id="x7" placeholder="?" />
+          <button class="btn" onclick="checkNum('x7', 4)">Check</button>
+          <div class="fb" id="fb-x7"></div>
+          <details><summary>Hint</summary><p>6 × 16 = 96. 100 − 96 = 4. The remainder is 4.</p></details>
+        </div>
+      </section>
+
+      <div style="text-align:center;margin-top:22px;">
+        <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print this lesson</button>
+      </div>
+
+      <div class="nav-links">
+        <a href="/math/remediation/unit-r1/lesson-3/">← Lesson 3: Multiply</a>
+        <a href="/math/remediation/unit-r1/lesson-5/">Next: Order of Operations →</a>
+      </div>
+
+      <p class="footer">Neft Teacher · Bridge to Grade 6 · Unit R1 · Lesson 4 · <span id="yr"></span></p>
+    </div>
+
+    <script>
+      document.getElementById("yr").textContent = new Date().getFullYear();
+      var TOTAL = 7, done = {};
+
+      document.querySelectorAll(".opts").forEach(function (group) {
+        group.querySelectorAll(".opt").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (group.dataset.locked) return;
+            group.querySelectorAll(".opt").forEach(function (b) { b.classList.remove("sel"); });
+            btn.classList.add("sel");
+            group.dataset.sel = btn.dataset.v;
+          });
+        });
+      });
+
+      function checkMC(key) {
+        var group = document.querySelector('[data-mc="' + key + '"]');
+        var fb = document.getElementById("fb-" + key);
+        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
+        var correct = group.dataset.sel === group.dataset.ans;
+        group.querySelectorAll(".opt").forEach(function (b) {
+          b.classList.remove("sel");
+          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
+          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
+        });
+        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
+        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
+      }
+
+      function checkNum(id, ans) {
+        var v = parseFloat(document.getElementById(id).value);
+        var fb = document.getElementById("fb-" + id);
+        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
+        if (v === ans) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
+        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
+      }
+
+      function mark(key) {
+        done[key] = true;
+        var pct = Math.round((Object.keys(done).length / TOTAL) * 100);
+        document.getElementById("pfill").style.width = pct + "%";
+        document.getElementById("pct").textContent = pct;
+      }
+    </script>
+  </body>
+</html>
