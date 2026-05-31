@@ -18,6 +18,8 @@ Folder structure:
     index.html
   surface-area-review/
     index.html
+  misconception-museum/
+    index.html
   unit-1/
     index.html
     ...activity-folders/
@@ -59,6 +61,7 @@ Current launch activities:
 
 - `geometry-prep/`
 - `surface-area-review/`
+- `misconception-museum/`
 - `unit-5-practice/`
 - `world-architect-math-project/`
 

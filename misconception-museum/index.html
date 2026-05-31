@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A polished Grade 6 math misconception museum for diagnosing, repairing, and reflecting on common MCAP review mistakes.">
+  <title>Misconception Museum | Grade 6 Math</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231e5b8e'/%3E%3Cpath d='M14 46h36v6H14zM18 18h28v24H18z' fill='%23fffdf8'/%3E%3Cpath d='M23 23h18v4H23zm0 8h12v4H23z' fill='%23c7523b'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    :root {
+      --museum-ink: #172033;
+      --museum-muted: #5d6472;
+      --museum-line: #d7e0ea;
+      --museum-paper: #fffdf8;
+      --museum-blue: #1e5b8e;
+      --museum-teal: #19756f;
+      --museum-coral: #c7523b;
+      --museum-gold: #c78a1c;
+      --museum-green: #477a3a;
+      --museum-plum: #6f4a8e;
+    }
+
+    body {
+      background:
+        linear-gradient(90deg, rgba(30, 91, 142, 0.055) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(25, 117, 111, 0.05) 1px, transparent 1px),
+        linear-gradient(180deg, #f5f2eb 0%, #edf4f5 52%, #f7f2e9 100%);
+      background-size: 42px 42px, 42px 42px, auto;
+      color: var(--museum-ink);
+    }
+
+    .museum-shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 22px 0 42px;
+    }
+
+    .museum-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 18px;
+      font-size: 0.92rem;
+    }
+
+    .museum-nav a {
+      color: var(--museum-blue);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .museum-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
+      gap: 22px;
+      align-items: stretch;
+      padding: 26px;
+      border: 1px solid rgba(23, 32, 51, 0.11);
+      border-radius: 8px;
+      background: rgba(255, 253, 248, 0.92);
+      box-shadow: 0 22px 55px rgba(36, 52, 68, 0.14);
+    }
+
+    .museum-eyebrow,
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--museum-teal);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .museum-hero h1 {
+      margin: 0;
+      max-width: 760px;
+      color: var(--museum-ink);
+      font-size: clamp(2.6rem, 6.2vw, 5.4rem);
+      line-height: 0.94;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .museum-hero p {
+      max-width: 690px;
+      color: var(--museum-muted);
+      font-size: 1.08rem;
+      line-height: 1.65;
+    }
+
+    .hero-actions,
+    .button-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .museum-button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--museum-ink);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 850;
+      padding: 10px 14px;
+      text-align: center;
+      text-decoration: none;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+      white-space: normal;
+    }
+
+    .museum-button.primary {
+      border-color: var(--museum-blue);
+      background: var(--museum-blue);
+      color: #ffffff;
+    }
+
+    .museum-button:hover,
+    .choice-button:hover,
+    .exhibit-card:hover {
+      box-shadow: 0 12px 26px rgba(23, 32, 51, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .hero-visual {
+      display: grid;
+      min-height: 330px;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid rgba(23, 32, 51, 0.12);
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.52) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255, 255, 255, 0.52) 1px, transparent 1px),
+        linear-gradient(145deg, #234f77, #1c7771 56%, #b8791c);
+      background-size: 34px 34px, 34px 34px, auto;
+      color: #ffffff;
+      place-items: center;
+      position: relative;
+    }
+
+    .hero-visual svg {
+      width: min(92%, 520px);
+      height: auto;
+      filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.25));
+    }
+
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0 0;
+    }
+
+    .stat-tile {
+      border: 1px solid rgba(23, 32, 51, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.74);
+      padding: 12px;
+    }
+
+    .stat-tile strong {
+      display: block;
+      font-size: 1.42rem;
+      line-height: 1;
+    }
+
+    .stat-tile span {
+      color: var(--museum-muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .control-panel,
+    .lab-panel,
+    .routine-panel {
+      margin-top: 22px;
+      border: 1px solid rgba(23, 32, 51, 0.11);
+      border-radius: 8px;
+      background: rgba(255, 253, 248, 0.95);
+      box-shadow: 0 16px 34px rgba(36, 52, 68, 0.1);
+      padding: 18px;
+    }
+
+    .control-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+      gap: 18px;
+      align-items: end;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-chip {
+      min-height: 38px;
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--museum-ink);
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 850;
+      padding: 8px 11px;
+    }
+
+    .filter-chip[aria-pressed="true"] {
+      border-color: var(--museum-teal);
+      background: #e2f4ef;
+      color: #0b5f59;
+    }
+
+    .progress-wrap {
+      display: grid;
+      gap: 8px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--museum-muted);
+      font-size: 0.88rem;
+      font-weight: 850;
+    }
+
+    .progress-track {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #d9e2ea;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--museum-teal), var(--museum-gold));
+      transition: width 0.25s ease;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .exhibit-card {
+      min-height: 168px;
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #ffffff;
+      cursor: pointer;
+      padding: 13px;
+      text-align: left;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    }
+
+    .exhibit-card.active {
+      border-color: var(--museum-blue);
+      box-shadow: 0 0 0 3px rgba(30, 91, 142, 0.16);
+    }
+
+    .exhibit-card.mastered {
+      background: linear-gradient(180deg, #ffffff, #f0f8f3);
+    }
+
+    .exhibit-card h3 {
+      margin: 8px 0 8px;
+      color: var(--museum-ink);
+      font-size: 1rem;
+      line-height: 1.18;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      border-radius: 999px;
+      background: #edf2f7;
+      color: var(--museum-muted);
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 4px 8px;
+    }
+
+    .tag.mastered {
+      background: #e3f4e7;
+      color: #2f6835;
+    }
+
+    .card-trap {
+      margin: 0;
+      color: var(--museum-muted);
+      font-size: 0.86rem;
+      line-height: 1.42;
+    }
+
+    .lab-panel {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.95fr) minmax(0, 1.05fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .visual-stage {
+      min-height: 320px;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .visual-stage svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .source-card {
+      border-top: 1px solid var(--museum-line);
+      background: #f8fafc;
+      padding: 16px;
+    }
+
+    .source-card h3,
+    .detail-copy h2,
+    .routine-panel h2 {
+      margin: 0 0 8px;
+      color: var(--museum-ink);
+      line-height: 1.08;
+    }
+
+    .source-card p,
+    .detail-copy p,
+    .routine-panel p {
+      color: var(--museum-muted);
+      line-height: 1.55;
+    }
+
+    .meta-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .meta-pill {
+      border: 1px solid rgba(30, 91, 142, 0.2);
+      border-radius: 999px;
+      background: #edf3fb;
+      color: var(--museum-blue);
+      font-size: 0.78rem;
+      font-weight: 900;
+      line-height: 1.2;
+      padding: 6px 9px;
+    }
+
+    .quick-read {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .quick-card,
+    .hint-box,
+    .selected-analysis {
+      border: 1px solid rgba(23, 32, 51, 0.1);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 12px;
+    }
+
+    .quick-card span {
+      display: block;
+      color: var(--museum-teal);
+      font-size: 0.73rem;
+      font-weight: 900;
+      letter-spacing: 0;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .quick-card strong,
+    .selected-analysis strong,
+    .hint-box strong {
+      color: var(--museum-ink);
+      font-size: 0.95rem;
+      line-height: 1.35;
+    }
+
+    .hint-box {
+      background: #fff7e9;
+      border-color: rgba(199, 138, 28, 0.28);
+      margin-top: 12px;
+    }
+
+    .selected-analysis {
+      background: #eef7f5;
+      border-color: rgba(25, 117, 111, 0.2);
+      margin-top: 12px;
+    }
+
+    .misread-box {
+      border-left: 5px solid var(--museum-coral);
+      background: #fff1ec;
+      padding: 12px 14px;
+    }
+
+    .repair-box {
+      border-left: 5px solid var(--museum-teal);
+      background: #eefaf6;
+      padding: 12px 14px;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .choice-button {
+      min-height: 72px;
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--museum-ink);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 850;
+      line-height: 1.35;
+      padding: 12px;
+      text-align: left;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    }
+
+    .choice-button.selected {
+      border-color: var(--museum-blue);
+      box-shadow: 0 0 0 3px rgba(30, 91, 142, 0.14);
+    }
+
+    .choice-button.correct {
+      border-color: var(--museum-green);
+      background: #edf8ee;
+    }
+
+    .choice-button.incorrect {
+      border-color: var(--museum-coral);
+      background: #fff1ec;
+    }
+
+    .feedback {
+      min-height: 78px;
+      margin-top: 12px;
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--museum-muted);
+      line-height: 1.55;
+      padding: 12px;
+    }
+
+    .teacher-notes,
+    .exit-ticket {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .note-box {
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 12px;
+    }
+
+    .note-box h3 {
+      margin: 0 0 7px;
+      font-size: 0.98rem;
+    }
+
+    .note-box p {
+      margin: 0;
+    }
+
+    .routine-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .routine-step {
+      border: 1px solid var(--museum-line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .routine-step strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--museum-blue);
+      font-size: 1.05rem;
+    }
+
+    .site-footer {
+      margin-top: 28px;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid rgba(199, 138, 28, 0.7);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 980px) {
+      .museum-hero,
+      .control-top,
+      .lab-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stat-strip,
+      .routine-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .quick-read {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .museum-shell {
+        width: min(100% - 20px, 1180px);
+      }
+
+      .museum-hero,
+      .control-panel,
+      .lab-panel,
+      .routine-panel {
+        padding: 14px;
+      }
+
+      .museum-hero h1 {
+        font-size: clamp(2.25rem, 13vw, 3.2rem);
+      }
+
+      .hero-visual {
+        min-height: 240px;
+      }
+
+      .hero-actions .museum-button {
+        width: 100%;
+      }
+
+      .gallery-grid,
+      .choice-grid,
+      .teacher-notes,
+      .exit-ticket,
+      .stat-strip,
+      .routine-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .museum-nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .museum-nav,
+      .hero-actions,
+      .filter-row,
+      .button-cluster {
+        display: none;
+      }
+
+      .museum-shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .museum-hero,
+      .control-panel,
+      .lab-panel,
+      .routine-panel {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .gallery-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="museum-shell">
+    <nav class="museum-nav" aria-label="Breadcrumb">
+      <a href="/">Neft Hub</a>
+      <span>Grade 6 Math / MCAP Review / Misconception Museum</span>
+    </nav>
+
+    <section class="museum-hero" aria-labelledby="museum-title">
+      <div>
+        <p class="museum-eyebrow">Diagnostic repair lab</p>
+        <h1 id="museum-title">Misconception Museum</h1>
+        <p>
+          Students inspect common Grade 6 math mistakes, name the faulty reasoning,
+          repair it with a visual model, and leave with a sharper strategy for the next problem.
+        </p>
+        <div class="hero-actions">
+          <a class="museum-button primary" href="#gallery">Enter the exhibits</a>
+          <a class="museum-button" href="/mcap-review/">Back to review hub</a>
+        </div>
+        <div class="stat-strip" aria-label="Museum scope">
+          <div class="stat-tile"><strong>10</strong><span>high-impact exhibits</span></div>
+          <div class="stat-tile"><strong>5</strong><span>math domains</span></div>
+          <div class="stat-tile"><strong>30</strong><span>teacher prompts</span></div>
+          <div class="stat-tile"><strong>0</strong><span>external dependencies</span></div>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <svg viewBox="0 0 560 390" role="img">
+          <rect x="42" y="42" width="476" height="306" rx="18" fill="rgba(255,255,255,.94)"/>
+          <path d="M83 106h394M83 170h394M83 234h394M83 298h394" stroke="#d8e3ed" stroke-width="4"/>
+          <path d="M154 74v248M280 74v248M406 74v248" stroke="#d8e3ed" stroke-width="4"/>
+          <rect x="103" y="92" width="102" height="48" rx="10" fill="#eaf6f5" stroke="#19756f" stroke-width="4"/>
+          <text x="154" y="123" text-anchor="middle" font-size="22" font-weight="800" fill="#19756f">Trap</text>
+          <rect x="228" y="156" width="102" height="48" rx="10" fill="#fff3df" stroke="#c78a1c" stroke-width="4"/>
+          <text x="279" y="187" text-anchor="middle" font-size="22" font-weight="800" fill="#9a6812">Model</text>
+          <rect x="354" y="220" width="102" height="48" rx="10" fill="#edf3fb" stroke="#1e5b8e" stroke-width="4"/>
+          <text x="405" y="251" text-anchor="middle" font-size="22" font-weight="800" fill="#1e5b8e">Repair</text>
+          <circle cx="146" cy="272" r="28" fill="#c7523b"/>
+          <text x="146" y="281" text-anchor="middle" font-size="30" font-weight="900" fill="#fff">?</text>
+          <path d="M184 272h152" stroke="#172033" stroke-width="8" stroke-linecap="round"/>
+          <path d="M322 250l27 22-27 22" fill="none" stroke="#172033" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="control-panel" aria-labelledby="gallery-heading">
+      <div class="control-top">
+        <div>
+          <p class="kicker">Curated gallery</p>
+          <h2 id="gallery-heading">Choose a misconception to investigate</h2>
+          <div class="filter-row" aria-label="Filter exhibits by domain">
+            <button class="filter-chip" data-filter="all" aria-pressed="true">All</button>
+            <button class="filter-chip" data-filter="Number System" aria-pressed="false">Number System</button>
+            <button class="filter-chip" data-filter="Ratios" aria-pressed="false">Ratios</button>
+            <button class="filter-chip" data-filter="Expressions" aria-pressed="false">Expressions</button>
+            <button class="filter-chip" data-filter="Geometry" aria-pressed="false">Geometry</button>
+            <button class="filter-chip" data-filter="Statistics" aria-pressed="false">Statistics</button>
+          </div>
+        </div>
+        <div class="progress-wrap" aria-label="Mastery progress">
+          <div class="progress-label">
+            <span id="progressText">0 of 10 exhibits mastered</span>
+            <button class="museum-button" id="resetProgress" type="button">Reset</button>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+      </div>
+      <div class="gallery-grid" id="gallery"></div>
+    </section>
+
+    <section class="lab-panel" id="lab" aria-live="polite"></section>
+
+    <section class="routine-panel" aria-labelledby="routine-heading">
+      <p class="kicker">Classroom routine</p>
+      <h2 id="routine-heading">Four moves for every exhibit</h2>
+      <div class="routine-grid">
+        <div class="routine-step"><strong>Notice</strong><p>Read the student work and name exactly where the reasoning starts to drift.</p></div>
+        <div class="routine-step"><strong>Represent</strong><p>Use the model, table, number line, graph, or diagram before choosing an answer.</p></div>
+        <div class="routine-step"><strong>Repair</strong><p>Rewrite the solution with one sentence that explains the corrected idea.</p></div>
+        <div class="routine-step"><strong>Transfer</strong><p>Complete the exit ticket and say how this trap could show up on MCAP.</p></div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <span>Mr. Neft's classroom activities</span>
+      <span>&copy; <span data-current-year></span> Classroom-ready static HTML</span>
+    </footer>
+  </main>
+
+  <script src="/assets/app.js" defer></script>
+  <script>
+    const STORAGE_KEY = "neft-misconception-museum-progress-v1";
+
+    const exhibits = [
+      {
+        id: "fraction-division",
+        domain: "Number System",
+        standard: "6.NS.A.1",
+        title: "The fraction division flip trap",
+        trap: "Students invert the wrong fraction or multiply across without asking how many groups fit.",
+        question: "A ribbon is 3/4 yard long. Each bracelet needs 1/8 yard. How many bracelets can be made?",
+        choices: ["3/32 bracelet", "6 bracelets", "1/6 bracelet", "8/3 bracelets"],
+        correct: 1,
+        feedback: "3/4 contains six eighths. The model converts 3/4 to 6/8, then asks how many 1/8 groups fit.",
+        repair: "Rename the dividend in the divisor's unit before using an algorithm.",
+        teacher: "Ask: What is the unit of one group? Where can we see that unit in the model?",
+        frame: "I know the answer is ___ because ___ groups of ___ fit inside ___.",
+        exit: "Make a new fraction division problem where the answer is 5.",
+        visual: "fraction"
+      },
+      {
+        id: "ratio-additive",
+        domain: "Ratios",
+        standard: "6.RP.A.1",
+        title: "The ratio is not a difference",
+        trap: "Students keep the difference between quantities instead of preserving the multiplicative relationship.",
+        question: "A drink mix uses 2 cups of juice for every 5 cups of water. Which mix tastes the same?",
+        choices: ["4 cups juice and 10 cups water", "5 cups juice and 8 cups water", "3 cups juice and 6 cups water", "6 cups juice and 9 cups water"],
+        correct: 0,
+        feedback: "Equivalent ratios scale both quantities by the same factor. 2:5 doubled is 4:10.",
+        repair: "Check the multiplier, not the gap.",
+        teacher: "Ask: What happened to the juice? Did the water change by the same multiplier?",
+        frame: "The ratio stayed equivalent because both quantities were multiplied by ___.",
+        exit: "Write two ratios equivalent to 3:7 and one non-example.",
+        visual: "ratio"
+      },
+      {
+        id: "unit-rate-direction",
+        domain: "Ratios",
+        standard: "6.RP.A.2",
+        title: "Unit rate direction confusion",
+        trap: "Students calculate a correct division but attach the wrong units or reverse the meaning.",
+        question: "A train travels 180 miles in 3 hours. What is the train's speed?",
+        choices: ["60 miles per hour", "60 hours per mile", "540 miles per hour", "1/60 mile per hour"],
+        correct: 0,
+        feedback: "Miles per hour means miles for one hour: 180 divided by 3 is 60.",
+        repair: "Circle the word after 'per' and make that quantity equal 1.",
+        teacher: "Ask: Which quantity is being reduced to one? What does one unit represent?",
+        frame: "The unit rate is ___ per ___, so the one-unit quantity is ___.",
+        exit: "Explain the difference between miles per hour and hours per mile.",
+        visual: "rate"
+      },
+      {
+        id: "percent-whole",
+        domain: "Ratios",
+        standard: "6.RP.A.3.C",
+        title: "Percent without the whole",
+        trap: "Students use the percent as the whole or treat 30 percent as 30 more.",
+        question: "Eighteen students are 30% of the club. How many students are in the whole club?",
+        choices: ["48 students", "54 students", "60 students", "90 students"],
+        correct: 2,
+        feedback: "If 30% is 18, then 10% is 6 and 100% is 60.",
+        repair: "Find 1%, 10%, or another benchmark before scaling to 100%.",
+        teacher: "Ask: Which number is the part? Which number is the whole we are missing?",
+        frame: "Since ___% equals ___, then ___% equals ___, so 100% equals ___.",
+        exit: "Create a percent problem where 24 is 40% of the whole.",
+        visual: "percent"
+      },
+      {
+        id: "integer-subtraction",
+        domain: "Number System",
+        standard: "6.NS.C.5",
+        title: "Subtraction across zero",
+        trap: "Students see two symbols and guess the sign instead of interpreting movement on a number line.",
+        question: "What is -3 - 5?",
+        choices: ["2", "-2", "-8", "8"],
+        correct: 2,
+        feedback: "Starting at -3 and subtracting 5 moves five spaces left to -8.",
+        repair: "Describe subtraction as movement away from the starting value.",
+        teacher: "Ask: Where do you start? Which direction does subtracting a positive number move?",
+        frame: "I started at ___ and moved ___ spaces ___, landing at ___.",
+        exit: "Show -2 - 6 on a number line and write the answer.",
+        visual: "numberline"
+      },
+      {
+        id: "absolute-value",
+        domain: "Number System",
+        standard: "6.NS.C.7",
+        title: "Absolute value as distance",
+        trap: "Students compare the original signed numbers instead of comparing distance from zero.",
+        question: "Which statement is true?",
+        choices: ["|-12| < |8|", "|-12| = -12", "|-12| > |8|", "|8| = -8"],
+        correct: 2,
+        feedback: "Absolute value is distance from zero. Twelve units is farther than eight units.",
+        repair: "Read absolute value bars as 'distance from zero.'",
+        teacher: "Ask: Can a distance be negative? Which point is farther from zero?",
+        frame: "The distance from ___ to 0 is ___, so the absolute value is ___.",
+        exit: "Write two numbers with the same absolute value and explain why.",
+        visual: "absolute"
+      },
+      {
+        id: "coordinate-order",
+        domain: "Number System",
+        standard: "6.NS.C.8",
+        title: "Coordinate order mix-up",
+        trap: "Students move up or down first, reverse x and y, or ignore the sign.",
+        question: "Where is the point (-4, 3)?",
+        choices: ["4 right, 3 up", "4 left, 3 up", "3 left, 4 up", "4 left, 3 down"],
+        correct: 1,
+        feedback: "The x-coordinate is first, so move 4 left. The y-coordinate is second, so move 3 up.",
+        repair: "Say the coordinate as x then y: across first, then vertical.",
+        teacher: "Ask: Which coordinate controls left and right? Which controls up and down?",
+        frame: "For (___, ___), I move ___ first and ___ second.",
+        exit: "Plot (2, -5) and describe the two moves.",
+        visual: "coordinate"
+      },
+      {
+        id: "combining-terms",
+        domain: "Expressions",
+        standard: "6.EE.A.3",
+        title: "Unlike terms cannot merge",
+        trap: "Students combine coefficients and constants into one term.",
+        question: "Simplify 3x + 4 + 2x.",
+        choices: ["9x", "5x + 4", "5x + 6", "3x + 6"],
+        correct: 1,
+        feedback: "The x-terms combine to 5x. The constant 4 is a different kind of term and stays separate.",
+        repair: "Sort terms by what they measure before combining.",
+        teacher: "Ask: Which terms have the same variable part? Which term has no variable?",
+        frame: "I can combine ___ and ___ because they are like terms; ___ stays separate.",
+        exit: "Simplify 7 + 4y + 3y and explain the groups.",
+        visual: "expression"
+      },
+      {
+        id: "geometry-units",
+        domain: "Geometry",
+        standard: "6.G.A",
+        title: "Area, surface area, and volume units",
+        trap: "Students use the right formula with the wrong unit or confuse covering with filling.",
+        question: "A rectangular prism has length 5 cm, width 2 cm, and height 3 cm. What unit should volume use?",
+        choices: ["cm", "square cm", "cubic cm", "degrees"],
+        correct: 2,
+        feedback: "Volume measures filling a three-dimensional space, so it uses cubic units.",
+        repair: "Match the measurement to the action: length measures, area covers, volume fills.",
+        teacher: "Ask: Are we measuring an edge, covering faces, or filling space?",
+        frame: "This measurement uses ___ units because it is measuring ___.",
+        exit: "Write one sentence comparing surface area and volume.",
+        visual: "prism"
+      },
+      {
+        id: "statistics-outlier",
+        domain: "Statistics",
+        standard: "6.SP.B.5",
+        title: "Averages with outliers",
+        trap: "Students report the mean as the typical value even when an outlier pulls it away from most data.",
+        question: "Scores are 8, 9, 10, 10, 11, 12, and 38. Which value better describes a typical score?",
+        choices: ["Mean, because it uses every value", "Median, because the outlier pulls the mean", "Range, because it is largest", "38, because it stands out"],
+        correct: 1,
+        feedback: "The score 38 is far from the cluster. The median better represents a typical score here.",
+        repair: "Look at the distribution before choosing a measure of center.",
+        teacher: "Ask: Where do most data values sit? What does the outlier do to the mean?",
+        frame: "The better measure is ___ because the data ___.",
+        exit: "Create a data set where the mean is not a good typical value.",
+        visual: "stats"
+      }
+    ];
+
+    const exhibitEnhancements = {
+      "fraction-division": {
+        focus: "Fraction division as counting equal-sized groups",
+        diagnosis: "Checks whether students can name the unit being counted before using an algorithm.",
+        lookFor: "Student renames 3/4 as 6/8, then counts six one-eighth groups.",
+        modelMove: "Partition the ribbon into eighths, shade six eighths, and count the groups aloud.",
+        hint: "Ask: how many eighths are already inside three fourths?",
+        transfer: "A recipe has 5/6 cup of flour and each batch needs 1/12 cup. How many batches fit?",
+        choiceDiagnoses: [
+          "This multiplies numerators and denominators, treating division like fraction multiplication.",
+          "Correct: the answer counts how many one-eighth pieces fit inside six eighths.",
+          "This flips the dividend instead of counting equal groups inside the dividend.",
+          "This reverses the quotient; the result is larger than the available group count supports."
+        ]
+      },
+      "ratio-additive": {
+        focus: "Equivalent ratios preserve a multiplicative scale factor",
+        diagnosis: "Separates additive pattern spotting from multiplicative ratio reasoning.",
+        lookFor: "Student checks that 2 becomes 4 and 5 becomes 10 with the same multiplier.",
+        modelMove: "Draw paired ratio tables and ask what single multiplier turns 2 into 4 and 5 into 10.",
+        hint: "One part goes from 2 to 4. Can the other part use that same multiplier?",
+        transfer: "A paint mix uses 4 cups blue for 7 cups white. Which mix is equivalent: 8:14, 9:12, or 12:21?",
+        choiceDiagnoses: [
+          "Correct: both quantities are multiplied by 2, so the ratio relationship is preserved.",
+          "This adds 3 to both terms, which changes the taste relationship.",
+          "This adds 1 to both terms and keeps a visible pattern, but it is not equivalent.",
+          "This adds 4 to both terms, preserving the gap instead of the ratio."
+        ]
+      },
+      "unit-rate-direction": {
+        focus: "Unit rate as amount per one unit",
+        diagnosis: "Checks whether students can decide which unit should become 1.",
+        lookFor: "Student labels the quotient as miles per hour and divides distance by hours.",
+        modelMove: "Write 180 miles / 3 hours, then annotate the result as miles for 1 hour.",
+        hint: "The phrase per hour means for 1 hour. Which number should be divided into 1-hour groups?",
+        transfer: "A printer makes 96 pages in 8 minutes. What is the rate in pages per minute?",
+        choiceDiagnoses: [
+          "Correct: distance divided by time gives miles for 1 hour.",
+          "This divides in the reverse direction and creates hours per mile, not miles per hour.",
+          "This multiplies the two quantities, which creates mile-hours instead of a rate.",
+          "This reverses the relationship and reports a tiny distance for each hour."
+        ]
+      },
+      "percent-whole": {
+        focus: "Percent as a rate per 100 with an unknown whole",
+        diagnosis: "Reveals whether students treat 18 as the part or the whole.",
+        lookFor: "Student uses 30% = 18, then scales 10% = 6 and 100% = 60.",
+        modelMove: "Use a double number line with percent on top and students on bottom.",
+        hint: "If 30 percent is 18 students, what is 10 percent?",
+        transfer: "Twelve tickets are 40% of the total sold. How many tickets were sold in all?",
+        choiceDiagnoses: [
+          "This treats 18 as the whole and finds 30% of it.",
+          "This may come from adding 30 and 18 rather than using percent structure.",
+          "Correct: 30% maps to 18, so 100% maps to 60.",
+          "This scales 18 by 10 without accounting for the 30% relationship."
+        ]
+      },
+      "integer-subtraction": {
+        focus: "Subtracting as adding the opposite on a number line",
+        diagnosis: "Identifies whether students use direction and operation separately.",
+        lookFor: "Student starts at -3 and moves left 5 spaces, landing at -8.",
+        modelMove: "Act it out on a number line: subtraction of positive 5 means remove 5 or move left 5.",
+        hint: "From -3, subtracting a positive number moves which direction?",
+        transfer: "Evaluate -6 - 7 and explain the movement on a number line.",
+        choiceDiagnoses: [
+          "This moves right 5, as if the operation were addition.",
+          "This finds a distance of 5 without tracking the starting point.",
+          "Correct: start at -3 and move left 5 units to -8.",
+          "This changes both signs and overextends the movement."
+        ]
+      },
+      "absolute-value": {
+        focus: "Absolute value as distance from zero",
+        diagnosis: "Checks whether students compare magnitudes instead of signs.",
+        lookFor: "Student says |-12| is 12 and |8| is 8, then compares 12 and 8.",
+        modelMove: "Mark both values on a number line and measure each distance back to zero.",
+        hint: "Ignore left or right for a moment. Which point is farther from zero?",
+        transfer: "Which has the greater absolute value: -15 or 11? Explain with distance.",
+        choiceDiagnoses: [
+          "This incorrectly says 12 is less than 8 after taking absolute value.",
+          "This treats the bars as parentheses and keeps the negative sign.",
+          "Correct: -12 is 12 units from zero, which is farther than 8 units.",
+          "This treats absolute value as making values negative."
+        ]
+      },
+      "coordinate-order": {
+        focus: "Ordered pairs as horizontal movement then vertical movement",
+        diagnosis: "Finds whether students reverse x and y or lose sign direction.",
+        lookFor: "Student moves left 4 from the origin, then up 3.",
+        modelMove: "Use a two-step chant: x first across, y second up or down.",
+        hint: "In (-4, 3), which number tells left or right?",
+        transfer: "Plot (2, -5) and describe the two movements from the origin.",
+        choiceDiagnoses: [
+          "This misses the negative x direction and moves right instead of left.",
+          "Correct: x = -4 moves left, y = 3 moves up.",
+          "This reverses the coordinates and treats 3 as the horizontal movement.",
+          "This changes the sign of y and moves down instead of up."
+        ]
+      },
+      "combining-terms": {
+        focus: "Like terms share the same variable part",
+        diagnosis: "Tests whether students preserve constants instead of merging all numbers.",
+        lookFor: "Student groups 3x and 2x, keeps 4 as a constant, and writes 5x + 4.",
+        modelMove: "Circle terms by type: x-terms in one color, constants in another.",
+        hint: "Which terms have an x attached, and which term does not?",
+        transfer: "Simplify 6y + 3 + y + 8 and explain which terms could combine.",
+        choiceDiagnoses: [
+          "This combines every number and drops the variable structure.",
+          "Correct: only 3x and 2x combine, while 4 remains a constant.",
+          "This combines the x-terms but also adds the constant into the coefficient.",
+          "This combines 4 and 2x but leaves 3x separate, mixing unlike terms."
+        ]
+      },
+      "geometry-units": {
+        focus: "Measurement units must match dimension",
+        diagnosis: "Checks whether students distinguish edge length, surface covering, and filling space.",
+        lookFor: "Student identifies volume as filling three-dimensional space and labels cubic centimeters.",
+        modelMove: "Point to an edge, a face, and the whole prism, then match each to cm, square cm, and cubic cm.",
+        hint: "Volume fills a prism. How many dimensions are being measured?",
+        transfer: "A box is 5 cm by 2 cm by 4 cm. What is its volume and unit?",
+        choiceDiagnoses: [
+          "This is a length unit for one-dimensional edges, not a volume unit.",
+          "This is an area unit for covering faces, not filling space.",
+          "Correct: volume measures three-dimensional filling, so cubic centimeters are needed.",
+          "Degrees measure angle size, not prism volume."
+        ]
+      },
+      "statistics-outlier": {
+        focus: "Measures of center depend on distribution shape",
+        diagnosis: "Checks whether students choose a measure of center that fits the data story.",
+        lookFor: "Student notices 38 is far from the cluster and explains why median describes typical better.",
+        modelMove: "Order the values, mark the median, then show how the far value pulls the mean upward.",
+        hint: "Which measure changes a lot when one value is far away from the rest?",
+        transfer: "For scores 7, 8, 8, 9, 9, 50, which center better describes a typical score? Why?",
+        choiceDiagnoses: [
+          "This is a useful fact about the mean, but it ignores the effect of the outlier.",
+          "Correct: the outlier pulls the mean away from the cluster, so median is more typical.",
+          "Range describes spread, not the typical center.",
+          "This selects the outlier itself instead of describing the group."
+        ]
+      }
+    };
+
+    exhibits.forEach((exhibit) => {
+      const enhancement = exhibitEnhancements[exhibit.id];
+      if (enhancement) {
+        Object.assign(exhibit, enhancement);
+      }
+    });
+
+    const state = {
+      activeId: exhibits[0].id,
+      filter: "all",
+      selected: null,
+      answered: false,
+      hintOpen: false,
+      mastered: new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"))
+    };
+
+    const gallery = document.getElementById("gallery");
+    const lab = document.getElementById("lab");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+
+    function visualTemplate(type) {
+      const svgStart = '<svg viewBox="0 0 620 430" role="img" aria-label="Math model">';
+      const bg = '<rect width="620" height="430" fill="#fffdf8"/><rect x="34" y="34" width="552" height="362" rx="16" fill="#ffffff" stroke="#d7e0ea" stroke-width="4"/>';
+      const end = "</svg>";
+      const text = (x, y, label, size = 22, color = "#172033") => `<text x="${x}" y="${y}" text-anchor="middle" font-size="${size}" font-weight="850" fill="${color}">${label}</text>`;
+
+      const visuals = {
+        fraction: `${svgStart}${bg}<rect x="82" y="128" width="456" height="62" rx="8" fill="#edf3fb" stroke="#1e5b8e" stroke-width="4"/><path d="M139 128v62M196 128v62M253 128v62M310 128v62M367 128v62M424 128v62M481 128v62" stroke="#1e5b8e" stroke-width="3"/><rect x="82" y="128" width="342" height="62" rx="8" fill="#e2f4ef" opacity=".82"/><path d="M82 252h456" stroke="#c78a1c" stroke-width="12" stroke-linecap="round"/><path d="M82 252h342" stroke="#19756f" stroke-width="12" stroke-linecap="round"/><circle cx="111" cy="252" r="18" fill="#19756f"/><circle cx="168" cy="252" r="18" fill="#19756f"/><circle cx="225" cy="252" r="18" fill="#19756f"/><circle cx="282" cy="252" r="18" fill="#19756f"/><circle cx="339" cy="252" r="18" fill="#19756f"/><circle cx="396" cy="252" r="18" fill="#19756f"/>${text(310, 90, "3/4 = 6 eighths", 28, "#1e5b8e")}${text(310, 322, "Six 1/8 groups fit", 24, "#19756f")}${end}`,
+        ratio: `${svgStart}${bg}<rect x="110" y="92" width="400" height="236" rx="10" fill="#f8fafc" stroke="#d7e0ea" stroke-width="4"/><path d="M110 152h400M110 212h400M110 272h400M250 92v236M380 92v236" stroke="#d7e0ea" stroke-width="4"/>${text(180, 132, "Batch", 19)}${text(315, 132, "Juice", 19)}${text(445, 132, "Water", 19)}${text(180, 192, "1x", 22, "#19756f")}${text(315, 192, "2", 26, "#19756f")}${text(445, 192, "5", 26, "#19756f")}${text(180, 252, "2x", 22, "#1e5b8e")}${text(315, 252, "4", 26, "#1e5b8e")}${text(445, 252, "10", 26, "#1e5b8e")}${text(310, 356, "Same multiplier, same taste", 25, "#c78a1c")}${end}`,
+        rate: `${svgStart}${bg}<path d="M120 278c46-96 106-144 190-144s144 48 190 144" fill="none" stroke="#d7e0ea" stroke-width="20" stroke-linecap="round"/><path d="M120 278c46-96 106-144 190-144" fill="none" stroke="#19756f" stroke-width="20" stroke-linecap="round"/><circle cx="310" cy="278" r="18" fill="#172033"/><path d="M310 278l88-88" stroke="#c7523b" stroke-width="10" stroke-linecap="round"/><text x="310" y="340" text-anchor="middle" font-size="40" font-weight="900" fill="#1e5b8e">60 mph</text>${text(170, 304, "0", 20)}${text(450, 304, "180 miles", 20)}${text(310, 112, "3 hours -> 1 hour", 25, "#19756f")}${end}`,
+        percent: `${svgStart}${bg}<rect x="84" y="152" width="452" height="74" rx="10" fill="#edf3fb" stroke="#1e5b8e" stroke-width="4"/><rect x="84" y="152" width="136" height="74" rx="10" fill="#e2f4ef" stroke="#19756f" stroke-width="4"/><path d="M84 246h452" stroke="#d7e0ea" stroke-width="5"/><path d="M129 238v22M174 238v22M220 238v22M265 238v22M310 238v22M355 238v22M400 238v22M446 238v22M491 238v22" stroke="#172033" stroke-width="3"/>${text(152, 198, "18", 30, "#19756f")}${text(152, 116, "30%", 26, "#19756f")}${text(310, 310, "10% = 6, so 100% = 60", 26, "#c78a1c")}${end}`,
+        numberline: `${svgStart}${bg}<path d="M92 220h436" stroke="#172033" stroke-width="6" stroke-linecap="round"/><path d="M92 220l18-18M92 220l18 18M528 220l-18-18M528 220l18 18" stroke="#172033" stroke-width="6" stroke-linecap="round"/><path d="M190 202v36M250 202v36M310 202v36M370 202v36M430 202v36" stroke="#172033" stroke-width="5"/><path d="M370 176c-70-48-140-48-210 0" fill="none" stroke="#c7523b" stroke-width="8" stroke-linecap="round"/><path d="M160 176l24-4-12 22" fill="none" stroke="#c7523b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>${text(370, 270, "-3", 22)}${text(160, 270, "-8", 22, "#c7523b")}${text(300, 116, "Subtract 5: move left", 28, "#c7523b")}${end}`,
+        absolute: `${svgStart}${bg}<path d="M92 238h436" stroke="#172033" stroke-width="6" stroke-linecap="round"/><path d="M310 202v72" stroke="#172033" stroke-width="5"/><circle cx="166" cy="238" r="18" fill="#c7523b"/><circle cx="406" cy="238" r="18" fill="#1e5b8e"/><path d="M166 164h144" stroke="#c7523b" stroke-width="9" stroke-linecap="round"/><path d="M310 126h96" stroke="#1e5b8e" stroke-width="9" stroke-linecap="round"/>${text(166, 292, "-12", 22, "#c7523b")}${text(310, 292, "0", 22)}${text(406, 292, "8", 22, "#1e5b8e")}${text(238, 150, "12 units", 22, "#c7523b")}${text(358, 112, "8 units", 22, "#1e5b8e")}${end}`,
+        coordinate: `${svgStart}${bg}<path d="M310 76v276M116 214h388" stroke="#172033" stroke-width="5"/><path d="M310 76l-14 22M310 76l14 22M504 214l-22-14M504 214l-22 14" stroke="#172033" stroke-width="5" stroke-linecap="round"/><g stroke="#d7e0ea" stroke-width="2">${Array.from({length: 9}, (_, i) => `<path d="M${154 + i * 39} 84v260"/>`).join("")}${Array.from({length: 7}, (_, i) => `<path d="M132 ${97 + i * 39}h356"/>`).join("")}</g><circle cx="154" cy="97" r="15" fill="#c7523b"/><path d="M310 214h-156v-117" fill="none" stroke="#19756f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>${text(154, 72, "(-4, 3)", 22, "#c7523b")}${text(224, 250, "x first", 22, "#19756f")}${text(114, 154, "then y", 22, "#19756f")}${end}`,
+        expression: `${svgStart}${bg}<rect x="90" y="120" width="145" height="72" rx="10" fill="#edf3fb" stroke="#1e5b8e" stroke-width="4"/><rect x="250" y="120" width="90" height="72" rx="10" fill="#fff3df" stroke="#c78a1c" stroke-width="4"/><rect x="355" y="120" width="145" height="72" rx="10" fill="#edf3fb" stroke="#1e5b8e" stroke-width="4"/>${text(162, 166, "3x", 32, "#1e5b8e")}${text(295, 166, "4", 32, "#9a6812")}${text(428, 166, "2x", 32, "#1e5b8e")}<path d="M160 242h270" stroke="#19756f" stroke-width="8" stroke-linecap="round"/><path d="M410 220l28 22-28 22" fill="none" stroke="#19756f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>${text(310, 310, "5x + 4", 40, "#19756f")}${text(310, 84, "Sort before combining", 25, "#172033")}${end}`,
+        prism: `${svgStart}${bg}<path d="M210 130h190l64 58H274z" fill="#edf3fb" stroke="#1e5b8e" stroke-width="4"/><path d="M210 130v146l64 58V188z" fill="#e2f4ef" stroke="#19756f" stroke-width="4"/><path d="M274 188h190v146H274z" fill="#fff3df" stroke="#c78a1c" stroke-width="4"/><path d="M210 276h190l64 58M400 130v146" stroke="#172033" stroke-width="3" opacity=".35"/>${text(337, 96, "Fill space = cubic units", 27, "#1e5b8e")}${text(188, 342, "edge: cm", 20, "#19756f")}${text(434, 368, "volume: cm^3", 22, "#9a6812")}${end}`,
+        stats: `${svgStart}${bg}<path d="M112 300h410" stroke="#172033" stroke-width="5" stroke-linecap="round"/><path d="M144 130v170" stroke="#172033" stroke-width="5" stroke-linecap="round"/><g fill="#1e5b8e"><circle cx="180" cy="238" r="14"/><circle cx="218" cy="224" r="14"/><circle cx="256" cy="210" r="14"/><circle cx="294" cy="210" r="14"/><circle cx="332" cy="196" r="14"/><circle cx="370" cy="182" r="14"/></g><circle cx="486" cy="84" r="17" fill="#c7523b"/><path d="M256 320v-204" stroke="#19756f" stroke-width="7" stroke-dasharray="12 10"/><path d="M358 320v-248" stroke="#c7523b" stroke-width="7" stroke-dasharray="12 10"/>${text(256, 352, "median", 20, "#19756f")}${text(358, 352, "mean pulled", 20, "#c7523b")}${text(310, 64, "Check the shape of the data", 24, "#172033")}${end}`
+      };
+
+      return visuals[type] || visuals.fraction;
+    }
+
+    function getActiveExhibit() {
+      return exhibits.find((exhibit) => exhibit.id === state.activeId) || exhibits[0];
+    }
+
+    function saveProgress() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...state.mastered]));
+    }
+
+    function updateProgress() {
+      const mastered = state.mastered.size;
+      progressText.textContent = `${mastered} of ${exhibits.length} exhibits mastered`;
+      progressFill.style.width = `${Math.round((mastered / exhibits.length) * 100)}%`;
+    }
+
+    function renderGallery() {
+      const visible = exhibits.filter((exhibit) => state.filter === "all" || exhibit.domain === state.filter);
+      gallery.innerHTML = visible.map((exhibit) => {
+        const active = exhibit.id === state.activeId ? " active" : "";
+        const mastered = state.mastered.has(exhibit.id);
+        return `
+          <button class="exhibit-card${active}${mastered ? " mastered" : ""}" type="button" data-exhibit="${exhibit.id}">
+            <div class="tag-row">
+              <span class="tag">${exhibit.standard}</span>
+              <span class="tag">${exhibit.domain}</span>
+              ${mastered ? '<span class="tag mastered">Mastered</span>' : ""}
+            </div>
+            <h3>${exhibit.title}</h3>
+            <p class="card-trap">${exhibit.trap}</p>
+          </button>
+        `;
+      }).join("");
+
+      gallery.querySelectorAll("[data-exhibit]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.activeId = button.dataset.exhibit;
+          state.selected = null;
+          state.answered = false;
+          state.hintOpen = false;
+          render();
+          document.getElementById("lab").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    }
+
+    function renderLab() {
+      const exhibit = getActiveExhibit();
+      const selectedDiagnosis = state.selected === null ? "" : exhibit.choiceDiagnoses[state.selected] || exhibit.feedback;
+      const feedbackCopy = state.answered
+        ? (state.selected === exhibit.correct
+          ? `<strong>Reasoning confirmed.</strong> ${selectedDiagnosis}`
+          : `<strong>Reasoning diagnosis:</strong> ${selectedDiagnosis}`)
+        : "Choose an answer, then check the reasoning. The goal is to explain the repair, not just pick a letter.";
+
+      lab.innerHTML = `
+        <div>
+          <div class="visual-stage">${visualTemplate(exhibit.visual)}</div>
+          <div class="source-card">
+            <div class="meta-strip" aria-label="Exhibit metadata">
+              <span class="meta-pill">${exhibit.standard}</span>
+              <span class="meta-pill">${exhibit.domain}</span>
+              <span class="meta-pill">${exhibit.focus}</span>
+            </div>
+            <h3>Student work to inspect</h3>
+            <p>${exhibit.question}</p>
+          </div>
+        </div>
+        <div class="detail-copy">
+          <p class="kicker">Evidence lab</p>
+          <h2>${exhibit.title}</h2>
+          <div class="quick-read" aria-label="Teacher quick read">
+            <div class="quick-card">
+              <span>Diagnostic target</span>
+              <strong>${exhibit.diagnosis}</strong>
+            </div>
+            <div class="quick-card">
+              <span>Look for</span>
+              <strong>${exhibit.lookFor}</strong>
+            </div>
+            <div class="quick-card">
+              <span>Model move</span>
+              <strong>${exhibit.modelMove}</strong>
+            </div>
+          </div>
+          <div class="misread-box">
+            <strong>Common misread:</strong>
+            <p>${exhibit.trap}</p>
+          </div>
+          <div class="repair-box">
+            <strong>Repair model:</strong>
+            <p>${exhibit.repair}</p>
+          </div>
+          <div class="choice-grid" role="group" aria-label="Answer choices">
+            ${exhibit.choices.map((choice, index) => {
+              let className = "choice-button";
+              if (state.selected === index) className += " selected";
+              if (state.answered && index === exhibit.correct) className += " correct";
+              if (state.answered && state.selected === index && index !== exhibit.correct) className += " incorrect";
+              return `<button class="${className}" type="button" data-choice="${index}">${choice}</button>`;
+            }).join("")}
+          </div>
+          <div class="button-cluster">
+            <button class="museum-button primary" id="checkAnswer" type="button">Check reasoning</button>
+            <button class="museum-button" id="toggleHint" type="button">${state.hintOpen ? "Hide hint" : "Show hint"}</button>
+            <button class="museum-button" id="markMastered" type="button">Mark mastered</button>
+          </div>
+          ${state.hintOpen ? `<div class="hint-box"><strong>Hint ladder</strong><p>${exhibit.hint}</p></div>` : ""}
+          <div class="feedback" id="feedback">
+            ${feedbackCopy}
+          </div>
+          ${state.answered ? `<div class="selected-analysis"><strong>Repair focus</strong><p>${exhibit.repair}</p></div>` : ""}
+          <div class="teacher-notes">
+            <div class="note-box">
+              <h3>Teacher move</h3>
+              <p>${exhibit.teacher}</p>
+            </div>
+            <div class="note-box">
+              <h3>Language frame</h3>
+              <p>${exhibit.frame}</p>
+            </div>
+          </div>
+          <div class="exit-ticket">
+            <div class="note-box">
+              <h3>Exit ticket</h3>
+              <p>${exhibit.exit}</p>
+            </div>
+            <div class="note-box">
+              <h3>Transfer question</h3>
+              <p>${exhibit.transfer}</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      lab.querySelectorAll("[data-choice]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selected = Number(button.dataset.choice);
+          state.answered = false;
+          state.hintOpen = false;
+          render();
+        });
+      });
+
+      document.getElementById("toggleHint").addEventListener("click", () => {
+        state.hintOpen = !state.hintOpen;
+        render();
+      });
+
+      document.getElementById("checkAnswer").addEventListener("click", () => {
+        const feedback = document.getElementById("feedback");
+        if (state.selected === null) {
+          feedback.textContent = "Select one answer first so the museum can compare the reasoning.";
+          return;
+        }
+        state.answered = true;
+        if (state.selected === exhibit.correct) {
+          state.mastered.add(exhibit.id);
+          saveProgress();
+        }
+        render();
+      });
+
+      document.getElementById("markMastered").addEventListener("click", () => {
+        state.mastered.add(exhibit.id);
+        saveProgress();
+        render();
+      });
+    }
+
+    function render() {
+      renderGallery();
+      renderLab();
+      updateProgress();
+    }
+
+    document.querySelectorAll("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.filter = button.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach((chip) => {
+          chip.setAttribute("aria-pressed", String(chip === button));
+        });
+        const firstVisible = exhibits.find((exhibit) => state.filter === "all" || exhibit.domain === state.filter);
+        if (firstVisible) {
+          state.activeId = firstVisible.id;
+          state.selected = null;
+          state.answered = false;
+          state.hintOpen = false;
+        }
+        render();
+      });
+    });
+
+    document.getElementById("resetProgress").addEventListener("click", () => {
+      state.mastered.clear();
+      saveProgress();
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
