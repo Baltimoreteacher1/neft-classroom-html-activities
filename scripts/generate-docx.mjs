@@ -174,6 +174,79 @@ function twrParas(config) {
   return out;
 }
 
+// Turn & Talk — Discussion Points. Mirrors the HTML section: per item, a
+// phase + question, a Level 1 (support) block (kernel, bilingual stems, word
+// bank, listen-for note), and a Level 2 push question with stems. Defensive
+// about every optional field so older configs still render.
+function turnAndTalkParas(config) {
+  const items = Array.isArray(config.turnAndTalk) ? config.turnAndTalk : [];
+  if (!items.length) return [];
+  const out = [
+    h2("Turn & Talk — Discussion Points  (Level 1 support · Level 2)", TEAL),
+    muted(
+      "Talk with a partner. Use the Level 1 stems if you need help getting started; try the Level 2 question when you are ready for more.",
+    ),
+  ];
+  items.forEach((it, idx) => {
+    const phase = String(it.phase || "").trim();
+    const phaseLabel = phase
+      ? phase.charAt(0).toUpperCase() + phase.slice(1)
+      : "Discuss";
+    out.push(
+      para([
+        new TextRun({ text: `${idx + 1}. [${phaseLabel}] `, bold: true, color: NAVY, size: 21 }),
+        new TextRun({ text: it.question || "", bold: true, size: 21 }),
+      ]),
+    );
+    // Level 1 (support)
+    if (it.kernel) {
+      out.push(
+        para([
+          new TextRun({ text: "Level 1 — Start here: ", bold: true, color: TEAL, size: 20 }),
+          new TextRun({ text: it.kernel, size: 20 }),
+        ]),
+      );
+    }
+    const stems = Array.isArray(it.stems) ? it.stems : [];
+    for (const s of stems) {
+      const en = typeof s === "string" ? s : s && s.en;
+      const es = typeof s === "object" && s ? s.es : "";
+      if (en) out.push(bilingual(en, es));
+    }
+    const wordBank = (Array.isArray(it.wordBank) ? it.wordBank : []).filter(Boolean);
+    if (wordBank.length) {
+      out.push(
+        para([
+          new TextRun({ text: "Word bank: ", bold: true, color: NAVY, size: 20 }),
+          new TextRun({ text: wordBank.join(", "), color: TEAL, size: 20 }),
+        ]),
+      );
+    }
+    if (it.listenFor) {
+      out.push(
+        para([
+          new TextRun({ text: "Listen for: ", bold: true, color: NAVY, size: 19 }),
+          new TextRun({ text: it.listenFor, italics: true, color: MUTED, size: 19 }),
+        ]),
+      );
+    }
+    // Level 2
+    if (it.extend) {
+      out.push(
+        para([
+          new TextRun({ text: "Level 2: ", bold: true, color: AMBER, size: 20 }),
+          new TextRun({ text: it.extend, size: 20 }),
+        ]),
+      );
+    }
+    const extendStems = (Array.isArray(it.extendStems) ? it.extendStems : []).filter(Boolean);
+    for (const s of extendStems) {
+      out.push(para(new TextRun({ text: `• ${s}`, size: 20 }), { indent: { left: 360 } }));
+    }
+  });
+  return out;
+}
+
 function gatherPractice(practice = {}) {
   return [].concat(
     practice.approaching || [],
@@ -276,6 +349,7 @@ function buildDoc(id, cfg) {
       new TextRun({ text: "Class: ____________", size: 21 }),
     ]),
     ...vocabParas(cfg.vocabulary),
+    ...turnAndTalkParas(cfg),
     ...twrParas(cfg),
     ...tryItParas(cfg.practice),
     ...reflectParas(cfg.reflect),
