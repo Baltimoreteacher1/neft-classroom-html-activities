@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Dash — Lessons 8.1–8.7 Game | Neft Teacher</title>
+    <meta name="description" content="Arcade review game for Grade 6 lessons 8.1–8.7: mean, median, and range of data sets (6.SP)." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root { --navy:#0f2b3c; --blue:#1a6fb5; --teal:#0e8a7d; --gold:#d4952a; --coral:#c45a3c; --green:#2d874b; --ink:#1a2633; --muted:#5e6e7e; --line:#e2e7ec; --bg:#f7f9fb; --font:"Segoe UI",system-ui,sans-serif; }
+      * { box-sizing:border-box; }
+      body { margin:0; font-family:var(--font); color:var(--ink); background:var(--bg); line-height:1.5; }
+      .wrap { max-width:680px; margin:0 auto; padding:0 18px 60px; }
+      .ghero { background:linear-gradient(135deg,#1a3fb5,#0e7a8a); color:#fff; text-align:center; padding:30px 20px 26px; }
+      .ghero .deco { font-size:48px; }
+      .ghero h1 { margin:8px 0 6px; font-size:clamp(24px,5vw,34px); }
+      .ghero p { margin:0 auto; max-width:520px; color:rgba(255,255,255,.9); }
+      .breadcrumb { font-size:13px; padding:14px 0; color:var(--muted); }
+      .breadcrumb a { color:var(--blue); text-decoration:none; font-weight:600; }
+      .hud { display:flex; justify-content:space-between; gap:10px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin:18px 0; font-weight:800; box-shadow:0 2px 10px rgba(15,43,60,.06); }
+      .hud .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); display:block; }
+      .hud .val { font-size:22px; }
+      .hearts { color:var(--coral); letter-spacing:2px; }
+      .card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px 22px; box-shadow:0 6px 22px rgba(15,43,60,.08); text-align:center; }
+      .mode-tag { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--teal); }
+      .prompt { font-size:clamp(22px,5vw,30px); font-weight:800; margin:8px 0 4px; }
+      .sub { color:var(--muted); margin:0 0 18px; }
+      .opts { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+      @media (max-width:460px){ .opts{ grid-template-columns:1fr; } }
+      .opt { padding:16px; border:2px solid var(--line); border-radius:14px; background:#fff; font-size:20px; font-weight:800; cursor:pointer; font-family:inherit; color:var(--ink); transition:transform .06s, border-color .15s; }
+      .opt:hover { border-color:var(--blue); }
+      .opt:active { transform:scale(.97); }
+      .opt.right { border-color:var(--green); background:#e6f4eb; color:var(--green); animation:pop .3s; }
+      .opt.wrong { border-color:var(--coral); background:#fdeee9; color:var(--coral); animation:shake .3s; }
+      @keyframes pop { 50%{ transform:scale(1.06);} }
+      @keyframes shake { 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+      .feedback { min-height:26px; margin-top:16px; font-weight:800; }
+      .feedback.ok { color:var(--green); } .feedback.no { color:var(--coral); }
+      .btn { background:var(--blue); color:#fff; border:none; border-radius:12px; padding:13px 26px; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit; margin-top:8px; }
+      .btn:hover { filter:brightness(1.08); }
+      .btn.start { background:var(--teal); font-size:18px; padding:15px 34px; }
+      .bar { height:10px; background:var(--line); border-radius:50px; overflow:hidden; margin:14px 0 2px; }
+      .bar > div { height:100%; width:100%; background:linear-gradient(90deg,var(--gold),var(--coral)); transition:width .25s linear; }
+      .hidden { display:none; }
+      .big-score { font-size:52px; font-weight:900; color:var(--blue); margin:6px 0; }
+      .legend { font-size:13px; color:var(--muted); margin-top:18px; }
+      .legend a { color:var(--blue); font-weight:700; }
+      ul.modes { text-align:left; max-width:430px; margin:14px auto; color:var(--muted); font-size:15px; }
+    </style>
+  </head>
+  <body>
+    <header class="ghero">
+      <div class="deco">📊</div>
+      <h1>Data Dash</h1>
+      <p>Race the clock on mean, median, and range of real data sets.</p>
+    </header>
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/math/">Math</a> / <a href="/math/games/">Games</a> / Data Dash
+      </nav>
+
+      <section class="card" id="startScreen">
+        <p class="mode-tag">Lessons 8.1–8.7 · 6.SP</p>
+        <h2 style="margin:6px 0;">Ready to dash?</h2>
+        <ul class="modes">
+          <li><strong>Round 1 — Mean.</strong> Find the average of a set of whole numbers.</li>
+          <li><strong>Round 2 — Median.</strong> Find the middle value of a sorted data set.</li>
+          <li><strong>Round 3 — Range.</strong> Find the difference between the max and min.</li>
+        </ul>
+        <p class="sub">You have <strong>3 ❤</strong> and a timer on each question. Build a streak for bonus points!</p>
+        <button class="btn start" id="startBtn" type="button">Start Game ▶</button>
+      </section>
+
+      <section id="playScreen" class="hidden">
+        <div class="hud">
+          <div><span class="lbl">Score</span><span class="val" id="score">0</span></div>
+          <div><span class="lbl">Streak</span><span class="val" id="streak">0</span></div>
+          <div><span class="lbl">Lives</span><span class="val hearts" id="lives">❤❤❤</span></div>
+          <div><span class="lbl">Question</span><span class="val" id="qnum">1</span></div>
+        </div>
+        <div class="bar"><div id="timebar"></div></div>
+        <div class="card" style="margin-top:14px;">
+          <span class="mode-tag" id="modeTag"></span>
+          <div class="prompt" id="prompt"></div>
+          <p class="sub" id="sub"></p>
+          <div class="opts" id="opts"></div>
+          <div class="feedback" id="feedback"></div>
+          <button class="btn hidden" id="nextBtn" type="button">Next ▶</button>
+        </div>
+      </section>
+
+      <section class="card hidden" id="resultScreen">
+        <p class="mode-tag">Game Over</p>
+        <div class="big-score" id="finalScore">0</div>
+        <p id="resultMsg" style="font-weight:700;"></p>
+        <p class="sub" id="resultDetail"></p>
+        <button class="btn start" id="againBtn" type="button">Play Again 🔁</button>
+        <p class="legend">More review: <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> · <a href="/math/games/">All Games</a></p>
+      </section>
+    </div>
+
+    <script>
+      function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+      function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+
+      var TOTAL=12, TIME=12;
+      var state={};
+
+      function distinctOpts(correct, makeWrong, fmt){
+        var set={}; set[fmt(correct)]=true; var opts=[fmt(correct)];
+        var guard=0;
+        while(opts.length<4 && guard<50){ guard++; var w=makeWrong(); var k=fmt(w); if(!set[k]){ set[k]=true; opts.push(k); } }
+        while(opts.length<4){ opts.push(fmt(correct + opts.length * 2 + 1)); }
+        return { opts:shuffle(opts), correct:fmt(correct) };
+      }
+
+      // MEAN questions: pick count values whose sum is divisible by count
+      // Strategy: pick (count-1) random values, compute last to make sum divisible
+      var meanTemplates = [
+        [4, 6, 8, 10],
+        [3, 7, 9, 5],
+        [2, 4, 6, 12, 6],
+        [5, 10, 15, 20],
+        [8, 12, 4, 16],
+        [6, 9, 3, 12, 15]
+      ];
+
+      // Pre-validated question banks to guarantee correctness
+      function buildMeanQuestion(){
+        // Build a fresh mean question: pick 4 or 5 numbers, force sum divisible by count
+        var count = (Math.random() < 0.5) ? 4 : 5;
+        var nums = [];
+        var sumSoFar = 0;
+        for(var k=0; k<count-1; k++){
+          var v = rnd(2, 15);
+          nums.push(v);
+          sumSoFar += v;
+        }
+        // choose last value so sum % count === 0
+        var rem = sumSoFar % count;
+        var last;
+        if(rem === 0){ last = rnd(2,15); }
+        else { last = count - rem + rnd(0,3)*count; }
+        // keep last in reasonable range
+        if(last < 1) last += count;
+        if(last > 20) last = last % count + 2;
+        nums.push(last);
+        var total = 0;
+        for(var k=0; k<nums.length; k++) total += nums[k];
+        var mean = total / count;
+        // verify integer
+        if(mean !== Math.floor(mean) || mean < 1){
+          // fallback to a known good set
+          nums = [4, 6, 8, 10];
+          mean = 7;
+        }
+        var setStr = nums.join(", ");
+        var o = distinctOpts(mean, function(){ return mean + rnd(1,4)*(Math.random()<0.5?1:-1); }, String);
+        return { tag:"Mean", prompt:"Mean of "+setStr+" = ?", sub:"Add all values, then divide by the count ("+count+" numbers).", opts:o.opts, correct:o.correct, why:"Sum = "+total+"; "+total+" ÷ "+count+" = "+mean+"." };
+      }
+
+      function buildMedianQuestion(){
+        // odd-length (5) sorted set, answer is middle value
+        var nums = [];
+        var seen = {};
+        while(nums.length < 5){
+          var v = rnd(1, 20);
+          if(!seen[v]){ seen[v]=true; nums.push(v); }
+        }
+        nums.sort(function(a,b){ return a-b; });
+        var median = nums[2]; // middle of 5
+        var setStr = nums.join(", ");
+        var o = distinctOpts(median, function(){ return median + rnd(1,4)*(Math.random()<0.5?1:-1); }, String);
+        return { tag:"Median", prompt:"Median of "+setStr+" = ?", sub:"Sort the values and find the middle one (5 numbers).", opts:o.opts, correct:o.correct, why:"Sorted: "+setStr+". Middle value = "+median+"." };
+      }
+
+      function buildRangeQuestion(){
+        // range = max - min; use 4 or 5 distinct values
+        var count = (Math.random() < 0.5) ? 4 : 5;
+        var nums = [];
+        var seen = {};
+        while(nums.length < count){
+          var v = rnd(1, 25);
+          if(!seen[v]){ seen[v]=true; nums.push(v); }
+        }
+        var mn = nums[0], mx = nums[0];
+        for(var k=1; k<nums.length; k++){ if(nums[k]<mn) mn=nums[k]; if(nums[k]>mx) mx=nums[k]; }
+        var range = mx - mn;
+        var display = nums.join(", ");
+        var o = distinctOpts(range, function(){ return range + rnd(1,5)*(Math.random()<0.5?1:-1); }, String);
+        return { tag:"Range", prompt:"Range of "+display+" = ?", sub:"Subtract the minimum from the maximum.", opts:o.opts, correct:o.correct, why:"Max = "+mx+", Min = "+mn+"; "+mx+" − "+mn+" = "+range+"." };
+      }
+
+      function buildQuestion(i){
+        var round = i<4 ? 1 : (i<8 ? 2 : 3);
+        if(round===1){ return buildMeanQuestion(); }
+        if(round===2){ return buildMedianQuestion(); }
+        return buildRangeQuestion();
+      }
+
+      function startGame(){
+        state={ i:0, score:0, streak:0, lives:3, locked:false };
+        document.getElementById("startScreen").classList.add("hidden");
+        document.getElementById("resultScreen").classList.add("hidden");
+        document.getElementById("playScreen").classList.remove("hidden");
+        nextQuestion();
+      }
+      function nextQuestion(){
+        if(state.lives<=0 || state.i>=TOTAL){ return endGame(); }
+        state.locked=false; state.q=buildQuestion(state.i);
+        document.getElementById("qnum").textContent=(state.i+1)+"/"+TOTAL;
+        document.getElementById("modeTag").textContent=state.q.tag;
+        document.getElementById("prompt").textContent=state.q.prompt;
+        document.getElementById("sub").textContent=state.q.sub;
+        document.getElementById("feedback").textContent=""; document.getElementById("feedback").className="feedback";
+        document.getElementById("nextBtn").classList.add("hidden");
+        var box=document.getElementById("opts"); box.innerHTML="";
+        state.q.opts.forEach(function(o){ var b=document.createElement("button"); b.type="button"; b.className="opt"; b.textContent=o; b.onclick=function(){ answer(o,b); }; box.appendChild(b); });
+        startTimer();
+      }
+      function startTimer(){
+        var t=TIME, bar=document.getElementById("timebar"); bar.style.width="100%"; clearInterval(state.timer);
+        state.timer=setInterval(function(){ t-=0.1; bar.style.width=Math.max(0,(t/TIME*100))+"%"; if(t<=0){ clearInterval(state.timer); if(!state.locked){ timeUp(); } } },100);
+      }
+      function answer(choice, btn){
+        if(state.locked) return; state.locked=true; clearInterval(state.timer);
+        var fb=document.getElementById("feedback"), correct = choice===state.q.correct;
+        Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){ if(b.textContent===state.q.correct) b.classList.add("right"); else if(b===btn) b.classList.add("wrong"); });
+        if(correct){ state.streak++; state.score += 10+Math.min(state.streak,5)*2; fb.textContent="✓ Correct! "+state.q.why+(state.streak>1?"  🔥 Streak ×"+state.streak:""); fb.className="feedback ok"; }
+        else { state.streak=0; state.lives--; fb.textContent="✗ "+state.q.why+"  (−1 ❤)"; fb.className="feedback no"; }
+        updateHud(); document.getElementById("nextBtn").classList.remove("hidden");
+      }
+      function timeUp(){
+        state.locked=true; state.streak=0; state.lives--;
+        Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){ if(b.textContent===state.q.correct) b.classList.add("right"); });
+        var fb=document.getElementById("feedback"); fb.textContent="⏰ Time! "+state.q.why+"  (−1 ❤)"; fb.className="feedback no";
+        updateHud(); document.getElementById("nextBtn").classList.remove("hidden");
+      }
+      function updateHud(){
+        document.getElementById("score").textContent=state.score;
+        document.getElementById("streak").textContent=state.streak;
+        document.getElementById("lives").textContent= state.lives>0 ? "❤".repeat(state.lives) : "—";
+      }
+      function endGame(){
+        clearInterval(state.timer);
+        document.getElementById("playScreen").classList.add("hidden");
+        document.getElementById("resultScreen").classList.remove("hidden");
+        document.getElementById("finalScore").textContent=state.score;
+        var msg;
+        if(state.score>=180) msg="🏆 Data Champion!";
+        else if(state.score>=120) msg="🌟 Fast and accurate!";
+        else if(state.score>=60) msg="👍 Nice work — keep practicing.";
+        else msg="💪 Try again to beat your score!";
+        document.getElementById("resultMsg").textContent=msg;
+        document.getElementById("resultDetail").textContent=(state.lives<=0?"Out of lives! ":"You finished all "+TOTAL+" questions! ")+"Final score: "+state.score+".";
+      }
+      document.getElementById("startBtn").onclick=startGame;
+      document.getElementById("againBtn").onclick=startGame;
+      document.getElementById("nextBtn").onclick=function(){ state.i++; nextQuestion(); };
+    </script>
+  </body>
+</html>
