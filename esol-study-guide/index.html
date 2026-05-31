@@ -450,14 +450,187 @@
             text-anchor: middle;
             dominant-baseline: middle;
         }
+
+        /* Sketchpad Canvas Draw Overlays & brush toolbars */
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            background: white;
+        }
+
+        .sketchpad-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            cursor: crosshair;
+        }
+
+        .brush-toolbar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .brush-btn {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            font-size: 0.8rem;
+            font-family: var(--font-display);
+            font-weight: 700;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            color: var(--gray-400);
+            transition: var(--transition);
+        }
+
+        .brush-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--white);
+        }
+
+        .brush-btn.active {
+            border-color: var(--primary);
+            background: rgba(20, 184, 166, 0.15);
+            color: #2dd4bf;
+            font-weight: bold;
+        }
+
+        /* Achievements progress & badge metrics styling */
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .badge-icon {
+            font-size: 1.3rem;
+            padding: 6px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1.5px dashed rgba(255, 255, 255, 0.08);
+            opacity: 0.35;
+            filter: grayscale(1);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1;
+        }
+
+        .badge-icon.active {
+            background: rgba(20, 184, 166, 0.12);
+            border: 1.5px solid var(--primary);
+            opacity: 1;
+            filter: none;
+            cursor: help;
+        }
+
+        .badge-icon.active:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 10px rgba(20, 184, 166, 0.4);
+        }
+
+        /* Print formatting */
+        .print-header {
+            display: none;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                font-family: 'Plus Jakarta Sans', sans-serif !important;
+            }
+            header, .sidebar, .brush-toolbar, #teacher-panel, footer, .audio-scaffold-hub, .btn, #quiz-options-list, .diagnostics-overlay, .header-controls {
+                display: none !important;
+            }
+            .app-grid {
+                display: block !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .workspace {
+                width: 100% !important;
+                display: block !important;
+            }
+            .work-card, .card {
+                background: white !important;
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                padding: 16px !important;
+                margin-bottom: 20px !important;
+                color: black !important;
+                page-break-inside: avoid;
+            }
+            .work-card-title, .work-card-title span, .work-card-title svg {
+                color: #0f766e !important;
+            }
+            .explanation-text {
+                background: #f8fafc !important;
+                border-left: 4px solid #0f766e !important;
+                color: #0f172a !important;
+                padding: 12px !important;
+            }
+            .canvas-wrapper {
+                border: 1px solid #cbd5e1 !important;
+                background: white !important;
+                page-break-inside: avoid;
+            }
+            #svg-concept-canvas {
+                border: none !important;
+            }
+            #sketchpad {
+                filter: none !important;
+            }
+            #notes-textarea {
+                border: 1px solid #cbd5e1 !important;
+                color: black !important;
+                background: white !important;
+                height: 140px !important;
+            }
+            .print-header {
+                display: block !important;
+                text-align: center;
+                border-bottom: 2px solid #0f766e;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+                color: black !important;
+            }
+            .print-header h1 {
+                font-family: 'Outfit', sans-serif;
+                font-size: 20pt;
+                color: #0f766e;
+                margin-bottom: 4px;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Print-only Header -->
+    <div class="print-header">
+        <h1>ESOL Math Study Guide & Mastery Portfolio</h1>
+        <p>Student: ___________________________ &middot; Date: _________________</p>
+        <p id="lbl-print-mastery-summary" style="font-weight: bold; margin-top: 6px;"></p>
+    </div>
 
     <header>
         <div class="brand-logo">
             <span>🌍</span>
             <h1>ESOL Study Guide Player</h1>
+            <span onclick="toggleTeacherPanel()" style="cursor:pointer; opacity:0.25; font-size:0.95rem; vertical-align:middle; transition:var(--transition); margin-left:6px;" id="teacher-lock-trigger" title="Teacher Admin Center">🔒</span>
         </div>
         <div class="header-controls">
             <button class="btn btn-lang" id="btn-lang" onclick="toggleLanguage()">
@@ -478,6 +651,23 @@
                     <!-- Topics mapped dynamically -->
                 </div>
             </div>
+
+            <!-- Mastery Achievements Card -->
+            <div class="card" style="margin-top: 20px;">
+                <h2 id="lbl-progress-board">🏆 Mastery Achievements</h2>
+                <div class="mastery-summary" style="margin-bottom:14px;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.82rem; font-weight:700; margin-bottom:6px;">
+                        <span>Progress:</span>
+                        <span id="mastery-ratio">0 / 10 Mastered</span>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.06); height:8px; border-radius:4px; overflow:hidden; border:1px solid rgba(255,255,255,0.05);">
+                        <div id="mastery-progress-bar" style="background:linear-gradient(90deg, var(--primary), var(--secondary)); width:0%; height:100%; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+                <div class="badge-grid" id="badge-collection-grid">
+                    <!-- Badge icons rendered here -->
+                </div>
+            </div>
         </div>
 
         <!-- Analytical Workbench -->
@@ -493,10 +683,24 @@
                     Loading lesson explanations...
                 </div>
 
-                <!-- Programmatic Visual Math Models -->
-                <svg id="svg-concept-canvas" class="svg-viewport" viewBox="0 0 400 200" style="background: white;">
-                    <!-- SVG visual math structures -->
-                </svg>
+                <!-- Programmatic Visual Math Models with Draw Overlay -->
+                <div class="canvas-wrapper">
+                    <svg id="svg-concept-canvas" viewBox="0 0 400 200" style="width:100%; height:100%; position:absolute; top:0; left:0;">
+                        <!-- SVG visual math structures -->
+                    </svg>
+                    <canvas id="sketchpad" class="sketchpad-overlay"></canvas>
+                </div>
+
+                <!-- Floating drawing tools -->
+                <div class="brush-toolbar" id="brush-toolbar">
+                    <span style="font-size:0.8rem; font-weight:700; color:var(--gray-300);">✏️ Canvas Pencil:</span>
+                    <button class="brush-btn active" id="btn-brush-teal" onclick="setBrushColor('var(--primary)', 'teal')">Teal</button>
+                    <button class="brush-btn" id="btn-brush-blue" onclick="setBrushColor('var(--secondary)', 'blue')">Blue</button>
+                    <button class="brush-btn" id="btn-brush-amber" onclick="setBrushColor('var(--accent)', 'amber')">Amber</button>
+                    <button class="brush-btn" id="btn-brush-dark" onclick="setBrushColor('#ffffff', 'dark')">Eraser</button>
+                    <button class="btn btn-secondary" onclick="undoDraw()" style="padding:4px 10px; font-size:0.75rem; font-family:var(--font-display);">↩️ Undo</button>
+                    <button class="btn btn-secondary" onclick="clearSketchpad()" style="padding:4px 10px; font-size:0.75rem; font-family:var(--font-display);">🗑️ Clear</button>
+                </div>
             </div>
 
             <!-- Vocabulary & Self-Check Splits -->
@@ -535,6 +739,29 @@
                     <div class="translation-sub" id="esol-starter-trans">¡Haga clic en las tarjetas de vocabulario o en los botones de audio para escuchar las oraciones pronunciadas de manera lenta y clara!</div>
                 </div>
             </div>
+
+            <!-- Student Study Notebook & Reflections -->
+            <div class="work-card">
+                <div class="work-card-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <span id="lbl-notebook-reflections">Bilingual Study Notebook & Reflections</span>
+                </div>
+                <textarea id="notes-textarea" oninput="saveCurrentNote(this.value)" placeholder="Write your math observations, calculations, or translations here... Escriba sus observaciones matemáticas o traducción aquí..." style="width:100%; height:120px; padding:12px; background:rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); color:var(--white); font-family:var(--font-main); font-size:0.92rem; outline:none; resize:none; transition:var(--transition);"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <span id="notes-status-msg" style="font-size:0.75rem; color:var(--primary); opacity:0.85;">✨ Saved automatically</span>
+                    <button class="btn btn-primary" onclick="generateReportCard()" style="font-family:var(--font-display); font-weight:700;">🖨️ Export Guide & Print</button>
+                </div>
+            </div>
+
+            <!-- Hidden Teacher Admin Panel -->
+            <div class="card" id="teacher-panel" style="display:none; border:1.5px solid rgba(245,158,11,0.3); background:linear-gradient(135deg, var(--study-medium), rgba(245,158,11,0.03));">
+                <h2 style="color:var(--accent); border-bottom:1px solid rgba(245,158,11,0.2); font-family:var(--font-display); font-size:1.1rem; font-weight:700; display:flex; align-items:center; gap:8px;">🔑 Teacher Control Center</h2>
+                <p style="font-size:0.82rem; color:var(--gray-400); margin-bottom:12px;">Administer student progress states and generate report card portfolios.</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-secondary" onclick="resetAllProgress()" style="font-size:0.8rem; font-family:var(--font-display);">🗑️ Reset All Scores</button>
+                    <button class="btn btn-primary" onclick="masterAllProgress()" style="background:linear-gradient(135deg, var(--accent), #d97706); box-shadow:0 4px 14px rgba(245,158,11,0.35); font-size:0.8rem; font-family:var(--font-display);">🎓 Master All Modules</button>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -570,8 +797,7 @@
 
         // ==========================================
         // 2. STUDY GUIDE TOPICS DATABASE
-        // ==========================================
-        const STUDY_GUIDE_DB = {
+          const STUDY_GUIDE_DB = {
             factors_multiples: {
                 title: "Factors & Multiples (GCF/LCM)",
                 titleEs: "Factores y Múltiplos (MCD/mcm)",
@@ -583,8 +809,6 @@
                 explanation: "The Greatest Common Factor (GCF) is the largest factor shared between numbers. The Least Common Multiple (LCM) is the smallest shared multiple.",
                 explanationEs: "El Máximo Común Divisor (MCD) es el mayor factor común compartido. El Mínimo Común Múltiplo (mcm) es el múltiplo común más pequeño.",
                 renderSvg: (svg) => {
-                    // Draw factors visual grid comparison
-                    const cx = 200;
                     svg.innerHTML += `
                         <rect x="30" y="30" width="140" height="110" fill="rgba(20,184,166,0.06)" stroke="var(--primary)" stroke-width="1.5" rx="6" />
                         <text x="100" y="55" font-family="var(--font-display)" font-size="10" font-weight="900" fill="var(--primary)" text-anchor="middle">Factors of 12</text>
@@ -613,8 +837,6 @@
                 explanation: "To divide fractions, multiply by the reciprocal of the divisor. For example, 1/2 divided by 1/4 is equal to 1/2 multiplied by 4/1, which yields 2.",
                 explanationEs: "Para dividir fracciones, multiplique por el recíproco del divisor. Por ejemplo, 1/2 dividido por 1/4 equivale a 1/2 multiplicado por 4/1.",
                 renderSvg: (svg) => {
-                    const step = 80;
-                    // Draw fraction slices in pure SVG
                     svg.innerHTML += `
                         <rect x="40" y="40" width="320" height="30" fill="rgba(0,0,0,0.15)" stroke="var(--navy-dark)" stroke-width="2" />
                         <rect x="40" y="40" width="160" height="30" fill="var(--primary)" opacity="0.65" stroke="var(--stroke)" stroke-width="1.5" />
@@ -646,7 +868,6 @@
                 explanation: "Ratio tables represent equivalent relationships. Multiply or divide both terms in the ratio by the same factor to scale.",
                 explanationEs: "Las tablas de razones representan relaciones equivalentes. Multiplique o divida ambos términos de la razón por el mismo factor.",
                 renderSvg: (svg) => {
-                    // Draw a tabular layout
                     svg.innerHTML += `
                         <rect x="50" y="30" width="300" height="100" fill="var(--white)" stroke="var(--navy-dark)" stroke-width="2" />
                         
@@ -681,7 +902,6 @@
                 explanation: "To solve an equation, isolate the variable by performing the inverse operation on both sides of the equals sign.",
                 explanationEs: "Para resolver una ecuación, aísle la variable realizando la operación inversa en ambos lados de la igualdad.",
                 renderSvg: (svg) => {
-                    // Draw a balance scale representing x + 2 = 6
                     svg.innerHTML += `
                         <line x1="120" y1="90" x2="280" y2="90" stroke="var(--primary)" stroke-width="4" />
                         <rect x="80" y="90" width="60" height="8" rx="2" fill="var(--alchemy-light)" />
@@ -714,7 +934,6 @@
                 explanation: "The coordinate plane consists of two perpendicular axes. Point (x, y) coordinates locate points: X is horizontal, Y is vertical.",
                 explanationEs: "El plano cartesiano consta de dos ejes perpendiculares. El punto (x, y) localiza objetos: X es horizontal, Y es vertical.",
                 renderSvg: (svg) => {
-                    // Draw a grid
                     svg.innerHTML += `
                         <line x1="200" y1="10" x2="200" y2="190" stroke="var(--navy-dark)" stroke-width="1.5" />
                         <line x1="20" y1="100" x2="380" y2="100" stroke="var(--navy-dark)" stroke-width="1.5" />
@@ -731,6 +950,230 @@
                 },
                 quiz: [
                     { q: "In which quadrant does the point (-3, 5) lie?", options: ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"], correct: 1 }
+                ]
+            },
+            exponents_prime: {
+                title: "Exponents & Prime Factors",
+                titleEs: "Exponentes y Factores Primos",
+                standard: "6.EE.A.1",
+                vocab: [
+                    { en: "Exponent", es: "Exponente", desc: "The number of times a base is multiplied by itself." },
+                    { en: "Prime Factor", es: "Factor primo", desc: "A prime number that divides another number evenly." }
+                ],
+                explanation: "An exponent shows repeated multiplication. For example, 2 to the power of 3 means multiplying 2 three times: 2 * 2 * 2 = 8. Prime factorization breaks a composite number down into a product of prime numbers.",
+                explanationEs: "Un exponente muestra la multiplicación repetida. Por ejemplo, 2 al exponente 3 significa multiplicar 2 tres veces: 2 * 2 * 2 = 8. La factorización prima descompone un número en factores primos.",
+                renderSvg: (svg) => {
+                    svg.innerHTML += `
+                        <!-- Root -->
+                        <circle cx="200" cy="35" r="16" fill="rgba(59,130,246,0.15)" stroke="var(--secondary)" stroke-width="2" />
+                        <text x="200" y="38" font-family="var(--font-display)" font-size="12" font-weight="900" fill="var(--white)" text-anchor="middle">24</text>
+
+                        <!-- Level 1 Branches -->
+                        <line x1="185" y1="47" x2="135" y2="78" stroke="var(--gray-400)" stroke-width="1.5" />
+                        <line x1="215" y1="47" x2="265" y2="78" stroke="var(--gray-400)" stroke-width="1.5" />
+
+                        <circle cx="130" cy="90" r="14" fill="var(--accent)" />
+                        <text x="130" y="93" class="svg-text" font-size="10">2</text>
+                        <text x="130" y="112" font-family="var(--font-main)" font-size="7.5" fill="var(--gray-400)" text-anchor="middle">(Prime)</text>
+
+                        <circle cx="270" cy="90" r="14" fill="rgba(20,184,166,0.15)" stroke="var(--primary)" stroke-width="2" />
+                        <text x="270" y="93" font-family="var(--font-display)" font-size="10" font-weight="900" fill="var(--white)" text-anchor="middle">12</text>
+
+                        <!-- Level 2 Branches -->
+                        <line x1="255" y1="100" x2="225" y2="128" stroke="var(--gray-400)" stroke-width="1.5" />
+                        <line x1="285" y1="100" x2="315" y2="128" stroke="var(--gray-400)" stroke-width="1.5" />
+
+                        <circle cx="220" cy="140" r="14" fill="var(--accent)" />
+                        <text x="220" y="143" class="svg-text" font-size="10">2</text>
+
+                        <circle cx="320" cy="140" r="14" fill="rgba(59,130,246,0.15)" stroke="var(--secondary)" stroke-width="2" />
+                        <text x="320" y="143" font-family="var(--font-display)" font-size="10" font-weight="900" fill="var(--white)" text-anchor="middle">6</text>
+
+                        <!-- Level 3 Branches -->
+                        <line x1="310" y1="150" x2="295" y2="173" stroke="var(--gray-400)" stroke-width="1.5" />
+                        <line x1="330" y1="150" x2="345" y2="173" stroke="var(--gray-400)" stroke-width="1.5" />
+
+                        <circle cx="290" cy="183" r="11" fill="var(--accent)" />
+                        <text x="290" y="186" class="svg-text" font-size="9">2</text>
+
+                        <circle cx="350" cy="183" r="11" fill="var(--accent)" />
+                        <text x="350" y="186" class="svg-text" font-size="9">3</text>
+
+                        <text x="90" y="160" font-family="var(--font-display)" font-size="11" font-weight="900" fill="var(--primary)" text-anchor="middle">24 = 2 &times; 2 &times; 2 &times; 3</text>
+                        <text x="90" y="180" font-family="monospace" font-size="11" font-weight="900" fill="var(--accent)" text-anchor="middle">24 = 2³ &times; 3</text>
+                    `;
+                },
+                quiz: [
+                    { q: "What is 2 to the power of 3 (2³) equal to?", options: ["5", "6", "8", "9"], correct: 2 }
+                ]
+            },
+            volume_nets: {
+                title: "Volume & 3D Nets",
+                titleEs: "Volumen y Redes 3D",
+                standard: "6.G.A.4",
+                vocab: [
+                    { en: "Net", es: "Red plana", desc: "A 2D layout that folds into a 3D prism." },
+                    { en: "Surface Area", es: "Área superficial", desc: "The total area of all outer faces." }
+                ],
+                explanation: "A geometric net is a flat pattern that folds into a 3D solid. Calculating surface area involves summing the individual areas of all 2D faces of the net.",
+                explanationEs: "Una red geométrica es un patrón plano que se pliega en un sólido 3D. El cálculo del área superficial implica sumar las áreas individuales de todas las caras.",
+                renderSvg: (svg) => {
+                    svg.innerHTML += `
+                        <rect x="160" y="20" width="80" height="40" fill="rgba(20,184,166,0.1)" stroke="var(--primary)" stroke-width="1.5" />
+                        <text x="200" y="44" class="svg-text" font-size="8" fill="var(--white)">Back (8x4)</text>
+
+                        <rect x="80" y="60" width="80" height="50" fill="rgba(59,130,246,0.1)" stroke="var(--secondary)" stroke-width="1.5" />
+                        <text x="120" y="89" class="svg-text" font-size="8" fill="var(--white)">Left (8x5)</text>
+
+                        <rect x="160" y="60" width="80" height="50" fill="rgba(245,158,11,0.1)" stroke="var(--accent)" stroke-width="1.5" />
+                        <text x="200" y="89" class="svg-text" font-size="8" fill="var(--white)">Bottom (8x5)</text>
+
+                        <rect x="240" y="60" width="80" height="50" fill="rgba(59,130,246,0.1)" stroke="var(--secondary)" stroke-width="1.5" />
+                        <text x="280" y="89" class="svg-text" font-size="8" fill="var(--white)">Right (8x5)</text>
+
+                        <rect x="160" y="110" width="80" height="40" fill="rgba(20,184,166,0.1)" stroke="var(--primary)" stroke-width="1.5" />
+                        <text x="200" y="134" class="svg-text" font-size="8" fill="var(--white)">Top (8x4)</text>
+
+                        <rect x="160" y="150" width="80" height="40" fill="rgba(245,158,11,0.1)" stroke="var(--accent)" stroke-width="1.5" />
+                        <text x="200" y="174" class="svg-text" font-size="8" fill="var(--white)">Front (8x4)</text>
+
+                        <text x="200" y="13" font-family="sans-serif" font-size="8" fill="var(--primary)" text-anchor="middle">Width: 8</text>
+                        <text x="330" y="85" font-family="sans-serif" font-size="8" fill="var(--secondary)" text-anchor="start">Height: 5</text>
+                        <text x="250" y="135" font-family="sans-serif" font-size="8" fill="var(--accent)" text-anchor="start">Length: 4</text>
+                    `;
+                },
+                quiz: [
+                    { q: "How many total faces does a rectangular prism net have?", options: ["4 faces", "5 faces", "6 faces", "8 faces"], correct: 2 }
+                ]
+            },
+            absolute_value: {
+                title: "Absolute Value & Distance",
+                titleEs: "Valor Absoluto y Distancia",
+                standard: "6.NS.C.7",
+                vocab: [
+                    { en: "Absolute Value", es: "Valor absoluto", desc: "The distance of a number from zero on a number line." },
+                    { en: "Magnitude", es: "Magnitud", desc: "The size of a value regardless of its positive or negative sign." }
+                ],
+                explanation: "Absolute value is a number's distance from zero. Since distance cannot be negative, absolute value is always positive. For example, | -4 | = 4.",
+                explanationEs: "El valor absoluto es la distancia de un número respecto al cero. Como la distancia no puede ser negativa, el valor absoluto siempre es positivo. | -4 | = 4.",
+                renderSvg: (svg) => {
+                    svg.innerHTML += `
+                        <line x1="30" y1="100" x2="370" y2="100" stroke="var(--navy-dark)" stroke-width="3" />
+                        
+                        <path d="M 25 100 L 35 95 L 35 105 Z" fill="var(--navy-dark)" />
+                        <path d="M 375 100 L 365 95 L 365 105 Z" fill="var(--navy-dark)" />
+
+                        <line x1="200" y1="90" x2="200" y2="110" stroke="var(--navy-dark)" stroke-width="2" />
+                        <text x="200" y="125" class="svg-text" font-size="9" fill="var(--navy-dark)">0</text>
+
+                        <line x1="80" y1="92" x2="80" y2="108" stroke="var(--navy-dark)" stroke-width="1.5" />
+                        <text x="80" y="125" class="svg-text" font-size="9" fill="var(--navy-dark)">-4</text>
+
+                        <line x1="320" y1="92" x2="320" y2="108" stroke="var(--navy-dark)" stroke-width="1.5" />
+                        <text x="320" y="125" class="svg-text" font-size="9" fill="var(--navy-dark)">4</text>
+
+                        <path d="M 80 70 L 80 60 L 200 60 L 200 70" fill="none" stroke="var(--primary)" stroke-width="2" />
+                        <text x="140" y="52" font-family="var(--font-display)" font-size="9.5" font-weight="900" fill="var(--primary)" text-anchor="middle">Distance = 4 units</text>
+
+                        <circle cx="80" cy="100" r="6" fill="var(--accent)" stroke="var(--white)" stroke-width="1.5" />
+                        
+                        <text x="200" y="175" font-family="var(--font-display)" font-size="11" font-weight="900" fill="var(--secondary)" text-anchor="middle">
+                            |-4| = 4  &middot;  |4| = 4
+                        </text>
+                    `;
+                },
+                quiz: [
+                    { q: "What is the absolute value of -7, written as |-7|?", options: ["-7", "0", "7", "14"], correct: 2 }
+                ]
+            },
+            ratios_percents: {
+                title: "Ratios & Percents",
+                titleEs: "Razones y Porcentajes",
+                standard: "6.RP.A.3c",
+                vocab: [
+                    { en: "Percent", es: "Porcentaje", desc: "A ratio comparing a number to 100." },
+                    { en: "Proportion", es: "Proporción", desc: "An equation stating that two ratios are equal." }
+                ],
+                explanation: "A percent is a part-to-whole ratio where the whole is always 100. For example, 35% means 35 out of 100 equal parts.",
+                explanationEs: "Un porcentaje es una razón de parte a todo donde el todo siempre es 100. Por ejemplo, 35% significa 35 de cada 100 partes iguales.",
+                renderSvg: (svg) => {
+                    const startX = 110;
+                    const startY = 20;
+                    const size = 15;
+                    const gap = 2;
+                    let gridHtml = '';
+
+                    for (let row = 0; row < 10; row++) {
+                        for (let col = 0; col < 10; col++) {
+                            const index = row * 10 + col;
+                            const x = startX + col * (size + gap);
+                            const y = startY + row * (size + gap);
+                            const isColored = index < 35;
+                            const color = isColored ? 'var(--primary)' : 'rgba(0,0,0,0.06)';
+                            const stroke = isColored ? 'var(--white)' : '#e2e8f0';
+                            const opacity = isColored ? '0.85' : '1';
+                            
+                            gridHtml += `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${color}" stroke="${stroke}" stroke-width="0.8" opacity="${opacity}" />`;
+                        }
+                    }
+
+                    svg.innerHTML += `
+                        ${gridHtml}
+                        <text x="50" y="80" font-family="var(--font-display)" font-size="18" font-weight="900" fill="var(--primary)" text-anchor="middle">35%</text>
+                        <text x="50" y="105" font-family="var(--font-main)" font-size="8.5" fill="var(--gray-400)" text-anchor="middle">35 / 100 colored</text>
+                        <text x="50" y="125" font-family="monospace" font-size="10" fill="var(--accent)" text-anchor="middle">Decimal: 0.35</text>
+                    `;
+                },
+                quiz: [
+                    { q: "What fraction is equal to 35% when fully simplified?", options: ["35/100", "7/20", "3/5", "7/10"], correct: 1 }
+                ]
+            },
+            data_stats: {
+                title: "Data & Statistics",
+                titleEs: "Datos y Estadísticas",
+                standard: "6.SP.B.5",
+                vocab: [
+                    { en: "Median", es: "Mediana", desc: "The middle value in an ordered list of numbers." },
+                    { en: "Mean", es: "Media", desc: "The sum of values divided by the count (average)." }
+                ],
+                explanation: "The Mean is the sum of numbers divided by the count. The Median is the exact middle number when sorted from least to greatest.",
+                explanationEs: "La Media es la suma de los valores dividida entre la cantidad. La Mediana es el número del centro al ordenar de menor a mayor.",
+                renderSvg: (svg) => {
+                    svg.innerHTML += `
+                        <line x1="40" y1="140" x2="360" y2="140" stroke="var(--navy-dark)" stroke-width="2" />
+                        
+                        <line x1="80" y1="30" x2="80" y2="140" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="2" />
+                        <line x1="150" y1="30" x2="150" y2="140" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="2" />
+                        <line x1="220" y1="30" x2="220" y2="140" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="2" />
+                        <line x1="290" y1="30" x2="290" y2="140" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="2" />
+
+                        <circle cx="80" cy="130" r="7" fill="var(--primary)" />
+                        
+                        <circle cx="150" cy="130" r="7" fill="var(--primary)" />
+                        <circle cx="150" cy="114" r="7" fill="var(--primary)" />
+
+                        <circle cx="220" cy="130" r="7" fill="var(--accent)" />
+                        <circle cx="220" cy="114" r="7" fill="var(--accent)" />
+                        <circle cx="220" cy="98" r="7" fill="var(--accent)" />
+
+                        <circle cx="290" cy="130" r="7" fill="var(--secondary)" />
+
+                        <text x="80" y="156" class="svg-text" font-size="9" fill="var(--navy-dark)">2</text>
+                        <text x="150" y="156" class="svg-text" font-size="9" fill="var(--navy-dark)">3</text>
+                        <text x="220" y="156" class="svg-text" font-size="9" fill="var(--navy-dark)">5</text>
+                        <text x="290" y="156" class="svg-text" font-size="9" fill="var(--navy-dark)">7</text>
+
+                        <line x1="220" y1="20" x2="220" y2="85" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="3" />
+                        <rect x="180" y="10" width="80" height="15" rx="3" fill="var(--accent)" />
+                        <text x="220" y="20" class="svg-text" font-size="8.5" fill="var(--white)">Median = 5</text>
+
+                        <text x="200" y="185" font-family="var(--font-display)" font-size="10" font-weight="900" fill="var(--navy-dark)" text-anchor="middle">
+                            Data Set: 2, 3, 3, 5, 5, 5, 7
+                        </text>
+                    `;
+                },
+                quiz: [
+                    { q: "What is the median of this data set: 2, 3, 3, 5, 5, 5, 7?", options: ["3", "4", "5", "7"], correct: 2 }
                 ]
             }
         };
@@ -756,7 +1199,17 @@
                 'solving_equations-starter': 'Solve one-step equations by performing the inverse operation on both sides of the equals sign.',
                 'solving_equations-trans': 'Resuelve ecuaciones de un paso realizando la operación inversa en ambos lados del signo igual.',
                 'coordinate_plane-starter': 'Locate points using coordinates (x, y). X moves horizontally, Y moves vertically.',
-                'coordinate_plane-trans': 'Localiza puntos usando las coordenadas (x, y). La X se mueve horizontalmente, la Y verticalmente.'
+                'coordinate_plane-trans': 'Localiza puntos usando las coordenadas (x, y). La X se mueve horizontalmente, la Y verticalmente.',
+                'exponents_prime-starter': 'An exponent shows repeated multiplication. Prime factorization resolves a number into its prime building blocks.',
+                'exponents_prime-trans': 'Un exponente muestra la multiplicación repetida. La factorización prima resuelve un número en sus componentes primos.',
+                'volume_nets-starter': '3D nets show flat representations of 3D solids. Surface Area is the total area of all flat faces.',
+                'volume_nets-trans': 'Las redes 3D muestran representaciones planas de sólidos. El área superficial es el área total de todas las caras.',
+                'absolute_value-starter': 'Absolute value represents distance from zero. Magnitude is always positive since distance cannot be negative.',
+                'absolute_value-trans': 'El valor absoluto representa la distancia al cero. La magnitud siempre es positiva ya que la distancia no puede ser negativa.',
+                'ratios_percents-starter': 'Percents are part-to-whole ratios where the whole is always 100. Write percents as decimals by dividing by 100.',
+                'ratios_percents-trans': 'Los porcentajes son razones de parte a todo donde el todo es siempre 100. Escribe decimales dividiendo por 100.',
+                'data_stats-starter': 'The median is the exact middle value in a sorted data set. Dot plots help show distributions visually.',
+                'data_stats-trans': 'La mediana es el valor central en un conjunto ordenado. Los diagramas de puntos ayudan a ver distribuciones visualmente.'
             },
             es: {
                 'quest-log': '📚 Módulos de Matemáticas',
@@ -775,7 +1228,17 @@
                 'solving_equations-starter': 'Resuelve ecuaciones de un paso realizando la operación inversa en ambos lados del signo igual.',
                 'solving_equations-trans': 'Solve one-step equations by performing the inverse operation on both sides of the equals sign.',
                 'coordinate_plane-starter': 'Localiza puntos usando las coordenadas (x, y). La X se mueve horizontalmente, la Y verticalmente.',
-                'coordinate_plane-trans': 'Locate points using coordinates (x, y). X moves horizontally, Y moves vertically.'
+                'coordinate_plane-trans': 'Locate points using coordinates (x, y). X moves horizontally, Y moves vertically.',
+                'exponents_prime-starter': 'Un exponente muestra la multiplicación repetida. La factorización prima resuelve un número en sus componentes primos.',
+                'exponents_prime-trans': 'An exponent shows repeated multiplication. Prime factorization resolves a number into its prime building blocks.',
+                'volume_nets-starter': 'Las redes 3D muestran representaciones planas de sólidos. El área superficial es el área total de todas las caras.',
+                'volume_nets-trans': '3D nets show flat representations of 3D solids. Surface Area is the total area of all flat faces.',
+                'absolute_value-starter': 'El valor absoluto representa la distancia al cero. La magnitud siempre es positiva ya que la distancia no puede ser negativa.',
+                'absolute_value-trans': 'Absolute value represents distance from zero. Magnitude is always positive since distance cannot be negative.',
+                'ratios_percents-starter': 'Los porcentajes son razones de parte a todo donde el todo es siempre 100. Escribe decimales dividiendo por 100.',
+                'ratios_percents-trans': 'Percents are part-to-whole ratios where the whole is always 100. Write percents as decimals by dividing by 100.',
+                'data_stats-starter': 'La mediana es el valor central en un conjunto ordenado. Los diagramas de puntos ayudan a ver distribuciones visualmente.',
+                'data_stats-trans': 'The median is the exact middle value in a sorted data set. Dot plots help show distributions visually.'
             }
         };
 
@@ -801,12 +1264,40 @@
             currentTopicId: 'factors_multiples',
             completedTopics: [],
             selectedAnswerIdx: null,
-            language: 'en'
+            language: 'en',
+            notes: {}
         };
 
         function transitionState(updatedFields) {
             Object.assign(STATE, updatedFields);
+            
+            // Sync to local storage
+            localStorage.setItem('esol_study_guide_state', JSON.stringify({
+                completedTopics: STATE.completedTopics,
+                notes: STATE.notes || {},
+                language: STATE.language,
+                currentTopicId: STATE.currentTopicId
+            }));
+
             renderUI();
+        }
+
+        function loadPersistedState() {
+            try {
+                const raw = localStorage.getItem('esol_study_guide_state');
+                if (raw) {
+                    const data = JSON.parse(raw);
+                    if (data.completedTopics) STATE.completedTopics = data.completedTopics;
+                    if (data.notes) STATE.notes = data.notes;
+                    if (data.language) STATE.language = data.language;
+                    if (data.currentTopicId) STATE.currentTopicId = data.currentTopicId;
+                    
+                    // Sync initial language button state
+                    document.getElementById('btn-lang').innerText = STATE.language === 'en' ? '🌐 EN | ES' : '🌐 ES | EN';
+                }
+            } catch (e) {
+                console.error("Error loading persisted state:", e);
+            }
         }
 
         // ==========================================
@@ -866,6 +1357,456 @@
         }
 
         // ==========================================
+        // 6.5 SKETCHPAD CANVAS CONTROLLER
+        // ==========================================
+        let canvas = null;
+        let ctx = null;
+        let drawingPaths = [];
+        let currentPath = null;
+        let isDrawing = false;
+        let brushColor = 'var(--primary)';
+        let brushThickness = 3.5;
+
+        function initSketchpad() {
+            canvas = document.getElementById('sketchpad');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+            
+            // Mouse Events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+            
+            // Touch Events
+            canvas.addEventListener('touchstart', startDrawing, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing, { passive: false });
+            
+            // Resize Event
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Initial size
+            resizeCanvas();
+        }
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            redrawCanvas();
+        }
+
+        function redrawCanvas() {
+            if (!canvas || !ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            drawingPaths.forEach(path => {
+                if (path.points.length === 0) return;
+                ctx.beginPath();
+                ctx.strokeStyle = path.color;
+                ctx.lineWidth = path.width;
+                ctx.moveTo(path.points[0].x, path.points[0].y);
+                for (let i = 1; i < path.points.length; i++) {
+                    ctx.lineTo(path.points[i].x, path.points[i].y);
+                }
+                ctx.stroke();
+            });
+        }
+
+        function getCoords(e) {
+            if (!canvas) return { x: 0, y: 0 };
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const coords = getCoords(e);
+            currentPath = {
+                color: brushColor,
+                width: brushThickness,
+                points: [coords]
+            };
+            drawingPaths.push(currentPath);
+            redrawCanvas();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const coords = getCoords(e);
+            currentPath.points.push(coords);
+            redrawCanvas();
+        }
+
+        function stopDrawing(e) {
+            if (isDrawing) {
+                isDrawing = false;
+                currentPath = null;
+            }
+        }
+
+        function clearSketchpad() {
+            drawingPaths = [];
+            redrawCanvas();
+        }
+
+        function undoDraw() {
+            drawingPaths.pop();
+            redrawCanvas();
+        }
+
+        function setBrushColor(color, name) {
+            brushColor = color;
+            const buttons = document.querySelectorAll('.brush-toolbar .brush-btn');
+            buttons.forEach(btn => {
+                if (btn.id === `btn-brush-${name}`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // ==========================================
+        // 6.6 BILINGUAL STUDY NOTEBOOK AUTOSAVER
+        // ==========================================
+        function saveCurrentNote(value) {
+            if (!STATE.notes) STATE.notes = {};
+            STATE.notes[STATE.currentTopicId] = value;
+            
+            // Sync local storage directly (skips re-render to preserve cursor focus)
+            localStorage.setItem('esol_study_guide_state', JSON.stringify({
+                completedTopics: STATE.completedTopics,
+                notes: STATE.notes,
+                language: STATE.language,
+                currentTopicId: STATE.currentTopicId
+            }));
+            
+            const statusEl = document.getElementById('notes-status-msg');
+            if (statusEl) {
+                statusEl.innerText = STATE.language === 'en' ? '⏳ Saving...' : '⏳ Guardando...';
+                if (window.saveNoteTimeout) clearTimeout(window.saveNoteTimeout);
+                window.saveNoteTimeout = setTimeout(() => {
+                    statusEl.innerText = STATE.language === 'en' ? '✨ Saved automatically' : '✨ Guardado automáticamente';
+                }, 600);
+            }
+        }
+
+        // ==========================================
+        // 6.7 TEACHER ADMINISTRATIVE CONTROLS
+        // ==========================================
+        function toggleTeacherPanel() {
+            const panel = document.getElementById('teacher-panel');
+            const lock = document.getElementById('teacher-lock-trigger');
+            if (panel.style.display === 'none') {
+                const pass = prompt(STATE.language === 'en' ? "Enter Teacher Access Code (default is 'admin'):" : "Ingrese el código de acceso del maestro (por defecto es 'admin'):");
+                if (pass === 'admin' || pass === '') {
+                    panel.style.display = 'block';
+                    lock.innerText = '🔓';
+                    lock.style.opacity = '1';
+                } else {
+                    alert(STATE.language === 'en' ? "Access Denied." : "Acceso Denegado.");
+                }
+            } else {
+                panel.style.display = 'none';
+                lock.innerText = '🔒';
+                lock.style.opacity = '0.25';
+            }
+        }
+
+        function resetAllProgress() {
+            if (confirm(STATE.language === 'en' ? "Are you sure you want to reset all student progress, notes, and drawings?" : "¿Está seguro de que desea restablecer todo el progreso, notas y dibujos del estudiante?")) {
+                STATE.completedTopics = [];
+                STATE.notes = {};
+                clearSketchpad();
+                const textarea = document.getElementById('notes-textarea');
+                if (textarea) textarea.value = '';
+                
+                localStorage.removeItem('esol_study_guide_state');
+                transitionState({ completedTopics: [], notes: {} });
+                alert(STATE.language === 'en' ? "All progress reset successfully." : "Todo el progreso se ha restablecido con éxito.");
+            }
+        }
+
+        function masterAllProgress() {
+            const allTopics = Object.keys(STUDY_GUIDE_DB);
+            STATE.completedTopics = allTopics;
+            localStorage.setItem('esol_study_guide_state', JSON.stringify({
+                completedTopics: STATE.completedTopics,
+                notes: STATE.notes || {},
+                language: STATE.language,
+                currentTopicId: STATE.currentTopicId
+            }));
+            transitionState({ completedTopics: allTopics });
+            alert(STATE.language === 'en' ? "All modules marked as completed!" : "¡Todos los módulos marcados como completados!");
+        }
+
+        function generateReportCard() {
+            const progressText = `${STATE.completedTopics.length} of 10 Math Modules Mastered (${Math.round((STATE.completedTopics.length/10)*100)}%)`;
+            const summaryEl = document.getElementById('lbl-print-mastery-summary');
+            if (summaryEl) {
+                summaryEl.innerText = progressText;
+            }
+            
+            const choice = confirm(
+                STATE.language === 'en' 
+                ? "Would you like to print the complete 10-Module Mastery Portfolio Report Card?\n\n(Click 'Cancel' to print only the current workspace worksheet instead.)" 
+                : "¿Le gustaría imprimir la libreta de calificaciones del Portafolio de Maestría completo de 10 módulos?\n\n(Haga clic en 'Cancelar' para imprimir solo la hoja de trabajo actual)."
+            );
+            
+            if (choice) {
+                const reportWindow = window.open('', '_blank');
+                if (!reportWindow) {
+                    alert("Popup blocker prevented opening the report card window. Please allow popups and try again.");
+                    return;
+                }
+                
+                const lang = STATE.language;
+                const totalCompleted = STATE.completedTopics.length;
+                const pct = Math.round((totalCompleted / 10) * 100);
+                
+                let modulesHtml = '';
+                for (let id in STUDY_GUIDE_DB) {
+                    const item = STUDY_GUIDE_DB[id];
+                    const isDone = STATE.completedTopics.includes(id);
+                    const note = (STATE.notes && STATE.notes[id]) || '';
+                    const title = lang === 'en' ? item.title : item.titleEs;
+                    const explanation = lang === 'en' ? item.explanation : item.explanationEs;
+                    
+                    modulesHtml += `
+                        <div class="module-row ${isDone ? 'completed' : 'pending'}">
+                            <div class="module-header">
+                                <h3>${title} <span class="standard-badge">${item.standard}</span></h3>
+                                <span class="status-indicator">${isDone ? '🎓 Mastered / Dominado' : '🧭 In Progress / En Progreso'}</span>
+                            </div>
+                            <p class="explanation"><em>${explanation}</em></p>
+                            <div class="note-box">
+                                <strong>Student Notes / Notas del estudiante:</strong>
+                                <p>${note ? note.replace(/\n/g, '<br>') : '<em>No notes recorded. / Sin notas registradas.</em>'}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                reportWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>ESOL Mastery Portfolio Report Card</title>
+                        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+                        <style>
+                            body {
+                                font-family: 'Plus Jakarta Sans', sans-serif;
+                                color: #1e293b;
+                                line-height: 1.5;
+                                padding: 40px;
+                                background: #f8fafc;
+                            }
+                            .report-card {
+                                max-width: 800px;
+                                margin: 0 auto;
+                                background: white;
+                                padding: 40px;
+                                border-radius: 12px;
+                                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+                                border: 1px solid #e2e8f0;
+                            }
+                            .header {
+                                text-align: center;
+                                border-bottom: 3px double #0f766e;
+                                padding-bottom: 20px;
+                                margin-bottom: 30px;
+                            }
+                            .header h1 {
+                                font-family: 'Outfit', sans-serif;
+                                color: #0f766e;
+                                font-size: 24pt;
+                                margin: 0 0 6px 0;
+                            }
+                            .meta-grid {
+                                display: grid;
+                                grid-template-columns: 1fr 1fr;
+                                gap: 15px;
+                                margin-bottom: 30px;
+                                font-size: 0.95rem;
+                                background: #f1f5f9;
+                                padding: 15px;
+                                border-radius: 8px;
+                            }
+                            .meta-item strong {
+                                color: #475569;
+                            }
+                            .score-bar-container {
+                                background: #e2e8f0;
+                                height: 20px;
+                                border-radius: 10px;
+                                overflow: hidden;
+                                margin: 20px 0;
+                                border: 1px solid #cbd5e1;
+                            }
+                            .score-bar {
+                                background: linear-gradient(90deg, #14b8a6, #3b82f6);
+                                height: 100%;
+                                width: ${pct}%;
+                            }
+                            .module-row {
+                                padding: 20px;
+                                border: 1px solid #e2e8f0;
+                                border-radius: 8px;
+                                margin-bottom: 20px;
+                                background: #fff;
+                                page-break-inside: avoid;
+                            }
+                            .module-row.completed {
+                                border-left: 6px solid #10b981;
+                                background: rgba(16, 185, 129, 0.01);
+                            }
+                            .module-row.pending {
+                                border-left: 6px solid #f59e0b;
+                                background: rgba(245, 158, 11, 0.01);
+                            }
+                            .module-header {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 10px;
+                                flex-wrap: wrap;
+                                gap: 10px;
+                            }
+                            .module-header h3 {
+                                margin: 0;
+                                font-family: 'Outfit', sans-serif;
+                                font-size: 1.15rem;
+                                color: #0f172a;
+                            }
+                            .standard-badge {
+                                background: #f1f5f9;
+                                padding: 2px 8px;
+                                border-radius: 4px;
+                                font-size: 0.75rem;
+                                font-weight: 700;
+                                color: #475569;
+                                margin-left: 6px;
+                            }
+                            .status-indicator {
+                                font-size: 0.85rem;
+                                font-weight: 700;
+                            }
+                            .completed .status-indicator {
+                                color: #059669;
+                            }
+                            .pending .status-indicator {
+                                color: #d97706;
+                            }
+                            .explanation {
+                                font-size: 0.88rem;
+                                color: #475569;
+                                margin: 0 0 12px 0;
+                            }
+                            .note-box {
+                                background: #f8fafc;
+                                border: 1px solid #e2e8f0;
+                                padding: 12px;
+                                border-radius: 6px;
+                                font-size: 0.9rem;
+                            }
+                            .note-box strong {
+                                display: block;
+                                font-size: 0.8rem;
+                                text-transform: uppercase;
+                                color: #64748b;
+                                margin-bottom: 4px;
+                            }
+                            .btn-print {
+                                background: #0f766e;
+                                color: white;
+                                border: none;
+                                padding: 12px 24px;
+                                font-size: 1rem;
+                                font-weight: 700;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                display: block;
+                                margin: 20px auto 0 auto;
+                                transition: background 0.2s;
+                                font-family: 'Plus Jakarta Sans', sans-serif;
+                            }
+                            .btn-print:hover {
+                                background: #0d5c56;
+                            }
+                            @media print {
+                                body {
+                                    background: white;
+                                    padding: 0;
+                                }
+                                .report-card {
+                                    box-shadow: none;
+                                    border: none;
+                                    padding: 0;
+                                }
+                                .btn-print {
+                                    display: none;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="report-card">
+                            <div class="header">
+                                <h1>Grade 6 Mathematics Mastery Portfolio</h1>
+                                <p>ESOL Bilingual Study Guide & Interactive Diagnostics</p>
+                            </div>
+                            <div class="meta-grid">
+                                <div class="meta-item">
+                                    <strong>Student Name / Nombre:</strong> ___________________________
+                                </div>
+                                <div class="meta-item">
+                                    <strong>Date / Fecha:</strong> ${new Date().toLocaleDateString()}
+                                </div>
+                                <div class="meta-item">
+                                    <strong>Total Mastered Modules:</strong> ${totalCompleted} / 10 (Grade 6)
+                                </div>
+                                <div class="meta-item">
+                                    <strong>Mastery Percentage:</strong> ${pct}%
+                                </div>
+                            </div>
+                            
+                            <div class="score-bar-container">
+                                <div class="score-bar"></div>
+                            </div>
+                            
+                            <div class="modules-list">
+                                ${modulesHtml}
+                            </div>
+                            
+                            <button class="btn-print" onclick="window.print()">🖨️ Print Portfolio</button>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                reportWindow.document.close();
+            } else {
+                window.print();
+            }
+        }
+
+        // ==========================================
         // 7. RENDER ENGINE (Bilingual layout builder)
         // ==========================================
         function renderUI() {
@@ -876,6 +1817,7 @@
             renderVocabStudio();
             renderQuizCard();
             updateESOLHub();
+            renderMasteryHub();
         }
 
         function renderStaticLabels() {
@@ -909,10 +1851,30 @@
             }
         }
 
+        let lastRenderedTopicId = null;
+
         function renderMainWorkspace() {
             const currentTopic = STUDY_GUIDE_DB[STATE.currentTopicId];
             const explanation = STATE.language === 'en' ? currentTopic.explanation : currentTopic.explanationEs;
             
+            // Clear sketchpad only if topic actually changed
+            if (lastRenderedTopicId !== STATE.currentTopicId) {
+                clearSketchpad();
+                lastRenderedTopicId = STATE.currentTopicId;
+            }
+
+            // Sync notepad textarea value
+            const textarea = document.getElementById('notes-textarea');
+            if (textarea) {
+                textarea.value = (STATE.notes && STATE.notes[STATE.currentTopicId]) || '';
+            }
+
+            // Sync notepad autosave status message
+            const statusEl = document.getElementById('notes-status-msg');
+            if (statusEl) {
+                statusEl.innerText = STATE.language === 'en' ? '✨ Saved automatically' : '✨ Guardado automáticamente';
+            }
+
             // Render text with dynamic audio trigger button
             document.getElementById('explanation-container').innerHTML = `
                 <p>
@@ -980,13 +1942,147 @@
             trans.innerText = t[`${currentTopicKey}-trans`] || t['starter-default-trans'];
         }
 
+        function renderMasteryHub() {
+            const total = Object.keys(STUDY_GUIDE_DB).length;
+            const completedCount = STATE.completedTopics.length;
+            const pct = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+            
+            const ratioEl = document.getElementById('mastery-ratio');
+            if (ratioEl) {
+                ratioEl.innerText = STATE.language === 'en' 
+                    ? `${completedCount} / ${total} Mastered` 
+                    : `${completedCount} / ${total} Dominado`;
+            }
+            
+            const barEl = document.getElementById('mastery-progress-bar');
+            if (barEl) {
+                barEl.style.width = `${pct}%`;
+            }
+            
+            const grid = document.getElementById('badge-collection-grid');
+            if (grid) {
+                grid.innerHTML = '';
+                for (let id in STUDY_GUIDE_DB) {
+                    const item = STUDY_GUIDE_DB[id];
+                    const isDone = STATE.completedTopics.includes(id);
+                    const title = STATE.language === 'en' ? item.title : item.titleEs;
+                    
+                    const badgeSvg = getBadgeSvg(id, isDone);
+                    
+                    grid.innerHTML += `
+                        <div class="badge-icon ${isDone ? 'active' : ''}" title="${title}: ${isDone ? (STATE.language === 'en' ? 'Mastered!' : '¡Dominado!') : (STATE.language === 'en' ? 'In Progress' : 'En Progreso')}">
+                            ${badgeSvg}
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function getBadgeSvg(topicId, isDone) {
+            const strokeColor = isDone ? 'var(--primary)' : 'var(--outline)';
+            const fillColor = isDone ? 'rgba(20, 184, 166, 0.2)' : 'rgba(255, 255, 255, 0.05)';
+            
+            switch (topicId) {
+                case 'factors_multiples':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <circle cx="9" cy="12" r="6" stroke="${strokeColor}" stroke-width="1.5" fill="${fillColor}" />
+                            <circle cx="15" cy="12" r="6" stroke="${strokeColor}" stroke-width="1.5" fill="${fillColor}" style="mix-blend-mode: multiply;" />
+                            <path d="M12 9v6" stroke="${strokeColor}" stroke-width="1.5" stroke-linecap="round" />
+                        </svg>
+                    `;
+                case 'fraction_division':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="${strokeColor}" stroke-width="1.5" fill="${fillColor}" />
+                            <line x1="12" y1="5" x2="12" y2="19" stroke="${strokeColor}" stroke-width="1.5" />
+                            <line x1="3" y1="12" x2="21" y2="12" stroke="${strokeColor}" stroke-width="1.5" />
+                        </svg>
+                    `;
+                case 'ratio_tables':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect x="4" y="4" width="16" height="16" rx="2" stroke="${strokeColor}" stroke-width="1.5" fill="${fillColor}" />
+                            <line x1="12" y1="4" x2="12" y2="20" stroke="${strokeColor}" stroke-width="1.5" />
+                            <line x1="4" y1="12" x2="20" y2="12" stroke="${strokeColor}" stroke-width="1.5" />
+                        </svg>
+                    `;
+                case 'solving_equations':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <line x1="3" y1="12" x2="21" y2="12" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" />
+                            <line x1="12" y1="12" x2="12" y2="20" stroke="${strokeColor}" stroke-width="1.5" />
+                            <path d="M7 12l-2 5h4l-2-5M17 12l-2 5h4l-2-5" stroke="${strokeColor}" stroke-width="1.5" stroke-linejoin="round" />
+                        </svg>
+                    `;
+                case 'coordinate_plane':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <line x1="2" y1="12" x2="22" y2="12" stroke="${strokeColor}" stroke-width="1.5" stroke-linecap="round" />
+                            <line x1="12" y1="2" x2="12" y2="22" stroke="${strokeColor}" stroke-width="1.5" stroke-linecap="round" />
+                            <circle cx="17" cy="7" r="2.5" fill="${strokeColor}" />
+                        </svg>
+                    `;
+                case 'exponents_prime':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 4v16M12 12l-6-5M12 12l6-5" stroke="${strokeColor}" stroke-width="1.5" stroke-linecap="round" />
+                            <circle cx="6" cy="7" r="2" fill="${strokeColor}" />
+                            <circle cx="18" cy="7" r="2" fill="${strokeColor}" />
+                            <circle cx="12" cy="4" r="2" fill="${strokeColor}" />
+                        </svg>
+                    `;
+                case 'volume_nets':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2l7 4v8l-7 4-7-4V6l7-4z" stroke="${strokeColor}" stroke-width="1.5" stroke-linejoin="round" fill="${fillColor}" />
+                            <line x1="12" y1="2" x2="12" y2="10" stroke="${strokeColor}" stroke-width="1.5" />
+                            <line x1="5" y1="6" x2="12" y2="10" stroke="${strokeColor}" stroke-width="1.5" />
+                            <line x1="19" y1="6" x2="12" y2="10" stroke="${strokeColor}" stroke-width="1.5" />
+                        </svg>
+                    `;
+                case 'absolute_value':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <line x1="3" y1="12" x2="21" y2="12" stroke="${strokeColor}" stroke-width="1.5" />
+                            <line x1="12" y1="8" x2="12" y2="16" stroke="${strokeColor}" stroke-width="1.5" />
+                            <circle cx="6" cy="12" r="2" fill="${strokeColor}" />
+                            <circle cx="18" cy="12" r="2" fill="${strokeColor}" />
+                            <path d="M6 7h12" stroke="${strokeColor}" stroke-width="1" stroke-dasharray="2" />
+                        </svg>
+                    `;
+                case 'ratios_percents':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <circle cx="8" cy="8" r="3" stroke="${strokeColor}" stroke-width="1.5" fill="${fillColor}" />
+                            <circle cx="16" cy="16" r="3" stroke="${strokeColor}" stroke-width="1.5" fill="${fillColor}" />
+                            <line x1="18" y1="6" x2="6" y2="18" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    `;
+                case 'data_stats':
+                    return `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <line x1="4" y1="20" x2="20" y2="20" stroke="${strokeColor}" stroke-width="1.5" stroke-linecap="round" />
+                            <circle cx="7" cy="16" r="2.5" fill="${strokeColor}" />
+                            <circle cx="12" cy="16" r="2.5" fill="${strokeColor}" />
+                            <circle cx="12" cy="10" r="2.5" fill="${strokeColor}" />
+                            <circle cx="17" cy="16" r="2.5" fill="${strokeColor}" />
+                        </svg>
+                    `;
+                default:
+                    return '';
+            }
+        }
+
         // ==========================================
         // 8. SELF-TEST SUITE & DIAGNOSTICS
         // ==========================================
         function logDiag(msg) {
             const el = document.getElementById('diag-log');
-            el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-            el.scrollTop = el.scrollHeight;
+            if (el) {
+                el.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+                el.scrollTop = el.scrollHeight;
+            }
         }
 
         function triggerSelfTest() {
@@ -1002,15 +2098,50 @@
                 // Assert 2: Database structure check
                 const dbSize = Object.keys(STUDY_GUIDE_DB).length;
                 logDiag(`✓ Validated Database topics count: ${dbSize} modules loaded.`);
-                if (dbSize === 0) {
-                    throw new Error("Assertion failed: Empty DB templates.");
+                if (dbSize !== 10) {
+                    throw new Error(`Assertion failed: Expected 10 math modules, found ${dbSize}.`);
                 }
 
-                // Assert 3: Speech Utterance interface verify
+                // Assert 3: Verification of all 10 expected standards
+                const expectedModules = [
+                    'factors_multiples', 'fraction_division', 'ratio_tables', 'solving_equations', 'coordinate_plane',
+                    'exponents_prime', 'volume_nets', 'absolute_value', 'ratios_percents', 'data_stats'
+                ];
+                expectedModules.forEach(modId => {
+                    if (!STUDY_GUIDE_DB[modId]) {
+                        throw new Error(`Assertion failed: Module ${modId} missing from STUDY_GUIDE_DB.`);
+                    }
+                    if (!STUDY_GUIDE_DB[modId].quiz || STUDY_GUIDE_DB[modId].quiz.length === 0) {
+                        throw new Error(`Assertion failed: Quiz data missing for module ${modId}.`);
+                    }
+                });
+                logDiag("✓ All 10 Grade 6 math standards exist and contain quizzes.");
+
+                // Assert 4: LocalStorage Availability Check
+                let storageCheck = false;
+                try {
+                    localStorage.setItem('__test__', '1');
+                    localStorage.removeItem('__test__');
+                    storageCheck = true;
+                } catch (e) {}
+                logDiag(`✓ Checking browser localStorage persistence: ${storageCheck?'AVAILABLE':'UNAVAILABLE'}`);
+
+                // Assert 5: Sketchpad Canvas Overlay existence
+                const canvasEl = document.getElementById('sketchpad');
+                if (!canvasEl) {
+                    throw new Error("Assertion failed: Canvas element #sketchpad not found in DOM.");
+                }
+                const testCtx = canvasEl.getContext('2d');
+                if (!testCtx) {
+                    throw new Error("Assertion failed: Failed to get 2D rendering context for sketchpad.");
+                }
+                logDiag("✓ Sketchpad canvas element and 2D context verified successfully.");
+
+                // Assert 6: Speech Utterance interface verify
                 const isSpeechSupported = 'speechSynthesis' in window;
                 logDiag(`✓ Checking browser Speech Synthesis API support: ${isSpeechSupported?'ACTIVE':'INACTIVE'}`);
 
-                // Assert 4: Interactive Quiz validations
+                // Assert 7: Interactive Quiz validations
                 const activeQuiz = STUDY_GUIDE_DB['factors_multiples'].quiz[0];
                 logDiag(`✓ Checking Quiz math correct option index: expected 2 (which is 6). Result: ${activeQuiz.correct}`);
                 if (activeQuiz.correct !== 2) {
@@ -1029,6 +2160,8 @@
 
         // Initialize application on load
         window.addEventListener('DOMContentLoaded', () => {
+            loadPersistedState();
+            initSketchpad();
             renderUI();
         });
     </script>
