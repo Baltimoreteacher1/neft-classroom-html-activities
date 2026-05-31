@@ -817,7 +817,7 @@ vsoRender();
     <section class="hero panel">
       <div class="hero-grid">
         <div>
-          <h1>Decimal Operations Interactive Review Studio</h1>
+          <h1>Decimal Operations Interactive Review Studio <span onclick="toggleTeacherPanel()" style="cursor:pointer; opacity:0.25; font-size:0.95rem; vertical-align:middle; transition:0.2s ease; margin-left:6px;" id="teacher-lock-trigger" title="Teacher Admin Center">🔒</span></h1>
           <p>Learn, practice, and play with adding, subtracting, multiplying, and dividing decimals.</p>
           <p><strong>Built for clarity:</strong> vertical worked examples, interactive step reveals, optional click-to-open hints, mixed practice, and two polished game tabs.</p>
           <p><strong>language-friendly supports:</strong> simplified directions, sentence frames, math vocabulary, visual cues, and guided scaffolds that only appear when needed.</p>
@@ -857,6 +857,7 @@ vsoRender();
         <h2>Student Tools</h2>
         <div class="toggle-row">
           <button id="supportToggle" class="support-on">Extra Support: ON</button>
+          <button id="btn-lang" class="secondary-btn" onclick="toggleLanguage()" style="font-family:inherit; font-size:0.85rem; padding:6px 12px; border-radius:var(--radius-sm); border:1px solid var(--line); cursor:pointer;">🌐 EN | ES</button>
           <button id="resetProgressBtn" class="secondary-btn">Reset Scores</button>
         </div>
         <div class="mini-controls" style="margin-top:10px;">
@@ -871,6 +872,17 @@ vsoRender();
           <strong>Add / Subtract:</strong> line up the decimal points.<br />
           <strong>Multiply:</strong> multiply first, then count decimal places.<br />
           <strong>Divide:</strong> make the divisor a whole number first.
+        </div>
+      </div>
+    </section>
+
+    <section class="teacher-admin-section" id="teacher-panel" style="display:none; margin-bottom: 20px;">
+      <div class="panel tool-card" style="border:1.5px solid rgba(193,125,17,0.3); background:rgba(193,125,17,0.03);">
+        <h2 style="color:var(--gold); font-size:1.1rem; font-weight:700; display:flex; align-items:center; gap:8px; margin:0 0 8px 0;">🔑 Teacher Control Center</h2>
+        <p style="font-size:0.82rem; color:var(--muted); margin:0 0 12px 0;">Administer student progress states and perform diagnostics checkups.</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="secondary-btn" onclick="resetAllProgress()" style="font-size:0.8rem; font-family:inherit; padding:6px 12px; border-radius:var(--radius-sm); border:1px solid var(--line); cursor:pointer;">🗑️ Reset All Scores</button>
+          <button class="primary-btn" onclick="masterAllProgress()" style="background:var(--gold); color:white; border:none; padding:6px 12px; border-radius:var(--radius-sm); font-size:0.8rem; font-family:inherit; cursor:pointer; font-weight:bold;">🎓 Master All Modules</button>
         </div>
       </div>
     </section>
@@ -1627,12 +1639,14 @@ vsoRender();
       const el = document.getElementById(id);
       el.className = "feedback " + type;
       el.textContent = message;
+      if (state.supportOn) speakMath(message);
     }
 
     function setGameFeedback(id, type, message) {
       const el = document.getElementById(id);
       el.className = "game-status " + type;
       el.textContent = message;
+      speakMath(message);
     }
 
     function checkSingle(inputId, expected, feedbackId, hint) {
@@ -1643,7 +1657,9 @@ vsoRender();
     }
 
     function toggleHint(id) {
-      document.getElementById(id).classList.toggle("visible");
+      const el = document.getElementById(id);
+      el.classList.toggle("visible");
+      if (el.classList.contains("visible")) speakMath(el.textContent);
     }
 
     function toggleBox(id) {
@@ -1653,7 +1669,9 @@ vsoRender();
     function revealStep(group, total) {
       if (state.stepCounters[group] < total) state.stepCounters[group] += 1;
       for (let i = 1; i <= total; i++) {
-        document.getElementById(`${group}-${i}`).classList.toggle("visible", i <= state.stepCounters[group]);
+        const el = document.getElementById(`${group}-${i}`);
+        el.classList.toggle("visible", i <= state.stepCounters[group]);
+        if (i === state.stepCounters[group]) speakMath(el.textContent);
       }
     }
 
@@ -1759,6 +1777,7 @@ vsoRender();
 
     function renderTabs() {
       const tabs = document.getElementById("tabs");
+      if (!tabs) return;
       tabs.innerHTML = "";
       CONFIG.tabIds.forEach((id, idx) => {
         const btn = document.createElement("button");
@@ -1776,36 +1795,21 @@ vsoRender();
       btn.classList.add("active");
     }
 
-    document.getElementById("supportToggle").addEventListener("click", () => {
-      state.supportOn = !state.supportOn;
-      document.getElementById("supportToggle").textContent = "Extra Support: " + (state.supportOn ? "ON" : "OFF");
-      document.querySelectorAll("[data-support]").forEach((el) => {
-        el.classList.toggle("hidden", !state.supportOn);
+    const supp = document.getElementById("supportToggle");
+    if (supp) {
+      supp.addEventListener("click", () => {
+        state.supportOn = !state.supportOn;
+        supp.textContent = "Extra Support: " + (state.supportOn ? "ON" : "OFF");
+        document.querySelectorAll("[data-support]").forEach((el) => {
+          el.classList.toggle("hidden", !state.supportOn);
+        });
       });
-    });
+    }
 
     document.getElementById("expandLearnBtn").addEventListener("click", expandAllLearnSteps);
     document.getElementById("collapseLearnBtn").addEventListener("click", collapseAllLearnSteps);
 
-    document.getElementById("resetProgressBtn").addEventListener("click", () => {
-      state.correct = 0;
-      state.checked = 0;
-      state.countMap = {};
-      state.trackPosition = 0;
-      state.trackStars = 0;
-      state.trackStreak = 0;
-      state.trackIndex = 0;
-      state.bossHealth = 100;
-      state.bossCombo = 0;
-      state.bossHits = 0;
-      state.bossWins = 0;
-      state.bossIndex = 0;
-      updateTrackBoard();
-      updateBossBoard();
-      updateDashboard();
-      setGameFeedback("trackFb", "neutral", "Answer a question to earn stars.");
-      setGameFeedback("bossFb", "neutral", "Correct answers deal 20 damage. A combo deals bonus damage.");
-    });
+    document.getElementById("resetProgressBtn").addEventListener("click", resetAllProgress);
 
     function updateTrackBoard() {
       document.getElementById("trackPosition").textContent = state.trackPosition;
@@ -1819,6 +1823,7 @@ vsoRender();
       state.trackIndex = (state.trackIndex + 1) % CONFIG.trackQuestions.length;
       document.getElementById("trackAnswer").value = "";
       updateTrackBoard();
+      savePersistedState();
     }
 
     function submitTrackAnswer() {
@@ -1836,6 +1841,7 @@ vsoRender();
       }
       nextTrackQuestion();
       updateDashboard();
+      savePersistedState();
     }
 
     function updateBossBoard() {
@@ -1863,6 +1869,7 @@ vsoRender();
       document.getElementById("bossAnswer").value = "";
       updateBossBoard();
       updateDashboard();
+      savePersistedState();
     }
 
     function submitBossAnswer() {
@@ -1887,6 +1894,7 @@ vsoRender();
       document.getElementById("bossAnswer").value = "";
       updateBossBoard();
       updateDashboard();
+      savePersistedState();
     }
 
     function healBoss() {
@@ -1894,8 +1902,11 @@ vsoRender();
       state.bossCombo = 0;
       setGameFeedback("bossFb", "neutral", "Mr. Neft healed 10 health. Try again.");
       updateBossBoard();
+      updateDashboard();
+      savePersistedState();
     }
 
+    loadPersistedState();
     renderTabs();
     wireDnD();
     updateTrackBoard();

@@ -308,6 +308,89 @@
       from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    .scenario-card.dragging {
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5) !important;
+      border-color: var(--teal-accent) !important;
+      transform: scale(1.04) rotate(2deg);
+      opacity: 0.95 !important;
+      cursor: grabbing;
+    }
+
+    /* Print-ready Worksheets CSS */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .studio-shell {
+        max-width: 100% !important;
+        padding: 10px !important;
+        margin: 0 !important;
+      }
+      .studio-header {
+        background: none !important;
+        border: none !important;
+        border-bottom: 2px solid #000000 !important;
+        border-radius: 0 !important;
+        padding: 10px 0 !important;
+        box-shadow: none !important;
+      }
+      .studio-title h1 {
+        background: none !important;
+        -webkit-text-fill-color: #000000 !important;
+        color: #000000 !important;
+        font-size: 1.8rem !important;
+      }
+      .studio-title p {
+        color: #555555 !important;
+      }
+      .hud-metrics, .deck-viewport, .control-row, .button-row, .breadcrumb, .coach-feedback p, #assignIndBtn, #assignDepBtn, #resetBtn {
+        display: none !important;
+      }
+      .sorting-canvas {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px !important;
+        margin-top: 20px !important;
+      }
+      .sorting-bin {
+        background: #ffffff !important;
+        border: 2px solid #000000 !important;
+        border-radius: 12px !important;
+        padding: 15px !important;
+        min-height: 250px !important;
+        page-break-inside: avoid;
+      }
+      .bin-label {
+        color: #000000 !important;
+        border-bottom: 1.5px solid #000000 !important;
+        padding-bottom: 6px !important;
+        font-size: 1rem !important;
+      }
+      .sorted-pill {
+        background: #ffffff !important;
+        border: 1px solid #000000 !important;
+        color: #000000 !important;
+        border-radius: 6px !important;
+        padding: 6px 10px !important;
+        margin-top: 6px !important;
+        box-shadow: none !important;
+      }
+      textarea {
+        border: 1.5px solid #000000 !important;
+        color: #000000 !important;
+        background: #ffffff !important;
+        min-height: 180px !important;
+        width: 100% !important;
+      }
+      .btn-assign, #printBtn {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -362,9 +445,25 @@
       🤖 <strong>Sorting Coach:</strong> Welcome! Look at the scenario card in the deck. Read the highlighted variable and deduce whether it is the **Independent Variable (x)** (the cause) or the **Dependent Variable (y)** (the effect). Tap a sorting button or drag the card into the targets!
     </section>
 
-    <div class="button-row" style="margin-top:10px;">
+    <!-- Reflections Notebook Section -->
+    <section class="card" style="margin-top: 20px; background: rgba(28, 37, 65, 0.6); border: 1px solid rgba(111, 255, 233, 0.2);">
+      <h2 style="color: var(--teal-accent); display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem;">
+        <span>📝 My Variables Reflections Notebook</span>
+        <span id="notebookSaved" style="font-size: 0.75rem; color: var(--teal-accent); opacity: 0.7; font-weight: normal;">Saved</span>
+      </h2>
+      <p style="font-size: 0.85rem; margin-bottom: 12px; color: #94a3b8;">Reflect on your card sorting. Complete the sentences below to solidify your understanding:</p>
+      <textarea id="reflectionsText" style="width: 100%; min-height: 120px; background: #0b0f19; border: 1px solid rgba(111, 255, 233, 0.2); border-radius: 12px; padding: 12px; color: #e2e8f0; font-family: inherit; font-size: 0.9rem; resize: vertical; outline: none; line-height: 1.5;" placeholder="Start writing here... (e.g., 'An independent variable is the cause because... The dependent variable is the effect because...')"></textarea>
+      
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <button class="btn-assign teal" style="flex: none; padding: 6px 12px; font-size: 0.8rem; border-radius: 6px;" onclick="insertSentenceStarter('cause')">Starter 1: Cause & Effect</button>
+        <button class="btn-assign blue" style="flex: none; padding: 6px 12px; font-size: 0.8rem; border-radius: 6px;" onclick="insertSentenceStarter('graph')">Starter 2: Graphing (x vs y)</button>
+      </div>
+    </section>
+
+    <div class="button-row" style="margin-top:15px;">
       <button class="secondary-button" id="resetBtn">Reset Deck</button>
-      <a class="primary-button" href="/expressions-equations/">Back to collection</a>
+      <button class="primary-button" id="printBtn" onclick="window.print()" style="background: var(--teal-accent); color: var(--bg-studio); border: none;">🖨️ Export Worksheet</button>
+      <a class="secondary-button" href="/expressions-equations/">Back to collection</a>
       <a class="secondary-button" href="/">Back to homepage</a>
     </div>
   </main>
@@ -412,9 +511,46 @@
       return array.sort(() => Math.random() - 0.5);
     }
 
+    // Notebook auto-saving setup
+    const reflectionsText = document.getElementById("reflectionsText");
+    const notebookSaved = document.getElementById("notebookSaved");
+
+    function loadReflections() {
+      const saved = localStorage.getItem("neft_variables_studio_reflections");
+      if (saved !== null) {
+        reflectionsText.value = saved;
+      } else {
+        reflectionsText.value = "An independent variable is the cause because ________.\n\nA dependent variable is the effect because ________.\n\nOn a graph, we place the independent variable on the x-axis because ________.";
+      }
+    }
+
+    function saveReflections() {
+      notebookSaved.textContent = "⏳ Saving...";
+      localStorage.setItem("neft_variables_studio_reflections", reflectionsText.value);
+      setTimeout(() => {
+        notebookSaved.textContent = "✨ Saved automatically";
+      }, 500);
+    }
+
+    reflectionsText.addEventListener("input", saveReflections);
+
+    window.insertSentenceStarter = function(type) {
+      let starter = "";
+      if (type === "cause") {
+        starter = "\n• I can identify the cause and effect because: the independent variable (cause) is ________ while the dependent variable (effect) is ________.";
+      } else if (type === "graph") {
+        starter = "\n• Graphing relation: We place the independent variable (x) on the horizontal axis and the dependent variable (y) on the vertical axis because ________.";
+      }
+      reflectionsText.value += starter;
+      saveReflections();
+      reflectionsText.focus();
+    };
+
     function initGame() {
       deck = shuffle([...initialDeck]);
-      score = 0;
+      
+      const savedScore = localStorage.getItem("neft_variables_studio_score");
+      score = savedScore ? parseInt(savedScore, 10) : 0;
       scoreVal.textContent = score;
       cardsLeftVal.textContent = deck.length;
 
@@ -422,6 +558,7 @@
       dependentBin.innerHTML = '<div class="bin-label blue-txt">Dependent Variables (y) 👉</div>';
 
       renderDeck();
+      loadReflections();
       
       coachFeedback.className = "coach-feedback";
       coachFeedback.innerHTML = `🤖 <strong>Sorting Coach:</strong> Fresh deck shuffled! Ready to classify variables.`;
@@ -467,6 +604,13 @@
         startX = t.clientX;
         startY = t.clientY;
         cardEl.style.transition = "none";
+        cardEl.classList.add("dragging");
+
+        // Add move/end listeners to window ONLY during drag (avoids duplicate listeners)
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onEnd);
+        window.addEventListener("touchmove", onMove, { passive: false });
+        window.addEventListener("touchend", onEnd);
       }
 
       function onMove(e) {
@@ -474,6 +618,9 @@
         const t = e.touches ? e.touches[0] : e;
         curX = t.clientX - startX;
         curY = t.clientY - startY;
+
+        // Prevent default touch scrolling on mobile screens when dragging cards
+        if (e.cancelable) e.preventDefault();
 
         cardEl.style.transform = `translate(${curX}px, ${curY}px) rotate(${curX * 0.05}deg)`;
 
@@ -493,7 +640,14 @@
 
       function onEnd() {
         if (startX === 0) return;
+
+        // Cleanup global handlers
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onEnd);
+        window.removeEventListener("touchmove", onMove);
+        window.removeEventListener("touchend", onEnd);
         
+        cardEl.classList.remove("dragging");
         independentBin.classList.remove("drag-over");
         dependentBin.classList.remove("drag-over");
 
@@ -502,7 +656,7 @@
         } else if (curX > 100) {
           classify("dep");
         } else {
-          // snap back
+          // snap back smoothly
           cardEl.style.transition = "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
           cardEl.style.transform = "scale(1) translateY(0)";
         }
@@ -513,12 +667,7 @@
       }
 
       cardEl.addEventListener("mousedown", onStart);
-      window.addEventListener("mousemove", onMove);
-      window.addEventListener("mouseup", onEnd);
-
-      cardEl.addEventListener("touchstart", onStart);
-      window.addEventListener("touchmove", onMove);
-      window.addEventListener("touchend", onEnd);
+      cardEl.addEventListener("touchstart", onStart, { passive: true });
     }
 
     function classify(choice) {
@@ -527,6 +676,7 @@
         // Correct
         score += 10;
         scoreVal.textContent = score;
+        localStorage.setItem("neft_variables_studio_score", score);
         beep(660, 'sine', 0.12);
         setTimeout(() => beep(880, 'sine', 0.15), 100);
 
@@ -559,7 +709,43 @@
 
     document.getElementById("assignIndBtn").addEventListener("click", () => classify("ind"));
     document.getElementById("assignDepBtn").addEventListener("click", () => classify("dep"));
-    document.getElementById("resetBtn").addEventListener("click", initGame);
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      localStorage.removeItem("neft_variables_studio_score");
+      initGame();
+    });
+
+    function validateConfig() {
+      if (!Array.isArray(initialDeck) || initialDeck.length !== 8) {
+        throw new Error("Configuration Error: 'initialDeck' array must exist and contain exactly 8 scenario items.");
+      }
+      initialDeck.forEach((card, idx) => {
+        if (!card.id || !card.type || !card.scene || !card.text || !card.explanation) {
+          throw new Error(`Configuration Error: Missing required fields in card at index ${idx}.`);
+        }
+        if (card.type !== "ind" && card.type !== "dep") {
+          throw new Error(`Configuration Error: Invalid card type '${card.type}' at index ${idx}. Must be 'ind' or 'dep'.`);
+        }
+      });
+      return true;
+    }
+
+    function selfTest() {
+      try {
+        const firstCard = initialDeck[0];
+        console.assert(firstCard.id === 1, "First card ID should be 1");
+        console.assert(firstCard.type === "ind", "First card type should be 'ind'");
+        localStorage.setItem("neft_variables_studio_test", "reflections_data");
+        console.assert(localStorage.getItem("neft_variables_studio_test") === "reflections_data", "Reflections storage read/write failed");
+        localStorage.removeItem("neft_variables_studio_test");
+        return true;
+      } catch (e) {
+        console.error("SelfTest Diagnostics Failed:", e);
+        return false;
+      }
+    }
+
+    validateConfig();
+    selfTest();
 
     window.addEventListener("DOMContentLoaded", initGame);
   </script>
