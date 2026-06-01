@@ -298,6 +298,8 @@
       todos: [], // [{ id, text, done, date, createdAt }] quick daily to-dos
       // Cached Google Calendar events (read-only). { events:[...], fetchedAt }
       gcal: { events: [], fetchedAt: "" },
+      // Cached Gmail messages (read-only). { messages:[...], fetchedAt }
+      gmail: { messages: [], fetchedAt: "" },
       // Quick morning check-in: { dateKey: { mood, priority } }
       checkins: {},
       routines: DEFAULT_ROUTINES(),
@@ -366,6 +368,10 @@
         x.gcal && Array.isArray(x.gcal.events)
           ? { events: x.gcal.events, fetchedAt: x.gcal.fetchedAt || "" }
           : { events: [], fetchedAt: "" },
+      gmail:
+        x.gmail && Array.isArray(x.gmail.messages)
+          ? { messages: x.gmail.messages, fetchedAt: x.gmail.fetchedAt || "" }
+          : { messages: [], fetchedAt: "" },
       checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
     };
   }
@@ -1317,6 +1323,12 @@
             sub: "Things to remember",
           },
           {
+            act: "view-mail",
+            ic: "📨",
+            title: "School Mail",
+            sub: "Read recent Gmail, make tasks",
+          },
+          {
             act: "view-email",
             ic: "✉️",
             title: "Email a teacher",
@@ -1439,6 +1451,14 @@ ${esc(state.settings.studentName)}</textarea></div>
       );
     },
 
+    mail() {
+      return (
+        backHeader("School Mail", "more") +
+        `<p class="view-intro">Your recent Gmail, read-only. Turn a message into a task or reminder with one tap — the mailbox is never changed.</p>
+        ${gmailPanel()}`
+      );
+    },
+
     import() {
       return (
         backHeader("Paste from Google Classroom", "more") +
@@ -1521,16 +1541,17 @@ Due May 31"></textarea>
           `
           <div class="field"><label>Google OAuth Web Client ID</label><input id="gClientId" value="${esc(s.googleClientId)}" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off"></div>
           <button class="btn primary" data-act="save-google-id">Save Client ID</button>
-          ${s.googleClientId.trim() ? `<button class="btn navy" data-act="gcal-connect" style="margin-left:8px">Connect now</button>` : ""}
+          ${s.googleClientId.trim() ? `<button class="btn navy" data-act="gcal-connect" style="margin-left:8px">Connect now</button><button class="btn" data-act="view-mail" style="margin-left:8px">Open School Mail</button>` : ""}
           <div class="note" style="margin-top:12px"><b>One-time setup</b> (an adult does this once):
             <ol style="margin:6px 0 0;padding-left:18px;line-height:1.6">
               <li>Go to <b>Google Cloud Console</b> → APIs &amp; Services.</li>
-              <li><b>Enable</b> the <b>Google Calendar API</b>.</li>
+              <li><b>Enable</b> the <b>Google Calendar API</b> and the <b>Gmail API</b>.</li>
               <li>Create an <b>OAuth client ID</b> of type <b>Web application</b>.</li>
               <li>Under <b>Authorized JavaScript origins</b> add: <code>https://neft-classroom-html-activities.pages.dev</code></li>
+              <li>On the <b>OAuth consent screen</b>, add the scope <code>gmail.readonly</code> (a sensitive scope — fine for the owner's own / test-user account; full public verification is a later step).</li>
               <li>Copy the Client ID (ends in <code>.apps.googleusercontent.com</code>) and paste it above.</li>
             </ol>
-            Only this Client ID is saved. Google sign-in gives a temporary access token that stays in memory and is never stored. Scope used: <code>calendar.readonly</code>.
+            The same Client ID powers Calendar and <b>School Mail</b>. Only this Client ID is saved. Google sign-in gives temporary access tokens that stay in memory and are never stored. Scopes used: <code>calendar.readonly</code> and <code>gmail.readonly</code> (Gmail is requested separately when you connect School Mail).
           </div>
         `,
         ) +
@@ -2579,6 +2600,195 @@ Due May 31"></textarea>
   }
 
   // ---------------------------------------------------------------------------
+  // Gmail (client-side, read-only, no backend)
+  // ---------------------------------------------------------------------------
+  // Same pattern as Google Calendar: GIS token client gives a short-lived access
+  // token IN MEMORY (never persisted), then reads recent messages via the Gmail
+  // REST API. Reuses the SAME Web Client ID; requests a SEPARATE token with the
+  // gmail.readonly scope. Read-only — the mailbox is never modified.
+  const GMAIL_SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
+  const gmail = {
+    token: "", // access token — memory only
+    tokenClient: null,
+    connected: false,
+    clientId() {
+      return state.settings.googleClientId.trim();
+    },
+    async connect() {
+      const cid = this.clientId();
+      if (!cid) {
+        toast("Add your Google Client ID in Settings first.");
+        setView("settings");
+        return;
+      }
+      if (!navigator.onLine) return toast("Connect to the internet to sync.");
+      // gcal owns the GIS loader; reuse it so the script loads only once.
+      const ok = await gcal.loadGis();
+      if (!ok || !window.google?.accounts?.oauth2)
+        return toast("Couldn't load Google sign-in. Try again online.");
+      toast("Opening Google sign-in…");
+      // Distinct token client call for the gmail.readonly scope.
+      this.tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: cid,
+        scope: GMAIL_SCOPE,
+        callback: (resp) => {
+          if (resp && resp.access_token) {
+            this.token = resp.access_token;
+            this.connected = true;
+            this.fetchMessages();
+          } else {
+            toast("Google sign-in was cancelled.");
+          }
+        },
+        error_callback: () =>
+          toast("Google sign-in failed. Check your Client ID."),
+      });
+      this.tokenClient.requestAccessToken({ prompt: "" });
+    },
+    async fetchMessages() {
+      if (!this.token) return this.connect();
+      try {
+        const listUrl =
+          "https://gmail.googleapis.com/gmail/v1/users/me/messages?" +
+          new URLSearchParams({ q: "newer_than:7d", maxResults: "20" });
+        const res = await fetch(listUrl, {
+          headers: { Authorization: "Bearer " + this.token },
+        });
+        if (!res.ok) {
+          if (res.status === 401) {
+            this.token = "";
+            this.connected = false;
+          }
+          toast("Couldn't load Gmail.");
+          return;
+        }
+        const data = await res.json();
+        const ids = (data.messages || []).map((m) => m.id).filter(Boolean);
+        // Fetch metadata (From/Subject/Date) + snippet for each message.
+        const metaUrl = (id) =>
+          `https://gmail.googleapis.com/gmail/v1/users/me/messages/${encodeURIComponent(id)}?` +
+          new URLSearchParams([
+            ["format", "metadata"],
+            ["metadataHeaders", "From"],
+            ["metadataHeaders", "Subject"],
+            ["metadataHeaders", "Date"],
+          ]);
+        const details = await Promise.all(
+          ids.map((id) =>
+            fetch(metaUrl(id), {
+              headers: { Authorization: "Bearer " + this.token },
+            })
+              .then((r) => (r.ok ? r.json() : null))
+              .catch(() => null),
+          ),
+        );
+        const header = (msg, name) =>
+          (msg.payload?.headers || []).find(
+            (h) => (h.name || "").toLowerCase() === name,
+          )?.value || "";
+        const messages = details
+          .filter(Boolean)
+          .map((m) => {
+            const rawFrom = header(m, "from");
+            // "Name <addr>" → prefer the display name, fall back to address.
+            const from =
+              (rawFrom.match(/^\s*"?([^"<]*?)"?\s*</)?.[1] || "").trim() ||
+              rawFrom ||
+              "(unknown sender)";
+            const dateMs =
+              Number(m.internalDate) || Date.parse(header(m, "date")) || 0;
+            return {
+              id: m.id,
+              from,
+              subject: header(m, "subject") || "(no subject)",
+              date: dateMs ? new Date(dateMs).toISOString() : "",
+              snippet: decodeHtmlEntities(m.snippet || ""),
+              unread: Array.isArray(m.labelIds)
+                ? m.labelIds.includes("UNREAD")
+                : false,
+            };
+          })
+          .sort((a, b) => (a.date < b.date ? 1 : -1)); // newest first
+        state.gmail = { messages, fetchedAt: new Date().toISOString() };
+        save();
+        render();
+        toast(`School Mail synced (${messages.length}) ✉️`);
+      } catch {
+        toast("Couldn't reach Gmail.");
+      }
+    },
+    disconnect() {
+      try {
+        if (this.token && window.google?.accounts?.oauth2)
+          google.accounts.oauth2.revoke(this.token, () => {});
+      } catch {}
+      this.token = "";
+      this.connected = false;
+      state.gmail = { messages: [], fetchedAt: "" };
+      save();
+      render();
+      toast("Disconnected from School Mail.");
+    },
+  };
+
+  // Gmail snippets come back HTML-entity encoded (&amp; &#39; …). Decode safely.
+  function decodeHtmlEntities(s) {
+    if (!s) return "";
+    const t = document.createElement("textarea");
+    t.innerHTML = s;
+    return t.value;
+  }
+  // Friendly relative date label for a message ISO timestamp.
+  const gmailDateLabel = (iso) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (isNaN(d)) return "";
+    const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+    if (days <= 0) {
+      return d.toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    }
+    if (days === 1) return "Yesterday";
+    if (days < 7) return `${days} days ago`;
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  };
+  // A read-only Gmail message row with "make a task / reminder" actions.
+  const gmailRow = (m) =>
+    `<div class="item gmail-item${m.unread ? " gmail-unread" : ""}"><div class="head"><div style="min-width:0"><h4><span class="gcal-badge gmail-badge" title="From Gmail">✉</span>${esc(m.subject)}</h4><p class="meta">${esc(m.from)} · <span class="muted">${esc(gmailDateLabel(m.date))} · Gmail · read-only</span></p>${m.snippet ? `<p class="sub" style="margin:4px 0 0">${esc(m.snippet)}</p>` : ""}</div></div>
+      <div class="row"><button class="btn sm" data-act="gmail-make-task" data-id="${esc(m.id)}">➕ Make a task</button><button class="btn sm" data-act="gmail-make-reminder" data-id="${esc(m.id)}">⏰ Make a reminder</button></div></div>`;
+
+  // Gmail connect/refresh/disconnect panel + message list (School Mail view).
+  function gmailPanel() {
+    const hasId = !!state.settings.googleClientId.trim();
+    const count = (state.gmail?.messages || []).length;
+    const fetched = state.gmail?.fetchedAt
+      ? new Date(state.gmail.fetchedAt).toLocaleString()
+      : "";
+    if (!hasId) {
+      return card(
+        "gmail",
+        "✉️ School Mail",
+        "Read-only — see your recent Gmail here.",
+        `<p class="sub" style="margin-top:0">To connect, add a Google OAuth <b>Web Client ID</b> in Settings → Google Calendar (the same one School Mail uses). It's a one-time setup.</p>
+         <button class="btn primary" data-act="view-settings">Set it up in Settings</button>`,
+      );
+    }
+    const status = count
+      ? `<span class="pill green">● Connected · ${count} messages</span>`
+      : `<span class="pill">Not loaded yet</span>`;
+    return `<section class="card" data-card="gmail"><div class="head"><div><h3>✉️ School Mail</h3><p class="sub">Read-only — your recent Gmail (last 7 days). The mailbox is never changed.</p></div>${status}</div>
+      <div class="row">
+        <button class="btn ${count ? "" : "primary"}" data-act="gmail-connect">${count ? "🔄 Reconnect" : "Connect Gmail"}</button>
+        ${count ? `<button class="btn navy" data-act="gmail-refresh">🔄 Refresh</button><button class="btn danger" data-act="gmail-disconnect">Disconnect</button>` : ""}
+      </div>
+      ${fetched ? `<p class="muted" style="font-size:.8rem;margin-top:8px">Last synced: ${esc(fetched)}. Messages are cached so they show even offline.</p>` : ""}
+      ${count ? `<div class="section-title" style="margin-top:12px">Recent mail (newest first)</div>${(state.gmail.messages || []).map(gmailRow).join("")}` : `<p class="muted" style="margin-top:10px">No messages loaded yet. Tap <b>Connect Gmail</b> to load the last 7 days.</p>`}
+    </section>`;
+  }
+
+  // ---------------------------------------------------------------------------
   // Install prompt (Add to desktop)
   // ---------------------------------------------------------------------------
   let deferredPrompt = null;
@@ -2702,6 +2912,7 @@ Due May 31"></textarea>
     nav: (_, arg) => setView(arg),
     "view-classes": () => setView("classes"),
     "view-reminders": () => setView("reminders"),
+    "view-mail": () => setView("mail"),
     "view-email": () => setView("email"),
     "view-import": () => setView("import"),
     "view-wins": () => setView("wins"),
@@ -3333,6 +3544,51 @@ ${name}`;
     "gcal-confirm-disconnect": () => {
       closeModal();
       gcal.disconnect();
+    },
+
+    "gmail-connect": () => gmail.connect(),
+    "gmail-refresh": () => {
+      toast("Refreshing School Mail…");
+      gmail.token ? gmail.fetchMessages() : gmail.connect();
+    },
+    "gmail-disconnect": () => {
+      openModal(
+        "Disconnect School Mail?",
+        `<p class="sub">This removes the cached Gmail messages from this app. Your Google account and mailbox aren't changed.</p><div class="row"><button class="btn danger" data-act="gmail-confirm-disconnect">Disconnect</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
+      );
+    },
+    "gmail-confirm-disconnect": () => {
+      closeModal();
+      gmail.disconnect();
+    },
+    // Turn a Gmail message into a task — prefilled from its subject.
+    "gmail-make-task": (id) => {
+      const m = (state.gmail?.messages || []).find((x) => x.id === id);
+      if (!m) return;
+      const obj = normalizeTask({
+        title: ("Email: " + (m.subject || "(no subject)")).slice(0, 120),
+        source: "School Mail",
+        notes: m.from ? `From: ${m.from}` : "",
+      });
+      state.assignments.push(obj);
+      save();
+      render();
+      toast("Made a task from this email 📝");
+    },
+    // Turn a Gmail message into a reminder — prefilled from its subject.
+    "gmail-make-reminder": (id) => {
+      const m = (state.gmail?.messages || []).find((x) => x.id === id);
+      if (!m) return;
+      const r = normalizeReminder({
+        text: ("Reply / handle: " + (m.subject || "(no subject)")).slice(
+          0,
+          200,
+        ),
+      });
+      state.reminders.push(r);
+      save();
+      render();
+      toast("Made a reminder from this email ⏰");
     },
     "save-google-id": () => {
       state.settings.googleClientId = ($("#gClientId")?.value || "").trim();
