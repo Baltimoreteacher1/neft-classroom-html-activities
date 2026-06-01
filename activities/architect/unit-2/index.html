@@ -652,7 +652,50 @@
         outline-offset: 2px;
       }
 
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .actions,
         #submitBtn,
         .btn {
@@ -707,6 +750,82 @@
           <span>Grade 6</span>
         </div>
       </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Brief." Anchor the two
+              meanings of division: <em>how many fit</em> (measurement, e.g.
+              "how many ¾-ft planks fit in 8¼ ft?") versus <em>fair share</em>
+              (partitive, e.g. "split ¾ gal among 6 helpers"). Both appear in
+              this build.
+            </li>
+            <li>
+              <strong>Design work (25–30 min):</strong> Students complete Task 1
+              → 4 in order. Task 1 (Plank Fitter) is interactive; Task 4
+              (Optimize the Order) reuses the division skill to compare waste.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Surface the "invert and
+              multiply" rule and <em>why</em> it works, then discuss
+              interpreting the remainder (Task 2 rounds DOWN to whole sections).
+            </li>
+          </ul>
+          <h3>Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Q1.1 — Planks that fit:</strong> 8¼ ÷ ¾ = 33/4 × 4/3 =
+              132/12 = <strong>11 planks</strong>.
+            </li>
+            <li>
+              <strong>Q1.2 — Balusters:</strong> 12 ÷ ⅔ = 12 × 3/2 = 36/2 =
+              <strong>18 balusters</strong>.
+            </li>
+            <li>
+              <strong>Q2.1 — Gaps (posts):</strong> 8¼ ÷ 2¾ = 33/4 ÷ 11/4 = 33/4
+              × 4/11 = <strong>3 gaps</strong> (so 4 posts).
+            </li>
+            <li>
+              <strong>Q2.2 — Sealer sections:</strong> 5½ ÷ ⅓ = 11/2 × 3 = 33/2
+              = <strong>16.5</strong>, which means
+              <strong>16</strong> fully-coated sections (round DOWN — half a
+              section is not fully sealed).
+            </li>
+            <li>
+              <strong>Q3.1 — Fair share:</strong> ¾ ÷ 6 = 3/4 × 1/6 = 3/24 = 1/8
+              = <strong>0.125 gal</strong> each. This is the SHARING meaning of
+              division.
+            </li>
+            <li>
+              <strong>Q4.1 — Least-waste plank:</strong> the
+              <strong>⅝ ft</strong> plank leaves only ⅛ ft (0.125 ft) of waste —
+              8¼ ÷ ⅝ = 33/4 × 8/5 = 13.2, so 13 full planks use 8⅛ ft, leaving
+              <strong>⅛ ft</strong>.
+            </li>
+          </ul>
+          <h3>Common Misconceptions</h3>
+          <ul>
+            <li>
+              Multiplying instead of using the reciprocal — remind students that
+              "÷ a fraction" means "× its flip."
+            </li>
+            <li>
+              Rounding 16.5 up: in a real build, a partial section is not a
+              finished, sealed section, so round DOWN.
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>
+            CCSS <strong>6.NS.A.1</strong> — Interpret and compute quotients of
+            fractions, and solve word problems involving division of fractions
+            by fractions.
+          </p>
+        </div>
+      </details>
 
       <!-- ══ HERO ══ -->
       <header class="hero">

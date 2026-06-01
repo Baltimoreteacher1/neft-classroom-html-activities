@@ -602,7 +602,50 @@
         clip: rect(0 0 0 0);
         border: 0;
       }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .wq-actions,
         .wq-btn,
         .wq-reveal-btn {
@@ -1464,6 +1507,51 @@
       </section>
 
       <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin: 4px 0 0">
+            <strong>Trail Mix Lab · Stocking Sheet</strong> — pairs with the
+            Evaluation rubric above.
+          </p>
+          <h3>Sample Answers — Stocking Sheet</h3>
+          <ul>
+            <li>
+              <strong>Whole ÷ fraction:</strong> 3 ÷ 1/4 = 3 × 4 =
+              <strong>12 full bags</strong> (Keep–Change–Flip).
+            </li>
+            <li>
+              <strong>Fraction ÷ fraction:</strong> 3/4 ÷ 1/8 = 3/4 × 8/1 =
+              <strong>6 deluxe batches</strong>.
+            </li>
+            <li>
+              <strong>Fraction ÷ whole number:</strong> 2/3 ÷ 4 = 2/3 × 1/4 =
+              2/12 = <strong>1/6 cup of honey per tray</strong> (the SHARING
+              meaning).
+            </li>
+            <li>
+              <strong>Mixed number ÷ fraction:</strong> 2½ ÷ 1/3 = 5/2 × 3 =
+              15/2 = 7½, so <strong>7 full samples</strong> with a half-sample
+              left over.
+            </li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>
+              Require the division <em>expression</em> before the answer, plus
+              one sentence interpreting it in context.
+            </li>
+            <li>
+              Stress interpreting the remainder: 7½ means 7
+              <em>full</em> samples — round DOWN for "how many complete."
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.NS.A.1</strong>.</p>
+        </div>
+      </details>
+
       <section class="wq-card" aria-labelledby="h-cyu">
         <h2 id="h-cyu">
           <span class="wq-step-num" aria-hidden="true">5</span>Check Your

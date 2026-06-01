@@ -460,7 +460,50 @@
         color: var(--nt-muted, #5b6472);
       }
 
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only > summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only > summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] > summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .u2-toc,
         .u2-actions {
           display: none !important;
@@ -1149,6 +1192,32 @@
       </section>
 
       <!-- ============ 5. REFLECT ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>Stage-by-Stage Notes (Engage → Explore → Explain → Apply → Reflect)</h3>
+          <ul>
+            <li><strong>Engage:</strong> "how many ¼-cup containers fill from 3 cups?" builds the measurement meaning of division.</li>
+            <li><strong>Explore:</strong> visual fraction bars show how many small pieces fit in the whole.</li>
+            <li><strong>Explain:</strong> formalize Keep–Change–Flip and why ÷ a fraction = × its reciprocal.</li>
+            <li><strong>Apply:</strong> answer key below.</li>
+            <li><strong>Reflect:</strong> students state both meanings of division (how many fit vs fair share).</li>
+          </ul>
+          <h3>Apply — Answer Key</h3>
+          <ul>
+            <li><strong>Q1:</strong> 3 ÷ ¼ = 3 × 4 = <strong>12 containers</strong>.</li>
+            <li><strong>Q2:</strong> ⅔ ÷ ⅙ = ⅔ × 6 = <strong>4 cups</strong>.</li>
+            <li><strong>Q3 (choice):</strong> answer <strong>b</strong>.</li>
+            <li><strong>Q4:</strong> <strong>2/3</strong>.</li>
+            <li><strong>Q5:</strong> <strong>3/8</strong>.</li>
+            <li><strong>Q6:</strong> <strong>5/2</strong>.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.NS.A.1</strong>.</p>
+        </div>
+      </details>
+
       <section class="u2-step" id="reflect">
         <h2><span class="u2-badge b5">5</span> Reflect</h2>
         <p class="u2-phase">Make your thinking visible</p>

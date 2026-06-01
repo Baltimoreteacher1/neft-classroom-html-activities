@@ -601,7 +601,50 @@
         outline-offset: 2px;
       }
 
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .actions,
         #submitBtn,
         .btn {
@@ -656,6 +699,91 @@
           <span>Grade 6</span>
         </div>
       </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Engineering Brief."
+              Preview the three tools students must move between fluidly: unit
+              rates (per 1), percents (of a quantity and percent change), and
+              measurement conversions via ratio reasoning.
+            </li>
+            <li>
+              <strong>Design work (25–30 min):</strong> Students work the ramp,
+              tank, conversion, and budget questions in order, then make a
+              stamped recommendation that integrates all three skills.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Compare flow-rate reasoning
+              in Q4.1 and the percent-over result in the budget — both are
+              unit-rate comparisons in disguise.
+            </li>
+          </ul>
+          <h3>Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Q1.1 — Ramp grade:</strong> 1.5 ÷ 12 × 100 =
+              <strong>12.5%</strong>. This FAILS the 8.33% (1:12) ADA limit.
+            </li>
+            <li>
+              <strong>Q1.2 — Required run:</strong> 30 in ÷ 12 = 2.5 ft of rise;
+              at 1:12, run = 12 × 2.5 = <strong>30 ft</strong>.
+            </li>
+            <li>
+              <strong>Q2.1 — Drain time:</strong> 2,400 L ÷ 15 L/min =
+              <strong>160 minutes</strong>.
+            </li>
+            <li>
+              <strong>Q2.2 — Net fill rate:</strong> 20 in − 15 out =
+              <strong>5 L/min</strong> net filling.
+            </li>
+            <li>
+              <strong>Q3.1 — Tank in gallons:</strong> 2,400 ÷ 3.785 ≈
+              <strong>634 gallons</strong>.
+            </li>
+            <li>
+              <strong>Q3.2 — Footing in gallons:</strong> 40 ft³ × 7.48 gal/ft³
+              = <strong>299.2 gallons</strong>.
+            </li>
+            <li>
+              <strong>Q4.1 — Faster pump:</strong> A = 360 ÷ 24 = 15 L/min; B =
+              200 ÷ 16 = 12.5 L/min, so <strong>Pump A</strong> is faster.
+            </li>
+            <li>
+              <strong>Q5.1 — Percent of budget:</strong> 0.45 × 8,000 =
+              <strong>$3,600</strong>.
+            </li>
+            <li>
+              <strong>Q5.2 — Percent over budget:</strong> overage = 4,320 −
+              3,600 = 720; 720 ÷ 3,600 × 100 = <strong>20% over</strong>.
+            </li>
+          </ul>
+          <h3>Common Misconceptions</h3>
+          <ul>
+            <li>
+              Forgetting to ×100 when turning a ratio (1.5 ÷ 12) into a percent.
+            </li>
+            <li>
+              Dividing by the wrong conversion factor — keep units in the ratio
+              (L ÷ L/gal → gal) to self-check.
+            </li>
+            <li>
+              Computing percent change off the new value instead of the original
+              (use the original budget as the base in Q5.2).
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>
+            CCSS <strong>6.RP.A.3 (a–d)</strong> — Use ratio and rate reasoning
+            to solve real-world problems, including unit rates, percents, and
+            measurement-unit conversions.
+          </p>
+        </div>
+      </details>
 
       <!-- ══ HERO ══ -->
       <header class="hero">

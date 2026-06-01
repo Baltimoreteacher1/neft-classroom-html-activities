@@ -428,7 +428,50 @@
         color: #0d9488;
       }
 
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only > summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only > summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] > summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .u9-toc,
         .u9-actions,
         .u9-explore a.u9-link::after {
@@ -1241,6 +1284,60 @@
       </section>
 
       <!-- ============ 5. REFLECT ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>
+            Stage-by-Stage Notes (Engage → Explore → Explain → Apply → Reflect)
+          </h3>
+          <ul>
+            <li>
+              <strong>Engage:</strong> dive depths motivate negative numbers and
+              absolute value.
+            </li>
+            <li>
+              <strong>Explore:</strong> place integers on a vertical number line
+              and plot points.
+            </li>
+            <li>
+              <strong>Explain:</strong> absolute value as distance; quadrants;
+              reflections.
+            </li>
+            <li><strong>Apply:</strong> answer key below.</li>
+            <li><strong>Reflect:</strong> students explain why |−40| = 40.</li>
+          </ul>
+          <h3>Apply — Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Q1 — Distance |−40|:</strong> <strong>40</strong> m.
+            </li>
+            <li>
+              <strong>Q2 — Compare depths (MC):</strong> answer
+              <strong>c</strong>.
+            </li>
+            <li>
+              <strong>Q3 — Distance −12 to −40:</strong> |−40 − (−12)| =
+              <strong>28</strong> m.
+            </li>
+            <li>
+              <strong>Q4 — Quadrant of (5, −3) (MC):</strong> answer
+              <strong>b</strong> (Quadrant IV).
+            </li>
+            <li>
+              <strong>Q5 — Reflect D(5, 2) across the y-axis:</strong> x changes
+              sign → new x-coordinate <strong>−5</strong> (new point (−5, 2)).
+            </li>
+            <li>
+              <strong>Q6 — Distance A(−3,1) to B(4,1):</strong> 3 + 4 =
+              <strong>7</strong>.
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.NS.C.5–8</strong>.</p>
+        </div>
+      </details>
+
       <section class="u9-step u9-reflect" id="reflect">
         <h2><span class="u9-badge b5">5</span> Reflect</h2>
         <p class="u9-phase">Think about your thinking</p>

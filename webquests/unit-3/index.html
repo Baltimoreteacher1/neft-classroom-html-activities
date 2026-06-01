@@ -535,7 +535,50 @@
         clip: rect(0 0 0 0);
         border: 0;
       }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .wq-actions,
         .wq-btn {
           display: none;
@@ -1005,6 +1048,27 @@
       </section>
 
       <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Pixel Forge · Color Lab Report</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Color Lab Report</h3>
+          <ul>
+            <li><strong>Ratio table (cyan : magenta = 2 : 3):</strong> cyan 2, 4, 6, 10, 16 / magenta 3, 6, 9, 15, 24. Every pair simplifies to 2 : 3.</li>
+            <li><strong>Graph:</strong> plotting (cyan, magenta) pairs (2,3), (6,9), (10,15)… all fall on one straight line through the origin.</li>
+            <li><strong>Compare recipes:</strong> Maya 2 : 3 vs Devon 3 : 4 — match cyan: Maya 6 : 9, Devon 6 : 8. Maya has more magenta (9 > 8), so <strong>Maya is pinker</strong>. Unit-ratio check: Maya 3÷2 = 1.5 vs Devon 4÷3 ≈ 1.33 magenta per cyan.</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>Connect the table, the straight-line graph, and the unit ratio (1.5 magenta per cyan) as three views of the same relationship.</li>
+            <li>For the compare, make a common term (same cyan) so the comparison is fair.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.RP.A.3a</strong>.</p>
+        </div>
+      </details>
+
       <section class="wq-card" aria-labelledby="h-cyu">
         <h2 id="h-cyu">
           <span class="wq-step-num" aria-hidden="true">5</span>Check Your

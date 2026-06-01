@@ -543,7 +543,50 @@
         clip: rect(0 0 0 0);
         border: 0;
       }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .wq-actions,
         .wq-btn {
           display: none;
@@ -1211,6 +1254,28 @@
       </section>
 
       <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Aquarium Build-Out · Tank Build Packet</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Tank Build Packet</h3>
+          <ul>
+            <li><strong>Reef Tank volume:</strong> V = l × w × h = 4½ × 2 × 3 = 4.5 × 2 × 3 = <strong>27 ft³</strong>.</li>
+            <li><strong>Feeding-Prep Box (unit cubes):</strong> bottom layer 3 × 2 = 6 cubes × 2 layers = <strong>12 cubes (12 ft³)</strong> — matches l × w × h.</li>
+            <li><strong>Net:</strong> a rectangular prism unfolds into 6 faces in 3 matching pairs (top/bottom, front/back, two sides).</li>
+            <li><strong>Surface area:</strong> add all six face areas (2lw + 2lh + 2wh); for the 4.5 × 2 × 3 tank that is 2(9) + 2(13.5) + 2(6) = 18 + 27 + 12 = <strong>57 ft²</strong>.</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>Volume fills the inside (ft³); surface area covers the outside (ft²) — keep units distinct.</li>
+            <li>Use the net so no face is missed; opposite faces come in equal pairs.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.G.A.2 & A.4</strong>.</p>
+        </div>
+      </details>
+
       <section class="wq-card" aria-labelledby="h-cyu">
         <h2 id="h-cyu">
           <span class="wq-step-num" aria-hidden="true">5</span>Check Your

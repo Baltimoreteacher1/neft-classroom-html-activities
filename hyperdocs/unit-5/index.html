@@ -400,7 +400,50 @@
         color: var(--nt-muted, #5b6472);
       }
 
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only > summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only > summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] > summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .u5-toc,
         .u5-actions,
         .u5-explore a.u5-link::after {
@@ -1003,6 +1046,31 @@
       </section>
 
       <!-- ============ 5. REFLECT ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>Stage-by-Stage Notes (Engage → Explore → Explain → Apply → Reflect)</h3>
+          <ul>
+            <li><strong>Engage:</strong> estimate how much turf a shaped garden bed needs.</li>
+            <li><strong>Explore:</strong> decompose polygons into triangles/rectangles interactively.</li>
+            <li><strong>Explain:</strong> derive the triangle, parallelogram, and trapezoid area formulas.</li>
+            <li><strong>Apply:</strong> answer key below.</li>
+            <li><strong>Reflect:</strong> students explain decomposing composite figures.</li>
+          </ul>
+          <h3>Apply — Answer Key</h3>
+          <ul>
+            <li><strong>Q1 — Triangle (b 12, h 6):</strong> ½ × 12 × 6 = <strong>36 ft²</strong>.</li>
+            <li><strong>Q2:</strong> <strong>4</strong>.</li>
+            <li><strong>Q3 (MC):</strong> answer <strong>b</strong>.</li>
+            <li><strong>Q4 — Composite total:</strong> <strong>35</strong> ft².</li>
+            <li><strong>Q5 — Composite total:</strong> <strong>54</strong> ft².</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.G.A.1</strong>.</p>
+        </div>
+      </details>
+
       <section class="u5-step u5-reflect" id="reflect">
         <h2><span class="u5-badge b5">5</span> Reflect</h2>
         <p class="u5-phase">Think about your thinking</p>
