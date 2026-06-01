@@ -3852,6 +3852,154 @@
         .getElementById("roleSelect")
         .addEventListener("change", () => applyRoleAccess());
 
+      /* ════════ OPTIONAL LIVE API MODE (Cloudflare Worker backend) ════════
+         Off by default → the local-storage demo is untouched. Enable with the
+         Admin → Backend Mode toggle, or ?api=1 in the URL. ?api=0 disables. */
+      const NSH_API_BASE = "https://neft-school-hub-api.neftjd.workers.dev";
+      const _apiParam = new URLSearchParams(location.search).get("api");
+      if (_apiParam === "1") lsSet("nsh:useapi", "1");
+      if (_apiParam === "0") localStorage.removeItem("nsh:useapi");
+      let USE_API = lsGet("nsh:useapi", null) === "1";
+
+      async function apiReq(method, path, body) {
+        const headers = { Accept: "application/json" };
+        if (body !== undefined) headers["Content-Type"] = "application/json";
+        const res = await fetch(NSH_API_BASE + path, {
+          method,
+          headers,
+          credentials: "include",
+          body: body !== undefined ? JSON.stringify(body) : undefined,
+        });
+        const txt = await res.text();
+        const data = txt ? JSON.parse(txt) : null;
+        if (!res.ok)
+          throw new Error((data && data.error) || "HTTP " + res.status);
+        return data;
+      }
+      // local⇄api field mapping (links.desc⇄descr, requests.from⇄from_team)
+      const fromApi = (coll, x) =>
+        coll === "links"
+          ? { ...x, desc: x.descr }
+          : coll === "requests"
+            ? { ...x, from: x.from_team }
+            : x;
+      const toApi = (coll, x) => {
+        if (coll === "links") {
+          const { desc, ...r } = x;
+          return { ...r, descr: desc };
+        }
+        if (coll === "requests") {
+          const { from, ...r } = x;
+          return { ...r, from_team: from };
+        }
+        return x;
+      };
+      async function apiLoadAll() {
+        const colls = [
+          "announcements",
+          "tasks",
+          "meetings",
+          "links",
+          "requests",
+          "messages",
+        ];
+        const res = await Promise.all(
+          colls.map((c) => apiReq("GET", "/api/" + c).catch(() => null)),
+        );
+        const pick = (i, c) => {
+          const d = res[i];
+          return d ? (Array.isArray(d) ? d : d[c] || []) : [];
+        };
+        setArr(announcements, pick(0, "announcements"));
+        setArr(tasks, pick(1, "tasks"));
+        setArr(meetings, pick(2, "meetings"));
+        setArr(
+          links,
+          pick(3, "links").map((x) => fromApi("links", x)),
+        );
+        setArr(
+          requests,
+          pick(4, "requests").map((x) => fromApi("requests", x)),
+        );
+        const grouped = {};
+        pick(5, "messages").forEach((m) => {
+          const ch = m.channel || m.team || "General";
+          (grouped[ch] = grouped[ch] || []).push([
+            m.author || m.who || "Staff",
+            m.body || m.msg || "",
+          ]);
+        });
+        setObj(messages, grouped);
+        renderAll();
+      }
+      // route data loading through the API when enabled
+      const _hydrateData = hydrateData;
+      hydrateData = function () {
+        if (USE_API) {
+          apiLoadAll().catch((e) => {
+            toast("API load failed (" + e.message + ") — using local.");
+            _hydrateData();
+          });
+          return;
+        }
+        _hydrateData();
+      };
+      // write-through: POST the just-added item to the API
+      const API_COLL = {
+        saveTask: "tasks",
+        saveAnnouncement: "announcements",
+        saveMeeting: "meetings",
+        saveLink: "links",
+        saveRequest: "requests",
+      };
+      Object.keys(API_COLL).forEach((fn) => {
+        const wrapped = window[fn];
+        window[fn] = function (...a) {
+          wrapped.apply(this, a);
+          if (USE_API) {
+            const coll = API_COLL[fn];
+            const item = { announcements, tasks, meetings, links, requests }[
+              coll
+            ][0];
+            apiReq("POST", "/api/" + coll, toApi(coll, item))
+              .then(() => toast("Saved to server."))
+              .catch((e) => toast("Server save failed: " + e.message));
+          }
+        };
+      });
+      const _sendMessage = window.sendMessage;
+      window.sendMessage = function (team) {
+        _sendMessage(team);
+        if (USE_API) {
+          const arr = messages[team] || [];
+          const last = arr[arr.length - 1];
+          if (last)
+            apiReq("POST", "/api/messages", {
+              channel: team,
+              author: last[0],
+              body: last[1],
+            }).catch(() => {});
+        }
+      };
+      function nshToggleApi(on) {
+        if (on) lsSet("nsh:useapi", "1");
+        else localStorage.removeItem("nsh:useapi");
+        location.reload();
+      }
+      // add a Backend Mode card to the Admin console
+      const _enhanceAdmin = enhanceAdmin;
+      enhanceAdmin = function () {
+        _enhanceAdmin();
+        const host = document.getElementById("entAdmin");
+        if (!host) return;
+        const card = document.createElement("div");
+        card.innerHTML = `<br/><div class="card"><div class="card-title"><div><h3>Backend Mode</h3><p>Local browser storage vs the live Cloudflare Worker API.</p></div><span class="ent-flag">${USE_API ? "Live API" : "Local"}</span></div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Currently: <strong>${USE_API ? "Live API — " + NSH_API_BASE : "Local (this browser only)"}</strong></p>
+          <button class="btn ${USE_API ? "" : "primary"}" onclick="nshToggleApi(true)">Use Live API</button>
+          <button class="btn ${USE_API ? "primary" : ""}" onclick="nshToggleApi(false)">Use Local</button></div>`;
+        host.appendChild(card);
+      };
+
       // boot
       init();
       (function boot() {
