@@ -1,1472 +1,1845 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Factor Tree Space Salvage: An interactive prime factorization sandbox. Split composite numbers, grow factor trees, and write prime factorization equations.">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Factor Tree Space Salvage: An interactive prime factorization sandbox. Split composite numbers, grow factor trees, and write prime factorization equations."
+    />
     <title>Factor Tree Space Salvage | Prime Factorization Game</title>
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --bg-base: #040815;
-            --bg-surface: #0a1027;
-            --bg-card: rgba(15, 23, 59, 0.65);
-            --bg-glow: rgba(16, 185, 129, 0.08);
-            
-            --border-glow: rgba(255, 255, 255, 0.08);
-            --border-active: rgba(16, 185, 129, 0.45);
-            
-            --primary: #10b981;
-            --primary-glow: rgba(16, 185, 129, 0.4);
-            --secondary: #3b82f6;
-            --secondary-glow: rgba(59, 130, 246, 0.4);
-            --accent: #f59e0b;
-            --accent-glow: rgba(245, 158, 11, 0.4);
-            --pink: #d946ef;
-            --danger: #f43f5e;
-            --white: #ffffff;
-            
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --text-dark: #475569;
-            
-            --font-display: 'Outfit', sans-serif;
-            --font-main: 'Plus Jakarta Sans', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            
-            --radius-lg: 24px;
-            --radius-md: 16px;
-            --radius-sm: 10px;
-            
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow: 0 16px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(16, 185, 129, 0.06);
-        }
+      :root {
+        --bg-base: #040815;
+        --bg-surface: #0a1027;
+        --bg-card: rgba(15, 23, 59, 0.65);
+        --bg-glow: rgba(16, 185, 129, 0.08);
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+        --border-glow: rgba(255, 255, 255, 0.08);
+        --border-active: rgba(16, 185, 129, 0.45);
 
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.04) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.04) 0%, transparent 45%);
-            background-attachment: fixed;
-        }
+        --primary: #10b981;
+        --primary-glow: rgba(16, 185, 129, 0.4);
+        --secondary: #3b82f6;
+        --secondary-glow: rgba(59, 130, 246, 0.4);
+        --accent: #f59e0b;
+        --accent-glow: rgba(245, 158, 11, 0.4);
+        --pink: #d946ef;
+        --danger: #f43f5e;
+        --white: #ffffff;
 
-        header {
-            background: rgba(10, 16, 39, 0.85);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border-glow);
-            padding: 16px 32px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --text-dark: #475569;
 
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        --font-display: "Outfit", sans-serif;
+        --font-main: "Plus Jakarta Sans", sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
 
-        .logo-icon {
-            font-size: 2rem;
-            filter: drop-shadow(0 0 8px var(--primary-glow));
-            animation: pulse-slow 3.5s infinite ease-in-out;
-        }
+        --radius-lg: 24px;
+        --radius-md: 16px;
+        --radius-sm: 10px;
 
-        .logo-title {
-            font-family: var(--font-display);
-            font-size: 1.6rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--white) 30%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.02em;
-        }
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --shadow:
+          0 16px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(16, 185, 129, 0.06);
+      }
 
-        .header-buttons {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-        /* Buttons */
-        .btn {
-            font-family: var(--font-display);
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 10px 20px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-glow);
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(4px);
-        }
+      body {
+        background-color: var(--bg-base);
+        color: var(--text-main);
+        font-family: var(--font-main);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        background-image:
+          radial-gradient(
+            circle at 15% 15%,
+            rgba(16, 185, 129, 0.04) 0%,
+            transparent 45%
+          ),
+          radial-gradient(
+            circle at 85% 85%,
+            rgba(59, 130, 246, 0.04) 0%,
+            transparent 45%
+          );
+        background-attachment: fixed;
+      }
 
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
+      header {
+        background: rgba(10, 16, 39, 0.85);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border-glow);
+        padding: 16px 32px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .btn:active {
-            transform: translateY(0);
-        }
+      .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, #065f46 100%);
-            border: none;
-            box-shadow: 0 4px 14px var(--primary-glow);
-        }
+      .logo-icon {
+        font-size: 2rem;
+        filter: drop-shadow(0 0 8px var(--primary-glow));
+        animation: pulse-slow 3.5s infinite ease-in-out;
+      }
 
-        .btn-primary:hover {
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        }
+      .logo-title {
+        font-family: var(--font-display);
+        font-size: 1.6rem;
+        font-weight: 800;
+        background: linear-gradient(
+          135deg,
+          var(--white) 30%,
+          var(--primary) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.02em;
+      }
 
-        .btn-secondary {
-            border-color: rgba(59, 130, 246, 0.3);
-            color: #60a5fa;
-            background: rgba(59, 130, 246, 0.08);
-        }
+      .header-buttons {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
 
-        .btn-secondary:hover {
-            border-color: var(--secondary);
-            background: rgba(59, 130, 246, 0.15);
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
-        }
+      /* Buttons */
+      .btn {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 10px 20px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-glow);
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(4px);
+      }
 
-        /* Layout Grid */
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, #065f46 100%);
+        border: none;
+        box-shadow: 0 4px 14px var(--primary-glow);
+      }
+
+      .btn-primary:hover {
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      }
+
+      .btn-secondary {
+        border-color: rgba(59, 130, 246, 0.3);
+        color: #60a5fa;
+        background: rgba(59, 130, 246, 0.08);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--secondary);
+        background: rgba(59, 130, 246, 0.15);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+      }
+
+      /* Layout Grid */
+      .app-grid {
+        display: grid;
+        grid-template-columns: 370px 1fr;
+        gap: 24px;
+        max-width: 1440px;
+        width: 100%;
+        margin: 24px auto;
+        padding: 0 24px;
+        flex: 1;
+      }
+
+      @media (max-width: 1100px) {
         .app-grid {
-            display: grid;
-            grid-template-columns: 370px 1fr;
-            gap: 24px;
-            max-width: 1440px;
-            width: 100%;
-            margin: 24px auto;
-            padding: 0 24px;
-            flex: 1;
+          grid-template-columns: 1fr;
         }
+      }
 
-        @media (max-width: 1100px) {
-            .app-grid {
-                grid-template-columns: 1fr;
-            }
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .main-workspace {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      /* Card panels */
+      .glass-panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border-glow);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(12px);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+      }
+
+      .glass-panel::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.05),
+          transparent
+        );
+      }
+
+      .glass-panel:hover {
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      .panel-title {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 12px;
+        color: var(--white);
+      }
+
+      .panel-title svg {
+        color: var(--primary);
+      }
+
+      /* Quests list styles */
+      .quest-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .quest-card {
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        border-radius: var(--radius-sm);
+        padding: 14px 16px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+      }
+
+      .quest-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+
+      .quest-card.active {
+        border-color: var(--primary);
+        background: rgba(16, 185, 129, 0.08);
+        box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.1);
+      }
+
+      .quest-card.completed {
+        border-color: var(--secondary);
+        background: rgba(59, 130, 246, 0.05);
+      }
+
+      .quest-card.completed:hover {
+        border-color: #60a5fa;
+        background: rgba(59, 130, 246, 0.08);
+      }
+
+      .quest-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+      }
+
+      .quest-title-text {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--white);
+      }
+
+      .quest-desc-text {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+
+      .quest-badge {
+        font-size: 1.3rem;
+        margin-left: 12px;
+        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+        transition: var(--transition);
+      }
+
+      .quest-matching-hud {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        margin-bottom: 16px;
+      }
+
+      .hud-metric {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .hud-metric-label {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .hud-metric-value {
+        font-family: var(--font-mono);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      /* SVG factor tree container */
+      .svg-container {
+        width: 100%;
+        position: relative;
+        background: #02040b;
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
+        overflow: hidden;
+      }
+
+      .viewport-svg {
+        width: 100%;
+        height: 400px;
+        display: block;
+      }
+
+      /* Interactive factor tree node styles */
+      .tree-node-circle {
+        fill: #0c122f;
+        stroke: var(--secondary);
+        stroke-width: 2.5;
+        cursor: pointer;
+        transition: var(--transition);
+        filter: drop-shadow(0 0 6px var(--secondary-glow));
+      }
+
+      .tree-node-circle:hover {
+        fill: rgba(59, 130, 246, 0.1);
+        transform: scale(1.05);
+        stroke-width: 3.5;
+      }
+
+      .tree-node-circle.prime {
+        stroke: var(--primary);
+        filter: drop-shadow(0 0 8px var(--primary-glow));
+        cursor: default;
+      }
+
+      .tree-node-circle.prime:hover {
+        fill: #0c122f;
+        transform: none;
+        stroke-width: 2.5;
+      }
+
+      .tree-node-circle.selected {
+        stroke: var(--accent);
+        filter: drop-shadow(0 0 10px var(--accent-glow));
+      }
+
+      .tree-branch-line {
+        stroke: rgba(255, 255, 255, 0.15);
+        stroke-dasharray: 4, 3;
+        stroke-width: 2;
+      }
+
+      .tree-node-text {
+        font-family: var(--font-display);
+        font-size: 14px;
+        font-weight: 800;
+        fill: var(--white);
+        pointer-events: none;
+        text-anchor: middle;
+      }
+
+      .tree-node-type-text {
+        font-family: var(--font-main);
+        font-size: 8px;
+        font-weight: 700;
+        fill: var(--text-muted);
+        pointer-events: none;
+        text-anchor: middle;
+      }
+
+      .tree-node-type-text.prime {
+        fill: var(--primary);
+      }
+
+      /* Interactive Potion Formula Tray */
+      .equation-input-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .equation-bar-wrapper {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        background: rgba(0, 0, 0, 0.25);
+        padding: 16px 20px;
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        align-items: center;
+      }
+
+      .formula-input {
+        background: #060918;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-sm);
+        padding: 12px 18px;
+        font-family: var(--font-mono);
+        font-size: 1.1rem;
+        color: var(--white);
+        outline: none;
+        width: 100%;
+        transition: var(--transition);
+      }
+
+      .formula-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+      }
+
+      /* Modal Dialog splits factors */
+      .split-dialog-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(2, 4, 11, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .split-dialog-box {
+        background: var(--bg-surface);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        width: 380px;
+        box-shadow: var(--shadow);
+        animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .split-dialog-box h3 {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        margin-bottom: 12px;
+        color: var(--white);
+      }
+
+      .split-inputs {
+        display: grid;
+        grid-template-columns: 1fr 20px 1fr;
+        align-items: center;
+        gap: 12px;
+        margin: 20px 0;
+      }
+
+      .factor-box-input {
+        background: #02040b;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-sm);
+        padding: 12px;
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 1.2rem;
+        color: var(--white);
+        outline: none;
+        width: 100%;
+      }
+
+      .factor-box-input:focus {
+        border-color: var(--accent);
+      }
+
+      /* ESOL guide bubble and glossary card styles */
+      .esol-panel {
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.08) 0%,
+          rgba(59, 130, 246, 0.03) 100%
+        );
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+
+      .esol-bubble {
+        background: rgba(0, 0, 0, 0.25);
+        border-left: 4px solid var(--primary);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: var(--text-main);
+        margin-bottom: 16px;
+      }
+
+      .esol-translation {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        font-style: italic;
+        margin-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-top: 8px;
+      }
+
+      .vocab-word-pill {
+        padding: 6px 12px;
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        font-size: 0.8rem;
+        border-radius: 15px;
+        cursor: pointer;
+        color: var(--text-muted);
+        transition: var(--transition);
+      }
+
+      .vocab-word-pill:hover {
+        color: var(--white);
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+
+      /* Diagnostics console overlay */
+      .diagnostics-panel {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 330px;
+        background: #050711;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        z-index: 1000;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        display: none;
+        animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .diagnostics-log-box {
+        background: #010206;
+        border-radius: var(--radius-sm);
+        height: 140px;
+        overflow-y: auto;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        padding: 8px 12px;
+        color: #34d399;
+        margin: 12px 0;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        line-height: 1.4;
+      }
+
+      .log-error {
+        color: var(--danger);
+      }
+      .log-success {
+        color: var(--primary);
+      }
+      .log-warning {
+        color: var(--accent);
+      }
+
+      @keyframes pulse-slow {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+          filter: drop-shadow(0 0 8px var(--primary-glow));
         }
-
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
+        50% {
+          transform: scale(1.05);
+          opacity: 0.85;
+          filter: drop-shadow(0 0 15px var(--primary));
         }
+      }
 
-        .main-workspace {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
+      @keyframes slide-up {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
         }
-
-        /* Card panels */
-        .glass-panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
+        to {
+          transform: translateY(0);
+          opacity: 1;
         }
+      }
 
-        .glass-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-        }
-
-        .glass-panel:hover {
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .panel-title {
-            font-family: var(--font-display);
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 12px;
-            color: var(--white);
-        }
-
-        .panel-title svg {
-            color: var(--primary);
-        }
-
-        /* Quests list styles */
-        .quest-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .quest-card {
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-sm);
-            padding: 14px 16px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-
-        .quest-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-
-        .quest-card.active {
-            border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.08);
-            box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.1);
-        }
-
-        .quest-card.completed {
-            border-color: var(--secondary);
-            background: rgba(59, 130, 246, 0.05);
-        }
-
-        .quest-card.completed:hover {
-            border-color: #60a5fa;
-            background: rgba(59, 130, 246, 0.08);
-        }
-
-        .quest-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex: 1;
-        }
-
-        .quest-title-text {
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: var(--white);
-        }
-
-        .quest-desc-text {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-
-        .quest-badge {
-            font-size: 1.3rem;
-            margin-left: 12px;
-            filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
-            transition: var(--transition);
-        }
-
-        .quest-matching-hud {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 16px;
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: var(--radius-sm);
-            border: 1px solid rgba(255,255,255,0.03);
-            margin-bottom: 16px;
-        }
-
-        .hud-metric {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .hud-metric-label {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .hud-metric-value {
-            font-family: var(--font-mono);
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        /* SVG factor tree container */
-        .svg-container {
-            width: 100%;
-            position: relative;
-            background: #02040b;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9);
-            overflow: hidden;
-        }
-
-        .viewport-svg {
-            width: 100%;
-            height: 400px;
-            display: block;
-        }
-
-        /* Interactive factor tree node styles */
-        .tree-node-circle {
-            fill: #0c122f;
-            stroke: var(--secondary);
-            stroke-width: 2.5;
-            cursor: pointer;
-            transition: var(--transition);
-            filter: drop-shadow(0 0 6px var(--secondary-glow));
-        }
-
-        .tree-node-circle:hover {
-            fill: rgba(59, 130, 246, 0.1);
-            transform: scale(1.05);
-            stroke-width: 3.5;
-        }
-
-        .tree-node-circle.prime {
-            stroke: var(--primary);
-            filter: drop-shadow(0 0 8px var(--primary-glow));
-            cursor: default;
-        }
-
-        .tree-node-circle.prime:hover {
-            fill: #0c122f;
-            transform: none;
-            stroke-width: 2.5;
-        }
-
-        .tree-node-circle.selected {
-            stroke: var(--accent);
-            filter: drop-shadow(0 0 10px var(--accent-glow));
-        }
-
-        .tree-branch-line {
-            stroke: rgba(255, 255, 255, 0.15);
-            stroke-dasharray: 4, 3;
-            stroke-width: 2.0;
-        }
-
-        .tree-node-text {
-            font-family: var(--font-display);
-            font-size: 14px;
-            font-weight: 800;
-            fill: var(--white);
-            pointer-events: none;
-            text-anchor: middle;
-        }
-
-        .tree-node-type-text {
-            font-family: var(--font-main);
-            font-size: 8px;
-            font-weight: 700;
-            fill: var(--text-muted);
-            pointer-events: none;
-            text-anchor: middle;
-        }
-
-        .tree-node-type-text.prime {
-            fill: var(--primary);
-        }
-
-        /* Interactive Potion Formula Tray */
-        .equation-input-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .equation-bar-wrapper {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 16px;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 16px 20px;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(255,255,255,0.03);
-            align-items: center;
-        }
-
-        .formula-input {
-            background: #060918;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-sm);
-            padding: 12px 18px;
-            font-family: var(--font-mono);
-            font-size: 1.1rem;
-            color: var(--white);
-            outline: none;
-            width: 100%;
-            transition: var(--transition);
-        }
-
-        .formula-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
-        }
-
-        /* Modal Dialog splits factors */
-        .split-dialog-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(2, 4, 11, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .split-dialog-box {
-            background: var(--bg-surface);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-lg);
-            padding: 28px;
-            width: 380px;
-            box-shadow: var(--shadow);
-            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .split-dialog-box h3 {
-            font-family: var(--font-display);
-            font-size: 1.25rem;
-            margin-bottom: 12px;
-            color: var(--white);
-        }
-
-        .split-inputs {
-            display: grid;
-            grid-template-columns: 1fr 20px 1fr;
-            align-items: center;
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .factor-box-input {
-            background: #02040b;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-sm);
-            padding: 12px;
-            text-align: center;
-            font-family: var(--font-mono);
-            font-size: 1.2rem;
-            color: var(--white);
-            outline: none;
-            width: 100%;
-        }
-
-        .factor-box-input:focus {
-            border-color: var(--accent);
-        }
-
-        /* ESOL guide bubble and glossary card styles */
-        .esol-panel {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.03) 100%);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .esol-bubble {
-            background: rgba(0, 0, 0, 0.25);
-            border-left: 4px solid var(--primary);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            color: var(--text-main);
-            margin-bottom: 16px;
-        }
-
-        .esol-translation {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-style: italic;
-            margin-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 8px;
-        }
-
-        .vocab-word-pill {
-            padding: 6px 12px;
-            background: rgba(255,255,255,0.01);
-            border: 1px solid rgba(255,255,255,0.04);
-            font-size: 0.8rem;
-            border-radius: 15px;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: var(--transition);
-        }
-
-        .vocab-word-pill:hover {
-            color: var(--white);
-            background: rgba(16,185,129,0.1);
-            border-color: rgba(16,185,129,0.3);
-        }
-
-        /* Diagnostics console overlay */
-        .diagnostics-panel {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 330px;
-            background: #050711;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            z-index: 1000;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-            display: none;
-            animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .diagnostics-log-box {
-            background: #010206;
-            border-radius: var(--radius-sm);
-            height: 140px;
-            overflow-y: auto;
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            padding: 8px 12px;
-            color: #34d399;
-            margin: 12px 0;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            line-height: 1.4;
-        }
-
-        .log-error { color: var(--danger); }
-        .log-success { color: var(--primary); }
-        .log-warning { color: var(--accent); }
-
-        @keyframes pulse-slow {
-            0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px var(--primary-glow)); }
-            50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 15px var(--primary)); }
-        }
-
-        @keyframes slide-up {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        footer {
-            text-align: center;
-            padding: 24px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--border-glow);
-            margin-top: 40px;
-            background: rgba(4, 8, 21, 0.8);
-            font-family: var(--font-display);
-        }
+      footer {
+        text-align: center;
+        padding: 24px;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        border-top: 1px solid var(--border-glow);
+        margin-top: 40px;
+        background: rgba(4, 8, 21, 0.8);
+        font-family: var(--font-display);
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <header>
-        <div class="logo-section">
-            <span class="logo-icon">🌿</span>
-            <h1 class="logo-title">Factor Tree Space Salvage</h1>
-        </div>
-        <div class="header-buttons">
-            <button class="btn btn-primary" id="lang-toggle-btn" onclick="toggleLanguage()">
-                🌐 EN | ES
-            </button>
-            <button class="btn" onclick="openDiagnostics()">
-                🛠️ Diagnostics
-            </button>
-            <button class="btn btn-secondary" id="selftest-btn" onclick="runSelfTests()">
-                ⚡ Self-Test
-            </button>
-        </div>
+      <div class="logo-section">
+        <span class="logo-icon">🌿</span>
+        <h1 class="logo-title">Factor Tree Space Salvage</h1>
+      </div>
+      <div class="header-buttons">
+        <button
+          class="btn btn-primary"
+          id="lang-toggle-btn"
+          onclick="toggleLanguage()"
+        >
+          🌐 EN | ES
+        </button>
+        <button class="btn" onclick="openDiagnostics()">🛠️ Diagnostics</button>
+        <button
+          class="btn btn-secondary"
+          id="selftest-btn"
+          onclick="runSelfTests()"
+        >
+          ⚡ Self-Test
+        </button>
+      </div>
     </header>
 
     <main class="app-grid">
-        <!-- Sidebar: Quests & Vocabulary Definitions -->
-        <div class="sidebar">
-            
-            <!-- Quests Panel -->
-            <div class="glass-panel">
-                <h2 class="panel-title">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"></path></svg>
-                    <span id="lbl-mission-control">Supply Cargo Pods</span>
-                </h2>
+      <!-- Sidebar: Quests & Vocabulary Definitions -->
+      <div class="sidebar">
+        <!-- Quests Panel -->
+        <div class="glass-panel">
+          <h2 class="panel-title">
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"
+              ></path>
+            </svg>
+            <span id="lbl-mission-control">Supply Cargo Pods</span>
+          </h2>
 
-                <div class="quest-matching-hud">
-                    <div class="hud-metric">
-                        <span class="hud-metric-label" id="lbl-pod-state">Pod Status</span>
-                        <span class="hud-metric-value" id="quest-status-flag" style="color:var(--text-muted);">SANDBOX</span>
-                    </div>
-                    <div class="hud-metric" style="text-align: right;">
-                        <span class="hud-metric-label" id="lbl-tree-complete">Tree Status</span>
-                        <span class="hud-metric-value" id="quest-tree-state" style="color:var(--danger);">UNFINISHED</span>
-                    </div>
-                </div>
-
-                <div class="quest-list" id="quests-container">
-                    <!-- Loaded dynamically -->
-                </div>
+          <div class="quest-matching-hud">
+            <div class="hud-metric">
+              <span class="hud-metric-label" id="lbl-pod-state"
+                >Pod Status</span
+              >
+              <span
+                class="hud-metric-value"
+                id="quest-status-flag"
+                style="color: var(--text-muted)"
+                >SANDBOX</span
+              >
             </div>
-
-            <!-- ESOL Vocabulary glossary -->
-            <div class="glass-panel esol-panel">
-                <h2 class="panel-title" style="color: var(--primary); border-bottom-color: rgba(16, 185, 129, 0.15);">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
-                    <span id="lbl-glossary-title">Acoustic Glossary</span>
-                </h2>
-
-                <div class="esol-bubble" id="esol-scaffold-box">
-                    <span id="esol-en">Click on any factor node to break it down! Prune composite numbers until all leaf nodes are green prime numbers.</span>
-                    <div class="esol-translation" id="esol-es">¡Haz clic en cualquier nodo para separarlo! Divide los números compuestos hasta que todas las hojas sean números primos verdes.</div>
-                </div>
-
-                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;" id="glossary-pills-container">
-                    <!-- Interactive pills -->
-                </div>
+            <div class="hud-metric" style="text-align: right">
+              <span class="hud-metric-label" id="lbl-tree-complete"
+                >Tree Status</span
+              >
+              <span
+                class="hud-metric-value"
+                id="quest-tree-state"
+                style="color: var(--danger)"
+                >UNFINISHED</span
+              >
             </div>
+          </div>
 
+          <div class="quest-list" id="quests-container">
+            <!-- Loaded dynamically -->
+          </div>
         </div>
 
-        <!-- Main Workspace (SVG Display & Formula submission) -->
-        <div class="main-workspace">
-            
-            <!-- Dynamic factor tree SVG canvas -->
-            <div class="glass-panel" style="padding: 16px;">
-                <div class="viewport-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding: 4px 8px;">
-                    <div class="panel-title" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path></svg>
-                        <span id="lbl-workspace-title">Supply Cargo Factor Tree console</span>
-                    </div>
-                    <div style="font-family: var(--font-display); font-size: 0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 12px; color:var(--text-muted);" id="nodes-count-label">
-                        Leaf Nodes: 1
-                    </div>
-                </div>
+        <!-- ESOL Vocabulary glossary -->
+        <div class="glass-panel esol-panel">
+          <h2
+            class="panel-title"
+            style="
+              color: var(--primary);
+              border-bottom-color: rgba(16, 185, 129, 0.15);
+            "
+          >
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+              ></path>
+            </svg>
+            <span id="lbl-glossary-title">Acoustic Glossary</span>
+          </h2>
 
-                <div class="svg-container">
-                    <svg id="tree-svg" class="viewport-svg" viewBox="0 0 800 400">
-                        <!-- Branches lines and circles mapped programmatically -->
-                    </svg>
-                </div>
+          <div class="esol-bubble" id="esol-scaffold-box">
+            <span id="esol-en"
+              >Click on any factor node to break it down! Prune composite
+              numbers until all leaf nodes are green prime numbers.</span
+            >
+            <div class="esol-translation" id="esol-es">
+              ¡Haz clic en cualquier nodo para separarlo! Divide los números
+              compuestos hasta que todas las hojas sean números primos verdes.
             </div>
+          </div>
 
-            <!-- Formula Builder tray -->
-            <div class="glass-panel">
-                <h2 class="panel-title">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"></path></svg>
-                    <span id="lbl-formula-title">Synthesize Prime Factorization Formula</span>
-                </h2>
-
-                <div class="equation-input-panel">
-                    <div class="esol-bubble" style="border-left-color: var(--accent); margin-bottom: 0; padding: 12px;">
-                        <span id="formula-tip-en">Write the final factorization equation using * or × as multipliers. Exponents like 2^2 are accepted!</span>
-                        <div class="esol-translation" id="formula-tip-es" style="margin-top:6px; padding-top:6px;">Escribe la ecuación final usando * o ×. ¡Se aceptan exponentes como 2^2!</div>
-                    </div>
-
-                    <div class="equation-bar-wrapper">
-                        <input type="text" class="formula-input" id="factorization-formula-bar" placeholder="e.g. 2 * 2 * 3 * 5" onkeydown="if(event.key==='Enter') evaluateFormula()">
-                        <button class="btn btn-primary" onclick="evaluateFormula()" id="btn-submit">
-                            🚀 Decrypt Cargo
-                        </button>
-                    </div>
-                </div>
-            </div>
-
+          <div
+            style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px"
+            id="glossary-pills-container"
+          >
+            <!-- Interactive pills -->
+          </div>
         </div>
+      </div>
+
+      <!-- Main Workspace (SVG Display & Formula submission) -->
+      <div class="main-workspace">
+        <!-- Dynamic factor tree SVG canvas -->
+        <div class="glass-panel" style="padding: 16px">
+          <div
+            class="viewport-header"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 12px;
+              padding: 4px 8px;
+            "
+          >
+            <div
+              class="panel-title"
+              style="margin-bottom: 0; border-bottom: none; padding-bottom: 0"
+            >
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+                ></path>
+              </svg>
+              <span id="lbl-workspace-title"
+                >Supply Cargo Factor Tree console</span
+              >
+            </div>
+            <div
+              style="
+                font-family: var(--font-display);
+                font-size: 0.8rem;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 4px 10px;
+                border-radius: 12px;
+                color: var(--text-muted);
+              "
+              id="nodes-count-label"
+            >
+              Leaf Nodes: 1
+            </div>
+          </div>
+
+          <div class="svg-container">
+            <svg id="tree-svg" class="viewport-svg" viewBox="0 0 800 400">
+              <!-- Branches lines and circles mapped programmatically -->
+            </svg>
+          </div>
+        </div>
+
+        <!-- Formula Builder tray -->
+        <div class="glass-panel">
+          <h2 class="panel-title">
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"
+              ></path>
+            </svg>
+            <span id="lbl-formula-title"
+              >Synthesize Prime Factorization Formula</span
+            >
+          </h2>
+
+          <div class="equation-input-panel">
+            <div
+              class="esol-bubble"
+              style="
+                border-left-color: var(--accent);
+                margin-bottom: 0;
+                padding: 12px;
+              "
+            >
+              <span id="formula-tip-en"
+                >Write the final factorization equation using * or × as
+                multipliers. Exponents like 2^2 are accepted!</span
+              >
+              <div
+                class="esol-translation"
+                id="formula-tip-es"
+                style="margin-top: 6px; padding-top: 6px"
+              >
+                Escribe la ecuación final usando * o ×. ¡Se aceptan exponentes
+                como 2^2!
+              </div>
+            </div>
+
+            <div class="equation-bar-wrapper">
+              <input
+                type="text"
+                class="formula-input"
+                id="factorization-formula-bar"
+                placeholder="e.g. 2 * 2 * 3 * 5"
+                onkeydown="if (event.key === 'Enter') evaluateFormula();"
+              />
+              <button
+                class="btn btn-primary"
+                onclick="evaluateFormula()"
+                id="btn-submit"
+              >
+                🚀 Decrypt Cargo
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Interactive dialog splits factor -->
     <div class="split-dialog-overlay" id="split-overlay">
-        <div class="split-dialog-box">
-            <h3 id="split-title">Split Cargo Node</h3>
-            <p style="font-size:0.8rem; color:var(--text-muted);" id="split-prompt">Enter a valid factor pair multiplied to equal this node.</p>
-            
-            <div class="split-inputs">
-                <input type="number" class="factor-box-input" id="factor-in-1" min="2">
-                <span style="font-size:1.2rem; font-weight:800; text-align:center;">&times;</span>
-                <input type="number" class="factor-box-input" id="factor-in-2" min="2">
-            </div>
+      <div class="split-dialog-box">
+        <h3 id="split-title">Split Cargo Node</h3>
+        <p
+          style="font-size: 0.8rem; color: var(--text-muted)"
+          id="split-prompt"
+        >
+          Enter a valid factor pair multiplied to equal this node.
+        </p>
 
-            <div style="display:flex; justify-content:flex-end; gap:12px;">
-                <button class="btn" onclick="closeSplitDialog()">Cancel</button>
-                <button class="btn btn-primary" onclick="submitSplitNode()">Apply split</button>
-            </div>
+        <div class="split-inputs">
+          <input
+            type="number"
+            class="factor-box-input"
+            id="factor-in-1"
+            min="2"
+          />
+          <span style="font-size: 1.2rem; font-weight: 800; text-align: center"
+            >&times;</span
+          >
+          <input
+            type="number"
+            class="factor-box-input"
+            id="factor-in-2"
+            min="2"
+          />
         </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px">
+          <button class="btn" onclick="closeSplitDialog()">Cancel</button>
+          <button class="btn btn-primary" onclick="submitSplitNode()">
+            Apply split
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Diagnostics panel overlay -->
     <div class="diagnostics-panel" id="diagnostics-overlay">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
-            <strong style="font-family: var(--font-display); font-size: 0.95rem;">🛠️ Diagnostics Console</strong>
-            <button onclick="closeDiagnostics()" style="background:none; border:none; color:var(--danger); font-size:1.1rem; font-weight:800; cursor:pointer;">&times;</button>
-        </div>
-        <div class="diagnostics-log-box" id="diagnostics-logs"></div>
-        <button class="btn" style="width:100%; justify-content:center; padding: 8px;" onclick="clearDiagnosticsLogs()">
-            Clear Logs
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          padding-bottom: 6px;
+        "
+      >
+        <strong style="font-family: var(--font-display); font-size: 0.95rem"
+          >🛠️ Diagnostics Console</strong
+        >
+        <button
+          onclick="closeDiagnostics()"
+          style="
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+          "
+        >
+          &times;
         </button>
+      </div>
+      <div class="diagnostics-log-box" id="diagnostics-logs"></div>
+      <button
+        class="btn"
+        style="width: 100%; justify-content: center; padding: 8px"
+        onclick="clearDiagnosticsLogs()"
+      >
+        Clear Logs
+      </button>
     </div>
 
     <footer>
-        <p>&copy; 2026 Neft Learning Systems. Built locally, completely private. Designed to support Grade 6 Prime Factorization standards expected score ranges.</p>
+      <p>
+        &copy; 2026 Neft Learning Systems. Built locally, completely private.
+        Designed to support Grade 6 Prime Factorization standards expected score
+        ranges.
+      </p>
     </footer>
 
     <script>
-        // ==========================================
-        // 1. CONFIGURATION
-        // ==========================================
-        const CONFIG = {
-            primes: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47],
-            quests: [
-                { id: 1, target: 36, title: '📦 Cargo Pod Alpha', title_es: '📦 Contenedor Alfa', desc: 'Factor supply pod 36. Tip: 36 = 2² * 3².', desc_es: 'Factoriza el contenedor 36. Pista: 36 = 2² * 3².' },
-                { id: 2, target: 60, title: '🚀 Supply Pod Gamma', title_es: '🚀 Contenedor Gamma', desc: 'Factor heavy battery pod 60. Factorization tree splits are adjustable!', desc_es: 'Factoriza el contenedor 60. ¡Las divisiones del árbol son libres!' },
-                { id: 3, target: 72, title: '📡 Comms Relay Pod', title_es: '📡 Contenedor de Antena', desc: 'Factor relay pod 72. All branches must reduce to primes.', desc_es: 'Factoriza el contenedor 72. Todas las ramas deben reducirse a primos.' },
-                { id: 4, target: 90, title: '🔋 Core Generator Pod', title_es: '🔋 Contenedor Generador', desc: 'Factor core generator 90. Validate leaf primes carefully!', desc_es: 'Factoriza el generador 90. ¡Verifica las hojas primas con cuidado!' }
-            ],
-            glossary: [
-                {
-                    term: 'Prime Number',
-                    term_es: 'Número Primo',
-                    def: 'A number bigger than 1 with exactly two factors: 1 and itself.',
-                    def_es: 'Un número mayor que 1 con exactamente dos factores: el 1 y sí mismo.'
-                },
-                {
-                    term: 'Composite Number',
-                    term_es: 'Número Compuesto',
-                    def: 'A number bigger than 1 that can be divided by more than just 1 and itself.',
-                    def_es: 'Un número mayor que 1 que tiene más de dos factores (se puede dividir por más números).'
-                },
-                {
-                    term: 'Factor Tree',
-                    term_es: 'Árbol de Factores',
-                    def: 'A diagram step-by-step splitting a number into its multiplying components.',
-                    def_es: 'Un diagrama paso a paso que divide un número en sus componentes multiplicadores.'
-                },
-                {
-                    term: 'Exponent',
-                    term_es: 'Exponente',
-                    def: 'A small number showing how many times a base number is multiplied by itself.',
-                    def_es: 'Un número pequeño que indica cuántas veces se multiplica la base por sí misma.'
-                }
-            ],
-            translations: {
-                en: {
-                    'mission-control': 'Supply Cargo Pods',
-                    'navigation-guide': 'Factor Tree Scaffold',
-                    'workspace-title': 'Supply Cargo Factor Tree Console',
-                    'formula-title': 'Synthesize Prime Factorization Formula',
-                    'pod-state': 'Pod Status',
-                    'tree-complete': 'Tree Status',
-                    'sandbox': 'SANDBOX PLAY',
-                    'active': 'ACTIVE POD 📦',
-                    'success': 'DECRYPTED ✅',
-                    'unfinished': 'UNFINISHED ❌',
-                    'ready': 'READY TO MULTIPLY ⚡',
-                    'btn-submit': '🚀 Decrypt Cargo'
-                },
-                es: {
-                    'mission-control': 'Contenedores de Carga',
-                    'navigation-guide': 'Ayudante de Factores ESOL',
-                    'workspace-title': 'Consola de Árbol de Factores',
-                    'formula-title': 'Sintetizar Fórmula de Factorización',
-                    'pod-state': 'Estado de Carga',
-                    'tree-complete': 'Estado del Árbol',
-                    'sandbox': 'MODO LIBRE CÓSMICO',
-                    'active': 'CONTENEDOR ACTIVO 📦',
-                    'success': 'DESCIFRADO ✅',
-                    'unfinished': 'INCOMPLETO ❌',
-                    'ready': 'LISTO PARA MULTIPLICAR ⚡',
-                    'btn-submit': '🚀 Descifrar Carga'
-                }
-            }
+      // ==========================================
+      // 1. CONFIGURATION
+      // ==========================================
+      const CONFIG = {
+        primes: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47],
+        quests: [
+          {
+            id: 1,
+            target: 36,
+            title: "📦 Cargo Pod Alpha",
+            title_es: "📦 Contenedor Alfa",
+            desc: "Factor supply pod 36. Tip: 36 = 2² * 3².",
+            desc_es: "Factoriza el contenedor 36. Pista: 36 = 2² * 3².",
+          },
+          {
+            id: 2,
+            target: 60,
+            title: "🚀 Supply Pod Gamma",
+            title_es: "🚀 Contenedor Gamma",
+            desc: "Factor heavy battery pod 60. Factorization tree splits are adjustable!",
+            desc_es:
+              "Factoriza el contenedor 60. ¡Las divisiones del árbol son libres!",
+          },
+          {
+            id: 3,
+            target: 72,
+            title: "📡 Comms Relay Pod",
+            title_es: "📡 Contenedor de Antena",
+            desc: "Factor relay pod 72. All branches must reduce to primes.",
+            desc_es:
+              "Factoriza el contenedor 72. Todas las ramas deben reducirse a primos.",
+          },
+          {
+            id: 4,
+            target: 90,
+            title: "🔋 Core Generator Pod",
+            title_es: "🔋 Contenedor Generador",
+            desc: "Factor core generator 90. Validate leaf primes carefully!",
+            desc_es:
+              "Factoriza el generador 90. ¡Verifica las hojas primas con cuidado!",
+          },
+        ],
+        glossary: [
+          {
+            term: "Prime Number",
+            term_es: "Número Primo",
+            def: "A number bigger than 1 with exactly two factors: 1 and itself.",
+            def_es:
+              "Un número mayor que 1 con exactamente dos factores: el 1 y sí mismo.",
+          },
+          {
+            term: "Composite Number",
+            term_es: "Número Compuesto",
+            def: "A number bigger than 1 that can be divided by more than just 1 and itself.",
+            def_es:
+              "Un número mayor que 1 que tiene más de dos factores (se puede dividir por más números).",
+          },
+          {
+            term: "Factor Tree",
+            term_es: "Árbol de Factores",
+            def: "A diagram step-by-step splitting a number into its multiplying components.",
+            def_es:
+              "Un diagrama paso a paso que divide un número en sus componentes multiplicadores.",
+          },
+          {
+            term: "Exponent",
+            term_es: "Exponente",
+            def: "A small number showing how many times a base number is multiplied by itself.",
+            def_es:
+              "Un número pequeño que indica cuántas veces se multiplica la base por sí misma.",
+          },
+        ],
+        translations: {
+          en: {
+            "mission-control": "Supply Cargo Pods",
+            "navigation-guide": "Factor Tree Scaffold",
+            "workspace-title": "Supply Cargo Factor Tree Console",
+            "formula-title": "Synthesize Prime Factorization Formula",
+            "pod-state": "Pod Status",
+            "tree-complete": "Tree Status",
+            sandbox: "SANDBOX PLAY",
+            active: "ACTIVE POD 📦",
+            success: "DECRYPTED ✅",
+            unfinished: "UNFINISHED ❌",
+            ready: "READY TO MULTIPLY ⚡",
+            "btn-submit": "🚀 Decrypt Cargo",
+          },
+          es: {
+            "mission-control": "Contenedores de Carga",
+            "navigation-guide": "Ayudante de Factores",
+            "workspace-title": "Consola de Árbol de Factores",
+            "formula-title": "Sintetizar Fórmula de Factorización",
+            "pod-state": "Estado de Carga",
+            "tree-complete": "Estado del Árbol",
+            sandbox: "MODO LIBRE CÓSMICO",
+            active: "CONTENEDOR ACTIVO 📦",
+            success: "DESCIFRADO ✅",
+            unfinished: "INCOMPLETO ❌",
+            ready: "LISTO PARA MULTIPLICAR ⚡",
+            "btn-submit": "🚀 Descifrar Carga",
+          },
+        },
+      };
+
+      // ==========================================
+      // 2. INTEGRITY CHECK (validateConfig)
+      // ==========================================
+      function validateConfig() {
+        if (!CONFIG.primes || CONFIG.primes.length === 0) {
+          throw new Error(
+            "CONFIG: Prime numbers verification list is missing.",
+          );
+        }
+        if (!CONFIG.quests || CONFIG.quests.length === 0) {
+          throw new Error("CONFIG: Quests cargo pod values are missing.");
+        }
+        if (
+          !CONFIG.translations ||
+          !CONFIG.translations.en ||
+          !CONFIG.translations.es
+        ) {
+          throw new Error("CONFIG: Bilingual translation packs are missing.");
+        }
+      }
+
+      // ==========================================
+      // 3. DETERMINISTIC STATE MACHINE
+      // ==========================================
+      const STATE = {
+        activeQuestId: null, // null is Sandbox
+        completedQuests: [],
+        language: "en",
+        activeGlossaryWord: "Prime Number",
+
+        // Factor tree coordinates structure representation:
+        // Node: { id: string, val: number, isPrime: boolean, x: number, y: number, parentId: string, children: [string] }
+        treeNodes: {},
+        selectedNodeId: null,
+        isTreeComplete: false,
+
+        audioInitialized: false,
+      };
+
+      function transitionState(updatedFields) {
+        Object.assign(STATE, updatedFields);
+
+        // Audit factor tree complete state
+        STATE.isTreeComplete = checkTreeFactoredState();
+
+        // Redraw HTML & SVG UI elements
+        renderUI();
+      }
+
+      function isNumberPrime(num) {
+        if (num <= 1) return false;
+        for (let i = 2; i <= Math.sqrt(num); i++) {
+          if (num % i === 0) return false;
+        }
+        return true;
+      }
+
+      function checkTreeFactoredState() {
+        const nodes = Object.values(STATE.treeNodes);
+        if (nodes.length === 0) return false;
+
+        // Tree is factored when every leaf node (node with no children) is a prime number!
+        const leaves = nodes.filter(
+          (n) => !n.children || n.children.length === 0,
+        );
+        return leaves.every((n) => n.isPrime);
+      }
+
+      // ==========================================
+      // 4. FACTOR TREE SPARK GENERATOR (SERVICE)
+      // ==========================================
+      function initializeFactorTree(rootValue) {
+        const rootId = "node-root";
+        const nodes = {};
+
+        nodes[rootId] = {
+          id: rootId,
+          val: rootValue,
+          isPrime: isNumberPrime(rootValue),
+          x: 400,
+          y: 50,
+          parentId: null,
+          children: [],
         };
 
-        // ==========================================
-        // 2. INTEGRITY CHECK (validateConfig)
-        // ==========================================
-        function validateConfig() {
-            if (!CONFIG.primes || CONFIG.primes.length === 0) {
-                throw new Error("CONFIG: Prime numbers verification list is missing.");
-            }
-            if (!CONFIG.quests || CONFIG.quests.length === 0) {
-                throw new Error("CONFIG: Quests cargo pod values are missing.");
-            }
-            if (!CONFIG.translations || !CONFIG.translations.en || !CONFIG.translations.es) {
-                throw new Error("CONFIG: Bilingual translation packs are missing.");
-            }
-        }
+        transitionState({
+          treeNodes: nodes,
+          selectedNodeId: null,
+          isTreeComplete: isNumberPrime(rootValue),
+        });
 
-        // ==========================================
-        // 3. DETERMINISTIC STATE MACHINE
-        // ==========================================
-        const STATE = {
-            activeQuestId: null, // null is Sandbox
-            completedQuests: [],
-            language: 'en',
-            activeGlossaryWord: 'Prime Number',
-            
-            // Factor tree coordinates structure representation:
-            // Node: { id: string, val: number, isPrime: boolean, x: number, y: number, parentId: string, children: [string] }
-            treeNodes: {}, 
-            selectedNodeId: null,
-            isTreeComplete: false,
+        logDiagnostics(`Initialized factor tree root value: ${rootValue}`);
+      }
 
-            audioInitialized: false
+      function splitNode(nodeId, f1, f2) {
+        const parent = STATE.treeNodes[nodeId];
+        if (!parent || parent.isPrime) return;
+
+        // Correct split coordinate heights:
+        // Parent level determines child spacing width
+        const currentLevel = Math.round((parent.y - 50) / 75);
+        const childSpacingX = 140 / Math.pow(1.6, currentLevel);
+        const childY = parent.y + 75;
+
+        const leftId = `${nodeId}-L`;
+        const rightId = `${nodeId}-R`;
+
+        const leftChild = {
+          id: leftId,
+          val: f1,
+          isPrime: isNumberPrime(f1),
+          x: parent.x - childSpacingX,
+          y: childY,
+          parentId: nodeId,
+          children: [],
         };
 
-        function transitionState(updatedFields) {
-            Object.assign(STATE, updatedFields);
+        const rightChild = {
+          id: rightId,
+          val: f2,
+          isPrime: isNumberPrime(f2),
+          x: parent.x + childSpacingX,
+          y: childY,
+          parentId: nodeId,
+          children: [],
+        };
 
-            // Audit factor tree complete state
-            STATE.isTreeComplete = checkTreeFactoredState();
+        // Mutate and connect
+        const nodes = { ...STATE.treeNodes };
+        nodes[nodeId].children = [leftId, rightId];
+        nodes[leftId] = leftChild;
+        nodes[rightId] = rightChild;
 
-            // Redraw HTML & SVG UI elements
-            renderUI();
+        // Trigger success chime if prime node sprouts
+        if (STATE.audioInitialized) {
+          if (leftChild.isPrime || rightChild.isPrime) {
+            AudioEngine.playPrimeSproutChime();
+          } else {
+            AudioEngine.playSplitChirp();
+          }
         }
 
-        function isNumberPrime(num) {
-            if (num <= 1) return false;
-            for (let i = 2; i <= Math.sqrt(num); i++) {
-                if (num % i === 0) return false;
+        transitionState({ treeNodes: nodes });
+        logDiagnostics(`Node ${parent.val} split into factors: ${f1} × ${f2}`);
+      }
+
+      // ==========================================
+      // 5. INTERACTIVE TRIGGERS
+      // ==========================================
+      function toggleLanguage() {
+        const next = STATE.language === "en" ? "es" : "en";
+        transitionState({ language: next });
+        logDiagnostics(`Language toggled: ${next}`);
+      }
+
+      function selectQuest(questId) {
+        if (STATE.activeQuestId === questId) {
+          transitionState({ activeQuestId: null });
+          initializeFactorTree(48); // default sandbox
+          logDiagnostics("Returned to free play sandbox.");
+        } else {
+          const quest = CONFIG.quests.find((q) => q.id === questId);
+          transitionState({ activeQuestId: questId });
+          initializeFactorTree(quest.target);
+          logDiagnostics(`Activated Supply Quest: Pod ${quest.target}`);
+        }
+      }
+
+      function clickNode(nodeId) {
+        const node = STATE.treeNodes[nodeId];
+        if (!node || node.isPrime) return; // primes cannot split
+
+        STATE.selectedNodeId = nodeId;
+
+        // Open interactive HTML Split Modal Dialog box
+        const overlay = document.getElementById("split-overlay");
+        overlay.style.display = "flex";
+        document.getElementById("split-title").innerText =
+          `Split Node: ${node.val}`;
+        document.getElementById("split-prompt").innerText =
+          `Enter two factors that multiply to precisely ${node.val}`;
+
+        document.getElementById("factor-in-1").value = "";
+        document.getElementById("factor-in-2").value = "";
+        document.getElementById("factor-in-1").focus();
+      }
+
+      function closeSplitDialog() {
+        document.getElementById("split-overlay").style.display = "none";
+      }
+
+      function submitSplitNode() {
+        const f1 = parseInt(document.getElementById("factor-in-1").value, 10);
+        const f2 = parseInt(document.getElementById("factor-in-2").value, 10);
+
+        if (isNaN(f1) || isNaN(f2) || f1 <= 1 || f2 <= 1) {
+          alert("Factors must be positive whole numbers greater than 1.");
+          return;
+        }
+
+        const targetVal = STATE.treeNodes[STATE.selectedNodeId].val;
+        if (f1 * f2 !== targetVal) {
+          alert(
+            `Error: ${f1} × ${f2} equals ${f1 * f2}, which does not match ${targetVal}!`,
+          );
+          if (STATE.audioInitialized) {
+            AudioEngine.playErrorAlert();
+          }
+          return;
+        }
+
+        closeSplitDialog();
+        splitNode(STATE.selectedNodeId, f1, f2);
+      }
+
+      // ==========================================
+      // 6. EQUATION PARSER (evaluateFormula)
+      // ==========================================
+      function evaluateFormula() {
+        const formulaStr = document
+          .getElementById("factorization-formula-bar")
+          .value.trim();
+        if (!formulaStr) return;
+
+        // Remove spaces, replace visual × with standard asterisk
+        let cleanFormula = formulaStr.replace(/\s+/g, "").replace(/×/g, "*");
+
+        // Parse exponents (e.g. 2^2 becomes Math.pow(2,2))
+        cleanFormula = cleanFormula.replace(/(\d+)\^(\d+)/g, "Math.pow($1,$2)");
+
+        try {
+          // Safely evaluate factors expression
+          const parsedValue = eval(cleanFormula);
+
+          // Validation rules:
+          // 1. Math value must equal the root pod value
+          const nodesList = Object.values(STATE.treeNodes);
+          const rootVal = nodesList.find((n) => n.parentId === null).val;
+
+          if (parsedValue !== rootVal) {
+            throw new Error(
+              `Formula value evaluates to ${parsedValue}, expected ${rootVal}.`,
+            );
+          }
+
+          // 2. All factors used must be Prime Numbers!
+          // Extract only numbers from cleanFormula to verify prime integrity
+          const numbersUsed = formulaStr.match(/\d+/g).map(Number);
+          const allPrimes = numbersUsed.every(isNumberPrime);
+
+          if (!allPrimes) {
+            throw new Error(
+              "Formula contains composite values! Only prime factors are accepted.",
+            );
+          }
+
+          // If passed both, Success! pod decrypted
+          if (STATE.audioInitialized) {
+            AudioEngine.playPodDecryptedChord();
+          }
+
+          alert(
+            `Success! Supply Pod Decrypted! Equation ${formulaStr} is 100% correct! ✅`,
+          );
+          logDiagnostics(
+            `Decrypted Pod successfully with equation: ${formulaStr}`,
+            "success",
+          );
+
+          // Mark quest completed
+          if (STATE.activeQuestId !== null) {
+            if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
+              const completed = [...STATE.completedQuests, STATE.activeQuestId];
+              transitionState({ completedQuests: completed });
             }
-            return true;
+          }
+        } catch (e) {
+          alert("Incorrect Equation! " + e.message);
+          logDiagnostics("Formula decryption failed: " + e.message, "error");
+          if (STATE.audioInitialized) {
+            AudioEngine.playErrorAlert();
+          }
         }
+      }
 
-        function checkTreeFactoredState() {
-            const nodes = Object.values(STATE.treeNodes);
-            if (nodes.length === 0) return false;
+      function clickGlossaryWord(word) {
+        transitionState({ activeGlossaryWord: word });
+      }
 
-            // Tree is factored when every leaf node (node with no children) is a prime number!
-            const leaves = nodes.filter(n => !n.children || n.children.length === 0);
-            return leaves.every(n => n.isPrime);
-        }
+      // ==========================================
+      // 7. WEB AUDIO API SOUND ENGINE
+      // ==========================================
+      const AudioEngine = {
+        ctx: null,
+        masterGain: null,
 
-        // ==========================================
-        // 4. FACTOR TREE SPARK GENERATOR (SERVICE)
-        // ==========================================
-        function initializeFactorTree(rootValue) {
-            const rootId = 'node-root';
-            const nodes = {};
-            
-            nodes[rootId] = {
-                id: rootId,
-                val: rootValue,
-                isPrime: isNumberPrime(rootValue),
-                x: 400,
-                y: 50,
-                parentId: null,
-                children: []
-            };
+        init() {
+          try {
+            const AudioContextClass =
+              window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContextClass();
+            this.masterGain = this.ctx.createGain();
+            this.masterGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+            this.masterGain.connect(this.ctx.destination);
+            STATE.audioInitialized = true;
+          } catch (e) {
+            console.log("AudioContext blocked or unsuited: " + e.message);
+          }
+        },
 
-            transitionState({
-                treeNodes: nodes,
-                selectedNodeId: null,
-                isTreeComplete: isNumberPrime(rootValue)
+        playSplitChirp() {
+          if (!STATE.audioInitialized) this.init();
+          try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + 0.15,
+            );
+            gain.connect(this.masterGain);
+
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+            osc.frequency.setValueAtTime(660, this.ctx.currentTime + 0.05);
+            osc.connect(gain);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.2);
+          } catch (e) {}
+        },
+
+        playPrimeSproutChime() {
+          if (!STATE.audioInitialized) this.init();
+          try {
+            // Bright high-pitched chime
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + 0.4,
+            );
+            gain.connect(this.masterGain);
+
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(880, this.ctx.currentTime);
+            osc.frequency.setValueAtTime(1320, this.ctx.currentTime + 0.1);
+            osc.connect(gain);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.45);
+          } catch (e) {}
+        },
+
+        playErrorAlert() {
+          if (!STATE.audioInitialized) this.init();
+          try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(
+              0.001,
+              this.ctx.currentTime + 0.3,
+            );
+            gain.connect(this.masterGain);
+
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+            osc.frequency.linearRampToValueAtTime(
+              80,
+              this.ctx.currentTime + 0.3,
+            );
+            osc.connect(gain);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.35);
+          } catch (e) {}
+        },
+
+        playPodDecryptedChord() {
+          if (!STATE.audioInitialized) this.init();
+          try {
+            // Ascending Major chord sweep
+            const notes = [261.63, 329.63, 392.0, 523.25]; // C major
+            notes.forEach((freq, idx) => {
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              gain.gain.setValueAtTime(0.05, this.ctx.currentTime + idx * 0.08);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                this.ctx.currentTime + idx * 0.08 + 0.5,
+              );
+              gain.connect(this.masterGain);
+
+              osc.type = "sine";
+              osc.frequency.setValueAtTime(
+                freq,
+                this.ctx.currentTime + idx * 0.08,
+              );
+              osc.connect(gain);
+              osc.start(this.ctx.currentTime + idx * 0.08);
+              osc.stop(this.ctx.currentTime + idx * 0.08 + 0.6);
             });
+          } catch (e) {}
+        },
+      };
 
-            logDiagnostics(`Initialized factor tree root value: ${rootValue}`);
+      // ==========================================
+      // 8. GUI VIEW ENGINE (renderUI)
+      // ==========================================
+      function renderUI() {
+        validateConfig();
+
+        // Translations
+        const lang = STATE.language;
+        const t = CONFIG.translations[lang];
+
+        document.getElementById("lbl-mission-control").innerText =
+          t["mission-control"];
+        document.getElementById("lbl-navigation-guide").innerText =
+          t["navigation-guide"];
+        document.getElementById("lbl-workspace-title").innerText =
+          t["workspace-title"];
+        document.getElementById("lbl-formula-title").innerText =
+          t["formula-title"];
+        document.getElementById("lbl-pod-state").innerText = t["pod-state"];
+        document.getElementById("lbl-tree-complete").innerText =
+          t["tree-complete"];
+        document.getElementById("btn-submit").innerText = t["btn-submit"];
+        document.getElementById("lang-toggle-btn").innerText =
+          lang === "en" ? "🌐 EN | ES" : "🌐 ES | EN";
+
+        // Quests Sidebar list
+        renderQuestsList();
+
+        // Matching HUD parameters
+        const statusEl = document.getElementById("quest-status-flag");
+        const treeStateEl = document.getElementById("quest-tree-state");
+
+        if (STATE.activeQuestId === null) {
+          statusEl.innerText = t["sandbox"];
+          statusEl.style.color = "var(--text-muted)";
+        } else {
+          const questDone = STATE.completedQuests.includes(STATE.activeQuestId);
+          if (questDone) {
+            statusEl.innerText = t["success"];
+            statusEl.style.color = "var(--primary)";
+          } else {
+            statusEl.innerText = t["active"];
+            statusEl.style.color = "var(--secondary)";
+          }
         }
 
-        function splitNode(nodeId, f1, f2) {
-            const parent = STATE.treeNodes[nodeId];
-            if (!parent || parent.isPrime) return;
-
-            // Correct split coordinate heights:
-            // Parent level determines child spacing width
-            const currentLevel = Math.round((parent.y - 50) / 75);
-            const childSpacingX = 140 / Math.pow(1.6, currentLevel);
-            const childY = parent.y + 75;
-
-            const leftId = `${nodeId}-L`;
-            const rightId = `${nodeId}-R`;
-
-            const leftChild = {
-                id: leftId,
-                val: f1,
-                isPrime: isNumberPrime(f1),
-                x: parent.x - childSpacingX,
-                y: childY,
-                parentId: nodeId,
-                children: []
-            };
-
-            const rightChild = {
-                id: rightId,
-                val: f2,
-                isPrime: isNumberPrime(f2),
-                x: parent.x + childSpacingX,
-                y: childY,
-                parentId: nodeId,
-                children: []
-            };
-
-            // Mutate and connect
-            const nodes = { ...STATE.treeNodes };
-            nodes[nodeId].children = [leftId, rightId];
-            nodes[leftId] = leftChild;
-            nodes[rightId] = rightChild;
-
-            // Trigger success chime if prime node sprouts
-            if (STATE.audioInitialized) {
-                if (leftChild.isPrime || rightChild.isPrime) {
-                    AudioEngine.playPrimeSproutChime();
-                } else {
-                    AudioEngine.playSplitChirp();
-                }
-            }
-
-            transitionState({ treeNodes: nodes });
-            logDiagnostics(`Node ${parent.val} split into factors: ${f1} × ${f2}`);
+        if (STATE.isTreeComplete) {
+          treeStateEl.innerText = t["ready"];
+          treeStateEl.style.color = "var(--primary)";
+          treeStateEl.style.textShadow = "0 0 10px var(--primary-glow)";
+        } else {
+          treeStateEl.innerText = t["unfinished"];
+          treeStateEl.style.color = "var(--danger)";
+          treeStateEl.style.textShadow = "none";
         }
 
-        // ==========================================
-        // 5. INTERACTIVE TRIGGERS
-        // ==========================================
-        function toggleLanguage() {
-            const next = STATE.language === 'en' ? 'es' : 'en';
-            transitionState({ language: next });
-            logDiagnostics(`Language toggled: ${next}`);
-        }
+        // Glossary and ESOL bubble guides
+        renderGlossaryHub();
 
-        function selectQuest(questId) {
-            if (STATE.activeQuestId === questId) {
-                transitionState({ activeQuestId: null });
-                initializeFactorTree(48); // default sandbox
-                logDiagnostics("Returned to free play sandbox.");
-            } else {
-                const quest = CONFIG.quests.find(q => q.id === questId);
-                transitionState({ activeQuestId: questId });
-                initializeFactorTree(quest.target);
-                logDiagnostics(`Activated Supply Quest: Pod ${quest.target}`);
-            }
-        }
+        // Render interactive SVG Factor Tree graphics
+        renderFactorTreeGraphics();
+      }
 
-        function clickNode(nodeId) {
-            const node = STATE.treeNodes[nodeId];
-            if (!node || node.isPrime) return; // primes cannot split
+      function renderQuestsList() {
+        const container = document.getElementById("quests-container");
+        container.innerHTML = "";
 
-            STATE.selectedNodeId = nodeId;
-            
-            // Open interactive HTML Split Modal Dialog box
-            const overlay = document.getElementById('split-overlay');
-            overlay.style.display = 'flex';
-            document.getElementById('split-title').innerText = `Split Node: ${node.val}`;
-            document.getElementById('split-prompt').innerText = `Enter two factors that multiply to precisely ${node.val}`;
-            
-            document.getElementById('factor-in-1').value = '';
-            document.getElementById('factor-in-2').value = '';
-            document.getElementById('factor-in-1').focus();
-        }
+        CONFIG.quests.forEach((q) => {
+          const isActive = STATE.activeQuestId === q.id;
+          const completed = STATE.completedQuests.includes(q.id);
+          const title = STATE.language === "en" ? q.title : q.title_es;
+          const desc = STATE.language === "en" ? q.desc : q.desc_es;
 
-        function closeSplitDialog() {
-            document.getElementById('split-overlay').style.display = 'none';
-        }
-
-        function submitSplitNode() {
-            const f1 = parseInt(document.getElementById('factor-in-1').value, 10);
-            const f2 = parseInt(document.getElementById('factor-in-2').value, 10);
-
-            if (isNaN(f1) || isNaN(f2) || f1 <= 1 || f2 <= 1) {
-                alert("Factors must be positive whole numbers greater than 1.");
-                return;
-            }
-
-            const targetVal = STATE.treeNodes[STATE.selectedNodeId].val;
-            if (f1 * f2 !== targetVal) {
-                alert(`Error: ${f1} × ${f2} equals ${f1 * f2}, which does not match ${targetVal}!`);
-                if (STATE.audioInitialized) {
-                    AudioEngine.playErrorAlert();
-                }
-                return;
-            }
-
-            closeSplitDialog();
-            splitNode(STATE.selectedNodeId, f1, f2);
-        }
-
-        // ==========================================
-        // 6. EQUATION PARSER (evaluateFormula)
-        // ==========================================
-        function evaluateFormula() {
-            const formulaStr = document.getElementById('factorization-formula-bar').value.trim();
-            if (!formulaStr) return;
-
-            // Remove spaces, replace visual × with standard asterisk
-            let cleanFormula = formulaStr.replace(/\s+/g, '').replace(/×/g, '*');
-
-            // Parse exponents (e.g. 2^2 becomes Math.pow(2,2))
-            cleanFormula = cleanFormula.replace(/(\d+)\^(\d+)/g, 'Math.pow($1,$2)');
-
-            try {
-                // Safely evaluate factors expression
-                const parsedValue = eval(cleanFormula);
-
-                // Validation rules:
-                // 1. Math value must equal the root pod value
-                const nodesList = Object.values(STATE.treeNodes);
-                const rootVal = nodesList.find(n => n.parentId === null).val;
-
-                if (parsedValue !== rootVal) {
-                    throw new Error(`Formula value evaluates to ${parsedValue}, expected ${rootVal}.`);
-                }
-
-                // 2. All factors used must be Prime Numbers!
-                // Extract only numbers from cleanFormula to verify prime integrity
-                const numbersUsed = formulaStr.match(/\d+/g).map(Number);
-                const allPrimes = numbersUsed.every(isNumberPrime);
-
-                if (!allPrimes) {
-                    throw new Error("Formula contains composite values! Only prime factors are accepted.");
-                }
-
-                // If passed both, Success! pod decrypted
-                if (STATE.audioInitialized) {
-                    AudioEngine.playPodDecryptedChord();
-                }
-
-                alert(`Success! Supply Pod Decrypted! Equation ${formulaStr} is 100% correct! ✅`);
-                logDiagnostics(`Decrypted Pod successfully with equation: ${formulaStr}`, 'success');
-
-                // Mark quest completed
-                if (STATE.activeQuestId !== null) {
-                    if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
-                        const completed = [...STATE.completedQuests, STATE.activeQuestId];
-                        transitionState({ completedQuests: completed });
-                    }
-                }
-
-            } catch(e) {
-                alert("Incorrect Equation! " + e.message);
-                logDiagnostics("Formula decryption failed: " + e.message, 'error');
-                if (STATE.audioInitialized) {
-                    AudioEngine.playErrorAlert();
-                }
-            }
-        }
-
-        function clickGlossaryWord(word) {
-            transitionState({ activeGlossaryWord: word });
-        }
-
-        // ==========================================
-        // 7. WEB AUDIO API SOUND ENGINE
-        // ==========================================
-        const AudioEngine = {
-            ctx: null,
-            masterGain: null,
-
-            init() {
-                try {
-                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                    this.ctx = new AudioContextClass();
-                    this.masterGain = this.ctx.createGain();
-                    this.masterGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-                    this.masterGain.connect(this.ctx.destination);
-                    STATE.audioInitialized = true;
-                } catch(e) {
-                    console.log("AudioContext blocked or unsuited: " + e.message);
-                }
-            },
-
-            playSplitChirp() {
-                if (!STATE.audioInitialized) this.init();
-                try {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
-                    gain.connect(this.masterGain);
-
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-                    osc.frequency.setValueAtTime(660, this.ctx.currentTime + 0.05);
-                    osc.connect(gain);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + 0.2);
-                } catch(e){}
-            },
-
-            playPrimeSproutChime() {
-                if (!STATE.audioInitialized) this.init();
-                try {
-                    // Bright high-pitched chime
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.4);
-                    gain.connect(this.masterGain);
-
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(880, this.ctx.currentTime);
-                    osc.frequency.setValueAtTime(1320, this.ctx.currentTime + 0.1);
-                    osc.connect(gain);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + 0.45);
-                } catch(e){}
-            },
-
-            playErrorAlert() {
-                if (!STATE.audioInitialized) this.init();
-                try {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
-                    gain.connect(this.masterGain);
-
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(120, this.ctx.currentTime);
-                    osc.frequency.linearRampToValueAtTime(80, this.ctx.currentTime + 0.3);
-                    osc.connect(gain);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + 0.35);
-                } catch(e){}
-            },
-
-            playPodDecryptedChord() {
-                if (!STATE.audioInitialized) this.init();
-                try {
-                    // Ascending Major chord sweep
-                    const notes = [261.63, 329.63, 392.00, 523.25]; // C major
-                    notes.forEach((freq, idx) => {
-                        const osc = this.ctx.createOscillator();
-                        const gain = this.ctx.createGain();
-                        gain.gain.setValueAtTime(0.05, this.ctx.currentTime + idx * 0.08);
-                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.08 + 0.5);
-                        gain.connect(this.masterGain);
-
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
-                        osc.connect(gain);
-                        osc.start(this.ctx.currentTime + idx * 0.08);
-                        osc.stop(this.ctx.currentTime + idx * 0.08 + 0.6);
-                    });
-                } catch(e){}
-            }
-        };
-
-        // ==========================================
-        // 8. GUI VIEW ENGINE (renderUI)
-        // ==========================================
-        function renderUI() {
-            validateConfig();
-
-            // Translations
-            const lang = STATE.language;
-            const t = CONFIG.translations[lang];
-
-            document.getElementById('lbl-mission-control').innerText = t['mission-control'];
-            document.getElementById('lbl-navigation-guide').innerText = t['navigation-guide'];
-            document.getElementById('lbl-workspace-title').innerText = t['workspace-title'];
-            document.getElementById('lbl-formula-title').innerText = t['formula-title'];
-            document.getElementById('lbl-pod-state').innerText = t['pod-state'];
-            document.getElementById('lbl-tree-complete').innerText = t['tree-complete'];
-            document.getElementById('btn-submit').innerText = t['btn-submit'];
-            document.getElementById('lang-toggle-btn').innerText = lang === 'en' ? '🌐 EN | ES' : '🌐 ES | EN';
-
-            // Quests Sidebar list
-            renderQuestsList();
-
-            // Matching HUD parameters
-            const statusEl = document.getElementById('quest-status-flag');
-            const treeStateEl = document.getElementById('quest-tree-state');
-
-            if (STATE.activeQuestId === null) {
-                statusEl.innerText = t['sandbox'];
-                statusEl.style.color = 'var(--text-muted)';
-            } else {
-                const questDone = STATE.completedQuests.includes(STATE.activeQuestId);
-                if (questDone) {
-                    statusEl.innerText = t['success'];
-                    statusEl.style.color = 'var(--primary)';
-                } else {
-                    statusEl.innerText = t['active'];
-                    statusEl.style.color = 'var(--secondary)';
-                }
-            }
-
-            if (STATE.isTreeComplete) {
-                treeStateEl.innerText = t['ready'];
-                treeStateEl.style.color = 'var(--primary)';
-                treeStateEl.style.textShadow = '0 0 10px var(--primary-glow)';
-            } else {
-                treeStateEl.innerText = t['unfinished'];
-                treeStateEl.style.color = 'var(--danger)';
-                treeStateEl.style.textShadow = 'none';
-            }
-
-            // Glossary and ESOL bubble guides
-            renderGlossaryHub();
-
-            // Render interactive SVG Factor Tree graphics
-            renderFactorTreeGraphics();
-        }
-
-        function renderQuestsList() {
-            const container = document.getElementById('quests-container');
-            container.innerHTML = '';
-
-            CONFIG.quests.forEach(q => {
-                const isActive = STATE.activeQuestId === q.id;
-                const completed = STATE.completedQuests.includes(q.id);
-                const title = STATE.language === 'en' ? q.title : q.title_es;
-                const desc = STATE.language === 'en' ? q.desc : q.desc_es;
-
-                container.innerHTML += `
-                    <div class="quest-card ${isActive?'active':''} ${completed?'completed':''}" onclick="selectQuest(${q.id})">
+          container.innerHTML += `
+                    <div class="quest-card ${isActive ? "active" : ""} ${completed ? "completed" : ""}" onclick="selectQuest(${q.id})">
                         <div class="quest-info">
                             <span class="quest-title-text">${title}</span>
                             <span class="quest-desc-text">${desc}</span>
                         </div>
-                        <span class="quest-badge">${completed?'✅':'📦'}</span>
+                        <span class="quest-badge">${completed ? "✅" : "📦"}</span>
                     </div>
                 `;
-            });
-        }
+        });
+      }
 
-        function renderGlossaryHub() {
-            const pillsContainer = document.getElementById('glossary-pills-container');
-            pillsContainer.innerHTML = '';
+      function renderGlossaryHub() {
+        const pillsContainer = document.getElementById(
+          "glossary-pills-container",
+        );
+        pillsContainer.innerHTML = "";
 
-            CONFIG.glossary.forEach(g => {
-                const termText = STATE.language === 'en' ? g.term : g.term_es;
-                pillsContainer.innerHTML += `
+        CONFIG.glossary.forEach((g) => {
+          const termText = STATE.language === "en" ? g.term : g.term_es;
+          pillsContainer.innerHTML += `
                     <div class="vocab-word-pill" onclick="clickGlossaryWord('${g.term}')">
                         ${termText}
                     </div>
                 `;
-            });
+        });
 
-            // Update details bubble text based on active selection
-            const activeWord = CONFIG.glossary.find(g => g.term === STATE.activeGlossaryWord);
-            if (activeWord) {
-                const scaffoldBox = document.getElementById('esol-scaffold-box');
-                const termText = STATE.language === 'en' ? activeWord.term : activeWord.term_es;
-                const defText = STATE.language === 'en' ? activeWord.def : activeWord.def_es;
+        // Update details bubble text based on active selection
+        const activeWord = CONFIG.glossary.find(
+          (g) => g.term === STATE.activeGlossaryWord,
+        );
+        if (activeWord) {
+          const scaffoldBox = document.getElementById("esol-scaffold-box");
+          const termText =
+            STATE.language === "en" ? activeWord.term : activeWord.term_es;
+          const defText =
+            STATE.language === "en" ? activeWord.def : activeWord.def_es;
 
-                scaffoldBox.innerHTML = `
+          scaffoldBox.innerHTML = `
                     <strong style="color:var(--primary); font-family:var(--font-display); font-size:1.0rem;">${termText}</strong>
                     <p style="margin-top:4px;">${defText}</p>
                 `;
-            }
         }
+      }
 
-        function renderFactorTreeGraphics() {
-            const svg = document.getElementById('tree-svg');
-            if (!svg) return;
-            svg.innerHTML = ''; // Wipe
+      function renderFactorTreeGraphics() {
+        const svg = document.getElementById("tree-svg");
+        if (!svg) return;
+        svg.innerHTML = ""; // Wipe
 
-            const nodesList = Object.values(STATE.treeNodes);
-            if (nodesList.length === 0) return;
+        const nodesList = Object.values(STATE.treeNodes);
+        if (nodesList.length === 0) return;
 
-            // Update leaf count label
-            const leaves = nodesList.filter(n => !n.children || n.children.length === 0);
-            document.getElementById('nodes-count-label').innerText = `Leaf Nodes: ${leaves.length}`;
+        // Update leaf count label
+        const leaves = nodesList.filter(
+          (n) => !n.children || n.children.length === 0,
+        );
+        document.getElementById("nodes-count-label").innerText =
+          `Leaf Nodes: ${leaves.length}`;
 
-            // Draw connecting branches lines first (so they render behind circles)
-            nodesList.forEach(n => {
-                if (n.children && n.children.length > 0) {
-                    n.children.forEach(childId => {
-                        const child = STATE.treeNodes[childId];
-                        if (child) {
-                            svg.innerHTML += `
+        // Draw connecting branches lines first (so they render behind circles)
+        nodesList.forEach((n) => {
+          if (n.children && n.children.length > 0) {
+            n.children.forEach((childId) => {
+              const child = STATE.treeNodes[childId];
+              if (child) {
+                svg.innerHTML += `
                                 <line x1="${n.x}" y1="${n.y}" x2="${child.x}" y2="${child.y}" class="tree-branch-line" />
                             `;
-                        }
-                    });
-                }
+              }
             });
+          }
+        });
 
-            // Draw interactive node circles and labels
-            nodesList.forEach(n => {
-                const primeClass = n.isPrime ? 'prime' : '';
-                const selectedClass = STATE.selectedNodeId === n.id ? 'selected' : '';
-                const typeText = n.isPrime ? (STATE.language === 'en' ? 'PRIME' : 'PRIMO') : (STATE.language === 'en' ? 'COMPOSITE' : 'COMPUESTO');
-                const typeColorClass = n.isPrime ? 'prime' : '';
+        // Draw interactive node circles and labels
+        nodesList.forEach((n) => {
+          const primeClass = n.isPrime ? "prime" : "";
+          const selectedClass = STATE.selectedNodeId === n.id ? "selected" : "";
+          const typeText = n.isPrime
+            ? STATE.language === "en"
+              ? "PRIME"
+              : "PRIMO"
+            : STATE.language === "en"
+              ? "COMPOSITE"
+              : "COMPUESTO";
+          const typeColorClass = n.isPrime ? "prime" : "";
 
-                svg.innerHTML += `
+          svg.innerHTML += `
                     <g transform="translate(0, 0)">
                         <circle cx="${n.x}" cy="${n.y}" r="22" class="tree-node-circle ${primeClass} ${selectedClass}" onclick="clickNode('${n.id}')" />
                         <text x="${n.x}" y="${n.y + 4}" class="tree-node-text">${n.val}</text>
                         <text x="${n.x}" y="${n.y + 34}" class="tree-node-type-text ${typeColorClass}">${typeText}</text>
                     </g>
                 `;
-            });
-        }
-
-        // ==========================================
-        // 9. DIAGNOSTICS & AUTOMATED SELF-TESTS
-        // ==========================================
-        function logDiagnostics(message, type = 'info') {
-            const logBox = document.getElementById('diagnostics-logs');
-            if (!logBox) return;
-
-            const time = new Date().toTimeString().split(' ')[0];
-            let colorClass = '';
-            if (type === 'error') colorClass = 'log-error';
-            else if (type === 'success') colorClass = 'log-success';
-            else if (type === 'warning') colorClass = 'log-warning';
-
-            logBox.innerHTML += `<div class="${colorClass}">[${time}] ${message}</div>`;
-            logBox.scrollTop = logBox.scrollHeight;
-        }
-
-        function openDiagnostics() {
-            document.getElementById('diagnostics-overlay').style.display = 'block';
-            logDiagnostics("Telemetry logs opened.");
-        }
-
-        function closeDiagnostics() {
-            document.getElementById('diagnostics-overlay').style.display = 'none';
-        }
-
-        function clearDiagnosticsLogs() {
-            document.getElementById('diagnostics-logs').innerHTML = '';
-        }
-
-        // --- Core Automated Unit Tests ---
-        function runSelfTests() {
-            openDiagnostics();
-            logDiagnostics("====== Starting Factor Tree Space Salvage Self-Tests ======", 'warning');
-            let failedCount = 0;
-
-            // Test 1: Config Validity
-            try {
-                validateConfig();
-                logDiagnostics("Test 1 Passed: Configurations layout validated.", 'success');
-            } catch(e) {
-                logDiagnostics(`Test 1 Failed: Config check: ${e.message}`, 'error');
-                failedCount++;
-            }
-
-            // Test 2: State mutations reducer
-            try {
-                const initialLang = STATE.language;
-                transitionState({ language: 'es' });
-                if (STATE.language === 'es') {
-                    logDiagnostics("Test 2 Passed: Deterministic state machine transition verified.", 'success');
-                } else {
-                    throw new Error("State variables failed to save.");
-                }
-                transitionState({ language: initialLang });
-            } catch(e) {
-                logDiagnostics(`Test 2 Failed: State updates: ${e.message}`, 'error');
-                failedCount++;
-            }
-
-            // Test 3: Math Primes Identifier
-            try {
-                const is2Prime = isNumberPrime(2);
-                const is4Prime = isNumberPrime(4);
-                const is97Prime = isNumberPrime(97);
-
-                if (is2Prime === true && is4Prime === false && is97Prime === true) {
-                    logDiagnostics("Test 3 Passed: Primes validator mathematics verified.", 'success');
-                } else {
-                    throw new Error("Mathematical primes check generated false outputs.");
-                }
-            } catch(e) {
-                logDiagnostics(`Test 3 Failed: Primes math checking: ${e.message}`, 'error');
-                failedCount++;
-            }
-
-            // Test 4: Factors Equations Evaluation
-            try {
-                const mockFormulaPass = "2 * 2 * 3 * 5";
-                const mockFormulaFail = "6 * 10"; // composite factor used
-
-                // Mock eval math value
-                const valPass = eval(mockFormulaPass.replace(/\s+/g, ''));
-                const valFail = eval(mockFormulaFail.replace(/\s+/g, ''));
-
-                const numbersPass = mockFormulaPass.match(/\d+/g).map(Number);
-                const numbersFail = mockFormulaFail.match(/\d+/g).map(Number);
-
-                const passAllPrimes = numbersPass.every(isNumberPrime);
-                const failAllPrimes = numbersFail.every(isNumberPrime);
-
-                if (valPass === 60 && passAllPrimes === true && valFail === 60 && failAllPrimes === false) {
-                    logDiagnostics("Test 4 Passed: Equation exponents & multiplication parser verified.", 'success');
-                } else {
-                    throw new Error("Evaluations checks failed assertions.");
-                }
-            } catch(e) {
-                logDiagnostics(`Test 4 Failed: Formula evaluation: ${e.message}`, 'error');
-                failedCount++;
-            }
-
-            // Test 5: Sound Engine safety gain constraints
-            try {
-                if (!STATE.audioInitialized || STATE.masterGain.gain.value <= 0.15) {
-                    logDiagnostics("Test 5 Passed: Web Audio gain margins verified.", 'success');
-                } else {
-                    throw new Error("Gain setting exceeds safe margins (<=0.15)");
-                }
-            } catch(e) {
-                logDiagnostics(`Test 5 Failed: Sound safety check: ${e.message}`, 'error');
-                failedCount++;
-            }
-
-            if (failedCount === 0) {
-                logDiagnostics("====== All 5 Core Tests Passed Successfully! ======", 'success');
-                alert("Self-Tests Complete: 5/5 passed!");
-            } else {
-                logDiagnostics(`====== Self-Tests Failed: ${failedCount} errors registered ======`, 'error');
-                alert(`Self-Tests Failed: ${failedCount} errors inside diagnostics panel.`);
-            }
-        }
-
-        // ==========================================
-        // 10. INITIALIZATION
-        // ==========================================
-        window.addEventListener('DOMContentLoaded', () => {
-            logDiagnostics("Space Cargo Salvage console DOM loaded.");
-            validateConfig();
-
-            // Set up default tree
-            initializeFactorTree(48); // default sandbox value
-
-            // Telemetry update
-            renderUI();
         });
+      }
+
+      // ==========================================
+      // 9. DIAGNOSTICS & AUTOMATED SELF-TESTS
+      // ==========================================
+      function logDiagnostics(message, type = "info") {
+        const logBox = document.getElementById("diagnostics-logs");
+        if (!logBox) return;
+
+        const time = new Date().toTimeString().split(" ")[0];
+        let colorClass = "";
+        if (type === "error") colorClass = "log-error";
+        else if (type === "success") colorClass = "log-success";
+        else if (type === "warning") colorClass = "log-warning";
+
+        logBox.innerHTML += `<div class="${colorClass}">[${time}] ${message}</div>`;
+        logBox.scrollTop = logBox.scrollHeight;
+      }
+
+      function openDiagnostics() {
+        document.getElementById("diagnostics-overlay").style.display = "block";
+        logDiagnostics("Telemetry logs opened.");
+      }
+
+      function closeDiagnostics() {
+        document.getElementById("diagnostics-overlay").style.display = "none";
+      }
+
+      function clearDiagnosticsLogs() {
+        document.getElementById("diagnostics-logs").innerHTML = "";
+      }
+
+      // --- Core Automated Unit Tests ---
+      function runSelfTests() {
+        openDiagnostics();
+        logDiagnostics(
+          "====== Starting Factor Tree Space Salvage Self-Tests ======",
+          "warning",
+        );
+        let failedCount = 0;
+
+        // Test 1: Config Validity
+        try {
+          validateConfig();
+          logDiagnostics(
+            "Test 1 Passed: Configurations layout validated.",
+            "success",
+          );
+        } catch (e) {
+          logDiagnostics(`Test 1 Failed: Config check: ${e.message}`, "error");
+          failedCount++;
+        }
+
+        // Test 2: State mutations reducer
+        try {
+          const initialLang = STATE.language;
+          transitionState({ language: "es" });
+          if (STATE.language === "es") {
+            logDiagnostics(
+              "Test 2 Passed: Deterministic state machine transition verified.",
+              "success",
+            );
+          } else {
+            throw new Error("State variables failed to save.");
+          }
+          transitionState({ language: initialLang });
+        } catch (e) {
+          logDiagnostics(`Test 2 Failed: State updates: ${e.message}`, "error");
+          failedCount++;
+        }
+
+        // Test 3: Math Primes Identifier
+        try {
+          const is2Prime = isNumberPrime(2);
+          const is4Prime = isNumberPrime(4);
+          const is97Prime = isNumberPrime(97);
+
+          if (is2Prime === true && is4Prime === false && is97Prime === true) {
+            logDiagnostics(
+              "Test 3 Passed: Primes validator mathematics verified.",
+              "success",
+            );
+          } else {
+            throw new Error(
+              "Mathematical primes check generated false outputs.",
+            );
+          }
+        } catch (e) {
+          logDiagnostics(
+            `Test 3 Failed: Primes math checking: ${e.message}`,
+            "error",
+          );
+          failedCount++;
+        }
+
+        // Test 4: Factors Equations Evaluation
+        try {
+          const mockFormulaPass = "2 * 2 * 3 * 5";
+          const mockFormulaFail = "6 * 10"; // composite factor used
+
+          // Mock eval math value
+          const valPass = eval(mockFormulaPass.replace(/\s+/g, ""));
+          const valFail = eval(mockFormulaFail.replace(/\s+/g, ""));
+
+          const numbersPass = mockFormulaPass.match(/\d+/g).map(Number);
+          const numbersFail = mockFormulaFail.match(/\d+/g).map(Number);
+
+          const passAllPrimes = numbersPass.every(isNumberPrime);
+          const failAllPrimes = numbersFail.every(isNumberPrime);
+
+          if (
+            valPass === 60 &&
+            passAllPrimes === true &&
+            valFail === 60 &&
+            failAllPrimes === false
+          ) {
+            logDiagnostics(
+              "Test 4 Passed: Equation exponents & multiplication parser verified.",
+              "success",
+            );
+          } else {
+            throw new Error("Evaluations checks failed assertions.");
+          }
+        } catch (e) {
+          logDiagnostics(
+            `Test 4 Failed: Formula evaluation: ${e.message}`,
+            "error",
+          );
+          failedCount++;
+        }
+
+        // Test 5: Sound Engine safety gain constraints
+        try {
+          if (!STATE.audioInitialized || STATE.masterGain.gain.value <= 0.15) {
+            logDiagnostics(
+              "Test 5 Passed: Web Audio gain margins verified.",
+              "success",
+            );
+          } else {
+            throw new Error("Gain setting exceeds safe margins (<=0.15)");
+          }
+        } catch (e) {
+          logDiagnostics(
+            `Test 5 Failed: Sound safety check: ${e.message}`,
+            "error",
+          );
+          failedCount++;
+        }
+
+        if (failedCount === 0) {
+          logDiagnostics(
+            "====== All 5 Core Tests Passed Successfully! ======",
+            "success",
+          );
+          alert("Self-Tests Complete: 5/5 passed!");
+        } else {
+          logDiagnostics(
+            `====== Self-Tests Failed: ${failedCount} errors registered ======`,
+            "error",
+          );
+          alert(
+            `Self-Tests Failed: ${failedCount} errors inside diagnostics panel.`,
+          );
+        }
+      }
+
+      // ==========================================
+      // 10. INITIALIZATION
+      // ==========================================
+      window.addEventListener("DOMContentLoaded", () => {
+        logDiagnostics("Space Cargo Salvage console DOM loaded.");
+        validateConfig();
+
+        // Set up default tree
+        initializeFactorTree(48); // default sandbox value
+
+        // Telemetry update
+        renderUI();
+      });
     </script>
-</body>
+  </body>
 </html>
