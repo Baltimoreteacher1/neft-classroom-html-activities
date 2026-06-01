@@ -11,8 +11,10 @@
  * Sources:
  *   1. Lessons      — lessons/<id>/config.json (skip *-flagship, _template)
  *   2. Readiness    — lessons/<id>/readiness/index.html
- *   3. Math tools   — math/<sub>/index.html
- *   4. Top-level    — first-level dirs containing index.html
+ *   3. Unit hubs    — math/unit-<n>/index.html
+ *   4. Unit projects— math/unit-<n>/projects/index.html
+ *   5. Math tools   — math/<sub>/index.html
+ *   6. Top-level    — first-level dirs containing index.html
  *
  * Output is idempotent: entries are sorted by a stable key so re-runs produce
  * byte-identical JSON when the repo is unchanged.
@@ -168,8 +170,40 @@ if (existsSync(mathDir)) {
     if (!d.isDirectory()) continue;
     const name = d.name;
     const idx = resolve(mathDir, name, "index.html");
-    if (!existsSync(idx)) continue;
+    const unit = unitFromName(name);
 
+    // 3. Unit hubs — math/unit-<n>/  (per-unit landing page)
+    if (unit != null) {
+      if (existsSync(idx)) {
+        const title = titleFromHtml(idx, `Unit ${unit} Hub`);
+        add({
+          title,
+          path: `/math/${name}/`,
+          category: "Unit Hub",
+          audience: "student",
+          unit,
+          standard: null,
+        });
+      }
+
+      // 4. Unit projects — math/unit-<n>/projects/
+      const projIdx = resolve(mathDir, name, "projects", "index.html");
+      if (existsSync(projIdx)) {
+        const title = titleFromHtml(projIdx, `Unit ${unit} Projects`);
+        add({
+          title,
+          path: `/math/${name}/projects/`,
+          category: "Project",
+          audience: "student",
+          unit,
+          standard: null,
+        });
+      }
+      continue;
+    }
+
+    // 5. Other math tools / hubs (get-ready, unit-map, etc.)
+    if (!existsSync(idx)) continue;
     const title = titleFromHtml(idx, titleCase(name));
     const category = MATH_HUBS.has(name) ? "Hub" : "Math Tool";
     add({
@@ -177,7 +211,7 @@ if (existsSync(mathDir)) {
       path: `/math/${name}/`,
       category,
       audience: "student",
-      unit: unitFromName(name),
+      unit: null,
       standard: null,
     });
   }
@@ -285,6 +319,8 @@ for (const d of readdirSync(ROOT, { withFileTypes: true })) {
 const CATEGORY_ORDER = [
   "Lesson",
   "Readiness",
+  "Project",
+  "Unit Hub",
   "Math Tool",
   "Hub",
   "Tool",
