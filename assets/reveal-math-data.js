@@ -585,6 +585,22 @@
           },
           "level2": "On a graph, where would the point (12, 32) fall relative to (3, 8)? Explain what a straight line through the origin shows.",
           "answerKey": "32 cups (scale factor 4)."
+        },
+        {
+          "id": "3.3-a",
+          "lessonId": "3.3",
+          "title": "Does the cocoa recipe graph make a straight line?",
+          "scenario": "A hot-cocoa recipe uses 2 scoops of mix for every 8 ounces of water. Leo plots (scoops, ounces) from a ratio table: (1,4),(2,8),(3,12).",
+          "question": "When you graph the equivalent ratios from the table, what pattern do the points form, and what does it mean?",
+          "evidence": "The ratio 2:8 simplifies to 1:4, so the table is (1,4),(2,8),(3,12). Plotted, the points lie on a straight line that passes through the origin (0,0).",
+          "claim": "I claim the points form a straight line through the origin because every pair keeps the ratio 1 scoop to 4 ounces.",
+          "reasoningTarget": "Explain that equivalent ratios graph as collinear points through the origin because each point is the same multiplicative scaling of 1:4.",
+          "level1": {
+            "frame": "I claim the graphed points form a ______ that passes through ______ because every pair keeps the ratio ______.",
+            "frameEs": "Afirmo que los puntos graficados forman una ______ que pasa por ______ porque cada par mantiene la razon ______."
+          },
+          "level2": "Predict the ounces of water for 5 scoops without extending the table, and explain how the graph lets you check it.",
+          "answerKey": "A straight line through the origin (0,0); the constant ratio is 1 scoop : 4 ounces."
         }
       ]
     },
@@ -842,6 +858,22 @@
           },
           "level2": "Predict how many tickets would be 120% of the goal, and explain what going over 100% means here.",
           "answerKey": "60 tickets (120% would be 72)."
+        },
+        {
+          "id": "4.7-a",
+          "lessonId": "4.7",
+          "title": "Jacket on sale, then taxed",
+          "scenario": "An $80 jacket is marked 25% off. After the discount, an 8% sales tax is added.",
+          "question": "What is the final price of the jacket after the discount and the tax?",
+          "evidence": "Discount: 25% of $80 = $20, so sale price = $80 - $20 = $60. Tax: 8% of $60 = $4.80, so final price = $60 + $4.80 = $64.80.",
+          "claim": "I claim the final price is $64.80 because the discount is taken first and then the tax is applied to the lower sale price.",
+          "reasoningTarget": "Explain that tax must be applied to the discounted price, not the original, because you pay tax only on what you are actually charged.",
+          "level1": {
+            "frame": "I claim the final price is ______ because the sale price is ______ and then ______% tax adds ______.",
+            "frameEs": "Afirmo que el precio final es ______ porque el precio de oferta es ______ y luego el ______% de impuesto agrega ______."
+          },
+          "level2": "Would the final price change if the tax were applied before the discount? Justify your answer with the numbers.",
+          "answerKey": "$64.80 (sale price $60, plus 8% tax of $4.80)."
         }
       ]
     },
@@ -1047,6 +1079,22 @@
           },
           "level2": "Explain the difference between what perimeter and area would tell a painter, using correct units for each.",
           "answerKey": "80 square feet."
+        },
+        {
+          "id": "5.4-a",
+          "lessonId": "5.4",
+          "title": "Area of a regular hexagon tile",
+          "scenario": "A regular hexagon floor tile is split from its center into 6 identical triangles. Each triangle has a base of 6 cm and a height of 5.2 cm.",
+          "question": "What is the total area of the hexagonal tile?",
+          "evidence": "Area of one triangle = (1/2)(6)(5.2) = 15.6 cm^2. There are 6 congruent triangles, so total area = 6 x 15.6 = 93.6 cm^2.",
+          "claim": "I claim the area of the hexagon is 93.6 cm^2 because it is made of 6 congruent triangles of 15.6 cm^2 each.",
+          "reasoningTarget": "Explain that a regular polygon can be decomposed into congruent triangles, so its area is the number of triangles times one triangle's area.",
+          "level1": {
+            "frame": "I claim the hexagon area is ______ because one triangle is ______ cm^2 and there are ______ congruent triangles.",
+            "frameEs": "Afirmo que el area del hexagono es ______ porque un triangulo mide ______ cm^2 y hay ______ triangulos congruentes."
+          },
+          "level2": "If the tile were a regular octagon split into 8 congruent triangles of the same size, how would you find its area?",
+          "answerKey": "93.6 cm^2 (6 triangles x 15.6 cm^2)."
         }
       ]
     },
@@ -1116,6 +1164,22 @@
           },
           "level2": "Describe a real game situation that 5n + 8 could represent, and say what n stands for.",
           "answerKey": "Coefficient 5, variable n, constant 8."
+        },
+        {
+          "id": "6.1-a",
+          "lessonId": "6.1",
+          "title": "Write the expression for the cube's volume",
+          "scenario": "A storage cube has an edge length of 5 inches. Dana wants to write the volume using an exponent instead of repeated multiplication.",
+          "question": "Write a numerical expression for the cube's volume using an exponent, and state its value.",
+          "evidence": "Volume of a cube = edge x edge x edge = 5 x 5 x 5, which is written as 5^3. Evaluating, 5^3 = 125 cubic inches.",
+          "claim": "I claim the volume expression is 5^3 because the edge length 5 is used as a factor three times.",
+          "reasoningTarget": "Explain that an exponent records repeated multiplication, where the base is the repeated factor and the exponent is how many times it is used.",
+          "level1": {
+            "frame": "I claim the expression is ______ because the base ______ is multiplied ______ times.",
+            "frameEs": "Afirmo que la expresion es ______ porque la base ______ se multiplica ______ veces."
+          },
+          "level2": "Explain why 5^3 is not the same as 5 x 3, using the meaning of an exponent.",
+          "answerKey": "5^3 = 125 cubic inches."
         }
       ]
     },
@@ -1186,6 +1250,38 @@
           },
           "level2": "Explain how the cost would change for a 10-mile ride and what part of the expression stays the same.",
           "answerKey": "$18."
+        },
+        {
+          "id": "6.3-a",
+          "lessonId": "6.3",
+          "title": "Distribute to find the team's total cost",
+          "scenario": "A coach buys 6 identical kits. Each kit has a $9 jersey and a $4 water bottle. Sam writes 6(9 + 4) and Rosa writes 6(9) + 6(4).",
+          "question": "Are 6(9 + 4) and 6(9) + 6(4) equivalent, and which property explains why?",
+          "evidence": "6(9 + 4) = 6(13) = 78. 6(9) + 6(4) = 54 + 24 = 78. Both equal 78.",
+          "claim": "I claim the two expressions are equivalent because the distributive property lets you multiply 6 by each addend and add the products.",
+          "reasoningTarget": "Explain that the distributive property guarantees a(b + c) = ab + ac for all numbers, so both forms must give the same total.",
+          "level1": {
+            "frame": "I claim the expressions are ______ because the ______ property gives ______ both ways.",
+            "frameEs": "Afirmo que las expresiones son ______ porque la propiedad ______ da ______ de las dos formas."
+          },
+          "level2": "Rewrite 4(x + 7) using the distributive property and explain what each term represents.",
+          "answerKey": "Equivalent; both equal 78 by the distributive property."
+        },
+        {
+          "id": "6.7-a",
+          "lessonId": "6.7",
+          "title": "Factor the expression for fenced gardens",
+          "scenario": "A landscaper writes the cost expression 8x + 12 for x gardens. She wants an equivalent factored form.",
+          "question": "Write an expression equivalent to 8x + 12 by factoring out the greatest common factor.",
+          "evidence": "The GCF of 8x and 12 is 4. Factoring: 8x + 12 = 4(2x + 3). Checking by distributing: 4(2x) + 4(3) = 8x + 12.",
+          "claim": "I claim 8x + 12 is equivalent to 4(2x + 3) because 4 is the greatest common factor of both terms.",
+          "reasoningTarget": "Explain that factoring out the GCF produces an equivalent expression because distributing the GCF back returns the original terms.",
+          "level1": {
+            "frame": "I claim 8x + 12 equals ______ because the GCF of the terms is ______.",
+            "frameEs": "Afirmo que 8x + 12 es igual a ______ porque el MCD de los terminos es ______."
+          },
+          "level2": "Explain how you can check that 4(2x + 3) is truly equivalent to 8x + 12 for any value of x.",
+          "answerKey": "4(2x + 3); the GCF is 4."
         }
       ]
     },
@@ -1255,6 +1351,22 @@
           },
           "level2": "Explain how you could test whether x = 4 is a solution, and what result would tell you it is not.",
           "answerKey": "Yes, x = 5 is a solution."
+        },
+        {
+          "id": "7.3-a",
+          "lessonId": "7.3",
+          "title": "Write and solve the savings equation",
+          "scenario": "Maya has $18 saved and adds $9 each week. She wants to know how many weeks w it takes to reach $45.",
+          "question": "Write an equation for the total savings and solve for the number of weeks w needed to reach $45.",
+          "evidence": "Total = starting amount + weekly amount x weeks: 18 + 9w = 45. Subtract 18: 9w = 27. Divide by 9: w = 3.",
+          "claim": "I claim Maya needs 3 weeks because the equation 18 + 9w = 45 solves to w = 3.",
+          "reasoningTarget": "Explain that inverse operations (subtract 18, then divide by 9) isolate the variable while keeping the equation balanced.",
+          "level1": {
+            "frame": "I claim w = ______ because the equation ______ solves when I ______ from both sides and then ______.",
+            "frameEs": "Afirmo que w = ______ porque la ecuacion ______ se resuelve cuando ______ en ambos lados y luego ______."
+          },
+          "level2": "Explain how you can check that w = 3 is correct by substituting it back into the equation.",
+          "answerKey": "18 + 9w = 45, so w = 3 weeks."
         }
       ]
     },
@@ -1308,6 +1420,22 @@
           },
           "level2": "Explain why the answer is a range and not a single value, and describe how to graph p <= 10.",
           "answerKey": "At most 10 prizes (p <= 10)."
+        },
+        {
+          "id": "7.5-a",
+          "lessonId": "7.5",
+          "title": "Graph the ride-height rule",
+          "scenario": "A ride requires riders to be at least 48 inches tall. Theo writes h >= 48 and graphs it on a number line.",
+          "question": "How should the inequality h >= 48 be graphed on a number line, and why?",
+          "evidence": "Plot the boundary at 48. Because 'at least' includes 48, use a CLOSED (filled) circle at 48 and shade to the right toward larger heights.",
+          "claim": "I claim the graph uses a closed circle at 48 shaded to the right because heights of 48 inches and taller are allowed.",
+          "reasoningTarget": "Explain that >= includes the boundary value, so the circle is closed, and shading right shows all values greater than the boundary also work.",
+          "level1": {
+            "frame": "I claim the graph has a ______ circle at ______ shaded to the ______ because ______ is allowed.",
+            "frameEs": "Afirmo que la grafica tiene un circulo ______ en ______ sombreado hacia la ______ porque ______ esta permitido."
+          },
+          "level2": "How would the graph change if the rule were 'taller than 48 inches' (h > 48)? Explain the difference.",
+          "answerKey": "Closed circle at 48, shaded to the right (h >= 48)."
         }
       ]
     },
@@ -1361,6 +1489,22 @@
           },
           "level2": "Make a table for 0, 1, and 2 books and explain how the +5 shows up in the table.",
           "answerKey": "Books independent, points dependent; p = 8b + 5."
+        },
+        {
+          "id": "7.7-a",
+          "lessonId": "7.7",
+          "title": "Find the rule in the table",
+          "scenario": "A table shows hours worked and dollars earned: (1,12), (2,24), (3,36), (4,48).",
+          "question": "What equation relates dollars earned (d) to hours worked (h), and how do you know?",
+          "evidence": "Each output is 12 times the input: 12x1=12, 12x2=24, 12x3=36. The constant rate is 12 dollars per hour, so d = 12h.",
+          "claim": "I claim the rule is d = 12h because every dollar value equals 12 times the matching hour value.",
+          "reasoningTarget": "Explain that a constant multiplicative pattern in a table means the dependent variable equals the constant rate times the independent variable.",
+          "level1": {
+            "frame": "I claim the equation is ______ because each output is ______ times the input.",
+            "frameEs": "Afirmo que la ecuacion es ______ porque cada salida es ______ veces la entrada."
+          },
+          "level2": "Use the equation d = 12h to predict the earnings for 7 hours, and explain which variable is dependent.",
+          "answerKey": "d = 12h (constant rate of $12 per hour)."
         }
       ]
     },
@@ -1498,6 +1642,22 @@
           },
           "level2": "Describe the overall shape of this distribution and explain what the gap before 5 tells you.",
           "answerKey": "Mode is 1 pet; 5 is the outlier."
+        },
+        {
+          "id": "8.5-a",
+          "lessonId": "8.5",
+          "title": "Describe the spelling-score dot plot",
+          "scenario": "A dot plot shows spelling-test scores: most dots cluster at 8 and 9, there is a gap at 5 and 6, and a single dot sits at 2.",
+          "question": "Describe the distribution of the scores, including center, clusters, gaps, and any outlier.",
+          "evidence": "Scores cluster at 8 and 9 (the peak), there is a gap with no scores at 5-6, and one isolated score at 2 sits far from the rest.",
+          "claim": "I claim the distribution clusters around 8-9 with a gap at 5-6 and an outlier at 2 because most data sits high while one point is far below.",
+          "reasoningTarget": "Explain that an outlier is a value far from the cluster and that describing peaks, clusters, and gaps summarizes the shape of the data.",
+          "level1": {
+            "frame": "I claim the scores cluster around ______, with a gap at ______, and an outlier at ______ because ______.",
+            "frameEs": "Afirmo que los puntajes se agrupan alrededor de ______, con un hueco en ______, y un valor atipico en ______ porque ______."
+          },
+          "level2": "Explain how the outlier at 2 would affect the mean compared to the median of these scores.",
+          "answerKey": "Cluster/peak at 8-9; gap at 5-6; outlier at 2."
         }
       ]
     },
@@ -1551,6 +1711,22 @@
           },
           "level2": "Explain a situation where using the mean WOULD be the better choice, and what the data would look like.",
           "answerKey": "Median ($10); the mean is skewed by $200."
+        },
+        {
+          "id": "8.6-a",
+          "lessonId": "8.6",
+          "title": "Summarize the daily reading minutes",
+          "scenario": "A student reads these minutes over 5 days: 20, 25, 30, 25, 20.",
+          "question": "Summarize the data by finding the mean, the median, and the range.",
+          "evidence": "Ordered: 20, 20, 25, 25, 30. Mean = (20+25+30+25+20)/5 = 120/5 = 24. Median (middle of ordered list) = 25. Range = 30 - 20 = 10.",
+          "claim": "I claim the data is centered near 24-25 minutes with a range of 10 because the mean is 24, the median is 25, and the spread is 10.",
+          "reasoningTarget": "Explain that mean and median describe the center while range describes the spread, so together they summarize the data set.",
+          "level1": {
+            "frame": "I claim the mean is ______, the median is ______, and the range is ______ because ______.",
+            "frameEs": "Afirmo que la media es ______, la mediana es ______, y el rango es ______ porque ______."
+          },
+          "level2": "If a sixth day of 60 minutes were added, explain how the mean and the range would change.",
+          "answerKey": "Mean 24, median 25, range 10."
         }
       ]
     },
@@ -1636,6 +1812,22 @@
           },
           "level2": "Explain why -120 is the smaller number but represents the greater distance from sea level.",
           "answerKey": "The submarine (|-120| = 120 > 45)."
+        },
+        {
+          "id": "9.1-a",
+          "lessonId": "9.1",
+          "title": "Which quadrant holds the point?",
+          "scenario": "A treasure map marks a chest at the point (-4, 3) on the coordinate plane.",
+          "question": "In which quadrant is the point (-4, 3) located, and how do the signs tell you?",
+          "evidence": "The x-coordinate -4 is negative (left of the origin) and the y-coordinate 3 is positive (above the origin). Left-and-up is Quadrant II.",
+          "claim": "I claim (-4, 3) is in Quadrant II because the x-value is negative and the y-value is positive.",
+          "reasoningTarget": "Explain that the signs of the coordinates determine the quadrant: (-,+) means left of and above the origin, which is Quadrant II.",
+          "level1": {
+            "frame": "I claim (-4, 3) is in Quadrant ______ because x is ______ and y is ______.",
+            "frameEs": "Afirmo que (-4, 3) esta en el Cuadrante ______ porque x es ______ y y es ______."
+          },
+          "level2": "Name the quadrant for the reflection of (-4, 3) across the x-axis, and explain how the signs change.",
+          "answerKey": "Quadrant II (x negative, y positive)."
         }
       ]
     },
@@ -1705,6 +1897,22 @@
           },
           "level2": "Find the area of this park as well, and explain how its units differ from the perimeter's units.",
           "answerKey": "Perimeter 20 units."
+        },
+        {
+          "id": "9.7-a",
+          "lessonId": "9.7",
+          "title": "Map distance between two stops",
+          "scenario": "On a city grid, the library is at (3, -2) and the park is at (3, 5). Each unit is one block.",
+          "question": "How many blocks apart are the library and the park, and how do you know?",
+          "evidence": "The points share the same x-value (3), so the distance is vertical. Distance = |5 - (-2)| = |7| = 7 blocks.",
+          "claim": "I claim the two stops are 7 blocks apart because they share an x-coordinate, so I add the absolute values of the y-coordinates across zero.",
+          "reasoningTarget": "Explain that when points share a coordinate, the distance is the absolute difference of the other coordinate, which works across the axis.",
+          "level1": {
+            "frame": "I claim the stops are ______ blocks apart because they share ______ and |5 - (-2)| = ______.",
+            "frameEs": "Afirmo que las paradas estan a ______ cuadras porque comparten ______ y |5 - (-2)| = ______."
+          },
+          "level2": "If a third stop were at (-1, 5), explain how you would find its distance from the park at (3, 5).",
+          "answerKey": "7 blocks (|5 - (-2)| = 7)."
         }
       ]
     },
@@ -1842,6 +2050,22 @@
           },
           "level2": "Explain why a cube's net must have exactly 6 faces and what would go wrong with only 5.",
           "answerKey": "54 square cm."
+        },
+        {
+          "id": "10.4-a",
+          "lessonId": "10.4",
+          "title": "Wrap the square pyramid",
+          "scenario": "A square pyramid has a base 6 cm on each side. Each of its 4 triangular faces has a base of 6 cm and a slant height of 5 cm.",
+          "question": "What is the total surface area of the square pyramid?",
+          "evidence": "Base area = 6 x 6 = 36 cm^2. Each triangle = (1/2)(6)(5) = 15 cm^2, and 4 triangles = 60 cm^2. Total surface area = 36 + 60 = 96 cm^2.",
+          "claim": "I claim the surface area is 96 cm^2 because it is the square base (36) plus the 4 triangular faces (60).",
+          "reasoningTarget": "Explain that surface area of a pyramid sums the base area and all lateral triangular faces, which the net makes visible as flat 2-D regions.",
+          "level1": {
+            "frame": "I claim the surface area is ______ because the base is ______ cm^2 and the ______ triangles total ______ cm^2.",
+            "frameEs": "Afirmo que el area de superficie es ______ porque la base es ______ cm^2 y los ______ triangulos suman ______ cm^2."
+          },
+          "level2": "Explain why unfolding the pyramid into a net makes the surface area easier to calculate.",
+          "answerKey": "96 cm^2 (base 36 + 4 triangles of 15)."
         }
       ]
     }
