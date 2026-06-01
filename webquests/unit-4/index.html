@@ -558,7 +558,50 @@
         clip: rect(0 0 0 0);
         border: 0;
       }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .wq-actions,
         .wq-btn {
           display: none;
@@ -1235,6 +1278,28 @@
       </section>
 
       <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Hydration Lab · Race-Day Fuel Plan</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Race-Day Fuel & Hydration Plan</h3>
+          <ul>
+            <li><strong>Sweat rate:</strong> 600 mL ÷ 20 min = <strong>30 mL/min</strong>; over 30 min → 30 × 30 = <strong>900 mL lost</strong>.</li>
+            <li><strong>mL → L → bottles:</strong> 900 mL ÷ 1,000 = 0.9 L; 0.9 L ÷ 0.5 L per bottle = <strong>1.8 bottles</strong>.</li>
+            <li><strong>km → mi:</strong> 5 km ÷ 1.6 km/mi ≈ <strong>3.1 miles</strong>.</li>
+            <li><strong>Percent of fuel goal:</strong> 15% = 0.15; 0.15 × 2,000 = <strong>300 calories</strong>.</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>Keep units attached to every number so conversions self-check (L ÷ L/bottle → bottles).</li>
+            <li>Reinforce that a rate and a percent are both "per 1" reasoning.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.RP.A.3b–d</strong>.</p>
+        </div>
+      </details>
+
       <section class="wq-card" aria-labelledby="h-cyu">
         <h2 id="h-cyu">
           <span class="wq-step-num" aria-hidden="true">5</span>Check Your

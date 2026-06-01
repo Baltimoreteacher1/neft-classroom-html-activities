@@ -438,7 +438,50 @@
         color: #db2777;
       }
 
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only > summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only > summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] > summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .u7-toc,
         .u7-actions,
         .u7-controls,
@@ -1343,6 +1386,32 @@
       </section>
 
       <!-- ============ 5. REFLECT ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>Stage-by-Stage Notes (Engage → Explore → Explain → Apply → Reflect)</h3>
+          <ul>
+            <li><strong>Engage:</strong> a balance puzzle motivates "do the same to both sides."</li>
+            <li><strong>Explore:</strong> solve one-step equations with inverse operations.</li>
+            <li><strong>Explain:</strong> formalize inverse operations and inequality notation.</li>
+            <li><strong>Apply:</strong> answer key below.</li>
+            <li><strong>Reflect:</strong> students explain checking a solution by substitution.</li>
+          </ul>
+          <h3>Apply — Answer Key</h3>
+          <ul>
+            <li><strong>Q1 — x + 3 = 10:</strong> x = 10 − 3 = <strong>7</strong>.</li>
+            <li><strong>Q2 — equation result:</strong> <strong>6</strong>.</li>
+            <li><strong>Q3 (MC):</strong> answer <strong>c</strong>.</li>
+            <li><strong>Q4 — "at most 8" inequality (MC):</strong> answer <strong>b</strong> (≤ 8).</li>
+            <li><strong>Q5 — "more than 12" (MC):</strong> answer <strong>d</strong> (&gt; 12).</li>
+            <li><strong>Q6 — divide evenly:</strong> <strong>3</strong>.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.EE.B.5–8</strong>.</p>
+        </div>
+      </details>
+
       <section class="u7-step u7-reflect" id="reflect">
         <h2><span class="u7-badge b5">5</span> Reflect</h2>
         <p class="u7-phase">Think about your thinking</p>

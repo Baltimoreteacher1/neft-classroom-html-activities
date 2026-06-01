@@ -552,7 +552,50 @@
         clip: rect(0 0 0 0);
         border: 0;
       }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .wq-actions,
         .wq-btn {
           display: none;
@@ -1218,6 +1261,29 @@
       </section>
 
       <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Deep Six Salvage · Salvage Log</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Salvage Log</h3>
+          <ul>
+            <li><strong>Order checkpoints:</strong> −455 &lt; −310 &lt; −140 &lt; −85 &lt; +12, so shallowest → deepest is +12, −85, −140, −310, −455.</li>
+            <li><strong>Absolute value (depth):</strong> |−310| = <strong>310 ft</strong> deep — distance from sea level regardless of sign.</li>
+            <li><strong>Plot pieces:</strong> A (3, 2) Quadrant I; D (2, −3½) Quadrant IV — plot the fractional coordinate halfway between −3 and −4.</li>
+            <li><strong>Reflect beacon:</strong> (3, 2) across the y-axis → <strong>(−3, 2)</strong> (x changes sign, y stays).</li>
+            <li><strong>Distance:</strong> for points on the same line, subtract coordinates (or add absolute values across an axis).</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>On the gauge, lower = smaller: −455 is deeper (and smaller) than −85.</li>
+            <li>Reflection across the y-axis flips only the sign of x; across the x-axis flips only y.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.NS.C.5–8</strong>.</p>
+        </div>
+      </details>
+
       <section class="wq-card" aria-labelledby="h-cyu">
         <h2 id="h-cyu">
           <span class="wq-step-num" aria-hidden="true">5</span>Check Your

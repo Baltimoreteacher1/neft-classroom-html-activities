@@ -552,7 +552,50 @@
         clip: rect(0 0 0 0);
         border: 0;
       }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
+        details.teacher-only,
         .wq-actions,
         .wq-btn {
           display: none;
@@ -1092,6 +1135,28 @@
       </section>
 
       <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin:4px 0 0"><strong>Sunrise Splash · Festival Bid Card</strong> — pairs with the Evaluation rubric above.</p>
+          <h3>Sample Answers — Festival Bid Card</h3>
+          <ul>
+            <li><strong>Recipe ratio:</strong> lemon : water = <strong>2 : 3</strong> (colon form) = <strong>2/3</strong> (fraction form). Order matters — water : lemon would be 3 : 2.</li>
+            <li><strong>Ratio table (scale up):</strong> ×3 gives 6 lemon : 9 water; a 30-cup pitcher splits into 2 + 3 = 5 parts, so each part = 30 ÷ 5 = 6 cups → <strong>12 cups lemon : 18 cups water</strong>.</li>
+            <li><strong>Best unit price:</strong> $12 ÷ 4 = $3.00/cup; divide each supplier's dollars ÷ cups and pick the lowest cost per cup of lemons.</li>
+            <li><strong>Delivery speed:</strong> our truck 90 mi ÷ 2 h = <strong>45 mph</strong>; rival 120 mi ÷ 3 h = 40 mph → our cart is faster (higher unit rate).</li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>Watch for students reversing the ratio order or adding to one part only — both amounts must scale together.</li>
+            <li>For the supplier compare, insist on a true <em>unit</em> price ($ per 1 cup) so the comparison is fair.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.RP.A.1–3</strong>.</p>
+        </div>
+      </details>
+
       <section class="wq-card" aria-labelledby="h-cyu">
         <h2 id="h-cyu">
           <span class="wq-step-num" aria-hidden="true">5</span>Check Your
