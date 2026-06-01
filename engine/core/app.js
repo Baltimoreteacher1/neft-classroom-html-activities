@@ -9,6 +9,12 @@ export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+  // Browser tab / SEO title (the engine shell ships a generic <title>).
+  if (config.title) {
+    const bits = [config.title];
+    if (config.lessonId) bits.push("Lesson " + config.lessonId);
+    document.title = bits.join(" · ") + " — Neft Teacher";
+  }
   if (config.theme) {
     document.documentElement.setAttribute("data-theme", config.theme);
     root.setAttribute("data-theme", config.theme);

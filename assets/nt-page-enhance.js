@@ -21,6 +21,16 @@
     document.documentElement.classList.remove("nt-dark");
   } catch (e) {}
 
+  // ---- favicon (most legacy pages ship without one) ----------------------
+  try {
+    if (!document.querySelector('link[rel~="icon"]')) {
+      var fav = document.createElement("link");
+      fav.rel = "icon";
+      fav.href = "/assets/favicon.svg";
+      document.head.appendChild(fav);
+    }
+  } catch (e) {}
+
   var LS_STUDENT = "nt_student";
 
   // ---- styles (save bar only) --------------------------------------------
