@@ -503,9 +503,19 @@ function renderLaunchHeader(el, state, config) {
   const notesHref = `/lessons/${encodeURIComponent(config.lessonId)}/notes.html`;
   const homeworkHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.docx`;
 
+  const readinessHref = `/lessons/${encodeURIComponent(config.lessonId)}/readiness/`;
+
   const block = document.createElement("div");
   block.className = "card launch-intro";
   block.innerHTML = `
+    ${
+      config.readiness
+        ? `<a class="launch-readiness-banner" href="${readinessHref}" style="display:flex; align-items:center; gap:var(--sp-3); text-decoration:none; color:inherit; background:var(--cream, #fdf3e0); border:1px solid var(--gold, #d4952a); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-4, 18px);">
+            <span style="font-size:1.6rem;">📚</span>
+            <span><strong>Need the basics for this lesson first?</strong> Take the quick 10-minute Readiness check — it finds what you're missing and gets you ready. <span style="white-space:nowrap; font-weight:700; color:var(--blue, #1a6fb5);">Start →</span></span>
+          </a>`
+        : ""
+    }
     <div class="launch-identity" style="display:flex; flex-wrap:wrap; gap:var(--sp-3); align-items:flex-end; margin-bottom:var(--sp-4);">
       <div class="launch-field" style="flex:1 1 220px;">
         <label for="launch-name" style="display:block; font-weight:600; margin-bottom:var(--sp-1);">Name</label>
