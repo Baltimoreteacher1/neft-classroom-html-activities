@@ -1,7 +1,7 @@
 /* Noam School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "noam-school-v21";
+const VERSION = "noam-school-v22";
 const CORE = [
   "./",
   "index.html",

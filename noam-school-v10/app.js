@@ -1607,23 +1607,37 @@ Due May 31"></textarea>
 
     sync() {
       const s = state.settings.sync;
-      const status = s.enabled
+      const pill = s.enabled
         ? '<span class="pill green">● Sync is on</span>'
         : '<span class="pill">Off by default</span>';
+      // When sync is ON, show the linking code + status. When OFF, show the
+      // one-tap "Turn on sync" plus an "Enter a code" path for the 2nd device.
+      const onBody = `
+          <p class="sub" style="margin-top:0">Sync is on. Your data keeps itself up to date across every device that uses this code — automatically.</p>
+          ${syncStatusHTML()}
+          <div class="field"><label>Your sync code</label>
+            <input id="syncCode" value="${esc(s.code)}" readonly onclick="this.select()"></div>
+          <div class="row">
+            <button class="btn primary" data-act="copy-code">📋 Copy code</button>
+            <button class="btn" data-act="copy-link">🔗 Copy link</button>
+            <button class="btn navy" data-act="sync-now">🔄 Sync now</button>
+            <button class="btn danger" data-act="toggle-sync">Turn off sync</button>
+          </div>
+          <p class="sub" style="margin-top:10px"><b>Link another device:</b> paste this code there (Backup &amp; sync → “Enter a code”), or send yourself the <b>link</b> and open it on the other device — it links automatically.</p>`;
+      const offBody = `
+          <p class="sub" style="margin-top:0">Turn this on to work on your phone and laptop and see the same tasks everywhere — no account, no email, no password to remember. ${cloud.available() ? "" : "<b>Heads up:</b> this site isn't set up for cloud sync yet, so your code is saved and ready, but data stays on this device until it is."}</p>
+          <div class="row">
+            <button class="btn primary" data-act="enable-sync">✨ Turn on sync</button>
+            <button class="btn" data-act="enter-code">⌨️ Enter a code</button>
+          </div>
+          <p class="sub" style="margin-top:10px">First device? Tap <b>Turn on sync</b> — we'll make a strong code for you. Adding a second device? Tap <b>Enter a code</b> and paste the code from your first device.</p>`;
       return (
         backHeader("Backup & sync", "more") +
         `<p class="view-intro">Your work is always saved on this device. Choose how you want to back it up or carry it to another device.</p>` +
         // Cloud sync surfaced first, highlighted, with a plain-language explanation.
         `<section class="card feature" data-card="cloud">
-          <div class="head"><div><h3>☁️ Sync across your devices</h3><p class="sub">Optional — work on your phone and laptop and see the same tasks everywhere.</p></div>${status}</div>
-          <p class="sub" style="margin-top:0">Pick one secret code and type it on every device you use. They'll keep each other up to date automatically — no account, no email, no password to remember. ${cloud.available() ? "" : "<b>Heads up:</b> this site isn't set up for cloud sync yet, so your code is saved and ready, but data stays on this device until it is."}</p>
-          <div class="field"><label>Secret sync code (12+ characters)</label><input id="syncCode" value="${esc(s.code)}" placeholder="Tap “Make a code” for a strong one"></div>
-          <div class="row">
-            <button class="btn" data-act="gen-code">🎲 Make a code</button>
-            <button class="btn ${s.enabled ? "danger" : "primary"}" data-act="toggle-sync">${s.enabled ? "Turn off sync" : "Turn on sync"}</button>
-            ${s.enabled ? `<button class="btn navy" data-act="sync-now">🔄 Sync now</button>` : ""}
-          </div>
-          ${s.lastAt ? `<p class="muted" style="font-size:.8rem;margin-top:8px">Last synced: ${esc(new Date(s.lastAt).toLocaleString())}</p>` : ""}
+          <div class="head"><div><h3>☁️ Sync across your devices</h3><p class="sub">Optional — work on your phone and laptop and see the same tasks everywhere.</p></div>${pill}</div>
+          ${s.enabled ? onBody : offBody}
         </section>` +
         card(
           "file",
@@ -2390,19 +2404,41 @@ Due May 31"></textarea>
     },
     base: "/api/state",
     _busy: false,
+    // status: "idle" | "syncing" | "synced" | "offline" — drives the UI chip.
+    status: "idle",
+    _interval: null,
+    // Update the status and refresh just the sync status line if it's on screen,
+    // so we never need a full re-render for a status flicker.
+    _setStatus(next) {
+      this.status = next;
+      const el = document.getElementById("syncStatus");
+      if (el) el.outerHTML = syncStatusHTML();
+    },
     async push() {
       const code = state.settings.sync.code;
       if (!code || !this.available() || this._busy) return;
       this._busy = true;
+      this._setStatus("syncing");
       try {
-        await fetch(`${this.base}?code=${encodeURIComponent(code)}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ updatedAt: state.updatedAt, state }),
-        });
-        state.settings.sync.lastAt = new Date().toISOString();
+        const res = await fetch(
+          `${this.base}?code=${encodeURIComponent(code)}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ updatedAt: state.updatedAt, state }),
+          },
+        );
+        if (res && res.ok) {
+          state.settings.sync.lastAt = new Date().toISOString();
+          mirror();
+          this._setStatus("synced");
+        } else {
+          // 503 (endpoint not configured) or any error — stay local-only.
+          this._setStatus("offline");
+        }
       } catch {
         /* offline or no backend — fine, local data is the source of truth */
+        this._setStatus("offline");
       } finally {
         this._busy = false;
       }
@@ -2410,25 +2446,132 @@ Due May 31"></textarea>
     async pull() {
       const code = state.settings.sync.code;
       if (!code || !this.available()) return false;
+      this._setStatus("syncing");
       try {
         const res = await fetch(
           `${this.base}?code=${encodeURIComponent(code)}`,
         );
-        if (!res.ok) return false;
+        if (!res.ok) {
+          this._setStatus("offline");
+          return false;
+        }
         const data = await res.json();
         if (
           data &&
           data.state &&
           (data.updatedAt || 0) > (state.updatedAt || 0)
         ) {
+          // Newer cloud wins. Apply WITHOUT pushing it straight back (echo guard).
+          const prev = suppressPush;
+          suppressPush = true;
           state = normalize(data.state);
           await save({ touch: false, immediate: true });
+          suppressPush = prev;
+          state.settings.sync.lastAt = new Date().toISOString();
+          mirror();
+          this._setStatus("synced");
           return true;
         }
-      } catch {}
+        // Local is same/newer — nothing to apply, but we're in sync.
+        state.settings.sync.lastAt = new Date().toISOString();
+        mirror();
+        this._setStatus("synced");
+      } catch {
+        this._setStatus("offline");
+      }
       return false;
     },
+    // Pull + re-render if anything changed. Safe to call from any auto trigger.
+    async autoPull() {
+      if (!state.settings.sync.enabled || !this.available()) return;
+      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        this._setStatus("offline");
+        return;
+      }
+      const changed = await this.pull();
+      if (changed) render();
+    },
+    // Start/refresh the periodic pull loop while the tab is open.
+    startAuto() {
+      this.stopAuto();
+      if (!state.settings.sync.enabled) return;
+      // ~50s cadence: fresh enough to feel live, light on the KV endpoint.
+      this._interval = setInterval(() => this.autoPull(), 50000);
+    },
+    stopAuto() {
+      if (this._interval) {
+        clearInterval(this._interval);
+        this._interval = null;
+      }
+    },
   };
+
+  // Human-friendly "how long ago" for the sync status line.
+  function timeAgo(iso) {
+    if (!iso) return "";
+    const ms = Date.now() - new Date(iso).getTime();
+    if (!isFinite(ms) || ms < 0) return "just now";
+    const m = Math.round(ms / 60000);
+    if (m < 1) return "just now";
+    if (m < 60) return `${m}m ago`;
+    const h = Math.round(m / 60);
+    if (h < 24) return `${h}h ago`;
+    return new Date(iso).toLocaleDateString();
+  }
+
+  // The live status chip. Re-rendered in place by cloud._setStatus via #syncStatus.
+  function syncStatusHTML() {
+    const s = state.settings.sync;
+    // Map to existing pill variants (.blue/.green/default) — no new CSS, and
+    // each variant already has a dark-mode rule, avoiding the dark-pill gotcha.
+    let label, cls;
+    if (!cloud.available()) {
+      label = "Saved on this device — cloud not available here";
+      cls = "";
+    } else if (cloud.status === "syncing") {
+      label = "Syncing…";
+      cls = "blue";
+    } else if (cloud.status === "offline") {
+      label = "Offline — will sync later";
+      cls = "";
+    } else if (s.lastAt) {
+      label = `Synced ✓ (${timeAgo(s.lastAt)})`;
+      cls = "green";
+    } else {
+      label = "Ready to sync";
+      cls = "blue";
+    }
+    return `<p id="syncStatus" class="pill ${cls}" style="margin:4px 0 10px">${esc(label)}</p>`;
+  }
+
+  // Deep link that pre-fills the code on the other device (handled at init).
+  function linkURL(code) {
+    return `${location.origin}${location.pathname}?view=sync&sync=${encodeURIComponent(code)}`;
+  }
+
+  // Strong, url-safe, human-readable sync code (16+ chars of entropy).
+  function genSyncCode() {
+    const words = [
+      "orca",
+      "fox",
+      "hawk",
+      "puma",
+      "wolf",
+      "lynx",
+      "bear",
+      "owl",
+      "moth",
+      "kite",
+      "reef",
+      "fern",
+    ];
+    const bytes = new Uint8Array(14);
+    (crypto || {}).getRandomValues?.(bytes);
+    const alpha = "abcdefghjkmnpqrstuvwxyz23456789"; // no look-alikes
+    const rand = [...bytes].map((b) => alpha[b % alpha.length]).join("");
+    const w = words[bytes[0] % words.length];
+    return `noam-${w}-${rand}`; // e.g. noam-hawk-<14 chars> → 24+ chars total
+  }
 
   // ---------------------------------------------------------------------------
   // Google Calendar (client-side, read-only, no backend)
@@ -3611,53 +3754,83 @@ ${name}`;
       render();
       toast("Backup loaded ✅");
     },
-    "gen-code": () => {
-      // High-entropy code so the (no-account) sync key isn't guessable.
-      const words = [
-        "orca",
-        "fox",
-        "hawk",
-        "puma",
-        "wolf",
-        "lynx",
-        "bear",
-        "owl",
-        "moth",
-        "kite",
-        "reef",
-        "fern",
-      ];
-      const bytes = new Uint8Array(10);
-      (crypto || {}).getRandomValues?.(bytes);
-      const rand = [...bytes]
-        .map((b) => "abcdefghjkmnpqrstuvwxyz23456789"[b % 31])
-        .join("");
-      const w = words[bytes[0] % words.length];
-      $("#syncCode").value = `noam-${w}-${rand}`;
+    // One tap: generate a strong code (if needed), turn sync on, show it.
+    "enable-sync": async () => {
+      if (!state.settings.sync.code) state.settings.sync.code = genSyncCode();
+      state.settings.sync.enabled = true;
+      save();
+      cloud.startAuto();
+      render();
+      toast(
+        cloud.available()
+          ? "Sync on 🔄 — share your code with your other device"
+          : "Saved. Cloud activates when the site supports it.",
+      );
+      // First-ever sync: pull anything already in the cloud, then push.
+      await cloud.pull();
+      await cloud.push();
+      render();
+    },
+    // Second device: paste the code from the first device to link.
+    "enter-code": () => {
+      openModal(
+        "Enter your sync code",
+        `<p class="sub">On your first device, open Backup &amp; sync and copy the code. Paste it below to link this device.</p>
+        <div class="field"><input id="linkCodeInput" placeholder="noam-..." autocomplete="off" autocapitalize="off"></div>
+        <div class="row">
+          <button class="btn primary" data-act="link-code">Link this device</button>
+          <button class="btn" data-act="close-modal">Cancel</button>
+        </div>`,
+      );
+      setTimeout(() => $("#linkCodeInput")?.focus(), 50);
+    },
+    "link-code": async () => {
+      const code = ($("#linkCodeInput")?.value || "").trim();
+      if (!code) return toast("Paste a code first.");
+      if (code.length < 12)
+        return toast("That code looks too short — copy the full code.");
+      state.settings.sync.code = code;
+      state.settings.sync.enabled = true;
+      save();
+      cloud.startAuto();
+      closeModal();
+      toast("Linking… pulling your data ⬇️");
+      // Pull first so this device adopts the existing shared data.
+      const pulled = await cloud.pull();
+      await cloud.push();
+      render();
+      toast(pulled ? "Linked — your data is here ✅" : "Linked 🔄");
+    },
+    "copy-link": async () => {
+      const url = linkURL(state.settings.sync.code);
+      try {
+        await navigator.clipboard.writeText(url);
+        toast("Link copied 🔗 — open it on your other device");
+      } catch {
+        toast("Copy failed — copy the code instead");
+      }
+    },
+    "copy-code": async () => {
+      const code = state.settings.sync.code;
+      try {
+        await navigator.clipboard.writeText(code);
+        toast("Code copied 📋");
+      } catch {
+        // Clipboard blocked — select the field so they can copy manually.
+        const el = $("#syncCode");
+        if (el) {
+          el.focus();
+          el.select();
+        }
+        toast("Press Copy / long-press to copy the code");
+      }
     },
     "toggle-sync": async () => {
-      const code = $("#syncCode")?.value.trim();
-      if (!state.settings.sync.enabled) {
-        if (!code) return toast("Enter or make a sync code first.");
-        if (code.length < 12)
-          return toast(
-            "Use a longer code (12+ characters) to keep data private. Tap 🎲.",
-          );
-        state.settings.sync.code = code;
-        state.settings.sync.enabled = true;
-        save();
-        toast(
-          cloud.available()
-            ? "Cloud sync on 🔄"
-            : "Saved. Cloud activates when the site supports it.",
-        );
-        await cloud.pull();
-        await cloud.push();
-      } else {
-        state.settings.sync.enabled = false;
-        save();
-        toast("Cloud sync off");
-      }
+      // From the ON view this only turns sync OFF (enable is its own action).
+      state.settings.sync.enabled = false;
+      cloud.stopAuto();
+      save();
+      toast("Cloud sync off");
       render();
     },
     "sync-now": async () => {
@@ -3999,6 +4172,15 @@ ${name}`;
     const v = params.get("view");
     if (v && (TABS.some((t) => t[0] === v) || VIEWS[v])) view = v;
 
+    // Deep link: ?sync=<code> links this device automatically (e.g. from a QR
+    // or a shared link), so the second device doesn't have to type anything.
+    const linkCode = (params.get("sync") || "").trim();
+    if (linkCode && linkCode.length >= 12) {
+      state.settings.sync.code = linkCode;
+      state.settings.sync.enabled = true;
+      view = "sync";
+    }
+
     wire();
     render();
 
@@ -4010,6 +4192,21 @@ ${name}`;
       if (pulled) render();
     }
     suppressPush = false;
+    // Save any code adopted from a deep link now that pushing is allowed.
+    if (linkCode && linkCode.length >= 12) {
+      save();
+      await cloud.push();
+    }
+
+    // ---- Auto-pull triggers: keep this device live without any user action ----
+    // 1) Periodic pull while the tab is open (~50s).
+    cloud.startAuto();
+    // 2) On window focus and 3) when the tab becomes visible again — grabs the
+    //    latest the moment the user returns to the app (covers throttled timers).
+    window.addEventListener("focus", () => cloud.autoPull());
+    addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") cloud.autoPull();
+    });
 
     // calm one-line briefing on open, plus the reminders loop
     dailyBriefing();
