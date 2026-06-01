@@ -1876,59 +1876,69 @@
           browser.
         </p>
         <button
+          id="googleSignInBtn"
           class="btn primary"
-          onclick="nshQuickEnter()"
-          style="width: 100%; margin-bottom: 16px"
+          onclick="nshGoogleSignIn()"
+          style="width: 100%; margin-bottom: 16px; display: none"
         >
-          ⚡ Enter demo as Principal (1 click)
+          Sign in with Google
         </button>
-        <p class="gate-hint" style="margin: -6px 0 16px">
-          …or sign in with a role below.
-        </p>
-        <div class="field">
-          <label for="gateCode">Access code</label
-          ><input
-            id="gateCode"
-            type="password"
-            autocomplete="off"
-            value="neft2026"
-            placeholder="Access code"
-            onkeydown="if (event.key === 'Enter') nshSignIn();"
-          />
+        <div id="localGateControls" style="display: contents">
+          <button
+            class="btn primary"
+            onclick="nshQuickEnter()"
+            style="width: 100%; margin-bottom: 16px"
+          >
+            ⚡ Enter demo as Principal (1 click)
+          </button>
+          <p class="gate-hint" style="margin: -6px 0 16px">
+            …or sign in with a role below.
+          </p>
+          <div class="field">
+            <label for="gateCode">Access code</label
+            ><input
+              id="gateCode"
+              type="password"
+              autocomplete="off"
+              value="neft2026"
+              placeholder="Access code"
+              onkeydown="if (event.key === 'Enter') nshSignIn();"
+            />
+          </div>
+          <div class="field">
+            <label for="gateName">Your name</label
+            ><input
+              id="gateName"
+              placeholder="e.g. Dana Rivera"
+              onkeydown="if (event.key === 'Enter') nshSignIn();"
+            />
+          </div>
+          <div class="field">
+            <label for="gateRole">Your role</label
+            ><select id="gateRole">
+              <option value="principal">Principal</option>
+              <option value="ap">Assistant Principal</option>
+              <option value="gradechair">Grade Chair</option>
+              <option value="teacher">Teacher</option>
+              <option value="sped">SPED / ESOL Lead</option>
+              <option value="office">Office Staff</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="gateSchool">School</label
+            ><select id="gateSchool">
+              <option>Harbor View Middle School</option>
+              <option>North Star Elementary</option>
+              <option>City Bridge Academy</option>
+            </select>
+          </div>
+          <button class="btn primary" onclick="nshSignIn()">Enter Hub</button>
+          <p class="gate-err" id="gateErr">Incorrect access code. Try again.</p>
+          <p class="gate-hint">
+            Demo access code: <strong>neft2026</strong> · This is illustrative
+            security, not production auth.
+          </p>
         </div>
-        <div class="field">
-          <label for="gateName">Your name</label
-          ><input
-            id="gateName"
-            placeholder="e.g. Dana Rivera"
-            onkeydown="if (event.key === 'Enter') nshSignIn();"
-          />
-        </div>
-        <div class="field">
-          <label for="gateRole">Your role</label
-          ><select id="gateRole">
-            <option value="principal">Principal</option>
-            <option value="ap">Assistant Principal</option>
-            <option value="gradechair">Grade Chair</option>
-            <option value="teacher">Teacher</option>
-            <option value="sped">SPED / ESOL Lead</option>
-            <option value="office">Office Staff</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="gateSchool">School</label
-          ><select id="gateSchool">
-            <option>Harbor View Middle School</option>
-            <option>North Star Elementary</option>
-            <option>City Bridge Academy</option>
-          </select>
-        </div>
-        <button class="btn primary" onclick="nshSignIn()">Enter Hub</button>
-        <p class="gate-err" id="gateErr">Incorrect access code. Try again.</p>
-        <p class="gate-hint">
-          Demo access code: <strong>neft2026</strong> · This is illustrative
-          security, not production auth.
-        </p>
       </div>
     </div>
 
@@ -4138,7 +4148,99 @@
 
       // boot
       init();
+
+      // ── Google Sign-In (API mode) ─────────────────────────────────────────
+      // Redirect the browser to the Worker's /auth/login, which runs the Google
+      // consent flow and sets a session cookie, then returns here.
+      function nshGoogleSignIn() {
+        window.location =
+          NSH_API_BASE +
+          "/auth/login?redirect=" +
+          encodeURIComponent(location.href);
+      }
+      window.nshGoogleSignIn = nshGoogleSignIn;
+
+      // Toggle the gate between Google (API mode) and the local demo controls.
+      function nshApplyGateMode() {
+        const g = document.getElementById("googleSignInBtn");
+        const local = document.getElementById("localGateControls");
+        if (g) g.style.display = USE_API ? "block" : "none";
+        if (local) local.style.display = USE_API ? "none" : "contents";
+      }
+
+      // Sign a user in from a verified /api/me response (API mode).
+      function nshApplyApiSession(me) {
+        const u = (me && me.user) || {};
+        const role = me.role || "teacher";
+        const tenant =
+          (me.memberships || []).find((m) => m.tenant_id === me.tenant_id) ||
+          {};
+        const schoolName = tenant.tenant_name || me.tenant_id || currentSchool;
+        session = {
+          name: u.name || u.email || "Staff User",
+          role,
+          school: schoolName,
+          ts: Date.now(),
+        };
+        currentSchool = schoolName;
+        state.role = role;
+        const ss = document.getElementById("schoolSelect");
+        const rs = document.getElementById("roleSelect");
+        // Inject the live tenant as an option if the demo list lacks it.
+        if (ss && ![...ss.options].some((o) => o.value === schoolName)) {
+          const opt = document.createElement("option");
+          opt.value = schoolName;
+          opt.textContent = schoolName;
+          ss.appendChild(opt);
+        }
+        if (ss) ss.value = schoolName;
+        if (rs) rs.value = role;
+        applySettings();
+        document.getElementById("authGate").classList.add("hidden");
+        document.getElementById("identityChip").hidden = false;
+        document.getElementById("signOutBtn").hidden = false;
+        document.getElementById("identityText").textContent =
+          session.name + " · " + (ROLE_LABEL[role] || role);
+        apiLoadAll().catch((e) => toast("API load failed: " + e.message));
+      }
+
+      // Show the gate (with the Google button) in API mode.
+      function nshShowApiGate() {
+        nshApplyGateMode();
+        document.getElementById("authGate").classList.remove("hidden");
+        document.getElementById("identityChip").hidden = true;
+        document.getElementById("signOutBtn").hidden = true;
+        hydrateData(); // best-effort: still renders local/demo scaffolding
+        applySettings();
+        renderAll();
+      }
+
+      // API-aware sign-out: redirect through the Worker to clear the cookie.
+      const _nshSignOut = nshSignOut;
+      nshSignOut = function () {
+        if (USE_API) {
+          audit("Sign out");
+          window.location =
+            NSH_API_BASE +
+            "/auth/logout?redirect=" +
+            encodeURIComponent(location.origin + location.pathname);
+          return;
+        }
+        _nshSignOut();
+      };
+      window.nshSignOut = nshSignOut;
+
+      nshApplyGateMode();
+
       (function boot() {
+        if (USE_API) {
+          // API mode: ask the Worker who we are. 200 → signed in; 401 → gate.
+          apiReq("GET", "/api/me")
+            .then((me) => nshApplyApiSession(me))
+            .catch(() => nshShowApiGate());
+          return;
+        }
+        // LOCAL demo mode (unchanged).
         session = lsGet("nsh:session", null);
         if (session) {
           currentSchool = session.school || currentSchool;
