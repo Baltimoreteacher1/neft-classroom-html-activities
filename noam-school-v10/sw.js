@@ -1,7 +1,7 @@
 /* Noam School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "noam-school-v16";
+const VERSION = "noam-school-v17";
 const CORE = [
   "./",
   "index.html",
@@ -14,6 +14,21 @@ const CORE = [
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
 ];
+
+// Focus (or open) the app when a reminder/briefing notification is tapped.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((list) => {
+        for (const c of list) {
+          if ("focus" in c) return c.focus();
+        }
+        if (self.clients.openWindow) return self.clients.openWindow("./");
+      }),
+  );
+});
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

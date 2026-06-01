@@ -134,6 +134,17 @@
   // ---------------------------------------------------------------------------
   // State model
   // ---------------------------------------------------------------------------
+  // Accent themes — [id, label, primary hex, deep/navy hex]. Used both to set a
+  // --accent CSS var and to tint the hero. Kid-friendly, all AA on white text.
+  const ACCENTS = [
+    ["teal", "Teal", "#0d9488", "#1e293b"],
+    ["blue", "Ocean", "#2563eb", "#172554"],
+    ["purple", "Grape", "#7c3aed", "#2e1065"],
+    ["green", "Forest", "#15803d", "#14302a"],
+    ["rose", "Berry", "#be185d", "#3f0d22"],
+    ["orange", "Sunset", "#c2410c", "#3a1505"],
+  ];
+
   const CARDS = [
     ["glance", "Today at a glance"],
     ["calendar", "Calendar"],
@@ -257,6 +268,7 @@
         studentName: "Noam",
         gmail: "",
         theme: "light",
+        accent: "teal",
         readable: false,
         motion: "on",
         fontScale: 1,
@@ -265,6 +277,9 @@
         breakMin: 5,
         homeOrder: CARDS.map((x) => x[0]),
         hiddenCards: [],
+        // Reminder times (24h "HH:MM") for the local notification scheduler.
+        morningBriefingTime: "07:15",
+        leaveByTime: "",
         sync: { enabled: false, code: "", lastAt: "" },
       },
       classes: [
@@ -282,6 +297,9 @@
       wins: [],
       points: 0,
       daily: { goal: "", goalDate: "" },
+      // { dateKey: true } — marks days the "did you write everything down?"
+      // capture prompt was answered, so it only nudges once per day.
+      captureLog: {},
       updatedAt: Date.now(),
     };
   }
@@ -302,6 +320,11 @@
     s.hiddenCards = Array.isArray(s.hiddenCards) ? s.hiddenCards : [];
     s.fontScale = clamp(Number(s.fontScale) || 1, 0.9, 1.5);
     s.defaultFocusMin = clamp(Number(s.defaultFocusMin) || 15, 5, 60);
+    s.accent = ACCENTS.some((a) => a[0] === s.accent) ? s.accent : "teal";
+    s.morningBriefingTime = TIME_RE.test(s.morningBriefingTime)
+      ? s.morningBriefingTime
+      : "07:15";
+    s.leaveByTime = TIME_RE.test(s.leaveByTime) ? s.leaveByTime : "";
     return {
       ...base,
       ...x,
@@ -327,6 +350,8 @@
       wins: Array.isArray(x.wins) ? x.wins : [],
       points: Number(x.points) || 0,
       daily: { ...base.daily, ...(x.daily || {}) },
+      captureLog:
+        x.captureLog && typeof x.captureLog === "object" ? x.captureLog : {},
     };
   }
 
@@ -574,7 +599,22 @@
     root.dataset.theme = s.theme;
     root.dataset.readable = s.readable ? "on" : "off";
     root.dataset.motion = s.motion;
+    root.dataset.accent = s.accent;
     root.style.setProperty("--font-scale", s.fontScale);
+    // Light theme only: re-tint the teal accent. Dark/contrast keep their tuned
+    // palettes so contrast stays AA.
+    const acc = ACCENTS.find((a) => a[0] === s.accent);
+    if (acc && s.theme === "light") {
+      root.style.setProperty("--teal", acc[2]);
+      root.style.setProperty("--teal-bright", acc[2]);
+      root.style.setProperty("--navy", acc[3]);
+      root.style.setProperty("--navy-deep", acc[3]);
+    } else {
+      root.style.removeProperty("--teal");
+      root.style.removeProperty("--teal-bright");
+      root.style.removeProperty("--navy");
+      root.style.removeProperty("--navy-deep");
+    }
     const meta = $('meta[name="theme-color"]');
     if (meta)
       meta.content =
@@ -622,7 +662,7 @@
         <h2>You're all caught up 🎉</h2>
         <p style="color:rgba(255,255,255,.82);max-width:46ch">Nothing is waiting for you right now. Add your next assignment, or paste your work from Google Classroom.</p>
         <div class="now-actions">
-          <button class="btn go" data-act="open-task">＋ Add an assignment</button>
+          <button class="btn go big" data-act="quick-add">＋ Add an assignment</button>
           <button class="btn" data-act="nav" data-arg="more">📋 Paste Classroom</button>
         </div>`;
       return;
@@ -630,8 +670,19 @@
     const c = cls(t.classId);
     const pct = stepPct(t);
     const overdueB = daysUntil(t.due) < 0;
+    const firstStep = t.steps.find((s) => !s.done);
+    // ONE clear next move. If the task is broken into steps, the headline shows
+    // the very next step so there's never a "what do I do?" gap.
+    const cue = firstStep
+      ? `Next small step: <b>${esc(firstStep.text)}</b>`
+      : t.steps.length
+        ? "All steps done — finish and turn it in."
+        : "Tap “Break it down” to make a tiny first step.";
     hero.innerHTML = `
-      <span class="eyebrow">🎯 Right now — just this one thing</span>
+      <div class="now-head">
+        <span class="eyebrow">🎯 Right now — just this one thing</span>
+        <button class="btn sm now-quickadd" data-act="quick-add" aria-label="Add an assignment">＋ Add</button>
+      </div>
       <div class="now-task">
         <div class="now-title">${esc(t.title)}</div>
         <div class="now-meta">
@@ -640,18 +691,26 @@
           ${t.estimateMin ? `<span class="tag">~${t.estimateMin} min</span>` : ""}
           ${t.steps.length ? `<span class="tag">${pct}% done</span>` : ""}
         </div>
+        <p class="now-cue">${cue}</p>
       </div>
       <div class="now-actions">
-        <button class="btn go" data-act="focus-start" data-id="${t.id}">▶ Start focus</button>
-        <button class="btn" data-act="breakdown" data-id="${t.id}">🧩 Break it down</button>
-        <button class="btn" data-act="complete" data-id="${t.id}">✓ Done</button>
+        <button class="btn go big" data-act="focus-start" data-id="${t.id}">▶ Start this now</button>
+        ${t.steps.length ? `<button class="btn" data-act="complete" data-id="${t.id}">✓ Done</button>` : `<button class="btn" data-act="breakdown" data-id="${t.id}">🧩 Break it down</button>`}
       </div>
-      <div class="progress-strip">
-        <div class="statbox"><b>${overdue.length}</b><small>Overdue</small></div>
-        <div class="statbox"><b>${today.length}</b><small>Due today</small></div>
-        <div class="statbox"><b>${open.length}</b><small>Open total</small></div>
-        <div class="statbox"><b>${streak()}🔥</b><small>Day streak</small></div>
-      </div>`;
+      <details class="now-rest">
+        <summary>The rest can wait — tap to peek (${Math.max(open.length - 1, 0)} more)</summary>
+        <div class="progress-strip" style="margin-top:12px">
+          <div class="statbox"><b>${overdue.length}</b><small>Overdue</small></div>
+          <div class="statbox"><b>${today.length}</b><small>Due today</small></div>
+          <div class="statbox"><b>${open.length}</b><small>Open total</small></div>
+          <div class="statbox"><b>${streak()}🔥</b><small>Day streak</small></div>
+        </div>
+        <div class="now-rest-actions">
+          ${t.steps.length ? `<button class="btn sm" data-act="breakdown" data-id="${t.id}">🧩 Edit steps</button>` : `<button class="btn sm" data-act="complete" data-id="${t.id}">✓ Mark done</button>`}
+          <button class="btn sm" data-act="nav" data-arg="today">📅 See today's plan</button>
+          <button class="btn sm" data-act="nav" data-arg="tasks">✅ All tasks</button>
+        </div>
+      </details>`;
   }
 
   // ---------------------------------------------------------------------------
@@ -715,6 +774,7 @@
         <div class="row" style="margin-top:10px">
           <button class="btn primary sm" data-act="focus-start" data-id="${a.id}">▶ Start focus</button>
           <button class="btn sm" data-act="breakdown" data-id="${a.id}">🧩 Steps</button>
+          <button class="btn sm" data-act="ask-help" data-id="${a.id}">🙋 Ask for help</button>
           <button class="btn sm" data-act="open-task" data-id="${a.id}">✏️ Edit</button>
           ${a.status === "done" ? `<button class="btn sm" data-act="reopen" data-id="${a.id}">↩ Reopen</button>` : `<button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button>`}
           <button class="btn danger sm" data-act="delete-task" data-id="${a.id}">Delete</button>
@@ -730,6 +790,20 @@
   }
   function emptyState(emoji, text) {
     return `<div class="empty"><div class="big-emoji" aria-hidden="true">${emoji}</div><p>${esc(text)}</p></div>`;
+  }
+
+  // Daily "did you write everything down?" capture nudge. Shows once per day,
+  // from late morning on (after classes have handed out work), until answered.
+  function captureBanner() {
+    if (state.captureLog[todayKey()]) return "";
+    if (new Date().getHours() < 11) return "";
+    return `<div class="capture-banner" role="region" aria-label="Daily check-in">
+      <div class="capture-text"><b>📋 Did you write everything down?</b><small>Check your bag, planner, and Google Classroom for any new homework.</small></div>
+      <div class="capture-actions">
+        <button class="btn primary sm" data-act="capture-add">＋ Add one</button>
+        <button class="btn sm" data-act="capture-done">✓ All in</button>
+      </div>
+    </div>`;
   }
 
   // ---------------------------------------------------------------------------
@@ -897,7 +971,7 @@
         : "Upcoming and overdue.",
       `${rows}
        <div class="row" style="margin-top:10px">
-         <button class="btn primary" data-act="open-task">＋ Add assignment</button>
+         <button class="btn primary" data-act="quick-add">＋ Add assignment</button>
          <button class="btn sm" data-act="nav" data-arg="tasks">See all →</button>
        </div>`,
     );
@@ -943,7 +1017,7 @@
       const order = state.settings.homeOrder.filter(
         (k) => !state.settings.hiddenCards.includes(k),
       );
-      return `<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
+      return `${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
     },
 
     calendar() {
@@ -1024,7 +1098,7 @@
       return `
         <div class="view-head">
           <h2 class="view-title">All tasks</h2>
-          <button class="btn primary" data-act="open-task">＋ Add assignment</button>
+          <button class="btn primary" data-act="quick-add">＋ Add assignment</button>
         </div>
         ${open.length === 0 ? emptyState("🎉", "No open tasks. Add one or paste from Classroom (More tab).") : ""}
         ${buckets
@@ -1068,6 +1142,7 @@
                  )
                  .join("")}</ul>
                <div class="row" style="margin-top:8px">
+                 <button class="btn primary sm" data-act="guide-start" data-id="${r.id}">▶ Walk me through it</button>
                  <button class="btn sm" data-act="reset-routine" data-id="${r.id}">Reset for today</button>
                  <button class="btn sm" data-act="edit-routine" data-id="${r.id}">Edit</button>
                </div>`,
@@ -1262,6 +1337,10 @@ Due May 31"></textarea>
           "Set it up the way that's easiest for you.",
           `
           <div class="field"><label>Color theme</label><div class="seg">${themeBtn("light", "☀️ Light")}${themeBtn("dark", "🌙 Dark")}${themeBtn("contrast", "⬛ High contrast")}</div></div>
+          <div class="field"><label>Accent color${s.theme === "light" ? "" : " (Light theme only)"}</label><div class="accent-row" role="group" aria-label="Accent color">${ACCENTS.map(
+            (a) =>
+              `<button class="accent-swatch" data-act="set-accent" data-arg="${a[0]}" aria-pressed="${s.accent === a[0]}" aria-label="${a[1]}" title="${a[1]}" style="background:${a[2]}"></button>`,
+          ).join("")}</div></div>
           <div class="field"><label>Text size — ${Math.round(s.fontScale * 100)}%</label><input type="range" min="0.9" max="1.5" step="0.05" value="${s.fontScale}" data-bind="fontScale"></div>
           <div class="toggle-row"><div class="label"><b>Readable font & spacing</b><small>Easier-to-read letters with more space</small></div><label class="seg"><button data-act="toggle" data-arg="readable" aria-pressed="${s.readable}">${s.readable ? "On" : "Off"}</button></label></div>
           <div class="toggle-row"><div class="label"><b>Reduce motion</b><small>Turn off animations</small></div><label class="seg"><button data-act="toggle" data-arg="motion" aria-pressed="${s.motion === "off"}">${s.motion === "off" ? "On" : "Off"}</button></label></div>
@@ -1278,11 +1357,26 @@ Due May 31"></textarea>
         ) +
         card(
           "notify",
-          "Reminders",
-          "Get a nudge when something is due soon.",
+          "Reminders & briefing",
+          "Gentle nudges so the app gets opened.",
           `
-          <div class="toggle-row"><div class="label"><b>Due-soon reminders</b><small>${notifSupport() ? "Shows a notification while the app is open" : "Not supported on this device"}</small></div>
+          <div class="toggle-row"><div class="label"><b>Reminders &amp; morning briefing</b><small>${notifSupport() ? "A morning hello and due-soon nudges while the app is open" : "Not supported on this device"}</small></div>
           <label class="seg"><button data-act="toggle-notify" aria-pressed="${s.notifications}" ${notifSupport() ? "" : "disabled"}>${s.notifications ? "On" : "Off"}</button></label></div>
+          <div class="field"><label>Morning briefing time</label><input type="time" id="setBriefTime" value="${esc(s.morningBriefingTime)}"></div>
+          <div class="field"><label>“Leave by” time (optional, shown in guided routine)</label><input type="time" id="setLeaveBy" value="${esc(s.leaveByTime)}"></div>
+          <button class="btn primary" data-act="save-reminder-times">Save times</button>
+          <p class="muted" style="font-size:.8rem;margin:10px 0 0">Tip: for the most reliable nudges, install the app (More → Install) and open it each morning.</p>
+        `,
+        ) +
+        card(
+          "family",
+          "Family setup",
+          "Set up classes, teachers, and routines together.",
+          `
+          <div class="grid g2">
+            <button class="btn block menu-tile" data-act="view-classes"><span class="menu-ic" aria-hidden="true">🏫</span><span><b>Classes &amp; teacher emails</b><small>Names, colors, who to email</small></span></button>
+            <button class="btn block menu-tile" data-act="nav" data-arg="routines"><span class="menu-ic" aria-hidden="true">🔁</span><span><b>Morning &amp; daily routines</b><small>Edit the step-by-step lists</small></span></button>
+          </div>
         `,
         ) +
         card(
@@ -1399,7 +1493,10 @@ Due May 31"></textarea>
              `<li><input class="check" type="checkbox" data-check="routine" data-id="${r.id}" data-sid="${it.id}" ${done.includes(it.id) ? "checked" : ""} aria-label="${esc(it.text)}"><span class="steptext ${done.includes(it.id) ? "done" : ""}">${esc(it.text)}</span></li>`,
          )
          .join("")}</ul>
-       <button class="btn sm" data-act="nav" data-arg="routines">All routines →</button>`,
+       <div class="row" style="margin-top:8px">
+         <button class="btn primary sm" data-act="guide-start" data-id="${r.id}">▶ Walk me through it</button>
+         <button class="btn sm" data-act="nav" data-arg="routines">All routines →</button>
+       </div>`,
     );
   }
   function pickRoutineForNow() {
@@ -1498,6 +1595,26 @@ Due May 31"></textarea>
       ev.preventDefault();
       first.focus();
     }
+  }
+
+  // Minimal capture form: what + class + due in the fewest taps. "Due" defaults
+  // to a quick-pick row (Today / Tomorrow / Pick) so most adds are 2 taps.
+  function quickAddForm() {
+    const due = quickAddForm._due ?? "";
+    const pick = (val, label) =>
+      `<button type="button" data-act="qa-due" data-arg="${val}" aria-pressed="${due === val || (val === "custom" && due && due !== isoForOffset(0) && due !== isoForOffset(1))}">${label}</button>`;
+    return `
+      <p class="sub">Write it down before you forget. You can add details later.</p>
+      <div class="field"><label>What is it?</label><input id="qaTitle" placeholder="Math worksheet p. 42" autocomplete="off"></div>
+      <div class="field"><label>Which class?</label><select id="qaClass">${state.classes
+        .map((c) => `<option value="${c.id}">${esc(c.name)}</option>`)
+        .join("")}</select></div>
+      <div class="field"><label>When is it due?</label>
+        <div class="seg" id="qaDueSeg">${pick(isoForOffset(0), "Today")}${pick(isoForOffset(1), "Tomorrow")}${pick("custom", "Pick a date")}${pick("", "Not sure")}</div>
+        <input type="date" id="qaDate" value="${esc(due && due !== "custom" ? due : "")}" style="margin-top:8px;${due === "custom" || (due && due !== isoForOffset(0) && due !== isoForOffset(1)) ? "" : "display:none"}">
+      </div>
+      <button class="btn primary block big" data-act="save-quickadd">＋ Add it</button>
+      <button class="btn block ghost" data-act="open-task" style="margin-top:8px">More details…</button>`;
   }
 
   function taskForm(a) {
@@ -1722,6 +1839,141 @@ Due May 31"></textarea>
   };
 
   // ---------------------------------------------------------------------------
+  // Guided routine — walk through steps ONE at a time (morning launch etc.)
+  // ---------------------------------------------------------------------------
+  function leaveByCountdown() {
+    const t = state.settings.leaveByTime;
+    if (!TIME_RE.test(t)) return null;
+    const [hh, mm] = t.split(":").map(Number);
+    const now = new Date();
+    const target = new Date();
+    target.setHours(hh, mm, 0, 0);
+    const mins = Math.round((target - now) / 60000);
+    return { mins, label: t };
+  }
+
+  const guide = {
+    routineId: null,
+    idx: 0,
+    timer: null,
+    start(routineId) {
+      const r = state.routines.find((x) => x.id === routineId);
+      if (!r || !r.items.length)
+        return toast("Add steps to this routine first.");
+      this.routineId = routineId;
+      // Resume at the first not-yet-checked step so it picks up where they left off.
+      const done = (state.routineLog[todayKey()] || {})[routineId] || [];
+      const firstOpen = r.items.findIndex((it) => !done.includes(it.id));
+      this.idx = firstOpen < 0 ? r.items.length : firstOpen;
+      this._lastFocus = document.activeElement;
+      $("#guideOverlay").classList.add("open");
+      this.render();
+      this.timer = setInterval(() => this.renderCountdown(), 30000);
+      try {
+        navigator.wakeLock
+          ?.request("screen")
+          .then((l) => (this._wake = l))
+          .catch(() => {});
+      } catch {}
+      $("#guideOverlay [data-act='guide-stop']")?.focus();
+    },
+    routine() {
+      return state.routines.find((x) => x.id === this.routineId);
+    },
+    markCurrent() {
+      const r = this.routine();
+      if (!r) return;
+      const it = r.items[this.idx];
+      if (!it) return;
+      const day = (state.routineLog[todayKey()] =
+        state.routineLog[todayKey()] || {});
+      const arr = (day[r.id] = day[r.id] || []);
+      if (!arr.includes(it.id)) arr.push(it.id);
+      // Award +5 once when fully complete, mirroring the checkbox flow.
+      const awarded = (day.__awarded = day.__awarded || []);
+      if (arr.length === r.items.length && !awarded.includes(r.id)) {
+        awarded.push(r.id);
+        state.points += 5;
+        bumpActivity("routines");
+      }
+      save();
+      this.idx++;
+      vibrate();
+      this.render();
+    },
+    back() {
+      if (this.idx > 0) this.idx--;
+      this.render();
+    },
+    renderCountdown() {
+      const el = $("#gCountdown");
+      if (!el) return;
+      const lb = leaveByCountdown();
+      if (!lb) {
+        el.textContent = "";
+        return;
+      }
+      if (lb.mins > 0) {
+        el.className = "gcountdown" + (lb.mins <= 5 ? " urgent" : "");
+        el.textContent = `🕗 Leave by ${lb.label} — ${lb.mins} min left`;
+      } else if (lb.mins === 0) {
+        el.className = "gcountdown urgent";
+        el.textContent = `🕗 Time to leave!`;
+      } else {
+        el.className = "gcountdown urgent";
+        el.textContent = `🕗 Leave time was ${lb.label}`;
+      }
+    },
+    render() {
+      const r = this.routine();
+      if (!r) return;
+      $("#gTitle").textContent = `${r.emoji || "🔁"} ${r.name}`;
+      const total = r.items.length;
+      const pct = Math.round((this.idx / total) * 100);
+      $("#gBar").style.width = pct + "%";
+      this.renderCountdown();
+      // Completion state.
+      if (this.idx >= total) {
+        $("#gSub").textContent = "";
+        $("#gCount").textContent = `${total} / ${total}`;
+        $("#gBody").innerHTML =
+          `<div class="gdone"><div class="gdone-emoji" aria-hidden="true">🎉</div><div class="gbig">All done!</div><p>You finished <b>${esc(r.name)}</b>. Nice — that's one less thing to think about.</p></div>`;
+        $("#gActions").innerHTML =
+          `<button class="btn go big" data-act="guide-stop">Done</button>`;
+        return;
+      }
+      const it = r.items[this.idx];
+      $("#gSub").textContent = `Step ${this.idx + 1} of ${total}`;
+      $("#gCount").textContent = `${this.idx} / ${total}`;
+      const nextIt = r.items[this.idx + 1];
+      $("#gBody").innerHTML = `
+        <div class="gstep">
+          <div class="gstep-num">${this.idx + 1}</div>
+          <div class="gbig">${esc(it.text)}</div>
+          ${nextIt ? `<p class="gnext">Next: ${esc(nextIt.text)}</p>` : `<p class="gnext">Last step — almost there!</p>`}
+        </div>`;
+      $("#gActions").innerHTML = `
+        ${this.idx > 0 ? `<button class="btn" data-act="guide-back">← Back</button>` : `<span></span>`}
+        <button class="btn go big" data-act="guide-next">✓ Done — next</button>`;
+    },
+    stop() {
+      clearInterval(this.timer);
+      $("#guideOverlay").classList.remove("open");
+      try {
+        this._wake?.release();
+      } catch {}
+      if (this._lastFocus) {
+        try {
+          this._lastFocus.focus();
+        } catch {}
+        this._lastFocus = null;
+      }
+      this.routineId = null;
+      render();
+    },
+  };
+
+  // ---------------------------------------------------------------------------
   // Notifications / reminders
   // ---------------------------------------------------------------------------
   const notifSupport = () => "Notification" in window;
@@ -1731,6 +1983,41 @@ Due May 31"></textarea>
     const p = await Notification.requestPermission();
     return p === "granted";
   }
+  // Show a notification through the service worker when possible (required for
+  // notifications to appear reliably in an installed PWA), else fall back to the
+  // page Notification constructor.
+  async function showNotif(title, opts) {
+    try {
+      const reg = await navigator.serviceWorker?.ready;
+      if (reg && reg.showNotification) return reg.showNotification(title, opts);
+    } catch {}
+    try {
+      new Notification(title, opts);
+    } catch {}
+  }
+  // Plain-language summary of what matters today — used for the open-app briefing
+  // and the morning notification.
+  function briefingText() {
+    const open = openTasks();
+    const overdue = open.filter((a) => daysUntil(a.due) < 0).length;
+    const today = open.filter((a) => daysUntil(a.due) === 0).length;
+    if (overdue)
+      return `${overdue} thing${overdue === 1 ? "" : "s"} to catch up on, ${today} due today.`;
+    if (today)
+      return `${today} thing${today === 1 ? "" : "s"} due today. You've got this.`;
+    return "Nothing due today — you're caught up! 🎉";
+  }
+  // One quiet briefing per app-open per day, surfaced as a toast.
+  let briefedToday = false;
+  function dailyBriefing() {
+    if (briefedToday) return;
+    briefedToday = true;
+    const t = rightNowTask();
+    setTimeout(
+      () => toast(t ? `${briefingText()} First: ${t.title}` : briefingText()),
+      900,
+    );
+  }
   function checkReminders() {
     if (
       !state.settings.notifications ||
@@ -1739,6 +2026,24 @@ Due May 31"></textarea>
     )
       return;
     const now = new Date();
+    // Morning briefing notification — fires once per day within ~30 min of the
+    // chosen time, but only if the app happens to be open then. (True scheduled
+    // background notifications aren't available offline without a push server.)
+    const mb = state.settings.morningBriefingTime;
+    if (TIME_RE.test(mb)) {
+      const [hh, mm] = mb.split(":").map(Number);
+      const target = hh * 60 + mm;
+      const cur = now.getHours() * 60 + now.getMinutes();
+      const key = "briefing:" + todayKey();
+      if (cur >= target && cur <= target + 30 && !notified.has(key)) {
+        notified.add(key);
+        showNotif("Good morning ☀️", {
+          body: briefingText(),
+          tag: key,
+          icon: "icons/icon-192.png",
+        });
+      }
+    }
     openTasks().forEach((a) => {
       const n = daysUntil(a.due);
       let key = null,
@@ -1759,13 +2064,11 @@ Due May 31"></textarea>
       }
       if (key && msg && !notified.has(key)) {
         notified.add(key);
-        try {
-          new Notification("Noam School", {
-            body: msg,
-            tag: key,
-            icon: "icons/icon-192.png",
-          });
-        } catch {}
+        showNotif("Noam School", {
+          body: msg,
+          tag: key,
+          icon: "icons/icon-192.png",
+        });
       }
     });
   }
@@ -1988,6 +2291,37 @@ Due May 31"></textarea>
     "view-sync": () => setView("sync"),
     "view-about": () => setView("about"),
 
+    "quick-add": () => {
+      quickAddForm._due = "";
+      openModal("Quick add", quickAddForm());
+    },
+    "qa-due": (_, arg, ev) => {
+      // Toggle which quick-pick is active and show/hide the date input.
+      quickAddForm._due = arg === "custom" ? "custom" : arg;
+      $$("#qaDueSeg [data-act='qa-due']").forEach((b) =>
+        b.setAttribute("aria-pressed", b.dataset.arg === arg),
+      );
+      const dateInp = $("#qaDate");
+      if (dateInp) dateInp.style.display = arg === "custom" ? "" : "none";
+      if (arg === "custom") dateInp?.focus();
+    },
+    "save-quickadd": () => {
+      const title = $("#qaTitle").value.trim();
+      if (!title) return toast("Type what it is first.");
+      let due = quickAddForm._due || "";
+      if (due === "custom") due = $("#qaDate").value || "";
+      const obj = normalizeTask({
+        title,
+        classId: $("#qaClass").value,
+        due,
+        source: "Quick add",
+      });
+      state.assignments.push(obj);
+      save();
+      closeModal();
+      render();
+      toast("Added 📝 — it's on your list");
+    },
     "open-task": (id) =>
       openModal(
         id ? "Edit assignment" : "Add assignment",
@@ -2009,6 +2343,18 @@ Due May 31"></textarea>
       closeModal();
       render();
       toast(id ? "Saved" : "Assignment added");
+    },
+    "capture-add": () => {
+      state.captureLog[todayKey()] = true;
+      save();
+      quickAddForm._due = isoForOffset(0);
+      openModal("Quick add", quickAddForm());
+    },
+    "capture-done": () => {
+      state.captureLog[todayKey()] = true;
+      save();
+      render();
+      toast("Nice — nothing slips through 👍");
     },
     complete: (id) => completeTask(id),
     reopen: (id) => {
@@ -2078,6 +2424,11 @@ Due May 31"></textarea>
       focus.beginPhase("focus");
     },
     "focus-stop": () => focus.stop(),
+
+    "guide-start": (id) => guide.start(id),
+    "guide-next": () => guide.markCurrent(),
+    "guide-back": () => guide.back(),
+    "guide-stop": () => guide.stop(),
 
     "add-class": () => openModal("Add a class", classForm()),
     "edit-class": (id) =>
@@ -2290,6 +2641,21 @@ Due May 31"></textarea>
       save();
       render();
     },
+    "set-accent": (_, arg) => {
+      if (!ACCENTS.some((a) => a[0] === arg)) return;
+      state.settings.accent = arg;
+      save();
+      render();
+    },
+    "save-reminder-times": () => {
+      const mb = $("#setBriefTime")?.value;
+      const lb = $("#setLeaveBy")?.value;
+      if (TIME_RE.test(mb)) state.settings.morningBriefingTime = mb;
+      state.settings.leaveByTime = TIME_RE.test(lb) ? lb : "";
+      save();
+      render();
+      toast("Times saved 🕗");
+    },
     toggle: (_, arg) => {
       if (arg === "readable")
         state.settings.readable = !state.settings.readable;
@@ -2339,6 +2705,41 @@ Due May 31"></textarea>
         "_blank",
         "noopener",
       );
+    },
+
+    // Ask the teacher for help on a specific assignment — prefills the teacher's
+    // email, a subject, and a clear message with the assignment context.
+    "ask-help": (id) => {
+      const a = state.assignments.find((x) => x.id === id);
+      if (!a) return;
+      const c = cls(a.classId);
+      const name = state.settings.studentName || "Noam";
+      const due = a.due ? ` (due ${niceDate(a.due)})` : "";
+      const sub = `Help with ${c.name}: ${a.title}`;
+      const body = `Hi${c.teacher ? " " + c.teacher : ""},
+
+I have a question about "${a.title}"${due} in ${c.name}.
+
+The part I'm stuck on is:
+
+What I've tried so far is:
+
+Could you help me understand what to do next? Thank you,
+${name}`;
+      if (c.email) {
+        window.open(gmailCompose(c.email, sub, body), "_blank", "noopener");
+        toast("Opening Gmail ✉️");
+      } else {
+        // No teacher email saved — guide them to add it / use the composer.
+        openModal(
+          "No teacher email yet",
+          `<p class="sub">There's no email saved for <b>${esc(c.name)}</b> yet. Add one so “Ask for help” can reach the teacher in one tap.</p>
+          <div class="row">
+            <button class="btn primary" data-act="edit-class" data-id="${c.id}">Add teacher email</button>
+            <a class="btn navy" target="_blank" rel="noopener" href="${gmailCompose("", sub, body)}">Write it anyway</a>
+          </div>`,
+        );
+      }
     },
 
     "parse-paste": () => {
@@ -2573,12 +2974,15 @@ Due May 31"></textarea>
     document.addEventListener("keydown", (ev) => {
       const modalOpen = $("#modalBack").classList.contains("open");
       const focusOpen = $("#focusOverlay").classList.contains("open");
+      const guideOpen = $("#guideOverlay").classList.contains("open");
       if (ev.key === "Escape") {
         if (modalOpen) closeModal();
         else if (focusOpen) focus.stop();
+        else if (guideOpen) guide.stop();
       } else if (ev.key === "Tab") {
         if (modalOpen) trapFocus($("#modalBack .modal"), ev);
         else if (focusOpen) trapFocus($("#focusOverlay"), ev);
+        else if (guideOpen) trapFocus($("#guideOverlay"), ev);
       }
     });
 
@@ -2669,7 +3073,7 @@ Due May 31"></textarea>
     wire();
     render();
 
-    if (params.get("action") === "add") ACTIONS["open-task"]();
+    if (params.get("action") === "add") ACTIONS["quick-add"]();
 
     // pull cloud data if enabled, THEN re-enable pushing
     if (state.settings.sync.enabled && cloud.available()) {
@@ -2678,7 +3082,8 @@ Due May 31"></textarea>
     }
     suppressPush = false;
 
-    // reminders loop
+    // calm one-line briefing on open, plus the reminders loop
+    dailyBriefing();
     checkReminders();
     setInterval(checkReminders, 60000);
 
