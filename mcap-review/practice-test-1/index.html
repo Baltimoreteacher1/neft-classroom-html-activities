@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Interactive, auto-graded Maryland MCAP Grade 6 math practice test 1 from Neft Teacher. 40 questions with instant scoring, domain breakdown, and explanations." />
+    <title>MCAP Practice Test 1 &middot; Grade 6 Math &middot; Neft Teacher</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root {
+        --primary: #0d9488;
+        --primary-light: #14b8a6;
+        --primary-dark: #0f766e;
+        --bg: #fffbeb;
+        --text: #1e293b;
+        --card: #ffffff;
+        --correct: #16a34a;
+        --incorrect: #dc2626;
+        --border: #e2e8f0;
+        --muted: #64748b;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      body {
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+      .container { max-width: 760px; margin: 0 auto; padding: 20px; }
+      .breadcrumb { font-size: 0.85rem; color: var(--muted); margin-bottom: 14px; }
+      .breadcrumb a { color: var(--primary-dark); text-decoration: none; }
+      .breadcrumb a:hover { text-decoration: underline; }
+      .breadcrumb span { margin: 0 6px; }
+      .mcap-note {
+        display: inline-block; text-align: center; font-size: 0.78rem; font-weight: 700;
+        letter-spacing: 0.04em; color: var(--primary-dark); background: #f0fdfa;
+        border: 1px solid #99f6e4; border-radius: 20px; padding: 5px 14px; margin-bottom: 14px;
+      }
+      h1 { color: var(--primary-dark); font-size: 1.9rem; text-align: center; margin-bottom: 4px; }
+      .subtitle { text-align: center; color: var(--muted); font-size: 0.95rem; margin-bottom: 18px; }
+      .intro-card, .question-card, .summary-card {
+        background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+        padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow);
+      }
+      .intro-card p { margin-bottom: 8px; font-size: 0.95rem; }
+      .intro-card ul { margin: 8px 0 8px 22px; font-size: 0.9rem; color: var(--muted); }
+      .progress-bar { background: #e2e8f0; border-radius: 20px; height: 12px; overflow: hidden; margin-bottom: 6px; }
+      .progress-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.3s; }
+      .progress-text { text-align: center; font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; }
+      .q-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+      .q-number {
+        flex-shrink: 0; background: var(--primary); color: #fff; min-width: 30px; height: 30px;
+        border-radius: 50%; text-align: center; line-height: 30px; font-size: 0.85rem; font-weight: 700; padding: 0 4px;
+      }
+      .q-domain {
+        margin-left: auto; flex-shrink: 0; font-size: 0.72rem; font-weight: 700; color: var(--primary-dark);
+        background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 12px; padding: 2px 9px;
+      }
+      .q-text { font-weight: 600; font-size: 1.02rem; }
+      .q-note { font-size: 0.85rem; color: var(--muted); font-style: italic; margin: 6px 0 4px; }
+      .options { list-style: none; margin-top: 10px; }
+      .option {
+        display: block; border: 2px solid var(--border); border-radius: 10px; padding: 11px 14px;
+        margin-bottom: 9px; cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 0.95rem;
+      }
+      .option:hover { border-color: var(--primary-light); }
+      .option input { margin-right: 10px; accent-color: var(--primary); }
+      .option.sel { border-color: var(--primary); background: #f0fdfa; }
+      .option.correct { border-color: var(--correct); background: #f0fdf4; }
+      .option.incorrect { border-color: var(--incorrect); background: #fef2f2; }
+      .fr-input {
+        width: 100%; max-width: 280px; padding: 10px 12px; border: 2px solid var(--border);
+        border-radius: 10px; font-size: 1rem; margin-top: 8px;
+      }
+      .fr-input:focus { outline: none; border-color: var(--primary); }
+      .hint-toggle {
+        background: none; border: none; color: var(--primary-dark); font-size: 0.85rem; font-weight: 600;
+        cursor: pointer; padding: 4px 0; margin-top: 6px; text-decoration: underline;
+      }
+      .hint-box {
+        background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 6px;
+        padding: 8px 12px; margin-top: 8px; font-size: 0.88rem;
+      }
+      .explain-box {
+        border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 0.9rem;
+        background: #f8fafc; border: 1px solid var(--border);
+      }
+      .explain-box .verdict { font-weight: 700; margin-bottom: 4px; }
+      .verdict.right { color: var(--correct); }
+      .verdict.wrong { color: var(--incorrect); }
+      .answered-correct { border-color: var(--correct); }
+      .answered-incorrect { border-color: var(--incorrect); }
+      .btn {
+        display: inline-block; border: none; border-radius: 10px; padding: 12px 28px;
+        font-size: 1rem; font-weight: 600; cursor: pointer; margin: 6px;
+      }
+      .btn-primary { background: var(--primary); color: #fff; }
+      .btn-primary:hover { background: var(--primary-dark); }
+      .btn-reset { background: #64748b; color: #fff; }
+      .btn-reset:hover { background: #475569; }
+      .btn-row { text-align: center; margin: 22px 0; }
+      .summary-card { text-align: center; }
+      .score-big { font-size: 3rem; font-weight: 800; color: var(--primary-dark); }
+      .score-pct { font-size: 1.1rem; color: var(--muted); margin-bottom: 14px; }
+      .domain-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.92rem; }
+      .domain-table th, .domain-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+      .domain-table th { color: var(--primary-dark); }
+      .domain-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+      .dbar { background: #e2e8f0; border-radius: 10px; height: 9px; overflow: hidden; margin-top: 4px; }
+      .dbar > div { background: var(--primary); height: 100%; }
+      .footer {
+        text-align: center; padding: 20px; color: #94a3b8; font-size: 0.8rem; margin-top: 10px;
+      }
+      .stretch-note {
+        font-size: 0.85rem; color: var(--muted); background: #f0fdfa; border: 1px dashed #99f6e4;
+        border-radius: 8px; padding: 8px 12px; margin-top: 10px;
+      }
+      .hidden { display: none !important; }
+      .focus-target:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+      @media (max-width: 600px) {
+        .container { padding: 12px; }
+        h1 { font-size: 1.45rem; }
+        .intro-card, .question-card, .summary-card { padding: 15px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { transition-duration: 0.001ms !important; }
+      }
+      @media print {
+        body { background: #fff; }
+        .no-print { display: none !important; }
+        .question-card, .intro-card, .summary-card { box-shadow: none; page-break-inside: avoid; }
+        .hint-box, .explain-box { display: block !important; }
+        .option { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="breadcrumb no-print" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/mcap-review/">MCAP &amp; General Review</a><span>/</span>Practice Test 1
+      </nav>
+      <div style="text-align: center">
+        <span class="mcap-note">Maryland MCAP &middot; Grade 6 &middot; Full-length</span>
+      </div>
+      <h1>Practice Test 1</h1>
+      <p class="subtitle">Grade 6 Mathematics &bull; 40 questions &bull; Calculator not permitted</p>
+
+      <div class="intro-card no-print">
+        <p><strong>How this works:</strong> Answer all 40 questions, then press <em>Submit &amp; Grade</em>. You'll get your score, a domain breakdown, and a worked explanation for every question.</p>
+        <ul>
+          <li>Your answers save automatically on this device. Use <em>Reset</em> to start fresh.</li>
+          <li>Need a nudge? Each question has an optional <strong>Level 1 hint</strong>. Explanations stay hidden until you submit &mdash; no peeking!</li>
+          <li>Domains are tagged (6.RP, 6.NS, 6.EE, 6.G, 6.SP) so you can see your strengths.</li>
+        </ul>
+      </div>
+
+      <div class="progress-bar no-print" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="40">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-text no-print" id="progressText">0 of 40 answered</p>
+
+      <form id="quizForm" onsubmit="return false;"></form>
+
+      <div class="btn-row no-print">
+        <button type="button" class="btn btn-primary focus-target" id="submitBtn" onclick="gradeTest()">Submit &amp; Grade</button>
+        <button type="button" class="btn btn-reset focus-target" onclick="resetTest()">Reset</button>
+      </div>
+
+      <div id="summary" class="summary-card hidden" tabindex="-1"></div>
+
+      <div class="btn-row no-print" id="postRow" style="display:none">
+        <button type="button" class="btn btn-reset focus-target" onclick="resetTest()">Reset &amp; Try Again</button>
+        <button type="button" class="btn btn-primary focus-target" onclick="window.print()">Print</button>
+        <a class="btn btn-reset focus-target" href="/mcap-review/">Back to MCAP Review</a>
+      </div>
+
+      <div class="footer">
+        Neft Teacher &bull; Maryland MCAP &middot; Grade 6 Mathematics &bull; Practice Test 1 &bull;
+        <a href="/mcap-review/" style="color:#0f766e">All MCAP practice</a>
+        &bull; &copy; <span id="yr"></span>
+      </div>
+    </div>
+
+    <script>
+      const TEST_NUM = 1;
+      const STORAGE_KEY = "mcapPracticeTest_1_v1";
+      const DOMAIN_NAMES = {"6.RP": "Ratios & Proportional Relationships", "6.NS": "The Number System", "6.EE": "Expressions & Equations", "6.G": "Geometry", "6.SP": "Statistics & Probability"};
+      const QUESTIONS = [{"id": 1, "domain": "6.RP", "type": "mc", "text": "What is 35% of 2/5?", "explain": "Convert 35% to 7/20 and multiply by 2/5: 7/20 × 2/5 = 14/100 = 7/50.", "hint": "Percent means 'out of 100'. Write 35% as a fraction, then multiply by 2/5.", "options": ["7/50", "2/7", "7/25", "3/10"], "answer": 0}, {"id": 2, "domain": "6.RP", "type": "mc", "text": "A homeowner installs flooring in a rectangular room 15 ft by 12 ft. Flooring costs $4.50 per square foot, plus a $75 installation fee. What is the total cost?", "explain": "Area = 15 × 12 = 180 sq ft. Flooring: 180 × $4.50 = $810. Add the $75 fee: $810 + $75 = $885.", "hint": "First find the area (length × width), then multiply by the cost per square foot, then add the fee.", "options": ["$810", "$885", "$945", "$1,020"], "answer": 1}, {"id": 3, "domain": "6.SP", "type": "mc", "text": "A bar graph shows Jacob's monthly earnings: April $240, May $450, June $600, July $680, August $500. Which statement is correct?", "explain": "July's bar ($680) is the tallest, so Jacob earned the most in July.", "note": "April $240, May $450, June $600, July $680, August $500.", "hint": "Compare each statement to the values one at a time.", "options": ["Jacob earned the most in July.", "Jacob earned twice as much in June as in May.", "Jacob earned less in August than in April.", "Jacob's earnings increased every month."], "answer": 0}, {"id": 4, "domain": "6.EE", "type": "mc", "text": "Solve for x: 5x − 3 = 2x + 12", "explain": "Subtract 2x: 3x − 3 = 12. Add 3: 3x = 15. Divide by 3: x = 5.", "hint": "Get the variable terms on one side and the numbers on the other.", "options": ["x = 3", "x = 5", "x = 7", "x = 9"], "answer": 1}, {"id": 5, "domain": "6.SP", "type": "fr", "text": "Emma scored 85, 92, and 78 on her first three tests. What must she score on her fourth test to have an average of 87?", "explain": "Solve (85+92+78+x)/4 = 87 → 255 + x = 348 → x = 93.", "hint": "Average × number of tests = total of all scores. Find the total needed, then subtract what she has.", "answer": "93", "accept": ["93"]}, {"id": 6, "domain": "6.SP", "type": "mc", "text": "The ages of players on a basketball team are: 16, 17, 15, 18, 16, 19, 17, 16. What is the range of ages?", "explain": "Range = highest − lowest = 19 − 15 = 4 years.", "hint": "Range = largest value minus smallest value.", "options": ["2 years", "3 years", "4 years", "5 years"], "answer": 2}, {"id": 7, "domain": "6.G", "type": "mc", "text": "Two angles lie on a straight line. One is 112°, the other is y°. What is the value of y? (Figure not drawn to scale.)", "explain": "Angles on a straight line are supplementary: y = 180° − 112° = 68°.", "hint": "Angles that form a straight line add up to 180°.", "options": ["58°", "68°", "78°", "88°"], "answer": 1}, {"id": 8, "domain": "6.SP", "type": "mc", "text": "A tally chart shows favorite sports: Basketball 17, Soccer 23, Baseball 15, Swimming 11. How many more students prefer Soccer than Swimming?", "explain": "23 − 11 = 12 more students prefer Soccer than Swimming.", "hint": "Subtract the Swimming total from the Soccer total.", "options": ["8 students", "10 students", "12 students", "14 students"], "answer": 2}, {"id": 9, "domain": "6.NS", "type": "mc", "text": "Calculate: 5/6 − 2/9", "explain": "LCD of 6 and 9 is 18: 5/6 = 15/18 and 2/9 = 4/18, so 15/18 − 4/18 = 11/18.", "hint": "Find a common denominator before subtracting.", "options": ["3/18", "11/18", "7/15", "3/5"], "answer": 1}, {"id": 10, "domain": "6.RP", "type": "mc", "text": "A table shows lunch choices: Pizza 45, Sandwich 30, Salad 15, Pasta 10. What percentage of students chose pizza?", "explain": "Total = 45 + 30 + 15 + 10 = 100. Pizza share = 45/100 = 45%.", "hint": "Find the total first, then write pizza as a fraction of the total.", "options": ["35%", "40%", "45%", "50%"], "answer": 2}, {"id": 11, "domain": "6.RP", "type": "fr", "text": "The ratio of blue marbles to red marbles in a jar is 4:7. If there are 28 blue marbles, how many red marbles are in the jar?", "explain": "4/7 = 28/red, so red = 7/4 × 28 = 49 red marbles.", "hint": "How many times bigger is 28 than 4? Multiply 7 by that same factor.", "answer": "49", "accept": ["49", "49 red marbles"]}, {"id": 12, "domain": "6.NS", "type": "mc", "text": "Calculate: −18 + 25 − (−7)", "explain": "−18 + 25 − (−7) = −18 + 25 + 7 = 7 + 7 = 14.", "hint": "Subtracting a negative is the same as adding a positive.", "options": ["0", "4", "10", "14"], "answer": 3}, {"id": 13, "domain": "6.SP", "type": "mc", "text": "Find the mode of the data set: 12, 15, 12, 18, 20, 15, 12, 16", "explain": "12 appears three times — more than any other value — so the mode is 12.", "hint": "The mode is the value that appears most often.", "options": ["12", "15", "16", "18"], "answer": 0}, {"id": 14, "domain": "6.NS", "type": "mc", "text": "Calculate: 8.4 ÷ 0.7", "explain": "Scale both numbers by 10: 84 ÷ 7 = 12.", "hint": "Multiply both numbers by 10 to remove the decimal in the divisor.", "options": ["10", "12", "14", "16"], "answer": 1}, {"id": 15, "domain": "6.G", "type": "mc", "text": "An equilateral triangle has a side length of 13 meters. All three sides are equal. What is the perimeter?", "explain": "Perimeter = 3 × 13 = 39 meters.", "hint": "Equilateral means all 3 sides are equal — add them, or multiply one side by 3.", "options": ["26 meters", "32 meters", "39 meters", "45 meters"], "answer": 2}, {"id": 16, "domain": "6.G", "type": "mc", "text": "A triangle has a base of 14 ft and a height of 10 ft. What is its area?", "explain": "Area = 1/2 × 14 × 10 = 70 square feet.", "hint": "Triangle area = 1/2 × base × height.", "options": ["28 square feet", "70 square feet", "82 square feet", "96 square feet"], "answer": 1}, {"id": 17, "domain": "6.G", "type": "mc", "text": "An irregular polygon has sides of length 6 cm, 3 cm, 3 cm, 3 cm, 4 cm, and 5 cm. What is the perimeter?", "explain": "Add all sides: 6 + 3 + 3 + 3 + 4 + 5 = 24 cm.", "hint": "Perimeter is the sum of all the side lengths.", "options": ["22 cm", "24 cm", "26 cm", "28 cm"], "answer": 1}, {"id": 18, "domain": "6.EE", "type": "mc", "text": "Calculate: 3 + 2³ × 4 − 10", "explain": "Order of operations: 2³ = 8, then 8 × 4 = 32, then 3 + 32 − 10 = 25.", "hint": "Evaluate the exponent first, then multiply, then add and subtract.", "options": ["18", "22", "25", "28"], "answer": 2}, {"id": 19, "domain": "6.NS", "type": "mc", "text": "Convert 5 3/8 to an improper fraction.", "explain": "(5 × 8 + 3)/8 = 43/8.", "hint": "Multiply the whole number by the denominator, add the numerator, keep the denominator.", "options": ["38/8", "40/8", "43/8", "48/8"], "answer": 2}, {"id": 20, "domain": "6.G", "type": "mc", "text": "Find the area of the shaded region. A large square has side 10 cm; a white square of side 6 cm sits inside it.", "explain": "Shaded = 10×10 − 6×6 = 100 − 36 = 64 cm².", "hint": "Subtract the white (inner) area from the large square's area.", "options": ["36 cm²", "64 cm²", "84 cm²", "100 cm²"], "answer": 1}, {"id": 21, "domain": "6.EE", "type": "mc", "text": "Simplify: 8x − 3x + 12 − 5", "explain": "Combine like terms: 8x − 3x = 5x and 12 − 5 = 7, giving 5x + 7.", "hint": "Combine the x-terms together and the number terms together.", "options": ["5x + 7", "5x + 17", "11x + 7", "11x + 17"], "answer": 0}, {"id": 22, "domain": "6.NS", "type": "mc", "text": "A rectangle is divided into 3 rows and 5 columns of equal squares; 8 of the squares are shaded. What fraction of the rectangle is shaded?", "explain": "There are 3 × 5 = 15 equal squares and 8 are shaded, so 8/15.", "hint": "Count the total squares (rows × columns), then write the shaded count over it.", "options": ["5/12", "7/15", "8/15", "3/5"], "answer": 2}, {"id": 23, "domain": "6.NS", "type": "mc", "text": "On a coordinate grid, point H is 4 units left of the origin and 2 units up. What is the ordered pair for point H?", "explain": "Left means negative x; up means positive y, so H is (−4, 2).", "hint": "Left/right is the x-coordinate (first); up/down is the y-coordinate (second).", "options": ["(−4, 2)", "(−4, −2)", "(4, 2)", "(2, −4)"], "answer": 0}, {"id": 24, "domain": "6.NS", "type": "mc", "text": "Find the least common multiple (LCM) of 12 and 18.", "explain": "12 = 2²×3 and 18 = 2×3²; take highest powers: 2²×3² = 36.", "hint": "List multiples of each number and find the smallest they share.", "options": ["24", "36", "48", "72"], "answer": 1}, {"id": 25, "domain": "6.RP", "type": "mc", "text": "If 5 pencils cost $3, how much do 15 pencils cost?", "explain": "Unit price = $3 ÷ 5 = $0.60; 15 × $0.60 = $9.", "hint": "15 is 3 times 5, so the cost is 3 times $3.", "options": ["$7", "$8", "$9", "$10"], "answer": 2}, {"id": 26, "domain": "6.NS", "type": "mc", "text": "A model shows 3/4 ÷ 1/8. How many 1/8 pieces fit in 3/4? What is 3/4 ÷ 1/8?", "explain": "3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6.", "hint": "To divide by a fraction, multiply by its reciprocal (flip it).", "options": ["4", "5", "6", "8"], "answer": 2}, {"id": 27, "domain": "6.NS", "type": "mc", "text": "Calculate: |−14| + |−8|", "explain": "Absolute values are positive: 14 + 8 = 22.", "hint": "Absolute value makes a number positive (its distance from zero).", "options": ["−22", "−6", "6", "22"], "answer": 3}, {"id": 28, "domain": "6.G", "type": "mc", "text": "A composite figure is a rectangle (12 cm by 8 cm) with a triangle on top (base 12 cm, height 6 cm). What is the total area?", "explain": "Rectangle 12×8 = 96; triangle 1/2×12×6 = 36; total 96 + 36 = 132 cm².", "hint": "Find each shape's area separately, then add them.", "options": ["96 cm²", "120 cm²", "132 cm²", "144 cm²"], "answer": 2}, {"id": 29, "domain": "6.G", "type": "mc", "text": "Point A is at (2, 3) and point B is at (6, 3). What is the distance between them?", "explain": "Same y-value means a horizontal segment: |6 − 2| = 4 units.", "hint": "When points share a y-value, subtract their x-values.", "options": ["3 units", "4 units", "5 units", "6 units"], "answer": 1}, {"id": 30, "domain": "6.SP", "type": "mc", "text": "A bag has 5 red, 8 blue, and 7 green marbles. What is the probability of selecting a blue marble?", "explain": "Total = 5+8+7 = 20; blue = 8, so P(blue) = 8/20 = 2/5.", "hint": "Probability = favorable outcomes ÷ total outcomes.", "options": ["1/4", "2/5", "7/20", "1/2"], "answer": 1}, {"id": 31, "domain": "6.RP", "type": "fr", "text": "A recipe uses flour, sugar, and butter in the ratio 3:2:1. If you use 18 cups of flour, how many cups of ingredients do you need in total?", "explain": "18 cups is the 3-part flour, so 1 part = 6. Sugar = 12, butter = 6; total = 18+12+6 = 36 cups.", "hint": "Find the value of one ratio part first, then total all the parts.", "answer": "36", "accept": ["36", "36 cups"]}, {"id": 32, "domain": "6.RP", "type": "mc", "text": "A line graph shows a cyclist's distance over time, passing through (2 hours, 30 miles). What is the cyclist's speed?", "explain": "Speed = 30 miles ÷ 2 hours = 15 mph.", "hint": "Speed = distance ÷ time. Read a point off the line.", "options": ["10 mph", "12 mph", "15 mph", "20 mph"], "answer": 2}, {"id": 33, "domain": "6.RP", "type": "mc", "text": "A pool fills at 450 gallons per hour. How many days will it take to fill a 32,400-gallon pool?", "explain": "32,400 ÷ 450 = 72 hours; 72 ÷ 24 = 3 days.", "hint": "First find the number of hours, then convert hours to days (÷ 24).", "options": ["2.5 days", "3.0 days", "3.5 days", "4.0 days"], "answer": 1}, {"id": 34, "domain": "6.NS", "type": "mc", "text": "Find all factor pairs of 36 for a factor rainbow: 1×36, 2×?, 3×?, ?×?. Which set of missing factors is correct?", "explain": "Factor pairs of 36: 1×36, 2×18, 3×12, 4×9, 6×6, so the missing factors are 18, 12, 4 and 9.", "hint": "List every pair of whole numbers that multiply to 36.", "options": ["Missing: 18, 12, 4 and 9", "Missing: 18, 12, 4 and 8", "Missing: 16, 12, 4 and 9", "Missing: 18, 11, 5 and 9"], "answer": 0}, {"id": 35, "domain": "6.RP", "type": "fr", "text": "A bookstore sold 240 books; fiction is 60% of total sales. How many fiction books were sold?", "explain": "0.60 × 240 = 144 fiction books.", "hint": "Multiply the total by the percent written as a decimal (60% = 0.60).", "answer": "144", "accept": ["144", "144 books"]}, {"id": 36, "domain": "6.SP", "type": "mc", "text": "Books read per month: Jan 15, Feb 12, Mar 18, Apr 21, May 14, Jun 16. What is the average number of books read per month?", "explain": "Sum = 96; 96 ÷ 6 = 16 books.", "hint": "Add all the values, then divide by how many months there are.", "options": ["14 books", "15 books", "16 books", "17 books"], "answer": 2}, {"id": 37, "domain": "6.NS", "type": "mc", "text": "Calculate: 2 3/5 × 4", "explain": "2 3/5 = 13/5; 13/5 × 4 = 52/5 = 10 2/5.", "hint": "Change the mixed number to an improper fraction before multiplying.", "options": ["8 2/5", "9 3/5", "10 2/5", "11 1/5"], "answer": 2}, {"id": 38, "domain": "6.EE", "type": "mc", "text": "A dot pattern grows by adding one column of four dots each figure: 3, 7, 11, 15, … How many dots will be in Figure 5?", "explain": "Each figure adds 4 dots (3, 7, 11, 15), so Figure 5 = 15 + 4 = 19 dots.", "hint": "Find how many dots are added each step, then continue the pattern.", "options": ["15 dots", "17 dots", "19 dots", "21 dots"], "answer": 2}, {"id": 39, "domain": "6.G", "type": "mc", "text": "A rectangular park is 30 m long and 19 m wide. What is the perimeter of the park?", "explain": "Perimeter = 2 × (30 + 19) = 2 × 49 = 98 meters.", "hint": "Perimeter of a rectangle = 2 × (length + width).", "options": ["86 meters", "92 meters", "98 meters", "104 meters"], "answer": 2}, {"id": 40, "domain": "6.G", "type": "mc", "text": "Two angles form a right angle. One is 38°, the other is x°. What is the value of x?", "explain": "Complementary angles sum to 90°: x = 90° − 38° = 52°.", "hint": "Angles that form a right angle add up to 90°.", "options": ["42°", "52°", "62°", "72°"], "answer": 1}];
+      let graded = false;
+
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+      function buildQuiz() {
+        const form = document.getElementById("quizForm");
+        form.innerHTML = "";
+        QUESTIONS.forEach(function (q) {
+          const card = document.createElement("div");
+          card.className = "question-card";
+          card.id = "qcard-" + q.id;
+
+          let h = '<div class="q-head">';
+          h += '<span class="q-number">' + q.id + '</span>';
+          h += '<span class="q-text">' + esc(q.text) + '</span>';
+          h += '<span class="q-domain" title="' + esc(DOMAIN_NAMES[q.domain]) + '">' + q.domain + '</span>';
+          h += '</div>';
+          if (q.note) h += '<p class="q-note">' + esc(q.note) + '</p>';
+
+          if (q.type === "mc") {
+            h += '<ul class="options">';
+            q.options.forEach(function (opt, i) {
+              const oid = "q" + q.id + "_o" + i;
+              h += '<li><label class="option" for="' + oid + '">';
+              h += '<input type="radio" name="q' + q.id + '" id="' + oid + '" value="' + i + '" onchange="onAnswer(' + q.id + ')"> ';
+              h += esc(opt) + '</label></li>';
+            });
+            h += '</ul>';
+          } else {
+            h += '<input type="text" class="fr-input" name="q' + q.id + '" id="q' + q.id + '_fr" ';
+            h += 'placeholder="Type your answer" autocomplete="off" oninput="onAnswer(' + q.id + ')" aria-label="Answer for question ' + q.id + '">';
+          }
+
+          if (q.hint) {
+            h += '<button type="button" class="hint-toggle no-print" onclick="toggleHint(' + q.id + ')" id="hintbtn-' + q.id + '">Show Level 1 hint</button>';
+            h += '<div class="hint-box hidden" id="hint-' + q.id + '"><strong>Level 1:</strong> ' + esc(q.hint) + '</div>';
+          }
+          if (q.stretch) {
+            h += '<div class="stretch-note"><strong>Level 2 stretch:</strong> ' + esc(q.stretch) + '</div>';
+          }
+          h += '<div class="explain-box hidden" id="explain-' + q.id + '"></div>';
+          card.innerHTML = h;
+          form.appendChild(card);
+        });
+      }
+
+      function toggleHint(id) {
+        const box = document.getElementById("hint-" + id);
+        const btn = document.getElementById("hintbtn-" + id);
+        const hidden = box.classList.toggle("hidden");
+        btn.textContent = hidden ? "Show Level 1 hint" : "Hide Level 1 hint";
+      }
+
+      function getResponse(q) {
+        if (q.type === "mc") {
+          const sel = document.querySelector('input[name="q' + q.id + '"]:checked');
+          return sel ? parseInt(sel.value, 10) : null;
+        } else {
+          const el = document.getElementById("q" + q.id + "_fr");
+          return el && el.value.trim() !== "" ? el.value.trim() : null;
+        }
+      }
+
+      function onAnswer(id) {
+        if (id) {
+          const q = QUESTIONS.find(function(x){return x.id===id;});
+          if (q && q.type === "mc") {
+            const labels = document.querySelectorAll('#qcard-' + id + ' .option');
+            labels.forEach(function(l){ l.classList.remove("sel"); });
+            const sel = document.querySelector('input[name="q' + id + '"]:checked');
+            if (sel) sel.closest(".option").classList.add("sel");
+          }
+        }
+        saveProgress();
+        updateProgress();
+      }
+
+      function updateProgress() {
+        let answered = 0;
+        QUESTIONS.forEach(function (q) { if (getResponse(q) !== null) answered++; });
+        document.getElementById("progressFill").style.width = (answered / QUESTIONS.length * 100) + "%";
+        document.getElementById("progressText").textContent = answered + " of " + QUESTIONS.length + " answered";
+      }
+
+      function saveProgress() {
+        const data = {};
+        QUESTIONS.forEach(function (q) {
+          const r = getResponse(q);
+          if (r !== null) data[q.id] = r;
+        });
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+      }
+
+      function loadProgress() {
+        let data;
+        try { data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch (e) { data = {}; }
+        QUESTIONS.forEach(function (q) {
+          if (!(q.id in data)) return;
+          if (q.type === "mc") {
+            const inp = document.querySelector('input[name="q' + q.id + '"][value="' + data[q.id] + '"]');
+            if (inp) { inp.checked = true; inp.closest(".option").classList.add("sel"); }
+          } else {
+            const el = document.getElementById("q" + q.id + "_fr");
+            if (el) el.value = data[q.id];
+          }
+        });
+      }
+
+      function normalizeFR(s) {
+        return String(s).toLowerCase().replace(/\s+/g, " ").replace(/[$,°]/g, "")
+          .replace(/\s*\/\s*/g, "/").trim();
+      }
+
+      function checkFR(q, resp) {
+        const given = normalizeFR(resp);
+        const list = (q.accept || [String(q.answer)]);
+        for (let i = 0; i < list.length; i++) {
+          if (normalizeFR(list[i]) === given) return true;
+        }
+        return false;
+      }
+
+      function gradeTest() {
+        graded = true;
+        let correct = 0;
+        const byDomain = {};
+        Object.keys(DOMAIN_NAMES).forEach(function (d) { byDomain[d] = { c: 0, t: 0 }; });
+
+        QUESTIONS.forEach(function (q) {
+          const card = document.getElementById("qcard-" + q.id);
+          const resp = getResponse(q);
+          let isCorrect = false;
+          byDomain[q.domain].t++;
+
+          if (q.type === "mc") {
+            const labels = card.querySelectorAll(".option");
+            labels.forEach(function (l, i) {
+              l.classList.remove("sel");
+              if (i === q.answer) l.classList.add("correct");
+              if (resp !== null && i === resp && resp !== q.answer) l.classList.add("incorrect");
+              l.querySelector("input").disabled = true;
+            });
+            isCorrect = resp !== null && resp === q.answer;
+          } else {
+            const el = document.getElementById("q" + q.id + "_fr");
+            isCorrect = resp !== null && checkFR(q, resp);
+            if (el) el.disabled = true;
+          }
+
+          if (isCorrect) { correct++; byDomain[q.domain].c++; }
+          card.classList.add(isCorrect ? "answered-correct" : "answered-incorrect");
+
+          const ex = document.getElementById("explain-" + q.id);
+          let verdict;
+          if (resp === null) verdict = '<span class="verdict wrong">Not answered</span>';
+          else if (isCorrect) verdict = '<span class="verdict right">Correct</span>';
+          else verdict = '<span class="verdict wrong">Incorrect</span>';
+          let ans = q.type === "mc" ? esc(q.options[q.answer]) : esc(String(q.answer));
+          ex.innerHTML = '<div class="verdict-line">' + verdict + '</div>' +
+            '<div><strong>Answer:</strong> ' + ans + '</div>' +
+            '<div>' + esc(q.explain) + '</div>';
+          ex.classList.remove("hidden");
+        });
+
+        showSummary(correct, byDomain);
+        document.getElementById("submitBtn").disabled = true;
+        document.getElementById("submitBtn").style.opacity = 0.5;
+        document.getElementById("postRow").style.display = "block";
+        const sum = document.getElementById("summary");
+        sum.scrollIntoView({ behavior: "smooth", block: "start" });
+        sum.focus();
+      }
+
+      function showSummary(correct, byDomain) {
+        const total = QUESTIONS.length;
+        const pct = Math.round((correct / total) * 100);
+        let msg;
+        if (pct >= 90) msg = "Outstanding work!";
+        else if (pct >= 75) msg = "Great job &mdash; you're MCAP-ready!";
+        else if (pct >= 60) msg = "Solid effort. Review the misses below.";
+        else msg = "Keep practicing &mdash; the explanations will help.";
+
+        let h = '<div class="score-big">' + correct + " / " + total + "</div>";
+        h += '<div class="score-pct">' + pct + "% &bull; " + msg + "</div>";
+        h += '<table class="domain-table"><thead><tr><th>Domain</th><th class="num">Score</th></tr></thead><tbody>';
+        Object.keys(DOMAIN_NAMES).forEach(function (d) {
+          const b = byDomain[d];
+          if (b.t === 0) return;
+          const dp = Math.round((b.c / b.t) * 100);
+          h += '<tr><td>' + d + " &middot; " + esc(DOMAIN_NAMES[d]) +
+            '<div class="dbar"><div style="width:' + dp + '%"></div></div></td>' +
+            '<td class="num">' + b.c + "/" + b.t + " (" + dp + "%)</td></tr>";
+        });
+        h += "</tbody></table>";
+        h += '<p style="margin-top:14px;font-size:0.88rem;color:var(--muted)">Scroll up to see the correct answer and a worked explanation under every question.</p>';
+        const sum = document.getElementById("summary");
+        sum.innerHTML = h;
+        sum.classList.remove("hidden");
+      }
+
+      function resetTest() {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        graded = false;
+        buildQuiz();
+        document.getElementById("summary").classList.add("hidden");
+        document.getElementById("postRow").style.display = "none";
+        const sb = document.getElementById("submitBtn");
+        sb.disabled = false; sb.style.opacity = 1;
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      buildQuiz();
+      loadProgress();
+      updateProgress();
+    </script>
+  </body>
+</html>
