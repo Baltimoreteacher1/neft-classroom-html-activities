@@ -386,6 +386,11 @@ export default {
     let roundIndex = 0;
     let solved = false;
     let rateGuess = 0;
+    // Forgiving stakes: a pool of attempts; a wrong Serve costs one. Run out and
+    // the shift ends (lose screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
 
     const timers = [];
     const later = (fn, ms) => {
@@ -494,6 +499,33 @@ export default {
       if (clarity) clarity.setObjective(text);
     }
 
+    // Returns true if the wrong answer ended the game (out of lives).
+    function loseLife() {
+      lives = Math.max(0, lives - 1);
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      if (lives <= 0) {
+        loseGame();
+        return true;
+      }
+      return false;
+    }
+
+    function loseGame() {
+      gameOver = true;
+      feel.sfx("wrong");
+      const msg = `Out of tries! You served ${roundIndex} of ${cfg.rounds.length} orders.`;
+      hud.setObjective(msg);
+      announce(`Shift over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Out of tries!",
+          badge: "🥤",
+          stats: `${msg} Tip: simplify the recipe ratio first, then scale it up to the order.`,
+        });
+      }
+    }
+
     function ratioMatches() {
       // The order fixes the yellow count; the student must work out the red
       // count from the recipe ratio, so the exact batch is required (no giveaway
@@ -502,15 +534,18 @@ export default {
     }
 
     function serveRatio() {
-      if (solved) return;
+      if (solved || gameOver) return;
       if (!ratioMatches()) {
-        const [ta, tb] = simplify(round.a, round.b);
-        hud.message(
-          `Not yet — use the recipe ${ta} : ${tb} to find how many red go with ${round.b} yellow.`,
-          { tone: "warn", duration: 2800 },
-        );
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.16);
+        if (loseLife()) return;
+        const [ta, tb] = simplify(round.a, round.b);
+        hud.message(
+          `Not yet — use the recipe ${ta} : ${tb} to find how many red go with ${round.b} yellow. ${lives} ${
+            lives === 1 ? "try" : "tries"
+          } left.`,
+          { tone: "warn", duration: 2800 },
+        );
         announce(
           `Not a match yet. Keep the recipe ${ta} red to ${tb} yellow, and fill ${round.b} yellow.`,
         );
@@ -547,14 +582,20 @@ export default {
       announce(`Answer ${round.unit}${rateGuess}.`);
     }
     function serveRate() {
-      if (solved) return;
+      if (solved || gameOver) return;
       if (rateGuess !== round.answer) {
-        hud.message(`Not yet. Try ${round.total} ÷ ${round.count}.`, {
-          tone: "warn",
-          duration: 2400,
-        });
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.16);
+        if (loseLife()) return;
+        hud.message(
+          `Not yet. Try ${round.total} ÷ ${round.count}. ${lives} ${
+            lives === 1 ? "try" : "tries"
+          } left.`,
+          {
+            tone: "warn",
+            duration: 2400,
+          },
+        );
         announce(`Not yet. Find ${round.total} divided by ${round.count}.`);
         return;
       }
@@ -688,7 +729,7 @@ export default {
 
     // ---- Input --------------------------------------------------------------
     function onPress(name) {
-      if (!round) return;
+      if (!round || gameOver) return;
       if (round.kind === "rate") {
         if (name === "up" || name === "right") adjustRate(1);
         else if (name === "down" || name === "left") adjustRate(-1);
@@ -702,7 +743,7 @@ export default {
     }
 
     function onTapWorld() {
-      if (solved || !round) return;
+      if (solved || !round || gameOver) return;
       if (round.kind === "rate") {
         adjustRate(input.state.ndc.x >= 0 ? 1 : -1);
         return;
@@ -827,6 +868,9 @@ export default {
         // play and for Play Again.
         function beginGameplay() {
           roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
           unbindPress = input.onPress(onPress);
           unbindTap = input.onTap(onTapWorld);
           startRound();

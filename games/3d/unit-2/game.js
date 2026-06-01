@@ -278,6 +278,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong Serve costs one. Run out and
+    // the kitchen closes (lose screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     const timers = [];
     const unbinders = [];
 
@@ -814,7 +819,7 @@ export default {
 
     // ---- Serve / check ------------------------------------------------------
     function serve() {
-      if (solved || busy) return;
+      if (solved || busy || gameOver) return;
       let correct = false;
       let detail = "";
       if (round.type === "build") {
@@ -829,18 +834,25 @@ export default {
       }
 
       if (!correct) {
-        const msg =
-          round.type === "divide"
-            ? "Not yet. The answer is " + round._answer + " scoops. Keep going."
-            : "Not yet. The plate does not match the order.";
         streak = 0;
         hud.setStreak(0);
-        hud.message(msg, { tone: "warn", duration: 2200 });
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.18);
-        announce(msg);
         serveBtn.material.emissive.setHex(PALETTE.serveBad);
         later(() => serveBtn.material.emissive.setHex(PALETTE.serve), 480);
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        if (lives <= 0) {
+          loseGame();
+          return;
+        }
+        const base =
+          round.type === "divide"
+            ? "Not yet. Keep scooping to share it out evenly."
+            : "Not yet. The plate does not match the order.";
+        const msg = `${base} ${lives} ${lives === 1 ? "try" : "tries"} left.`;
+        hud.message(msg, { tone: "warn", duration: 2200 });
+        announce(msg);
         return;
       }
 
@@ -872,6 +884,23 @@ export default {
           finish();
         }
       }, 2400);
+    }
+
+    function loseGame() {
+      gameOver = true;
+      busy = true;
+      feel.sfx("wrong");
+      const msg = `Kitchen closed! You filled ${solvedCount} of ${cfg.rounds.length} orders.`;
+      hud.setObjective(msg);
+      announce(`Out of tries. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Kitchen closed!",
+          badge: "🍰",
+          stats: `${msg} Tip: count the unit fractions on the plate and match the order exactly.`,
+        });
+      }
     }
 
     function finish() {
@@ -985,6 +1014,9 @@ export default {
         function beginGameplay() {
           roundIndex = 0;
           solvedCount = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
           startRound();
 
           unbinders.push(

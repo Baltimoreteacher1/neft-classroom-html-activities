@@ -485,6 +485,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong commit costs one. Run out
+    // and the race ends (lose screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let raceAnim = null; // car launch tween
     let popAnim = null; // dial scale-pop
     const total = cfg.problems.length;
@@ -685,11 +690,35 @@ export default {
     function rejectRound(msg) {
       streak = 0;
       if (typeof hud.setStreak === "function") hud.setStreak(0);
-      if (typeof hud.feedback === "function") hud.feedback(false, msg);
-      else hud.message(msg, { tone: "warn", duration: 2200 });
       feel.sfx("wrong");
       if (!reduced) feel.shake(0.16);
-      announce(msg);
+      lives = Math.max(0, lives - 1);
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      if (lives <= 0) {
+        loseGame();
+        return;
+      }
+      const full = `${msg} ${lives} ${lives === 1 ? "try" : "tries"} left.`;
+      if (typeof hud.feedback === "function") hud.feedback(false, full);
+      else hud.message(full, { tone: "warn", duration: 2200 });
+      announce(full);
+    }
+
+    function loseGame() {
+      gameOver = true;
+      locked = true;
+      feel.sfx("wrong");
+      const msg = `Out of tries! You solved ${solvedCount} of ${total}.`;
+      hud.setObjective(msg);
+      announce(`Race over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Out of tries!",
+          badge: "🏁",
+          stats: `${msg} Tip: find the unit rate (price per liter, miles per hour) before you commit.`,
+        });
+      }
     }
 
     function win(detail) {
@@ -821,6 +850,9 @@ export default {
         // play and for Play Again.
         function beginGameplay() {
           problemIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
           startRound();
 
           unbindPress = input.onPress((name) => {

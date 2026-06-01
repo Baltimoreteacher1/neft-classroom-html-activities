@@ -318,6 +318,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong confirm costs one. Run out
+    // and the quest fails (lose screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     const cursor = { x: 0, y: 0 };
 
     function clearMarkers() {
@@ -525,9 +530,34 @@ export default {
     function reject(msg) {
       streak = 0;
       hud.setStreak(0);
-      hud.feedback(false, msg);
       feel.shake(0.14, 0.25);
       feel.sfx("wrong", msg);
+      lives = Math.max(0, lives - 1);
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      if (lives <= 0) {
+        loseGame();
+        return;
+      }
+      hud.feedback(
+        false,
+        `${msg} ${lives} ${lives === 1 ? "try" : "tries"} left.`,
+      );
+    }
+
+    function loseGame() {
+      gameOver = true;
+      feel.sfx("wrong");
+      const msg = `Out of tries! You charted ${solvedCount} of ${cfg.tasks.length} points.`;
+      hud.setObjective(msg);
+      announce(`Quest over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Out of tries!",
+          badge: "🗺️",
+          stats: `${msg} Tip: read the x-coordinate (across) before the y-coordinate (up/down).`,
+        });
+      }
     }
 
     function drawDistanceBar(a, b) {
@@ -544,7 +574,7 @@ export default {
     }
 
     function attempt() {
-      if (solved || !task) return;
+      if (solved || !task || gameOver) return;
 
       if (task.kind === "plot") {
         if (cursor.x === task.x && cursor.y === task.y) {
@@ -640,6 +670,7 @@ export default {
 
     // ---- Movement ----
     function move(dx, dy) {
+      if (gameOver) return;
       const before = `${cursor.x},${cursor.y}`;
       setCursor(cursor.x + dx, cursor.y + dy, true);
       if (`${cursor.x},${cursor.y}` !== before) feel.sfx("pop");
@@ -685,6 +716,9 @@ export default {
         // animation below may run immediately behind the overlay.
         function beginGameplay() {
           taskIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
           startTask();
 
           unbinders.push(

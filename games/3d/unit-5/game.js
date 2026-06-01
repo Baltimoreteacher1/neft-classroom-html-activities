@@ -312,6 +312,12 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts. Overshooting the target area (laying
+    // too much) costs one. Run out and the blueprint fails (lose screen).
+    // Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let introDone = false;
     const frameUnbinders = [];
     const timers = [];
@@ -738,16 +744,30 @@ export default {
     }
 
     function checkWin() {
-      if (solved) return;
+      if (solved || gameOver) return;
       let win = false;
       if (round.kind === "triangle") {
         win = triPlaced;
       } else {
         if (covered.size > targetArea) {
-          hud.message("Area is too big — rethink your pieces.", {
-            tone: "warn",
-            duration: 2000,
-          });
+          streak = 0;
+          if (typeof hud.setStreak === "function") hud.setStreak(0);
+          feel.sfx("wrong");
+          lives = Math.max(0, lives - 1);
+          if (typeof hud.setLives === "function") hud.setLives(lives);
+          if (lives <= 0) {
+            loseGame();
+            return;
+          }
+          hud.message(
+            `Area is too big — rethink your pieces. ${lives} ${
+              lives === 1 ? "try" : "tries"
+            } left.`,
+            {
+              tone: "warn",
+              duration: 2000,
+            },
+          );
           return;
         }
         if (covered.size !== targetArea) return;
@@ -803,6 +823,22 @@ export default {
           finishGame();
         }
       }, 2600);
+    }
+
+    function loseGame() {
+      gameOver = true;
+      feel.sfx("wrong");
+      const msg = `Blueprint scrapped! You filled ${solvedCount} of ${cfg.rounds.length} shapes.`;
+      hud.setObjective(msg);
+      announce(`Out of tries. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Blueprint scrapped!",
+          badge: "📐",
+          stats: `${msg} Tip: add up the area of your pieces and stop at the target — don't overshoot.`,
+        });
+      }
     }
 
     function finishGame() {
@@ -870,7 +906,7 @@ export default {
     }
 
     function primaryAction() {
-      if (solved || !introDone) return;
+      if (solved || !introDone || gameOver) return;
       if (!anchor) {
         if (triangleMode) {
           if (cursor.col !== round.cx || cursor.row !== round.cy) {
@@ -982,6 +1018,9 @@ export default {
         // clarity overlay. Single entry point for first play and Play Again.
         function beginGameplay() {
           roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
           startRound();
 
           unbindPress = input.onPress((name) => {
@@ -994,7 +1033,7 @@ export default {
           });
 
           unbindTap = input.onTap(() => {
-            if (solved || !introDone) return;
+            if (solved || !introDone || gameOver) return;
             const cell = pointerToTarget();
             if (!cell) return;
             cursor.col = cell.col;

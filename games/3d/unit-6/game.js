@@ -626,6 +626,12 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong (but complete) answer costs
+    // one. Incomplete expressions don't. Run out and the machine jams (lose
+    // screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     const timers = [];
     const unbinders = [];
     const later = (fn, ms) => {
@@ -856,7 +862,7 @@ export default {
           return;
         }
         if (equivalent(toks, round.targetExpr)) win("equivalent");
-        else rejectExpr("Not equal yet. Try again.");
+        else rejectExpr("Not equal yet. Try again.", true);
         return;
       }
 
@@ -869,17 +875,44 @@ export default {
       else
         rejectExpr(
           `You got ${r.value}. You need ${round.target}. Do × before +. Try again.`,
+          true,
         );
     }
 
-    function rejectExpr(msg) {
+    function rejectExpr(msg, costsLife = false) {
       streak = 0;
       if (typeof hud.setStreak === "function") hud.setStreak(0);
-      if (typeof hud.feedback === "function") hud.feedback(false, msg);
-      else hud.message(msg, { tone: "warn", duration: 2400 });
       feel.sfx("wrong");
       if (!reduced) feel.shake(0.16);
+      if (costsLife) {
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        if (lives <= 0) {
+          loseGame();
+          return;
+        }
+        msg += ` ${lives} ${lives === 1 ? "try" : "tries"} left.`;
+      }
+      if (typeof hud.feedback === "function") hud.feedback(false, msg);
+      else hud.message(msg, { tone: "warn", duration: 2400 });
       announce(msg);
+    }
+
+    function loseGame() {
+      gameOver = true;
+      finished = true;
+      feel.sfx("wrong");
+      const msg = `Machine jammed! You built ${solvedCount} of ${cfg.rounds.length}.`;
+      hud.setObjective(msg);
+      announce(`Out of tries. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Machine jammed!",
+          badge: "⚙️",
+          stats: `${msg} Tip: multiply before you add, and combine like terms.`,
+        });
+      }
     }
 
     function win(kind) {
@@ -1054,6 +1087,9 @@ export default {
           if (started) return;
           started = true;
           roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
           startRound();
 
           // Keyboard: ←/→ select, Space place, Enter/↑ submit, ↓ remove.

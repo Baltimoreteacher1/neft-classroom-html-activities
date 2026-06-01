@@ -170,6 +170,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts. A wrong answer costs one; run out
+    // and the mission fails (lose screen). Level 1 gets more cushion.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let unbindFrame = null;
     let unbindIdle = null;
 
@@ -329,19 +334,21 @@ export default {
       cursorMesh.visible = true;
       cursorMesh.scale.setScalar(step);
 
-      const targetVol = prismVolume(round.l, round.w, round.h);
+      // Show the dimensions and the V = l × w × h set-up, but NOT the result —
+      // the student works out the volume by packing the cubes. The answer is
+      // revealed in the post-solve feedback (see markCorrect below).
       setProblemCard(
         `V = ${fracLabel(round.l)} × ${fracLabel(round.w)} × ${fracLabel(
           round.h,
-        )} = ${fracLabel(targetVol)} cubic units`,
+        )} = ?  cubic units`,
       );
 
       announce(
-        `Round ${roundIndex + 1}. Fill the box with cubes. ` +
+        `Round ${roundIndex + 1}. Fill the box with cubes to find its volume. ` +
           `It is ${fracLabel(round.l)} long, ${fracLabel(
             round.w,
           )} wide, ${fracLabel(round.h)} tall. ` +
-          `The answer is ${fracLabel(targetVol)} cubic units.`,
+          `Multiply length times width times height.`,
       );
 
       if (cfg.hints) {
@@ -360,16 +367,15 @@ export default {
     }
 
     function updateFillObjective() {
-      const targetVol = prismVolume(round.l, round.w, round.h);
+      // Don't reveal the volume here — show progress only so the student has to
+      // pack the box to discover it.
       const text =
-        `Fill the box. Answer = ${fracLabel(targetVol)} cubic units.  ` +
+        `Fill the box, then read off its volume.  ` +
         `Cubes: ${placedCount} / ${targetCount}`;
       hud.setObjective(text);
       if (clarity) {
         clarity.setObjective(text);
-        clarity.setTarget(
-          `Pack ${targetCount} cubes · V = ${fracLabel(targetVol)} cubic units`,
-        );
+        clarity.setTarget(`Pack the box · V = l × w × h`);
       }
     }
 
@@ -775,8 +781,33 @@ export default {
     function markWrong(warnMsg, duration = 2000) {
       streak = 0;
       if (typeof hud.setStreak === "function") hud.setStreak(0);
-      if (typeof hud.feedback === "function") hud.feedback(false, warnMsg);
-      else hud.message(warnMsg, { tone: "warn", duration });
+      lives = Math.max(0, lives - 1);
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      if (lives <= 0) {
+        loseGame();
+        return;
+      }
+      const livesMsg = ` ${lives} ${lives === 1 ? "try" : "tries"} left.`;
+      if (typeof hud.feedback === "function")
+        hud.feedback(false, warnMsg + livesMsg);
+      else hud.message(warnMsg + livesMsg, { tone: "warn", duration });
+    }
+
+    function loseGame() {
+      gameOver = true;
+      feel.sfx("wrong");
+      const msg = `Vault locked! You solved ${solvedCount} of ${cfg.rounds.length}.`;
+      setProblemCard("VAULT LOCKED");
+      hud.setObjective(msg);
+      announce(`Mission over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Vault locked!",
+          badge: "🔒",
+          stats: `${msg} Tip: count the cubes along each edge, then multiply length × width × height.`,
+        });
+      }
     }
 
     function nextRoundSoon() {
@@ -832,14 +863,14 @@ export default {
 
     // ===================== Input wiring ===================================
     function onPrimary() {
-      if (!round) return;
+      if (!round || gameOver) return;
       if (round.kind === "fill") placeCube();
       else if (round.kind === "missing") checkMissing();
       else if (round.kind === "compare") checkCompare();
     }
 
     function onDirection(name) {
-      if (!round) return;
+      if (!round || gameOver) return;
       if (round.kind === "fill") {
         if (name === "up") moveCursor(0, 0, -1);
         else if (name === "down") moveCursor(0, 0, 1);
@@ -863,7 +894,7 @@ export default {
 
     // Secondary (keyboard Enter): vertical layer move in fill, hint elsewhere.
     function onConfirm() {
-      if (!round) return;
+      if (!round || gameOver) return;
       if (round.kind === "fill") {
         if (layerUp && cursor.y < ny - 1) moveCursor(0, 1, 0);
         else if (!layerUp && cursor.y > 0) moveCursor(0, -1, 0);
@@ -938,6 +969,9 @@ export default {
         // play and Play Again.
         function beginGameplay() {
           roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
           startRound();
 
           unbindPress = input.onPress((name) => {
@@ -953,7 +987,7 @@ export default {
           });
 
           unbindTap = input.onTap(() => {
-            if (!round || solved) return;
+            if (!round || solved || gameOver) return;
             onPrimary();
           });
         }
