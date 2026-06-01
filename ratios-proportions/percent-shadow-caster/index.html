@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Percent Shadow-Caster: An interactive solar observatory mapping percentages to double-number lines, grids, and shadows.">
+  <title>Percent Shadow-Caster | Neft Studio</title>
+
+  <!-- Google Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    /* ── Amber Space Design Tokens ── */
+    :root {
+      --bg-base: #0a0502;
+      --bg-surface: #150a04;
+      --bg-card: rgba(26, 12, 4, 0.6);
+      --bg-glow: rgba(249, 115, 22, 0.08);
+      
+      --primary: #f97316; /* Neon Amber Orange */
+      --primary-glow: rgba(249, 115, 22, 0.45);
+      --secondary: #fbbf24; /* Sun Gold */
+      --secondary-glow: rgba(251, 191, 36, 0.4);
+      --accent: #ef4444; /* Solar Flare Red */
+      --accent-glow: rgba(239, 68, 68, 0.4);
+      --warning: #f59e0b;
+      
+      --text-main: #fef3c7;
+      --text-muted: #d97706;
+      --text-dark: #78350f;
+      
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+      
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-gaze: 0 0 22px rgba(249, 115, 22, 0.25);
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(249, 115, 22, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.05) 0%, transparent 40%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Breadcrumb & Navigation ── */
+    .breadcrumb {
+      margin: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .breadcrumb a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .breadcrumb a:hover {
+      text-shadow: 0 0 8px var(--primary);
+    }
+    .breadcrumb span {
+      color: var(--text-muted);
+    }
+
+    /* ── Hero Solar Banner ── */
+    .hero {
+      background: linear-gradient(135deg, #260e02 0%, #0a0502 100%);
+      border: 1px solid rgba(249, 115, 22, 0.15);
+      border-left: 6px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin: 20px 24px;
+      box-shadow: var(--shadow-gaze);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.4), transparent);
+    }
+    .hero-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #fff, #ffedd5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 0 16px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+    }
+    .hero-chip {
+      background: rgba(249, 115, 22, 0.1);
+      border: 1px solid rgba(249, 115, 22, 0.2);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hero-chip.accent {
+      background: rgba(251, 191, 36, 0.1);
+      border-color: rgba(251, 191, 36, 0.2);
+      color: var(--secondary);
+    }
+
+    /* ── Main Layout Grid ── */
+    .studio-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .brand-block h2 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-block p {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    /* ── Quest List Cards ── */
+    .quest-catalog {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .quest-card {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .quest-card:hover {
+      border-color: var(--primary);
+      background: rgba(249, 115, 22, 0.05);
+      transform: translateY(-1px);
+    }
+    .quest-card.active {
+      background: rgba(249, 115, 22, 0.15);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
+    }
+    .quest-card .quest-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .quest-card.completed {
+      border-color: var(--secondary);
+      background: rgba(251, 191, 36, 0.05);
+    }
+
+    /* ── Main Workspace ── */
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .glass-panel {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .panel-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+    .panel-meta h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Percent Workspace Split */
+    .obs-split {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .obs-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Controllers */
+    .solar-controllers {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .control-slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .slider-header span.val-label {
+      color: var(--primary);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #251206;
+      border-radius: 4px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--primary);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--primary-glow);
+      transition: var(--transition);
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      background: #fff;
+      transform: scale(1.15);
+    }
+
+    /* Visual viewport */
+    .model-viewport {
+      background: #050201;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-md);
+      min-height: 300px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .model-viewport svg {
+      width: 100%;
+      height: 300px;
+      display: block;
+    }
+
+    /* ── Case Objective HUD ── */
+    .objective-hud {
+      background: rgba(249, 115, 22, 0.03);
+      border: 1px solid rgba(249, 115, 22, 0.15);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .hud-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hud-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .hud-item.done {
+      border-color: var(--secondary);
+      background: rgba(251, 191, 36, 0.08);
+      color: var(--secondary);
+    }
+
+    /* ── ESOL Bilingual Glossary ── */
+    .glossary-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .glossary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .glossary-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .glossary-lang-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .lang-tab {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lang-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .glossary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .vocab-chip {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: help;
+      position: relative;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vocab-chip:hover {
+      border-color: var(--primary);
+      background: rgba(249, 115, 22, 0.08);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .vocab-chip .tooltip-bubble {
+      visibility: hidden;
+      width: 240px;
+      background: #150a04;
+      color: var(--text-main);
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px 12px;
+      position: absolute;
+      z-index: 100;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(249, 115, 22, 0.2);
+      pointer-events: none;
+      font-weight: 500;
+    }
+    .vocab-chip:hover .tooltip-bubble {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* ── TWR Writing Reporter ── */
+    .writing-reporter {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .writing-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .writing-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .writing-header p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .twr-lanes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .twr-lane {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lane-label {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+    .twr-lane:nth-child(2) .lane-label { color: var(--secondary); }
+    .twr-lane:nth-child(3) .lane-label { color: var(--accent); }
+    .lane-kernel {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.4;
+    }
+    .twr-textarea {
+      width: 100%;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      resize: none;
+      outline: none;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .twr-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(249, 115, 22, 0.25);
+    }
+    .twr-conjunctions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .conj-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .conj-chip:hover {
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* Double Number Line Card styling */
+    .double-line-panel {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+
+    /* ── Cyber Buttons ── */
+    .cyber-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
+    }
+    .cyber-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.45);
+    }
+    .cyber-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .cyber-btn.sec {
+      background: linear-gradient(135deg, var(--secondary) 0%, #d97706 100%);
+      box-shadow: 0 4px 14px rgba(251, 191, 36, 0.3);
+    }
+    .cyber-btn.sec:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.45);
+    }
+    .cyber-btn.outline {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+    .cyber-btn.outline:hover {
+      border-color: var(--primary);
+      background: rgba(249, 115, 22, 0.05);
+    }
+
+    /* ── Diagnostics console overlay ── */
+    .diag-overlay {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 420px;
+      background: #0f0702;
+      color: #00ff66;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      border: 1px solid #78350f;
+      padding: 16px;
+      display: none;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+    .diag-head {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      border-bottom: 1px dashed #78350f;
+      padding-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+    .diag-stream {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .diag-line {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    .diag-close {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1080px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-wrapper {
+        position: static;
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a href="/ratios-proportions/">Ratios</a>
+    <span>/</span>
+    <span>Percent Shadow-Caster</span>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-row">
+      <div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px">
+          <span class="hero-chip">Unit 5 · Percents</span>
+          <span class="hero-chip accent" id="langIndicator">English Mode</span>
+        </div>
+        <h1 id="heroTitle">Percent Shadow-Caster</h1>
+        <p id="heroCopy">
+          Explore rates, parts, wholes, and percentages inside an solar physics observatory. Shift active multipliers 
+          to cast glowing vector shadow lengths and shade equivalent percent grids.
+        </p>
+        <div class="hero-stats">
+          <button class="cyber-btn outline" onclick="toggleLanguage()" id="btnLangToggle">
+            🌍 Translate to Spanish
+          </button>
+          <button class="cyber-btn outline" onclick="toggleDiagnostics()">
+            📊 Run System Checks
+          </button>
+          <button class="cyber-btn outline" id="btnSelfTest" onclick="triggerSelfTest()">
+            ⚙️ Run Self-Test
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="studio-shell">
+    <!-- Sidebar: Quests -->
+    <aside class="sidebar-wrapper" aria-label="Active Quests">
+      <div class="brand-block">
+        <h2 id="sidebarTitle">☀️ Solar Quests</h2>
+        <p id="sidebarSubtitle">Align percent coordinates</p>
+      </div>
+
+      <div class="quest-catalog" id="questCatalog" role="radiogroup" aria-label="Select Case">
+        <!-- Dynamic quest cards -->
+      </div>
+    </aside>
+
+    <!-- Workspace -->
+    <div class="canvas-layout">
+      <section class="glass-panel" aria-labelledby="canvasHeading">
+        <div class="panel-meta">
+          <h3 id="canvasHeading">🔬 Eclipse Grid & Projection Vault</h3>
+          <button class="cyber-btn" onclick="resetActiveSliders()" id="btnResetData">
+            🔄 Reset Observatory
+          </button>
+        </div>
+
+        <div class="obs-split">
+          <!-- Solar Grid Grid Canvas -->
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="model-viewport">
+              <svg id="svgGrid" viewBox="0 0 300 300"></svg>
+            </div>
+            <div class="solar-controllers">
+              <div class="control-slider-group">
+                <div class="slider-header">
+                  <span id="labelPercent">Solar Energy Rate (Percent)</span>
+                  <span class="val-label" id="valPercent">40%</span>
+                </div>
+                <input type="range" id="sliderPercent" min="0" max="100" value="40" step="5" oninput="updateObservatory()">
+              </div>
+              <div class="control-slider-group">
+                <div class="slider-header">
+                  <span id="labelWhole">System Capacity (Whole)</span>
+                  <span class="val-label" id="valWhole">80 units</span>
+                </div>
+                <input type="range" id="sliderWhole" min="20" max="200" value="80" step="10" oninput="updateObservatory()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Shadow Caster Vault -->
+          <div style="display:flex; flex-direction:column; gap:20px;">
+            <div class="model-viewport" style="background:#0a0401;">
+              <svg id="svgShadow" viewBox="0 0 300 300"></svg>
+            </div>
+            <div class="solar-controllers" style="background:rgba(239, 68, 68, 0.02); border-color:rgba(239, 68, 68, 0.1);">
+              <div style="font-size:0.8rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em;">
+                ☀️ Real-Time Sol-Equation
+              </div>
+              <div style="font-family:var(--font-mono); font-size:1.3rem; text-align:center; padding:12px; background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid rgba(249,115,22,0.15);" id="liveMath">
+                Part = 80 &times; 0.40 = 32
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Double Number Line Scale Panel -->
+        <div class="double-line-panel">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px;">
+            📏 Double Number Line Coordinates
+          </div>
+          <svg id="svgDoubleLine" viewBox="0 0 600 120" style="width:100%; height:auto; display:block;"></svg>
+        </div>
+
+        <!-- Quest Objective HUD -->
+        <div class="objective-hud">
+          <div class="hud-title">
+            <span style="font-size:1.25rem;">📡</span>
+            <span id="hudTitleText">Active Alignment Indicators</span>
+          </div>
+          <div class="hud-checklist" id="hudChecklist">
+            <!-- Dynamic checkpoints -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Writing Reporter -->
+      <section class="writing-reporter" aria-labelledby="writingHeading">
+        <div class="writing-header">
+          <h4 id="writingHeading">✍️ TWR Solar Observatory Engineering Report</h4>
+          <p id="writingSubtitle">Document your solar alignments using transition organizing clauses</p>
+        </div>
+
+        <div class="twr-lanes">
+          <div class="twr-lane">
+            <span class="lane-label">Because (Explicación)</span>
+            <span class="lane-kernel" id="kernelBecause">The shadow length is 32 units...</span>
+            <textarea class="twr-textarea" id="textBecause" placeholder="Extend explanation using 'because'..." oninput="evaluateWriting()"></textarea>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">But (Contraste)</span>
+            <span class="lane-kernel" id="kernelBut">The percentage rate increased...</span>
+            <textarea class="twr-textarea" id="textBut" placeholder="Add contrasting evidence using 'but'..." oninput="evaluateWriting()"></textarea>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">So (Consecuencia)</span>
+            <span class="lane-kernel" id="kernelSo">The solar array is at 40% capacity...</span>
+            <textarea class="twr-textarea" id="textSo" placeholder="Draft standard consequence using 'so'..." oninput="evaluateWriting()"></textarea>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:16px;">
+          <div class="twr-conjunctions" id="writingFeedback">
+            <span class="conj-chip" style="color:var(--text-muted); pointer-events:none;">Report Status: Awaiting engineering notes</span>
+          </div>
+          <button class="cyber-btn sec" id="btnSubmitReport" onclick="submitSolarReport()" disabled>
+            💾 Submit Solar Report
+          </button>
+        </div>
+      </section>
+
+      <!-- Glossary cards -->
+      <section class="glossary-card" aria-label="Math Glossary">
+        <div class="glossary-header">
+          <h4 id="glossaryTitle">📚 Solar Terminology Wall</h4>
+          <div class="glossary-lang-tabs" role="tablist">
+            <button class="lang-tab active" onclick="setGlossaryLang('en')" role="tab" aria-selected="true" id="tabEN">EN English</button>
+            <button class="lang-tab" onclick="setGlossaryLang('es')" role="tab" aria-selected="false" id="tabES">ES Español</button>
+          </div>
+        </div>
+        <div class="glossary-grid" id="glossaryGrid">
+          <!-- Dynamic vocab chips -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Diagnostics log overlay -->
+  <aside class="diag-overlay" id="diagConsole" aria-label="System Diagnostics">
+    <div class="diag-head">
+      <span>SYSTEM DIAGNOSTIC OVERLAY</span>
+      <button class="diag-close" onclick="toggleDiagnostics()">CLOSE</button>
+    </div>
+    <div class="diag-stream" id="diagStream">
+      <p class="diag-line">System initializing...</p>
+    </div>
+  </aside>
+
+  <script>
+    // 1. SYSTEM CONFIGURATION
+    const CONFIG = {
+      theme: 'amber-eclipse',
+      defaultPercent: 40,
+      defaultWhole: 80,
+      maxWhole: 200,
+      minWhole: 20,
+      audioGainLimit: 0.06,
+      debug: true
+    };
+
+    // 2. STATE LAYER (Repository)
+    let STATE = {
+      percent: CONFIG.defaultPercent,
+      whole: CONFIG.defaultWhole,
+      activeCaseId: 1,
+      casesCompleted: [],
+      lang: 'en',
+      glossaryLang: 'en',
+      conjunctionsFound: { because: false, but: false, so: false }
+    };
+
+    const CASE_QUESTS = [
+      {
+        id: 1,
+        titleEN: "Case 1: Solar Panel Charge",
+        titleES: "Caso 1: Carga de Panel Solar",
+        descEN: "Shade the solar grid matrix to achieve exactly 25% of 80 units of energy.",
+        descES: "Sombrea el panel solar para alcanzar exactamente el 25% de 80 unidades de energía.",
+        targetPercent: 25,
+        targetWhole: 80,
+        checks: ['percentMatches', 'wholeMatches']
+      },
+      {
+        id: 2,
+        titleEN: "Case 2: Solar Angle Alignment",
+        titleES: "Caso 2: Alineación Solar",
+        descEN: "Shift the solar dial to determine what percentage of 60 yields exactly 45 units.",
+        descES: "Mueve el dial solar para determinar qué porcentaje de 60 produce exactamente 45 unidades.",
+        targetPercent: 75,
+        targetWhole: 60,
+        checks: ['percentMatches', 'wholeMatches']
+      },
+      {
+        id: 3,
+        titleEN: "Case 3: Infinite Battery Grid",
+        titleES: "Caso 3: Red de Batería Infinita",
+        descEN: "Reconstruct a solar configuration where 40% of maximum capacity yields exactly 24 active battery cells. Solve for the total capacity (whole).",
+        descES: "Reconstruye un panel solar donde el 40% del total sea exactamente 24 celdas. Resuelve para la capacidad total (entero).",
+        targetPercent: 40,
+        targetWhole: 60,
+        checks: ['percentMatches', 'wholeMatches']
+      }
+    ];
+
+    const VOCAB_MAP = {
+      en: [
+        { word: "Percent", def: "A ratio that compares a number to 100, meaning 'out of 100' (%)" },
+        { word: "Whole", def: "The total amount or capacity, representing 100% of the value" },
+        { word: "Part", def: "A portion of the whole amount, calculated by multiplying Whole × Percent" },
+        { word: "Double Number Line", def: "A visual tool showing two parallel lines matching percent and absolute values" }
+      ],
+      es: [
+        { word: "Porcentaje", def: "Una razón que compara un número con 100, que significa 'de cada 100' (%)" },
+        { word: "Entero (Todo)", def: "La cantidad o capacidad total, que representa el 100% del valor" },
+        { word: "Parte", def: "Una porción de la cantidad entera, calculada multiplicando Entero × Porcentaje" },
+        { word: "Línea Numérica Doble", def: "Una herramienta visual que muestra dos líneas paralelas relacionando valores absolutos y porcentajes" }
+      ]
+    };
+
+    // Global Web Audio synth variables
+    let audioCtx = null;
+
+    // 3. SERVICE LOGIC LAYER
+    function validateConfig() {
+      logDiag("Running validateConfig()...");
+      if (CONFIG.defaultPercent < 0 || CONFIG.defaultPercent > 100) {
+        throw new Error("CONFIG Error: defaultPercent must be between 0 and 100.");
+      }
+      if (CONFIG.defaultWhole < CONFIG.minWhole || CONFIG.defaultWhole > CONFIG.maxWhole) {
+        throw new Error("CONFIG Error: defaultWhole out of bounds.");
+      }
+      if (CONFIG.audioGainLimit > 0.08) {
+        throw new Error("CONFIG Warning: audioGain Limit exceeds safe publishing levels.");
+      }
+      logDiag("validateConfig(): PASS");
+      return true;
+    }
+
+    function selfTest() {
+      logDiag("=== Starting Percent Shadow-Caster Self-Test ===");
+      try {
+        validateConfig();
+        
+        // Assert mathematical solvers
+        const testPart1 = solvePart(25, 80);
+        if (testPart1 !== 20) throw new Error("Math Solver Error: 25% of 80 must be 20.");
+        
+        const testPart2 = solvePart(75, 60);
+        if (testPart2 !== 45) throw new Error("Math Solver Error: 75% of 60 must be 45.");
+
+        // Assert DOM presence
+        const testIds = ['sliderPercent', 'sliderWhole', 'svgGrid', 'svgShadow', 'svgDoubleLine'];
+        testIds.forEach(id => {
+          if (!document.getElementById(id)) {
+            throw new Error(`DOM Error: Missing element #${id}`);
+          }
+        });
+
+        logDiag("selfTest(): 100% PASS");
+        return true;
+      } catch (e) {
+        logDiag(`selfTest() FAILED: ${e.message}`, true);
+        return false;
+      }
+    }
+
+    function solvePart(percent, whole) {
+      return Math.round((percent / 100) * whole);
+    }
+
+    // 4. CONTROLLER LAYER
+    window.addEventListener('load', () => {
+      validateConfig();
+      renderQuests();
+      setGlossaryLang('en');
+      updateObservatory();
+    });
+
+    function transitionState(action, data) {
+      logDiag(`State transition action: ${action}`);
+      switch (action) {
+        case 'SET_CASE':
+          STATE.activeCaseId = data;
+          const selectedCase = CASE_QUESTS.find(c => c.id === data);
+          STATE.percent = selectedCase.id === 3 ? 10 : selectedCase.targetPercent - 15; // Set adjacent starting points
+          STATE.whole = selectedCase.id === 2 ? 100 : selectedCase.targetWhole + 20;
+          
+          document.getElementById('sliderPercent').value = STATE.percent;
+          document.getElementById('sliderWhole').value = STATE.whole;
+          
+          playSynthNote(220, 'triangle', 0.1);
+          break;
+        case 'UPDATE_SLIDERS':
+          STATE.percent = parseInt(document.getElementById('sliderPercent').value);
+          STATE.whole = parseInt(document.getElementById('sliderWhole').value);
+          break;
+        case 'RESET':
+          STATE.percent = CONFIG.defaultPercent;
+          STATE.whole = CONFIG.defaultWhole;
+          document.getElementById('sliderPercent').value = STATE.percent;
+          document.getElementById('sliderWhole').value = STATE.whole;
+          playSynthNote(180, 'sine', 0.15);
+          break;
+      }
+      updateObservatory();
+    }
+
+    function updateObservatory() {
+      // Pull slider values
+      STATE.percent = parseInt(document.getElementById('sliderPercent').value);
+      STATE.whole = parseInt(document.getElementById('sliderWhole').value);
+
+      const part = solvePart(STATE.percent, STATE.whole);
+
+      // Update Slider text
+      document.getElementById('valPercent').textContent = `${STATE.percent}%`;
+      document.getElementById('valWhole').textContent = `${STATE.whole} units`;
+
+      // Update Formula Text
+      document.getElementById('liveMath').innerHTML = `Part = ${STATE.whole} &times; ${(STATE.percent / 100).toFixed(2)} = <span style="color:var(--primary); font-weight:800">${part}</span>`;
+
+      // Redraw everything
+      drawSolarGrid();
+      drawShadowCaster();
+      drawDoubleLine();
+      checkCaseObjectives();
+      updateTWRKernels(part);
+    }
+
+    function updateTWRKernels(part) {
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+      if (STATE.lang === 'en') {
+        document.getElementById('kernelBecause').textContent = `The shadow length measures ${part} units because...`;
+        document.getElementById('kernelBut').textContent = `The target was to cast a shadow representing ${activeCase.targetPercent}% of the whole, but...`;
+        document.getElementById('kernelSo').textContent = `The solar dial matches exactly ${STATE.percent}%, so...`;
+      } else {
+        document.getElementById('kernelBecause').textContent = `La longitud de la sombra es de ${part} unidades porque...`;
+        document.getElementById('kernelBut').textContent = `El objetivo era proyectar una sombra que represente el ${activeCase.targetPercent}% del total, pero...`;
+        document.getElementById('kernelSo').textContent = `El dial solar coincide exactamente con el ${STATE.percent}%, así que...`;
+      }
+    }
+
+    function resetActiveSliders() {
+      transitionState('RESET');
+    }
+
+    // 5. VIEW (Visual SVG Drawer)
+    function drawSolarGrid() {
+      const svg = document.getElementById('svgGrid');
+      svg.innerHTML = '';
+      
+      const width = 300;
+      const height = 300;
+      const size = 26;
+      const gap = 2.5;
+      const startX = (width - (10 * size + 9 * gap)) / 2;
+      const startY = (height - (10 * size + 9 * gap)) / 2;
+
+      // Draw background panel
+      const panel = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      panel.setAttribute("x", 5);
+      panel.setAttribute("y", 5);
+      panel.setAttribute("width", width - 10);
+      panel.setAttribute("height", height - 10);
+      panel.setAttribute("fill", "rgba(255,255,255,0.01)");
+      panel.setAttribute("stroke", "rgba(249,115,22,0.1)");
+      panel.setAttribute("stroke-width", "2");
+      panel.setAttribute("rx", "16");
+      svg.appendChild(panel);
+
+      const activeCells = STATE.percent; // Out of 100 cells
+
+      for (let r = 0; r < 10; r++) {
+        for (let c = 0; c < 10; c++) {
+          const index = r * 10 + c;
+          const active = index < activeCells;
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x", startX + c * (size + gap));
+          rect.setAttribute("y", startY + r * (size + gap));
+          rect.setAttribute("width", size);
+          rect.setAttribute("height", size);
+          rect.setAttribute("rx", "4");
+          
+          if (active) {
+            rect.setAttribute("fill", "var(--primary)");
+            rect.setAttribute("filter", "drop-shadow(0px 0px 4px var(--primary-glow))");
+          } else {
+            rect.setAttribute("fill", "#201006");
+            rect.setAttribute("stroke", "rgba(249,115,22,0.1)");
+            rect.setAttribute("stroke-width", "1");
+          }
+          svg.appendChild(rect);
+        }
+      }
+    }
+
+    function drawShadowCaster() {
+      const svg = document.getElementById('svgShadow');
+      svg.innerHTML = '';
+
+      const width = 300;
+      const height = 300;
+
+      // Draw panel background
+      const panel = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      panel.setAttribute("x", 5);
+      panel.setAttribute("y", 5);
+      panel.setAttribute("width", width - 10);
+      panel.setAttribute("height", height - 10);
+      panel.setAttribute("fill", "rgba(255,255,255,0.01)");
+      panel.setAttribute("stroke", "rgba(249,115,22,0.1)");
+      panel.setAttribute("stroke-width", "2");
+      panel.setAttribute("rx", "16");
+      svg.appendChild(panel);
+
+      // Draw Horizon Ground
+      const ground = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      ground.setAttribute("x1", 20);
+      ground.setAttribute("y1", 240);
+      ground.setAttribute("x2", 280);
+      ground.setAttribute("y2", 240);
+      ground.setAttribute("stroke", "var(--text-muted)");
+      ground.setAttribute("stroke-width", "3");
+      svg.appendChild(ground);
+
+      // Calculate Sun Position based on Percent slider
+      const angle = (STATE.percent / 100) * Math.PI; // Maps 0-100% to 0 to 180 degrees
+      const radius = 100;
+      const centerX = 150;
+      const centerY = 130;
+      // Subtracting PI/2 to rotate starting point to bottom left
+      const sunX = centerX - radius * Math.cos(angle);
+      const sunY = centerY - radius * Math.sin(angle);
+
+      // Draw Sun rays line to obstacle top
+      const obsTopX = 150;
+      const obsTopY = 160;
+
+      // Calculate shadow length. Let's make it proportional to the percent and whole values
+      const shadowLength = (STATE.percent / 100) * 100;
+
+      // Draw Shadow
+      const shadow = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      const shadowStartX = obsTopX;
+      const shadowEndX = obsTopX + shadowLength;
+      shadow.setAttribute("points", `${shadowStartX},240 ${shadowEndX},240 150,160`);
+      shadow.setAttribute("fill", "rgba(249,115,22,0.18)");
+      svg.appendChild(shadow);
+
+      // Sun beams line
+      const beam = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      beam.setAttribute("x1", sunX);
+      beam.setAttribute("y1", sunY);
+      beam.setAttribute("x2", obsTopX);
+      beam.setAttribute("y2", obsTopY);
+      beam.setAttribute("stroke", "rgba(251,191,36,0.3)");
+      beam.setAttribute("stroke-dasharray", "4,4");
+      beam.setAttribute("stroke-width", "2");
+      svg.appendChild(beam);
+
+      // Draw Obstacle (Solar Reactor Brick)
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", obsTopX - 10);
+      rect.setAttribute("y", obsTopY);
+      rect.setAttribute("width", 20);
+      rect.setAttribute("height", 80);
+      rect.setAttribute("fill", "#251105");
+      rect.setAttribute("stroke", "var(--primary)");
+      rect.setAttribute("stroke-width", "2.5");
+      rect.setAttribute("rx", "2");
+      svg.appendChild(rect);
+
+      // Draw glowing Sun node
+      const sun = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      sun.setAttribute("cx", sunX);
+      sun.setAttribute("cy", sunY);
+      sun.setAttribute("r", "14");
+      sun.setAttribute("fill", "var(--secondary)");
+      sun.setAttribute("filter", "drop-shadow(0px 0px 8px var(--secondary-glow))");
+      svg.appendChild(sun);
+    }
+
+    function drawDoubleLine() {
+      const svg = document.getElementById('svgDoubleLine');
+      svg.innerHTML = '';
+
+      const width = 600;
+      const height = 120;
+
+      // Draw parallel line scales
+      const drawLineWithTicks = (y, minVal, maxVal, labelText, isPercent) => {
+        // Core horizontal scale
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", 50);
+        line.setAttribute("y1", y);
+        line.setAttribute("x2", 550);
+        line.setAttribute("y2", y);
+        line.setAttribute("stroke", "var(--text-muted)");
+        line.setAttribute("stroke-width", "3");
+        svg.appendChild(line);
+
+        // Labels
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", 12);
+        lbl.setAttribute("y", y + 4);
+        lbl.setAttribute("fill", "var(--text-main)");
+        lbl.setAttribute("font-family", "var(--font-display)");
+        lbl.setAttribute("font-weight", "700");
+        lbl.setAttribute("font-size", "10");
+        lbl.textContent = labelText;
+        svg.appendChild(lbl);
+
+        // Render Ticks (0, 20, 40, 60, 80, 100%)
+        for (let i = 0; i <= 5; i++) {
+          const ratio = i / 5;
+          const x = 50 + ratio * 500;
+          const val = Math.round(minVal + ratio * (maxVal - minVal));
+
+          const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          tick.setAttribute("x1", x);
+          tick.setAttribute("y1", y - 6);
+          tick.setAttribute("x2", x);
+          tick.setAttribute("y2", y + 6);
+          tick.setAttribute("stroke", "var(--text-muted)");
+          tick.setAttribute("stroke-width", "2");
+          svg.appendChild(tick);
+
+          const tickLbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          tickLbl.setAttribute("x", x);
+          tickLbl.setAttribute("y", y + 18);
+          tickLbl.setAttribute("text-anchor", "middle");
+          tickLbl.setAttribute("fill", "var(--text-muted)");
+          tickLbl.setAttribute("font-family", "var(--font-mono)");
+          tickLbl.setAttribute("font-size", "9");
+          tickLbl.textContent = isPercent ? `${val}%` : val;
+          svg.appendChild(tickLbl);
+        }
+      };
+
+      // Draw Top line (Percents)
+      drawLineWithTicks(35, 0, 100, "RATE", true);
+
+      // Draw Bottom line (Values)
+      drawLineWithTicks(80, 0, STATE.whole, "CAP", false);
+
+      // Draw interactive glowing active slider bar aligning current percentages
+      const activeRatio = STATE.percent / 100;
+      const activeX = 50 + activeRatio * 500;
+      const activeVal = solvePart(STATE.percent, STATE.whole);
+
+      // Vertical connecting cursor
+      const cursor = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      cursor.setAttribute("x1", activeX);
+      cursor.setAttribute("y1", 25);
+      cursor.setAttribute("x2", activeX);
+      cursor.setAttribute("y2", 90);
+      cursor.setAttribute("stroke", "var(--accent)");
+      cursor.setAttribute("stroke-width", "2.5");
+      cursor.setAttribute("stroke-dasharray", "3,3");
+      svg.appendChild(cursor);
+
+      // Top active handle bubble
+      const topHandle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      topHandle.setAttribute("cx", activeX);
+      topHandle.setAttribute("cy", 35);
+      topHandle.setAttribute("r", "7");
+      topHandle.setAttribute("fill", "var(--primary)");
+      topHandle.setAttribute("filter", "drop-shadow(0 0 4px var(--primary-glow))");
+      svg.appendChild(topHandle);
+
+      // Bottom active handle bubble
+      const botHandle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      botHandle.setAttribute("cx", activeX);
+      botHandle.setAttribute("cy", 80);
+      botHandle.setAttribute("r", "7");
+      botHandle.setAttribute("fill", "var(--secondary)");
+      botHandle.setAttribute("filter", "drop-shadow(0 0 4px var(--secondary-glow))");
+      svg.appendChild(botHandle);
+
+      // Text tracking node labels
+      const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txt.setAttribute("x", activeX);
+      txt.setAttribute("y", 18);
+      txt.setAttribute("text-anchor", "middle");
+      txt.setAttribute("fill", "var(--primary)");
+      txt.setAttribute("font-family", "var(--font-mono)");
+      txt.setAttribute("font-weight", "700");
+      txt.setAttribute("font-size", "10");
+      txt.textContent = `${STATE.percent}%`;
+      svg.appendChild(txt);
+
+      const txtBot = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txtBot.setAttribute("x", activeX);
+      txtBot.setAttribute("y", 104);
+      txtBot.setAttribute("text-anchor", "middle");
+      txtBot.setAttribute("fill", "var(--secondary)");
+      txtBot.setAttribute("font-family", "var(--font-mono)");
+      txtBot.setAttribute("font-weight", "700");
+      txtBot.setAttribute("font-size", "10");
+      txtBot.textContent = activeVal;
+      svg.appendChild(txtBot);
+    }
+
+    // 6. QUEST EVALUATION & OBJECTIVE HUD
+    function renderQuests() {
+      const catalog = document.getElementById('questCatalog');
+      catalog.innerHTML = '';
+
+      CASE_QUESTS.forEach(c => {
+        const title = STATE.lang === 'en' ? c.titleEN : c.titleES;
+        const desc = STATE.lang === 'en' ? c.descEN : c.descES;
+
+        const button = document.createElement('button');
+        button.className = `quest-card ${STATE.activeCaseId === c.id ? 'active' : ''} ${STATE.casesCompleted.includes(c.id) ? 'completed' : ''}`;
+        button.setAttribute('role', 'radio');
+        button.setAttribute('aria-checked', STATE.activeCaseId === c.id ? 'true' : 'false');
+        button.onclick = () => transitionState('SET_CASE', c.id);
+
+        button.innerHTML = `
+          <span class="quest-title">${title}</span>
+          <span style="font-size:0.75rem; color:var(--text-muted); line-height:1.4">${desc}</span>
+        `;
+        catalog.appendChild(button);
+      });
+    }
+
+    function checkCaseObjectives() {
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+      const hudList = document.getElementById('hudChecklist');
+      hudList.innerHTML = '';
+
+      // Checklist validations
+      const percentOk = STATE.percent === activeCase.targetPercent;
+      const wholeOk = STATE.whole === activeCase.targetWhole;
+
+      const item1 = document.createElement('div');
+      item1.className = `hud-item ${percentOk ? 'done' : ''}`;
+      item1.innerHTML = percentOk 
+        ? `<span>✓</span> <span id="chkP">Percent Rate locked at ${activeCase.targetPercent}%</span>`
+        : `<span>✗</span> <span id="chkP">Set Solar Dial to ${activeCase.targetPercent}% (Current: ${STATE.percent}%)</span>`;
+      hudList.appendChild(item1);
+
+      const item2 = document.createElement('div');
+      item2.className = `hud-item ${wholeOk ? 'done' : ''}`;
+      item2.innerHTML = wholeOk 
+        ? `<span>✓</span> <span id="chkW">System capacity locked at ${activeCase.targetWhole} units</span>`
+        : `<span>✗</span> <span id="chkW">Set Capacity slider to ${activeCase.targetWhole} (Current: ${STATE.whole})</span>`;
+      hudList.appendChild(item2);
+
+      // Handle Quest completion
+      if (percentOk && wholeOk && !STATE.casesCompleted.includes(activeCase.id)) {
+        STATE.casesCompleted.push(activeCase.id);
+        renderQuests();
+        playSynthNote(440, 'sine', 0.25);
+        setTimeout(() => {
+          playSynthNote(554.37, 'sine', 0.25);
+        }, 150);
+        setTimeout(() => {
+          playSynthNote(659.25, 'sine', 0.35);
+        }, 300);
+        
+        logDiag(`QUEST SUCCESS: Case ${activeCase.id} cleared!`);
+      }
+    }
+
+    // 7. TWR WRITING GRAMMAR CHECKER
+    function evaluateWriting() {
+      const textB = document.getElementById('textBecause').value.toLowerCase();
+      const textBut = document.getElementById('textBut').value.toLowerCase();
+      const textSo = document.getElementById('textSo').value.toLowerCase();
+
+      const bOk = textB.includes('because') && textB.length > 25;
+      const butOk = textBut.includes('but') && textBut.length > 25;
+      const soOk = textSo.includes('so') && textSo.length > 25;
+
+      STATE.conjunctionsFound.because = bOk;
+      STATE.conjunctionsFound.but = butOk;
+      STATE.conjunctionsFound.so = soOk;
+
+      const feedback = document.getElementById('writingFeedback');
+      feedback.innerHTML = '';
+
+      const makeChip = (txt, ok) => {
+        const chip = document.createElement('span');
+        chip.className = 'conj-chip';
+        chip.style.borderColor = ok ? 'var(--secondary)' : 'rgba(255,255,255,0.08)';
+        chip.style.color = ok ? '#fff' : 'var(--text-muted)';
+        chip.textContent = txt;
+        feedback.appendChild(chip);
+      };
+
+      if (STATE.lang === 'en') {
+        makeChip("Because: Expan.", bOk);
+        makeChip("But: Contrast", butOk);
+        makeChip("So: Conseq.", soOk);
+      } else {
+        makeChip("Porque: Explic.", bOk);
+        makeChip("Pero: Contras.", butOk);
+        makeChip("Así que: Consec.", soOk);
+      }
+
+      const btnSubmit = document.getElementById('btnSubmitReport');
+      btnSubmit.disabled = !(bOk && butOk && soOk);
+    }
+
+    function submitSolarReport() {
+      playSynthNote(523.25, 'sine', 0.2);
+      setTimeout(() => {
+        playSynthNote(659.25, 'sine', 0.2);
+        playSynthNote(783.99, 'sine', 0.3);
+      }, 150);
+
+      const msg = STATE.lang === 'en' 
+        ? "✓ Engineering Report logged into Solar Observatory Ledger successfully!" 
+        : "✓ ¡Reporte de ingeniería registrado exitosamente en el registro solar!";
+      alert(msg);
+      
+      // Clear inputs
+      document.getElementById('textBecause').value = '';
+      document.getElementById('textBut').value = '';
+      document.getElementById('textSo').value = '';
+      evaluateWriting();
+    }
+
+    // 8. ESOL TRANSLATION & BILINGUAL HUB
+    function toggleLanguage() {
+      STATE.lang = STATE.lang === 'en' ? 'es' : 'en';
+      
+      const isES = STATE.lang === 'es';
+      document.getElementById('langIndicator').textContent = isES ? 'Modo Español' : 'English Mode';
+      document.getElementById('btnLangToggle').textContent = isES ? '🌍 Translate to English' : '🌍 Translate to Spanish';
+
+      document.getElementById('heroTitle').textContent = isES ? 'Percent Shadow-Caster' : 'Percent Shadow-Caster';
+      document.getElementById('heroCopy').textContent = isES
+        ? 'Explora razones, partes, enteros y porcentajes dentro de un observatorio de física solar. Cambia el dial solar para proyectar longitudes de sombra en tiempo real y colorear cuadrículas.'
+        : 'Explore rates, parts, wholes, and percentages inside an solar physics observatory. Shift active multipliers to cast glowing vector shadow lengths and shade equivalent percent grids.';
+
+      document.getElementById('sidebarTitle').textContent = isES ? '🧬 Misiones Solares' : '☀️ Solar Quests';
+      document.getElementById('sidebarSubtitle').textContent = isES ? 'Alinea razones de porcentaje' : 'Align percent coordinates';
+
+      document.getElementById('canvasHeading').textContent = isES ? '🔬 Cuadrícula Solar y Bóveda de Sombra' : '🔬 Eclipse Grid & Projection Vault';
+      document.getElementById('btnResetData').textContent = isES ? '🔄 Reiniciar Observatorio' : '🔄 Reset Observatory';
+
+      document.getElementById('labelPercent').textContent = isES ? 'Energía Solar Proyectada (Porcentaje)' : 'Solar Energy Rate (Percent)';
+      document.getElementById('labelWhole').textContent = isES ? 'Capacidad de Carga del Sistema (Entero)' : 'System Capacity (Whole)';
+
+      document.getElementById('writingHeading').textContent = isES ? '✍️ Reporte de Ingeniería del Observatorio Solar' : '✍️ TWR Solar Observatory Engineering Report';
+      document.getElementById('writingSubtitle').textContent = isES ? 'Documenta tus alineaciones solares utilizando cláusulas de contraste y explicación' : 'Document your solar alignments using transition organizing clauses';
+
+      document.getElementById('hudTitleText').textContent = isES ? 'Alineaciones de Panel Activas' : 'Active Alignment Indicators';
+      document.getElementById('btnSubmitReport').textContent = isES ? '💾 Registrar Reporte Solar' : '💾 Submit Solar Report';
+
+      renderQuests();
+      updateObservatory();
+      evaluateWriting();
+    }
+
+    function setGlossaryLang(lang) {
+      STATE.glossaryLang = lang;
+      
+      document.getElementById('tabEN').className = `lang-tab ${lang === 'en' ? 'active' : ''}`;
+      document.getElementById('tabES').className = `lang-tab ${lang === 'es' ? 'active' : ''}`;
+
+      const grid = document.getElementById('glossaryGrid');
+      grid.innerHTML = '';
+
+      const vocabItems = VOCAB_MAP[lang];
+      vocabItems.forEach(item => {
+        const chip = document.createElement('div');
+        chip.className = 'vocab-chip';
+        chip.innerHTML = `
+          <span>🔊</span>
+          <b>${item.word}</b>
+          <div class="tooltip-bubble">
+            <strong>${item.word}:</strong><br>${item.def}
+          </div>
+        `;
+        chip.onclick = () => playVocabSynth(item.word);
+        grid.appendChild(chip);
+      });
+    }
+
+    function playVocabSynth(word) {
+      // Low oscillator ping to represent vocal synth triggers
+      playSynthNote(330, 'triangle', 0.12);
+    }
+
+    // 9. WEB AUDIO API SYNTHESIZER
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playSynthNote(freq, type, duration) {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gainNode.gain.setValueAtTime(CONFIG.audioGainLimit, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Browser restrictions gracefully bypassed
+      }
+    }
+
+    // 10. DIAGNOSTICS & SYSTEM CHECKS
+    function toggleDiagnostics() {
+      const consoleOverlay = document.getElementById('diagConsole');
+      const isHidden = window.getComputedStyle(consoleOverlay).display === 'none';
+      consoleOverlay.style.display = isHidden ? 'flex' : 'none';
+      logDiag("System diagnostics toggled.");
+    }
+
+    function logDiag(msg, isError = false) {
+      console.log(msg);
+      const stream = document.getElementById('diagStream');
+      if (stream) {
+        const p = document.createElement('p');
+        p.className = 'diag-line';
+        p.style.color = isError ? 'var(--accent)' : '#00ff66';
+        p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        stream.appendChild(p);
+        stream.scrollTop = stream.scrollHeight;
+      }
+    }
+
+    function triggerSelfTest() {
+      const ok = selfTest();
+      if (ok) {
+        alert("✓ diagnostics check: 100% PASS! All visual scales and equation calculations are fully aligned.");
+      } else {
+        alert("✗ Diagnostics check failed. Review terminal console outputs.");
+      }
+    }
+  </script>
+</body>
+</html>

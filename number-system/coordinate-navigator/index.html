@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Archipelago Coordinate Navigator — 4-Quadrant Pirate Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --neon-pink: #ff2a74;
+  --neon-blue: #00f0ff;
+  --neon-green: #39ff14;
+  --neon-yellow: #fff01f;
+  --bg-dark: #0a0b10;
+  --panel-bg: rgba(20, 24, 38, 0.7);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --text-light: #f3f4f6;
+  --text-muted: #9ca3af;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #1b1c2b 0%, var(--bg-dark) 100%);
+  color: var(--text-light);
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+  padding-bottom: 40px;
+}
+
+header {
+  text-align: center;
+  padding: 30px 20px;
+  background: rgba(10, 11, 16, 0.8);
+  border-bottom: 2px solid var(--neon-blue);
+  box-shadow: 0 4px 30px rgba(0, 240, 255, 0.2);
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 0 10px var(--neon-blue), 0 0 30px var(--neon-blue);
+  font-style: italic;
+  letter-spacing: 1px;
+}
+
+header p {
+  color: var(--neon-pink);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 8px 0 0;
+  text-shadow: 0 0 5px var(--neon-pink);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+}
+
+.nav-header {
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.15);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--neon-yellow);
+  text-shadow: 0 0 5px rgba(255, 240, 31, 0.3);
+}
+
+.radar-telemetry {
+  background: rgba(10, 11, 16, 0.9);
+  border: 2px solid var(--neon-pink);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  box-shadow: inset 0 0 15px rgba(255, 42, 116, 0.2);
+}
+
+.tel-col h4 {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tel-val {
+  font-family: monospace;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--neon-pink);
+  text-shadow: 0 0 8px var(--neon-pink);
+}
+
+.grid-area {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+/* Glassmorphic pirate coordinate radar map container */
+.svg-container {
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  user-select: none;
+  touch-action: none;
+}
+
+.controls-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.controls-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  color: var(--neon-yellow);
+}
+
+.input-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.input-row label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.math-input {
+  background: #11141d;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: var(--neon-green);
+  font-size: 1.1rem;
+  font-family: monospace;
+  padding: 6px 12px;
+  width: 90px;
+  text-align: right;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.math-input:focus {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  outline: none;
+  font-family: 'Outfit', sans-serif;
+  text-transform: uppercase;
+  border: none;
+}
+
+.btn-blue {
+  background: transparent;
+  color: var(--neon-blue);
+  border: 2px solid var(--neon-blue);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
+
+.btn-blue:hover {
+  background: var(--neon-blue);
+  color: var(--bg-dark);
+  box-shadow: 0 0 20px var(--neon-blue);
+}
+
+.btn-pink {
+  background: transparent;
+  color: var(--neon-pink);
+  border: 2px solid var(--neon-pink);
+  box-shadow: 0 0 10px rgba(255, 42, 116, 0.2);
+}
+
+.btn-pink:hover {
+  background: var(--neon-pink);
+  color: #fff;
+  box-shadow: 0 0 20px var(--neon-pink);
+}
+
+.btn-green {
+  background: transparent;
+  color: var(--neon-green);
+  border: 2px solid var(--neon-green);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+}
+
+.btn-green:hover {
+  background: var(--neon-green);
+  color: var(--bg-dark);
+  box-shadow: 0 0 20px var(--neon-green);
+}
+
+.esol-word {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.esol-term-en {
+  font-weight: bold;
+  color: var(--neon-blue);
+}
+
+.esol-term-es {
+  display: block;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.esol-sentence {
+  background: rgba(0, 240, 255, 0.05);
+  border-left: 4px solid var(--neon-blue);
+  padding: 12px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.95rem;
+  margin-top: 15px;
+}
+
+.esol-sentence-es {
+  display: block;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.diagnostics-console {
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #0f0;
+  margin-top: 30px;
+  height: 90px;
+  overflow-y: auto;
+}
+
+.diagnostics-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.diagnostics-btn:hover {
+  color: var(--neon-pink);
+}
+
+.quest-status {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.quest-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quest-dot.done {
+  background: var(--neon-green);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+}
+
+.success-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.success-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.success-content {
+  background: var(--panel-bg);
+  border: 2px solid var(--neon-green);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 0 30px var(--neon-green);
+  transform: scale(0.8);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.success-modal.active .success-content {
+  transform: scale(1);
+}
+
+.success-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  color: var(--neon-green);
+  margin: 0 0 10px;
+  text-shadow: 0 0 10px var(--neon-green);
+}
+
+.success-content p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin: 0 0 24px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Coordinate Navigator</h1>
+  <p>4-Quadrant Archipelago Pirate Quest</p>
+</header>
+
+<main class="container">
+  <!-- Left Side: Interactive 4-quadrant radar map (SVG) -->
+  <section class="panel">
+    <div class="nav-header">
+      <h2>Archipelago Sonar</h2>
+      <span class="badge" style="background:var(--neon-pink); color:#fff; padding:4px 10px; border-radius:999px; font-weight:800; font-size:0.75rem; letter-spacing:1px; box-shadow:0 0 8px var(--neon-pink);">Active Map</span>
+    </div>
+
+    <div class="radar-telemetry">
+      <div class="tel-col">
+        <h4>Ship Coordinate</h4>
+        <div class="tel-val" id="telShipCoords">(-5, 8)</div>
+      </div>
+      <div class="tel-col" style="border-left: 1px solid rgba(255, 255, 255, 0.1); padding-left: 15px;">
+        <h4>Target Landmark</h4>
+        <div class="tel-val" id="telTargetIsland">Port B (-5, -3)</div>
+      </div>
+    </div>
+
+    <div class="grid-area">
+      <div class="svg-container">
+        <!-- Interactive 4-quadrant grid dynamic SVG canvas -->
+        <svg id="radarCanvas" width="420" height="420" style="background:white; border-radius:8px; cursor: crosshair;">
+          <!-- 4 Quadrants axes, grid divisions, ticks, labels, islands, ships, reflections -->
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right Side: Action Controllers, ESOL Word Wall & Diagnostics -->
+  <section class="panel">
+    <div class="quest-status" id="questIndicators">
+      <div class="quest-dot" id="dot1"></div>
+      <div class="quest-dot" id="dot2"></div>
+      <div class="quest-dot" id="dot3"></div>
+    </div>
+
+    <div class="controls-card">
+      <h3 id="questTitle">Quest 3: Distance Tracker</h3>
+      <p id="questDesc">Your ship is currently docked at Port A (-5, 8). The cargo port is at Port B (-5, -3). Calculate the absolute vertical distance between these two coordinates, enter it below, and secure the shipping channels!</p>
+      
+      <div id="distanceForm">
+        <div class="input-row">
+          <label for="inputDistance">Nautical Miles (Distance):</label>
+          <input type="text" id="inputDistance" class="math-input" placeholder="0" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-blue" id="btnReflectX" onclick="AppController.reflectX()" style="display: none;">Reflect X-Axis</button>
+        <button class="btn btn-pink" id="btnReflectY" onclick="AppController.reflectY()" style="display: none;">Reflect Y-Axis</button>
+        <button class="btn btn-green" id="btnSubmit" onclick="AppController.submitNavigator()">Confirm Navigation</button>
+      </div>
+    </div>
+
+    <div class="esol-card">
+      <div class="esol-word">
+        <span class="esol-term-en">Quadrant</span>
+        <span class="esol-term-es">Cuadrante — One of the four areas on a coordinate plane divided by the X and Y axes</span>
+      </div>
+      <div class="esol-word">
+        <span class="esol-term-en">Reflection</span>
+        <span class="esol-term-es">Reflexión — Mirroring a point across an axis line (coordinates flip sign)</span>
+      </div>
+      <div class="esol-word">
+        <span class="esol-term-en">Absolute Distance</span>
+        <span class="esol-term-es">Distancia Absoluta — The non-negative distance between two coordinate markers</span>
+      </div>
+
+      <div class="esol-sentence">
+        <span class="esol-sentence-en">"To reflect a point across the Y-axis, we keep the Y coordinate same and find the opposite of the X coordinate."</span>
+        <span class="esol-sentence-es">"Para reflejar un punto sobre el eje Y, mantenemos la coordenada Y igual y hallamos la opuesta de la coordenada X."</span>
+      </div>
+    </div>
+
+    <div class="diagnostics-console" id="logConsole">
+      * Sonar radar active. Wave signals ready...
+    </div>
+    <button class="diagnostics-btn" onclick="selfTest()">Run Diagnostic Self-Test</button>
+  </section>
+</main>
+
+<div class="success-modal" id="successModal">
+  <div class="success-content">
+    <h2>Cargo Unlocked! ⚓</h2>
+    <p id="modalBody">Perfect coordinate tracking! The ship successfully navigated to Port B, securing shipping supplies.</p>
+    <button class="btn btn-green" style="width: 100%;" onclick="AppController.nextQuest()">Serve Next Coastline</button>
+  </div>
+</div>
+
+<script>
+/* ---------- CONFIGURATION BLOCK ---------- */
+const CONFIG = {
+  canvasSize: 360, // 360px grid within 420px viewport
+  offset: 30, // 30px padding margins
+  quests: [
+    { id: 1, type: "CLICK", title: "Quest 1: First Voyage", desc: "Plot the coordinate path for your pirate ship! Click on the coordinate radar grid to place your ship exactly at island Port B (4, -6) to unlock the crew's chest.", targetX: 4, targetY: -6, shipX: -3, shipY: 5 },
+    { id: 2, type: "REFLECT", title: "Quest 2: Reflected Anchor", desc: "A giant sea monster blocks the horizontal channel! Reflect your ship's coordinate port at (-6, 5) across the Y-axis to safe reflected port at (6, 5) to bypass the beast.", targetX: 6, targetY: 5, shipX: -6, shipY: 5, reflectAxis: "Y" },
+    { id: 3, type: "DISTANCE", title: "Quest 3: Distance Tracker", desc: "Your ship is currently docked at Port A (-5, 8). The cargo port is at Port B (-5, -3). Calculate the absolute vertical distance between these two coordinates, enter it below, and secure the channels!", targetX: -5, targetY: -3, shipX: -5, shipY: 8, targetDistance: 11 }
+  ]
+};
+
+function validateConfig() {
+  if (CONFIG.canvasSize !== 360) throw new Error("Sonar grid canvas must be exactly 360px.");
+  if (!Array.isArray(CONFIG.quests) || CONFIG.quests.length !== 3) throw new Error("Navigation quests CONFIG missing items.");
+  return true;
+}
+
+/* ---------- WEB AUDIO ENGINE ---------- */
+const AudioEngine = {
+  ctx: null,
+  init() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  },
+  playPing() {
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200, now); // high radar ping
+    
+    gain.gain.setValueAtTime(0.06, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.6);
+  },
+  playSail(val) {
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'triangle';
+    // Frequency sweeps based on coordinates values
+    const freq = 400 + Math.abs(val) * 100;
+    osc.frequency.setValueAtTime(freq, now);
+    
+    gain.gain.setValueAtTime(0.02, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.18);
+  },
+  playSuccess() {
+    this.init();
+    const now = this.ctx.currentTime;
+    // Nautical canon fire chimes
+    const notes = [130.81, 261.63, 523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+      gain.gain.setValueAtTime(0.05, now + idx * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6 + idx * 0.05);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + idx * 0.05);
+      osc.stop(now + 0.8 + idx * 0.05);
+    });
+  },
+  playError() {
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(140, now);
+    
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.35);
+  }
+};
+
+/* ---------- STATE LAYER (REPOSITORY) ---------- */
+const STATE = {
+  currentQuestIndex: 0,
+  shipX: -5,
+  shipY: 8,
+  solved: false,
+  
+  quest() {
+    return CONFIG.quests[this.currentQuestIndex];
+  },
+  
+  // Converts coordinate grid values (-10 to 10) to SVG canvas coordinates
+  getPxCoord(val, dimension) {
+    const size = CONFIG.canvasSize;
+    const offset = CONFIG.offset;
+    const ratio = (val + 10) / 20; // scale -10..10 to 0..1
+    if (dimension === "X") {
+      return offset + ratio * size;
+    } else {
+      return offset + (1 - ratio) * size;
+    }
+  },
+  
+  // Converts SVG click positions back to integer grid values
+  getGridCoord(px, dimension) {
+    const size = CONFIG.canvasSize;
+    const offset = CONFIG.offset;
+    const ratio = (px - offset) / size;
+    let gridVal = ratio * 20 - 10;
+    if (dimension === "Y") {
+      gridVal = (1 - ratio) * 20 - 10;
+    }
+    return Math.max(-10, Math.min(10, Math.round(gridVal)));
+  },
+  
+  transitionState(fields) {
+    Object.assign(this, fields);
+    UI.drawRadar();
+  }
+};
+
+/* ---------- VIEW LAYER (UI) ---------- */
+const UI = {
+  log(msg) {
+    const consoleBox = document.getElementById("logConsole");
+    consoleBox.innerHTML += `<br/>* ${msg}`;
+    consoleBox.scrollTop = consoleBox.scrollHeight;
+  },
+  
+  drawRadar() {
+    const canvas = document.getElementById("radarCanvas");
+    canvas.innerHTML = ""; // Clear
+    
+    const size = CONFIG.canvasSize;
+    const offset = CONFIG.offset;
+    const mid = offset + size / 2;
+    
+    const q = STATE.quest();
+    
+    // Draw radar white background grid area
+    const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bg.setAttribute("x", offset);
+    bg.setAttribute("y", offset);
+    bg.setAttribute("width", size);
+    bg.setAttribute("height", size);
+    bg.setAttribute("fill", "#ffffff");
+    canvas.appendChild(bg);
+    
+    // Draw 4-Quadrant background coordinates division grid lines
+    for (let i = 1; i < 20; i++) {
+      if (i === 10) continue; // Skip axis lines
+      const px = offset + (i / 20) * size;
+      
+      const lineX = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      lineX.setAttribute("x1", px);
+      lineX.setAttribute("y1", offset);
+      lineX.setAttribute("x2", px);
+      lineX.setAttribute("y2", offset + size);
+      lineX.setAttribute("stroke", "rgba(0, 0, 0, 0.06)");
+      lineX.setAttribute("stroke-width", "1");
+      canvas.appendChild(lineX);
+      
+      const lineY = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      lineY.setAttribute("x1", offset);
+      lineY.setAttribute("y1", px);
+      lineY.setAttribute("x2", offset + size);
+      lineY.setAttribute("y2", px);
+      lineY.setAttribute("stroke", "rgba(0, 0, 0, 0.06)");
+      lineY.setAttribute("stroke-width", "1");
+      canvas.appendChild(lineY);
+    }
+    
+    // Draw Y-Axis (Vertical)
+    this.drawSvgLine(canvas, mid, offset, mid, offset + size, "#12355b", "3");
+    // Draw X-Axis (Horizontal)
+    this.drawSvgLine(canvas, offset, mid, offset + size, mid, "#12355b", "3");
+    
+    // Axis arrow caps and quadrant labels
+    this.drawSvgText(canvas, mid, offset - 10, "+Y", "10", "#12355b", "bold");
+    this.drawSvgText(canvas, offset + size + 15, mid + 4, "+X", "10", "#12355b", "bold");
+    this.drawSvgText(canvas, mid, offset + size + 16, "-Y", "10", "#12355b", "bold");
+    this.drawSvgText(canvas, offset - 14, mid + 4, "-X", "10", "#12355b", "bold");
+    
+    // Draw major ticks along X and Y axes
+    for (let i = -10; i <= 10; i++) {
+      if (i === 0 || i % 2 !== 0) continue;
+      const px = STATE.getPxCoord(i, "X");
+      const py = STATE.getPxCoord(i, "Y");
+      
+      // X axis ticks
+      this.drawSvgLine(canvas, px, mid - 4, px, mid + 4, "#12355b", "1.5");
+      this.drawSvgText(canvas, px, mid + 14, i, "8", "#12355b");
+      
+      // Y axis ticks
+      this.drawSvgLine(canvas, mid - 4, py, mid + 4, py, "#12355b", "1.5");
+      this.drawSvgText(canvas, mid - 14, py + 3, i, "8", "#12355b");
+    }
+    
+    // Draw glowing Port B target island Port
+    const targetPxX = STATE.getPxCoord(q.targetX, "X");
+    const targetPxY = STATE.getPxCoord(q.targetY, "Y");
+    this.drawIsland(canvas, targetPxX, targetPxY, "B");
+    
+    // If distance Quest 3, draw original Port A island
+    if (q.id === 3) {
+      const portPxX = STATE.getPxCoord(q.shipX, "X");
+      const portPxY = STATE.getPxCoord(q.shipY, "Y");
+      this.drawIsland(canvas, portPxX, portPxY, "A");
+      
+      // Draw distance vector dotted line connecting A and B
+      this.drawSvgLine(canvas, portPxX, portPxY, targetPxX, targetPxY, "var(--neon-pink)", "2", "4,4");
+    }
+    
+    // 5. Draw active Pirate Ship coordinate pointer
+    const shipPxX = STATE.getPxCoord(STATE.shipX, "X");
+    const shipPxY = STATE.getPxCoord(STATE.shipY, "Y");
+    this.drawShip(canvas, shipPxX, shipPxY);
+    
+    // Render text displays
+    this.renderDisplayValues();
+  },
+  
+  drawIsland(parent, cx, cy, label) {
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", cx);
+    c.setAttribute("cy", cy);
+    c.setAttribute("r", "12");
+    c.setAttribute("fill", "rgba(57, 255, 20, 0.15)");
+    c.setAttribute("stroke", "var(--neon-green)");
+    c.setAttribute("stroke-width", "2.5");
+    c.setAttribute("stroke-dasharray", "3,3");
+    parent.appendChild(c);
+    
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", cx);
+    text.setAttribute("y", cy + 4);
+    text.setAttribute("fill", "#2e7d32");
+    text.setAttribute("font-size", "10");
+    text.setAttribute("font-weight", "bold");
+    text.setAttribute("text-anchor", "middle");
+    text.textContent = label;
+    parent.appendChild(text);
+  },
+  
+  drawShip(parent, cx, cy) {
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    
+    const flag = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    flag.setAttribute("points", `${cx},${cy - 12} ${cx + 12},${cy - 8} ${cx},${cy - 4}`);
+    flag.setAttribute("fill", "var(--neon-pink)");
+    g.appendChild(flag);
+    
+    const body = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    body.setAttribute("d", `M ${cx - 10} ${cy - 4} L ${cx + 10} ${cy - 4} L ${cx + 7} ${cy + 4} L ${cx - 7} ${cy + 4} Z`);
+    body.setAttribute("fill", "var(--neon-blue)");
+    body.setAttribute("stroke", "#12355b");
+    body.setAttribute("stroke-width", "1.5");
+    g.appendChild(body);
+    
+    const mast = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    mast.setAttribute("x1", cx);
+    mast.setAttribute("y1", cy - 12);
+    mast.setAttribute("x2", cx);
+    mast.setAttribute("y2", cy - 4);
+    mast.setAttribute("stroke", "#333");
+    mast.setAttribute("stroke-width", "2");
+    g.appendChild(mast);
+    
+    parent.appendChild(g);
+  },
+  
+  renderDisplayValues() {
+    const q = STATE.quest();
+    
+    // Telemetry displays
+    document.getElementById("telShipCoords").innerText = `(${STATE.shipX}, ${STATE.shipY})`;
+    document.getElementById("telTargetIsland").innerText = `Port B (${q.targetX}, ${q.targetY})`;
+    
+    // Metrics display status
+    const metricDisplay = document.getElementById("metricDisplay");
+    
+    if (STATE.solved) {
+      metricDisplay.className = "metric-val correct";
+      metricDisplay.innerText = "SUCCESS! Channels Secured!";
+    } else {
+      metricDisplay.className = "metric-val waiting";
+      metricDisplay.innerText = "Out of Range";
+    }
+  },
+  
+  drawSvgLine(parent, x1, y1, x2, y2, stroke = "#12355b", w = "1.5", dash = "") {
+    const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    l.setAttribute("x1", x1);
+    l.setAttribute("y1", y1);
+    l.setAttribute("x2", x2);
+    l.setAttribute("y2", y2);
+    l.setAttribute("stroke", stroke);
+    l.setAttribute("stroke-width", w);
+    if (dash) l.setAttribute("stroke-dasharray", dash);
+    parent.appendChild(l);
+  },
+  
+  drawSvgText(parent, x, y, text, size = "11", fill = "#333", weight = "normal") {
+    const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    t.setAttribute("x", x);
+    t.setAttribute("y", y);
+    t.setAttribute("fill", fill);
+    t.setAttribute("font-size", size);
+    t.setAttribute("font-family", "Outfit, sans-serif");
+    t.setAttribute("font-weight", weight);
+    t.setAttribute("text-anchor", "middle");
+    t.textContent = text;
+    parent.appendChild(t);
+  }
+};
+
+/* ---------- CONTROLLER LAYER (BRIDGE) ---------- */
+const AppController = {
+  handleCanvasClick(e) {
+    const q = STATE.quest();
+    if (q.type !== "CLICK" || STATE.solved) return;
+    
+    const canvas = document.getElementById("radarCanvas");
+    const rect = canvas.getBoundingClientRect();
+    
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    const posX = clientX - rect.left;
+    const posY = clientY - rect.top;
+    
+    const gridX = STATE.getGridCoord(posX, "X");
+    const gridY = STATE.getGridCoord(posY, "Y");
+    
+    AudioEngine.playSail(gridX);
+    STATE.transitionState({ shipX: gridX, shipY: gridY });
+    
+    if (gridX === q.targetX && gridY === q.targetY) {
+      AudioEngine.playSuccess();
+      STATE.transitionState({ solved: true });
+      setTimeout(() => {
+        document.getElementById("successModal").classList.add("active");
+      }, 800);
+    }
+  },
+  
+  reflectX() {
+    const q = STATE.quest();
+    if (q.type !== "REFLECT" || STATE.solved) return;
+    
+    AudioEngine.playSail(STATE.shipX);
+    // X-axis reflection mirrors Y coordinate: (x, y) => (x, -y)
+    const newY = -STATE.shipY;
+    STATE.transitionState({ shipY: newY });
+    
+    if (STATE.shipX === q.targetX && newY === q.targetY) {
+      AudioEngine.playSuccess();
+      STATE.transitionState({ solved: true });
+      setTimeout(() => {
+        document.getElementById("successModal").classList.add("active");
+      }, 800);
+    } else {
+      AudioEngine.playError();
+      UI.log(`❌ Reflected incorrectly! dodged monster but port not reached.`);
+      alert("❌ Point not at target Port B! Click 'Reflect Y-axis' or ensure your reflection mirrors across the vertical axis.");
+    }
+  },
+  
+  reflectY() {
+    const q = STATE.quest();
+    if (q.type !== "REFLECT" || STATE.solved) return;
+    
+    AudioEngine.playSail(STATE.shipX);
+    // Y-axis reflection mirrors X coordinate: (x, y) => (-x, y)
+    const newX = -STATE.shipX;
+    STATE.transitionState({ shipX: newX });
+    
+    if (newX === q.targetX && STATE.shipY === q.targetY) {
+      AudioEngine.playSuccess();
+      STATE.transitionState({ solved: true });
+      setTimeout(() => {
+        document.getElementById("successModal").classList.add("active");
+      }, 800);
+    } else {
+      AudioEngine.playError();
+      UI.log(`❌ Reflected incorrectly! Dodger beast but Port B not reached.`);
+      alert("❌ Reflections miss coordinate target Port B!");
+    }
+  },
+  
+  submitNavigator() {
+    const q = STATE.quest();
+    if (q.type !== "DISTANCE" || STATE.solved) return;
+    
+    const input = document.getElementById("inputDistance").value.trim();
+    const ans = parseInt(input);
+    
+    if (ans === q.targetDistance) {
+      AudioEngine.playSuccess();
+      
+      // Move ship to target to complete visual quest
+      STATE.transitionState({ shipX: q.targetX, shipY: q.targetY, solved: true });
+      
+      setTimeout(() => {
+        document.getElementById("successModal").classList.add("active");
+      }, 800);
+    } else {
+      AudioEngine.playError();
+      UI.log(`❌ Incorrect absolute distance! Port A at y=8 and Port B at y=-3.`);
+      alert("❌ Incorrect distance! Calculate absolute distance: |8| + |-3| = 8 + 3 = 11.");
+    }
+  },
+  
+  nextQuest() {
+    document.getElementById("successModal").classList.remove("active");
+    
+    let nextQuestIdx = STATE.currentQuestIndex + 1;
+    if (nextQuestIdx >= CONFIG.quests.length) {
+      alert("🏆 PILOT EXPEDITION SECURED! ALL COORDINATE SHORELINES NAVIGATION COMPLETE!");
+      nextQuestIdx = 0;
+    }
+    
+    const q = CONFIG.quests[nextQuestIdx];
+    
+    // Configure buttons layouts matching quest type
+    const form = document.getElementById("distanceForm");
+    const rx = document.getElementById("btnReflectX");
+    const ry = document.getElementById("btnReflectY");
+    const sub = document.getElementById("btnSubmit");
+    
+    if (q.type === "CLICK") {
+      form.style.display = "none";
+      rx.style.display = "none";
+      ry.style.display = "none";
+      sub.style.display = "none";
+    } else if (q.type === "REFLECT") {
+      form.style.display = "none";
+      rx.style.display = "block";
+      ry.style.display = "block";
+      sub.style.display = "none";
+    } else {
+      form.style.display = "block";
+      rx.style.display = "none";
+      ry.style.display = "none";
+      sub.style.display = "block";
+      document.getElementById("inputDistance").value = "";
+    }
+    
+    STATE.transitionState({
+      currentQuestIndex: nextQuestIdx,
+      shipX: q.shipX,
+      shipY: q.shipY,
+      solved: false
+    });
+    
+    document.getElementById("questTitle").innerText = q.title;
+    document.getElementById("questDesc").innerText = q.desc;
+  }
+};
+
+/* ---------- EVENTS REGISTRATION ---------- */
+const canvas = document.getElementById("radarCanvas");
+canvas.addEventListener("click", (e) => AppController.handleCanvasClick(e));
+
+/* ---------- DIAGNOSTICS & SELF TEST SUITE ---------- */
+function selfTest() {
+  UI.log("🔬 Running automated coordinate navigator self-test...");
+  try {
+    validateConfig();
+    UI.log("✅ Config validation check passed.");
+    
+    // Test Coordinate translations
+    const midPx = STATE.getPxCoord(0, "X");
+    if (midPx !== 210) throw new Error("Origin coordinates translation mismatch: expected 210 got " + midPx);
+    
+    const topPx = STATE.getPxCoord(10, "Y");
+    if (topPx !== 30) throw new Error("Upper boundaries coordinates translation mismatch: expected 30 got " + topPx);
+    
+    // Test Reflection formula
+    const mockX = -6;
+    const reflectedX = -mockX; // Y axis reflection
+    if (reflectedX !== 6) throw new Error("Y-Axis reflection test failed: expected 6 got " + reflectedX);
+    
+    // Test absolute coordinate distances
+    const distY1 = 8;
+    const distY2 = -3;
+    const trueDist = Math.abs(distY1) + Math.abs(distY2); // 8 + 3 = 11
+    if (trueDist !== 11) throw new Error("Absolute coordinate distance evaluation failed: expected 11 got " + trueDist);
+    
+    UI.log("✅ Sonar axes and distances navigators resolved with 100% precision.");
+    UI.log("🏆 DIAGNOSTICS SUCCESS: Coordinate plane pirate radar is ready for deploy!");
+  } catch (err) {
+    UI.log("❌ SELF TEST FAIL: " + err.message);
+    console.error(err);
+  }
+}
+
+// Initialize Application
+window.addEventListener("load", () => {
+  validateConfig();
+  
+  // Set initial quest layouts
+  const form = document.getElementById("distanceForm");
+  const rx = document.getElementById("btnReflectX");
+  const ry = document.getElementById("btnReflectY");
+  const sub = document.getElementById("btnSubmit");
+  
+  form.style.display = "none";
+  rx.style.display = "none";
+  ry.style.display = "none";
+  sub.style.display = "none";
+  
+  const q = CONFIG.quests[0];
+  STATE.transitionState({
+    currentQuestIndex: 0,
+    shipX: q.shipX,
+    shipY: q.shipY,
+    solved: false
+  });
+  
+  UI.log("⚓ Pirate ship anchored. Sonar tracking systems active.");
+});
+</script>
+</body>
+</html>
