@@ -51,6 +51,40 @@ function esc(s) {
   return d.innerHTML;
 }
 
+// Derive a SHORT, non-answer-giving scaffold hint for a Level 1 practice item.
+// Prefers an authored item.scaffold/item.hint; otherwise builds a type-aware
+// nudge ("what to look at / what to ask yourself") from the item's shape. It
+// NEVER reveals the choice/index/answer/explanation. Degrades to a generic
+// process cue if the item has no usable fields.
+function deriveScaffold(prob) {
+  if (!prob) return "";
+  if (prob.scaffold) return String(prob.scaffold).trim();
+  if (prob.hint) return String(prob.hint).trim();
+
+  switch (prob.type) {
+    case "multiple-choice":
+      return "Read each choice carefully. Cross out the ones you can rule out first, then check the rest against the question.";
+    case "drag-sort":
+      return "Read each category label first. For every card, ask which label it matches best before you drag it.";
+    case "matching-game":
+    case "matching":
+      return "Start with the pair you are most sure about. Match those first, then use what is left to figure out the rest.";
+    case "number-line":
+      return "Find 0 and the end points first. Count the equal spaces between the marks before you place your point.";
+    case "fill-table":
+      return "Fill in the cells you already know first. Look for the pattern or rule between the rows or columns to find the rest.";
+    case "coordinate-grid":
+    case "coordinate-plane":
+      return "Start at the origin (0, 0). Move across for the x value, then up or down for the y value.";
+    case "open-response":
+      return "Underline what the question is asking. Show your steps and use one number or word from the problem as evidence.";
+    case "error-analysis":
+      return "Read each step and check it against the rule. Find the first step where the work stops being true.";
+    default:
+      return "Re-read the question and underline what it is asking. Plan your first step before you answer.";
+  }
+}
+
 function phaseHeader(el, icon, iconClass, title, desc) {
   const h = document.createElement("div");
   h.className = "section-header";
@@ -115,7 +149,28 @@ function resolveTurnTalk(phase, config) {
               : { en: s.en || "", es: s.es || "" },
           )
         : DEFAULT_TURN_TALK_STEMS;
-    return { phase, question: authored.question, stems };
+    // Surface the richer authored fields so the live lesson mirrors the notes:
+    // a Level 1 "Start here" kernel + word bank, and a Level 2 extend prompt
+    // with stretch stems. `listenFor` is intentionally omitted (teacher-only).
+    const wordBank = Array.isArray(authored.wordBank)
+      ? authored.wordBank.filter(Boolean)
+      : [];
+    const kernel =
+      typeof authored.kernel === "string" ? authored.kernel.trim() : "";
+    const extend =
+      typeof authored.extend === "string" ? authored.extend.trim() : "";
+    const extendStems = Array.isArray(authored.extendStems)
+      ? authored.extendStems.filter(Boolean)
+      : [];
+    return {
+      phase,
+      question: authored.question,
+      stems,
+      kernel,
+      wordBank,
+      extend,
+      extendStems,
+    };
   }
   return defaultTurnTalkPrompt(phase, config);
 }
@@ -145,6 +200,47 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
     )
     .join("");
 
+  // Level 1 (support): a "Start here" kernel + a word-bank chip strip. Both are
+  // optional — older configs without these fields simply render nothing here.
+  const kernelHtml = prompt.kernel
+    ? `<p style="margin:0 0 var(--sp-3); font-weight:600;"><span style="display:inline-block; font-weight:800; color:var(--coral); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
+    : "";
+  const wordBankHtml =
+    Array.isArray(prompt.wordBank) && prompt.wordBank.length
+      ? `<div style="margin:0 0 var(--sp-3);">
+      <span style="font-weight:700; margin-right:var(--sp-2);">Word bank:</span>
+      <span style="display:inline-flex; flex-wrap:wrap; gap:var(--sp-2); vertical-align:middle;">${prompt.wordBank
+        .map((w) => `<span class="badge badge-teal">${esc(w)}</span>`)
+        .join("")}</span>
+    </div>`
+      : "";
+  const supportHtml =
+    kernelHtml || wordBankHtml || stemsHtml
+      ? `<div style="border-left:4px solid var(--teal); padding-left:var(--sp-3); margin:0 0 var(--sp-4);">
+      <span class="badge badge-teal" style="margin-bottom:var(--sp-2);">Level 1 support</span>
+      ${kernelHtml}
+      <p style="font-weight:700; margin:var(--sp-2) 0 var(--sp-2);">Use a sentence starter / <span style="font-style:italic;">Usa un inicio de oración</span>:</p>
+      <ul style="margin:0 0 var(--sp-3); padding:0;">${stemsHtml}</ul>
+      ${wordBankHtml}
+    </div>`
+      : "";
+
+  // Level 2 (enrichment): a deeper "extend" push question + stretch stems.
+  const extendStemsHtml =
+    Array.isArray(prompt.extendStems) && prompt.extendStems.length
+      ? `<ul style="margin:var(--sp-2) 0 0; padding-left:var(--sp-4);">${prompt.extendStems
+          .map((s) => `<li style="margin-bottom:var(--sp-1);">${esc(s)}</li>`)
+          .join("")}</ul>`
+      : "";
+  const extendHtml =
+    prompt.extend || extendStemsHtml
+      ? `<div style="border-left:4px solid var(--amber); padding-left:var(--sp-3); margin:0 0 var(--sp-3);">
+      <span class="badge badge-amber" style="margin-bottom:var(--sp-2);">Level 2</span>
+      ${prompt.extend ? `<p style="font-weight:700; margin:0;">${esc(prompt.extend)}</p>` : ""}
+      ${extendStemsHtml}
+    </div>`
+      : "";
+
   card.innerHTML = `
     <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2);">
       <span style="font-size:1.6rem;" aria-hidden="true">🗣️</span>
@@ -155,8 +251,8 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
       <span class="badge badge-teal">🅰️ Partner A shares first</span>
       <span class="badge badge-amber">🅱️ Partner B goes next</span>
     </div>
-    <p style="font-weight:700; margin:0 0 var(--sp-2);">Use a sentence starter / <span style="font-style:italic;">Usa un inicio de oración</span>:</p>
-    <ul style="margin:0 0 var(--sp-3); padding:0;">${stemsHtml}</ul>
+    ${supportHtml}
+    ${extendHtml}
   `;
 
   // Optional ~60s talk timer (low-friction, fully optional).
@@ -783,12 +879,17 @@ function renderPracticePhase(el, state, ctx, config) {
     counter.textContent = `Problem ${shown} of ${seq.total}`;
     area.append(counter);
 
-    // Level 1 items get an always-visible scaffold hint when provided.
-    if (prob.tier === "level1" && (prob.scaffold || prob.hint)) {
-      const hint = document.createElement("div");
-      hint.className = "feedback feedback-hint visible";
-      hint.innerHTML = `<span class="feedback-icon">💡</span><span>${esc(prob.scaffold || prob.hint)}</span>`;
-      area.append(hint);
+    // Level 1 items get an always-visible scaffold hint. Uses an authored
+    // scaffold/hint when present, otherwise derives a short, type-aware,
+    // non-answer-giving nudge so every support item is scaffolded.
+    if (prob.tier === "level1") {
+      const scaffoldText = deriveScaffold(prob);
+      if (scaffoldText) {
+        const hint = document.createElement("div");
+        hint.className = "feedback feedback-hint visible";
+        hint.innerHTML = `<span class="feedback-icon">💡</span><span>${esc(scaffoldText)}</span>`;
+        area.append(hint);
+      }
     }
 
     renderComponent(area, prob, (isCorrect) => {
