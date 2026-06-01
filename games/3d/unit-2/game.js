@@ -956,9 +956,118 @@ export default {
       }
     }
 
-    // ---- Pointer picking ----------------------------------------------------
+    // ---- Drag-to-build: physically carry a slice/scoop onto the plate -------
+    // Genuine 3D manipulation (like unit-5/unit-10): the student grabs a tool
+    // from the tray and *drags* it onto the glowing drop zone over the plate to
+    // commit. Tapping a tool still works as a fallback (it auto-flies in), so
+    // keyboard players and quick taps are unaffected.
+    //
+    // A wide invisible ground plane lets us raycast the pointer to a world point
+    // every frame while a piece is held. The held mesh follows the pointer; on
+    // release, if it is over the plate drop zone we run the same add/scoop math.
+    const dragPlane = track(
+      new THREE.Mesh(
+        new THREE.PlaneGeometry(60, 60),
+        new THREE.MeshBasicMaterial({ visible: false }),
+      ),
+    );
+    dragPlane.rotation.x = -Math.PI / 2;
+    dragPlane.position.y = 0.62;
+    group.add(dragPlane);
+
+    // Glowing target ring on the plate that lights up while dragging a valid
+    // piece — the "build-to-target" affordance.
+    const dropZone = track(
+      new THREE.Mesh(
+        new THREE.RingGeometry(1.7, 2.9, 40),
+        new THREE.MeshBasicMaterial({
+          color: PALETTE.serve,
+          transparent: true,
+          opacity: 0.0,
+          side: THREE.DoubleSide,
+        }),
+      ),
+    );
+    dropZone.rotation.x = -Math.PI / 2;
+    dropZone.position.set(
+      plate.position.x,
+      plate.position.y + 0.18,
+      plate.position.z,
+    );
+    group.add(dropZone);
+    const DROP_RADIUS = 2.9; // world distance from plate center that counts as "on the plate"
+
+    const drag = { active: false, item: null, home: null, pointerDown: false };
+
+    function planePoint() {
+      const hits = input.raycast(camera, [dragPlane], false);
+      return hits.length ? hits[0].point : null;
+    }
+    function overPlate(p) {
+      if (!p) return false;
+      const dx = p.x - plate.position.x;
+      const dz = p.z - plate.position.z;
+      return Math.hypot(dx, dz) <= DROP_RADIUS;
+    }
+
+    function beginDrag(item) {
+      if (solved || busy || gameOver) return;
+      drag.active = true;
+      drag.item = item;
+      drag.home = item.position.clone();
+      item.userData.dragging = true;
+      if (!reduced) item.scale.setScalar(1.18);
+      feel.sfx("select");
+      announce(
+        "Picked up " +
+          kindName(item.userData.kind) +
+          ". Drag it onto the plate.",
+      );
+    }
+
+    function updateDrag() {
+      if (!drag.active || !drag.item) return;
+      const p = planePoint();
+      if (p) {
+        drag.item.position.set(p.x, drag.home.y + 0.5, p.z);
+        const on = overPlate(p);
+        dropZone.material.opacity = on ? 0.5 : 0.16;
+        if (drag.item.material && drag.item.material.emissive) {
+          drag.item.material.emissiveIntensity = on ? 0.7 : 0.25;
+          drag.item.material.emissive.setHex(on ? PALETTE.serve : 0x111522);
+        }
+      }
+    }
+
+    function endDrag() {
+      if (!drag.active || !drag.item) {
+        dropZone.material.opacity = 0;
+        return;
+      }
+      const item = drag.item;
+      const p = planePoint();
+      const dropped = overPlate(p);
+      // Return the tool to its tray home regardless; the math spawns its own
+      // mesh on the plate (matching the existing tap flow).
+      item.position.copy(drag.home);
+      item.userData.dragging = false;
+      if (!reduced) item.scale.setScalar(1);
+      dropZone.material.opacity = 0;
+      drag.active = false;
+      drag.item = null;
+      drag.home = null;
+      refreshSelection();
+      if (dropped) {
+        activateKind(item.userData.kind);
+      } else {
+        feel.sfx("remove");
+      }
+    }
+
+    // ---- Pointer picking (tap = quick-use; press-drag = carry to plate) -----
     function pointerPick() {
       if (busy) return;
+      drag.pointerDown = true;
       const hits = input.raycast(camera, [...sceneItems, serveBtn], true);
       if (!hits.length) return;
       let obj = hits[0].object;
@@ -974,7 +1083,14 @@ export default {
           selected = idx;
           refreshSelection();
         }
-        activateKind(obj.userData.kind);
+        // "Add"/"Scoop" tools are draggable onto the plate. Remove/put-back are
+        // instant taps (no target to drag to).
+        const k = obj.userData.kind;
+        if (k === "removeSlice" || k === "unscoop") {
+          activateKind(k);
+        } else {
+          beginDrag(obj);
+        }
       }
     }
 
@@ -1033,6 +1149,23 @@ export default {
             }),
           );
           unbinders.push(input.onTap(pointerPick));
+
+          // Pointer-up ends a drag (commit if over the plate, else snap back).
+          // input.js fires pointerup on window but exposes no callback, so we
+          // attach our own tracked listener.
+          const onUp = () => {
+            drag.pointerDown = false;
+            if (drag.active) endDrag();
+          };
+          window.addEventListener("pointerup", onUp);
+          unbinders.push(() => window.removeEventListener("pointerup", onUp));
+
+          // Drive the held piece every frame so it follows the pointer.
+          unbinders.push(
+            onFrame(() => {
+              if (drag.active) updateDrag();
+            }),
+          );
         }
 
         // Clarity / onboarding kit: start overlay, how-to-play, persistent help
@@ -1048,11 +1181,11 @@ export default {
           standard: "6.NS.A.1 · Dividing Fractions & Mixed Numbers",
           controls: [
             {
-              key: "Tap / Click",
+              key: "Drag / Click",
               actionEn:
-                "Tap a tool (Add 1/d, Remove, Scoop) to use it, or tap the green SERVE button to check",
+                "Drag a slice or scoop from the tray onto the glowing plate to add it (or just tap it). Remove / Put-back are instant taps. Tap green SERVE to check",
               actionEs:
-                "Toca una herramienta para usarla, o el botón verde SERVE para revisar",
+                "Arrastra una porción o cucharada del estante al plato brillante (o tócala). Toca SERVE para revisar",
             },
             {
               key: "← / → (or ↑ / ↓)",
@@ -1078,7 +1211,7 @@ export default {
             },
           ],
           howToWinEn:
-            "Make the gold order exactly — build the fraction from slices, or scoop the right number of servings — then Serve. Fill every order to win.",
+            "Make the gold order exactly — drag slices onto the plate to build the fraction, or drag scoops to portion the servings — then Serve. Fill every order to win.",
           howToWinEs:
             "Haz la orden dorada exacta y sirve. Completa todas las órdenes para ganar.",
           onStart: beginGameplay,
