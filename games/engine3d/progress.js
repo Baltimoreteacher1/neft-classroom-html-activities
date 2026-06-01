@@ -1,4 +1,4 @@
-const API_BASE = "https://eduwonderlab.pages.dev/api";
+const API_BASE = "/api";
 const SCORES_URL = `${API_BASE}/scores`;
 const PROGRESS_URL = `${API_BASE}/progress`;
 const QUEUE_KEY = "e3d:syncQueue";

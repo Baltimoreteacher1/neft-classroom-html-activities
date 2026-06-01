@@ -542,9 +542,15 @@ export default {
       feel.sfx("select");
     }
 
-    function adjust(dir) {
+    function adjust(dir, coarse) {
       if (locked) return;
-      const next = round2(value + dir * spec.step);
+      // Two-tier stepping so big targets are reachable fast:
+      //   fine  (Up/Down)  = one dial step (1 for whole numbers, 0.05/0.1 for decimals)
+      //   coarse(Left/Right) = a big jump (10 for whole numbers, 1.0 for decimals)
+      // Without this, decimal answers like 5.75 took 100+ key presses.
+      const coarseStep = spec.step >= 1 ? 10 : 1;
+      const amt = coarse ? coarseStep : spec.step;
+      const next = round2(value + dir * amt);
       const clamped = Math.max(spec.min, Math.min(spec.max, next));
       if (clamped === value) return;
       value = clamped;
@@ -710,8 +716,14 @@ export default {
           startRound();
 
           unbindPress = input.onPress((name) => {
-            if (name === "up" || name === "right") adjust(1);
-            else if (name === "down" || name === "left") adjust(-1);
+            if (name === "up")
+              adjust(1, false); // fine +
+            else if (name === "down")
+              adjust(-1, false); // fine −
+            else if (name === "right")
+              adjust(1, true); // coarse + (big jump)
+            else if (name === "left")
+              adjust(-1, true); // coarse − (big jump)
             else if (name === "action" || name === "confirm") confirm();
           });
 

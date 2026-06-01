@@ -486,29 +486,33 @@ export default {
     }
 
     function updateRatioLive() {
-      const text = `Make ${round.a} red : ${round.b} yellow. You have ${ratioText()}. Then tap Serve.`;
+      const [ba, bb] = simplify(round.a, round.b);
+      // Ratio-table framing: show the recipe and the order's yellow count, but
+      // NOT the red answer — the student works it out from the ratio and builds.
+      const text = `Recipe ${ba} red : ${bb} yellow.  Fill the order — ? red : ${round.b} yellow (keep the same ratio).  You have ${ratioText()}.`;
       hud.setObjective(text);
       if (clarity) clarity.setObjective(text);
     }
 
     function ratioMatches() {
-      const { strawberry: s, banana: b } = counts;
-      if (s === 0 && b === 0) return false;
-      return s * round.b === b * round.a;
+      // The order fixes the yellow count; the student must work out the red
+      // count from the recipe ratio, so the exact batch is required (no giveaway
+      // from accepting any equivalent ratio).
+      return counts.strawberry === round.a && counts.banana === round.b;
     }
 
     function serveRatio() {
       if (solved) return;
       if (!ratioMatches()) {
         const [ta, tb] = simplify(round.a, round.b);
-        hud.message(`Not a match yet. Make it like ${ta} : ${tb}.`, {
-          tone: "warn",
-          duration: 2400,
-        });
+        hud.message(
+          `Not yet — use the recipe ${ta} : ${tb} to find how many red go with ${round.b} yellow.`,
+          { tone: "warn", duration: 2800 },
+        );
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.16);
         announce(
-          `Not a match yet. Add or remove scoops to make ${ta} red to ${tb} yellow.`,
+          `Not a match yet. Keep the recipe ${ta} red to ${tb} yellow, and fill ${round.b} yellow.`,
         );
         return;
       }
@@ -662,22 +666,24 @@ export default {
         buildRate();
         return;
       }
-      const targetTxt =
-        round.baseLabel != null
-          ? `${round.a} : ${round.b}  (${round.baseLabel})`
-          : `${round.a} : ${round.b}`;
-      if (clarity) clarity.setTarget(`${round.a} red : ${round.b} yellow`);
-      setCard(["Order — red : yellow", targetTxt], "#1fa6a2");
+      const [ba, bb] = simplify(round.a, round.b);
+      const recipeTxt = `${ba} : ${bb}`;
+      if (clarity)
+        clarity.setTarget(
+          `recipe ${ba} red : ${bb} yellow · order needs ${round.b} yellow`,
+        );
+      // The 3D card shows the RECIPE rule, not the order's answer.
+      setCard(["Recipe  red : yellow", recipeTxt], "#1fa6a2");
       updateRatioLive();
       announce(
-        `New order: ${round.a} red to ${round.b} yellow. ` +
-          `Add scoops to match, then tap Serve.`,
+        `New order. The recipe is ${ba} red to ${bb} yellow. ` +
+          `Fill the order to use ${round.b} yellow — keep the same ratio, then tap Serve.`,
       );
       if (cfg.hints)
-        hud.message(`Order: ${targetTxt}. Add scoops to match.`, {
-          tone: "info",
-          duration: 3000,
-        });
+        hud.message(
+          `Recipe ${recipeTxt}. Build ${round.b} yellow and the matching red.`,
+          { tone: "info", duration: 3400 },
+        );
     }
 
     // ---- Input --------------------------------------------------------------
