@@ -1,0 +1,592 @@
+/* Hebrew Prayer Practice — warm, friendly, kid-focused styling.
+   Builds on the site palette but with its own softer feel. */
+
+:root {
+  --hp-bg: #fdf8ef;
+  --hp-surface: #ffffff;
+  --hp-ink: #2a2520;
+  --hp-muted: #6b6258;
+  --hp-line: #e7ddcc;
+  --hp-warm: #d97706; /* amber */
+  --hp-warm-dark: #b45309;
+  --hp-teal: #0f766e;
+  --hp-teal-dark: #115e59;
+  --hp-soft: #fff4e3;
+  --hp-good: #15803d;
+  --hp-good-soft: #dcfce7;
+  --hp-practice: #c2410c;
+  --hp-practice-soft: #ffedd5;
+  --hp-new: #6b6258;
+  --hp-new-soft: #f1ece2;
+  --hp-radius: 18px;
+  --hp-shadow: 0 14px 36px rgba(120, 80, 20, 0.12);
+  --hp-font-scale: 1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 12% -5%,
+      rgba(217, 119, 6, 0.12),
+      transparent 40%
+    ),
+    radial-gradient(circle at 95% 0%, rgba(15, 118, 110, 0.1), transparent 38%),
+    var(--hp-bg);
+  color: var(--hp-ink);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+}
+
+.hp-shell {
+  width: min(100% - 28px, 1040px);
+  margin: 0 auto;
+  padding: 26px 0 48px;
+}
+
+a {
+  color: var(--hp-teal-dark);
+}
+
+.hp-breadcrumb {
+  font-size: 0.92rem;
+  color: var(--hp-muted);
+  margin-bottom: 16px;
+}
+.hp-breadcrumb a {
+  font-weight: 700;
+  text-decoration: none;
+}
+.hp-breadcrumb a:hover {
+  text-decoration: underline;
+}
+.hp-breadcrumb span {
+  margin: 0 6px;
+}
+
+/* ---------- Header ---------- */
+.hp-header {
+  background: linear-gradient(135deg, #fff8ee, #fff);
+  border: 1px solid var(--hp-line);
+  border-top: 6px solid var(--hp-warm);
+  border-radius: var(--hp-radius);
+  box-shadow: var(--hp-shadow);
+  padding: clamp(22px, 4vw, 36px);
+  margin-bottom: 22px;
+}
+.hp-eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--hp-warm-dark);
+}
+.hp-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.9rem, 5vw, 2.9rem);
+  line-height: 1.05;
+}
+.hp-header p {
+  margin: 0;
+  color: var(--hp-muted);
+  max-width: 60ch;
+}
+.hp-header .hp-wave {
+  font-size: 1.4em;
+}
+
+/* ---------- Picker ---------- */
+.hp-section-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 14px;
+}
+.hp-section-title h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+.hp-section-title .hp-hint {
+  color: var(--hp-muted);
+  font-size: 0.92rem;
+}
+
+.hp-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.hp-prayer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  padding: 18px;
+  background: var(--hp-surface);
+  border: 1px solid var(--hp-line);
+  border-radius: var(--hp-radius);
+  box-shadow: 0 8px 20px rgba(120, 80, 20, 0.07);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+.hp-prayer-card:hover,
+.hp-prayer-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--hp-warm);
+  box-shadow: 0 14px 30px rgba(120, 80, 20, 0.14);
+  outline: none;
+}
+.hp-prayer-card:focus-visible {
+  outline: 3px solid rgba(217, 119, 6, 0.4);
+  outline-offset: 3px;
+}
+
+.hp-prayer-card .hp-card-he {
+  font-family: "Frank Ruhl Libre", "Times New Roman", "David", serif;
+  font-size: 1.5rem;
+  direction: rtl;
+  text-align: right;
+  color: var(--hp-ink);
+}
+.hp-prayer-card h3 {
+  margin: 0;
+  font-size: 1.12rem;
+}
+.hp-prayer-card .hp-card-sub {
+  margin: 0;
+  color: var(--hp-muted);
+  font-size: 0.86rem;
+}
+
+.hp-status-pill {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.hp-status-new {
+  background: var(--hp-new-soft);
+  color: var(--hp-new);
+}
+.hp-status-practicing {
+  background: var(--hp-practice-soft);
+  color: var(--hp-practice);
+}
+.hp-status-confident {
+  background: var(--hp-good-soft);
+  color: var(--hp-good);
+}
+
+.hp-encourage {
+  margin-top: 18px;
+  padding: 14px 18px;
+  background: var(--hp-soft);
+  border: 1px solid var(--hp-line);
+  border-left: 5px solid var(--hp-warm);
+  border-radius: var(--hp-radius);
+  color: var(--hp-warm-dark);
+  font-weight: 600;
+}
+
+/* ---------- Practice view ---------- */
+.hp-practice {
+  display: none;
+}
+.hp-practice.is-active {
+  display: block;
+}
+.hp-picker.is-hidden {
+  display: none;
+}
+
+.hp-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 14px 16px;
+  background: var(--hp-surface);
+  border: 1px solid var(--hp-line);
+  border-radius: var(--hp-radius);
+  box-shadow: 0 8px 20px rgba(120, 80, 20, 0.06);
+  margin-bottom: 18px;
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+}
+
+.hp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 9px 15px;
+  border-radius: 12px;
+  border: 1px solid var(--hp-line);
+  background: var(--hp-surface);
+  color: var(--hp-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 130ms ease,
+    border-color 130ms ease,
+    transform 100ms ease;
+}
+.hp-btn:hover {
+  border-color: var(--hp-warm);
+}
+.hp-btn:active {
+  transform: scale(0.97);
+}
+.hp-btn:focus-visible {
+  outline: 3px solid rgba(217, 119, 6, 0.4);
+  outline-offset: 2px;
+}
+.hp-btn-primary {
+  background: var(--hp-warm);
+  border-color: var(--hp-warm-dark);
+  color: #fff;
+}
+.hp-btn-primary:hover {
+  background: var(--hp-warm-dark);
+}
+.hp-btn-ghost {
+  background: transparent;
+}
+.hp-btn.is-playing {
+  background: var(--hp-good);
+  border-color: var(--hp-good);
+  color: #fff;
+}
+
+.hp-seg {
+  display: inline-flex;
+  border: 1px solid var(--hp-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.hp-seg button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: none;
+  background: var(--hp-surface);
+  color: var(--hp-muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hp-seg button + button {
+  border-left: 1px solid var(--hp-line);
+}
+.hp-seg button[aria-pressed="true"] {
+  background: var(--hp-teal);
+  color: #fff;
+}
+.hp-seg button:focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.4);
+  outline-offset: -3px;
+}
+
+.hp-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: var(--hp-muted);
+  font-weight: 700;
+}
+.hp-control input[type="range"] {
+  width: 110px;
+  accent-color: var(--hp-warm);
+}
+
+.hp-toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.hp-practice-title {
+  margin: 0 0 4px;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+.hp-practice-sub {
+  margin: 0 0 14px;
+  color: var(--hp-muted);
+}
+
+.hp-note {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 12px;
+  color: #92400e;
+  font-size: 0.92rem;
+}
+
+/* ---------- Lines ---------- */
+.hp-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hp-line {
+  padding: 14px 16px;
+  background: var(--hp-surface);
+  border: 1px solid var(--hp-line);
+  border-radius: 14px;
+  cursor: pointer;
+  transition:
+    background 130ms ease,
+    border-color 130ms ease,
+    box-shadow 130ms ease;
+}
+.hp-line:hover {
+  border-color: var(--hp-warm);
+}
+.hp-line:focus-visible {
+  outline: 3px solid rgba(217, 119, 6, 0.4);
+  outline-offset: 2px;
+}
+.hp-line.is-reading {
+  background: var(--hp-soft);
+  border-color: var(--hp-warm);
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.25);
+}
+
+.hp-line-he {
+  direction: rtl;
+  text-align: right;
+  font-family: "Frank Ruhl Libre", "Times New Roman", "David", serif;
+  font-size: calc(2rem * var(--hp-font-scale));
+  line-height: 1.7;
+  color: var(--hp-ink);
+}
+.hp-line-tr {
+  font-size: calc(1.15rem * var(--hp-font-scale));
+  font-weight: 600;
+  color: var(--hp-teal-dark);
+  margin-top: 4px;
+}
+.hp-line-en {
+  font-size: calc(0.98rem * var(--hp-font-scale));
+  color: var(--hp-muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* reading-mode visibility */
+.hp-lines[data-mode="tr"] .hp-line-he {
+  display: none;
+}
+.hp-lines[data-mode="he"] .hp-line-tr {
+  display: none;
+}
+
+/* tappable Hebrew words */
+.hp-word {
+  display: inline-block;
+  padding: 0 2px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+.hp-word:hover,
+.hp-word:focus-visible {
+  background: var(--hp-warm);
+  color: #fff;
+  outline: none;
+}
+
+/* enlarged word popover */
+.hp-word-pop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(42, 37, 32, 0.55);
+  z-index: 50;
+}
+.hp-word-pop.is-open {
+  display: grid;
+}
+.hp-word-pop .hp-word-pop-inner {
+  background: var(--hp-surface);
+  border-radius: 22px;
+  padding: clamp(26px, 6vw, 54px);
+  box-shadow: var(--hp-shadow);
+  text-align: center;
+  max-width: 90vw;
+}
+.hp-word-pop .hp-pop-he {
+  direction: rtl;
+  font-family: "Frank Ruhl Libre", "Times New Roman", serif;
+  font-size: clamp(3.5rem, 16vw, 8rem);
+  line-height: 1.2;
+  color: var(--hp-ink);
+}
+.hp-word-pop .hp-pop-hint {
+  margin-top: 14px;
+  color: var(--hp-muted);
+}
+
+/* ---------- Step (one line at a time) mode ---------- */
+.hp-step {
+  display: none;
+}
+.hp-step.is-active {
+  display: block;
+}
+.hp-lines-wrap.is-hidden {
+  display: none;
+}
+
+.hp-progress {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--hp-new-soft);
+  overflow: hidden;
+  margin: 6px 0 18px;
+}
+.hp-progress-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--hp-warm), var(--hp-good));
+  border-radius: 999px;
+  transition: width 250ms ease;
+}
+.hp-progress-label {
+  font-size: 0.86rem;
+  color: var(--hp-muted);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.hp-step-card {
+  padding: clamp(24px, 6vw, 48px);
+  background: var(--hp-surface);
+  border: 1px solid var(--hp-line);
+  border-radius: 22px;
+  box-shadow: var(--hp-shadow);
+  text-align: center;
+}
+.hp-step-card .hp-line-he {
+  text-align: center;
+  direction: rtl;
+  font-size: calc(3rem * var(--hp-font-scale));
+}
+.hp-step-card .hp-line-tr {
+  font-size: calc(1.5rem * var(--hp-font-scale));
+}
+.hp-step-card .hp-line-en {
+  font-size: calc(1.1rem * var(--hp-font-scale));
+}
+.hp-step-card[data-mode="tr"] .hp-line-he {
+  display: none;
+}
+.hp-step-card[data-mode="he"] .hp-line-tr {
+  display: none;
+}
+
+.hp-step-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 22px;
+}
+.hp-step-done {
+  text-align: center;
+  padding: clamp(28px, 7vw, 56px);
+  background: var(--hp-good-soft);
+  border: 1px solid #86efac;
+  border-radius: 22px;
+}
+.hp-step-done h3 {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+  color: var(--hp-good);
+}
+.hp-step-done p {
+  margin: 0 0 16px;
+  color: #166534;
+}
+
+.hp-confidence-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.hp-confidence-set .hp-btn {
+  flex: 1 1 140px;
+}
+
+.hp-voice-warn {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 12px;
+  color: #92400e;
+  font-size: 0.88rem;
+  display: none;
+}
+.hp-voice-warn.is-shown {
+  display: block;
+}
+
+.hp-footer {
+  margin-top: 36px;
+  text-align: center;
+  color: var(--hp-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 560px) {
+  .hp-toolbar {
+    position: static;
+  }
+  .hp-control input[type="range"] {
+    width: 84px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
