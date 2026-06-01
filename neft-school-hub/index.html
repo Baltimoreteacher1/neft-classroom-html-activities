@@ -2982,16 +2982,27 @@
     <div class="card"><div class="card-title"><div><h3>Tasks and Follow-Through</h3><p>Designed for IEP prep, attendance follow-up, testing logistics, data tasks, family contact, and meetings.</p></div><button class="btn primary" onclick="openModal('task')">+ Add Task</button></div><div class="filters">${filters.map((f) => `<button class="filter ${state.taskFilter === f ? "active" : ""}" onclick="state.taskFilter='${f}';renderTasks();">${f === "all" ? "All" : f}</button>`).join("")}</div>${taskTable(arr)}</div>`;
       }
       function taskTable(arr) {
-        return `<div class="table-wrap"><table><thead><tr><th>Task</th><th>Owner</th><th>Team</th><th>Category</th><th>Due</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead><tbody>${arr.map((t) => `<tr><td><strong>${esc(t.title)}</strong><br/><span class="item-meta">${esc(t.details)}</span></td><td>${esc(t.owner)}</td><td>${esc(t.team)}</td><td>${esc(t.category)}</td><td>${esc(t.due)}</td><td>${priorityTag(t.priority)}</td><td><span class="tag ${statusClass(t.status)}">${esc(t.status)}</span></td><td><button class="btn small" onclick="advanceTask(${t.id})">Advance</button></td></tr>`).join("") || `<tr><td colspan="8">${empty("No tasks match the current filters.")}</td></tr>`}</tbody></table></div>`;
+        return `<div class="table-wrap"><table><thead><tr><th>Task</th><th>Owner</th><th>Team</th><th>Category</th><th>Due</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead><tbody>${arr.map((t) => `<tr><td><strong>${esc(t.title)}</strong><br/><span class="item-meta">${esc(t.details)}</span></td><td>${esc(t.owner)}</td><td>${esc(t.team)}</td><td>${esc(t.category)}</td><td>${esc(t.due)}</td><td>${priorityTag(t.priority)}</td><td><span class="tag ${statusClass(t.status)}">${esc(t.status)}</span></td><td><button class="btn small" onclick="advanceTask(${JSON.stringify(String(t.id))})">Advance</button> <button class="btn small" onclick="deleteTask(${JSON.stringify(String(t.id))})">Delete</button></td></tr>`).join("") || `<tr><td colspan="8">${empty("No tasks match the current filters.")}</td></tr>`}</tbody></table></div>`;
       }
       function advanceTask(id) {
-        const t = tasks.find((x) => x.id === id);
+        const t = tasks.find((x) => String(x.id) === String(id));
         if (!t) return;
         const order = ["Not Started", "In Progress", "Waiting", "Done"];
         const idx = order.indexOf(t.status);
         t.status = order[Math.min(order.length - 1, idx + 1)] || "In Progress";
         renderAll();
         toast("Task status advanced.");
+        if (window.__nshApiPatch)
+          window.__nshApiPatch("tasks", t, { status: t.status });
+      }
+      function deleteTask(id) {
+        const i = tasks.findIndex((x) => String(x.id) === String(id));
+        if (i < 0) return;
+        const removed = tasks.splice(i, 1)[0];
+        renderAll();
+        toast("Task deleted.");
+        if (window.__nshApiDelete)
+          window.__nshApiDelete("tasks", removed && removed.id);
       }
 
       function renderTeams() {
@@ -3213,7 +3224,18 @@
             '<span class="pill teal">Queue-based</span><span class="pill blue">Assignable</span>',
           ) +
           `
-    <div class="card"><div class="card-title"><div><h3>Request Queue</h3><p>Turns random asks into trackable work.</p></div><button class="btn primary" onclick="openModal('request')">+ New Request</button></div><div class="filters">${filters.map((f) => `<button class="filter ${state.requestFilter === f ? "active" : ""}" onclick="state.requestFilter='${f}';renderRequests();">${f === "all" ? "All" : f}</button>`).join("")}</div><div class="grid grid-2">${arr.map((r) => `<div class="item"><div class="item-head"><div><div class="item-title">${esc(r.type)}</div><div class="item-meta">From: ${esc(r.from)} · Owner: ${esc(r.owner)} · Due: ${esc(r.due)}</div></div><span class="tag ${statusClass(r.status)}">${esc(r.status)}</span></div><div class="item-body">${esc(r.details)}</div></div>`).join("")}</div></div>`;
+    <div class="card"><div class="card-title"><div><h3>Request Queue</h3><p>Turns random asks into trackable work.</p></div><button class="btn primary" onclick="openModal('request')">+ New Request</button></div><div class="filters">${filters.map((f) => `<button class="filter ${state.requestFilter === f ? "active" : ""}" onclick="state.requestFilter='${f}';renderRequests();">${f === "all" ? "All" : f}</button>`).join("")}</div><div class="grid grid-2">${arr.map((r) => `<div class="item"><div class="item-head"><div><div class="item-title">${esc(r.type)}</div><div class="item-meta">From: ${esc(r.from)} · Owner: ${esc(r.owner)} · Due: ${esc(r.due)}</div></div><span class="tag ${statusClass(r.status)}">${esc(r.status)}</span></div><div class="item-body">${esc(r.details)}</div><div style="margin-top:10px"><button class="btn small" onclick="advanceRequest(${JSON.stringify(String(r.id))})">Advance Status</button></div></div>`).join("")}</div></div>`;
+      }
+      function advanceRequest(id) {
+        const r = requests.find((x) => String(x.id) === String(id));
+        if (!r) return;
+        const order = ["Pending", "In Progress", "Waiting", "Done"];
+        const idx = order.indexOf(r.status);
+        r.status = order[Math.min(order.length - 1, idx + 1)] || "In Progress";
+        renderAll();
+        toast("Request status advanced.");
+        if (window.__nshApiPatch)
+          window.__nshApiPatch("requests", r, { status: r.status });
       }
 
       function renderAdmin() {
@@ -3962,11 +3984,33 @@
               coll
             ][0];
             apiReq("POST", "/api/" + coll, toApi(coll, item))
-              .then(() => toast("Saved to server."))
+              .then((row) => {
+                // Adopt the server-assigned id so later PATCH/DELETE target
+                // the real row instead of the local Date.now() placeholder.
+                if (row && row.id != null) item.id = row.id;
+                toast("Saved to server.");
+              })
               .catch((e) => toast("Server save failed: " + e.message));
           }
         };
       });
+      // write-through helpers for UPDATE / DELETE of existing items.
+      function apiPatch(coll, item, fields) {
+        if (!USE_API || !item || item.id == null) return;
+        apiReq(
+          "PATCH",
+          "/api/" + coll + "/" + item.id,
+          toApi(coll, fields),
+        ).catch((e) => toast("Server update failed: " + e.message));
+      }
+      function apiDelete(coll, id) {
+        if (!USE_API || id == null) return;
+        apiReq("DELETE", "/api/" + coll + "/" + id).catch((e) =>
+          toast("Server delete failed: " + e.message),
+        );
+      }
+      window.__nshApiPatch = apiPatch;
+      window.__nshApiDelete = apiDelete;
       const _sendMessage = window.sendMessage;
       window.sendMessage = function (team) {
         _sendMessage(team);
@@ -3998,6 +4042,98 @@
           <button class="btn ${USE_API ? "" : "primary"}" onclick="nshToggleApi(true)">Use Live API</button>
           <button class="btn ${USE_API ? "primary" : ""}" onclick="nshToggleApi(false)">Use Local</button></div>`;
         host.appendChild(card);
+
+        // School/member management — only in API mode + admin role.
+        if (USE_API && ADMIN_ROLES.includes(state.role)) {
+          const admin = document.createElement("div");
+          admin.innerHTML = `<br/><div class="card"><div class="card-title"><div><h3>School Management</h3><p>Create schools, invite staff, and manage roles via the live backend.</p></div><span class="ent-flag">Admin · Live API</span></div>
+            <div class="form-grid" style="margin-bottom:14px">
+              <div class="field"><label>New school slug</label><input id="nsh_t_id" placeholder="harbor-view"/></div>
+              <div class="field"><label>New school name</label><input id="nsh_t_name" placeholder="Harbor View Middle School"/></div>
+              <div class="full"><button class="btn primary" onclick="nshCreateTenant()">Create School</button></div>
+            </div>
+            <div class="form-grid" style="margin-bottom:14px">
+              <div class="field"><label>Invite email</label><input id="nsh_inv_email" placeholder="teacher@school.org"/></div>
+              <div class="field"><label>Role</label><select id="nsh_inv_role">${["principal", "ap", "gradechair", "teacher", "sped", "office"].map((r) => `<option value="${r}">${r}</option>`).join("")}</select></div>
+              <div class="full"><button class="btn primary" onclick="nshInvite()">Invite to Current School</button></div>
+            </div>
+            <h4 style="margin:6px 0">Members in current school</h4>
+            <div id="nsh_members" class="table-wrap"><p style="font-size:13px;color:var(--muted)">Loading…</p></div></div>`;
+          host.appendChild(admin);
+          nshLoadMembers();
+        }
+      };
+
+      // ── Admin console API calls (TASK 4) ──────────────────────────────────
+      async function nshLoadMembers() {
+        const host = document.getElementById("nsh_members");
+        if (!host) return;
+        try {
+          const data = await apiReq("GET", "/api/admin/users");
+          const rows = (data && data.users) || [];
+          const roles = [
+            "principal",
+            "ap",
+            "gradechair",
+            "teacher",
+            "sped",
+            "office",
+          ];
+          host.innerHTML = rows.length
+            ? `<table><thead><tr><th>Email</th><th>Name</th><th>Role</th><th>Action</th></tr></thead><tbody>${rows
+                .map(
+                  (u) =>
+                    `<tr><td>${esc(u.email)}</td><td>${esc(u.name || "")}</td><td><select onchange="nshSetRole(${JSON.stringify(String(u.id))}, this.value)">${roles.map((r) => `<option value="${r}" ${u.role === r ? "selected" : ""}>${r}</option>`).join("")}</select></td><td><button class="btn small" onclick="nshRemoveMember(${JSON.stringify(String(u.id))})">Remove</button></td></tr>`,
+                )
+                .join("")}</tbody></table>`
+            : `<p style="font-size:13px;color:var(--muted)">No members yet.</p>`;
+        } catch (e) {
+          host.innerHTML = `<p style="font-size:13px;color:var(--muted)">Failed to load members: ${esc(e.message)}</p>`;
+        }
+      }
+      window.nshCreateTenant = async function () {
+        const id = (document.getElementById("nsh_t_id")?.value || "").trim();
+        const name = (
+          document.getElementById("nsh_t_name")?.value || ""
+        ).trim();
+        if (!id || !name) return toast("Slug and name are required.");
+        try {
+          await apiReq("POST", "/api/admin/tenants", { id, name });
+          toast("School created: " + name);
+        } catch (e) {
+          toast("Create failed: " + e.message);
+        }
+      };
+      window.nshInvite = async function () {
+        const email = (
+          document.getElementById("nsh_inv_email")?.value || ""
+        ).trim();
+        const role = document.getElementById("nsh_inv_role")?.value;
+        if (!email) return toast("Email is required.");
+        try {
+          await apiReq("POST", "/api/admin/invite", { email, role });
+          toast("Invited " + email);
+          nshLoadMembers();
+        } catch (e) {
+          toast("Invite failed: " + e.message);
+        }
+      };
+      window.nshSetRole = async function (userId, role) {
+        try {
+          await apiReq("PATCH", "/api/admin/members/" + userId, { role });
+          toast("Role updated.");
+        } catch (e) {
+          toast("Role change failed: " + e.message);
+        }
+      };
+      window.nshRemoveMember = async function (userId) {
+        try {
+          await apiReq("DELETE", "/api/admin/members/" + userId);
+          toast("Member removed.");
+          nshLoadMembers();
+        } catch (e) {
+          toast("Remove failed: " + e.message);
+        }
       };
 
       // boot
