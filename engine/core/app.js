@@ -15,12 +15,48 @@ export function createApp(config) {
     if (config.lessonId) bits.push("Lesson " + config.lessonId);
     document.title = bits.join(" · ") + " — Neft Teacher";
   }
+  // SEO meta (the static lesson shell has no description/canonical).
+  injectSeoMeta(config);
   if (config.theme) {
     document.documentElement.setAttribute("data-theme", config.theme);
     root.setAttribute("data-theme", config.theme);
   }
 
   showIdentityScreen(root, config);
+}
+
+function injectSeoMeta(config) {
+  if (typeof document === "undefined" || !document.head) return;
+
+  // Build a sensible description: prefer the lesson's content objective.
+  const description =
+    config.contentObjective ||
+    `${config.title} — Grade 6 Reveal Math (${config.standard}), Unit ${config.unit}.`;
+  upsertMetaName("description", description);
+
+  if (config.lessonId) {
+    upsertLinkRel("canonical", `/lessons/${config.lessonId}/`);
+  }
+}
+
+function upsertMetaName(name, content) {
+  let el = document.head.querySelector(`meta[name="${name}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute("name", name);
+    document.head.append(el);
+  }
+  el.setAttribute("content", content);
+}
+
+function upsertLinkRel(rel, href) {
+  let el = document.head.querySelector(`link[rel="${rel}"]`);
+  if (!el) {
+    el = document.createElement("link");
+    el.setAttribute("rel", rel);
+    document.head.append(el);
+  }
+  el.setAttribute("href", href);
 }
 
 function showIdentityScreen(root, config) {
