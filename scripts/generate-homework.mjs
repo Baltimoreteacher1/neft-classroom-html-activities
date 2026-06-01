@@ -10,6 +10,7 @@ import {
   Packer,
   Paragraph,
   TextRun,
+  ImageRun,
   HeadingLevel,
   AlignmentType,
   PageBreak,
@@ -19,12 +20,52 @@ import {
   WidthType,
   BorderStyle,
 } from "docx";
+import { Resvg } from "@resvg/resvg-js";
+import { resolveVocabImage } from "../engine/core/vocab-images.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const lessonsDir = join(root, "lessons");
 
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+// Rasterize a vocab term's SVG illustration to a PNG buffer so it embeds in
+// Word natively (no SVG-fallback quirks). Memoized per source file. Returns
+// { data, width, height } sized for a tidy ~110px-wide figure, or null if the
+// asset is missing — callers degrade gracefully (text only) rather than crash.
+// Ported from scripts/generate-docx.mjs (notes packets) so homework packets
+// show the same visual vocabulary (picture + word + meaning).
+const _vocabPngCache = new Map();
+function vocabPng(term) {
+  const webPath = resolveVocabImage(term); // e.g. "/assets/vocab-images/triangle.svg"
+  if (_vocabPngCache.has(webPath)) return _vocabPngCache.get(webPath);
+  let out = null;
+  try {
+    const file = join(root, webPath.replace(/^\//, ""));
+    if (existsSync(file)) {
+      // Strip <title>/<desc> before rasterizing: some assets embed raw "<"/">"
+      // in their accessible title (fine for browsers, rejected by resvg's
+      // strict XML parser). They aren't needed for rendering.
+      const svg = readFileSync(file, "utf8")
+        .replace(/<title[\s\S]*?<\/title>/gi, "")
+        .replace(/<desc[\s\S]*?<\/desc>/gi, "");
+      const r = new Resvg(svg, { fitTo: { mode: "width", value: 320 } });
+      const png = r.render();
+      const buf = png.asPng();
+      const display = 110; // points-ish width in the doc
+      const scale = display / png.width;
+      out = {
+        data: buf,
+        width: Math.round(png.width * scale),
+        height: Math.round(png.height * scale),
+      };
+    }
+  } catch {
+    out = null;
+  }
+  _vocabPngCache.set(webPath, out);
+  return out;
+}
 
 // ---------- config loading ----------
 function lessonConfigs() {
@@ -416,15 +457,34 @@ function buildDoc(id, config) {
     }
   }
 
-  // Key Words
+  // Key Words — picture first (when available), then the word + plain meaning,
+  // mirroring the visual-vocabulary house pattern used in the notes packets.
   const vocab = Array.isArray(config.vocabulary) ? config.vocabulary : [];
   if (vocab.length) {
     children.push(sectionHeading("Key Words"));
     vocab.forEach((v) => {
+      const pic = vocabPng(v.term);
+      if (pic) {
+        children.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 80, after: 20 },
+            keepNext: true,
+            children: [
+              new ImageRun({
+                type: "png",
+                data: pic.data,
+                transformation: { width: pic.width, height: pic.height },
+              }),
+            ],
+          }),
+        );
+      }
       const es = v.termEs ? ` (${v.termEs})` : "";
       children.push(
         new Paragraph({
-          spacing: { after: 60 },
+          spacing: { after: pic ? 120 : 60 },
+          keepNext: !!pic,
           children: [
             new TextRun({ text: `${v.term}${es}`, bold: true }),
             new TextRun({ text: ` — ${v.definition || ""}` }),
