@@ -41,6 +41,41 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-bullets li,.prompt-list li{margin:5px 0;}
 .think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
 .think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
@@ -156,6 +191,22 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
   header.packet{border-bottom:2px solid #000;}
   .section>h2{border-left:4px solid #000;}
   .example{border-left:3px solid #000;}
@@ -264,14 +315,46 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="section notes">
   <h2>Key Ideas &amp; Notes</h2>
-  <ul class="notes-bullets"><li>Your class is building a pyramid-shaped display to showcase the time capsule at the school entrance.</li><li>The pyramid will be covered in gold leaf to make it shine.</li><li>To figure out how much gold leaf you need, you must calculate the total surface area — the base plus all the triangular faces!</li><li>Calculate the surface area of each pyramid display. SA = Base Area + Lateral Area. For each triangular face, use A = ½ × base × slant height.</li></ul>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can find the surface area of a pyramid by adding the base area and the lateral faces.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">Your class is building a pyramid-shaped display to showcase the time capsule at the school entrance.</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can find the surface area of a pyramid by adding the base area and the lateral faces.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Pyramid</span><span class="notes-word-chip">Slant height</span><span class="notes-word-chip">Lateral face</span><span class="notes-word-chip">Base</span><span class="notes-word-chip">Apex</span><span class="notes-word-chip">Lateral area</span></div>
+    </div></div>
   <div class="think-block">
-    <h3>Think About It</h3>
+    <h3>🤔 Think About It</h3>
     <ul class="prompt-list"><li>How many faces does a square pyramid have?</li><li>What shape is the base? What shape are the side faces?</li><li>What is the difference between the height of the pyramid and the slant height?</li></ul>
   </div>
-  <div class="my-notes">
-    <h3>My Notes</h3>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  <div class="notes-gradual">
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 Watch</span>
+      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
+      <div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We try</span>
+      <p class="notes-gr-cue">Solve the next one together as a class.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You try</span>
+      <p class="notes-gr-cue">Now try one on your own.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
   </div>
 </section>
   <section class="section turn-and-talk">
@@ -283,7 +366,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Surface area of a pyramid is the base area plus the areas of all the triangular lateral faces.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">I need the area of the ___ plus the areas of the ___ triangular faces.</span><span class="twr-es">Necesito el área de la ___ más las áreas de las ___ caras triangulares.</span></p><p class="twr-frame"><span class="twr-en">The surface area is the ___ area plus the ___ faces.</span><span class="twr-es">El área de superficie es el área de la ___ más las caras ___.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;pyramid&quot; or &quot;base&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">I need the area of the ___ plus the areas of the ___ triangular faces.</span><span class="twr-es">Necesito el área de la ___ más las áreas de las ___ caras triangulares.</span></p><p class="twr-frame"><span class="twr-en">The surface area is the ___ area plus the ___ faces.</span><span class="twr-es">El área de superficie es el área de la ___ más las caras ___.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">pyramid</span><span class="tt-word">base</span><span class="tt-word">lateral face</span><span class="tt-word">slant height</span><span class="tt-word">surface area</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students explain a square pyramid's surface area = base area + the four triangular lateral faces, and that you add every face together.</p>
   </div>
@@ -299,7 +389,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Add the base area to four times the area of one triangular face (½ × base × slant height).</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">The base area is ___ × ___ = ___, and one triangular face is ½ × 6 × 8 = ___.</span><span class="twr-es">El área de la base es ___ × ___ = ___, y una cara triangular es ½ × 6 × 8 = ___.</span></p><p class="twr-frame"><span class="twr-en">The total surface area is the base plus 4 × ___ = ___ in².</span><span class="twr-es">El área total de superficie es la base más 4 × ___ = ___ in².</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;pyramid&quot; or &quot;base&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">The base area is ___ × ___ = ___, and one triangular face is ½ × 6 × 8 = ___.</span><span class="twr-es">El área de la base es ___ × ___ = ___, y una cara triangular es ½ × 6 × 8 = ___.</span></p><p class="twr-frame"><span class="twr-en">The total surface area is the base plus 4 × ___ = ___ in².</span><span class="twr-es">El área total de superficie es la base más 4 × ___ = ___ in².</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">pyramid</span><span class="tt-word">base</span><span class="tt-word">lateral face</span><span class="tt-word">slant height</span><span class="tt-word">surface area</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students compute base = 36 in², one face = 24 in², four faces = 96 in², total SA = 132 in², distinguishing base from lateral faces.</p>
   </div>
@@ -315,7 +412,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Find one triangular face area, multiply by 4, and skip the base since it is open.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">Each triangular face has area ½ × ___ × ___ = ___ ft².</span><span class="twr-es">Cada cara triangular tiene área ½ × ___ × ___ = ___ ft².</span></p><p class="twr-frame"><span class="twr-en">Four faces need ___ ft² of glass, and the base needs ___ because it is open.</span><span class="twr-es">Cuatro caras necesitan ___ ft² de vidrio, y la base necesita ___ porque está abierta.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;pyramid&quot; or &quot;base&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">Each triangular face has area ½ × ___ × ___ = ___ ft².</span><span class="twr-es">Cada cara triangular tiene área ½ × ___ × ___ = ___ ft².</span></p><p class="twr-frame"><span class="twr-en">Four faces need ___ ft² of glass, and the base needs ___ because it is open.</span><span class="twr-es">Cuatro caras necesitan ___ ft² de vidrio, y la base necesita ___ porque está abierta.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">pyramid</span><span class="tt-word">base</span><span class="tt-word">lateral face</span><span class="tt-word">slant height</span><span class="tt-word">surface area</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students compute one face = ½ × 3 × 4 = 6 ft², four faces = 24 ft², and explain the open base is not counted, so only the lateral area matters.</p>
   </div>
@@ -331,7 +435,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> They left out the base area, which must be added to the lateral faces for total surface area.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">They forgot to add the ___ area to the triangular faces.</span><span class="twr-es">Olvidaron sumar el área de la ___ a las caras triangulares.</span></p><p class="twr-frame"><span class="twr-en">The correct total surface area is the base plus the ___ lateral faces.</span><span class="twr-es">El área de superficie total correcta es la base más las ___ caras laterales.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;pyramid&quot; or &quot;base&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">They forgot to add the ___ area to the triangular faces.</span><span class="twr-es">Olvidaron sumar el área de la ___ a las caras triangulares.</span></p><p class="twr-frame"><span class="twr-en">The correct total surface area is the base plus the ___ lateral faces.</span><span class="twr-es">El área de superficie total correcta es la base más las ___ caras laterales.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">pyramid</span><span class="tt-word">base</span><span class="tt-word">lateral face</span><span class="tt-word">slant height</span><span class="tt-word">surface area</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students identify the missing base area and state that total surface area = base area + all lateral (triangular) faces.</p>
   </div>

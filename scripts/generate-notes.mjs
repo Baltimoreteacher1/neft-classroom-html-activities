@@ -88,41 +88,126 @@ ${cards}
 </section>`;
 }
 
-function notesSection(launch = {}, explore = {}) {
-  const bullets = [];
-  if (launch.narrative) {
-    launch.narrative
-      .split(/(?<=[.!?])\s+/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .slice(0, 4)
-      .forEach((s) => bullets.push(s));
-  }
-  if (explore.instructions) bullets.push(explore.instructions.trim());
+// Key Ideas & Notes — the guided-notes block. Rebuilt as an easier, more
+// visual, scaffolded sheet: a plain-language "what we're learning" line, then
+// color-coded numbered steps (Notice → Key idea → Words I'll use) and a guided
+// "Watch → We try → You try" mini-frame with blank work lines. Everything is
+// grounded in existing config fields; no math facts are invented.
+function notesSection(cfg = {}) {
+  const launch = cfg.launch || {};
+  const explore = cfg.explore || {};
 
+  // Plain-language "what we're learning today" — prefer the content objective,
+  // fall back to the language objective, then the lesson theme/title.
+  const learningRaw =
+    cfg.contentObjective ||
+    cfg.languageObjective ||
+    (cfg.title ? `We are learning about ${cfg.title}.` : "");
+  const learningHtml = learningRaw
+    ? `<div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">${esc(learningRaw)}</p>
+      </div>
+    </div>`
+    : "";
+
+  // 1️⃣ Notice — the first thing to look at, from the launch story / notice prompt.
+  const noticeText =
+    (launch.narrative
+      ? launch.narrative
+          .split(/(?<=[.!?])\s+/)
+          .map((s) => s.trim())
+          .filter(Boolean)[0]
+      : "") ||
+    (Array.isArray(launch.noticePrompts) ? launch.noticePrompts[0] : "") ||
+    "Look closely at the problem before you start.";
+
+  // 2️⃣ Key idea — the lesson's content objective stated as the big idea.
+  const keyIdeaText =
+    cfg.contentObjective ||
+    (explore.instructions ? explore.instructions.trim() : "") ||
+    "Write the main math idea in your own words.";
+
+  const stepCard = (num, icon, title, body) =>
+    `<div class="notes-step notes-step-${num}">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">${icon}</span>
+        <h4 class="notes-step-title">${esc(title)}</h4></div>
+      ${body}
+    </div>`;
+
+  const steps = [
+    stepCard(
+      1,
+      "1️⃣",
+      "Notice",
+      `<p class="notes-step-text">${esc(noticeText)}</p>`,
+    ),
+    stepCard(
+      2,
+      "2️⃣",
+      "Key idea",
+      `<p class="notes-step-text">${esc(keyIdeaText)}</p>`,
+    ),
+  ];
+
+  // 3️⃣ Words I'll use — chip strip of the lesson's vocabulary terms.
+  const vocabTerms = Array.isArray(cfg.vocabulary)
+    ? cfg.vocabulary.map((v) => v && v.term).filter(Boolean)
+    : [];
+  if (vocabTerms.length) {
+    const chips = vocabTerms
+      .map((t) => `<span class="notes-word-chip">${esc(t)}</span>`)
+      .join("");
+    steps.push(
+      stepCard(
+        3,
+        "3️⃣",
+        "Words I'll use",
+        `<div class="notes-word-chips">${chips}</div>`,
+      ),
+    );
+  }
+
+  const stepsHtml = `<div class="notes-steps">${steps.join("")}</div>`;
+
+  // "Think About It" prompts — kept, but presented as a friendly question strip.
   const noticeWonder = []
     .concat(launch.noticePrompts || [], launch.wonderPrompts || [])
     .slice(0, 3);
-
-  const bulletHtml = bullets.length
-    ? `<ul class="notes-bullets">${bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>`
-    : "";
-
   const promptHtml = noticeWonder.length
     ? `<div class="think-block">
-    <h3>Think About It</h3>
+    <h3>🤔 Think About It</h3>
     <ul class="prompt-list">${noticeWonder.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
   </div>`
     : "";
 
+  // Guided "Watch → We try → You try" mini-frame with blank work lines.
+  const gradualHtml = `<div class="notes-gradual">
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 Watch</span>
+      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
+      ${blankLines(1)}
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We try</span>
+      <p class="notes-gr-cue">Solve the next one together as a class.</p>
+      ${blankLines(2)}
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You try</span>
+      <p class="notes-gr-cue">Now try one on your own.</p>
+      ${blankLines(2)}
+    </div>
+  </div>`;
+
   return `<section class="section notes">
   <h2>Key Ideas &amp; Notes</h2>
-  ${bulletHtml}
+  ${learningHtml}
+  ${stepsHtml}
   ${promptHtml}
-  <div class="my-notes">
-    <h3>My Notes</h3>
-    ${blankLines(5)}
-  </div>
+  ${gradualHtml}
 </section>`;
 }
 
@@ -139,6 +224,28 @@ function ttBilingual(stem) {
   return `<p class="twr-frame"><span class="twr-en">${esc(en)}</span>${
     es ? `<span class="twr-es">${esc(es)}</span>` : ""
   }</p>`;
+}
+
+// Derive a SHORT strategy hint for a Turn & Talk item. Uses an explicit
+// item.hint when present; otherwise builds a non-answer-giving nudge (what to
+// look at / what to ask yourself / which word-bank term to try). NEVER uses
+// item.listenFor and NEVER states the answer.
+function deriveTtHint(item) {
+  if (item.hint) return String(item.hint).trim();
+  const parts = [];
+  const wb = Array.isArray(item.wordBank) ? item.wordBank.filter(Boolean) : [];
+  if (wb.length) {
+    const picks = wb.slice(0, 2).join('" or "');
+    parts.push(`Try starting with the word "${picks}".`);
+  }
+  // Turn the question into a self-check prompt without revealing the answer.
+  if (item.question) {
+    parts.push("Re-read the question and underline what it is asking you to compare or find.");
+  } else {
+    parts.push("Ask yourself: what does the math show, and how do I know?");
+  }
+  parts.push("Use one number or word from the problem as your evidence.");
+  return parts.join(" ");
 }
 
 function turnAndTalkCard(item) {
@@ -158,7 +265,20 @@ function turnAndTalkCard(item) {
   const stems = Array.isArray(item.stems)
     ? item.stems.map((s) => ttBilingual(s)).filter(Boolean).join("")
     : "";
-  const stemsHtml = stems ? `<div class="tt-stems">${stems}</div>` : "";
+  const stemsHtml = stems
+    ? `<div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      ${stems}
+    </div>`
+    : "";
+  // Optional collapsible strategy hint — never reveals the answer.
+  const hintText = deriveTtHint(item);
+  const hintHtml = hintText
+    ? `<details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">${esc(hintText)}</p>
+    </details>`
+    : "";
   const wordBank = Array.isArray(item.wordBank)
     ? item.wordBank.filter(Boolean)
     : [];
@@ -170,7 +290,7 @@ function turnAndTalkCard(item) {
   const listenFor = item.listenFor
     ? `<p class="tt-listen"><span class="tt-mini-label">Listen for:</span> ${esc(item.listenFor)}</p>`
     : "";
-  const supportInner = [kernel, stemsHtml, wordBankHtml, listenFor]
+  const supportInner = [kernel, hintHtml, stemsHtml, wordBankHtml, listenFor]
     .filter(Boolean)
     .join("\n    ");
   const support = supportInner
@@ -553,6 +673,41 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-bullets li,.prompt-list li{margin:5px 0;}
 .think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
 .think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
@@ -668,6 +823,22 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
   header.packet{border-bottom:2px solid #000;}
   .section>h2{border-left:4px solid #000;}
   .example{border-left:3px solid #000;}
@@ -747,7 +918,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   </header>
   ${missionBanner(cfg)}
   ${vocabSection(cfg.vocabulary)}
-  ${notesSection(cfg.launch, cfg.explore)}
+  ${notesSection(cfg)}
   ${turnAndTalkSection(cfg)}
   ${examplesSection(cfg.practice)}
   ${twrSection(cfg)}

@@ -41,6 +41,41 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-bullets li,.prompt-list li{margin:5px 0;}
 .think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
 .think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
@@ -156,6 +191,22 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
   header.packet{border-bottom:2px solid #000;}
   .section>h2{border-left:4px solid #000;}
   .example{border-left:3px solid #000;}
@@ -264,14 +315,46 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="section notes">
   <h2>Key Ideas &amp; Notes</h2>
-  <ul class="notes-bullets"><li>Captain Vega left a treasure map, but instead of an 'X marks the spot,' she hid the directions as ordered pairs!</li><li>To find the treasure, you need to plot each point on the coordinate plane and connect them in order.</li><li>The first clue says: Start at (2, 1), then go to (5, 4), then (8, 1).</li><li>Plot Captain Vega's treasure map points and connect them to reveal the path!</li></ul>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can plot and identify points on the coordinate plane using ordered pairs.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">Captain Vega left a treasure map, but instead of an 'X marks the spot,' she hid the directions as ordered pairs!</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can plot and identify points on the coordinate plane using ordered pairs.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Coordinate plane</span><span class="notes-word-chip">Ordered pair</span><span class="notes-word-chip">Origin</span><span class="notes-word-chip">Quadrant</span><span class="notes-word-chip">Reflection</span><span class="notes-word-chip">Integer</span></div>
+    </div></div>
   <div class="think-block">
-    <h3>Think About It</h3>
+    <h3>🤔 Think About It</h3>
     <ul class="prompt-list"><li>What shape will the three points make when connected?</li><li>Which number tells you how far right/left? Which tells you up/down?</li><li>Why is the ORDER in an ordered pair important?</li></ul>
   </div>
-  <div class="my-notes">
-    <h3>My Notes</h3>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  <div class="notes-gradual">
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 Watch</span>
+      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
+      <div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We try</span>
+      <p class="notes-gr-cue">Solve the next one together as a class.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You try</span>
+      <p class="notes-gr-cue">Now try one on your own.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
   </div>
 </section>
   <section class="section turn-and-talk">
@@ -283,7 +366,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> We start at the origin and move along the x-axis first because ___.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">The first number in (x, y) tells me to move ___.</span><span class="twr-es">El primer numero en (x, y) me dice que me mueva ___.</span></p><p class="twr-frame"><span class="twr-en">The second number tells me to move ___.</span><span class="twr-es">El segundo numero me dice que me mueva ___.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;coordinate plane&quot; or &quot;origin&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">The first number in (x, y) tells me to move ___.</span><span class="twr-es">El primer numero en (x, y) me dice que me mueva ___.</span></p><p class="twr-frame"><span class="twr-en">The second number tells me to move ___.</span><span class="twr-es">El segundo numero me dice que me mueva ___.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">coordinate plane</span><span class="tt-word">origin</span><span class="tt-word">ordered pair</span><span class="tt-word">x-axis</span><span class="tt-word">y-axis</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Student states the x-coordinate is the sideways (horizontal) move and the y-coordinate is the up/down (vertical) move, both starting from the origin.</p>
   </div>
@@ -299,7 +389,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Starting at the origin, I first move ___, then I move ___.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">I move ___ units along the x-axis.</span><span class="twr-es">Me muevo ___ unidades por el eje x.</span></p><p class="twr-frame"><span class="twr-en">Then I move ___ units along the y-axis.</span><span class="twr-es">Luego me muevo ___ unidades por el eje y.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;origin&quot; or &quot;ordered pair&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">I move ___ units along the x-axis.</span><span class="twr-es">Me muevo ___ unidades por el eje x.</span></p><p class="twr-frame"><span class="twr-en">Then I move ___ units along the y-axis.</span><span class="twr-es">Luego me muevo ___ unidades por el eje y.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">origin</span><span class="tt-word">ordered pair</span><span class="tt-word">x-axis</span><span class="tt-word">y-axis</span><span class="tt-word">coordinate plane</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Student moves 4 right along the x-axis and 2 up along the y-axis, naming each axis and the origin as the start.</p>
   </div>
@@ -315,7 +412,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> An ordered pair works like map directions because ___.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">The x-coordinate is like going ___.</span><span class="twr-es">La coordenada x es como ir ___.</span></p><p class="twr-frame"><span class="twr-en">The y-coordinate is like going ___.</span><span class="twr-es">La coordenada y es como ir ___.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;ordered pair&quot; or &quot;coordinate plane&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">The x-coordinate is like going ___.</span><span class="twr-es">La coordenada x es como ir ___.</span></p><p class="twr-frame"><span class="twr-en">The y-coordinate is like going ___.</span><span class="twr-es">La coordenada y es como ir ___.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">ordered pair</span><span class="tt-word">coordinate plane</span><span class="tt-word">x-axis</span><span class="tt-word">y-axis</span><span class="tt-word">origin</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Student connects the x-value to horizontal travel and the y-value to vertical travel, like map or grid directions from a starting point.</p>
   </div>
@@ -331,7 +435,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> The mistake was ___, and to fix it they should ___.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">They mixed up the ___ and the ___.</span><span class="twr-es">Confundieron la ___ y la ___.</span></p><p class="twr-frame"><span class="twr-en">The correct way is to move ___ first.</span><span class="twr-es">La forma correcta es moverse ___ primero.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;ordered pair&quot; or &quot;x-axis&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">They mixed up the ___ and the ___.</span><span class="twr-es">Confundieron la ___ y la ___.</span></p><p class="twr-frame"><span class="twr-en">The correct way is to move ___ first.</span><span class="twr-es">La forma correcta es moverse ___ primero.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">ordered pair</span><span class="tt-word">x-axis</span><span class="tt-word">y-axis</span><span class="tt-word">origin</span><span class="tt-word">coordinate plane</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Student identifies that the x- and y-coordinates were swapped and explains the correct order (x first, then y).</p>
   </div>

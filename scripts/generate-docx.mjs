@@ -178,6 +178,26 @@ function twrParas(config) {
 // phase + question, a Level 1 (support) block (kernel, bilingual stems, word
 // bank, listen-for note), and a Level 2 push question with stems. Defensive
 // about every optional field so older configs still render.
+// Derive a SHORT strategy hint (mirrors generate-notes.mjs). Uses an explicit
+// item.hint when present; otherwise a non-answer-giving nudge. NEVER uses
+// item.listenFor and NEVER states the answer.
+function deriveTtHint(item) {
+  if (item.hint) return String(item.hint).trim();
+  const parts = [];
+  const wb = Array.isArray(item.wordBank) ? item.wordBank.filter(Boolean) : [];
+  if (wb.length) {
+    const picks = wb.slice(0, 2).join('" or "');
+    parts.push(`Try starting with the word "${picks}".`);
+  }
+  if (item.question) {
+    parts.push("Re-read the question and underline what it is asking you to compare or find.");
+  } else {
+    parts.push("Ask yourself: what does the math show, and how do I know?");
+  }
+  parts.push("Use one number or word from the problem as your evidence.");
+  return parts.join(" ");
+}
+
 function turnAndTalkParas(config) {
   const items = Array.isArray(config.turnAndTalk) ? config.turnAndTalk : [];
   if (!items.length) return [];
@@ -207,7 +227,22 @@ function turnAndTalkParas(config) {
         ]),
       );
     }
+    // Optional strategy hint — never reveals the answer.
+    const hintText = deriveTtHint(it);
+    if (hintText) {
+      out.push(
+        para([
+          new TextRun({ text: "Hint (optional): ", bold: true, color: TEAL, size: 20 }),
+          new TextRun({ text: hintText, size: 20 }),
+        ]),
+      );
+    }
     const stems = Array.isArray(it.stems) ? it.stems : [];
+    if (stems.some((s) => (typeof s === "string" ? s : s && s.en))) {
+      out.push(
+        para(new TextRun({ text: "Sentence starters (optional)", bold: true, color: NAVY, size: 19 })),
+      );
+    }
     for (const s of stems) {
       const en = typeof s === "string" ? s : s && s.en;
       const es = typeof s === "object" && s ? s.es : "";

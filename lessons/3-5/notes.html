@@ -41,6 +41,41 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-bullets li,.prompt-list li{margin:5px 0;}
 .think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
 .think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
@@ -156,6 +191,22 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
   header.packet{border-bottom:2px solid #000;}
   .section>h2{border-left:4px solid #000;}
   .example{border-left:3px solid #000;}
@@ -256,14 +307,46 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="section notes">
   <h2>Key Ideas &amp; Notes</h2>
-  <ul class="notes-bullets"><li>Chef Academy is holding a Flavor Challenge!</li><li>Chef Reyes's hot cocoa recipe uses 3 tablespoons of cocoa for every 5 ounces of milk.</li><li>Chef Tran's recipe uses 4 tablespoons of cocoa for every 7 ounces of milk.</li><li>The students need to figure out whose hot cocoa is more chocolatey.</li><li>Build equivalent ratios for each chef's recipe so you can compare them fairly. Chef Reyes: 3 tbsp cocoa per 5 oz milk. Chef Tran: 4 tbsp cocoa per 7 oz milk.</li></ul>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can compare ratios by finding unit rates or using equivalent ratios.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">Chef Academy is holding a Flavor Challenge!</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can compare ratios by finding unit rates or using equivalent ratios.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Unit rate</span><span class="notes-word-chip">Equivalent ratio</span><span class="notes-word-chip">Compare</span><span class="notes-word-chip">Simplify</span><span class="notes-word-chip">Common denominator</span></div>
+    </div></div>
   <div class="think-block">
-    <h3>Think About It</h3>
+    <h3>🤔 Think About It</h3>
     <ul class="prompt-list"><li>What quantities are being compared in each recipe?</li><li>Can you tell just by looking which recipe has more cocoa per ounce?</li><li>What would make the comparison fair?</li></ul>
   </div>
-  <div class="my-notes">
-    <h3>My Notes</h3>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  <div class="notes-gradual">
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 Watch</span>
+      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
+      <div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We try</span>
+      <p class="notes-gr-cue">Solve the next one together as a class.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You try</span>
+      <p class="notes-gr-cue">Now try one on your own.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
   </div>
 </section>
   <section class="section turn-and-talk">
@@ -275,7 +358,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> You can't compare fairly until the ratios share the same amount of milk or you find cocoa per 1 oz.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">You ___ tell just by looking because the ___ amounts are different.</span><span class="twr-es">___ se puede saber solo mirando porque las cantidades de ___ son diferentes.</span></p><p class="twr-frame"><span class="twr-en">To compare fairly we need the same ___ or the cocoa per ___.</span><span class="twr-es">Para comparar de forma justa necesitamos la misma ___ o el cacao por ___.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;ratio&quot; or &quot;compare&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">You ___ tell just by looking because the ___ amounts are different.</span><span class="twr-es">___ se puede saber solo mirando porque las cantidades de ___ son diferentes.</span></p><p class="twr-frame"><span class="twr-en">To compare fairly we need the same ___ or the cocoa per ___.</span><span class="twr-es">Para comparar de forma justa necesitamos la misma ___ o el cacao por ___.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">ratio</span><span class="tt-word">compare</span><span class="tt-word">unit rate</span><span class="tt-word">equivalent ratio</span><span class="tt-word">fair</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students recognize that 3:5 and 4:7 have different milk amounts, so a fair comparison needs equal milk (a common amount) or a unit rate (cocoa per 1 oz).</p>
   </div>
@@ -291,7 +381,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> When both ratios share 35 oz of milk, you only have to compare the cocoa amounts.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">After scaling to 35 oz, Chef Reyes has ___ tbsp and Chef Tran has ___ tbsp.</span><span class="twr-es">Después de escalar a 35 oz, Chef Reyes tiene ___ cucharadas y Chef Tran tiene ___ cucharadas.</span></p><p class="twr-frame"><span class="twr-en">Now I can compare because the ___ is the same, so I just compare the ___.</span><span class="twr-es">Ahora puedo comparar porque la ___ es igual, así que solo comparo el ___.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;equivalent ratio&quot; or &quot;common denominator&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">After scaling to 35 oz, Chef Reyes has ___ tbsp and Chef Tran has ___ tbsp.</span><span class="twr-es">Después de escalar a 35 oz, Chef Reyes tiene ___ cucharadas y Chef Tran tiene ___ cucharadas.</span></p><p class="twr-frame"><span class="twr-en">Now I can compare because the ___ is the same, so I just compare the ___.</span><span class="twr-es">Ahora puedo comparar porque la ___ es igual, así que solo comparo el ___.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">equivalent ratio</span><span class="tt-word">common denominator</span><span class="tt-word">compare</span><span class="tt-word">simplify</span><span class="tt-word">milk</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students explain that equal milk (35 oz) makes the comparison fair, so 21 tbsp &gt; 20 tbsp means Chef Reyes is more chocolatey.</p>
   </div>
@@ -307,7 +404,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Find the unit rate (price per 1 pizza) for each shop, then compare those rates.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">Mario's costs ___ per pizza because 18 divided by 2 equals ___.</span><span class="twr-es">Mario's cuesta ___ por pizza porque 18 entre 2 es ___.</span></p><p class="twr-frame"><span class="twr-en">The better deal is ___ because its ___ is lower.</span><span class="twr-es">La mejor oferta es ___ porque su ___ es más baja.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;unit rate&quot; or &quot;compare&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">Mario's costs ___ per pizza because 18 divided by 2 equals ___.</span><span class="twr-es">Mario's cuesta ___ por pizza porque 18 entre 2 es ___.</span></p><p class="twr-frame"><span class="twr-en">The better deal is ___ because its ___ is lower.</span><span class="twr-es">La mejor oferta es ___ porque su ___ es más baja.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">unit rate</span><span class="tt-word">compare</span><span class="tt-word">ratio</span><span class="tt-word">better deal</span><span class="tt-word">per</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students compute $9.00/pizza for Mario's and about $8.33/pizza for Sal's, then choose Sal's because the lower unit rate is the better deal.</p>
   </div>

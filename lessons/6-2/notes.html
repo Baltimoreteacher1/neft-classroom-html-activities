@@ -41,6 +41,41 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-bullets li,.prompt-list li{margin:5px 0;}
 .think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
 .think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
@@ -156,6 +191,22 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
   header.packet{border-bottom:2px solid #000;}
   .section>h2{border-left:4px solid #000;}
   .example{border-left:3px solid #000;}
@@ -264,14 +315,46 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="section notes">
   <h2>Key Ideas &amp; Notes</h2>
-  <ul class="notes-bullets"><li>You're a music producer setting up a concert.</li><li>The total cost of the event is given by the expression 150 + 12s, where s is the number of speakers rented.</li><li>The venue charges $150 as a base fee, plus $12 for each speaker.</li><li>How much will it cost for different numbers of speakers?</li><li>Evaluate the expression 150 + 12s for each number of speakers.</li></ul>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can evaluate algebraic expressions by substituting values for the variables.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">You're a music producer setting up a concert.</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can evaluate algebraic expressions by substituting values for the variables.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Variable</span><span class="notes-word-chip">Expression</span><span class="notes-word-chip">Evaluate</span><span class="notes-word-chip">Substitute</span><span class="notes-word-chip">Coefficient</span><span class="notes-word-chip">Like terms</span></div>
+    </div></div>
   <div class="think-block">
-    <h3>Think About It</h3>
+    <h3>🤔 Think About It</h3>
     <ul class="prompt-list"><li>What does the 150 represent in the expression?</li><li>What does the 12s represent?</li><li>What happens to the total cost as s gets bigger?</li></ul>
   </div>
-  <div class="my-notes">
-    <h3>My Notes</h3>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  <div class="notes-gradual">
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 Watch</span>
+      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
+      <div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We try</span>
+      <p class="notes-gr-cue">Solve the next one together as a class.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You try</span>
+      <p class="notes-gr-cue">Now try one on your own.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
   </div>
 </section>
   <section class="section turn-and-talk">
@@ -283,7 +366,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Substitute the number of speakers for s, then evaluate.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">I substitute s = 5 into 150 + 12s to get ___.</span><span class="twr-es">Sustituyo s = 5 en 150 + 12s para obtener ___.</span></p><p class="twr-frame"><span class="twr-en">One expression works for any show because s ___.</span><span class="twr-es">Una expresión sirve para cualquier concierto porque s ___.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;Variable&quot; or &quot;Expression&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">I substitute s = 5 into 150 + 12s to get ___.</span><span class="twr-es">Sustituyo s = 5 en 150 + 12s para obtener ___.</span></p><p class="twr-frame"><span class="twr-en">One expression works for any show because s ___.</span><span class="twr-es">Una expresión sirve para cualquier concierto porque s ___.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">Variable</span><span class="tt-word">Expression</span><span class="tt-word">Evaluate</span><span class="tt-word">Substitute</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students substitute s = 5 (150 + 12 × 5 = 210), explain 150 is the fixed venue fee and 12 is the cost per speaker, and note s can be any number.</p>
   </div>
@@ -299,7 +389,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Follow order of operations: substitute, then exponents, then multiply, then add.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">First I substitute, then I do ___ because of the order of operations.</span><span class="twr-es">Primero sustituyo, luego hago ___ por el orden de las operaciones.</span></p><p class="twr-frame"><span class="twr-en">I must square before multiplying because ___.</span><span class="twr-es">Debo elevar al cuadrado antes de multiplicar porque ___.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;Evaluate&quot; or &quot;Substitute&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">First I substitute, then I do ___ because of the order of operations.</span><span class="twr-es">Primero sustituyo, luego hago ___ por el orden de las operaciones.</span></p><p class="twr-frame"><span class="twr-en">I must square before multiplying because ___.</span><span class="twr-es">Debo elevar al cuadrado antes de multiplicar porque ___.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">Evaluate</span><span class="tt-word">Substitute</span><span class="tt-word">Expression</span><span class="tt-word">Variable</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> A strong answer substitutes the value first, then applies the exponent before multiplying (e.g., 4 × 2² = 4 × 4 = 16, not (4 × 2)² ), citing order of operations.</p>
   </div>
@@ -315,7 +412,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Substitute m = 8 and evaluate to get the total fare.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">I substitute m = 8: 2.50 + 1.75 × ___ = ___.</span><span class="twr-es">Sustituyo m = 8: 2.50 + 1.75 × ___ = ___.</span></p><p class="twr-frame"><span class="twr-en">The 2.50 is the ___ and the 1.75 is the ___.</span><span class="twr-es">El 2.50 es la ___ y el 1.75 es la ___.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;Substitute&quot; or &quot;Variable&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">I substitute m = 8: 2.50 + 1.75 × ___ = ___.</span><span class="twr-es">Sustituyo m = 8: 2.50 + 1.75 × ___ = ___.</span></p><p class="twr-frame"><span class="twr-en">The 2.50 is the ___ and the 1.75 is the ___.</span><span class="twr-es">El 2.50 es la ___ y el 1.75 es la ___.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">Substitute</span><span class="tt-word">Variable</span><span class="tt-word">Evaluate</span><span class="tt-word">Expression</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students evaluate 2.50 + 1.75 × 8 = 16.50 and identify 2.50 as the base fee and 1.75 as the per-mile rate.</p>
   </div>

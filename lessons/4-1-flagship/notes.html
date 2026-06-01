@@ -41,6 +41,41 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-bullets li,.prompt-list li{margin:5px 0;}
 .think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
 .think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
@@ -156,6 +191,22 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
   header.packet{border-bottom:2px solid #000;}
   .section>h2{border-left:4px solid #000;}
   .example{border-left:3px solid #000;}
@@ -268,14 +319,46 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="section notes">
   <h2>Key Ideas &amp; Notes</h2>
-  <ul class="notes-bullets"><li>You're comparing ticket prices at different game booths in the arcade.</li><li>Booth A charges $3 for 5 games, and Booth B charges $5 for 8 games.</li><li>Which booth gives you a better deal?</li><li>To find out, you need to figure out the cost per game — that's the unit rate!</li><li>Calculate the unit rate (cost per game) for each arcade booth. Divide the total cost by the number of games.</li></ul>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">I can find a unit rate to compare prices and decide the better buy.</p>
+      </div>
+    </div>
+  <div class="notes-steps"><div class="notes-step notes-step-1">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">1️⃣</span>
+        <h4 class="notes-step-title">Notice</h4></div>
+      <p class="notes-step-text">You're comparing ticket prices at different game booths in the arcade.</p>
+    </div><div class="notes-step notes-step-2">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">2️⃣</span>
+        <h4 class="notes-step-title">Key idea</h4></div>
+      <p class="notes-step-text">I can find a unit rate to compare prices and decide the better buy.</p>
+    </div><div class="notes-step notes-step-3">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">3️⃣</span>
+        <h4 class="notes-step-title">Words I'll use</h4></div>
+      <div class="notes-word-chips"><span class="notes-word-chip">Rate</span><span class="notes-word-chip">Unit Rate</span><span class="notes-word-chip">Per</span><span class="notes-word-chip">Ratio</span><span class="notes-word-chip">Better Buy</span><span class="notes-word-chip">Divide</span></div>
+    </div></div>
   <div class="think-block">
-    <h3>Think About It</h3>
+    <h3>🤔 Think About It</h3>
     <ul class="prompt-list"><li>What two quantities are being compared at each booth?</li><li>Which booth seems like a better deal at first glance?</li><li>How can you compare prices when the number of games is different?</li></ul>
   </div>
-  <div class="my-notes">
-    <h3>My Notes</h3>
-    <div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div>
+  <div class="notes-gradual">
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 Watch</span>
+      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
+      <div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We try</span>
+      <p class="notes-gr-cue">Solve the next one together as a class.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You try</span>
+      <p class="notes-gr-cue">Now try one on your own.</p>
+      <div class="writeline"></div><div class="writeline"></div>
+    </div>
   </div>
 </section>
   <section class="section turn-and-talk">
@@ -287,7 +370,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> You can't compare fairly until you find the cost per 1 game (the unit rate) for each booth.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">You ___ tell just by looking because the number of ___ is different.</span><span class="twr-es">___ se puede saber solo mirando porque la cantidad de ___ es diferente.</span></p><p class="twr-frame"><span class="twr-en">To compare fairly I need the cost per ___ game.</span><span class="twr-es">Para comparar de forma justa necesito el costo por ___ juego.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;rate&quot; or &quot;unit rate&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">You ___ tell just by looking because the number of ___ is different.</span><span class="twr-es">___ se puede saber solo mirando porque la cantidad de ___ es diferente.</span></p><p class="twr-frame"><span class="twr-en">To compare fairly I need the cost per ___ game.</span><span class="twr-es">Para comparar de forma justa necesito el costo por ___ juego.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">rate</span><span class="tt-word">unit rate</span><span class="tt-word">per</span><span class="tt-word">better buy</span><span class="tt-word">compare</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students recognize the booths offer different numbers of games, so a fair comparison needs the cost per 1 game (unit rate).</p>
   </div>
@@ -303,7 +393,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Divide the price by the number of games to get the unit rate, then compare the two rates.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">Booth A costs ___ per game because 3 divided by 5 equals ___.</span><span class="twr-es">El puesto A cuesta ___ por juego porque 3 entre 5 es ___.</span></p><p class="twr-frame"><span class="twr-en">The better buy is Booth ___ because its ___ is lower.</span><span class="twr-es">La mejor compra es el puesto ___ porque su ___ es más baja.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;rate&quot; or &quot;unit rate&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">Booth A costs ___ per game because 3 divided by 5 equals ___.</span><span class="twr-es">El puesto A cuesta ___ por juego porque 3 entre 5 es ___.</span></p><p class="twr-frame"><span class="twr-en">The better buy is Booth ___ because its ___ is lower.</span><span class="twr-es">La mejor compra es el puesto ___ porque su ___ es más baja.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">rate</span><span class="tt-word">unit rate</span><span class="tt-word">per</span><span class="tt-word">better buy</span><span class="tt-word">divide</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students compute $0.60/game for Booth A and $0.625/game for Booth B, then choose Booth A because the lower unit rate is the better buy.</p>
   </div>
@@ -319,7 +416,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="tt-support">
     <span class="level-tag level-1">Level 1 support</span>
     <p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> Find the price per ounce (or per cup) for each size, then pick the lowest unit rate.</p>
-    <div class="tt-stems"><p class="twr-frame"><span class="twr-en">I would find the price per ___ for each popcorn size.</span><span class="twr-es">Hallaría el precio por ___ para cada tamaño de palomitas.</span></p><p class="twr-frame"><span class="twr-en">The best deal is the one with the ___ unit rate.</span><span class="twr-es">La mejor oferta es la que tiene la ___ tasa unitaria.</span></p></div>
+    <details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">Try starting with the word &quot;rate&quot; or &quot;unit rate&quot;. Re-read the question and underline what it is asking you to compare or find. Use one number or word from the problem as your evidence.</p>
+    </details>
+    <div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      <p class="twr-frame"><span class="twr-en">I would find the price per ___ for each popcorn size.</span><span class="twr-es">Hallaría el precio por ___ para cada tamaño de palomitas.</span></p><p class="twr-frame"><span class="twr-en">The best deal is the one with the ___ unit rate.</span><span class="twr-es">La mejor oferta es la que tiene la ___ tasa unitaria.</span></p>
+    </div>
     <div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> <span class="tt-word">rate</span><span class="tt-word">unit rate</span><span class="tt-word">per</span><span class="tt-word">better buy</span><span class="tt-word">compare</span></div>
     <p class="tt-listen"><span class="tt-mini-label">Listen for:</span> Students describe dividing price by size to get a per-unit cost and choosing the lowest unit rate as the best deal.</p>
   </div>
