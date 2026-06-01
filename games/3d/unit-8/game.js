@@ -498,6 +498,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong answer pad costs one. Run
+    // out and the data lab closes (lose screen). Level 1 gets more cushion.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let idleUnbind = null;
     const timers = [];
     const later = (fn, ms) => {
@@ -735,6 +740,23 @@ export default {
       if (buildMatches()) finishBuild();
     }
 
+    function loseGame() {
+      gameOver = true;
+      phase = "done";
+      feel.sfx("wrong");
+      const msg = `Lab closed! You finished ${solvedCount} of ${cfg.rounds.length} rounds.`;
+      hud.setObjective(msg);
+      announce(`Out of tries. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Lab closed!",
+          badge: "📊",
+          stats: `${msg} Tip: read the plot carefully — find the center and spread before you pick.`,
+        });
+      }
+    }
+
     function finishBuild() {
       clearGhosts();
       onScore(level === 2 ? 15 : 10, { round: roundIndex + 1, phase: "build" });
@@ -860,7 +882,7 @@ export default {
     }
 
     function chooseAnswer() {
-      if (phase !== "answer" || solvedRound) return;
+      if (phase !== "answer" || solvedRound || gameOver) return;
       const picked = question.choices[answerIndex];
       const ok = question.labels
         ? picked === question.correct
@@ -870,7 +892,16 @@ export default {
         feel.shake(0.2);
         streak = 0;
         hud.setStreak(0);
-        hud.feedback(false, "Not quite. Try again.");
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        if (lives <= 0) {
+          loseGame();
+          return;
+        }
+        const msg = `Not quite. ${lives} ${
+          lives === 1 ? "try" : "tries"
+        } left.`;
+        hud.feedback(false, msg);
         announce("Not quite. Try another pad.");
         return;
       }
@@ -1023,6 +1054,9 @@ export default {
         // Single entry point for first play and for Play Again.
         function beginGameplay() {
           roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
           unbindPress = input.onPress((name) => {
             if (phase === "answer") {
               if (name === "left") moveAnswer(-1);

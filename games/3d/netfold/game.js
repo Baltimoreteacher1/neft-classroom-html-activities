@@ -92,6 +92,24 @@ function pyramid(b, m) {
   return { type: "pyramid", b, m, sa: f.sa, faces: f.faces, worked: f.worked };
 }
 
+// Full-spec equality: a candidate net only counts as correct if it is the same
+// TYPE *and* the same DIMENSIONS as the target. Comparing type alone let a
+// same-type net with different dimensions pass. For prisms the three edge
+// lengths are compared as a sorted multiset, so a prism that is merely rotated
+// (e.g. 3×2×4 vs 4×2×3) still matches, while a genuinely different prism fails.
+function specsMatch(a, b) {
+  if (!a || !b || a.type !== b.type) return false;
+  if (a.type === "cube") return a.s === b.s;
+  if (a.type === "prism") {
+    const da = [a.l, a.w, a.h].sort((x, y) => x - y);
+    const db = [b.l, b.w, b.h].sort((x, y) => x - y);
+    return da[0] === db[0] && da[1] === db[1] && da[2] === db[2];
+  }
+  if (a.type === "pyramid") return a.b === b.b && a.m === b.m;
+  // Unknown type: fall back to surface-area equality as a last guard.
+  return a.sa === b.sa;
+}
+
 function solidName(spec) {
   if (spec.type === "cube") return "cube";
   if (spec.type === "prism") return "rectangular prism";
@@ -613,7 +631,7 @@ export default {
         const cand = {
           spec,
           net,
-          isCorrect: spec.type === r.target.type,
+          isCorrect: specsMatch(spec, r.target),
           baseX,
           labels: [],
         };

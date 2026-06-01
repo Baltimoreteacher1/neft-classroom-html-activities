@@ -402,6 +402,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong confirm costs one. Run out
+    // and the shift ends (lose screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let unbindFrame = null;
     let unbindPress = null;
     let unbindTap = null;
@@ -570,24 +575,48 @@ export default {
     }
 
     function confirm() {
-      if (locked) return;
+      if (locked || gameOver) return;
       if (!isCorrect()) {
-        const tip =
+        streak = 0;
+        hud.setStreak(0);
+        feel.sfx("wrong");
+        if (!reduced) feel.shake(0.16);
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        if (lives <= 0) {
+          loseGame();
+          return;
+        }
+        const base =
           round.kind === "distributive" &&
           value > 0 &&
           round.a % value === 0 &&
           round.b % value === 0
             ? "Close! Find a bigger factor that fits both."
             : "Not yet. Move the dial and try again.";
-        streak = 0;
-        hud.setStreak(0);
+        const tip = `${base} ${lives} ${lives === 1 ? "try" : "tries"} left.`;
         hud.feedback(false, tip);
-        feel.sfx("wrong");
-        if (!reduced) feel.shake(0.16);
         announce(tip);
         return;
       }
       win();
+    }
+
+    function loseGame() {
+      gameOver = true;
+      locked = true;
+      feel.sfx("wrong");
+      const msg = `Out of tries! You packed ${solvedCount} of ${cfg.rounds.length}.`;
+      hud.setObjective(msg);
+      announce(`Shift over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Out of tries!",
+          badge: "📦",
+          stats: `${msg} Tip: list the factors of each number and pick the one that fits.`,
+        });
+      }
     }
 
     function win() {
@@ -713,6 +742,9 @@ export default {
         // play and for Play Again.
         function beginGameplay() {
           roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
           startRound();
 
           unbindPress = input.onPress((name) => {
