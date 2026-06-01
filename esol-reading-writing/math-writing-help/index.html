@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Publisher-grade mathematical writing studio for Grade 6 math and ESOL. Construct Claim-Evidence-Reasoning responses with interactive visual models, speech synthesis highlighting, active vocabulary tracking, and professional worksheet printing."
+      content="Publisher-grade mathematical writing studio for Grade 6 math and multilingual learners. Construct Claim-Evidence-Reasoning responses with interactive visual models, speech synthesis highlighting, active vocabulary tracking, and professional worksheet printing."
     />
     <title>Math Writing Help Studio | Educational Publishing Suite</title>
 
@@ -579,6 +579,99 @@
         font-weight: 800;
         color: var(--primary);
         padding-top: 6px;
+      }
+
+      /* ── Bilingual Spanish frame hint ── */
+      .es-frame-hint {
+        margin-top: 10px;
+        border: 1px dashed var(--line-muted);
+        border-left: 4px solid var(--primary);
+        border-radius: 8px;
+        padding: 10px 12px;
+        background: rgba(99, 102, 241, 0.05);
+      }
+      .es-frame-tag {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--primary);
+      }
+      .es-frame-text {
+        margin: 4px 0 0;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--slate-muted);
+        font-style: italic;
+      }
+
+      /* ── Model exemplar reveal panel ── */
+      .exemplar-panel {
+        margin-top: 10px;
+      }
+      .exemplar-toggle {
+        border: 1px solid var(--line-muted);
+        background: var(--white);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--primary);
+        cursor: pointer;
+      }
+      .exemplar-toggle:hover {
+        background: rgba(99, 102, 241, 0.08);
+      }
+      .exemplar-body {
+        margin-top: 8px;
+        border: 1px solid var(--line-muted);
+        border-radius: 8px;
+        padding: 12px;
+        background: var(--white);
+        font-size: 0.85rem;
+        line-height: 1.55;
+        color: var(--slate);
+      }
+
+      /* ── Automated CER criterion check ── */
+      .criterion-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .criterion-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        border: 1px solid var(--line-muted);
+        border-radius: 8px;
+        padding: 9px 11px;
+        background: var(--white);
+      }
+      .criterion-row.met {
+        border-color: var(--green-success, #16a34a);
+        background: var(--green-light, rgba(22, 163, 74, 0.08));
+      }
+      .criterion-icon {
+        font-size: 1rem;
+        line-height: 1.4;
+      }
+      .criterion-text {
+        flex: 1;
+      }
+      .criterion-name {
+        font-size: 0.74rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--slate-muted);
+      }
+      .criterion-feedback {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--slate);
+        margin-top: 2px;
       }
 
       /* ── Speech synthesis control center ── */
@@ -1226,54 +1319,34 @@
               <!-- Programmatically rendered forms -->
             </div>
 
-            <!-- Interactive On-Screen Scorecard panel -->
+            <!-- Bilingual Spanish support frame (Level 1) -->
+            <div class="es-frame-hint" id="esFrameHint" hidden>
+              <span class="es-frame-tag">🌎 Apoyo en español (Level 1)</span>
+              <p class="es-frame-text" id="esFrameText"></p>
+            </div>
+
+            <!-- Model exemplar answer (reveal on demand) -->
+            <div class="exemplar-panel" id="exemplarPanel" hidden>
+              <button
+                type="button"
+                class="exemplar-toggle"
+                id="exemplarToggle"
+                onclick="toggleExemplar()"
+                aria-expanded="false"
+              >
+                💡 Show model answer
+              </button>
+              <div class="exemplar-body" id="exemplarBody" hidden></div>
+            </div>
+
+            <!-- Automated CER criterion check panel -->
             <div class="scorecard-panel">
               <div class="scorecard-header">
-                <h4>🏆 Self-Assessment Scorecard</h4>
-                <span class="score-badge" id="liveScoreBadge"
-                  >0 / 12 (Developing)</span
-                >
+                <h4>✅ CER Criterion Check</h4>
+                <span class="score-badge" id="liveScoreBadge">0 / 4 met</span>
               </div>
-              <div class="score-grid">
-                <div class="score-criterion">
-                  <label for="rubricClaim">Claim</label>
-                  <select id="rubricClaim" onchange="updateOnScreenScorecard()">
-                    <option value="0">Developing (0 pts)</option>
-                    <option value="1">Emerging (1 pt)</option>
-                    <option value="2">Proficient (2 pts)</option>
-                    <option value="3">Exemplary (3 pts)</option>
-                  </select>
-                </div>
-                <div class="score-criterion">
-                  <label for="rubricEvidence">Evidence</label>
-                  <select
-                    id="rubricEvidence"
-                    onchange="updateOnScreenScorecard()"
-                  >
-                    <option value="0">Developing (0 pts)</option>
-                    <option value="1">Emerging (1 pt)</option>
-                    <option value="2">Proficient (2 pts)</option>
-                    <option value="3">Exemplary (3 pts)</option>
-                  </select>
-                </div>
-                <div class="score-criterion">
-                  <label for="rubricReasoning">Reasoning</label>
-                  <select
-                    id="rubricReasoning"
-                    onchange="updateOnScreenScorecard()"
-                  >
-                    <option value="0">Developing (0 pts)</option>
-                    <option value="1">Emerging (1 pt)</option>
-                    <option value="2">Proficient (2 pts)</option>
-                    <option value="3">Exemplary (3 pts)</option>
-                  </select>
-                </div>
-                <div class="score-criterion">
-                  <label>Vocab Score</label>
-                  <span class="score-read-only" id="rubricVocabDisplay"
-                    >0 / 3 pts</span
-                  >
-                </div>
+              <div class="criterion-list" id="criterionList">
+                <!-- Programmatically rendered automated criteria -->
               </div>
             </div>
 
@@ -3490,6 +3563,7 @@
         STORE.activeCerTab = "claim";
         updateActiveTimelineUI();
         renderSentenceForms();
+        renderExemplar();
         updateParagraphDraft();
 
         // Populate hybrid textarea from dropdown compiled if empty
@@ -4251,6 +4325,339 @@
         },
       };
 
+      // ── Spanish (ES) sentence frames per lesson ──
+      // Bilingual scaffolds that mirror each English frame in LESSON_CER_FRAMES.
+      // Shown as a support hint beneath the live English frames so Level 1
+      // multilingual learners can build the sentence in either language.
+      const LESSON_FRAMES_ES = {
+        "1-1": {
+          claim:
+            "Afirmo que el número ___ es un número compuesto cuya factorización prima es ___.",
+          evidence:
+            "Mi árbol de factores muestra que ___ se descompone en las bases primas ___, y ningún factor puede dividirse más porque cada uno es primo.",
+          reasoning:
+            "Esto prueba mi afirmación porque la factorización prima es el conjunto único de números primos que se multiplican para formar el número.",
+        },
+        "1-2": {
+          claim:
+            "Afirmo que el máximo común divisor (MCD) de ___ y ___ es ___.",
+          evidence:
+            "En el diagrama de Venn, los primos ___ están en la intersección de ambos conjuntos, y su producto es ___.",
+          reasoning:
+            "Es el MCD porque la intersección contiene solo los factores comunes a los dos números, dando el factor más grande que comparten.",
+        },
+        "1-3": {
+          claim:
+            "Afirmo que el mínimo común múltiplo (MCM) de ___ y ___ es ___.",
+          evidence:
+            "El MCM usa todos los primos de ambos conjuntos — ___ — así que al multiplicarlos da el primer múltiplo compartido de ___.",
+          reasoning:
+            "Funciona porque el MCM es el valor más pequeño en el que ambos números entran, donde sus ciclos repetidos coinciden por primera vez.",
+        },
+        "1-4": {
+          claim:
+            "Afirmo que al sumar o restar ___ y ___, primero debo alinear los puntos decimales.",
+          evidence:
+            "Al alinear por valor posicional, las columnas de décimas y centésimas coinciden, y la suma o diferencia es ___.",
+          reasoning:
+            "Alinear los puntos decimales es necesario porque solo se pueden combinar dígitos que comparten el mismo valor posicional.",
+        },
+        "2-2": {
+          claim: "Afirmo que ___ de ___ es igual a ___.",
+          evidence:
+            "En el modelo de área, multiplico numerador por numerador y denominador por denominador para obtener ___.",
+          reasoning:
+            "Esto tiene sentido porque tomar una fracción de una fracción significa multiplicar las partes, y el producto es menor que cada factor.",
+        },
+        "2-3": {
+          claim: "Afirmo que ___ dividido entre ___ es igual a ___.",
+          evidence:
+            "Cuento cuántos grupos del divisor caben en el dividendo multiplicando por el recíproco, lo que da ___.",
+          reasoning:
+            "Dividir entre una fracción equivale a multiplicar por su recíproco, por eso el cociente puede ser mayor que el dividendo.",
+        },
+        "3-1": {
+          claim:
+            "Afirmo que la razón de ___ a ___ compara las dos cantidades de forma multiplicativa.",
+          evidence:
+            "Por cada ___ del primer valor hay ___ del segundo, lo que muestra la relación parte a parte.",
+          reasoning:
+            "Es una razón porque compara dos cantidades por multiplicación, no por suma.",
+        },
+        "3-6": {
+          claim: "Afirmo que la tasa unitaria es ___ por cada 1 unidad.",
+          evidence:
+            "Divido ___ entre ___ para encontrar el costo o cantidad por una sola unidad: ___.",
+          reasoning:
+            "Una tasa unitaria tiene un denominador de 1, lo que facilita comparar y escalar.",
+        },
+        "4-3": {
+          claim: "Afirmo que el ___% de ___ es ___.",
+          evidence:
+            "En el modelo de barra, ___ partes de cada 100 se sombrean, lo que representa ___ del total.",
+          reasoning:
+            "Encontrar un porcentaje de un número significa multiplicar el todo por el porcentaje escrito como decimal o fracción.",
+        },
+        "4-5": {
+          claim: "Afirmo que el precio total con ___% de ___ es ___.",
+          evidence:
+            "Calculo el ___% de ___ para obtener ___, y luego lo sumo o resto del precio original.",
+          reasoning:
+            "El impuesto o propina se calcula sobre el precio base, por eso multiplico antes de sumar al total.",
+        },
+        "5-2": {
+          claim: "Afirmo que el área del triángulo es ___ unidades cuadradas.",
+          evidence: "Uso A = ½ × base × altura: ½ × ___ × ___ = ___.",
+          reasoning:
+            "Un triángulo es exactamente la mitad de un paralelogramo con la misma base y altura, por eso multiplico por ½.",
+        },
+        "5-3": {
+          claim: "Afirmo que el área del trapecio es ___ unidades cuadradas.",
+          evidence:
+            "Descompongo el trapecio en triángulos y un rectángulo, cuyas áreas suman ___.",
+          reasoning:
+            "El área total es la suma de las sub-figuras porque las partes no se superponen y cubren toda la figura.",
+        },
+        "6-2": {
+          claim:
+            "Afirmo que al evaluar ___ cuando la variable es ___, el resultado es ___.",
+          evidence:
+            "Sustituyo el valor y sigo el orden de las operaciones, lo que da ___.",
+          reasoning:
+            "El orden de las operaciones garantiza un único valor correcto sin importar quién lo evalúe.",
+        },
+        "6-3": {
+          claim: "Afirmo que ___ y ___ son equivalentes por la propiedad ___.",
+          evidence:
+            "Al aplicar la propiedad, ambas expresiones dan el mismo valor: ___.",
+          reasoning:
+            "Las propiedades de las operaciones garantizan equivalencia para cualquier valor de la variable.",
+        },
+        "7-2": {
+          claim: "Afirmo que la solución de la ecuación ___ es ___.",
+          evidence:
+            "Uso la operación inversa para despejar la variable, lo que da ___.",
+          reasoning:
+            "Hacer la misma operación inversa en ambos lados mantiene la ecuación equilibrada y aísla la variable.",
+        },
+        "7-4": {
+          claim: "Afirmo que la solución de la desigualdad ___ es ___.",
+          evidence:
+            "Encuentro el valor límite y pruebo que los valores ___ que ese límite cumplen la desigualdad.",
+          reasoning:
+            "Una desigualdad describe un rango de soluciones, no un solo valor, porque muchos números cumplen la condición.",
+        },
+        "8-2": {
+          claim:
+            "Afirmo que la media es ___, la mediana es ___ y la moda es ___.",
+          evidence:
+            "Sumo los datos y divido entre la cantidad para la media; ordeno los datos para la mediana y la moda.",
+          reasoning:
+            "La media, la mediana y la moda son medidas de centro que describen un valor típico del conjunto.",
+        },
+        "8-3": {
+          claim: "Afirmo que la desviación media absoluta (DMA) es ___.",
+          evidence:
+            "Resto la media de cada dato, tomo el valor absoluto y promedio esas distancias: ___.",
+          reasoning:
+            "La DMA mide la variabilidad porque promedia qué tan lejos están los datos de la media.",
+        },
+        "9-1": {
+          claim: "Afirmo que el punto (___, ___) está en el Cuadrante ___.",
+          evidence:
+            "El valor x es ___ y el valor y es ___, lo que ubica el punto a la ___ y ___ del origen.",
+          reasoning:
+            "Los signos de las coordenadas determinan el cuadrante porque indican dirección horizontal y vertical desde el origen.",
+        },
+        "9-3": {
+          claim: "Afirmo que el valor absoluto de ___ es ___.",
+          evidence:
+            "El número está a ___ unidades del cero en la recta numérica, sin importar su signo.",
+          reasoning:
+            "El valor absoluto es siempre positivo porque mide distancia desde cero, no dirección.",
+        },
+        "10-1": {
+          claim: "Afirmo que el volumen del prisma es ___ unidades cúbicas.",
+          evidence: "Uso V = largo × ancho × alto: ___ × ___ × ___ = ___.",
+          reasoning:
+            "El volumen cuenta cuántos cubos unitarios llenan el espacio del prisma tridimensional.",
+        },
+        "10-3": {
+          claim:
+            "Afirmo que el área de superficie del prisma es ___ unidades cuadradas.",
+          evidence:
+            "Al desplegar el patrón (net), las áreas de las ___ caras suman ___.",
+          reasoning:
+            "El área de superficie suma las caras externas porque el net aplana el sólido 3-D en regiones medibles en 2-D.",
+        },
+      };
+
+      // ── Short model exemplar answers per lesson ──
+      // A teacher-quality CER paragraph students can compare their draft to.
+      const LESSON_EXEMPLARS = {
+        "1-1":
+          "I claim that 84 is a composite number whose prime factorization is 2 × 2 × 3 × 7. My factor tree shows 84 = 2 × 42 = 2 × 2 × 21 = 2 × 2 × 3 × 7, and no factor can be divided further because each is prime. This proves my claim because the prime factorization is the unique product of prime numbers that multiplies back to it.",
+        "1-2":
+          "I claim that the GCF of 24 and 36 is 12. In the Venn model, the shared primes 2 × 2 × 3 sit in the intersection, and their product is 12. This is the GCF because the intersection holds only the factors common to both numbers, giving the largest factor they share.",
+        "1-3":
+          "I claim that the LCM of 8 and 12 is 24. The LCM uses every prime from both sets — 2 × 2 × 2 × 3 — so multiplying them gives the first shared multiple of 24. This works because the LCM is the smallest value both numbers divide into, where their repeating multiples first align.",
+        "1-4":
+          "I claim that when I add 3.5 and 2.75, I must align the decimal points first. Lining up by place value, the tenths and hundredths columns match, and the sum of the two values is 6.25. Aligning the decimal points is required because you can only combine digits that share the same place value.",
+        "2-2":
+          "I claim that 2/3 of 3/4 equals 1/2. In the area model, I multiply 2 × 3 for the numerator and 3 × 4 for the denominator to get 6/12, which simplifies to 1/2. This makes sense because taking a fraction of a fraction means multiplying the parts, and the product is smaller than each factor.",
+        "2-3":
+          "I claim that 3/4 divided by 1/8 equals 6. I count how many 1/8 groups fit in 3/4 by multiplying 3/4 by the reciprocal 8/1, which gives 24/4 = 6. Dividing by a fraction is the same as multiplying by its reciprocal, so the quotient is larger than the dividend.",
+        "3-1":
+          "I claim that the ratio of 3 cats to 5 dogs compares the two groups multiplicatively. For every 3 cats there are 5 dogs, which shows the part-to-part relationship 3:5. It is a ratio because it compares two quantities by multiplication, not by adding.",
+        "3-6":
+          "I claim that the unit rate is $4 per 1 pound. I divide $12 by 3 pounds to find the cost for a single pound: $12 ÷ 3 = $4. A unit rate has a denominator of 1, which makes it easy to compare prices and scale up.",
+        "4-3":
+          "I claim that 25% of 80 is 20. In the bar model, 25 parts out of every 100 are shaded, which represents one fourth of the whole 80. Finding a percent of a number means multiplying the whole by the percent written as a decimal, 0.25 × 80 = 20.",
+        "4-5":
+          "I claim that the total price with 8% tax on $50 is $54. I calculate 8% of $50 to get $4, then add it to the original price. The tax is calculated on the base price, so I multiply first and then add to find the total.",
+        "5-2":
+          "I claim that the area of the triangle is 12 square units. I use A = ½ × base × height: ½ × 6 × 4 = 12. A triangle is exactly half of a parallelogram with the same base and height, which is why I multiply by ½.",
+        "5-3":
+          "I claim that the area of the trapezoid is 35 square units. I decompose it into two triangles and a rectangle whose areas add to 35. The total area is the sum of the sub-shapes because the parts do not overlap and together cover the whole figure.",
+        "6-2":
+          "I claim that evaluating 3x + 4 when x = 5 gives 19. I substitute 5 for x and follow the order of operations: 3 × 5 = 15, then 15 + 4 = 19. The order of operations guarantees one correct value no matter who evaluates it.",
+        "6-3":
+          "I claim that 6(9 + 4) and 6(9) + 6(4) are equivalent by the distributive property. Applying the property, both expressions equal 78. The properties of operations guarantee equivalence for any value of the variable.",
+        "7-2":
+          "I claim that the solution of x + 7 = 12 is x = 5. I use the inverse operation, subtracting 7 from both sides, which gives x = 5. Doing the same inverse operation on both sides keeps the equation balanced and isolates the variable.",
+        "7-4":
+          "I claim that the solution of x + 3 > 7 is x > 4. I find the boundary value 4 and test that values greater than 4 make the inequality true. An inequality describes a range of solutions, not a single value, because many numbers satisfy the condition.",
+        "8-2":
+          "I claim that the mean is 7, the median is 7, and the mode is 8 for the data 5, 7, 8, 8, 7. I add the values and divide by 5 for the mean, then order the data for the median and mode. Mean, median, and mode are measures of center that describe a typical value in the set.",
+        "8-3":
+          "I claim that the mean absolute deviation is 2. I subtract the mean from each value, take the absolute value, and average those distances. The MAD measures variability because it averages how far the data points are from the mean.",
+        "9-1":
+          "I claim that the point (-4, 3) is in Quadrant II. The x-value is negative and the y-value is positive, which places the point to the left of and above the origin. The signs of the coordinates determine the quadrant because they show horizontal and vertical direction from the origin.",
+        "9-3":
+          "I claim that the absolute value of -6 is 6. The number is 6 units from zero on the number line, no matter its sign. Absolute value is always positive because it measures distance from zero, not direction.",
+        "10-1":
+          "I claim that the volume of the prism is 60 cubic units. I use V = length × width × height: 5 × 4 × 3 = 60. Volume counts how many unit cubes fill the space inside the three-dimensional prism.",
+        "10-3":
+          "I claim that the surface area of the prism is 94 square units, the sum of all six faces. Unfolding the net shows 6 rectangles whose areas add to 94. Surface area sums the outer faces because the net flattens the 3-D solid into measurable 2-D regions.",
+      };
+
+      // ── Criterion keyword targets per lesson ──
+      // Drives the automated CER criterion checker. Each part lists the
+      // mathematical terms a strong response should contain; the checker gives
+      // actionable, part-specific feedback instead of a self-rated score.
+      const LESSON_KEYWORDS = {
+        "1-1": {
+          claim: ["composite", "prime factorization"],
+          evidence: ["factor tree", "prime"],
+          reasoning: ["unique", "multiply"],
+        },
+        "1-2": {
+          claim: ["gcf", "greatest common factor"],
+          evidence: ["intersection", "product"],
+          reasoning: ["common", "largest"],
+        },
+        "1-3": {
+          claim: ["lcm", "least common multiple"],
+          evidence: ["multiple", "primes"],
+          reasoning: ["smallest", "align"],
+        },
+        "1-4": {
+          claim: ["align", "decimal"],
+          evidence: ["place value", "sum"],
+          reasoning: ["place value", "column"],
+        },
+        "2-2": {
+          claim: ["fraction", "equals"],
+          evidence: ["numerator", "denominator"],
+          reasoning: ["multiply", "smaller"],
+        },
+        "2-3": {
+          claim: ["divide", "equals"],
+          evidence: ["reciprocal", "groups"],
+          reasoning: ["reciprocal", "quotient"],
+        },
+        "3-1": {
+          claim: ["ratio", "compare"],
+          evidence: ["for every", "part"],
+          reasoning: ["multiplicative", "not adding"],
+        },
+        "3-6": {
+          claim: ["unit rate", "per"],
+          evidence: ["divide", "single"],
+          reasoning: ["denominator", "compare"],
+        },
+        "4-3": {
+          claim: ["percent", "of"],
+          evidence: ["bar model", "hundred"],
+          reasoning: ["multiply", "decimal"],
+        },
+        "4-5": {
+          claim: ["total", "percent"],
+          evidence: ["calculate", "add"],
+          reasoning: ["base price", "multiply"],
+        },
+        "5-2": {
+          claim: ["area", "triangle"],
+          evidence: ["base", "height"],
+          reasoning: ["half", "parallelogram"],
+        },
+        "5-3": {
+          claim: ["area", "trapezoid"],
+          evidence: ["decompose", "triangle"],
+          reasoning: ["sum", "overlap"],
+        },
+        "6-2": {
+          claim: ["evaluate", "equals"],
+          evidence: ["substitute", "order of operations"],
+          reasoning: ["order of operations", "value"],
+        },
+        "6-3": {
+          claim: ["equivalent", "property"],
+          evidence: ["distributive", "equal"],
+          reasoning: ["property", "any value"],
+        },
+        "7-2": {
+          claim: ["solution", "equation"],
+          evidence: ["inverse", "isolate"],
+          reasoning: ["balanced", "both sides"],
+        },
+        "7-4": {
+          claim: ["solution", "inequality"],
+          evidence: ["boundary", "test"],
+          reasoning: ["range", "many"],
+        },
+        "8-2": {
+          claim: ["mean", "median"],
+          evidence: ["add", "order"],
+          reasoning: ["center", "typical"],
+        },
+        "8-3": {
+          claim: ["deviation", "variability"],
+          evidence: ["absolute value", "average"],
+          reasoning: ["variability", "mean"],
+        },
+        "9-1": {
+          claim: ["quadrant", "point"],
+          evidence: ["positive", "negative"],
+          reasoning: ["signs", "origin"],
+        },
+        "9-3": {
+          claim: ["absolute value", "is"],
+          evidence: ["distance", "zero"],
+          reasoning: ["positive", "distance"],
+        },
+        "10-1": {
+          claim: ["volume", "prism"],
+          evidence: ["length", "height"],
+          reasoning: ["unit cubes", "space"],
+        },
+        "10-3": {
+          claim: ["surface area", "faces"],
+          evidence: ["net", "rectangles"],
+          reasoning: ["net", "2-d"],
+        },
+      };
+
       // ── 10 Custom Unit Mathematical Sentence Frame Generators ──
       function getLessonTemplateFrame(tab) {
         const lesson = CURRICULUM_DATA[STORE.activeConceptIdx];
@@ -4622,6 +5029,52 @@
         });
 
         container.appendChild(row);
+
+        renderEsFrameHint();
+      }
+
+      // ── Bilingual Spanish frame hint for the active CER tab ──
+      function renderEsFrameHint() {
+        const lesson = CURRICULUM_DATA[STORE.activeConceptIdx];
+        const hint = document.getElementById("esFrameHint");
+        const textEl = document.getElementById("esFrameText");
+        const esSet = LESSON_FRAMES_ES[lesson.id];
+        const esText = esSet && esSet[STORE.activeCerTab];
+        if (esText) {
+          textEl.textContent = esText;
+          hint.hidden = false;
+        } else {
+          hint.hidden = true;
+        }
+      }
+
+      // ── Model exemplar answer wiring ──
+      function renderExemplar() {
+        const lesson = CURRICULUM_DATA[STORE.activeConceptIdx];
+        const panel = document.getElementById("exemplarPanel");
+        const body = document.getElementById("exemplarBody");
+        const toggle = document.getElementById("exemplarToggle");
+        const exemplar = LESSON_EXEMPLARS[lesson.id];
+        if (exemplar) {
+          body.textContent = exemplar;
+          body.hidden = true;
+          toggle.textContent = "💡 Show model answer";
+          toggle.setAttribute("aria-expanded", "false");
+          panel.hidden = false;
+        } else {
+          panel.hidden = true;
+        }
+      }
+
+      function toggleExemplar() {
+        const body = document.getElementById("exemplarBody");
+        const toggle = document.getElementById("exemplarToggle");
+        const show = body.hidden;
+        body.hidden = !show;
+        toggle.textContent = show
+          ? "🙈 Hide model answer"
+          : "💡 Show model answer";
+        toggle.setAttribute("aria-expanded", show ? "true" : "false");
       }
 
       // ── Active Vocabulary Scanner with Robust Regex Plural Matching ──
@@ -4679,46 +5132,126 @@
           .classList.toggle("step-done", complete);
       }
 
-      // ── Interactive Scorecard Calculations ──
-      function updateOnScreenScorecard() {
-        const claimVal =
-          parseInt(document.getElementById("rubricClaim").value) || 0;
-        const evidenceVal =
-          parseInt(document.getElementById("rubricEvidence").value) || 0;
-        const reasoningVal =
-          parseInt(document.getElementById("rubricReasoning").value) || 0;
+      // ── Automated, criterion-based CER check ──
+      // Replaces the old self-rated word-count rubric. Reads the student's
+      // compiled paragraph and tests each CER part against the lesson's
+      // required mathematical keywords (LESSON_KEYWORDS), plus a vocabulary
+      // criterion, giving actionable per-criterion feedback.
+      function buildPartText(tab) {
+        const schema = getLessonTemplateFrame(tab);
+        if (!schema) return "";
+        let str = schema.template;
+        schema.options.forEach((opt, idx) => {
+          const value = STORE.cerDraftValues[tab][idx] || "";
+          str = str.replace(`{${idx}}`, value);
+        });
+        return str.toLowerCase();
+      }
 
-        // Calculate vocab points automatically: 0=0pts, 1-2=1pt, 3-4=2pts, 5+=3pts
+      function matchedKeywords(text, keywords) {
+        if (!keywords || !keywords.length) return { hits: [], misses: [] };
+        const hits = [];
+        const misses = [];
+        keywords.forEach((kw) => {
+          if (text.includes(kw.toLowerCase())) hits.push(kw);
+          else misses.push(kw);
+        });
+        return { hits, misses };
+      }
+
+      function updateOnScreenScorecard() {
+        const lesson = CURRICULUM_DATA[STORE.activeConceptIdx];
+        const list = document.getElementById("criterionList");
+        if (!list) return;
+
+        // Combine the structured frame values with any free-text the student
+        // typed in the hybrid editor so the check reflects their full draft.
+        const hybrid = (
+          document.getElementById("hybridDraftBox")?.value || ""
+        ).toLowerCase();
+
+        const kw = LESSON_KEYWORDS[lesson.id] || {};
+        const cerLabels = {
+          claim: "Claim",
+          evidence: "Evidence",
+          reasoning: "Reasoning",
+        };
+
+        const rows = [];
+        let metCount = 0;
+
+        ["claim", "evidence", "reasoning"].forEach((tab) => {
+          const partText = buildPartText(tab) + " " + hybrid;
+          const required = kw[tab] || [];
+          const hasContent = (
+            Object.values(STORE.cerDraftValues[tab] || {})
+              .join("")
+              .trim() + hybrid.trim()
+          ).length;
+
+          let met = false;
+          let feedback;
+
+          if (!required.length) {
+            // No keyword list authored: fall back to "did the student fill it in".
+            met = hasContent > 0;
+            feedback = met
+              ? "You completed this part. Read it aloud — does it sound like a math sentence?"
+              : "Fill in this part of your CER sentence to continue.";
+          } else {
+            const { hits, misses } = matchedKeywords(partText, required);
+            met = misses.length === 0;
+            if (met) {
+              feedback = `Strong! Your ${cerLabels[tab].toLowerCase()} uses the math terms: ${hits.join(", ")}.`;
+            } else if (hits.length) {
+              feedback = `Good start. Add: ${misses.join(", ")} to make your ${cerLabels[tab].toLowerCase()} complete.`;
+            } else {
+              feedback = `Your ${cerLabels[tab].toLowerCase()} still needs the key idea — try using: ${misses.join(", ")}.`;
+            }
+          }
+
+          if (met) metCount++;
+          rows.push({ name: cerLabels[tab], met, feedback });
+        });
+
+        // Vocabulary criterion (automated from the live word wall).
         const activeChips = document.querySelectorAll(
           ".vocab-card.word-active",
         ).length;
-        let vocabVal = 0;
-        if (activeChips >= 5) vocabVal = 3;
-        else if (activeChips >= 3) vocabVal = 2;
-        else if (activeChips >= 1) vocabVal = 1;
+        const totalChips = lesson.terms.length;
+        const vocabTarget = Math.max(3, Math.ceil(totalChips / 2));
+        const vocabMet = activeChips >= vocabTarget;
+        if (vocabMet) metCount++;
+        rows.push({
+          name: "Vocabulary",
+          met: vocabMet,
+          feedback: vocabMet
+            ? `Great vocabulary use: ${activeChips} of ${totalChips} key terms.`
+            : `Use at least ${vocabTarget} key terms (you have ${activeChips}/${totalChips}). Try the word wall.`,
+        });
 
-        document.getElementById("rubricVocabDisplay").textContent =
-          `${vocabVal} / 3 pts (${activeChips} words)`;
+        // Render the criterion rows.
+        list.innerHTML = rows
+          .map(
+            (r) => `
+            <div class="criterion-row ${r.met ? "met" : ""}">
+              <span class="criterion-icon">${r.met ? "✅" : "⬜"}</span>
+              <span class="criterion-text">
+                <span class="criterion-name">${r.name}</span>
+                <span class="criterion-feedback">${r.feedback}</span>
+              </span>
+            </div>`,
+          )
+          .join("");
 
-        const totalScore = claimVal + evidenceVal + reasoningVal + vocabVal;
-        let scoreTag = "Developing";
-        if (totalScore >= 11) scoreTag = "Exemplary";
-        else if (totalScore >= 8) scoreTag = "Proficient";
-        else if (totalScore >= 4) scoreTag = "Emerging";
-
-        document.getElementById("liveScoreBadge").textContent =
-          `${totalScore} / 12 (${scoreTag})`;
-
-        if (totalScore >= 11) {
-          document.getElementById("liveScoreBadge").style.background =
-            "var(--green-light)";
-          document.getElementById("liveScoreBadge").style.color =
-            "var(--green-success)";
+        const badge = document.getElementById("liveScoreBadge");
+        badge.textContent = `${metCount} / 4 met`;
+        if (metCount === 4) {
+          badge.style.background = "var(--green-light)";
+          badge.style.color = "var(--green-success)";
         } else {
-          document.getElementById("liveScoreBadge").style.background =
-            "var(--amber-light)";
-          document.getElementById("liveScoreBadge").style.color =
-            "var(--amber)";
+          badge.style.background = "var(--amber-light)";
+          badge.style.color = "var(--amber)";
         }
       }
 
