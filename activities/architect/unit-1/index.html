@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Unit 1 — Smoothie Stand Architect | Ratios &amp; Unit Rates (6.RP.A.1–3)
+      Unit 1 — Hydration Station Engineer | Ratios &amp; Unit Rates (6.RP)
     </title>
 
     <!-- Shared theme -->
@@ -32,1028 +32,2185 @@
         font-size: 18px;
       }
       .wrap {
-        max-width: 860px;
+        max-width: 980px;
         margin: 0 auto;
-        padding: 20px 16px 64px;
+        padding: 20px 16px 72px;
       }
-      header.hero {
+
+      /* ── Learning target ── */
+      .learning-target {
         background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 20px 22px;
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
         margin-bottom: 18px;
       }
-      header.hero h1 {
-        margin: 0 0 6px;
-        font-size: 1.6rem;
-      }
-      .standard {
-        display: inline-block;
-        font-size: 0.85rem;
-        color: var(--nt-bg);
-        background: var(--nt-accent);
-        border-radius: 999px;
-        padding: 3px 12px;
-        font-weight: 700;
-        margin-bottom: 10px;
-      }
-      .todo {
-        color: var(--nt-muted);
-        margin: 0;
-      }
-
-      .progress-bar {
-        height: 12px;
-        background: var(--nt-border);
-        border-radius: 999px;
-        overflow: hidden;
-        margin: 14px 0 4px;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0%;
-        background: var(--nt-accent);
-        transition: width 0.25s ease;
-      }
-      .progress-text {
-        font-size: 0.85rem;
-        color: var(--nt-muted);
-      }
-
-      /* ── Learning Target ── */
-      .learning-target {
-        background: var(--nt-bg);
-        border: 3px solid var(--nt-accent);
-        border-radius: 14px;
-        padding: 20px 24px;
-        margin-bottom: 20px;
-      }
       .learning-target h2 {
-        margin: 0 0 12px;
-        font-size: 1.2rem;
-        border-bottom: 2px solid var(--nt-accent);
-        padding-bottom: 6px;
+        margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
       }
       .learning-target ul {
-        margin: 0 0 14px 0;
-        padding-left: 22px;
+        margin: 0 0 12px;
+        padding-left: 1.4em;
       }
       .learning-target li {
-        margin: 6px 0;
-        font-size: 1rem;
+        margin-bottom: 4px;
       }
-      .lt-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
         gap: 10px;
         margin-top: 10px;
-      }
-      .lt-chip {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 10px 14px;
-        font-size: 0.92rem;
-      }
-      .lt-chip strong {
-        display: block;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        font-size: 15px;
         color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+
+      /* ── Hero ── */
+      header.hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+        color: #e8fbff;
+        background:
+          radial-gradient(
+            1100px 280px at 82% -40%,
+            rgba(56, 189, 248, 0.45),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #06304a, #04141f);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+      }
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #7fd9f5;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 4vw, 34px);
+        line-height: 1.1;
+        color: #fff;
+      }
+      header.hero .lede {
+        margin: 0;
+        max-width: 64ch;
+        color: #bfeaf6;
+        font-size: 16px;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .badge {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #e6f8ff;
+      }
+
+      /* ── Design-cycle ribbon ── */
+      .cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 140px;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #cdeefb;
+        background: rgba(56, 189, 248, 0.08);
+      }
+      .cycle b {
+        display: block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7fd9f5;
         margin-bottom: 3px;
       }
 
-      /* ── Teacher Notes ── */
-      .teacher-notes {
-        background: var(--nt-surface);
-        border: 2px dashed var(--nt-accent);
-        border-radius: 14px;
-        margin-bottom: 20px;
-      }
-      .teacher-notes summary {
-        padding: 14px 18px;
-        font-size: 1rem;
+      /* ── Progress ── */
+      .progress {
+        margin-top: 16px;
         font-weight: 700;
-        cursor: pointer;
-        color: var(--nt-accent);
-        list-style: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        color: #e8fbff;
       }
-      .teacher-notes summary::before {
-        content: "▶";
-        font-size: 0.75rem;
-        transition: transform 0.2s;
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        margin-top: 6px;
       }
-      .teacher-notes[open] summary::before {
-        transform: rotate(90deg);
-      }
-      .teacher-notes summary:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-        border-radius: 10px;
-      }
-      .tn-body {
-        padding: 0 18px 18px;
-      }
-      .tn-body h3 {
-        font-size: 1rem;
-        margin: 14px 0 4px;
-        color: var(--nt-text);
-      }
-      .tn-body p,
-      .tn-body li {
-        font-size: 0.95rem;
-        color: var(--nt-text);
-        margin: 4px 0;
-      }
-      .tn-body ul {
-        padding-left: 20px;
-        margin: 6px 0;
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #33d6a6, #38bdf8);
+        transition: width 0.3s ease;
       }
 
-      /* ── Activity cards ── */
+      /* ── Cards / tasks ── */
       .card {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 18px 20px;
-        margin-bottom: 16px;
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
       }
       .card h2 {
         margin: 0 0 4px;
-        font-size: 1.15rem;
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
       }
-      .qnum {
-        font-size: 0.8rem;
-        font-weight: 700;
+      .card h3 {
+        margin: 16px 0 6px;
+        font-size: 16px;
+      }
+      .tag-shape {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: var(--nt-bg);
         color: var(--nt-accent);
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+        border: 1px solid var(--nt-border);
       }
-      .direction {
+      .scale {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+      .muted {
         color: var(--nt-muted);
-        margin: 4px 0 14px;
       }
 
-      /* Smoothie builder */
-      .builder {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        align-items: center;
+      .grid2 {
+        display: grid;
+        gap: 18px;
       }
-      .glass {
-        width: 120px;
-        min-height: 150px;
-        border: 3px solid var(--nt-border);
-        border-top: none;
-        border-radius: 6px 6px 40px 40px;
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid3 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+      }
+
+      /* ── Blueprint / schematic panel ── */
+      .bp {
+        background: #04141f;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .bp svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .bp-grid {
+        stroke: rgba(56, 189, 248, 0.18);
+      }
+      .bp-edge {
+        fill: none;
+        stroke: #7fd9f5;
+        stroke-width: 2;
+      }
+      .bp-dim {
+        stroke: #ffcc66;
+        stroke-width: 1.2;
+      }
+      .bp-dimtext {
+        fill: #ffcc66;
+        font:
+          700 12px ui-monospace,
+          monospace;
+      }
+      .bp-label {
+        fill: #e8fbff;
+        font:
+          700 14px system-ui,
+          sans-serif;
+      }
+      .bp-sub {
+        fill: #a9d8ec;
+        font:
+          600 11px system-ui,
+          sans-serif;
+      }
+      .bp-cap {
         display: flex;
-        flex-direction: column-reverse;
-        overflow: hidden;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: #7fd9f5;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      /* liquid fills */
+      .liq-conc {
+        fill: #f97316;
+      }
+      .liq-water {
+        fill: #38bdf8;
+      }
+      .liq-mix {
+        fill: #33d6a6;
+      }
+
+      /* ── Figures ── */
+      .fig {
+        text-align: center;
+      }
+      .fig svg {
+        width: 100%;
+        max-width: 220px;
+        height: auto;
+      }
+      .fig figcaption {
+        font-weight: 700;
+        margin-top: 4px;
+        font-size: 15px;
+      }
+      .fcode {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+        display: block;
+        margin-top: 2px;
+      }
+
+      /* ── Question blocks ── */
+      .q {
+        margin: 14px 0;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border);
         background: var(--nt-bg);
       }
-      .layer {
-        width: 100%;
-        transition: height 0.2s;
+      .q .lbl {
+        font-weight: 700;
+        margin: 0 0 8px;
       }
-      .layer.fruit {
-        background: #e8554e;
-      }
-      .layer.juice {
-        background: #f2b134;
-      }
-      .controls {
+      .q .row {
         display: flex;
-        flex-direction: column;
-        gap: 12px;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q input[type="text"] {
+        width: 120px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .q .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 8px 0 0;
+      }
+      .q .fb.ok {
+        color: #0f9d6b;
+      }
+      .q .fb.bad {
+        color: #d23f54;
+      }
+      .q input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      .q input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      #submitBtn {
+        font-size: 1.2rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+
+      /* ── Differentiation callouts ── */
+      .lvl {
+        border-radius: 12px;
+        padding: 13px 15px;
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .lvl1 {
+        background: rgba(51, 214, 166, 0.12);
+        border: 1px solid rgba(51, 214, 166, 0.45);
+      }
+      .lvl1 .pill {
+        background: #0f9d6b;
+      }
+      .lvl2 {
+        background: rgba(56, 189, 248, 0.12);
+        border: 1px solid rgba(56, 189, 248, 0.5);
+      }
+      .lvl2 .pill {
+        background: #0277b3;
+      }
+      .lvl3 {
+        background: rgba(255, 204, 102, 0.14);
+        border: 1px solid rgba(255, 204, 102, 0.5);
+      }
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
+      /* ── Recipe mixer ── */
+      .mixer {
+        display: grid;
+        gap: 14px;
+      }
+      @media (min-width: 620px) {
+        .mixer {
+          grid-template-columns: 1fr 1fr;
+        }
       }
       .stepper {
         display: flex;
         align-items: center;
         gap: 10px;
+        margin: 8px 0;
+        flex-wrap: wrap;
       }
       .stepper label {
-        min-width: 86px;
-        font-weight: 600;
-      }
-      .stepper .swatch {
-        width: 16px;
-        height: 16px;
-        border-radius: 4px;
-        display: inline-block;
-        vertical-align: middle;
-        margin-right: 4px;
-        border: 1px solid var(--nt-border);
-      }
-      button.step {
-        width: 40px;
-        height: 40px;
-        font-size: 1.3rem;
         font-weight: 700;
-        border: 2px solid var(--nt-accent);
-        background: var(--nt-surface);
-        color: var(--nt-accent);
-        border-radius: 8px;
-        cursor: pointer;
+        min-width: 9.5em;
       }
-      button.step:hover {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-      }
-      .count {
-        min-width: 30px;
-        text-align: center;
-        font-weight: 700;
-        font-size: 1.2rem;
-      }
-      .ratio-readout {
-        font-size: 1.05rem;
-        font-weight: 600;
-        margin-top: 6px;
+      .stepbtn {
+        font: inherit;
+        font-weight: 800;
+        font-size: 20px;
+        line-height: 1;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
         background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 8px;
-        padding: 8px 12px;
-        display: inline-block;
-      }
-
-      label.field {
-        display: block;
-        font-weight: 600;
-        margin: 10px 0 6px;
-      }
-      input[type="text"],
-      input[type="number"],
-      select {
-        font-size: 1.05rem;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        width: 100%;
-        max-width: 280px;
-      }
-      input:focus,
-      select:focus,
-      button:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-
-      .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-      .chip {
-        font-size: 1rem;
-        padding: 10px 16px;
-        border: 2px solid var(--nt-border);
-        border-radius: 999px;
-        background: var(--nt-surface);
         color: var(--nt-text);
         cursor: pointer;
       }
-      .chip[aria-pressed="true"] {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
+      .stepbtn:hover {
         border-color: var(--nt-accent);
       }
-
-      .hint {
-        font-size: 0.9rem;
-        color: var(--nt-muted);
-        margin-top: 8px;
+      .stepval {
+        font:
+          800 22px ui-monospace,
+          monospace;
+        min-width: 2.2em;
+        text-align: center;
       }
-      .price-table {
+
+      /* ── Readout + table ── */
+      .readout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        border: 1px solid var(--nt-border);
+      }
+      .readout .k {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        letter-spacing: 0.06em;
+      }
+      .readout .v {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      .readout .v.big {
+        font-size: 26px;
+      }
+      table.bt {
         width: 100%;
         border-collapse: collapse;
-        max-width: 420px;
+        margin-top: 6px;
       }
-      .price-table th,
-      .price-table td {
-        border: 1px solid var(--nt-border);
-        padding: 8px 12px;
+      table.bt th,
+      table.bt td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--nt-border);
         text-align: left;
+        font-size: 15px;
       }
-      .price-table th {
-        background: var(--nt-bg);
+      table.bt thead th {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+      }
+      table.bt input {
+        font: inherit;
+        width: 92px;
+        font-weight: 700;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      table.bt input.ok {
+        border-color: #33d6a6;
+      }
+      table.bt input.bad {
+        border-color: #ff6b81;
       }
 
-      .submit-row {
-        margin: 8px 0 22px;
+      /* ── Pump compare cards ── */
+      .pumpgrid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 6px;
       }
-      button.check {
-        font-size: 1.15rem;
-        font-weight: 700;
-        padding: 14px 28px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: none;
-        border-radius: 10px;
+      @media (max-width: 560px) {
+        .pumpgrid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .pumpcard {
+        font: inherit;
         cursor: pointer;
+        text-align: left;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
       }
-      button.check:hover {
-        filter: brightness(1.08);
+      .pumpcard[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+      }
+      .pumpcard .sw {
+        height: 40px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+      }
+      .pumpcard b {
+        font-size: 15px;
+      }
+      .pumpcard small {
+        color: var(--nt-muted);
+        display: block;
+        margin-top: 2px;
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
       }
 
       /* ── Rubric ── */
       .rubric-wrap {
+        margin-top: 6px;
         overflow-x: auto;
-        margin-top: 10px;
       }
       table.rubric {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.92rem;
-        min-width: 540px;
+        font-size: 15px;
+        min-width: 480px;
       }
       table.rubric th,
       table.rubric td {
-        border: 2px solid var(--nt-border);
-        padding: 10px 12px;
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
         text-align: left;
         vertical-align: top;
       }
       table.rubric thead th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-weight: 700;
-      }
-      table.rubric tbody tr:nth-child(even) td {
         background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
       }
 
-      /* ── Answer Key ── */
-      details.answer-key {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 12px;
-        padding: 0;
+      #ntkit {
         margin-top: 18px;
       }
-      details.answer-key summary {
-        padding: 14px 18px;
-        font-size: 1rem;
-        font-weight: 700;
-        cursor: pointer;
-        color: var(--nt-accent);
-        list-style: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      details.answer-key summary:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-        border-radius: 10px;
-      }
-      .ak-body {
-        padding: 0 18px 18px;
-      }
-      .ak-body ol {
-        margin: 6px 0;
-        padding-left: 20px;
-      }
-      .ak-body li {
-        margin-bottom: 10px;
-        font-size: 0.95rem;
-      }
-
-      /* ── Reflection / Deliverable ── */
-      .reflection-area {
-        width: 100%;
-        font-size: 1rem;
-        padding: 12px 14px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        min-height: 90px;
-        resize: vertical;
-        margin-top: 8px;
-        font-family: inherit;
-      }
-      .reflection-area:focus {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      .deliverable {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin-top: 14px;
-        font-size: 1rem;
-      }
-
-      .sr-only {
+      #a11y-feedback {
         position: absolute;
         width: 1px;
         height: 1px;
-        padding: 0;
-        margin: -1px;
         overflow: hidden;
-        clip: rect(0, 0, 0, 0);
+        clip: rect(0 0 0 0);
         white-space: nowrap;
-        border: 0;
       }
 
-      /* ── Print styles ── */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
       @media print {
-        body {
-          font-size: 13px;
-          line-height: 1.5;
-          background: #fff;
-          color: #000;
+        details.teacher-only,
+        .actions,
+        #submitBtn,
+        .btn,
+        .stepbtn {
+          display: none !important;
         }
         .wrap {
-          max-width: 100%;
-          padding: 0;
+          padding-bottom: 0;
         }
-        details.teacher-notes,
-        details.answer-key {
-          display: none !important;
-        }
-        .submit-row,
-        button.check,
-        button.step {
-          display: none !important;
-        }
-        header.hero,
-        .card,
-        .learning-target {
-          border: 1px solid #ccc !important;
-          border-radius: 0 !important;
+        .card {
           break-inside: avoid;
-        }
-        .learning-target {
-          border-color: #555 !important;
-        }
-        table.rubric thead th {
-          background: #555 !important;
-          color: #fff !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-        .standard {
-          background: #555 !important;
-          color: #fff !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-        .progress-bar,
-        .progress-text {
-          display: none !important;
         }
       }
     </style>
   </head>
 
   <body class="nt-theme-aware">
-    <div class="wrap">
-      <header class="hero">
-        <span class="standard">CCSS 6.RP.A.1–3</span>
-        <h1>🥤 Smoothie Stand Architect</h1>
-        <p class="todo">
-          <strong>What to do:</strong> You run a smoothie stand. Use ratios and
-          unit rates to build recipes, find prices, and fill orders. Answer all
-          6 tasks, then press <em>Check My Work</em>.
-        </p>
-        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" aria-label="Activity progress">
-          <div class="progress-fill" id="pfill"></div>
-        </div>
-        <p class="progress-text" id="ptext" aria-live="polite">0 of 6 tasks answered</p>
-      </header>
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
-      <!-- ══════════════════════════════════════════ -->
-      <!-- LEARNING TARGET                            -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="learning-target" aria-label="Learning Target">
-        <h2>Learning Target</h2>
+    <div class="wrap">
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
         <ul>
-          <li><strong>I can</strong> write a ratio in two ways (6:2 and 3:1) and explain what it means.</li>
-          <li><strong>I can</strong> find a unit rate by dividing to get a "per one" answer.</li>
-          <li><strong>I can</strong> use equivalent ratios to scale a recipe up or down.</li>
-          <li><strong>I can</strong> connect percent to a rate per 100 to find discounts and savings.</li>
+          <li>
+            I can describe a ratio relationship between two quantities (for
+            example, concentrate to water).
+          </li>
+          <li>
+            I can find a unit rate a/b associated with a ratio a : b and use it
+            to solve problems.
+          </li>
+          <li>
+            I can build a ratio table of equivalent ratios to scale a recipe up
+            or down.
+          </li>
+          <li>
+            I can compare two unit rates to decide which option is faster or a
+            better value.
+          </li>
         </ul>
-        <div class="lt-grid">
-          <div class="lt-chip"><strong>Standard</strong> CCSS 6.RP.A.1–3</div>
-          <div class="lt-chip"><strong>Estimated time</strong> 40–50 minutes</div>
-          <div class="lt-chip"><strong>Materials</strong> Pencil, scratch paper, this page</div>
-          <div class="lt-chip"><strong>Product</strong> Completed activity saved as PDF or DOC</div>
+        <div class="lt-meta">
+          <span>Standard: CCSS 6.RP.A.1–3</span>
+          <span>Time: ~40 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
         </div>
       </section>
 
-      <!-- ══════════════════════════════════════════ -->
-      <!-- TEACHER NOTES (collapsible, print-hidden)  -->
-      <!-- ══════════════════════════════════════════ -->
-      <details class="teacher-notes">
-        <summary>Teacher Notes (click to expand — not for student assessment)</summary>
-        <div class="tn-body">
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
           <h3>Pacing</h3>
-          <p>One 40–50 minute period. Suggested flow: introduce the smoothie context (2 min) → Tasks 1–3 together or in pairs (15 min) → Tasks 4–6 independently (15 min) → Check and discuss (10 min) → Reflection (5 min). Two-day option: Day 1 = Tasks 1–4; Day 2 = Tasks 5–6, reflection, and save deliverable.</p>
-
-          <h3>Grouping Suggestions</h3>
-          <p>Tasks 1–2 work well as pair activities to spark ratio conversation. Tasks 3–6 are best attempted individually before a brief class share-out. Use the "better buy" task (Task 4) as a whole-class discussion anchor.</p>
-
+          <ul>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Brief" together. Anchor
+              the mixing ratio idea using the beaker figure: "for every 1 part
+              concentrate we add 4 parts water." Stress that a ratio compares
+              two amounts.
+            </li>
+            <li>
+              <strong>Design work (25–30 min):</strong> Students complete Task 1
+              → 4 in order. Task 1 is a hands-on mixer; Task 4 (Pump Selection)
+              uses unit rates students built in Task 3.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Compare the two unit-rate
+              strategies in Task 4, and discuss the Level 2 scaling/inequality
+              extensions.
+            </li>
+          </ul>
           <h3>Differentiation</h3>
           <ul>
-            <li><strong>Support:</strong> Provide a multiplication/division chart. For Task 4, have students draw tally marks for each cup and label the cost. For Task 6, prompt: "25 per 100 — what is 25 per 100 of $20?" Allow students to use a calculator for the arithmetic, focusing on the setup.</li>
-            <li><strong>Challenge / Extension:</strong> Ask students to find three different ratio pairs that are equivalent to 3:1 (e.g., 6:2, 9:3, 12:4) and explain the pattern. Have them write their own "better buy" scenario and solve it. Extend Task 6: if the discount is 10%, 25%, 50%, or 75%, which saves the most? Make a table.</li>
+            <li>
+              <strong>Level 1 (support):</strong> Use the green callouts and
+              bilingual (EN/ES) prompts. Let students use the interactive mixer
+              to <em>see</em> equivalent ratios before computing. Provide a
+              printed ratio-table scaffold.
+            </li>
+            <li>
+              <strong>Level 2 (enrichment):</strong> Have students justify why
+              equivalent ratios share the same unit rate, and solve the scaling
+              problem for an arbitrary number of bottles.
+            </li>
           </ul>
-
-          <h3>ESOL / Language Supports</h3>
+          <h3>STEM Connection</h3>
           <ul>
-            <li>Pre-teach key vocabulary: <em>ratio, unit rate, equivalent, per, percent, discount</em>. Post a word wall with visual examples (e.g., a picture of juice cartons labeled with the ratio).</li>
-            <li>Sentence frames: "The ratio of ___ to ___ is ___:___." / "The unit rate is ___ per ___." / "I know Fresh is cheaper because ___."</li>
-            <li>The smoothie glass in Task 1 is a concrete visual model — encourage students to point and explain in their home language before writing in English.</li>
-            <li>Allow bilingual scratch paper. Accept correct numeric answers even if the written explanation uses limited English.</li>
+            <li>
+              This is an authentic process-engineering task: process and fluids
+              engineers design beverage and water-treatment systems by holding a
+              <em>mixing ratio</em> constant while scaling volume, and by
+              comparing <em>flow rates</em> (a unit rate, liters per minute) to
+              size pumps. Students do the exact reasoning a real systems
+              engineer uses.
+            </li>
           </ul>
         </div>
       </details>
 
-      <!-- Q1: Build a ratio with the smoothie glass -->
-      <section class="card" data-q="1">
-        <span class="qnum">Task 1 · Build a Ratio</span>
-        <h2>Make a 3 : 1 smoothie</h2>
-        <p class="direction">
-          Tap <strong>+</strong> and <strong>–</strong> to add scoops. Make the
-          ratio of <strong>fruit to juice</strong> equal
-          <strong>3 to 1</strong>.
-        </p>
-        <div class="builder">
-          <div class="glass" aria-hidden="true" role="img" aria-label="Smoothie glass visual">
-            <div class="layer juice" id="g-juice" style="height: 0"></div>
-            <div class="layer fruit" id="g-fruit" style="height: 0"></div>
-          </div>
-          <div class="controls">
-            <div class="stepper">
-              <button
-                type="button"
-                class="step"
-                data-act="dec"
-                data-t="fruit"
-                aria-label="Remove one fruit scoop"
-              >
-                –
-              </button>
-              <span class="count" id="c-fruit" aria-live="polite" aria-label="Fruit scoops">0</span>
-              <button
-                type="button"
-                class="step"
-                data-act="inc"
-                data-t="fruit"
-                aria-label="Add one fruit scoop"
-              >
-                +
-              </button>
-              <label><span class="swatch" style="background: #e8554e" aria-hidden="true"></span>Fruit</label>
-            </div>
-            <div class="stepper">
-              <button
-                type="button"
-                class="step"
-                data-act="dec"
-                data-t="juice"
-                aria-label="Remove one juice scoop"
-              >
-                –
-              </button>
-              <span class="count" id="c-juice" aria-live="polite" aria-label="Juice scoops">0</span>
-              <button
-                type="button"
-                class="step"
-                data-act="inc"
-                data-t="juice"
-                aria-label="Add one juice scoop"
-              >
-                +
-              </button>
-              <label><span class="swatch" style="background: #f2b134" aria-hidden="true"></span>Juice</label>
-            </div>
-            <div class="ratio-readout" id="ratio-readout" aria-live="polite" role="status">
-              Fruit : Juice = 0 : 0
-            </div>
-          </div>
-        </div>
-        <p class="hint">Tip: a 3 : 1 ratio means 3 fruit for every 1 juice.</p>
-      </section>
-
-      <!-- Q2: Write the ratio of a given mix -->
-      <section class="card" data-q="2">
-        <span class="qnum">Task 2 · Write the Ratio</span>
-        <h2>Berry Blast recipe</h2>
-        <p class="direction">
-          A Berry Blast uses <strong>6 berries</strong> and
-          <strong>2 bananas</strong>. Write the ratio of
-          <strong>berries to bananas</strong> in lowest terms (like
-          <em>3:1</em>).
-        </p>
-        <label class="field" for="q2">Berries : Bananas =</label>
-        <input
-          type="text"
-          id="q2"
-          inputmode="numeric"
-          placeholder="e.g. 3:1"
-          autocomplete="off"
-          aria-describedby="q2-hint"
-        />
-        <p class="hint" id="q2-hint">Divide both numbers by their greatest common factor.</p>
-      </section>
-
-      <!-- Q3: Unit rate -->
-      <section class="card" data-q="3">
-        <span class="qnum">Task 3 · Unit Rate</span>
-        <h2>Price per smoothie</h2>
-        <p class="direction">
-          <strong>4 smoothies cost $12.</strong> How much is
-          <strong>1 smoothie</strong>? Type just the number of dollars.
-        </p>
-        <label class="field" for="q3">$ per smoothie</label>
-        <input type="number" id="q3" min="0" step="0.01" placeholder="e.g. 5" aria-describedby="q3-hint" />
-        <p class="hint" id="q3-hint">Divide $12 by 4 to find the price for 1.</p>
-      </section>
-
-      <!-- Q4: Better buy / compare unit rates -->
-      <section class="card" data-q="4">
-        <span class="qnum">Task 4 · Better Buy</span>
-        <h2>Which juice is cheaper per cup?</h2>
-        <p class="direction">
-          Compare the unit rates. Tap the carton with the
-          <strong>lower price per cup</strong>.
-        </p>
-        <table class="price-table" aria-label="Juice carton prices">
-          <thead>
-            <tr>
-              <th scope="col">Carton</th>
-              <th scope="col">Cups</th>
-              <th scope="col">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Sunny</td>
-              <td>3</td>
-              <td>$6</td>
-            </tr>
-            <tr>
-              <td>Fresh</td>
-              <td>5</td>
-              <td>$8</td>
-            </tr>
-          </tbody>
-        </table>
-        <div
-          class="chips"
-          id="q4"
-          role="group"
-          aria-label="Pick the cheaper juice per cup"
-          style="margin-top: 12px"
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag"
+          >Unit 1 · Math Architect · Ratios &amp; Unit Rates (6.RP)</span
         >
-          <button
-            type="button"
-            class="chip"
-            data-val="Sunny"
-            aria-pressed="false"
-          >
-            Sunny — 3 cups / $6
-          </button>
-          <button
-            type="button"
-            class="chip"
-            data-val="Fresh"
-            aria-pressed="false"
-          >
-            Fresh — 5 cups / $8
-          </button>
+        <h1>Design Challenge: The Stadium Hydration Station</h1>
+        <p class="lede">
+          You are a <strong>systems engineer</strong> for AquaWorks. Brookside
+          Stadium needs a hydration station that mixes electrolyte concentrate
+          with water and refills bottles fast on a hot game day. Use ratios,
+          ratio tables, and unit rates to mix the formula correctly, scale it
+          for the crowd, and select the right pump.
+        </p>
+        <div class="badges">
+          <span class="badge">Standard 6.RP.A.1–3</span>
+          <span class="badge">Mixing Ratios</span>
+          <span class="badge">Ratio Tables</span>
+          <span class="badge">Unit Rates</span>
+          <span class="badge">Process Engineering</span>
         </div>
-        <p class="hint">
-          Find dollars per cup for each, then pick the smaller one.
+        <div class="cycle">
+          <div>
+            <b>1 · Define</b>Read the brief, the formula ratio &amp;
+            constraints.
+          </div>
+          <div><b>2 · Mix</b>Hold the 1 : 4 ratio while scaling volume.</div>
+          <div><b>3 · Scale</b>Build a ratio table for the whole crowd.</div>
+          <div><b>4 · Rate</b>Find the flow rate (L/min) for each pump.</div>
+          <div><b>5 · Decide</b>Compare unit rates &amp; pick the pump.</div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Specs approved: <span id="pcount">0</span> / 8
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="8"
+            aria-label="Specs approved"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ BRIEF ══ -->
+      <section class="card" aria-label="The brief">
+        <h2>The Brief</h2>
+        <p>
+          The stadium operations team handed you the official AquaWorks formula
+          and the day's targets. Your station has a
+          <strong>concentrate tank</strong>, a <strong>water line</strong>, a
+          <strong>mixing tank</strong>, and a <strong>fill nozzle</strong>. The
+          schematic below shows how they connect.
         </p>
+        <p class="scale">
+          FORMULA&nbsp; 1 part concentrate : 4 parts water &nbsp;·&nbsp; serve
+          ice-cold &amp; refill fast
+        </p>
+
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 420 240"
+              role="img"
+              aria-label="System schematic. A concentrate tank and a water tank feed pipes into a mixing tank, which feeds a fill nozzle into a bottle. The formula is one part concentrate to four parts water."
+            >
+              <defs>
+                <pattern
+                  id="g18"
+                  width="18"
+                  height="18"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M18 0H0V18"
+                    fill="none"
+                    class="bp-grid"
+                    stroke-width="1"
+                  />
+                </pattern>
+              </defs>
+              <rect x="8" y="8" width="404" height="224" fill="url(#g18)" />
+
+              <!-- concentrate tank -->
+              <rect
+                x="24"
+                y="28"
+                width="70"
+                height="64"
+                rx="6"
+                class="bp-edge"
+              />
+              <rect
+                x="28"
+                y="60"
+                width="62"
+                height="28"
+                class="liq-conc"
+                opacity="0.85"
+              />
+              <text x="59" y="22" text-anchor="middle" class="bp-sub">
+                Concentrate
+              </text>
+              <text
+                x="59"
+                y="80"
+                text-anchor="middle"
+                class="bp-label"
+                font-size="12"
+              >
+                1 part
+              </text>
+
+              <!-- water tank -->
+              <rect
+                x="24"
+                y="140"
+                width="70"
+                height="64"
+                rx="6"
+                class="bp-edge"
+              />
+              <rect
+                x="28"
+                y="150"
+                width="62"
+                height="50"
+                class="liq-water"
+                opacity="0.7"
+              />
+              <text x="59" y="134" text-anchor="middle" class="bp-sub">
+                Water
+              </text>
+              <text
+                x="59"
+                y="180"
+                text-anchor="middle"
+                class="bp-label"
+                font-size="12"
+              >
+                4 parts
+              </text>
+
+              <!-- pipes -->
+              <path d="M94 60 H160 V104" class="bp-edge" />
+              <path d="M94 172 H160 V120" class="bp-edge" />
+
+              <!-- mixing tank -->
+              <rect
+                x="150"
+                y="104"
+                width="120"
+                height="92"
+                rx="8"
+                class="bp-edge"
+              />
+              <rect
+                x="156"
+                y="150"
+                width="108"
+                height="40"
+                class="liq-mix"
+                opacity="0.8"
+              />
+              <text x="210" y="128" text-anchor="middle" class="bp-label">
+                Mixing Tank
+              </text>
+              <text x="210" y="174" text-anchor="middle" class="bp-sub">
+                electrolyte mix
+              </text>
+
+              <!-- nozzle pipe -->
+              <path d="M270 150 H320 V176" class="bp-edge" />
+              <!-- bottle -->
+              <rect
+                x="304"
+                y="176"
+                width="32"
+                height="46"
+                rx="5"
+                class="bp-edge"
+              />
+              <rect x="316" y="168" width="8" height="10" class="bp-edge" />
+              <rect
+                x="307"
+                y="196"
+                width="26"
+                height="24"
+                class="liq-mix"
+                opacity="0.85"
+              />
+              <text x="360" y="200" class="bp-sub">fill nozzle →</text>
+              <text
+                x="320"
+                y="236"
+                text-anchor="middle"
+                class="bp-dimtext"
+                font-size="11"
+              >
+                bottle
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>System schematic · 1 : 4 formula</span
+              ><span>not to scale</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="grid3" style="grid-template-columns: 1fr">
+              <div class="lvl lvl1" style="margin-top: 0">
+                <b>Deliverable 1</b><br />Mix the formula so the ratio is
+                exactly 1 part concentrate to 4 parts water.
+              </div>
+              <div class="lvl lvl2" style="margin-top: 0">
+                <b>Deliverable 2</b><br />Scale the recipe to fill enough mix
+                for the whole crowd with a ratio table.
+              </div>
+              <div class="lvl lvl3" style="margin-top: 0">
+                <b>Deliverable 3</b><br />Compare pump flow rates (L/min) and
+                pick the best pump for the line.
+              </div>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                A <strong>ratio</strong> compares two amounts. "1 : 4" means for
+                every 1 cup of concentrate you add 4 cups of water — so 5 cups
+                total. A <strong>unit rate</strong> tells you "how much for 1" —
+                like liters per <em>1</em> minute.
+              </p>
+              <span class="es"
+                >Español: Una <strong>razón</strong> compara dos cantidades. "1
+                : 4" significa que por cada 1 de concentrado agregas 4 de agua.
+                Una <strong>tasa unitaria</strong> dice "cuánto por 1", como
+                litros por <em>1</em> minuto.</span
+              >
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- Q5: Scale up a recipe (ratio table) -->
-      <section class="card" data-q="5">
-        <span class="qnum">Task 5 · Scale the Recipe</span>
-        <h2>Make a bigger batch</h2>
-        <p class="direction">
-          The recipe is <strong>2 cups fruit for every 5 cups water</strong>. If
-          you use <strong>10 cups of water</strong>, how many
-          <strong>cups of fruit</strong> do you need?
+      <!-- ══ TASK 1 · INTERACTIVE MIXER ══ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">
+          Task 1 · Mix the Formula
+          <span class="tag-shape">Equivalent ratios</span>
+        </h2>
+        <p>
+          Use the mixer to batch the formula. Add scoops of concentrate and cups
+          of water. The batch is
+          <strong>correct only when the ratio is equivalent to 1 : 4</strong>.
+          Watch the tank fill as you adjust it.
         </p>
-        <label class="field" for="q5">Cups of fruit</label>
-        <input type="number" id="q5" min="0" step="1" placeholder="cups" aria-describedby="q5-hint" />
-        <p class="hint" id="q5-hint">10 cups of water is 2 times the recipe.</p>
+
+        <div class="mixer">
+          <div class="bp" aria-hidden="false">
+            <svg
+              viewBox="0 0 220 220"
+              role="img"
+              aria-label="A mixing beaker showing layers of concentrate and water based on your current mix."
+            >
+              <rect x="8" y="8" width="204" height="204" fill="url(#g18)" />
+              <!-- beaker -->
+              <path
+                d="M60 30 H160 V180 a14 14 0 0 1 -14 14 H74 a14 14 0 0 1 -14 -14 Z"
+                class="bp-edge"
+              />
+              <!-- liquid layers (filled by JS) -->
+              <rect
+                id="mixWater"
+                x="62"
+                y="60"
+                width="96"
+                height="0"
+                class="liq-water"
+                opacity="0.7"
+              />
+              <rect
+                id="mixConc"
+                x="62"
+                y="60"
+                width="96"
+                height="0"
+                class="liq-conc"
+                opacity="0.85"
+              />
+              <text x="110" y="24" text-anchor="middle" class="bp-sub">
+                Mixing beaker
+              </text>
+              <text
+                id="mixRatioLabel"
+                x="110"
+                y="208"
+                text-anchor="middle"
+                class="bp-dimtext"
+                font-size="13"
+              >
+                1 : 4
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Live mix preview</span
+              ><span id="mixTotalCap">5 cups total</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="stepper">
+              <label id="lblConc" for="conc">Concentrate (parts)</label>
+              <button
+                type="button"
+                class="stepbtn"
+                data-step="conc"
+                data-dir="-1"
+                aria-label="Decrease concentrate"
+              >
+                −
+              </button>
+              <span class="stepval" id="conc" aria-live="polite">1</span>
+              <button
+                type="button"
+                class="stepbtn"
+                data-step="conc"
+                data-dir="1"
+                aria-label="Increase concentrate"
+              >
+                +
+              </button>
+            </div>
+            <div class="stepper">
+              <label id="lblWater" for="water">Water (parts)</label>
+              <button
+                type="button"
+                class="stepbtn"
+                data-step="water"
+                data-dir="-1"
+                aria-label="Decrease water"
+              >
+                −
+              </button>
+              <span class="stepval" id="water" aria-live="polite">4</span>
+              <button
+                type="button"
+                class="stepbtn"
+                data-step="water"
+                data-dir="1"
+                aria-label="Increase water"
+              >
+                +
+              </button>
+            </div>
+
+            <div class="readout">
+              <div>
+                <span class="k">Current ratio</span><br />
+                <span class="v" id="mixRatio">1 : 4</span>
+              </div>
+              <div>
+                <span class="k">Simplest form</span><br />
+                <span class="v" id="mixSimplest">1 : 4</span>
+              </div>
+              <div>
+                <span class="k">Status</span><br />
+                <span class="v" id="mixStatus">—</span>
+              </div>
+            </div>
+
+            <div class="q" data-q="mix-target" style="margin-top: 14px">
+              <p class="lbl">
+                Q1.1 — Set the mixer to a batch that is equivalent to 1 : 4 but
+                uses <strong>3 parts concentrate</strong>. How many parts of
+                water do you need?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="q-mix-target"
+                  data-ans="12"
+                  data-tol="0"
+                  data-why="3 : 12 = 1 : 4. Multiply both parts of 1 : 4 by 3."
+                  aria-label="Parts of water for 3 parts concentrate"
+                />
+                <span class="unit">parts water</span>
+                <button type="button" class="btn" data-check="mix-target">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="mix-target">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-mix-target"></p>
+            </div>
+
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Equivalent ratios are made by multiplying <em>both</em> numbers
+                by the same amount. 1 : 4, then ×3 on each part, gives 3 : 12.
+              </p>
+              <span class="es"
+                >Español: Las razones equivalentes se hacen multiplicando los
+                dos números por la misma cantidad. 1 : 4, por 3, da 3 :
+                12.</span
+              >
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- Q6: Percent as rate per 100 -->
-      <section class="card" data-q="6">
-        <span class="qnum">Task 6 · Percent Rate</span>
-        <h2>Today's discount</h2>
-        <p class="direction">
-          A $20 smoothie pack is <strong>25% off</strong>. 25% means 25 per 100.
-          How many <strong>dollars do you save</strong>?
+      <!-- ══ TASK 2 · UNIT RATE FROM THE FORMULA ══ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">
+          Task 2 · One Bottle, One Rate
+          <span class="tag-shape">Unit rate</span>
+        </h2>
+        <p>
+          Each sports bottle holds <strong>500 mL (0.5 L)</strong>. The station
+          mixed a <strong>15 L</strong> batch that filled
+          <strong>30 bottles</strong>. Engineers always reduce to a
+          <em>unit rate</em> — the amount for exactly one — so the system is
+          easy to scale.
         </p>
-        <label class="field" for="q6">$ saved</label>
-        <input
-          type="number"
-          id="q6"
-          min="0"
-          step="0.01"
-          placeholder="dollars"
-          aria-describedby="q6-hint"
-        />
-        <p class="hint" id="q6-hint">25% of $20 = 25/100 × 20 = ?</p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 180"
+              role="img"
+              aria-label="A 15 liter batch divides into 30 bottles, each 0.5 liters."
+            >
+              <rect x="8" y="8" width="344" height="164" fill="url(#g18)" />
+              <!-- batch tank -->
+              <rect
+                x="24"
+                y="40"
+                width="90"
+                height="100"
+                rx="8"
+                class="bp-edge"
+              />
+              <rect
+                x="28"
+                y="80"
+                width="82"
+                height="56"
+                class="liq-mix"
+                opacity="0.8"
+              />
+              <text x="69" y="34" text-anchor="middle" class="bp-sub">
+                Batch
+              </text>
+              <text x="69" y="112" text-anchor="middle" class="bp-label">
+                15 L
+              </text>
+              <!-- arrow -->
+              <path d="M120 92 H156" class="bp-dim" />
+              <path d="M150 86 L160 92 L150 98 Z" fill="#ffcc66" />
+              <!-- bottles row -->
+              <g class="bp-edge">
+                <rect x="176" y="60" width="20" height="60" rx="4" />
+                <rect x="206" y="60" width="20" height="60" rx="4" />
+                <rect x="236" y="60" width="20" height="60" rx="4" />
+                <rect x="266" y="60" width="20" height="60" rx="4" />
+              </g>
+              <text x="316" y="94" class="bp-sub">… 30 bottles</text>
+              <text x="231" y="142" text-anchor="middle" class="bp-dimtext">
+                0.5 L each
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Batch → bottles</span><span>0.5 L per bottle</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="bottle-rate">
+              <p class="lbl">
+                Q2.1 — Unit rate: how many
+                <strong>liters of mix per 1 bottle</strong>?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-bottle-rate"
+                  data-ans="0.5"
+                  data-tol="0.01"
+                  data-why="15 L ÷ 30 bottles = 0.5 L per bottle."
+                  aria-label="Liters per bottle"
+                />
+                <span class="unit">L / bottle</span>
+                <button type="button" class="btn" data-check="bottle-rate">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="bottle-rate">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-bottle-rate"></p>
+            </div>
+            <div class="q" data-q="batch-need">
+              <p class="lbl">
+                Q2.2 — Using that unit rate, how many
+                <strong>liters of mix</strong> are needed to fill
+                <strong>120 bottles</strong>?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-batch-need"
+                  data-ans="60"
+                  data-tol="0.5"
+                  data-why="0.5 L/bottle × 120 bottles = 60 L."
+                  aria-label="Liters for 120 bottles"
+                />
+                <span class="unit">L</span>
+                <button type="button" class="btn" data-check="batch-need">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="batch-need">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-batch-need"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Unit rate = total ÷ number of items. To go back up, multiply the
+                unit rate by how many you want.
+              </p>
+              <span class="es"
+                >Español: Tasa unitaria = total ÷ número de objetos. Para volver
+                a subir, multiplica la tasa unitaria por la cantidad que
+                quieres.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Write a rule that gives the liters of mix <em>L</em> for any
+                number of bottles <em>b</em>. (Hint: it uses your unit rate.)
+                Then explain why that rule is the same as the ratio 15 L : 30
+                bottles.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <div class="submit-row">
-        <button type="button" class="check" id="checkBtn">
-          Check My Work ✓
+      <!-- ══ TASK 3 · RATIO TABLE (SCALE FOR THE CROWD) ══ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">
+          Task 3 · Scale the Batch <span class="tag-shape">Ratio table</span>
+        </h2>
+        <p>
+          The crowd needs a big batch. Keep the formula at
+          <strong>1 : 4</strong>
+          and fill in the ratio table so every row is an equivalent ratio. Each
+          row must keep concentrate : water = 1 : 4 (and total = concentrate +
+          water).
+        </p>
+        <div class="grid2">
+          <div>
+            <table class="bt" aria-label="Ratio table for the 1 to 4 formula">
+              <thead>
+                <tr>
+                  <th>Concentrate (L)</th>
+                  <th>Water (L)</th>
+                  <th>Total mix (L)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>4</td>
+                  <td>5</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      id="q-rt-w1"
+                      data-ans="12"
+                      data-tol="0"
+                      data-why="3 × 4 = 12 L water (3 : 12 = 1 : 4)."
+                      aria-label="Water for 3 liters concentrate"
+                    />
+                  </td>
+                  <td>15</td>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      id="q-rt-c2"
+                      data-ans="5"
+                      data-tol="0"
+                      data-why="20 L water ÷ 4 = 5 L concentrate (5 : 20 = 1 : 4)."
+                      aria-label="Concentrate for 20 liters water"
+                    />
+                  </td>
+                  <td>20</td>
+                  <td>25</td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>48</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      id="q-rt-t3"
+                      data-ans="60"
+                      data-tol="0"
+                      data-why="12 + 48 = 60 L total."
+                      aria-label="Total for 12 liters concentrate"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row" style="margin-top: 10px">
+              <button type="button" class="btn" id="checkTableBtn">
+                Check the table
+              </button>
+              <button type="button" class="btn ghost" data-hint="rt-w1">
+                Hint
+              </button>
+            </div>
+            <p class="fb" id="fb-table"></p>
+          </div>
+          <div>
+            <div class="bp">
+              <svg
+                viewBox="0 0 320 220"
+                role="img"
+                aria-label="A double number line. The top line marks concentrate at 1, 3, 5, 12 liters; the bottom line marks water at 4, 12, 20, 48 liters, showing the 1 to 4 relationship."
+              >
+                <rect x="8" y="8" width="304" height="204" fill="url(#g18)" />
+                <text x="160" y="28" text-anchor="middle" class="bp-sub">
+                  Double number line · stays 1 : 4
+                </text>
+                <!-- concentrate line -->
+                <line x1="30" y1="80" x2="300" y2="80" class="bp-edge" />
+                <g class="liq-conc">
+                  <circle cx="50" cy="80" r="5" />
+                  <circle cx="120" cy="80" r="5" />
+                  <circle cx="180" cy="80" r="5" />
+                  <circle cx="280" cy="80" r="5" />
+                </g>
+                <text x="30" y="66" class="bp-sub">Concentrate (L)</text>
+                <text
+                  x="50"
+                  y="100"
+                  text-anchor="middle"
+                  class="bp-dimtext"
+                  font-size="11"
+                >
+                  1
+                </text>
+                <text
+                  x="120"
+                  y="100"
+                  text-anchor="middle"
+                  class="bp-dimtext"
+                  font-size="11"
+                >
+                  3
+                </text>
+                <text
+                  x="180"
+                  y="100"
+                  text-anchor="middle"
+                  class="bp-dimtext"
+                  font-size="11"
+                >
+                  5
+                </text>
+                <text
+                  x="280"
+                  y="100"
+                  text-anchor="middle"
+                  class="bp-dimtext"
+                  font-size="11"
+                >
+                  12
+                </text>
+                <!-- water line -->
+                <line x1="30" y1="160" x2="300" y2="160" class="bp-edge" />
+                <g class="liq-water">
+                  <circle cx="50" cy="160" r="5" />
+                  <circle cx="120" cy="160" r="5" />
+                  <circle cx="180" cy="160" r="5" />
+                  <circle cx="280" cy="160" r="5" />
+                </g>
+                <text x="30" y="146" class="bp-sub">Water (L)</text>
+                <text
+                  x="50"
+                  y="180"
+                  text-anchor="middle"
+                  class="bp-dimtext"
+                  font-size="11"
+                >
+                  4
+                </text>
+                <text
+                  x="120"
+                  y="180"
+                  text-anchor="middle"
+                  class="bp-dimtext"
+                  font-size="11"
+                >
+                  12
+                </text>
+                <text
+                  x="180"
+                  y="180"
+                  text-anchor="middle"
+                  class="bp-dimtext"
+                  font-size="11"
+                >
+                  20
+                </text>
+                <text
+                  x="280"
+                  y="180"
+                  text-anchor="middle"
+                  class="bp-dimtext"
+                  font-size="11"
+                >
+                  48
+                </text>
+                <!-- connectors -->
+                <g stroke="#ffcc66" stroke-width="1" stroke-dasharray="3 3">
+                  <line x1="50" y1="86" x2="50" y2="154" />
+                  <line x1="120" y1="86" x2="120" y2="154" />
+                  <line x1="180" y1="86" x2="180" y2="154" />
+                  <line x1="280" y1="86" x2="280" y2="154" />
+                </g>
+              </svg>
+              <div class="bp-cap">
+                <span>Each pair multiplies 1 : 4</span><span>×3, ×5, ×12</span>
+              </div>
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Every row of this table has the same unit rate of water per
+                concentrate. What is that unit rate, and why does it never
+                change even though the totals grow?
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 4 · PUMP SELECTION (COMPARE UNIT RATES) ══ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">
+          Task 4 · Choose the Pump
+          <span class="tag-shape">Compare unit rates</span>
+        </h2>
+        <p>
+          Three pumps can move the mix to the fill nozzle. The faster the
+          <strong>flow rate</strong> (liters per minute), the quicker the lines
+          move. Flow rate is a <strong>unit rate</strong>: liters per
+          <em>1</em> minute. Find each rate, then pick the fastest pump.
+        </p>
+
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 220"
+              role="img"
+              aria-label="A line graph of liters versus minutes for three pumps. Steeper lines mean faster flow rates."
+            >
+              <rect x="8" y="8" width="344" height="204" fill="url(#g18)" />
+              <!-- axes -->
+              <line x1="44" y1="24" x2="44" y2="184" class="bp-edge" />
+              <line x1="44" y1="184" x2="332" y2="184" class="bp-edge" />
+              <text x="20" y="30" class="bp-sub" transform="rotate(-90 20 30)">
+                Liters
+              </text>
+              <text x="300" y="200" class="bp-sub">Minutes</text>
+              <!-- gridline labels -->
+              <text x="116" y="198" text-anchor="middle" class="bp-sub">2</text>
+              <text x="188" y="198" text-anchor="middle" class="bp-sub">4</text>
+              <text x="260" y="198" text-anchor="middle" class="bp-sub">6</text>
+              <!-- Pump A: 6 L/min -> at 6 min reaches near top -->
+              <line
+                x1="44"
+                y1="184"
+                x2="260"
+                y2="40"
+                stroke="#33d6a6"
+                stroke-width="3"
+              />
+              <text
+                x="266"
+                y="40"
+                class="bp-label"
+                font-size="12"
+                fill="#33d6a6"
+              >
+                A
+              </text>
+              <!-- Pump B: 4 L/min -->
+              <line
+                x1="44"
+                y1="184"
+                x2="332"
+                y2="88"
+                stroke="#38bdf8"
+                stroke-width="3"
+              />
+              <text
+                x="336"
+                y="88"
+                class="bp-label"
+                font-size="12"
+                fill="#38bdf8"
+              >
+                B
+              </text>
+              <!-- Pump C: 3 L/min -->
+              <line
+                x1="44"
+                y1="184"
+                x2="332"
+                y2="124"
+                stroke="#f97316"
+                stroke-width="3"
+              />
+              <text
+                x="336"
+                y="124"
+                class="bp-label"
+                font-size="12"
+                fill="#f97316"
+              >
+                C
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Steeper = faster flow</span><span>L vs. min</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="q" data-q="pumpA">
+              <p class="lbl">
+                Q4.1 — Pump A moves <strong>18 L in 3 min</strong>. Flow rate?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-pumpA"
+                  data-ans="6"
+                  data-tol="0.1"
+                  data-why="18 L ÷ 3 min = 6 L per minute."
+                  aria-label="Pump A flow rate"
+                />
+                <span class="unit">L / min</span>
+                <button type="button" class="btn" data-check="pumpA">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="pumpA">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-pumpA"></p>
+            </div>
+            <div class="q" data-q="pumpB">
+              <p class="lbl">
+                Q4.2 — Pump B moves <strong>20 L in 5 min</strong>. Flow rate?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-pumpB"
+                  data-ans="4"
+                  data-tol="0.1"
+                  data-why="20 L ÷ 5 min = 4 L per minute."
+                  aria-label="Pump B flow rate"
+                />
+                <span class="unit">L / min</span>
+                <button type="button" class="btn" data-check="pumpB">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="pumpB">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-pumpB"></p>
+            </div>
+
+            <h3>Select the pump for the line</h3>
+            <div
+              class="pumpgrid"
+              id="pumpChooser"
+              role="group"
+              aria-label="Pump options"
+            >
+              <button
+                type="button"
+                class="pumpcard"
+                data-pump="A"
+                data-rate="6"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #2f8f5b, #33d6a6)"
+                ></div>
+                <b>Pump A</b><small>18 L in 3 min</small>
+              </button>
+              <button
+                type="button"
+                class="pumpcard"
+                data-pump="B"
+                data-rate="4"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #0277b3, #38bdf8)"
+                ></div>
+                <b>Pump B</b><small>20 L in 5 min</small>
+              </button>
+              <button
+                type="button"
+                class="pumpcard"
+                data-pump="C"
+                data-rate="3"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #c2410c, #f97316)"
+                ></div>
+                <b>Pump C</b><small>9 L in 3 min</small>
+              </button>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Selected</span><br /><span
+                  class="v"
+                  id="pumpName"
+                  >—</span
+                >
+              </div>
+              <div>
+                <span class="k">Flow rate</span><br /><span
+                  class="v"
+                  id="pumpRate"
+                  >—</span
+                >
+              </div>
+              <div>
+                <span class="k">Decision</span><br /><span
+                  class="v"
+                  id="pumpVerdict"
+                  >—</span
+                >
+              </div>
+            </div>
+
+            <div class="q" data-q="pump-time" style="margin-top: 14px">
+              <p class="lbl">
+                Q4.3 — With the <strong>fastest</strong> pump, how many minutes
+                to move your <strong>60 L</strong> crowd batch?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-pump-time"
+                  data-ans="10"
+                  data-tol="0.1"
+                  data-why="60 L ÷ 6 L/min = 10 minutes (Pump A is fastest)."
+                  aria-label="Minutes to move 60 liters"
+                />
+                <span class="unit">min</span>
+                <button type="button" class="btn" data-check="pump-time">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="pump-time">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-pump-time"></p>
+            </div>
+
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Flow rate = liters ÷ minutes. The bigger the L/min number, the
+                faster. Time = liters ÷ flow rate.
+              </p>
+              <span class="es"
+                >Español: Tasa de flujo = litros ÷ minutos. Número mayor = más
+                rápido. Tiempo = litros ÷ tasa de flujo.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Pump C moves 9 L in 3 min. Show its unit rate and explain, using
+                the graph, why a steeper line always means a faster pump.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SIGN-OFF ══ -->
+      <section class="card" aria-label="Engineer sign-off">
+        <h2>Engineer's Sign-off</h2>
+        <p class="muted" style="margin-top: 0">
+          When the formula mixes 1 : 4, the table scales correctly, and you have
+          chosen the fastest pump, submit your design report. Enter your name in
+          the field below, then press <strong>Submit design &amp; grade</strong>
+          to save your score as a PDF or DOC.
+        </p>
+        <button type="button" class="btn" id="submitBtn">
+          Submit design &amp; grade
         </button>
-      </div>
+        <div id="ntkit"></div>
+      </section>
 
-      <!-- Activity kit mounts here: student name, save PDF/DOC, results -->
-      <div id="ntkit"></div>
-
-      <!-- ══════════════════════════════════════════ -->
-      <!-- RUBRIC                                     -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card" aria-label="Scoring Rubric">
-        <h2>Scoring Rubric — Ratios &amp; Unit Rates (6.RP.A.1–3)</h2>
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>Performance Rubric — Hydration Station (6.RP.A.1–3)</h2>
         <div class="rubric-wrap">
           <table class="rubric">
             <thead>
               <tr>
-                <th scope="col">Skill</th>
-                <th scope="col">Expert (4)</th>
-                <th scope="col">Proficient (3)</th>
-                <th scope="col">Developing (2)</th>
-                <th scope="col">Beginning (1)</th>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Write &amp; Simplify Ratios</strong><br><span style="font-size:0.85rem;color:var(--nt-muted)">Tasks 1–2 · 6.RP.A.1</span></td>
-                <td>Writes ratio correctly and simplifies to lowest terms; explains what the ratio means in context.</td>
-                <td>Writes ratio correctly and simplifies to lowest terms with no explanation needed.</td>
-                <td>Writes the ratio correctly but does not simplify, or simplifies incorrectly.</td>
-                <td>Cannot write or simplify a ratio without significant help.</td>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>8 / 8</td>
+                <td>
+                  Builds equivalent ratios accurately, completes the ratio
+                  table, computes every unit rate correctly, and selects the
+                  fastest pump. Can explain why equivalent ratios share one unit
+                  rate.
+                </td>
               </tr>
               <tr>
-                <td><strong>Find Unit Rate</strong><br><span style="font-size:0.85rem;color:var(--nt-muted)">Tasks 3–4 · 6.RP.A.2</span></td>
-                <td>Correctly finds the unit rate for both cartons and clearly identifies the better buy with a written reason.</td>
-                <td>Correctly finds the unit rate and identifies the better buy.</td>
-                <td>Sets up the division correctly but makes a calculation error; or identifies one unit rate correctly.</td>
-                <td>Does not set up or compute unit rates correctly.</td>
+                <td><strong>3 — Meets</strong></td>
+                <td>6–7 / 8</td>
+                <td>
+                  Computes most ratios and unit rates correctly with at most one
+                  slip. Completes the table and reaches a valid pump choice.
+                </td>
               </tr>
               <tr>
-                <td><strong>Scale Ratios &amp; Ratio Tables</strong><br><span style="font-size:0.85rem;color:var(--nt-muted)">Task 5 · 6.RP.A.3</span></td>
-                <td>Correctly scales the recipe; explains the multiplicative relationship (×2) between the original and scaled recipe.</td>
-                <td>Correctly scales the recipe using equivalent ratios.</td>
-                <td>Attempts to scale but uses additive reasoning (adds 2 instead of multiplying).</td>
-                <td>Cannot scale the recipe; no clear strategy shown.</td>
+                <td><strong>2 — Approaching</strong></td>
+                <td>4–5 / 8</td>
+                <td>
+                  Finds simple unit rates but struggles to keep the ratio
+                  constant while scaling, or compares rates inconsistently.
+                  Partial table.
+                </td>
               </tr>
               <tr>
-                <td><strong>Percent as Rate per 100</strong><br><span style="font-size:0.85rem;color:var(--nt-muted)">Task 6 · 6.RP.A.3c</span></td>
-                <td>Finds the correct dollar savings and connects percent to "per 100"; shows or explains setup.</td>
-                <td>Finds the correct dollar savings from the percent discount.</td>
-                <td>Sets up the percent correctly but makes an arithmetic error.</td>
-                <td>Does not connect percent to a rate; cannot compute the savings.</td>
-              </tr>
-              <tr>
-                <td><strong>Overall Completion &amp; Deliverable</strong></td>
-                <td>All 6 tasks answered correctly; work saved as PDF or DOC with student name.</td>
-                <td>5–6 tasks answered correctly; deliverable saved.</td>
-                <td>3–4 tasks answered; deliverable saved or partially completed.</td>
-                <td>Fewer than 3 tasks; no deliverable saved.</td>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–3 / 8</td>
+                <td>
+                  Few correct rates. Confuses ratio with unit rate or misreads
+                  the formula. Needs reteaching on equivalent ratios and unit
+                  rates.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
-
-      <!-- ══════════════════════════════════════════ -->
-      <!-- ANSWER KEY (collapsible, print-hidden)     -->
-      <!-- ══════════════════════════════════════════ -->
-      <details class="answer-key">
-        <summary>Teacher Answer Key (click to expand)</summary>
-        <div class="ak-body">
-          <ol>
-            <li>
-              <strong>Task 1 — Build a 3:1 ratio:</strong>
-              Any combination where fruit scoops ÷ juice scoops = 3 is accepted (e.g., 3 fruit + 1 juice, 6 fruit + 2 juice, 9 fruit + 3 juice). The grader checks the reduced form <strong>3:1</strong>.
-            </li>
-            <li>
-              <strong>Task 2 — Berry Blast ratio:</strong>
-              6 berries : 2 bananas → GCF(6,2) = 2 → <strong>3:1</strong>. Accept "3:1" or "3/1".
-            </li>
-            <li>
-              <strong>Task 3 — Unit rate:</strong>
-              $12 ÷ 4 smoothies = <strong>$3 per smoothie</strong>. Answer: 3.
-            </li>
-            <li>
-              <strong>Task 4 — Better buy:</strong>
-              Sunny: $6 ÷ 3 cups = $2.00/cup. Fresh: $8 ÷ 5 cups = $1.60/cup. <strong>Fresh</strong> is cheaper per cup.
-            </li>
-            <li>
-              <strong>Task 5 — Scale the recipe:</strong>
-              Original ratio: 2 cups fruit : 5 cups water. 10 cups water = 5 × 2, so scale factor = 2. Fruit needed: 2 × 2 = <strong>4 cups</strong>.
-            </li>
-            <li>
-              <strong>Task 6 — Percent discount:</strong>
-              25% = 25/100 = 0.25. Savings: 0.25 × $20 = <strong>$5</strong>. Answer: 5.
-            </li>
-          </ol>
-          <p style="margin-top:12px;font-size:0.9rem;color:var(--nt-muted);">Sample reflection: "Ratios help me compare amounts. A unit rate like $3 per smoothie makes comparing prices easy because all the denominators are 1. I can use percent like a ratio — 25% means 25 out of 100."</p>
-        </div>
-      </details>
-
-      <!-- ══════════════════════════════════════════ -->
-      <!-- REFLECTION + DELIVERABLE                  -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card" aria-label="Reflection">
-        <h2>Reflection</h2>
-        <p>Answer in 2–3 sentences:</p>
-        <p><strong>Where in real life do people use ratios or unit rates? Give one example from your own life and explain what the ratio or unit rate would mean.</strong></p>
-        <label for="reflection" class="field">Type your reflection here (included when you save as PDF):</label>
-        <textarea
-          class="reflection-area"
-          id="reflection"
-          rows="4"
-          placeholder="Example: At the grocery store, my family compares price per ounce to find the best deal. That is a unit rate — cost divided by ounces gives a 'per one' price so we can compare different sizes..."
-          aria-label="Reflection response"
-        ></textarea>
-
-        <div class="deliverable">
-          <strong>Deliverable:</strong> Complete all 6 tasks above, then click <em>Check My Work</em>. After your results appear, click <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to download a copy with your name and score. Turn in that file.
-        </div>
-      </section>
-
     </div>
 
     <script>
       (function () {
         "use strict";
 
-        /* ---- Task 1: smoothie builder ---- */
-        var counts = { fruit: 0, juice: 0 };
-        var UNIT = 26; // px per scoop for the glass visual
-        function renderBuilder() {
-          document.getElementById("c-fruit").textContent = counts.fruit;
-          document.getElementById("c-juice").textContent = counts.juice;
-          document.getElementById("g-fruit").style.height =
-            counts.fruit * UNIT + "px";
-          document.getElementById("g-juice").style.height =
-            counts.juice * UNIT + "px";
-          document.getElementById("ratio-readout").textContent =
-            "Fruit : Juice = " + counts.fruit + " : " + counts.juice;
-          var bar = document.getElementById("pfill").parentElement;
-          var n = answered();
-          bar.setAttribute("aria-valuenow", n);
-          updateProgress();
-        }
-        document.querySelectorAll(".step").forEach(function (b) {
-          b.addEventListener("click", function () {
-            var t = b.getAttribute("data-t");
-            var d = b.getAttribute("data-act") === "inc" ? 1 : -1;
-            counts[t] = Math.max(0, Math.min(9, counts[t] + d));
-            renderBuilder();
-          });
-        });
-
-        /* ---- Task 4: chip choice ---- */
-        var q4val = "";
-        var chips = document.querySelectorAll("#q4 .chip");
-        chips.forEach(function (c) {
-          c.addEventListener("click", function () {
-            q4val = c.getAttribute("data-val");
-            chips.forEach(function (x) {
-              x.setAttribute("aria-pressed", x === c ? "true" : "false");
-            });
-            updateProgress();
-          });
-        });
-
-        /* ---- Progress ---- */
-        function answered() {
-          var n = 0;
-          if (counts.fruit > 0 || counts.juice > 0) n++;
-          if (val("q2")) n++;
-          if (val("q3")) n++;
-          if (q4val) n++;
-          if (val("q5")) n++;
-          if (val("q6")) n++;
-          return n;
-        }
-        function updateProgress() {
-          var n = answered();
-          document.getElementById("pfill").style.width = (n / 6) * 100 + "%";
-          document.getElementById("ptext").textContent =
-            n + " of 6 tasks answered";
-        }
-        function val(id) {
-          var e = document.getElementById(id);
-          return e ? e.value.trim() : "";
-        }
-        ["q2", "q3", "q5", "q6"].forEach(function (id) {
-          document.getElementById(id).addEventListener("input", updateProgress);
-        });
-
-        /* ---- Normalize a ratio answer like "6:2" -> "3:1" ---- */
-        function gcd(a, b) {
-          return b === 0 ? a : gcd(b, a % b);
-        }
-        function normRatio(s) {
-          var m = String(s)
-            .replace(/\s/g, "")
-            .match(/^(\d+)[:\/](\d+)$/);
-          if (!m) return "";
-          var a = parseInt(m[1], 10),
-            b = parseInt(m[2], 10);
-          if (b === 0) return "";
-          var g = gcd(a, b) || 1;
-          return a / g + ":" + b / g;
-        }
         function num(s) {
-          var n = parseFloat(String(s).replace(/[^0-9.\-]/g, ""));
-          return isNaN(n) ? "" : n;
+          return parseFloat(String(s == null ? "" : s).replace(/[$,\s]/g, ""));
+        }
+        function gcd(a, b) {
+          a = Math.abs(a);
+          b = Math.abs(b);
+          while (b) {
+            var t = b;
+            b = a % b;
+            a = t;
+          }
+          return a || 1;
+        }
+        function live(msg) {
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) fb.textContent = msg;
         }
 
-        /* ---- Mount kit & grade ---- */
-        NTKit.mount("#ntkit");
+        /* ── Auto-graded problems (string-compared by NTKit) ── */
+        var problems = [
+          {
+            id: "mix-target",
+            ans: "12",
+            skill: "Equivalent ratios",
+            prompt: "Equivalent to 1:4 with 3 concentrate → water",
+          },
+          {
+            id: "bottle-rate",
+            ans: "0.5",
+            skill: "Find a unit rate",
+            prompt: "Unit rate: 15 L ÷ 30 bottles",
+          },
+          {
+            id: "batch-need",
+            ans: "60",
+            skill: "Apply a unit rate",
+            prompt: "Liters for 120 bottles at 0.5 L/bottle",
+          },
+          {
+            id: "rt-w1",
+            ans: "12",
+            skill: "Ratio table (equivalent ratios)",
+            prompt: "Ratio table: water for 3 L concentrate",
+          },
+          {
+            id: "rt-c2",
+            ans: "5",
+            skill: "Ratio table (equivalent ratios)",
+            prompt: "Ratio table: concentrate for 20 L water",
+          },
+          {
+            id: "rt-t3",
+            ans: "60",
+            skill: "Ratio table (total)",
+            prompt: "Ratio table: total for 12 + 48",
+          },
+          {
+            id: "pumpA",
+            ans: "6",
+            skill: "Unit rate (flow rate)",
+            prompt: "Pump A flow rate: 18 L ÷ 3 min",
+          },
+          {
+            id: "pumpB",
+            ans: "4",
+            skill: "Unit rate (flow rate)",
+            prompt: "Pump B flow rate: 20 L ÷ 5 min",
+          },
+          {
+            id: "pump-time",
+            ans: "10",
+            skill: "Compare unit rates",
+            prompt: "Time for 60 L at fastest rate (6 L/min)",
+          },
+        ];
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {};
+        /* progress counts 8 "specs": treat the 3 table cells as ONE spec */
+        var TOTAL_SPECS = 8;
 
-        document
-          .getElementById("checkBtn")
-          .addEventListener("click", function () {
-            var t1Ratio = normRatio(counts.fruit + ":" + counts.juice); // student-built ratio
-            var items = [
-              {
-                prompt:
-                  "Task 1 — Build a smoothie with a 3:1 ratio of fruit to juice.",
-                studentAnswer: t1Ratio,
-                correctAnswer: "3:1",
-                points: 1,
-                skill: "Ratios (6.RP.A.1)",
-              },
-              {
-                prompt:
-                  "Task 2 — Ratio of 6 berries to 2 bananas in lowest terms.",
-                studentAnswer: normRatio(val("q2")),
-                correctAnswer: "3:1",
-                points: 1,
-                skill: "Ratios (6.RP.A.1)",
-              },
-              {
-                prompt:
-                  "Task 3 — Unit rate: 4 smoothies cost $12, price of 1 smoothie.",
-                studentAnswer: num(val("q3")),
-                correctAnswer: 3,
-                points: 1,
-                skill: "Unit Rate (6.RP.A.2)",
-              },
-              {
-                prompt:
-                  "Task 4 — Which juice is cheaper per cup (Sunny $2/cup vs Fresh $1.60/cup)?",
-                studentAnswer: q4val,
-                correctAnswer: "Fresh",
-                points: 1,
-                skill: "Compare Unit Rates (6.RP.A.2)",
-              },
-              {
-                prompt:
-                  "Task 5 — Scale 2 cups fruit : 5 cups water up to 10 cups water.",
-                studentAnswer: num(val("q5")),
-                correctAnswer: 4,
-                points: 1,
-                skill: "Ratio Reasoning (6.RP.A.3)",
-              },
-              {
-                prompt: "Task 6 — Dollars saved on a $20 pack at 25% off.",
-                studentAnswer: num(val("q6")),
-                correctAnswer: 5,
-                points: 1,
-                skill: "Percent as Rate (6.RP.A.3)",
-              },
-            ];
+        function inputFor(id) {
+          return document.getElementById("q-" + id);
+        }
+        function isCorrect(id) {
+          var inp = inputFor(id);
+          if (!inp) return false;
+          var got = num(inp.value);
+          var want = num(inp.getAttribute("data-ans"));
+          var tol = num(inp.getAttribute("data-tol"));
+          if (isNaN(tol)) tol = 0.01;
+          return !isNaN(got) && Math.abs(got - want) <= tol;
+        }
 
-            NTKit.grade({
-              activityId: "architect-unit-1",
-              activityTitle: "Smoothie Stand Architect — Ratios & Unit Rates",
-              standard: "6.RP.A.1-3",
-              items: items,
+        function specCount() {
+          var tableSpec =
+            correct["rt-w1"] && correct["rt-c2"] && correct["rt-t3"] ? 1 : 0;
+          var others = [
+            "mix-target",
+            "bottle-rate",
+            "batch-need",
+            "pumpA",
+            "pumpB",
+            "pump-time",
+          ].reduce(function (n, id) {
+            return n + (correct[id] ? 1 : 0);
+          }, 0);
+          return others + tableSpec;
+        }
+        function paint() {
+          var n = specCount();
+          document.getElementById("pcount").textContent = n;
+          document.getElementById("pbar").style.width =
+            (n / TOTAL_SPECS) * 100 + "%";
+          document.getElementById("progBar").setAttribute("aria-valuenow", n);
+        }
+
+        function mark(inp, ok) {
+          if (!inp) return;
+          inp.classList.toggle("ok", ok);
+          inp.classList.toggle("bad", !ok);
+        }
+        function check(id) {
+          var p = pById[id];
+          if (!p) return;
+          var inp = inputFor(id);
+          var fb = document.getElementById("fb-" + id);
+          var ok = isCorrect(id);
+          mark(inp, ok);
+          if (fb) {
+            fb.className = "fb " + (ok ? "ok" : "bad");
+            fb.textContent = ok
+              ? "✓ Approved — " + inp.getAttribute("data-why")
+              : "✗ Not yet. Re-read the formula, set up the ratio or rate, then compute.";
+          }
+          correct[id] = ok;
+          live(ok ? "Spec approved." : "Not correct yet, try again.");
+          paint();
+        }
+
+        /* Buttons: Check / Hint via delegation, + Enter key on inputs */
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var c = e.target.closest("[data-check]");
+          if (c) {
+            check(c.getAttribute("data-check"));
+            return;
+          }
+          var h = e.target.closest("[data-hint]");
+          if (h) {
+            var id = h.getAttribute("data-hint");
+            var inp = inputFor(id);
+            var fb =
+              document.getElementById("fb-" + id) ||
+              document.getElementById("fb-table");
+            if (inp && fb) {
+              fb.className = "fb";
+              fb.textContent =
+                "Hint: " +
+                inp.getAttribute("data-why").split("=")[0].trim() +
+                " = …  Set up the ratio or rate first, then plug in the numbers.";
+            }
+          }
+        });
+        problems.forEach(function (p) {
+          var inp = inputFor(p.id);
+          if (inp)
+            inp.addEventListener("keydown", function (e) {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                check(p.id);
+              }
             });
+        });
 
-            var res = document.getElementById("ntkit");
-            if (res) res.scrollIntoView({ behavior: "smooth", block: "start" });
+        /* Ratio-table single "Check the table" button */
+        document
+          .getElementById("checkTableBtn")
+          .addEventListener("click", function () {
+            ["rt-w1", "rt-c2", "rt-t3"].forEach(function (id) {
+              var ok = isCorrect(id);
+              mark(inputFor(id), ok);
+              correct[id] = ok;
+            });
+            var all = correct["rt-w1"] && correct["rt-c2"] && correct["rt-t3"];
+            var fb = document.getElementById("fb-table");
+            fb.className = "fb " + (all ? "ok" : "bad");
+            fb.textContent = all
+              ? "✓ Table approved — every row stays 1 : 4 (3:12, 5:20, 12:48 → total 60)."
+              : "✗ Some cells are off. Each row must keep concentrate : water = 1 : 4, and total = concentrate + water.";
+            live(all ? "Table approved." : "Table not correct yet.");
+            paint();
           });
 
-        renderBuilder();
+        /* ── Task 1: interactive mixer ── */
+        var state = { conc: 1, water: 4 };
+        var elConc = document.getElementById("conc");
+        var elWater = document.getElementById("water");
+        var mixWater = document.getElementById("mixWater");
+        var mixConc = document.getElementById("mixConc");
+        var mixRatioLabel = document.getElementById("mixRatioLabel");
+        var mixRatio = document.getElementById("mixRatio");
+        var mixSimplest = document.getElementById("mixSimplest");
+        var mixStatus = document.getElementById("mixStatus");
+        var mixTotalCap = document.getElementById("mixTotalCap");
+
+        function renderMix() {
+          elConc.textContent = state.conc;
+          elWater.textContent = state.water;
+          var total = state.conc + state.water;
+          var g = gcd(state.conc, state.water);
+          var sc = state.conc / g,
+            sw = state.water / g;
+          mixRatio.textContent = state.conc + " : " + state.water;
+          mixSimplest.textContent = sc + " : " + sw;
+          mixRatioLabel.textContent = state.conc + " : " + state.water;
+          mixTotalCap.textContent =
+            total + (total === 1 ? " cup total" : " cups total");
+
+          /* beaker fill: max region 120px tall starting y=60 */
+          var H = 120,
+            y0 = 60;
+          var maxParts = 20; /* cap so it fits */
+          var per = H / maxParts;
+          var concH = Math.min(state.conc, maxParts) * per;
+          var fillTotal = Math.min(total, maxParts) * per;
+          var waterH = Math.max(0, fillTotal - concH);
+          mixWater.setAttribute("y", y0 + H - fillTotal);
+          mixWater.setAttribute("height", fillTotal);
+          mixConc.setAttribute("y", y0 + H - fillTotal);
+          mixConc.setAttribute("height", concH);
+
+          var isFormula = sc === 1 && sw === 4;
+          mixStatus.textContent = isFormula ? "✓ 1 : 4" : "off formula";
+          mixStatus.style.color = isFormula ? "#0f9d6b" : "var(--nt-muted)";
+        }
+        document.querySelectorAll(".stepbtn").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var key = b.getAttribute("data-step");
+            var dir = parseInt(b.getAttribute("data-dir"), 10);
+            state[key] = Math.max(0, Math.min(20, state[key] + dir));
+            renderMix();
+            live("Mix is now " + state.conc + " to " + state.water + ".");
+          });
+        });
+        renderMix();
+
+        /* ── Task 4: pump chooser ── */
+        var pumpName = document.getElementById("pumpName");
+        var pumpRate = document.getElementById("pumpRate");
+        var pumpVerdict = document.getElementById("pumpVerdict");
+        var FASTEST = 6; /* Pump A */
+        document
+          .querySelectorAll("#pumpChooser .pumpcard")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              document
+                .querySelectorAll("#pumpChooser .pumpcard")
+                .forEach(function (b) {
+                  b.setAttribute("aria-pressed", "false");
+                });
+              btn.setAttribute("aria-pressed", "true");
+              var rate = num(btn.getAttribute("data-rate"));
+              pumpName.textContent = "Pump " + btn.getAttribute("data-pump");
+              pumpRate.textContent = rate + " L/min";
+              var best = rate === FASTEST;
+              pumpVerdict.textContent = best ? "✓ Fastest" : "slower";
+              pumpVerdict.style.color = best ? "#0f9d6b" : "#d23f54";
+              live(
+                "Selected Pump " +
+                  btn.getAttribute("data-pump") +
+                  ", " +
+                  rate +
+                  " liters per minute.",
+              );
+            });
+          });
+
+        /* ── Mount NTKit + grade on submit ── */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", function () {
+            var items = problems.map(function (p) {
+              var inp = inputFor(p.id);
+              return {
+                prompt: p.prompt,
+                studentAnswer: inp ? String(num(inp.value)) : "",
+                correctAnswer: p.ans,
+                points: 1,
+                skill: p.skill,
+              };
+            });
+            if (window.NTKit && NTKit.grade) {
+              NTKit.grade({
+                activityId: "architect-unit-1",
+                activityTitle:
+                  "Unit 1 · Math Architect — Stadium Hydration Station (Ratios & Unit Rates)",
+                standard: "6.RP.A.1-3",
+                items: items,
+              });
+              var panel = document.getElementById("ntkit");
+              if (panel && panel.scrollIntoView)
+                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              var n = items.filter(function (x) {
+                return num(x.studentAnswer) === num(x.correctAnswer);
+              }).length;
+              alert(
+                "Design submitted: " +
+                  n +
+                  " of " +
+                  items.length +
+                  " specs correct.",
+              );
+            }
+          });
+
+        paint();
       })();
     </script>
   </body>

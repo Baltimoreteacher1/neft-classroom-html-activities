@@ -1,822 +1,1352 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nt-theme-aware">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      WebQuest · Unit 3 — Ratio Rally: Rates, Unit Rates &amp; Percent
-      (6.RP.A.2-3)
+      WebQuest · Unit 3 · Pixel Forge Color Lab — Ratio Tables, Graphs &amp;
+      Equivalent Ratios | Neft Teacher
     </title>
+    <meta
+      name="description"
+      content="A Grade 6 ratio reasoning WebQuest: work as a game-studio color technician building ratio tables, plotting ratios on a coordinate graph, and comparing recipes with equivalent ratios (6.RP)."
+    />
 
-    <!-- Shared theme -->
+    <!-- Shared Neft design system -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
-    <script src="/assets/neft-theme.js" defer></script>
-
-    <!-- Activity kit -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
 
     <style>
-      /* ── Base ── */
+      /* ============================================================
+         Unit 3 WebQuest — Pixel Forge Color Lab.
+         Uses shared --nt-* theme variables. Scoped styles only.
+         All visuals are SVG/divs (no ASCII art).
+         ============================================================ */
+      :root {
+        --wq-magenta: #e0218a;
+        --wq-cyan: #1bb6c1;
+        --wq-amber: #f5a623;
+        --wq-violet: #7c3aed;
+        --wq-grid: #c9d4e3;
+      }
+      * {
+        box-sizing: border-box;
+      }
       body {
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        font-size: 19px;
-        line-height: 1.65;
         margin: 0;
-        padding: 0 0 4rem;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
+        font-size: 18px;
       }
-      .wrap {
-        max-width: 940px;
+      .wq-wrap {
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 1rem 1.25rem;
+        padding: 20px 18px 80px;
+      }
+      .wq-top {
+        font: 14px system-ui;
+        padding: 6px 0 2px;
+      }
+      .wq-top a {
+        color: var(--nt-accent, #245ea8);
+        font-weight: 600;
       }
 
-      /* ── Hero ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 18px;
-        padding: 1.75rem 1.5rem;
-        margin: 1.25rem 0;
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          135deg,
+          #15163a 0%,
+          #5b1f8a 48%,
+          #d6177e 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
       }
-      .badge {
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        letter-spacing: 0.2px;
+      }
+      .wq-hero .wq-kicker {
         display: inline-block;
-        font-size: 0.95rem;
         font-weight: 700;
-        letter-spacing: 0.04em;
+        letter-spacing: 1.4px;
         text-transform: uppercase;
-        color: var(--nt-accent);
-        border: 2px solid var(--nt-accent);
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
         border-radius: 999px;
-        padding: 0.2rem 0.85rem;
-        margin-bottom: 0.75rem;
       }
-
-      /* ── Typography ── */
-      h1 { font-size: 2.2rem; line-height: 1.2; margin: 0.2rem 0 0.5rem; }
-      h2 { font-size: 1.7rem; margin: 2rem 0 0.6rem; padding-bottom: 0.35rem; border-bottom: 3px solid var(--nt-accent); }
-      h3 { font-size: 1.25rem; margin: 1.2rem 0 0.4rem; }
-      p, li { font-size: 1.05rem; }
-      .lead { font-size: 1.2rem; color: var(--nt-text); }
-      .muted { color: var(--nt-muted); }
-
-      /* ── Cards ── */
-      section.card {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 1.25rem 1.5rem;
-        margin: 1rem 0;
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 62ch;
+        font-size: 1.05rem;
+        color: #f3e9ff;
       }
-      a { color: var(--nt-accent); font-weight: 600; }
-      a:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; border-radius: 4px; }
-
-      /* ── Learning Target box ── */
-      .learning-target {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-accent);
-        border-radius: 14px;
-        padding: 1.1rem 1.4rem;
-        margin: 1rem 0;
-      }
-      .learning-target h2 {
-        border-bottom: none;
-        margin: 0 0 0.6rem;
-        font-size: 1.3rem;
-        color: var(--nt-accent);
-      }
-      .learning-target ul { margin: 0.4rem 0 0.8rem 1.2rem; }
-      .lt-meta {
+      .wq-badges {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.6rem 1.4rem;
-        font-size: 0.98rem;
-        color: var(--nt-muted);
-        margin-top: 0.6rem;
+        gap: 8px;
+        margin-top: 16px;
       }
-      .lt-meta span { white-space: nowrap; }
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -8px;
+        bottom: -10px;
+        width: 220px;
+        opacity: 0.95;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
+      }
 
-      /* ── Teacher Notes ── */
-      .teacher-notes {
-        background: var(--nt-surface);
-        border: 2px dashed var(--nt-border);
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      }
+      .wq-card > h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--nt-accent, #245ea8);
+      }
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
+      }
+      .wq-lead {
+        font-size: 1.08rem;
+      }
+
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
         border-radius: 14px;
-        padding: 1.1rem 1.4rem;
-        margin: 1rem 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
       }
-      .teacher-notes h2 {
-        border-bottom: none;
-        margin: 0 0 0.5rem;
-        font-size: 1.2rem;
-        color: var(--nt-muted);
+      .wq-l1 {
+        background: rgba(27, 182, 193, 0.12);
+        border-color: rgba(27, 182, 193, 0.5);
       }
-      .teacher-notes h3 { font-size: 1rem; margin: 0.9rem 0 0.25rem; color: var(--nt-muted); }
-      .teacher-notes p, .teacher-notes li { font-size: 0.97rem; color: var(--nt-muted); }
-      @media print { .teacher-notes { border-style: solid; } }
-
-      /* ── Process list ── */
-      ol.process { padding-left: 1.4rem; }
-      ol.process > li { margin-bottom: 0.9rem; }
-
-      /* ── Resources ── */
-      .resources a {
+      .wq-l2 {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .wq-l1 .wq-tag {
+        background: #0c7c87;
+      }
+      .wq-l2 .wq-tag {
+        background: #7c3aed;
+      }
+      .wq-es {
         display: block;
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 0.85rem 1rem;
-        margin: 0.55rem 0;
-        text-decoration: none;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
       }
-      .resources a:hover { border-color: var(--nt-accent); }
-      .resources .what { display: block; color: var(--nt-muted); font-weight: 400; font-size: 0.98rem; }
 
-      /* ── Rubric ── */
-      table.rubric {
+      /* ---------- Recipe swatch + table ---------- */
+      .wq-recipe {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 20px;
+        align-items: start;
+      }
+      @media (max-width: 720px) {
+        .wq-recipe {
+          grid-template-columns: 1fr;
+        }
+      }
+      table.wq-data {
         width: 100%;
         border-collapse: collapse;
-        margin: 0.75rem 0;
         font-size: 1rem;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        overflow: hidden;
       }
-      table.rubric caption { text-align: left; font-weight: 700; margin-bottom: 0.5rem; }
-      table.rubric th,
-      table.rubric td {
-        border: 1px solid var(--nt-border);
-        padding: 0.6rem 0.7rem;
+      table.wq-data caption {
+        caption-side: top;
         text-align: left;
-        vertical-align: top;
-      }
-      table.rubric thead th { background: var(--nt-bg); font-weight: 700; }
-      table.rubric tbody tr:nth-child(even) { background: var(--nt-bg); }
-
-      /* ── Self-Check Quiz ── */
-      .self-check { margin: 1rem 0; }
-      .sc-item {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 1rem 1.15rem;
-        margin: 0.85rem 0;
-      }
-      .sc-item label {
-        display: block;
         font-weight: 700;
-        margin-bottom: 0.45rem;
-        font-size: 1.05rem;
+        margin-bottom: 6px;
+        color: var(--nt-text, #17212f);
       }
-      .sc-item .hint {
+      table.wq-data th,
+      table.wq-data td {
+        padding: 9px 11px;
+        text-align: center;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-data thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+      }
+      table.wq-data tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-data .wq-blank {
+        font-weight: 800;
+        color: var(--wq-magenta);
+      }
+      .wq-swatch {
+        border-radius: 14px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        overflow: hidden;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-swatch .wq-swatch-bar {
+        display: flex;
+        height: 56px;
+      }
+      .wq-swatch .wq-swatch-label {
+        padding: 8px 12px;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Graph figure ---------- */
+      .wq-graph {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        background: var(--nt-surface, #fff);
+        padding: 12px;
+        margin: 10px 0;
+      }
+      .wq-graph svg {
         display: block;
-        font-weight: 400;
-        color: var(--nt-muted);
-        font-size: 0.95rem;
-        margin-bottom: 0.55rem;
-      }
-      .sc-item input[type="text"],
-      .sc-item select {
         width: 100%;
-        max-width: 320px;
-        font-size: 1.05rem;
-        padding: 0.5rem 0.65rem;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
+        height: auto;
+        max-width: 420px;
+        margin: 0 auto;
       }
-      .sc-item input:focus,
-      .sc-item select:focus {
-        outline: 3px solid var(--nt-accent);
+
+      /* ---------- Worked example ---------- */
+      .wq-example {
+        border-left: 5px solid var(--nt-accent, #245ea8);
+        background: rgba(36, 94, 168, 0.06);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .wq-example b {
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-work {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+      }
+
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
+      }
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
         outline-offset: 2px;
       }
-      .sc-feedback {
-        margin-top: 0.5rem;
-        font-size: 0.97rem;
-        font-weight: 600;
-        min-height: 1.4em;
-        border-radius: 6px;
-        padding: 0.3rem 0.6rem;
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
+        font-weight: 700;
+        margin: 0;
+      }
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Rubric ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+        font-size: 0.96rem;
+      }
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-rubric thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--nt-accent, #245ea8);
+      }
+      .wq-num {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        width: 150px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-num:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--nt-accent, #245ea8);
+      }
+      .wq-hint {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 8px 12px;
         display: none;
       }
-      .sc-feedback.correct { background: #d4edda; color: #155724; display: block; }
-      .sc-feedback.incorrect { background: #f8d7da; color: #721c24; display: block; }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(16, 185, 129, 0.14);
+        color: #065f46;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(239, 68, 68, 0.14);
+        color: #991b1b;
+      }
       @media (prefers-color-scheme: dark) {
-        .sc-feedback.correct { background: #1a3a24; color: #75d8a0; }
-        .sc-feedback.incorrect { background: #3a1a1d; color: #f5a0a7; }
-      }
-      .sc-check-btn {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--nt-bg);
-        background: var(--nt-accent);
-        border: 2px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 0.55rem 1.3rem;
-        margin-top: 0.6rem;
-        cursor: pointer;
-      }
-      .sc-check-btn:hover { filter: brightness(1.08); }
-      .sc-check-btn:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; }
-
-      /* ── NTKit Quiz ── */
-      .quiz label { display: block; font-weight: 700; margin: 1.1rem 0 0.35rem; }
-      .quiz .hint { font-weight: 400; color: var(--nt-muted); font-size: 0.98rem; }
-      .quiz input[type="text"],
-      .quiz select {
-        width: 100%;
-        max-width: 420px;
-        font-size: 1.1rem;
-        padding: 0.6rem 0.7rem;
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-      }
-      .quiz input:focus,
-      .quiz select:focus { outline: 3px solid var(--nt-accent); outline-offset: 2px; }
-
-      /* ── Buttons ── */
-      .btn {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--nt-bg);
-        background: var(--nt-accent);
-        border: 2px solid var(--nt-accent);
-        border-radius: 12px;
-        padding: 0.75rem 1.6rem;
-        margin-top: 1.4rem;
-        cursor: pointer;
-      }
-      .btn:hover { filter: brightness(1.08); }
-      .btn:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; }
-
-      /* ── Tip box ── */
-      .tip {
-        background: var(--nt-bg);
-        border-left: 5px solid var(--nt-accent);
-        border-radius: 6px;
-        padding: 0.6rem 0.9rem;
-        margin: 0.8rem 0;
+        .wq-fb.ok {
+          color: #75d8a0;
+        }
+        .wq-fb.no {
+          color: #f5a0a7;
+        }
       }
 
-      /* ── Reflection ── */
-      .reflection textarea {
-        width: 100%;
-        box-sizing: border-box;
+      .wq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .wq-btn {
         font-size: 1rem;
-        padding: 0.65rem 0.8rem;
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        min-height: 110px;
-        resize: vertical;
-        font-family: inherit;
-      }
-      .reflection textarea:focus { outline: 3px solid var(--nt-accent); outline-offset: 2px; }
-
-      /* ── Answer Key (details) ── */
-      details.answer-key {
-        background: var(--nt-surface);
-        border: 2px dashed var(--nt-border);
-        border-radius: 14px;
-        padding: 1rem 1.4rem;
-        margin: 1rem 0;
-      }
-      details.answer-key summary {
         font-weight: 700;
-        font-size: 1.05rem;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
         cursor: pointer;
-        color: var(--nt-muted);
-        padding: 0.2rem 0;
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        transition: filter 0.12s ease;
       }
-      details.answer-key summary:focus-visible { outline: 3px solid var(--nt-accent); outline-offset: 3px; border-radius: 4px; }
-      details.answer-key p, details.answer-key li { font-size: 0.97rem; color: var(--nt-muted); }
-      details.answer-key strong { color: var(--nt-text); }
-
-      /* ── Mobile ── */
-      @media (max-width: 600px) {
-        h1 { font-size: 1.5rem; }
-        h2 { font-size: 1.25rem; }
-        table.rubric { font-size: 0.85rem; }
-        table.rubric th, table.rubric td { padding: 0.4rem 0.45rem; }
-        .lt-meta { gap: 0.4rem 0.8rem; }
+      .wq-btn:hover {
+        filter: brightness(1.08);
+      }
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--nt-accent, #245ea8);
+        border: 2px solid var(--nt-accent, #245ea8);
+      }
+      #wq-score {
+        margin-top: 16px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: none;
+      }
+      #wq-score.show {
+        display: block;
+        background: rgba(36, 94, 168, 0.1);
+        border: 1px solid var(--nt-accent, #245ea8);
       }
 
-      /* ── Print ── */
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
       @media print {
-        body { font-size: 14px; padding: 0; }
-        .wrap { max-width: 100%; padding: 0.5rem; }
-        header.hero, section.card, .learning-target, .teacher-notes { border-radius: 0; box-shadow: none; }
-        .btn, .sc-check-btn { display: none; }
-        a { color: inherit; text-decoration: underline; }
-        details.answer-key { display: block; }
-        details.answer-key[open] { border: 1px solid #999; }
-        .sc-feedback { display: none !important; }
+        .wq-actions,
+        .wq-btn {
+          display: none;
+        }
+        .wq-hero {
+          box-shadow: none;
+        }
       }
     </style>
   </head>
+  <body>
+    <div class="wq-wrap">
+      <p class="wq-top">
+        <a href="/webquests/">← All WebQuests</a> ·
+        <a href="/math/">Math Hub</a>
+      </p>
 
-  <body class="nt-theme-aware">
-    <div class="wrap">
-      <p style="font:14px system-ui;padding:10px 0;"><a href="/webquests/">← All WebQuests</a> · <a href="/math/">Math Hub</a></p>
-      <!-- Activity kit mount: name bar + Save-as-PDF / Save-as-DOC + results panel -->
+      <!-- Activity kit: name bar + Save-as-PDF / Save-as-DOC + results panel -->
       <div id="ntkit"></div>
 
-      <header class="hero">
-        <span class="badge">WebQuest · Unit 3</span>
-        <h1>Ratio Rally: Rates, Unit Rates &amp; Percent</h1>
-        <p class="lead">Standard 6.RP.A.2-3 · Grade 6 Math</p>
-        <p class="muted">
-          You are a race-team engineer at the neon speedway. Use rates, unit
-          rates, and percent to tune the fastest car and win the rally.
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker">Grade 6 Math WebQuest · Unit 3 · 6.RP</span>
+        <h1>Pixel Forge: The Color Lab</h1>
+        <p>
+          The indie game studio <strong>Pixel Forge</strong> just hired you as a
+          junior <strong>color technician</strong>. Every sprite in their new
+          game gets its color from a paint recipe — a ratio of cyan drops to
+          magenta drops. Your job: scale recipes up without changing the color,
+          prove your batches are consistent on a graph, and judge which artist
+          mixed the truer shade. Get the ratios right, or the whole game looks
+          wrong.
         </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 1–2 class periods</span>
+          <span class="wq-badge">📊 Ratio tables</span>
+          <span class="wq-badge">📈 Graphing ratios</span>
+          <span class="wq-badge">⚖️ Comparing recipes</span>
+        </div>
+        <!-- decorative pixel-color SVG -->
+        <svg class="wq-hero-art" viewBox="0 0 120 120" aria-hidden="true">
+          <g shape-rendering="crispEdges">
+            <rect x="10" y="10" width="20" height="20" fill="#1bb6c1" />
+            <rect x="30" y="10" width="20" height="20" fill="#e0218a" />
+            <rect x="50" y="10" width="20" height="20" fill="#1bb6c1" />
+            <rect x="70" y="10" width="20" height="20" fill="#e0218a" />
+            <rect x="10" y="30" width="20" height="20" fill="#e0218a" />
+            <rect x="30" y="30" width="20" height="20" fill="#7c3aed" />
+            <rect x="50" y="30" width="20" height="20" fill="#7c3aed" />
+            <rect x="70" y="30" width="20" height="20" fill="#1bb6c1" />
+            <rect x="10" y="50" width="20" height="20" fill="#1bb6c1" />
+            <rect x="30" y="50" width="20" height="20" fill="#7c3aed" />
+            <rect x="50" y="50" width="20" height="20" fill="#f5a623" />
+            <rect x="70" y="50" width="20" height="20" fill="#e0218a" />
+            <rect x="10" y="70" width="20" height="20" fill="#e0218a" />
+            <rect x="30" y="70" width="20" height="20" fill="#1bb6c1" />
+            <rect x="50" y="70" width="20" height="20" fill="#e0218a" />
+            <rect x="70" y="70" width="20" height="20" fill="#7c3aed" />
+          </g>
+        </svg>
       </header>
 
-      <!-- LEARNING TARGET -->
-      <section class="learning-target" aria-label="Learning Target">
-        <h2>Learning Target</h2>
-        <ul>
-          <li>I can find and explain a <strong>unit rate</strong> by dividing two quantities (6.RP.A.2).</li>
-          <li>I can use <strong>equivalent ratios</strong> and <strong>unit rates</strong> to solve real-world problems (6.RP.A.3).</li>
-          <li>I can find a <strong>percent of a number</strong> and use percent to compare quantities (6.RP.A.3c).</li>
-        </ul>
-        <div class="lt-meta">
-          <span><strong>Standards:</strong> 6.RP.A.2, 6.RP.A.3, 6.RP.A.3c</span>
-          <span><strong>Estimated Time:</strong> 45–55 minutes</span>
-          <span><strong>Materials:</strong> This page, pencil/paper for work, calculator (optional)</span>
-          <span><strong>Product:</strong> Race Engineer Report (written + quiz)</span>
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Welcome to the
+          Color Lab
+        </h2>
+        <p class="wq-lead">
+          At Pixel Forge, a color is never just "pink." It is a
+          <strong>ratio</strong>: for every 2 drops of cyan, add 3 drops of
+          magenta to make the studio's signature "Sunset Pink" (a 2 : 3 recipe).
+          The hard part is staying exact when you mix a tiny test batch or a
+          giant tank — the ratio has to stay the same, or the color shifts.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >How can a ratio table and a graph prove that two different-sized
+            batches are really the same color — and help you compare two recipes
+            fairly?</strong
+          >
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          A <strong>ratio</strong> compares two amounts. "2 : 3" means 2 of one
+          thing for every 3 of another. <strong>Equivalent ratios</strong> are
+          the same comparison written with bigger or smaller numbers, like 2 : 3
+          and 4 : 6. You make them by multiplying (or dividing) both numbers by
+          the same number.
+          <span class="wq-es"
+            >En español: Una razón compara dos cantidades. "2 : 3" significa 2
+            de una cosa por cada 3 de otra. Las razones equivalentes son la
+            misma comparación con números más grandes o más pequeños (2 : 3 y
+            4 : 6). Multiplica o divide ambos números por el mismo número.</span
+          >
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Here is the deep idea you will prove today: if you plot equivalent
+          ratios as points (cyan, magenta), they all land on one straight line
+          that passes through the origin (0, 0). That line <em>is</em> the
+          color. A point that falls off the line is a different recipe — a
+          different shade. Watch for it in Step 3.
         </div>
       </section>
 
-      <!-- TEACHER NOTES -->
-      <section class="teacher-notes" aria-label="Teacher Notes">
-        <h2>Teacher Notes <span style="font-weight:400;font-size:0.9rem;">(not printed in student view)</span></h2>
-
-        <h3>Pacing</h3>
-        <p>Introduction + Process reading: ~10 min | Game / research phase: ~15 min | Report writing: ~10 min | Self-Check + Quiz: ~10 min | Reflection: ~5 min. Adjust game phase to 20 min if this is students' first encounter with unit rates.</p>
-
-        <h3>Grouping</h3>
-        <p>Works well as individual or pairs. For pairs, have partners each write their own report and quiz, then compare answers before submitting.</p>
-
-        <h3>Differentiation — Support</h3>
-        <ul>
-          <li>Provide a reference card with the three steps: (1) write the ratio, (2) divide by the second number, (3) label with "per 1."</li>
-          <li>Pre-fill the first row of the report template to model the format.</li>
-          <li>Allow students to use the graphic novel or vocabulary link before starting Step 1.</li>
-        </ul>
-
-        <h3>Differentiation — Challenge</h3>
-        <ul>
-          <li>Have students find two different unit rates from the same problem (e.g., miles per hour AND hours per mile) and explain what each means.</li>
-          <li>Ask: "If Shop A lowers its price by 10%, is it still the same deal as Shop B? Show your work."</li>
-          <li>Have students write their own best-buy or percent scenario and trade with a partner to solve.</li>
-        </ul>
-
-        <h3>ESOL / Language Supports</h3>
-        <ul>
-          <li>Key sentence frames: "The unit rate is ___ per 1 ___." | "The better deal is ___ because the price per 1 is lower."</li>
-          <li>Post the vocabulary: <em>rate, unit rate, ratio, per, percent, equivalent</em> with pictures.</li>
-          <li>Allow students to show work in their home language alongside English.</li>
-          <li>The ESOL tip box in the Process section highlights "per" and "percent" in plain language.</li>
-        </ul>
-
-        <h3>Assessment Notes</h3>
-        <p>The Self-Check section gives instant formative feedback. The NTKit quiz at the bottom can be saved as PDF/DOC for gradebook upload. Use the rubric below to score the written Race Engineer Report.</p>
-      </section>
-
-      <!-- INTRODUCTION -->
-      <section class="card">
-        <h2>1. Introduction</h2>
-        <p>
-          Welcome to <strong>Ratio Rally</strong>! Race cars need smart math,
-          not just speed. A good engineer asks:
-          <em>How fast per minute? What is the best price per liter? What percent
-          of the fuel is left?</em>
-        </p>
-        <p>
-          In this WebQuest you will think like a race engineer. You will use
-          <strong>rates</strong> (two amounts compared),
-          <strong>unit rates</strong> (the amount for just 1), and
-          <strong>percent</strong> (an amount out of 100) to make winning
-          choices.
-        </p>
-      </section>
-
-      <!-- TASK -->
-      <section class="card">
-        <h2>2. Your Task</h2>
-        <p>
-          By the end you will build a short
-          <strong>Race Engineer Report</strong> that shows:
-        </p>
-        <ul>
-          <li>One <strong>unit rate</strong> you found (example: miles per 1 hour).</li>
-          <li>One <strong>best buy</strong> choice using price per 1 item.</li>
-          <li>One <strong>percent</strong> answer (example: 25% of 80 = 20).</li>
-        </ul>
-        <p>
-          Then you will complete the <strong>Self-Check</strong> questions and the
-          <strong>Check Your Understanding</strong> quiz, and save it with your
-          name as a PDF or DOC.
-        </p>
-        <div class="tip">
-          <strong>Deliverable:</strong> Written Race Engineer Report (3 answers with work shown) + saved quiz PDF/DOC with your name.
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>The Task
+        </h2>
+        <div class="wq-recipe">
+          <div>
+            <p>
+              By the end of this WebQuest you will submit a
+              <strong>Color Lab Report</strong> for Pixel Forge. A complete
+              report must:
+            </p>
+            <ul>
+              <li>
+                Finish a <strong>ratio table</strong> that scales the Sunset
+                Pink recipe (cyan : magenta = 2 : 3) up to a full batch.
+              </li>
+              <li>
+                <strong>Plot</strong> three of your batches as points
+                (cyan, magenta) and show they sit on one straight line.
+              </li>
+              <li>
+                <strong>Compare</strong> two artists' recipes and decide which
+                one makes the more magenta-heavy (pinker) color — with a reason.
+              </li>
+              <li>
+                Pass the <strong>Check Your Understanding</strong> self-check at
+                the bottom.
+              </li>
+            </ul>
+          </div>
+          <div class="wq-swatch" aria-label="Sunset Pink recipe swatch">
+            <div class="wq-swatch-bar">
+              <span style="flex: 2; background: var(--wq-cyan)"></span>
+              <span style="flex: 3; background: var(--wq-magenta)"></span>
+            </div>
+            <div class="wq-swatch-label">
+              <strong>Sunset Pink</strong> — cyan : magenta = <strong>2 : 3</strong>.
+              The magenta block is wider because the recipe uses more magenta.
+            </div>
+          </div>
+        </div>
+        <div class="wq-example">
+          <p><b>Deliverable:</b></p>
+          <p>
+            One Color Lab Report (completed ratio table + a sketched or
+            described graph + your recipe comparison with a reason) AND this page
+            saved as a PDF or DOC with your name from the bar at the top.
+          </p>
         </div>
       </section>
 
-      <!-- PROCESS -->
-      <section class="card">
-        <h2>3. Process — Follow the Steps</h2>
-        <ol class="process">
-          <li>
-            <strong>Warm up.</strong> Read this: a rate compares two amounts,
-            like <em>120 miles in 2 hours</em>. A
-            <strong>unit rate</strong> tells the amount for <strong>1</strong>.
-            Divide: 120 &divide; 2 = <strong>60 miles per 1 hour</strong>.
-          </li>
-          <li>
-            <strong>Play the game.</strong> Open
-            <em>Unit 3 — Ratio Rally</em> (link below). Tune your car by finding
-            unit rates and equivalent ratios.
-          </li>
-          <li>
-            <strong>Find a best buy.</strong> To compare prices, find the price
-            for <strong>1</strong> item. Lower price per 1 = better deal.
-            Example: $6 for 3 = <strong>$2 each</strong>.
-          </li>
-          <li>
-            <strong>Use percent.</strong> Percent means "out of 100". To find a
-            percent of a number, change the percent to a decimal, then multiply.
-            Example: 25% of 80 = 0.25 &times; 80 = <strong>20</strong>.
-          </li>
-          <li>
-            <strong>Write your report.</strong> Write your three answers from
-            the Task section. Show your division or multiplication for each.
-          </li>
-          <li>
-            <strong>Self-Check your knowledge.</strong> Try the three practice
-            questions below — get instant feedback before the real quiz.
-          </li>
-          <li>
-            <strong>Take the quiz.</strong> Type your name in the top bar,
-            answer the 5 quiz questions, click <em>Check My Answers</em>, then
-            Save as PDF or DOC.
-          </li>
-        </ol>
-        <div class="tip">
-          <strong>ESOL tip:</strong> "per" means "for each 1". "Unit rate" =
-          rate for just 1. "Percent" = out of 100.
-        </div>
-      </section>
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Work through the steps in order. Each step builds one part of your
+          Color Lab Report.
+        </p>
 
-      <!-- RESOURCES -->
-      <section class="card resources">
-        <h2>4. Resources</h2>
-        <p class="muted">Use these on-site links to learn and practice:</p>
-        <a href="/games/3d/unit-3/">Unit 3 — Ratio Rally (3D Game)<span class="what">Tune unit rates, equivalent ratios, percent &amp; conversions to launch your car.</span></a>
-        <a href="/math/">Math Curriculum Hub<span class="what">All lessons, tools, and units in one place.</span></a>
-        <a href="/graphic-novels/unit3/graphic-novel-1.html">Unit 3 Graphic Novel<span class="what">Read the rates &amp; percent story with pictures and ESOL support.</span></a>
-        <a href="/games/3d/unit-3/#vocab">Unit 3 Vocabulary<span class="what">Words: rate, unit rate, ratio, percent, with pictures and easy meanings.</span></a>
-      </section>
-
-      <!-- SELF-CHECK -->
-      <section class="card">
-        <h2>5. Self-Check — Try These First!</h2>
-        <p class="muted">Answer each question, then click <strong>Check</strong> to see if you are right. You get instant feedback and a hint. These do not count toward your final grade.</p>
-
-        <div class="self-check" role="group" aria-label="Self-check practice questions">
-
-          <!-- SC Q1 -->
-          <div class="sc-item">
-            <label for="sc1">1. A train travels 240 miles in 4 hours. What is the unit rate in miles per 1 hour?</label>
-            <span class="hint" id="sc1-hint">Divide total miles by total hours. Type a number only.</span>
-            <input type="text" id="sc1" inputmode="numeric" autocomplete="off" aria-describedby="sc1-hint" aria-label="Answer for question 1" />
-            <button type="button" class="sc-check-btn" data-target="sc1" data-answer="60" data-type="numeric" data-explanation="240 ÷ 4 = 60. The unit rate is 60 miles per 1 hour.">Check</button>
-            <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
-          </div>
-
-          <!-- SC Q2 -->
-          <div class="sc-item">
-            <label for="sc2">2. Which is the better deal: $10 for 5 bottles, or $9 for 3 bottles?</label>
-            <span class="hint" id="sc2-hint">Find the price per 1 bottle for each. Choose the lower one.</span>
-            <select id="sc2" aria-describedby="sc2-hint" aria-label="Answer for question 2">
-              <option value="">-- choose --</option>
-              <option value="10for5">$10 for 5 bottles ($2 each)</option>
-              <option value="9for3">$9 for 3 bottles ($3 each)</option>
-              <option value="same">They are the same price per bottle</option>
-            </select>
-            <button type="button" class="sc-check-btn" data-target="sc2" data-answer="10for5" data-explanation="$10 ÷ 5 = $2 each. $9 ÷ 3 = $3 each. $2 &lt; $3, so $10 for 5 is the better deal.">Check</button>
-            <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
-          </div>
-
-          <!-- SC Q3 -->
-          <div class="sc-item">
-            <label for="sc3">3. What is 30% of 50?</label>
-            <span class="hint" id="sc3-hint">Change 30% to a decimal (0.30), then multiply by 50. Type a number only.</span>
-            <input type="text" id="sc3" inputmode="numeric" autocomplete="off" aria-describedby="sc3-hint" aria-label="Answer for question 3" />
-            <button type="button" class="sc-check-btn" data-target="sc3" data-answer="15" data-type="numeric" data-explanation="0.30 × 50 = 15. So 30% of 50 is 15.">Check</button>
-            <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
-          </div>
-
-        </div><!-- /.self-check -->
-      </section>
-
-      <!-- EVALUATION / RUBRIC -->
-      <section class="card">
-        <h2>6. Evaluation — How You Are Graded</h2>
-        <table class="rubric">
-          <caption>Race Engineer Rubric — 4 Levels</caption>
+        <h3>Step 1 — Build the ratio table</h3>
+        <p>
+          The Sunset Pink recipe is <strong>2 drops cyan : 3 drops magenta</strong>.
+          To mix a bigger batch, multiply <em>both</em> numbers by the same
+          amount. Copy this table and fill in the magenta-colored blanks.
+        </p>
+        <table class="wq-data">
+          <caption>Sunset Pink ratio table (cyan : magenta = 2 : 3)</caption>
           <thead>
             <tr>
-              <th scope="col">Skill</th>
-              <th scope="col">4 — Champion</th>
-              <th scope="col">3 — On Track</th>
-              <th scope="col">2 — Pit Stop</th>
-              <th scope="col">1 — Restart</th>
+              <th scope="col">×</th>
+              <th scope="col">Cyan (drops)</th>
+              <th scope="col">Magenta (drops)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>Unit Rate</strong></td>
-              <td>Correct unit rate with division work shown and label (e.g., "60 mph").</td>
-              <td>Correct unit rate; label or work may be missing.</td>
-              <td>Attempted; minor arithmetic error in division.</td>
-              <td>Not attempted or unit rate concept missing.</td>
+              <th scope="row">×1</th>
+              <td>2</td>
+              <td>3</td>
             </tr>
             <tr>
-              <td><strong>Best Buy</strong></td>
-              <td>Compares price-per-1 for both options, picks correct deal, explains why.</td>
-              <td>Picks the correct deal; one price-per-1 shown.</td>
-              <td>Attempted; minor error in one price-per-1.</td>
-              <td>Not attempted or comparison missing.</td>
+              <th scope="row">×2</th>
+              <td>4</td>
+              <td>6</td>
             </tr>
             <tr>
-              <td><strong>Percent of a Number</strong></td>
-              <td>Correct answer with decimal conversion and multiplication shown.</td>
-              <td>Correct answer; one step may be missing.</td>
-              <td>Attempted; error in decimal conversion or multiplication.</td>
-              <td>Not attempted or percent concept missing.</td>
+              <th scope="row">×3</th>
+              <td>6</td>
+              <td class="wq-blank">?</td>
             </tr>
             <tr>
-              <td><strong>Quiz Score</strong></td>
-              <td>5 of 5 correct.</td>
-              <td>4 of 5 correct.</td>
-              <td>3 of 5 correct.</td>
-              <td>2 or fewer correct.</td>
+              <th scope="row">×5</th>
+              <td class="wq-blank">?</td>
+              <td>15</td>
+            </tr>
+            <tr>
+              <th scope="row">×8</th>
+              <td>16</td>
+              <td class="wq-blank">?</td>
             </tr>
           </tbody>
         </table>
-      </section>
+        <div class="wq-example">
+          <p><b>Worked example — the ×3 row:</b></p>
+          <p class="wq-work">
+            Cyan: 2 × 3 = 6. Magenta: 3 × 3 = <b>9</b>. So the ×3 batch is
+            6 : 9 — still Sunset Pink, just bigger.
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Stuck on the ×5 row? You already know magenta is 15. Ask: "3 times
+          what equals 15?" That is 5, so multiply cyan by 5 too: 2 × 5 = 10.
+          <span class="wq-es"
+            >En español: La magenta es 15. Pregunta: "¿3 por cuánto es 15?" Es 5.
+            Entonces multiplica el cian por 5 también: 2 × 5 = 10.</span
+          >
+        </div>
 
-      <!-- CHECK YOUR UNDERSTANDING (NTKit graded) -->
-      <section class="card quiz">
-        <h2>7. Check Your Understanding</h2>
-        <p class="muted">
-          Type your name in the bar at the top first. Answer all 5. Then click
-          <strong>Check My Answers</strong>.
+        <h3>Step 2 — Read the table sideways</h3>
+        <p>
+          A ratio table hides a useful pattern: in every Sunset Pink row,
+          magenta is bigger than cyan by the same comparison. Look down both
+          columns. Cyan goes 2, 4, 6, 10, 16 and magenta goes 3, 6, 9, 15, 24.
+          Every pair simplifies back to <strong>2 : 3</strong>.
         </p>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Find the <em>unit ratio</em>: how much magenta for exactly 1 drop of
+          cyan? Divide 3 ÷ 2 = 1.5. So Sunset Pink uses 1.5 drops of magenta per
+          drop of cyan. This single number is the fastest way to compare any two
+          recipes — keep it in mind for Step 4.
+        </div>
 
-        <label for="q1">1. A car goes 150 miles in 3 hours. What is the unit rate in miles per 1 hour?
-          <span class="hint">Divide: 150 &divide; 3. Type a number only.</span>
-        </label>
-        <input type="text" id="q1" inputmode="numeric" autocomplete="off" aria-label="Quiz question 1 answer" />
-
-        <label for="q2">2. 8 apples cost $4. What is the price for 1 apple?
-          <span class="hint">Divide: 4 &divide; 8. Type like 0.5</span>
-        </label>
-        <input type="text" id="q2" inputmode="decimal" autocomplete="off" aria-label="Quiz question 2 answer" />
-
-        <label for="q3">3. What is 20% of 60?
-          <span class="hint">0.20 &times; 60. Type a number only.</span>
-        </label>
-        <input type="text" id="q3" inputmode="numeric" autocomplete="off" aria-label="Quiz question 3 answer" />
-
-        <label for="q4">4. Best buy: Shop A is $6 for 2 liters. Shop B is $9 for 3 liters. Which has the lower price per 1 liter?
-          <span class="hint">Find price per 1 liter for each. Shop A: 6÷2=3. Shop B: 9÷3=3.</span>
-        </label>
-        <select id="q4" aria-label="Quiz question 4 answer">
-          <option value="">-- choose --</option>
-          <option value="same">They are the same</option>
-          <option value="A">Shop A</option>
-          <option value="B">Shop B</option>
-        </select>
-
-        <label for="q5">5. A team finished 45 of 50 laps. What percent of the laps did they finish?
-          <span class="hint">45 &divide; 50 = 0.9, then &times; 100. Type a number only.</span>
-        </label>
-        <input type="text" id="q5" inputmode="numeric" autocomplete="off" aria-label="Quiz question 5 answer" />
-
-        <button type="button" class="btn" id="checkBtn">Check My Answers</button>
-        <p class="muted" style="margin-top: 1rem">
-          Your score and results appear in the panel at the top. Use
-          <strong>Save as PDF</strong> or <strong>Save as DOC</strong> there to
-          turn in your work.
+        <h3>Step 3 — Plot the batches on a graph</h3>
+        <p>
+          Now prove your batches are the same color. Plot each pair as a point
+          (cyan across, magenta up). The grid below already shows the
+          ×1 and ×2 batches. Find where the ×3 batch (6, 9) belongs and notice
+          how all the points line up.
         </p>
-      </section>
+        <div class="wq-graph" aria-label="Coordinate graph of Sunset Pink batches">
+          <svg viewBox="0 0 360 300" role="img" aria-labelledby="graph-title">
+            <title id="graph-title">
+              Graph of Sunset Pink batches: points (2,3) and (4,6) on a straight
+              line through the origin, heading toward (6,9).
+            </title>
+            <!-- plot area background -->
+            <rect x="40" y="20" width="290" height="240" fill="var(--nt-bg,#f8fafc)" stroke="var(--wq-grid)" />
+            <!-- gridlines every 2 units; x:0..12 -> 290px (24.17px/unit), y:0..16 -> 240px (15px/unit) -->
+            <g stroke="var(--wq-grid)" stroke-width="1">
+              <line x1="88" y1="20" x2="88" y2="260" />
+              <line x1="137" y1="20" x2="137" y2="260" />
+              <line x1="185" y1="20" x2="185" y2="260" />
+              <line x1="233" y1="20" x2="233" y2="260" />
+              <line x1="282" y1="20" x2="282" y2="260" />
+              <line x1="40" y1="230" x2="330" y2="230" />
+              <line x1="40" y1="200" x2="330" y2="200" />
+              <line x1="40" y1="170" x2="330" y2="170" />
+              <line x1="40" y1="140" x2="330" y2="140" />
+              <line x1="40" y1="110" x2="330" y2="110" />
+              <line x1="40" y1="80" x2="330" y2="80" />
+              <line x1="40" y1="50" x2="330" y2="50" />
+            </g>
+            <!-- axes -->
+            <line x1="40" y1="20" x2="40" y2="260" stroke="#0b1f33" stroke-width="2" />
+            <line x1="40" y1="260" x2="330" y2="260" stroke="#0b1f33" stroke-width="2" />
+            <!-- the "color line" through origin: slope 3/2 -> passes (0,260)=origin to (8,12)=(233,80) -->
+            <line x1="40" y1="260" x2="282" y2="35" stroke="var(--wq-violet)" stroke-width="2" stroke-dasharray="5 4" />
+            <!-- plotted points: origin (0,0)=(40,260); (2,3)=(88,215); (4,6)=(137,170); (6,9)=(185,125) -->
+            <circle cx="88" cy="215" r="5" fill="var(--wq-cyan)" stroke="#0b1f33" stroke-width="1.5" />
+            <text x="94" y="212" font-size="11" fill="var(--nt-text,#17212f)">(2, 3)</text>
+            <circle cx="137" cy="170" r="5" fill="var(--wq-cyan)" stroke="#0b1f33" stroke-width="1.5" />
+            <text x="143" y="167" font-size="11" fill="var(--nt-text,#17212f)">(4, 6)</text>
+            <circle cx="185" cy="125" r="6" fill="none" stroke="var(--wq-magenta)" stroke-width="2.5" />
+            <text x="191" y="122" font-size="11" fill="var(--wq-magenta)" font-weight="700">(6, 9)?</text>
+            <!-- axis labels -->
+            <text x="150" y="285" font-size="12" fill="var(--nt-text,#17212f)">Cyan drops →</text>
+            <text x="12" y="150" font-size="12" fill="var(--nt-text,#17212f)" transform="rotate(-90 12 150)">Magenta drops →</text>
+            <text x="34" y="274" font-size="10" fill="var(--nt-muted,#5b6b80)">0</text>
+          </svg>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          To plot (6, 9): start at 0, move <strong>right to 6</strong> on the
+          cyan axis, then go <strong>up to 9</strong> on the magenta axis. Put a
+          dot. It should land right on the dashed purple line with the others.
+          <span class="wq-es"
+            >En español: Para marcar (6, 9): empieza en 0, ve a la derecha hasta
+            6 (cian), luego sube hasta 9 (magenta). Cae sobre la línea
+            morada.</span
+          >
+        </div>
 
-      <!-- REFLECTION -->
-      <section class="card reflection">
-        <h2>8. Reflection</h2>
-        <p>Think about what you learned in this WebQuest. Write 2–3 sentences to answer:</p>
+        <h3>Step 4 — Compare two artists' recipes</h3>
+        <p>
+          Two artists send you their "pink" recipes for the same boss-monster
+          sprite. You must pick the one that is <strong>more magenta-heavy</strong>
+          (the pinker shade). Compare them fairly using equivalent ratios.
+        </p>
         <ul>
-          <li>What is the most useful math skill you practiced today, and why would an engineer (or shopper, or athlete) need it?</li>
-          <li>What was the hardest part? What would you do differently next time?</li>
+          <li>
+            <strong>Artist Maya:</strong> cyan : magenta = <strong>2 : 3</strong>
+          </li>
+          <li>
+            <strong>Artist Devon:</strong> cyan : magenta = <strong>3 : 4</strong>
+          </li>
         </ul>
-        <label for="reflectionBox" style="font-weight:700;">Your reflection (write here):</label>
-        <textarea id="reflectionBox" rows="5" aria-label="Student reflection response" placeholder="Write your reflection here..."></textarea>
-        <div class="tip" style="margin-top:0.8rem;">
-          <strong>Deliverable reminder:</strong> Submit your Race Engineer Report (3 answers with work shown) AND save this quiz page as a PDF or DOC with your name before turning in.
+        <div class="wq-example">
+          <p><b>Worked example — compare 2 : 3 vs 3 : 4 fairly:</b></p>
+          <p class="wq-work">
+            Make the cyan parts match. Maya 2 : 3 ×3 = <b>6 : 9</b>. Devon 3 : 4
+            ×2 = <b>6 : 8</b>. Same cyan (6). Maya has 9 magenta, Devon has 8.
+            <b>Maya's recipe is pinker.</b>
+          </p>
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Check it the unit-ratio way: Maya = 3 ÷ 2 = 1.5 magenta per cyan;
+          Devon = 4 ÷ 3 ≈ 1.33 magenta per cyan. 1.5 &gt; 1.33, so Maya is
+          pinker — both methods agree. Which method felt faster to you, and why?
+        </div>
+
+        <h3>Step 5 — Write your Color Lab Report</h3>
+        <p>
+          Put it together: your completed ratio table, your three plotted points
+          (and the fact that they form a straight line through the origin), and
+          your recipe comparison with a clear reason. Then take the self-check
+          below.
+        </p>
+      </section>
+
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you work. They open in the same window
+          — use your back button to return.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-3/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 3 · 3D Ratio Game</span
+              ><span class="wq-rdesc"
+                >Mix and scale ratios, then see them snap onto the line.</span
+              ></span
+            >
+          </a>
+          <a href="/ratiolab/">
+            <span class="wq-ricon" aria-hidden="true">📊</span>
+            <span
+              ><span class="wq-rtitle">Ratio Lab</span
+              ><span class="wq-rdesc"
+                >Build ratio tables and plot equivalent ratios live.</span
+              ></span
+            >
+          </a>
+          <a href="/graphic-novels/unit3/graphic-novel-1.html">
+            <span class="wq-ricon" aria-hidden="true">📖</span>
+            <span
+              ><span class="wq-rtitle">Unit 3 Graphic Novel</span
+              ><span class="wq-rdesc"
+                >The ratios story with pictures and bilingual support.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
+        </div>
+        <h3>Key vocabulary · Vocabulario clave</h3>
+        <ul>
+          <li>
+            <strong>Ratio / Razón</strong> — a comparison of two amounts (cyan
+            to magenta).
+          </li>
+          <li>
+            <strong>Equivalent ratios / Razones equivalentes</strong> — ratios
+            that name the same comparison (2 : 3 = 4 : 6).
+          </li>
+          <li>
+            <strong>Ratio table / Tabla de razones</strong> — a table of
+            equivalent ratios made by multiplying or dividing.
+          </li>
+          <li>
+            <strong>Origin / Origen</strong> — the point (0, 0) where the axes
+            meet; equivalent-ratio graphs go through it.
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Color Lab Report will be scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>4 · Lead Artist</th>
+                <th>3 · Color Tech</th>
+                <th>2 · Apprentice</th>
+                <th>1 · Getting started</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ratio table</td>
+                <td>All blanks correct; multiplying both columns shown.</td>
+                <td>One blank wrong, method clear.</td>
+                <td>Some equivalent ratios attempted with errors.</td>
+                <td>Table mostly blank or incorrect.</td>
+              </tr>
+              <tr>
+                <td>Graphing ratios</td>
+                <td>All points correct and clearly on one line through origin.</td>
+                <td>Points correct; line idea partly explained.</td>
+                <td>Points plotted with errors.</td>
+                <td>No points or no graph.</td>
+              </tr>
+              <tr>
+                <td>Comparing recipes</td>
+                <td>Correct choice with equivalent-ratio reasoning shown.</td>
+                <td>Correct choice; reasoning thin.</td>
+                <td>Attempts comparison; reasoning unclear.</td>
+                <td>No comparison made.</td>
+              </tr>
+              <tr>
+                <td>Math language</td>
+                <td>Uses ratio, equivalent, origin correctly throughout.</td>
+                <td>Uses most terms correctly.</td>
+                <td>Few math terms used.</td>
+                <td>No math vocabulary.</td>
+              </tr>
+              <tr>
+                <td>Self-check</td>
+                <td>6 of 6 correct.</td>
+                <td>5 of 6 correct.</td>
+                <td>3–4 of 6 correct.</td>
+                <td>0–2 of 6 correct.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <!-- CONCLUSION -->
-      <section class="card">
-        <h2>9. Conclusion</h2>
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
         <p>
-          Great driving, engineer! You used <strong>rates</strong>,
-          <strong>unit rates</strong>, and <strong>percent</strong> to make
-          smart racing choices. These same skills help in real life: comparing
-          prices at the store, reading speed, and understanding sales like "30%
-          off".
+          Answer all six. Click <strong>Check My Answers</strong> when you are
+          done. These match the steps in your report.
         </p>
-        <p class="muted">
-          Next pit stop: keep practicing in the Ratio Rally game to beat your
-          best lap time.
+
+        <!-- Q1: complete the table (magenta for x3) -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="num"
+          data-answer="9"
+          data-tol="0.001"
+          data-skill="Equivalent ratios in a table"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span
+              >In the Sunset Pink table (2 : 3), the ×3 row has 6 cyan. How many
+              magenta drops?</span
+            >
+          </div>
+          <label for="q1in" class="sr-only">Magenta drops for the times-three row</label>
+          <input id="q1in" class="wq-num" type="number" inputmode="numeric" step="any" placeholder="drops" />
+          <div class="wq-hint">Hint / Pista: 3 × 3, or scale 2 : 3 by 3.</div>
+          <div class="wq-fb" id="fb1" role="status"></div>
+        </div>
+
+        <!-- Q2: missing cyan when magenta = 15 -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="10"
+          data-tol="0.001"
+          data-skill="Finding a missing value in a ratio table"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span
+              >A batch uses 15 magenta drops and stays Sunset Pink (2 : 3). How
+              many cyan drops does it need?</span
+            >
+          </div>
+          <label for="q2in" class="sr-only">Cyan drops when magenta is fifteen</label>
+          <input id="q2in" class="wq-num" type="number" inputmode="numeric" step="any" placeholder="drops" />
+          <div class="wq-hint">Hint / Pista: 3 × 5 = 15, so multiply cyan by 5 too.</div>
+          <div class="wq-fb" id="fb2" role="status"></div>
+        </div>
+
+        <!-- Q3: identify equivalent ratio (radio) -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="radio"
+          data-answer="c"
+          data-skill="Identifying equivalent ratios"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span
+              >Which ratio is <strong>equivalent</strong> to Sunset Pink
+              (2 : 3)?</span
+            >
+          </div>
+          <label class="wq-opt"><input type="radio" name="q3" value="a" /> 3 : 2</label>
+          <label class="wq-opt"><input type="radio" name="q3" value="b" /> 4 : 5</label>
+          <label class="wq-opt"><input type="radio" name="q3" value="c" /> 10 : 15</label>
+          <label class="wq-opt"><input type="radio" name="q3" value="d" /> 6 : 8</label>
+          <div class="wq-hint">Hint / Pista: multiply both numbers of 2 : 3 by the same value.</div>
+          <div class="wq-fb" id="fb3" role="status"></div>
+        </div>
+
+        <!-- Q4: plotting / which point belongs (radio) -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Graphing equivalent ratios"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >You plot Sunset Pink batches as points (cyan, magenta). Which
+              point lies on the <strong>same line</strong> as (2, 3) and (4, 6)?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg width="150" height="120" viewBox="0 0 150 120" role="img" aria-label="Small graph showing points (2,3) and (4,6) on a line through the origin">
+              <rect x="20" y="6" width="124" height="100" fill="var(--nt-bg,#f8fafc)" stroke="var(--wq-grid)" />
+              <line x1="20" y1="6" x2="20" y2="106" stroke="#0b1f33" stroke-width="2" />
+              <line x1="20" y1="106" x2="144" y2="106" stroke="#0b1f33" stroke-width="2" />
+              <line x1="20" y1="106" x2="120" y2="20" stroke="var(--wq-violet)" stroke-width="2" stroke-dasharray="4 3" />
+              <circle cx="44" cy="84" r="4" fill="var(--wq-cyan)" stroke="#0b1f33" />
+              <circle cx="68" cy="62" r="4" fill="var(--wq-cyan)" stroke="#0b1f33" />
+              <text x="48" y="80" font-size="9" fill="var(--nt-text,#17212f)">(2,3)</text>
+              <text x="72" y="58" font-size="9" fill="var(--nt-text,#17212f)">(4,6)</text>
+            </svg>
+          </div>
+          <label class="wq-opt"><input type="radio" name="q4" value="a" /> (3, 3)</label>
+          <label class="wq-opt"><input type="radio" name="q4" value="b" /> (6, 9)</label>
+          <label class="wq-opt"><input type="radio" name="q4" value="c" /> (5, 6)</label>
+          <label class="wq-opt"><input type="radio" name="q4" value="d" /> (6, 6)</label>
+          <div class="wq-hint">Hint / Pista: it must be an equivalent ratio of 2 : 3.</div>
+          <div class="wq-fb" id="fb4" role="status"></div>
+        </div>
+
+        <!-- Q5: comparing ratios (radio) -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="radio"
+          data-answer="a"
+          data-skill="Comparing ratios"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >Maya mixes 2 : 3 (cyan : magenta). Devon mixes 3 : 4. Whose color
+              is <strong>more magenta-heavy</strong> (pinker)?</span
+            >
+          </div>
+          <label class="wq-opt"><input type="radio" name="q5" value="a" /> Maya — 2 : 3 becomes 6 : 9, more magenta than 6 : 8.</label>
+          <label class="wq-opt"><input type="radio" name="q5" value="b" /> Devon — 3 : 4 has the bigger numbers.</label>
+          <label class="wq-opt"><input type="radio" name="q5" value="c" /> They are exactly the same color.</label>
+          <label class="wq-opt"><input type="radio" name="q5" value="d" /> You cannot compare different ratios.</label>
+          <div class="wq-hint">Hint / Pista: make the cyan parts equal, then compare magenta.</div>
+          <div class="wq-fb" id="fb5" role="status"></div>
+        </div>
+
+        <!-- Q6: scale-up word problem (num) -->
+        <div
+          class="wq-q"
+          data-q="6"
+          data-type="num"
+          data-answer="36"
+          data-tol="0.001"
+          data-skill="Using a ratio to scale up"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">6.</span
+            ><span
+              >A giant tank batch of Sunset Pink uses <strong>24 drops of cyan</strong>.
+              Keeping the 2 : 3 ratio, how many magenta drops are needed?</span
+            >
+          </div>
+          <label for="q6in" class="sr-only">Magenta drops for twenty-four cyan</label>
+          <input id="q6in" class="wq-num" type="number" inputmode="numeric" step="any" placeholder="drops" />
+          <div class="wq-hint">Hint / Pista: 2 × 12 = 24, so multiply 3 by 12 too.</div>
+          <div class="wq-fb" id="fb6" role="status"></div>
+        </div>
+
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+        <p class="wq-hint" style="margin-top: 14px">
+          Your score also saves to the panel at the top. Use
+          <strong>Save as PDF</strong> or <strong>Save as DOC</strong> there to
+          turn in your Color Lab Report with your name.
         </p>
-        <p style="font-size:0.88rem;color:var(--nt-muted);margin-top:1rem;">Neft Teacher · Grade 6 Math · Unit 3 · 6.RP.A.2-3</p>
       </section>
 
-      <!-- ANSWER KEY (teacher-only, inside <details>) -->
-      <details class="answer-key">
-        <summary>&#128274; Teacher Answer Key — click to expand (do not share with students)</summary>
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You did exactly what real game artists and color scientists do: you
+          kept a color exact across any batch size, proved it on a graph, and
+          judged two recipes fairly. A ratio table, a straight line through the
+          origin, and a fair comparison are the same tools used to color every
+          sprite in a game — and to mix paint, dye fabric, and tune photos.
+          Pixel Forge's boss monster is going to look perfect.
+        </p>
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              Invent a third recipe that is <em>between</em> Maya's and Devon's
+              in pinkness. Prove it with equivalent ratios.
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              How does the graph show that two batches are the same color?
+              ¿Cómo muestra la gráfica que dos mezclas son el mismo color?
+              Explain in 2–3 sentences.
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Game artists, paint chemists, and photo editors all use ratio
+              tables and graphs to keep colors consistent — exactly the skill
+              you just used.
+            </p>
+          </div>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--nt-muted, #5b6b80); margin-top: 16px">
+          Neft Teacher · Grade 6 Math · Unit 3 · Ratio Reasoning · 6.RP
+        </p>
+      </section>
+    </main>
 
-        <h3 style="margin-top:1rem;font-size:1.05rem;color:var(--nt-text);">Self-Check Answers</h3>
-        <ol>
-          <li><strong>SC Q1:</strong> <strong>60</strong> miles per hour. (240 ÷ 4 = 60)</li>
-          <li><strong>SC Q2:</strong> <strong>$10 for 5 bottles</strong> ($2 each vs. $3 each).</li>
-          <li><strong>SC Q3:</strong> <strong>15</strong>. (0.30 × 50 = 15)</li>
-        </ol>
-
-        <h3 style="font-size:1.05rem;color:var(--nt-text);">Quiz Answers</h3>
-        <ol>
-          <li><strong>Q1:</strong> <strong>50</strong> miles per hour. (150 ÷ 3 = 50)</li>
-          <li><strong>Q2:</strong> <strong>0.5</strong> (or $0.50). ($4 ÷ 8 = $0.50)</li>
-          <li><strong>Q3:</strong> <strong>12</strong>. (0.20 × 60 = 12)</li>
-          <li><strong>Q4:</strong> <strong>They are the same</strong>. (Shop A: $6÷2=$3/liter; Shop B: $9÷3=$3/liter — equal.)</li>
-          <li><strong>Q5:</strong> <strong>90</strong>%. (45÷50 = 0.9 × 100 = 90%)</li>
-        </ol>
-
-        <h3 style="font-size:1.05rem;color:var(--nt-text);">Sample Race Engineer Report (strong response)</h3>
-        <ul>
-          <li><strong>Unit Rate:</strong> "My car goes 150 miles in 3 hours. 150 ÷ 3 = 50. The unit rate is 50 miles per 1 hour."</li>
-          <li><strong>Best Buy:</strong> "Shop A is $6 for 2 liters ($3 each). Shop B is $9 for 3 liters ($3 each). They cost the same per liter."</li>
-          <li><strong>Percent:</strong> "20% of 60. I changed 20% to 0.20. Then 0.20 × 60 = 12. So 20% of 60 is 12."</li>
-        </ul>
-
-        <h3 style="font-size:1.05rem;color:var(--nt-text);">Sample Reflection (strong response)</h3>
-        <p>"The most useful skill was finding unit rates because shoppers and engineers use them every day to compare options. The hardest part was converting percent to a decimal before multiplying. Next time I would write the steps on paper first to keep track."</p>
-      </details>
-
-    </div><!-- /.wrap -->
-
-    <!-- Activity kit -->
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
     <script src="/assets/nt-activity-kit.js"></script>
     <script>
-      NTKit.mount("#ntkit");
-
-      /* ─────────────────────────────────────────────────────────
-         Answer normaliser — makes grading tolerant of common
-         formatting variations without changing any correct answer.
-         ───────────────────────────────────────────────────────── */
-      function normalise(raw) {
-        var s = String(raw).trim().toLowerCase();
-        // Collapse / strip whitespace
-        s = s.replace(/\s+/g, "");
-        // Strip leading dollar sign
-        s = s.replace(/^\$/, "");
-        // Strip trailing percent sign
-        s = s.replace(/%$/, "");
-        // Strip commas in numbers (1,000 → 1000)
-        s = s.replace(/,(\d{3})/g, "$1");
-        // Strip common trailing unit words (only at the end, whole-word)
-        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|bottles?|liters?|apples?|cups?|hours?|minutes?)$/, "");
-        return s;
-      }
-
-      /* Numeric equality with small epsilon (handles 60 vs 60.0 vs 60.00) */
-      function numericMatch(a, b) {
-        var na = parseFloat(a);
-        var nb = parseFloat(b);
-        if (isNaN(na) || isNaN(nb)) { return false; }
-        return Math.abs(na - nb) < 1e-9;
-      }
-
-      /* Ratio / fraction equivalence: "2/3" ↔ "2:3" (same numeric fraction) */
-      function ratioMatch(a, b) {
-        function toDecimal(s) {
-          var colonForm = s.match(/^(\d+):(\d+)$/);
-          if (colonForm) { return parseFloat(colonForm[1]) / parseFloat(colonForm[2]); }
-          var slashForm = s.match(/^(\d+)\/(\d+)$/);
-          if (slashForm) { return parseFloat(slashForm[1]) / parseFloat(slashForm[2]); }
-          return NaN;
-        }
-        var da = toDecimal(a);
-        var db = toDecimal(b);
-        if (isNaN(da) || isNaN(db)) { return false; }
-        return Math.abs(da - db) < 1e-9;
-      }
-
-      function answersMatch(studentRaw, correctRaw, questionType) {
-        var s = normalise(studentRaw);
-        var c = normalise(correctRaw);
-        if (s === c) { return true; }
-        // Numeric questions: tolerate 60 vs 60.0 vs 60.00
-        if (questionType === "numeric") {
-          return numericMatch(s, c);
-        }
-        // Fraction/ratio questions: tolerate slash ↔ colon and equivalent fractions
-        if (questionType === "fraction") {
-          return ratioMatch(s, c);
-        }
-        return false;
-      }
-
-      /* ── Self-Check Logic ── */
       (function () {
-        var btns = document.querySelectorAll(".sc-check-btn");
-        btns.forEach(function (btn) {
-          btn.addEventListener("click", function () {
-            var targetId = btn.getAttribute("data-target");
-            var correct  = btn.getAttribute("data-answer");
-            var explain  = btn.getAttribute("data-explanation");
-            var qtype    = btn.getAttribute("data-type") || "numeric";
-            var el       = document.getElementById(targetId);
-            var fb       = document.getElementById(targetId + "-fb");
-            if (!el || !fb) { return; }
-            var raw = (el.tagName === "SELECT") ? el.value : (el.value || "").trim();
-            var isCorrect;
-            if (el.tagName === "SELECT") {
-              // Select elements: exact normalised match only
-              isCorrect = (normalise(raw) === normalise(correct));
-            } else {
-              isCorrect = answersMatch(raw, correct, qtype);
-            }
-            fb.className = "sc-feedback " + (isCorrect ? "correct" : "incorrect");
-            fb.innerHTML = (isCorrect ? "&#10003; Correct! " : "&#10007; Not quite. ") + explain;
+        "use strict";
+        // Mount the shared student-name / save bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
+
+        var ACTIVITY_ID = "webquest-unit-3-pixelforge";
+        var ACTIVITY_TITLE = "WebQuest · Unit 3 · Pixel Forge Color Lab";
+        var STANDARD = "6.RP";
+
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
+
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
+          }
+          var input = card.querySelector("input.wq-num");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
+        }
+
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          if (type === "radio")
+            return resp === card.getAttribute("data-answer");
+          var ans = parseFloat(card.getAttribute("data-answer"));
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          var val = parseFloat(resp);
+          if (isNaN(val)) return false;
+          return Math.abs(val - ans) <= tol;
+        }
+
+        function showFeedback(card, ok) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck your equivalent ratio and try again. Inténtalo de nuevo.";
+        }
+
+        function buildItems() {
+          // Payload for the shared NTKit grader (auto-graded items).
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              id: "u3-q" + card.getAttribute("data-q"),
+              skill: card.getAttribute("data-skill") || "Ratio reasoning",
+              correct: isCorrect(card, resp),
+              response: resp === null ? "(blank)" : resp,
+              expected: card.getAttribute("data-answer"),
+            };
           });
-        });
-      }());
+        }
 
-      /* ── NTKit graded quiz ── */
-      function val(id) {
-        return (document.getElementById(id).value || "").trim();
-      }
+        document
+          .getElementById("wq-check")
+          .addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var ok = isCorrect(card, readResponse(card));
+              if (ok) correctCount++;
+              showFeedback(card, ok);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
 
-      document.getElementById("checkBtn").addEventListener("click", function () {
-        NTKit.grade({
-          activityId: "webquest-unit-3",
-          activityTitle: "Unit 3 · Ratio Rally — WebQuest Check",
-          standard: "6.RP.A.2-3",
-          items: [
-            {
-              prompt: "150 miles in 3 hours = ___ miles per 1 hour",
-              studentAnswer: val("q1"),
-              correctAnswer: "50",
-              points: 1,
-              skill: "Unit Rate"
-            },
-            {
-              prompt: "8 apples cost $4. Price for 1 apple?",
-              studentAnswer: val("q2"),
-              correctAnswer: "0.5",
-              points: 1,
-              skill: "Unit Rate"
-            },
-            {
-              prompt: "20% of 60 = ?",
-              studentAnswer: val("q3"),
-              correctAnswer: "12",
-              points: 1,
-              skill: "Percent"
-            },
-            {
-              prompt: "Lower price per 1 liter: Shop A or Shop B?",
-              studentAnswer: val("q4"),
-              correctAnswer: "same",
-              points: 1,
-              skill: "Best Buy"
-            },
-            {
-              prompt: "45 of 50 laps finished = ___ percent",
-              studentAnswer: val("q5"),
-              correctAnswer: "90",
-              points: 1,
-              skill: "Percent"
-            }
-          ]
-        });
-        document.getElementById("ntkit").scrollIntoView({ behavior: "smooth", block: "start" });
-      });
+            // Prefer the shared kit grader so results save to the dashboard.
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {}
+
+            // Always show an inline score so the page is fully self-contained.
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%)." +
+              (correctCount === total
+                ? " Color approved — the boss monster looks perfect! ¡Felicidades!"
+                : " Review the questions marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+
+        document
+          .getElementById("wq-reset")
+          .addEventListener("click", function () {
+            qs.forEach(function (card) {
+              var input = card.querySelector("input.wq-num");
+              if (input) input.value = "";
+              card.querySelectorAll("input[type=radio]").forEach(function (r) {
+                r.checked = false;
+              });
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
+      })();
     </script>
   </body>
 </html>

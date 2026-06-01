@@ -1,875 +1,1756 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nt-theme-aware">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebQuest: Unit 6 — Expressions (6.EE.A.1–4) | Neft Teacher</title>
+    <title>
+      WebQuest · Unit 6 · Glow Night Pricing Lab — Expressions &amp; Exponents |
+      Neft Teacher
+    </title>
+    <meta
+      name="description"
+      content="A Grade 6 expressions WebQuest: run the pricing lab for a school carnival by writing and evaluating algebraic expressions, using powers and exponents, applying the order of operations, and using the distributive property (6.EE.A.1–4)."
+    />
 
-    <!-- Shared theme -->
+    <!-- Shared Neft design system -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
-    <script src="/assets/neft-theme.js" defer></script>
-
-    <!-- Activity kit -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      /* ── Base ── */
+      /* ============================================================
+     Unit 6 WebQuest — Glow Night Pricing Lab.
+     Uses shared --nt-* theme variables. Scoped styles only;
+     all visuals are SVG/divs (no ASCII art).
+     ============================================================ */
+      :root {
+        --wq-glow-1: #22d3ee;
+        --wq-glow-2: #a855f7;
+        --wq-glow-3: #f472b6;
+        --wq-glow-4: #34d399;
+        --wq-glow-5: #fbbf24;
+        --wq-ink: #0b1530;
+      }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        font-size: 19px;
-        line-height: 1.65;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
+        font-size: 18px;
       }
-      .wrap {
-        max-width: 880px;
+      .wq-wrap {
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 24px 20px 80px;
+        padding: 20px 18px 80px;
       }
 
-      /* ── Hero header ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 28px 26px;
-        margin-bottom: 28px;
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          135deg,
+          #312e81 0%,
+          #6d28d9 50%,
+          #be185d 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
       }
-      .badge {
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        letter-spacing: 0.2px;
+      }
+      .wq-hero .wq-kicker {
         display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
         font-weight: 700;
-        padding: 6px 14px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
         border-radius: 999px;
-        font-size: 16px;
-        letter-spacing: 0.3px;
       }
-      h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; }
-      h2 { font-size: 26px; margin: 0 0 12px; border-bottom: 3px solid var(--nt-accent); padding-bottom: 6px; }
-      h3 { font-size: 21px; margin: 18px 0 6px; }
-      p, li { font-size: 19px; }
-      .lead { font-size: 21px; color: var(--nt-text); }
-      .muted { color: var(--nt-muted); }
-
-      /* ── Cards ── */
-      section.card {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 22px 24px;
-        margin-bottom: 24px;
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 62ch;
+        font-size: 1.05rem;
+        color: #f3e8ff;
       }
-
-      /* ── Learning Target box ── */
-      .learning-target {
-        background: var(--nt-surface);
-        border: 3px solid var(--nt-accent);
-        border-radius: 14px;
-        padding: 20px 24px;
-        margin-bottom: 24px;
-      }
-      .learning-target h2 {
-        color: var(--nt-accent);
-        font-size: 22px;
-        margin: 0 0 12px;
-        border-bottom: none;
-        padding-bottom: 0;
-      }
-      .learning-target ul { margin: 0 0 10px; padding-left: 22px; }
-      .learning-target li { margin-bottom: 4px; }
-      .lt-meta {
+      .wq-badges {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 14px;
+        gap: 8px;
+        margin-top: 16px;
       }
-      .lt-chip {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        padding: 6px 14px;
-        font-size: 17px;
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
         font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -6px;
+        bottom: -14px;
+        width: 220px;
+        opacity: 0.95;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
       }
 
-      /* ── Teacher notes ── */
-      .teacher-notes {
-        background: #fff8e1;
-        border: 2px dashed #f59e0b;
-        border-radius: 14px;
-        padding: 18px 22px;
-        margin-bottom: 24px;
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
       }
-      .teacher-notes h2 {
-        font-size: 22px;
-        color: #92400e;
-        margin: 0 0 10px;
-        border-bottom: 2px dashed #f59e0b;
-        padding-bottom: 6px;
+      .wq-card > h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
       }
-      .teacher-notes h3 { font-size: 18px; margin: 14px 0 4px; color: #78350f; }
-      .teacher-notes p, .teacher-notes li { font-size: 17px; }
-      .teacher-label {
-        display: inline-block;
-        background: #f59e0b;
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
         color: #fff;
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
+        background: var(--nt-accent, #245ea8);
+      }
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
+      }
+      .wq-lead {
+        font-size: 1.08rem;
+      }
+      code.wq-expr {
+        font-family: "Cambria Math", "Courier New", monospace;
+        background: rgba(109, 40, 217, 0.1);
+        color: #6d28d9;
+        padding: 1px 7px;
+        border-radius: 6px;
+        font-size: 1.02em;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
+      }
+      .wq-l1 {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.45);
+      }
+      .wq-l2 {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
         padding: 3px 10px;
         border-radius: 999px;
-        margin-bottom: 8px;
+        color: #fff;
+        margin-bottom: 6px;
       }
-
-      /* ── Steps ── */
-      ol.steps { padding-left: 22px; }
-      ol.steps > li { margin-bottom: 14px; }
-
-      /* ── Resources ── */
-      .resources a { color: var(--nt-accent); font-weight: 700; text-decoration: underline; }
-      .resources a:focus-visible,
-      a:focus-visible,
-      input:focus-visible,
-      select:focus-visible,
-      button:focus-visible,
-      textarea:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
+      .wq-l1 .wq-tag {
+        background: #0f766e;
       }
-      ul.res-list { list-style: none; padding-left: 0; }
-      ul.res-list li {
-        padding: 12px 14px;
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        margin-bottom: 10px;
-        background: var(--nt-bg);
+      .wq-l2 .wq-tag {
+        background: #7c3aed;
       }
-
-      /* ── Rubric ── */
-      table.rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 17px;
-      }
-      table.rubric th,
-      table.rubric td {
-        border: 2px solid var(--nt-border);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      table.rubric th { background: var(--nt-accent); color: var(--nt-bg); }
-      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
-
-      /* ── Tip / example ── */
-      .tip {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin: 14px 0;
-      }
-      .vocab { display: grid; gap: 10px; }
-      .vocab .word {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-      }
-      .vocab .word b { color: var(--nt-accent); }
-      .example {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        font-size: 20px;
-        margin: 10px 0;
-      }
-
-      /* ── Self-check (interactive) ── */
-      .sc-item {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin-bottom: 18px;
-      }
-      .sc-item .sc-prompt {
-        font-weight: 700;
-        font-size: 19px;
-        margin: 0 0 10px;
-      }
-      .sc-item .sc-hint {
-        color: var(--nt-muted);
-        font-size: 16px;
-        margin-bottom: 10px;
+      .wq-es {
         display: block;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
       }
-      .sc-item input[type="text"],
-      .sc-item select {
-        font-size: 19px;
-        padding: 10px 12px;
-        width: 100%;
-        max-width: 320px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-      }
-      .sc-btn {
-        display: inline-block;
-        margin-top: 10px;
-        font-size: 17px;
-        font-weight: 700;
-        padding: 10px 22px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-      .sc-btn:hover { filter: brightness(1.08); }
-      .sc-feedback {
-        margin-top: 10px;
-        font-size: 17px;
-        font-weight: 600;
-        padding: 8px 14px;
-        border-radius: 8px;
-        display: none;
-      }
-      .sc-feedback.correct { background: #d1fae5; color: #065f46; border: 2px solid #10b981; }
-      .sc-feedback.wrong   { background: #fee2e2; color: #7f1d1d; border: 2px solid #ef4444; }
 
-      /* ── Select-based self-check ── */
-      .sc-select-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; }
-
-      /* ── Final quiz ── */
-      .q { margin-bottom: 22px; }
-      .q label.qprompt { display: block; font-weight: 700; margin-bottom: 8px; font-size: 20px; }
-      .q .hint { color: var(--nt-muted); font-size: 16px; display: block; margin-bottom: 8px; }
-      .q input[type="text"],
-      .q select {
-        font-size: 19px;
-        padding: 10px 12px;
-        width: 100%;
-        max-width: 360px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
+      /* ---------- Vocab / glossary tiles ---------- */
+      .wq-vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
       }
-      .check-btn {
-        font-size: 20px;
+      .wq-vocab {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-vocab svg {
+        display: block;
+        margin: 0 auto 8px;
+      }
+      .wq-vocab .wq-vname {
         font-weight: 700;
-        padding: 14px 28px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-vocab .wq-vdef {
+        font-size: 0.92rem;
+        margin: 4px 0 0;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Mission / task booth ---------- */
+      .wq-mission {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: center;
+      }
+      @media (max-width: 720px) {
+        .wq-mission {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-stage {
+        border-radius: 16px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        background: var(--nt-bg, #f8fafc);
+        padding: 10px;
+      }
+      .wq-deliverables {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .wq-deliverables li {
+        position: relative;
+        padding: 8px 8px 8px 34px;
+        border-bottom: 1px dashed var(--nt-border, #dbe3ee);
+      }
+      .wq-deliverables li:last-child {
+        border-bottom: none;
+      }
+      .wq-deliverables li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 13px;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
         margin-top: 8px;
       }
-      .check-btn:hover { filter: brightness(1.08); }
-
-      /* ── Reflection ── */
-      .reflection-box textarea {
-        width: 100%;
-        box-sizing: border-box;
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 14px;
-        font-size: 18px;
-        font-family: inherit;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        resize: vertical;
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
       }
-      .deliverable-box {
-        background: var(--nt-bg);
-        border: 3px solid var(--nt-accent);
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin-top: 18px;
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
       }
-      .deliverable-box strong { color: var(--nt-accent); }
-
-      /* ── Answer key details ── */
-      details.answer-key {
-        background: #f0fdf4;
-        border: 2px dashed #16a34a;
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin-top: 20px;
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
       }
-      details.answer-key summary {
-        cursor: pointer;
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
         font-weight: 700;
-        font-size: 18px;
-        color: #15803d;
-        list-style: none;
+        margin: 0;
       }
-      details.answer-key summary::marker,
-      details.answer-key summary::-webkit-details-marker { display: none; }
-      details.answer-key summary::before { content: "▶ "; }
-      details.answer-key[open] summary::before { content: "▼ "; }
-      details.answer-key .ak-body { margin-top: 14px; }
-      details.answer-key table {
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Worked example ---------- */
+      .wq-example {
+        border-left: 5px solid var(--nt-accent, #245ea8);
+        background: rgba(36, 94, 168, 0.06);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .wq-example b {
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-work {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+      }
+
+      /* ---------- Powers reference strip ---------- */
+      .wq-power-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .wq-power {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-power .wq-pexp {
+        font-family: "Cambria Math", Georgia, serif;
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: #6d28d9;
+      }
+      .wq-power .wq-pval {
+        display: block;
+        margin-top: 2px;
+        font-size: 0.9rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Rubric table ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-rubric {
         width: 100%;
         border-collapse: collapse;
-        font-size: 17px;
+        min-width: 560px;
+        font-size: 0.96rem;
       }
-      details.answer-key table th,
-      details.answer-key table td {
-        border: 1px solid #86efac;
-        padding: 8px 12px;
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
         text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
       }
-      details.answer-key table th { background: #bbf7d0; color: #14532d; }
+      table.wq-rubric thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
 
-      /* ── Misc ── */
-      .engine { font-size: 30px; }
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--nt-accent, #245ea8);
+      }
+      .wq-num,
+      .wq-textin {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-num {
+        width: 140px;
+      }
+      .wq-textin {
+        width: 220px;
+        font-family: "Cambria Math", "Courier New", monospace;
+      }
+      .wq-num:focus,
+      .wq-textin:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--nt-accent, #245ea8);
+      }
+      .wq-hint {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: none;
+      }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(16, 185, 129, 0.14);
+        color: #065f46;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(239, 68, 68, 0.14);
+        color: #991b1b;
+      }
 
-      /* ── Print ── */
+      .wq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .wq-btn {
+        font-size: 1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        cursor: pointer;
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        transition: filter 0.12s ease;
+      }
+      .wq-btn:hover {
+        filter: brightness(1.08);
+      }
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--nt-accent, #245ea8);
+        border: 2px solid var(--nt-accent, #245ea8);
+      }
+      #wq-score {
+        margin-top: 16px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: none;
+      }
+      #wq-score.show {
+        display: block;
+        background: rgba(36, 94, 168, 0.1);
+        border: 1px solid var(--nt-accent, #245ea8);
+      }
+
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
       @media print {
-        .teacher-notes,
-        .teacher-notes * { display: none !important; }
-        details.answer-key { display: none !important; }
-        .sc-btn { display: none !important; }
-        .check-btn { display: none !important; }
-        section.card,
-        .learning-target {
-          break-inside: avoid;
-          border: 1px solid #ccc;
+        .wq-actions,
+        .wq-btn {
+          display: none;
+        }
+        .wq-hero {
           box-shadow: none;
         }
-        body { font-size: 14px; }
-        .wrap { padding: 0; }
-        a { color: #000; text-decoration: none; }
-      }
-
-      /* ── Mobile ── */
-      @media (max-width: 600px) {
-        h1 { font-size: 26px; }
-        h2 { font-size: 22px; }
-        .lt-meta { flex-direction: column; }
-        table.rubric { font-size: 14px; }
-        table.rubric th, table.rubric td { padding: 7px 8px; }
       }
     </style>
   </head>
-  <body class="nt-theme-aware">
-    <div class="wrap">
-      <p style="font:14px system-ui;padding:10px 0;"><a href="/webquests/">← All WebQuests</a> · <a href="/math/">Math Hub</a></p>
+  <body>
+    <div id="ntkit"></div>
 
-      <header class="hero">
-        <span class="badge">WebQuest · Unit 6 · CCSS 6.EE.A.1–4</span>
-        <h1><span class="engine">⚙️</span> The Expression Engine WebQuest</h1>
-        <p class="lead">Expressions — feed the blocks into the machine and build math!</p>
+    <main class="wq-wrap">
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker"
+          >Grade 6 Math WebQuest · Unit 6 · 6.EE.A.1–4</span
+        >
+        <h1>The Glow Night Pricing Lab</h1>
+        <p>
+          Your middle school is throwing <strong>Glow Night</strong> — an
+          after-dark carnival with neon booths, a glowing light grid, and snack
+          stands. The student council just hired
+          <strong>your data team</strong> to run the Pricing Lab. Booth prices
+          change with the number of players, the light grid grows in powers, and
+          two suppliers are fighting over your bulk order. Your job: write the
+          expressions, plug in the numbers, and find the smartest deal.
+        </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 2–3 class periods</span>
+          <span class="wq-badge">✏️ Write &amp; evaluate expressions</span>
+          <span class="wq-badge">⚡ Powers &amp; exponents</span>
+          <span class="wq-badge">🟰 Distributive property</span>
+        </div>
+        <!-- decorative neon-grid SVG -->
+        <svg class="wq-hero-art" viewBox="0 0 200 200" aria-hidden="true">
+          <defs>
+            <radialGradient id="bulb" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fff" />
+              <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.2" />
+            </radialGradient>
+          </defs>
+          <g>
+            <line
+              x1="20"
+              y1="20"
+              x2="180"
+              y2="20"
+              stroke="#a855f7"
+              stroke-width="2"
+              opacity="0.5"
+            />
+            <line
+              x1="20"
+              y1="70"
+              x2="180"
+              y2="70"
+              stroke="#a855f7"
+              stroke-width="2"
+              opacity="0.5"
+            />
+            <line
+              x1="20"
+              y1="120"
+              x2="180"
+              y2="120"
+              stroke="#a855f7"
+              stroke-width="2"
+              opacity="0.5"
+            />
+            <line
+              x1="20"
+              y1="170"
+              x2="180"
+              y2="170"
+              stroke="#a855f7"
+              stroke-width="2"
+              opacity="0.5"
+            />
+            <line
+              x1="20"
+              y1="20"
+              x2="20"
+              y2="170"
+              stroke="#a855f7"
+              stroke-width="2"
+              opacity="0.5"
+            />
+            <line
+              x1="73"
+              y1="20"
+              x2="73"
+              y2="170"
+              stroke="#a855f7"
+              stroke-width="2"
+              opacity="0.5"
+            />
+            <line
+              x1="126"
+              y1="20"
+              x2="126"
+              y2="170"
+              stroke="#a855f7"
+              stroke-width="2"
+              opacity="0.5"
+            />
+            <line
+              x1="180"
+              y1="20"
+              x2="180"
+              y2="170"
+              stroke="#a855f7"
+              stroke-width="2"
+              opacity="0.5"
+            />
+          </g>
+          <g>
+            <circle cx="20" cy="20" r="8" fill="url(#bulb)" />
+            <circle cx="73" cy="70" r="8" fill="url(#bulb)" />
+            <circle cx="126" cy="20" r="8" fill="url(#bulb)" />
+            <circle cx="180" cy="120" r="8" fill="url(#bulb)" />
+            <circle cx="73" cy="170" r="8" fill="url(#bulb)" />
+            <circle cx="126" cy="120" r="8" fill="url(#bulb)" />
+          </g>
+          <text
+            x="40"
+            y="115"
+            font-size="34"
+            font-weight="800"
+            fill="#fbbf24"
+            font-family="Cambria Math, serif"
+          >
+            5³
+          </text>
+        </svg>
       </header>
 
-      <!-- ══ LEARNING TARGET ══ -->
-      <div class="learning-target" role="region" aria-label="Learning Target">
-        <h2>🎯 Learning Target</h2>
-        <ul>
-          <li><strong>I can</strong> write and evaluate whole-number exponents (6.EE.A.1).</li>
-          <li><strong>I can</strong> write an expression that matches a word phrase, using variables (6.EE.A.2).</li>
-          <li><strong>I can</strong> evaluate an expression by substituting a given value and using order of operations (6.EE.A.2c).</li>
-          <li><strong>I can</strong> apply the distributive property and identify equivalent expressions (6.EE.A.3–4).</li>
-        </ul>
-        <div class="lt-meta">
-          <span class="lt-chip">📌 Standard: CCSS 6.EE.A.1–4</span>
-          <span class="lt-chip">⏱ Estimated time: 45–60 min</span>
-          <span class="lt-chip">📎 Materials: pencil, scratch paper, calculator (optional)</span>
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Welcome to the
+          Pricing Lab
+        </h2>
+        <p class="wq-lead">
+          A carnival looks like chaos, but a data team sees patterns. Every
+          booth charges by a rule. Every string of lights follows a power. Every
+          supplier deal hides inside an expression. An
+          <strong>algebraic expression</strong> is a math rule that uses a
+          letter (a <em>variable</em>) to stand for a number that can change —
+          like the number of players, <code class="wq-expr">p</code>. Learn to
+          read these rules and you can price the whole carnival before it even
+          opens.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >How can writing and evaluating algebraic expressions — and using
+            powers and the distributive property — let you predict cost before
+            anything is built?</strong
+          >
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          A <strong>variable</strong> is a letter that holds a number you do not
+          know yet. To <strong>evaluate</strong> means to put the number in for
+          the letter and do the math. Example: if
+          <code class="wq-expr">3p</code> and
+          <code class="wq-expr">p = 4</code>, then
+          <code class="wq-expr">3p = 3 × 4 = 12</code>.
+          <span class="wq-es"
+            >En español: Una <em>variable</em> es una letra que guarda un número
+            que aún no conoces. <em>Evaluar</em> significa poner el número en
+            lugar de la letra y calcular. Si <code class="wq-expr">3p</code> y
+            <code class="wq-expr">p = 4</code>, entonces
+            <code class="wq-expr">3p = 12</code>.</span
+          >
         </div>
-      </div>
-
-      <!-- ══ TEACHER NOTES ══ (hidden in print) ══ -->
-      <div class="teacher-notes" role="region" aria-label="Teacher Notes">
-        <span class="teacher-label">TEACHER ONLY — Does not print</span>
-        <h2>Teacher Notes</h2>
-
-        <h3>Pacing</h3>
-        <p>45 min class: Steps 1–3 (~15 min) → Self-Check (~10 min) → Steps 4–6 + Final Quiz (~20 min). 60 min class: add a think-pair-share after Step 4 (words to expressions) and a whole-group debrief of the distributive property before the quiz.</p>
-
-        <h3>Grouping</h3>
-        <p>Pairs work well for Steps 1–5 (one student reads the word phrase, the other writes the expression). The final quiz should be completed individually to assess individual mastery.</p>
-
-        <h3>Differentiation — Support</h3>
-        <ul>
-          <li>Provide an operation key card: "more than → +", "less than → −", "times/product → ×", "quotient → ÷".</li>
-          <li>Allow students to use a number line or multiplication chart during evaluation tasks.</li>
-          <li>Break multi-step evaluation into a table: (1) substitute, (2) simplify inside parentheses, (3) compute.</li>
-        </ul>
-
-        <h3>Differentiation — Challenge</h3>
-        <ul>
-          <li>Ask students to write their own word problem that results in the expression 3(x + 4).</li>
-          <li>Pose: "Are 2(x + 3) and 2x + 6 always equal? Show with three different values of x."</li>
-          <li>Extend to two-variable expressions: evaluate 2x + y when x = 3 and y = 5.</li>
-        </ul>
-
-        <h3>ESOL / Language Supports</h3>
-        <ul>
-          <li>Post a bilingual operation word wall: "sum / suma", "product / producto", "evaluate / evaluar".</li>
-          <li>Use sentence frames: "The expression is ___ because the word ___ means ___."</li>
-          <li>Allow students to write the expression before reading the word phrase aloud.</li>
-        </ul>
-      </div>
-
-      <!-- Student identity bar + Save PDF/DOC + results panel -->
-      <div id="ntkit"></div>
-
-      <!-- ══ INTRODUCTION ══ -->
-      <section class="card">
-        <h2>1. Introduction</h2>
-        <p>Welcome to the <strong>Expression Engine</strong>! ⚙️ This machine turns numbers, letters, and signs into <strong>expressions</strong>.</p>
-        <p>An <strong>expression</strong> is a math phrase like <em>3 + x</em> or <em>2 · n</em>. It has no equal sign. A <strong>variable</strong> is a letter that stands for a number, like <em>x</em> or <em>n</em>. An <strong>exponent</strong> tells how many times to multiply a number by itself: 4³ means 4 · 4 · 4.</p>
-        <p>In this WebQuest, you will read, write, evaluate, and simplify expressions to run the engine.</p>
-      </section>
-
-      <!-- ══ TASK ══ -->
-      <section class="card">
-        <h2>2. Task</h2>
-        <p>By the end, you will be able to:</p>
-        <ul>
-          <li>Write and evaluate <strong>exponents</strong> (like 4³ = 4·4·4 = 64).</li>
-          <li>Turn words into an <strong>expression</strong> (like "5 more than n" = n + 5).</li>
-          <li><strong>Evaluate</strong> an expression by substituting a value and using order of operations.</li>
-          <li>Apply the <strong>distributive property</strong> (like 3(x + 2) = 3x + 6).</li>
-          <li>Spot <strong>equivalent expressions</strong> (two expressions that are always equal).</li>
-        </ul>
-      </section>
-
-      <!-- ══ PROCESS ══ -->
-      <section class="card">
-        <h2>3. Process</h2>
-        <p class="muted">Do the steps in order. Read each one carefully.</p>
-
-        <ol class="steps">
-          <li>
-            <h3>Step 1 — Learn the words</h3>
-            <div class="vocab">
-              <div class="word"><b>Variable</b> — a letter for an unknown number. Example: <em>x</em>.</div>
-              <div class="word"><b>Coefficient</b> — the number multiplied by a variable. In <em>5x</em>, the coefficient is 5.</div>
-              <div class="word"><b>Exponent</b> — tells how many times to multiply a number by itself. In <em>4³</em>, the exponent is 3: 4 · 4 · 4 = 64.</div>
-              <div class="word"><b>Evaluate</b> — substitute a number in for the variable, then simplify using order of operations.</div>
-              <div class="word"><b>Equivalent expressions</b> — two expressions that give the same value for any number you substitute.</div>
-            </div>
-          </li>
-          <li>
-            <h3>Step 2 — Play the 3D game</h3>
-            <p>Open the <strong>Expression Engine</strong> 3D game. Feed blocks into the machine to build expressions.</p>
-          </li>
-          <li>
-            <h3>Step 3 — Read exponents</h3>
-            <p><em>4³</em> means <strong>4 · 4 · 4 = 64</strong>. The exponent 3 counts how many 4s you multiply.</p>
-            <div class="example">5² = 5 · 5 = <strong>25</strong></div>
-            <div class="example">2⁴ = 2 · 2 · 2 · 2 = <strong>16</strong></div>
-          </li>
-          <li>
-            <h3>Step 4 — Words to expression</h3>
-            <p>"3 more than n" → <strong>n + 3</strong>. &nbsp;&nbsp; "Twice a number x" → <strong>2x</strong>. &nbsp;&nbsp; "5 less than a number p" → <strong>p − 5</strong>.</p>
-          </li>
-          <li>
-            <h3>Step 5 — Evaluate using order of operations</h3>
-            <p>Evaluate <em>2x + 1</em> when <em>x = 4</em>: substitute first, then compute: 2 · 4 + 1 = 8 + 1 = <strong>9</strong>.</p>
-          </li>
-          <li>
-            <h3>Step 6 — Distributive property</h3>
-            <p>Multiply the outside number by each term inside the parentheses: 3(x + 2) = 3·x + 3·2 = <strong>3x + 6</strong>.</p>
-          </li>
-          <li>
-            <h3>Step 7 — Show what you know</h3>
-            <p>Complete the Self-Check below, then type your name in the bar above, finish the final quiz, and <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.</p>
-          </li>
-        </ol>
-        <div class="tip">
-          💡 <strong>Tip:</strong> <em>5x</em> means 5 <strong>times</strong> x. A number written next to a letter always means multiply.
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Two expressions can look different but always give the same value — we
+          call them <em>equivalent</em>. The distributive property is your proof
+          tool: <code class="wq-expr">6(p + 2)</code> and
+          <code class="wq-expr">6p + 12</code> are equivalent for
+          <strong>every</strong> value of <code class="wq-expr">p</code>. As you
+          work, look for chances to rewrite an expression into a faster-to-use
+          equivalent form.
         </div>
       </section>
 
-      <!-- ══ RESOURCES ══ -->
-      <section class="card resources">
-        <h2>4. Resources</h2>
-        <p>Use these to help you:</p>
-        <ul class="res-list">
-          <li>🎮 <a href="/games/3d/unit-6/">Unit 6 — Expression Engine 3D Game</a> — build expressions in the machine.</li>
-          <li>📘 <a href="/math/">Math Lessons Hub</a> — review expressions and exponents.</li>
-          <li>📖 <a href="/graphic-novels/unit6/graphic-novel-1.html">Unit 6 Graphic Novel</a> — the expressions story.</li>
-          <li>📝 <a href="/math/unit-6/">Unit 6 Practice Activities</a> — extra practice.</li>
-        </ul>
-      </section>
-
-      <!-- ══ SELF-CHECK (Interactive) ══ -->
-      <section class="card" aria-label="Self-Check">
-        <h2>5. Self-Check — Try It Yourself</h2>
-        <p class="muted">Answer each question, then press <strong>Check</strong> to see if you are right. Read the explanation before moving on.</p>
-
-        <!-- SC1 — Exponent value -->
-        <div class="sc-item">
-          <p class="sc-prompt">SC1. What is the value of 3³?</p>
-          <span class="sc-hint">Multiply: 3 · 3 · 3. Type the number.</span>
-          <input type="text" id="sc1" inputmode="numeric" autocomplete="off" placeholder="value" aria-label="Self-check 1 answer" />
-          <br />
-          <button type="button" class="sc-btn" onclick="checkSC('sc1','27','Correct! 3 · 3 · 3 = 27. The exponent 3 means multiply three 3s together.','Not quite. 3³ = 3 · 3 · 3. First 3 · 3 = 9, then 9 · 3 = 27.')">Check</button>
-          <div class="sc-feedback" id="sc1-fb" role="alert"></div>
-        </div>
-
-        <!-- SC2 — Words to expression -->
-        <div class="sc-item">
-          <p class="sc-prompt">SC2. Write an expression for "8 less than a number y".</p>
-          <span class="sc-hint">Type exactly: y - 8 (use a space around the minus sign)</span>
-          <input type="text" id="sc2" autocomplete="off" placeholder="expression" aria-label="Self-check 2 answer" />
-          <br />
-          <button type="button" class="sc-btn" onclick="checkSC2()">Check</button>
-          <div class="sc-feedback" id="sc2-fb" role="alert"></div>
-        </div>
-
-        <!-- SC3 — Evaluate with order of operations -->
-        <div class="sc-item">
-          <p class="sc-prompt">SC3. Evaluate 4x + 3 when x = 5. What is the value?</p>
-          <span class="sc-hint">Substitute first: 4 · 5 + 3. Then simplify. Type the number.</span>
-          <input type="text" id="sc3" inputmode="numeric" autocomplete="off" placeholder="value" aria-label="Self-check 3 answer" />
-          <br />
-          <button type="button" class="sc-btn" onclick="checkSC('sc3','23','Correct! 4 · 5 = 20, then 20 + 3 = 23. Always multiply before adding (order of operations).','Not quite. Substitute x = 5: 4 · 5 + 3 = 20 + 3 = 23.')">Check</button>
-          <div class="sc-feedback" id="sc3-fb" role="alert"></div>
-        </div>
-
-        <!-- SC4 — Distributive property (multiple choice) -->
-        <div class="sc-item">
-          <p class="sc-prompt">SC4. Which expression equals 2(x + 5) after applying the distributive property?</p>
-          <span class="sc-hint">Multiply 2 by each term inside the parentheses.</span>
-          <div class="sc-select-row">
-            <select id="sc4" aria-label="Self-check 4 answer">
-              <option value="">— Choose —</option>
-              <option value="2x+10">2x + 10</option>
-              <option value="2x+5">2x + 5</option>
-              <option value="x+10">x + 10</option>
-              <option value="2x+7">2x + 7</option>
-            </select>
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>The Task
+        </h2>
+        <div class="wq-mission">
+          <div>
+            <p>
+              By the end of this WebQuest, your data team will submit a
+              <strong>Glow Night Pricing Report</strong>. A complete report
+              must:
+            </p>
+            <ul class="wq-deliverables">
+              <li>
+                <strong>Write</strong> an algebraic expression for the Ring Toss
+                booth's cost rule.
+              </li>
+              <li>
+                <strong>Evaluate</strong> that expression for two different
+                player counts.
+              </li>
+              <li>
+                Use a <strong>power (exponent)</strong> to find how many bulbs
+                the neon light grid needs.
+              </li>
+              <li>
+                Use the <strong>order of operations</strong> to total a snack
+                stand combo.
+              </li>
+              <li>
+                Use the <strong>distributive property</strong> to choose the
+                cheaper of two supplier deals — and prove the two forms are
+                equivalent.
+              </li>
+              <li>
+                Pass the <strong>Check Your Understanding</strong> self-check at
+                the bottom.
+              </li>
+            </ul>
           </div>
-          <br />
-          <button type="button" class="sc-btn" onclick="checkSCSelect('sc4','2x+10','Correct! 2 · x = 2x and 2 · 5 = 10, so 2(x+5) = 2x + 10.','Not quite. Distribute the 2: 2·x + 2·5 = 2x + 10.')">Check</button>
-          <div class="sc-feedback" id="sc4-fb" role="alert"></div>
+          <div class="wq-stage" aria-label="Glow Night carnival map">
+            <svg viewBox="0 0 280 230" role="img" aria-labelledby="map-title">
+              <title id="map-title">
+                Map of the four Glow Night stations: Ring Toss, Light Grid,
+                Snack Stand, and Supplier Desk
+              </title>
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="230"
+                rx="10"
+                fill="var(--nt-bg,#f8fafc)"
+              />
+              <!-- Ring Toss booth -->
+              <rect
+                x="18"
+                y="20"
+                width="110"
+                height="80"
+                rx="8"
+                fill="var(--wq-glow-1)"
+                stroke="var(--wq-ink)"
+                stroke-width="2"
+              />
+              <circle
+                cx="73"
+                cy="55"
+                r="16"
+                fill="none"
+                stroke="#fff"
+                stroke-width="4"
+              />
+              <text
+                x="40"
+                y="92"
+                font-size="11"
+                fill="#06384a"
+                font-weight="700"
+              >
+                Ring Toss
+              </text>
+              <!-- Light grid -->
+              <rect
+                x="152"
+                y="20"
+                width="110"
+                height="80"
+                rx="8"
+                fill="var(--wq-glow-2)"
+                stroke="var(--wq-ink)"
+                stroke-width="2"
+              />
+              <g fill="#fff">
+                <circle cx="172" cy="40" r="3" />
+                <circle cx="192" cy="40" r="3" />
+                <circle cx="212" cy="40" r="3" />
+                <circle cx="232" cy="40" r="3" />
+                <circle cx="172" cy="58" r="3" />
+                <circle cx="192" cy="58" r="3" />
+                <circle cx="212" cy="58" r="3" />
+                <circle cx="232" cy="58" r="3" />
+                <circle cx="172" cy="76" r="3" />
+                <circle cx="192" cy="76" r="3" />
+                <circle cx="212" cy="76" r="3" />
+                <circle cx="232" cy="76" r="3" />
+              </g>
+              <text x="178" y="96" font-size="11" fill="#fff" font-weight="700">
+                Light Grid
+              </text>
+              <!-- Snack stand -->
+              <rect
+                x="18"
+                y="125"
+                width="110"
+                height="80"
+                rx="8"
+                fill="var(--wq-glow-4)"
+                stroke="var(--wq-ink)"
+                stroke-width="2"
+              />
+              <rect
+                x="40"
+                y="150"
+                width="66"
+                height="30"
+                rx="4"
+                fill="#fff"
+                opacity="0.8"
+              />
+              <text
+                x="36"
+                y="198"
+                font-size="11"
+                fill="#064e3b"
+                font-weight="700"
+              >
+                Snack Stand
+              </text>
+              <!-- Supplier desk -->
+              <rect
+                x="152"
+                y="125"
+                width="110"
+                height="80"
+                rx="8"
+                fill="var(--wq-glow-3)"
+                stroke="var(--wq-ink)"
+                stroke-width="2"
+              />
+              <text
+                x="183"
+                y="160"
+                font-size="20"
+                fill="#fff"
+                font-weight="800"
+                font-family="Cambria Math, serif"
+              >
+                a(b+c)
+              </text>
+              <text
+                x="168"
+                y="198"
+                font-size="11"
+                fill="#7a1638"
+                font-weight="700"
+              >
+                Supplier Desk
+              </text>
+            </svg>
+          </div>
         </div>
       </section>
 
-      <!-- ══ EVALUATION (RUBRIC) ══ -->
-      <section class="card">
-        <h2>6. Evaluation (Rubric)</h2>
-        <table class="rubric">
-          <thead>
-            <tr>
-              <th scope="col">Skill</th>
-              <th scope="col">4 — Expert</th>
-              <th scope="col">3 — Good</th>
-              <th scope="col">2 — Getting there</th>
-              <th scope="col">1 — Keep trying</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Exponents (6.EE.A.1)</strong></td>
-              <td>Writes and evaluates any whole-number exponent correctly and explains the meaning.</td>
-              <td>Correctly evaluates exponents with no errors.</td>
-              <td>Evaluates simple exponents; struggles with larger powers.</td>
-              <td>Needs support to interpret exponent notation.</td>
-            </tr>
-            <tr>
-              <td><strong>Writing expressions (6.EE.A.2)</strong></td>
-              <td>Translates any word phrase into a correct expression, including multi-step.</td>
-              <td>Translates most word phrases correctly.</td>
-              <td>Translates simple phrases with occasional errors.</td>
-              <td>Needs help translating words to symbols.</td>
-            </tr>
-            <tr>
-              <td><strong>Evaluating (6.EE.A.2c)</strong></td>
-              <td>Substitutes and applies order of operations perfectly every time.</td>
-              <td>Evaluates expressions correctly.</td>
-              <td>Evaluates with minor order-of-operations errors.</td>
-              <td>Struggles to substitute and simplify.</td>
-            </tr>
-            <tr>
-              <td><strong>Distributive property &amp; equivalent expressions (6.EE.A.3–4)</strong></td>
-              <td>Applies distribution and identifies equivalent expressions fluently.</td>
-              <td>Applies the distributive property correctly.</td>
-              <td>Applies distribution with prompting.</td>
-              <td>Has not yet applied the distributive property.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Work through the four stations in order. Each station builds one part
+          of your Pricing Report.
+        </p>
 
-      <!-- ══ CONCLUSION ══ -->
-      <section class="card">
-        <h2>7. Conclusion</h2>
-        <p>Great work, engineer! You can now read <strong>exponents</strong>, write <strong>expressions</strong> from words, <strong>evaluate</strong> them using order of operations, apply the <strong>distributive property</strong>, and spot <strong>equivalent expressions</strong>. These skills power algebra, formulas, and coding. Complete the reflection and final quiz below to show what you learned.</p>
-      </section>
+        <h3>Station 1 — Write the Ring Toss rule</h3>
+        <p>
+          The Ring Toss booth charges a <strong>$5 setup fee</strong>, plus
+          <strong>$3 for every player</strong>. Let
+          <code class="wq-expr">p</code> = the number of players. Your job is to
+          turn this rule into an expression, then evaluate it.
+        </p>
+        <div class="wq-example">
+          <p><b>Build the expression:</b></p>
+          <p class="wq-work">
+            "$3 for every player" → <code class="wq-expr">3p</code>. Add the $5
+            setup fee → cost expression = <code class="wq-expr">3p + 5</code>.
+          </p>
+          <p><b>Evaluate for p = 10 players:</b></p>
+          <p class="wq-work">3p + 5 = 3 × 10 + 5 = 30 + 5 = <b>$35</b></p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          "Per player" or "for every player" means
+          <strong>multiply by p</strong>. A flat "fee" that happens only once
+          means <strong>add a number</strong>. Write the multiply part first,
+          then add the one-time fee.
+          <span class="wq-es"
+            >En español: "por jugador" significa
+            <strong>multiplicar por p</strong>. Una "cuota" fija que pasa una
+            sola vez significa <strong>sumar un número</strong>.</span
+          >
+        </div>
 
-      <!-- ══ REFLECTION ══ -->
-      <section class="card reflection-box">
-        <h2>8. Reflection</h2>
-        <p>Answer these two questions in your own words before you submit.</p>
+        <h3>Station 2 — Power up the light grid</h3>
+        <p>
+          The neon light grid is a <strong>square</strong> of bulbs. The crew
+          can make it <code class="wq-expr">n</code> bulbs wide and
+          <code class="wq-expr">n</code> bulbs tall. The total number of bulbs
+          is <code class="wq-expr">n × n</code>, which we write as the power
+          <code class="wq-expr">n²</code> ("n squared"). For a grid that is 5
+          bulbs on each side, you need
+          <code class="wq-expr">5² = 5 × 5 = 25</code> bulbs.
+        </p>
+        <p>Keep this powers reference open while you work:</p>
+        <div class="wq-power-strip" aria-label="Powers reference">
+          <div class="wq-power">
+            <span class="wq-pexp">2³</span
+            ><span class="wq-pval">= 2·2·2 = 8</span>
+          </div>
+          <div class="wq-power">
+            <span class="wq-pexp">3²</span
+            ><span class="wq-pval">= 3·3 = 9</span>
+          </div>
+          <div class="wq-power">
+            <span class="wq-pexp">4²</span
+            ><span class="wq-pval">= 4·4 = 16</span>
+          </div>
+          <div class="wq-power">
+            <span class="wq-pexp">5²</span
+            ><span class="wq-pval">= 5·5 = 25</span>
+          </div>
+          <div class="wq-power">
+            <span class="wq-pexp">2⁴</span
+            ><span class="wq-pval">= 2·2·2·2 = 16</span>
+          </div>
+          <div class="wq-power">
+            <span class="wq-pexp">10²</span
+            ><span class="wq-pval">= 10·10 = 100</span>
+          </div>
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Watch the trap: <code class="wq-expr">5²</code> is
+          <strong>not</strong> 5 × 2 = 10. The little number (the
+          <em>exponent</em>) tells you how many times to use the
+          <em>base</em> as a factor, not what to multiply by. Predict: if the
+          crew also stacks the grid <code class="wq-expr">n</code> bulbs deep,
+          the rule becomes <code class="wq-expr">n³</code> — how many bulbs for
+          a 4-deep cube?
+        </div>
 
-        <p><strong>1. Which skill was most challenging — exponents, writing expressions, evaluating, or the distributive property? Explain why.</strong></p>
-        <textarea id="reflect1" rows="3" placeholder="Write your answer here…" aria-label="Reflection question 1"></textarea>
+        <h3>Station 3 — Total the snack combo (order of operations)</h3>
+        <p>
+          A "Glow Combo" is <strong>1 drink for $2</strong> plus
+          <strong>3 glow-bracelets at $4 each</strong>. The cost expression is
+          <code class="wq-expr">2 + 3 × 4</code>. Use the order of operations:
+          <strong>multiply before you add</strong>.
+        </p>
+        <div class="wq-example">
+          <p><b>Worked example — Glow Combo:</b></p>
+          <p class="wq-work">
+            2 + 3 × 4 = 2 + 12 = <b>$14</b> &nbsp;(NOT 5 × 4 = 20)
+          </p>
+        </div>
 
-        <p style="margin-top:16px;"><strong>2. Describe one real-life situation where you would use an expression with a variable.</strong></p>
-        <textarea id="reflect2" rows="3" placeholder="Write your answer here…" aria-label="Reflection question 2"></textarea>
-
-        <div class="deliverable-box">
-          <strong>Deliverable:</strong> When you finish the quiz below, press <strong>Save as PDF</strong> or <strong>Save as DOC</strong> in the panel at the top of the page, then submit the file to your teacher. Your file should include your name, all quiz answers, and your reflection.
+        <h3>Station 4 — Use the distributive property at the Supplier Desk</h3>
+        <p>
+          Two suppliers want your bulk order of <strong>glow kits</strong>. Each
+          kit holds a <code class="wq-expr">$6</code> wristband and a
+          <code class="wq-expr">$2</code> token. You need
+          <code class="wq-expr">k</code> kits.
+        </p>
+        <ul>
+          <li>
+            <strong>Supplier A</strong> charges
+            <code class="wq-expr">6(k + 2)</code> — they bundle a $6 kit price
+            with 2 free-shipping kits built into the rule.
+          </li>
+          <li>
+            <strong>Supplier B</strong> charges
+            <code class="wq-expr">6k + 8</code> — a $6 kit price plus a flat $8
+            handling fee.
+          </li>
+        </ul>
+        <p>
+          Use the distributive property to expand Supplier A's rule, then
+          compare the two expressions for the same number of kits.
+        </p>
+        <div class="wq-example">
+          <p><b>Worked example — distribute Supplier A:</b></p>
+          <p class="wq-work">6(k + 2) = 6 × k + 6 × 2 = <b>6k + 12</b></p>
+          <p>
+            Now both rules share the <code class="wq-expr">6k</code> part, so
+            you only have to compare the constants:
+            <strong>+12</strong> (Supplier A) vs. <strong>+8</strong> (Supplier
+            B). Supplier B is cheaper by $4 for any number of kits.
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          The distributive property means: the number outside the parentheses
+          multiplies <strong>everything</strong> inside. Draw arrows from the 6
+          to the <code class="wq-expr">k</code> AND from the 6 to the
+          <code class="wq-expr">2</code>. Multiply both, then add.
+          <span class="wq-es"
+            >En español: la propiedad distributiva significa que el número de
+            afuera multiplica <strong>todo</strong> lo de adentro:
+            <code class="wq-expr">6(k + 2) = 6k + 12</code>.</span
+          >
         </div>
       </section>
 
-      <!-- ══ CHECK YOUR UNDERSTANDING (graded) ══ -->
-      <section class="card">
-        <h2>9. Check Your Understanding</h2>
-        <p class="muted">Answer all 6. Then press <strong>Check My Answers</strong>. Use numbers only when asked.</p>
-
-        <div class="q">
-          <label class="qprompt" for="q1">Q1. Write <em>4 · 4 · 4</em> using an exponent. (Type like 4^3)</label>
-          <span class="hint">Example answer style: 2^5</span>
-          <input type="text" id="q1" autocomplete="off" placeholder="base^exponent" />
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you work. They open in the same window
+          — use your back button to return.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-6/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 6 · 3D Expression Builder</span
+              ><span class="wq-rdesc"
+                >Snap tiles into expressions and watch them evaluate live.</span
+              ></span
+            >
+          </a>
+          <a href="/activities/architect/unit-6/">
+            <span class="wq-ricon" aria-hidden="true">🧱</span>
+            <span
+              ><span class="wq-rtitle">Expression Architect Activity</span
+              ><span class="wq-rdesc"
+                >Practice writing, evaluating, and distributing step by
+                step.</span
+              ></span
+            >
+          </a>
+          <a href="/math/unit-6/">
+            <span class="wq-ricon" aria-hidden="true">📚</span>
+            <span
+              ><span class="wq-rtitle">Unit 6 Math Hub</span
+              ><span class="wq-rdesc"
+                >Lessons on powers, expressions, and properties.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
         </div>
-
-        <div class="q">
-          <label class="qprompt" for="q2">Q2. What is the value of <em>5²</em>? (5 · 5) Type the number only.</label>
-          <span class="hint">Example answer style: 16</span>
-          <input type="text" id="q2" inputmode="numeric" autocomplete="off" placeholder="value" />
+        <h3>Key vocabulary · Vocabulario clave</h3>
+        <div class="wq-vocab-grid">
+          <div class="wq-vocab">
+            <svg width="90" height="48" viewBox="0 0 90 48" aria-hidden="true">
+              <rect
+                x="6"
+                y="10"
+                width="78"
+                height="28"
+                rx="6"
+                fill="rgba(34,211,238,0.18)"
+                stroke="var(--wq-glow-1)"
+                stroke-width="2"
+              />
+              <text
+                x="20"
+                y="32"
+                font-size="20"
+                font-family="Cambria Math, serif"
+                font-weight="700"
+                fill="#0e7490"
+              >
+                3p + 5
+              </text>
+            </svg>
+            <div class="wq-vname">Expression / Expresión</div>
+            <p class="wq-vdef">
+              A math rule with numbers, operations, and at least one variable.
+              No equals sign.
+            </p>
+          </div>
+          <div class="wq-vocab">
+            <svg width="90" height="48" viewBox="0 0 90 48" aria-hidden="true">
+              <circle
+                cx="45"
+                cy="24"
+                r="16"
+                fill="rgba(168,85,247,0.18)"
+                stroke="var(--wq-glow-2)"
+                stroke-width="2"
+              />
+              <text
+                x="38"
+                y="31"
+                font-size="20"
+                font-family="Cambria Math, serif"
+                font-weight="700"
+                fill="#7c3aed"
+              >
+                p
+              </text>
+            </svg>
+            <div class="wq-vname">Variable / Variable</div>
+            <p class="wq-vdef">
+              A letter that stands for a number that can change.
+            </p>
+          </div>
+          <div class="wq-vocab">
+            <svg width="90" height="48" viewBox="0 0 90 48" aria-hidden="true">
+              <text
+                x="22"
+                y="34"
+                font-size="26"
+                font-family="Cambria Math, serif"
+                font-weight="800"
+                fill="#b45309"
+              >
+                5
+              </text>
+              <text
+                x="44"
+                y="22"
+                font-size="16"
+                font-family="Cambria Math, serif"
+                font-weight="800"
+                fill="#dc2626"
+              >
+                3
+              </text>
+            </svg>
+            <div class="wq-vname">Power / Potencia</div>
+            <p class="wq-vdef">
+              A base and an exponent: <code class="wq-expr">5³</code> = 5·5·5.
+              The exponent counts the factors.
+            </p>
+          </div>
+          <div class="wq-vocab">
+            <svg width="90" height="48" viewBox="0 0 90 48" aria-hidden="true">
+              <text
+                x="6"
+                y="32"
+                font-size="16"
+                font-family="Cambria Math, serif"
+                font-weight="700"
+                fill="#065f46"
+              >
+                6(k+2)
+              </text>
+              <text
+                x="62"
+                y="32"
+                font-size="16"
+                font-family="Cambria Math, serif"
+                font-weight="700"
+                fill="#065f46"
+              >
+                →6k+12
+              </text>
+            </svg>
+            <div class="wq-vname">Distributive / Distributiva</div>
+            <p class="wq-vdef">
+              Multiply the outside number by every term inside the parentheses.
+            </p>
+          </div>
         </div>
-
-        <div class="q">
-          <label class="qprompt" for="q3">Q3. Write an expression for "3 more than a number n".</label>
-          <span class="hint">Example answer style: n + 5</span>
-          <input type="text" id="q3" autocomplete="off" placeholder="expression" />
-        </div>
-
-        <div class="q">
-          <label class="qprompt" for="q4">Q4. In the expression <em>7x</em>, what is the coefficient?</label>
-          <span class="hint">Example answer style: 4</span>
-          <input type="text" id="q4" inputmode="numeric" autocomplete="off" placeholder="coefficient" />
-        </div>
-
-        <div class="q">
-          <label class="qprompt" for="q5">Q5. Evaluate <em>2x + 1</em> when <em>x = 4</em>. Type the number only.</label>
-          <span class="hint">Substitute x = 4, then simplify. Example answer style: 11</span>
-          <input type="text" id="q5" inputmode="numeric" autocomplete="off" placeholder="value" />
-        </div>
-
-        <div class="q">
-          <label class="qprompt" for="q6">Q6. Which expression is equal to <em>x + x + x</em>?</label>
-          <select id="q6">
-            <option value="">— Choose one —</option>
-            <option value="3x">3x</option>
-            <option value="x3">x3</option>
-            <option value="x^3">x^3</option>
-            <option value="3+x">3 + x</option>
-          </select>
-        </div>
-
-        <button type="button" class="check-btn" id="checkBtn">Check My Answers ✅</button>
-        <p class="muted" style="margin-top: 14px">Your score and a ✓/✗ for each question will appear in the panel at the top. Then use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to turn it in.</p>
       </section>
 
-      <!-- ══ ANSWER KEY (teacher only) ══ -->
-      <details class="answer-key" aria-label="Teacher Answer Key">
-        <summary>Teacher Answer Key (click to expand)</summary>
-        <div class="ak-body">
-          <p><em>Share with students only after submission. Keep collapsed during student work time.</em></p>
-          <table>
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Glow Night Pricing Report will be scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
             <thead>
               <tr>
-                <th>Item</th>
-                <th>Correct Answer</th>
-                <th>Explanation</th>
+                <th>Criteria</th>
+                <th>4 · Lead Analyst</th>
+                <th>3 · Analyst</th>
+                <th>2 · Trainee</th>
+                <th>1 · Getting started</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td>SC1</td><td>27</td><td>3³ = 3 · 3 · 3 = 27</td></tr>
-              <tr><td>SC2</td><td>y - 8</td><td>"less than" → subtract from the variable</td></tr>
-              <tr><td>SC3</td><td>23</td><td>4(5) + 3 = 20 + 3 = 23</td></tr>
-              <tr><td>SC4</td><td>2x + 10</td><td>2 · x + 2 · 5 = 2x + 10 (distributive property)</td></tr>
-              <tr><td>Q1</td><td>4^3</td><td>Three factors of 4 → exponent 3</td></tr>
-              <tr><td>Q2</td><td>25</td><td>5² = 5 · 5 = 25</td></tr>
-              <tr><td>Q3</td><td>n + 3</td><td>"more than" means add</td></tr>
-              <tr><td>Q4</td><td>7</td><td>The number in front of x is the coefficient</td></tr>
-              <tr><td>Q5</td><td>9</td><td>2(4) + 1 = 8 + 1 = 9</td></tr>
-              <tr><td>Q6</td><td>3x</td><td>x + x + x = 3 groups of x = 3x (combining like terms)</td></tr>
+              <tr>
+                <td>Writing expressions</td>
+                <td>Both rules written correctly with the right variable.</td>
+                <td>One rule fully correct.</td>
+                <td>Attempts a rule with errors.</td>
+                <td>No expression written.</td>
+              </tr>
+              <tr>
+                <td>Evaluating</td>
+                <td>All substitutions correct, work shown.</td>
+                <td>Most substitutions correct.</td>
+                <td>Some substitution errors.</td>
+                <td>No correct evaluation.</td>
+              </tr>
+              <tr>
+                <td>Powers &amp; order of ops</td>
+                <td>Exponents and order of operations both correct.</td>
+                <td>One small slip (e.g., 5² counted once).</td>
+                <td>Confuses exponent with multiply.</td>
+                <td>Not attempted.</td>
+              </tr>
+              <tr>
+                <td>Distributive property</td>
+                <td>Expands correctly and proves equivalence.</td>
+                <td>Expands correctly; weak proof.</td>
+                <td>Partial distribution.</td>
+                <td>Not attempted.</td>
+              </tr>
+              <tr>
+                <td>Reasoning &amp; decision</td>
+                <td>Picks cheaper supplier with clear evidence.</td>
+                <td>Picks a supplier with some evidence.</td>
+                <td>Brief or unclear reasoning.</td>
+                <td>No explanation.</td>
+              </tr>
             </tbody>
           </table>
         </div>
-      </details>
+      </section>
 
-    </div><!-- /.wrap -->
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
+        <p>
+          Answer all six. Click <strong>Check My Answers</strong> when you are
+          done. These match the four stations of your report.
+        </p>
 
+        <!-- Q1 write expression (text) -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="text"
+          data-answer="3p+5|5+3p|3*p+5|3xp+5"
+          data-skill="Writing an expression"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span
+              >The Ring Toss charges a $5 setup fee plus $3 per player (<code
+                class="wq-expr"
+                >p</code
+              >). Write the cost expression. (Type it like
+              <code class="wq-expr">3p+5</code>.)</span
+            >
+          </div>
+          <label for="q1in" class="sr-only">Ring Toss cost expression</label>
+          <input
+            id="q1in"
+            class="wq-textin"
+            type="text"
+            inputmode="text"
+            placeholder="e.g. 3p+5"
+            autocomplete="off"
+          />
+          <div class="wq-hint">
+            Hint / Pista: "$3 per player" → <code class="wq-expr">3p</code>; the
+            $5 fee is added once.
+          </div>
+          <div class="wq-fb" id="fb1" role="status"></div>
+        </div>
+
+        <!-- Q2 evaluate (num) -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="35"
+          data-tol="0.001"
+          data-skill="Evaluating an expression"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span
+              >Evaluate <code class="wq-expr">3p + 5</code> when
+              <code class="wq-expr">p = 10</code> players. What is the cost in
+              dollars?</span
+            >
+          </div>
+          <label for="q2in" class="sr-only">Cost when p equals 10</label>
+          <input
+            id="q2in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="$"
+          />
+          <div class="wq-hint">
+            Hint / Pista: Multiply 3 × 10 first, then add 5.
+          </div>
+          <div class="wq-fb" id="fb2" role="status"></div>
+        </div>
+
+        <!-- Q3 power (num) -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="num"
+          data-answer="25"
+          data-tol="0.001"
+          data-skill="Powers and exponents"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span
+              >The light grid is a square that is 5 bulbs on each side. Using
+              the power <code class="wq-expr">5²</code>, how many bulbs are
+              needed?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="86"
+              height="86"
+              viewBox="0 0 86 86"
+              role="img"
+              aria-label="A 5 by 5 square grid of light bulbs"
+            >
+              <rect
+                x="3"
+                y="3"
+                width="80"
+                height="80"
+                rx="6"
+                fill="rgba(168,85,247,0.12)"
+                stroke="var(--wq-glow-2)"
+                stroke-width="2"
+              />
+              <g fill="var(--wq-glow-5)" stroke="#b45309" stroke-width="1">
+                <circle cx="16" cy="16" r="4" />
+                <circle cx="30" cy="16" r="4" />
+                <circle cx="44" cy="16" r="4" />
+                <circle cx="58" cy="16" r="4" />
+                <circle cx="72" cy="16" r="4" />
+                <circle cx="16" cy="30" r="4" />
+                <circle cx="30" cy="30" r="4" />
+                <circle cx="44" cy="30" r="4" />
+                <circle cx="58" cy="30" r="4" />
+                <circle cx="72" cy="30" r="4" />
+                <circle cx="16" cy="44" r="4" />
+                <circle cx="30" cy="44" r="4" />
+                <circle cx="44" cy="44" r="4" />
+                <circle cx="58" cy="44" r="4" />
+                <circle cx="72" cy="44" r="4" />
+                <circle cx="16" cy="58" r="4" />
+                <circle cx="30" cy="58" r="4" />
+                <circle cx="44" cy="58" r="4" />
+                <circle cx="58" cy="58" r="4" />
+                <circle cx="72" cy="58" r="4" />
+                <circle cx="16" cy="72" r="4" />
+                <circle cx="30" cy="72" r="4" />
+                <circle cx="44" cy="72" r="4" />
+                <circle cx="58" cy="72" r="4" />
+                <circle cx="72" cy="72" r="4" />
+              </g>
+            </svg>
+          </div>
+          <label for="q3in" class="sr-only">Number of bulbs in the grid</label>
+          <input
+            id="q3in"
+            class="wq-num"
+            type="number"
+            inputmode="numeric"
+            step="any"
+            placeholder="bulbs"
+          />
+          <div class="wq-hint">
+            Hint / Pista: <code class="wq-expr">5²</code> = 5 × 5, not 5 × 2.
+          </div>
+          <div class="wq-fb" id="fb3" role="status"></div>
+        </div>
+
+        <!-- Q4 order of operations (num) -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="num"
+          data-answer="14"
+          data-tol="0.001"
+          data-skill="Order of operations"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >A Glow Combo is 1 drink for $2 plus 3 bracelets at $4 each:
+              <code class="wq-expr">2 + 3 × 4</code>. What is the total
+              cost?</span
+            >
+          </div>
+          <label for="q4in" class="sr-only">Glow Combo total cost</label>
+          <input
+            id="q4in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="$"
+          />
+          <div class="wq-hint">Hint / Pista: Multiply before you add.</div>
+          <div class="wq-fb" id="fb4" role="status"></div>
+        </div>
+
+        <!-- Q5 distributive (radio) -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Distributive property"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >Supplier A's rule is <code class="wq-expr">6(k + 2)</code>. Which
+              expression is equivalent (uses the distributive property
+              correctly)?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="a" />
+            <span><code class="wq-expr">6k + 2</code></span></label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="b" />
+            <span><code class="wq-expr">6k + 12</code></span></label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="c" />
+            <span><code class="wq-expr">6 + k + 2</code></span></label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="d" />
+            <span><code class="wq-expr">8k</code></span></label
+          >
+          <div class="wq-fb" id="fb5" role="status"></div>
+        </div>
+
+        <!-- Q6 choose supplier (radio) -->
+        <div
+          class="wq-q"
+          data-q="6"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Comparing equivalent expressions"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">6.</span
+            ><span
+              >Supplier A = <code class="wq-expr">6(k + 2)</code> = 6k + 12.
+              Supplier B = <code class="wq-expr">6k + 8</code>. For any number
+              of kits, which supplier is cheaper and why?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="a" /> Supplier A, because it
+            uses parentheses.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="b" /> Supplier B, because both
+            have 6k but B adds only 8 while A adds 12.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="c" /> They always cost exactly
+            the same.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="d" /> You cannot compare them
+            without knowing k.</label
+          >
+          <div class="wq-fb" id="fb6" role="status"></div>
+        </div>
+
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You did what real data analysts, event planners, and engineers do
+          every day: you turned plain-language rules into algebraic expressions,
+          plugged in numbers to predict cost, used powers to scale a design, and
+          used the distributive property to spot the smarter deal. Glow Night is
+          priced, the lights are ordered, and your data team made the call —
+          <strong>Supplier B saves $4 on every order.</strong>
+        </p>
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              The council adds a $20 sound-system fee shared across all booths.
+              Rewrite the Ring Toss rule as
+              <code class="wq-expr">3p + 5 + 20</code>
+              and combine the constants. What is the new flat fee?
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              Which station tricked you the most — the power (<code
+                class="wq-expr"
+                >5²</code
+              >) or the order of operations? Explain in 2–3 sentences. ¿Cuál
+              estación fue la más difícil y por qué?
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Event budget planners, app developers, and store pricing analysts
+              all write and evaluate expressions to predict cost — exactly the
+              skill you just used.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
+    <script src="/assets/nt-activity-kit.js"></script>
     <script>
-      NTKit.mount("#ntkit");
+      (function () {
+        "use strict";
+        // Mount the shared student-name / save bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
 
-      /* ─────────────────────────────────────────────────────────
-         Answer normaliser — tolerant of common formatting
-         variations without changing any correct answer.
-         ───────────────────────────────────────────────────────── */
-      function normalise(raw) {
-        var s = String(raw).trim().toLowerCase();
-        // Collapse / strip whitespace
-        s = s.replace(/\s+/g, "");
-        // Strip leading dollar sign
-        s = s.replace(/^\$/, "");
-        // Strip trailing percent sign
-        s = s.replace(/%$/, "");
-        // Strip commas in numbers (1,000 → 1000)
-        s = s.replace(/,(\d{3})/g, "$1");
-        // Strip common trailing unit words (only at the end, whole-word)
-        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|cups?|hours?|minutes?)$/, "");
-        return s;
-      }
+        var ACTIVITY_ID = "webquest-unit-6-glow-night";
+        var ACTIVITY_TITLE = "WebQuest · Unit 6 · The Glow Night Pricing Lab";
+        var STANDARD = "6.EE.A.1-4";
 
-      /* Numeric equality with small epsilon (handles 9 vs 9.0 vs 9.00) */
-      function numericMatch(a, b) {
-        var na = parseFloat(a);
-        var nb = parseFloat(b);
-        if (isNaN(na) || isNaN(nb)) { return false; }
-        return Math.abs(na - nb) < 1e-9;
-      }
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
 
-      /* Ratio equivalence: "2/3" ↔ "2:3" (same numeric fraction) */
-      function ratioMatch(a, b) {
-        function toDecimal(s) {
-          var colonForm = s.match(/^(\d+):(\d+)$/);
-          if (colonForm) { return parseFloat(colonForm[1]) / parseFloat(colonForm[2]); }
-          var slashForm = s.match(/^(\d+)\/(\d+)$/);
-          if (slashForm) { return parseFloat(slashForm[1]) / parseFloat(slashForm[2]); }
-          return NaN;
+        function normText(s) {
+          // Lowercase, strip spaces and the multiplication symbols students
+          // might use, so "3 p + 5", "3*p+5", "5+3p" all match.
+          return String(s)
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .replace(/[×·*x]/g, "")
+            .replace(/×/g, "");
         }
-        var da = toDecimal(a);
-        var db = toDecimal(b);
-        if (isNaN(da) || isNaN(db)) { return false; }
-        return Math.abs(da - db) < 1e-9;
-      }
 
-      function answersMatch(studentRaw, correctRaw, questionType) {
-        var s = normalise(studentRaw);
-        var c = normalise(correctRaw);
-        if (s === c) { return true; }
-        // Numeric questions: tolerate 9 vs 9.0 vs 9.00
-        if (questionType === "numeric") {
-          return numericMatch(s, c);
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
+          }
+          var input = card.querySelector("input.wq-num, input.wq-textin");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
         }
-        // Ratio questions: tolerate colon ↔ slash form
-        if (questionType === "ratio") {
-          return ratioMatch(s, c);
+
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          if (type === "radio")
+            return resp === card.getAttribute("data-answer");
+          if (type === "text") {
+            var accepted = card.getAttribute("data-answer").split("|");
+            var r = normText(resp);
+            return accepted.some(function (a) {
+              return normText(a) === r;
+            });
+          }
+          var ans = parseFloat(card.getAttribute("data-answer"));
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          var val = parseFloat(resp);
+          if (isNaN(val)) return false;
+          return Math.abs(val - ans) <= tol;
         }
-        return false;
-      }
 
-      /* ── Self-Check: numeric / text match ── */
-      function checkSC(inputId, correct, okMsg, wrongMsg) {
-        var inp = document.getElementById(inputId);
-        var fb  = document.getElementById(inputId + "-fb");
-        if (!inp || !fb) return;
-        var raw = inp.value.trim();
-        // Detect if correct answer is purely numeric
-        var subtype = (correct.match(/^\d+(\.\d+)?$/) ? "numeric" : "text");
-        var isRight = answersMatch(raw, correct, subtype);
-        fb.textContent = isRight ? ("✓ " + okMsg) : ("✗ " + wrongMsg);
-        fb.className = "sc-feedback " + (isRight ? "correct" : "wrong");
-        fb.style.display = "block";
-        inp.setAttribute("aria-invalid", isRight ? "false" : "true");
-      }
+        function showFeedback(card, ok) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck the rule and try again. Inténtalo de nuevo.";
+        }
 
-      /* ── Self-Check SC2: accepts y-8 or y - 8 ── */
-      function checkSC2() {
-        var inp = document.getElementById("sc2");
-        var fb  = document.getElementById("sc2-fb");
-        if (!inp || !fb) return;
-        // normalise strips all whitespace and lowercases
-        var ok  = (normalise(inp.value) === "y-8");
-        fb.textContent = ok
-          ? "✓ Correct! y − 8 means start with y and subtract 8. 'Less than' always means subtract."
-          : "✗ Not quite. 'Less than a number y' → start with y and subtract 8 → y − 8.";
-        fb.className = "sc-feedback " + (ok ? "correct" : "wrong");
-        fb.style.display = "block";
-        inp.setAttribute("aria-invalid", ok ? "false" : "true");
-      }
+        function buildItems() {
+          // Payload for the shared NTKit grader (auto-graded items).
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              id: "u6-q" + card.getAttribute("data-q"),
+              skill: card.getAttribute("data-skill") || "Expressions",
+              correct: isCorrect(card, resp),
+              response: resp === null ? "(blank)" : resp,
+              expected: card.getAttribute("data-answer"),
+            };
+          });
+        }
 
-      /* ── Self-Check: select-based ── */
-      function checkSCSelect(selectId, correct, okMsg, wrongMsg) {
-        var sel = document.getElementById(selectId);
-        var fb  = document.getElementById(selectId + "-fb");
-        if (!sel || !fb) return;
-        var isRight = (sel.value === correct);
-        fb.textContent = isRight ? ("✓ " + okMsg) : ("✗ " + wrongMsg);
-        fb.className = "sc-feedback " + (isRight ? "correct" : "wrong");
-        fb.style.display = "block";
-      }
+        document
+          .getElementById("wq-check")
+          .addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var ok = isCorrect(card, readResponse(card));
+              if (ok) correctCount++;
+              showFeedback(card, ok);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
 
-      /* ── Final quiz ── */
-      function val(id) {
-        var n = document.getElementById(id);
-        return n ? n.value.trim() : "";
-      }
+            // Prefer the shared kit grader so results save to the dashboard.
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {}
 
-      document.getElementById("checkBtn").addEventListener("click", function () {
-        NTKit.grade({
-          activityId: "webquest-unit-6",
-          activityTitle: "WebQuest · Unit 6 — Expressions (Expression Engine)",
-          standard: "6.EE.A.1-4",
-          gradeAnswer: function(student, correct) {
-            return answersMatch(student, correct, "text");
-          },
-          items: [
-            {
-              prompt: "Q1. Write 4 · 4 · 4 using an exponent.",
-              studentAnswer: val("q1"),
-              correctAnswer: "4^3",
-              points: 1,
-              skill: "Exponents"
-            },
-            {
-              prompt: "Q2. Value of 5² (5 · 5).",
-              studentAnswer: val("q2"),
-              correctAnswer: "25",
-              points: 1,
-              skill: "Exponents"
-            },
-            {
-              prompt: "Q3. Expression for \"3 more than a number n\".",
-              studentAnswer: val("q3"),
-              correctAnswer: "n+3",
-              points: 1,
-              skill: "Writing expressions"
-            },
-            {
-              prompt: "Q4. Coefficient in 7x.",
-              studentAnswer: val("q4"),
-              correctAnswer: "7",
-              points: 1,
-              skill: "Reading expressions"
-            },
-            {
-              prompt: "Q5. Evaluate 2x + 1 when x = 4.",
-              studentAnswer: val("q5"),
-              correctAnswer: "9",
-              points: 1,
-              skill: "Evaluating"
-            },
-            {
-              prompt: "Q6. Expression equal to x + x + x.",
-              studentAnswer: val("q6"),
-              correctAnswer: "3x",
-              points: 1,
-              skill: "Equivalent expressions"
-            }
-          ]
-        });
-        var panel = document.getElementById("ntkit");
-        if (panel && panel.scrollIntoView) panel.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
+            // Always show an inline score so the page is fully self-contained.
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%)." +
+              (correctCount === total
+                ? " Report approved — Glow Night is priced! ¡Felicidades!"
+                : " Review the stations marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+
+        document
+          .getElementById("wq-reset")
+          .addEventListener("click", function () {
+            qs.forEach(function (card) {
+              card
+                .querySelectorAll("input.wq-num, input.wq-textin")
+                .forEach(function (input) {
+                  input.value = "";
+                });
+              card.querySelectorAll("input[type=radio]").forEach(function (r) {
+                r.checked = false;
+              });
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
+      })();
     </script>
   </body>
 </html>

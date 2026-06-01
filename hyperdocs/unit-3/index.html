@@ -4,732 +4,1486 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Unit 3 HyperDoc — Rates, Unit Rates &amp; Percent (6.RP.A.2–3) | Neft Teacher
+      Unit 3 HyperDoc — Ratio Reasoning: Tables, Graphs & Comparing | Neft
+      Teacher
     </title>
+    <meta
+      name="description"
+      content="Grade 6 interactive HyperDoc for Unit 3: build ratio tables, graph equivalent ratios on the coordinate plane, find equivalent ratios, and compare ratios using unit rates (6.RP)."
+    />
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/neft-theme.js" defer></script>
+    <script defer src="/assets/neft-theme.js"></script>
+    <script defer src="/assets/nt-activity-kit.js"></script>
     <style>
-      /* ── Base ── */
-      *, *::before, *::after { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        font-size: 19px;
-        line-height: 1.6;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-      }
-      .wrap { max-width: 880px; margin: 0 auto; padding: 24px 18px 80px; }
-
-      /* ── Skip link ── */
-      .skip {
-        position: absolute; left: -999px; top: 0;
-        background: var(--nt-accent); color: var(--nt-bg);
-        padding: 10px 14px; border-radius: 8px; font-weight: 700;
-        text-decoration: none;
-      }
-      .skip:focus { left: 8px; top: 8px; z-index: 50; }
-
-      /* ── Top nav ── */
-      .top-nav { font-size: 14px; padding: 10px 16px; }
-      .top-nav a { color: var(--nt-accent); }
-
-      /* ── Hero ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 24px;
-        margin-bottom: 20px;
-      }
-      header.hero h1 { margin: 0 0 6px; font-size: 30px; line-height: 1.2; }
-      header.hero p.sub { margin: 0; color: var(--nt-muted); font-size: 17px; }
-
-      /* ── Badge / pill ── */
-      .badge {
-        display: inline-block;
-        background: var(--nt-accent); color: var(--nt-bg);
-        font-weight: 700; padding: 4px 12px;
-        border-radius: 999px; font-size: 15px; margin-bottom: 12px;
+      /* ---- Unit 3 HyperDoc: scoped styles layered on the shared Neft theme ---- */
+      .u3-wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 0 18px 64px;
       }
 
-      /* ── Cards ── */
-      section.card, div.card {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 22px;
-        margin-bottom: 22px;
+      .u3-hero {
+        position: relative;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background:
+          radial-gradient(
+            900px 240px at 12% -10%,
+            rgba(234, 88, 12, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            700px 220px at 95% 0%,
+            rgba(13, 148, 136, 0.16),
+            transparent 55%
+          ),
+          var(--nt-surface, #fff);
+        border-radius: 22px;
+        padding: 26px 26px 22px;
+        margin: 18px 0 22px;
+        overflow: hidden;
       }
-      section.card h2, div.card h2 {
+      .u3-hero h1 {
+        margin: 6px 0 4px;
+        font-size: clamp(1.5rem, 1.1rem + 2vw, 2.2rem);
+        line-height: 1.15;
+      }
+      .u3-hero .u3-sub {
+        color: var(--nt-muted, #5b6472);
         margin: 0 0 12px;
-        font-size: 23px;
-        display: flex; align-items: center; gap: 10px;
+        font-size: 1.02rem;
+      }
+      .u3-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        color: var(--nt-accent, #2563eb);
+        background: color-mix(
+          in srgb,
+          var(--nt-accent, #2563eb) 12%,
+          transparent
+        );
+        border-radius: 999px;
+        padding: 5px 12px;
+      }
+      .u3-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .u3-chip {
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--nt-bg, #f4f6fb);
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 4px 11px;
       }
 
-      /* ── Step tag ── */
-      .step-tag {
-        background: var(--nt-accent); color: var(--nt-bg);
-        font-size: 13px; font-weight: 700;
-        padding: 3px 10px; border-radius: 8px;
-        white-space: nowrap;
+      .u3-toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 8px;
+      }
+      .u3-toc a {
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 6px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u3-toc a:hover {
+        border-color: var(--nt-accent, #2563eb);
+        color: var(--nt-accent, #2563eb);
+      }
+      .u3-toc a:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
       }
 
-      /* ── Learning Target box ── */
-      .learning-target {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin-bottom: 22px;
+      .u3-step {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        border-radius: 18px;
+        padding: 22px 22px 20px;
+        margin: 16px 0;
       }
-      .learning-target h2 {
-        margin: 0 0 10px;
-        font-size: 18px;
-        color: var(--nt-accent);
+      .u3-step > h2 {
+        margin: 0 0 4px;
+        font-size: 1.28rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .u3-badge {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: inline-grid;
+        place-items: center;
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .b1 {
+        background: #ea580c;
+      }
+      .b2 {
+        background: #0ea5e9;
+      }
+      .b3 {
+        background: #0d9488;
+      }
+      .b4 {
+        background: #7c3aed;
+      }
+      .b5 {
+        background: #db2777;
+      }
+      .u3-step .u3-phase {
+        color: var(--nt-muted, #5b6472);
+        font-weight: 700;
+        font-size: 0.74rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-      }
-      .learning-target ul { margin: 0 0 10px 0; padding-left: 20px; }
-      .learning-target li { margin: 4px 0; font-size: 17px; }
-      .lt-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 15px; color: var(--nt-muted); margin-top: 10px; }
-      .lt-meta span::before { content: "• "; }
-
-      /* ── Teacher Notes (collapsible) ── */
-      .teacher-notes {
-        background: #fff8e1;
-        border: 2px solid #f9a825;
-        border-radius: 12px;
-        margin-bottom: 22px;
-      }
-      .teacher-notes summary {
-        padding: 14px 18px;
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 17px;
-        color: #5d4037;
-        list-style: none;
-        display: flex; align-items: center; gap: 8px;
-      }
-      .teacher-notes summary::-webkit-details-marker { display: none; }
-      .teacher-notes summary::before { content: "▶"; font-size: 13px; transition: transform 0.2s; }
-      .teacher-notes[open] summary::before { transform: rotate(90deg); }
-      .teacher-notes-body { padding: 0 18px 16px; }
-      .teacher-notes-body h3 { margin: 12px 0 4px; font-size: 16px; color: #5d4037; }
-      .teacher-notes-body p, .teacher-notes-body ul { font-size: 16px; margin: 4px 0; color: #4a3728; }
-      .teacher-notes-body ul { padding-left: 20px; }
-      .teacher-notes-body li { margin: 3px 0; }
-
-      /* ── Do-now callout ── */
-      .do-now {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        padding: 10px 14px;
-        border-radius: 8px;
-        margin: 10px 0 16px;
-        font-weight: 600;
+        margin: 0 0 10px 40px;
       }
 
-      /* ── Link buttons ── */
-      .link-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
-      .link-btn {
-        display: inline-block;
-        background: var(--nt-accent); color: var(--nt-bg);
-        text-decoration: none; font-weight: 700;
-        padding: 12px 18px; border-radius: 10px;
-        border: 2px solid var(--nt-accent); font-size: 17px;
-      }
-      .link-btn:hover { filter: brightness(1.08); }
-      .link-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
-
-      /* ── Worked examples ── */
-      .worked {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 10px;
+      .u3-card {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
         padding: 14px 16px;
         margin: 12px 0;
+        background: var(--nt-bg, #f7f9fc);
       }
-      .worked b { color: var(--nt-accent); }
-
-      /* ── Vocab table ── */
-      table.vocab { width: 100%; border-collapse: collapse; margin-top: 10px; }
-      table.vocab th, table.vocab td {
-        border: 1px solid var(--nt-border);
-        padding: 8px 10px; text-align: left; font-size: 17px;
+      .u3-card h3 {
+        margin: 0 0 6px;
+        font-size: 1.02rem;
       }
-      table.vocab th { background: var(--nt-bg); font-weight: 700; }
 
-      /* ── Questions ── */
-      .q { margin: 18px 0; }
-      .q label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 18px; }
-      .q .hint { font-weight: 400; color: var(--nt-muted); font-size: 15px; }
+      .u3-grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 640px) {
+        .u3-grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
-      /* ── Inputs ── */
-      input[type="text"], textarea {
+      .u3-fig {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .u3-fig svg {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      .u3-cap {
+        font-size: 0.82rem;
+        color: var(--nt-muted, #5b6472);
+        text-align: center;
+      }
+
+      .u3-formula {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        background: var(--nt-text, #1c2330);
+        color: #fff;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: inline-block;
+        font-size: 1rem;
+      }
+
+      /* Ratio table */
+      .u3-table {
+        border-collapse: collapse;
         width: 100%;
-        font-size: 18px; padding: 11px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 9px;
-        background: var(--nt-bg); color: var(--nt-text);
-        font-family: inherit;
+        margin: 8px 0 4px;
+        font-variant-numeric: tabular-nums;
       }
-      input[type="text"]:focus-visible, textarea:focus-visible {
-        outline: 3px solid var(--nt-focus); outline-offset: 2px;
-        border-color: var(--nt-accent);
+      .u3-table caption {
+        caption-side: top;
+        text-align: left;
+        font-weight: 700;
+        margin-bottom: 6px;
       }
-      textarea { min-height: 80px; resize: vertical; }
+      .u3-table th,
+      .u3-table td {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        padding: 8px 10px;
+        text-align: center;
+        font-size: 0.96rem;
+      }
+      .u3-table th {
+        background: var(--nt-bg, #eef2f8);
+        font-weight: 700;
+      }
+      .u3-table td.u3-fill {
+        background: color-mix(in srgb, #ea580c 14%, transparent);
+        font-weight: 700;
+      }
+      .u3-table .u3-rowlabel {
+        text-align: left;
+        font-weight: 700;
+        background: var(--nt-surface, #fff);
+      }
 
-      /* ── Self-check items ── */
-      .sc-item {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
+      details.u3-level {
+        border: 1px dashed var(--nt-border, #c3cad6);
         border-radius: 12px;
-        padding: 14px 16px;
+        padding: 4px 14px;
+        margin: 12px 0;
+        background: var(--nt-surface, #fff);
+      }
+      details.u3-level > summary {
+        cursor: pointer;
+        font-weight: 700;
+        padding: 8px 0;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      details.u3-level > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.u3-level > summary::before {
+        content: "▸";
+        transition: transform 0.15s;
+        color: var(--nt-accent, #2563eb);
+      }
+      details.u3-level[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      .u3-tag {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        color: #fff;
+      }
+      .u3-tag.l1 {
+        background: #0d9488;
+      }
+      .u3-tag.l2 {
+        background: #7c3aed;
+      }
+      .u3-es {
+        color: var(--nt-muted, #5b6472);
+        font-style: italic;
+      }
+
+      .u3-q {
         margin: 14px 0;
       }
-      .sc-item p.sc-q { margin: 0 0 10px; font-weight: 700; font-size: 17px; }
-      .sc-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-      .sc-options label {
-        display: flex; align-items: center; gap: 6px;
-        background: var(--nt-surface); border: 2px solid var(--nt-border);
-        border-radius: 8px; padding: 8px 12px; cursor: pointer;
-        font-size: 16px; font-weight: 400;
+      .u3-q p.u3-prompt {
+        font-weight: 600;
+        margin: 0 0 8px;
       }
-      .sc-options input[type="radio"] { width: auto; margin: 0; }
-      .sc-options label:has(input:checked) { border-color: var(--nt-accent); background: var(--nt-bg); }
-      .sc-feedback {
-        display: none; margin-top: 6px; padding: 8px 12px;
-        border-radius: 8px; font-size: 16px; font-weight: 600;
-      }
-      .sc-feedback.correct { background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
-      .sc-feedback.wrong   { background: #fce4ec; color: #b71c1c; border: 2px solid #ef9a9a; }
-      .sc-check-btn {
-        background: var(--nt-accent); color: var(--nt-bg);
-        border: none; border-radius: 8px;
-        padding: 8px 18px; font-size: 16px; font-weight: 700;
-        cursor: pointer;
-      }
-      .sc-check-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
-
-      /* ── Main check button ── */
-      .check-btn {
-        background: var(--nt-accent); color: var(--nt-bg);
-        border: none; font-size: 20px; font-weight: 800;
-        padding: 14px 28px; border-radius: 12px; cursor: pointer; margin-top: 8px;
-      }
-      .check-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
-      .check-btn:hover { filter: brightness(1.08); }
-
-      /* ── Rubric ── */
-      table.rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 16px; }
-      table.rubric th, table.rubric td {
-        border: 1px solid var(--nt-border); padding: 10px 12px; text-align: left; vertical-align: top;
-      }
-      table.rubric th { background: var(--nt-accent); color: var(--nt-bg); font-weight: 700; }
-      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
-
-      /* ── Answer key ── */
-      .answer-key {
-        background: #f3e5f5;
-        border: 2px solid #ab47bc;
-        border-radius: 12px;
-        margin-top: 22px;
-      }
-      .answer-key summary {
-        padding: 14px 18px; cursor: pointer;
-        font-weight: 700; font-size: 17px; color: #6a1b9a;
-        list-style: none; display: flex; align-items: center; gap: 8px;
-      }
-      .answer-key summary::-webkit-details-marker { display: none; }
-      .answer-key summary::before { content: "▶"; font-size: 13px; transition: transform 0.2s; }
-      .answer-key[open] summary::before { transform: rotate(90deg); }
-      .answer-key-body { padding: 0 18px 16px; font-size: 16px; color: #4a148c; }
-      .answer-key-body ol { padding-left: 20px; margin: 8px 0; }
-      .answer-key-body li { margin: 6px 0; }
-
-      /* ── Reflect ── */
-      .reflect-deliverable {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
+      .u3-q input[type="text"],
+      .u3-q input[type="number"] {
+        font: inherit;
+        padding: 9px 11px;
         border-radius: 10px;
-        padding: 12px 16px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        width: 160px;
+        max-width: 100%;
+      }
+      .u3-q input:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+      .u3-opts {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .u3-opts li label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 11px;
+        padding: 10px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u3-opts li label:hover {
+        border-color: var(--nt-accent, #2563eb);
+      }
+      .u3-unit {
+        color: var(--nt-muted, #5b6472);
+        margin-left: 6px;
+      }
+      .u3-fb {
+        margin-top: 7px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        min-height: 1.1em;
+      }
+      .u3-fb.ok {
+        color: #0d9488;
+      }
+      .u3-fb.no {
+        color: #db2777;
+      }
+
+      .u3-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
         margin-top: 14px;
-        font-size: 17px;
       }
-      .reflect-deliverable strong { color: var(--nt-accent); }
+      .u3-btn {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--nt-accent, #2563eb);
+        background: var(--nt-accent, #2563eb);
+        color: #fff;
+        border-radius: 11px;
+        padding: 11px 18px;
+      }
+      .u3-btn.ghost {
+        background: transparent;
+        color: var(--nt-accent, #2563eb);
+      }
+      .u3-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+      .u3-score {
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
 
-      /* ── Print ── */
-      @media print {
-        .top-nav, .teacher-notes, .answer-key { display: none !important; }
-        .skip { display: none; }
-        body { font-size: 14px; background: #fff; color: #000; }
-        .wrap { padding: 0; max-width: 100%; }
-        section.card, div.card, .learning-target {
-          border: 1px solid #ccc; border-radius: 6px;
-          break-inside: avoid; page-break-inside: avoid;
+      .u3-explore {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .u3-explore a.u3-link {
+        text-decoration: none;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        display: block;
+      }
+      .u3-explore a.u3-link:hover {
+        border-color: var(--nt-accent, #2563eb);
+        transform: translateY(-1px);
+      }
+      .u3-explore .u3-link strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 3px;
+      }
+      .u3-explore .u3-link span {
+        font-size: 0.85rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      .u3-reflect textarea {
+        width: 100%;
+        min-height: 96px;
+        font: inherit;
+        padding: 11px 13px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        resize: vertical;
+      }
+      .u3-reflect textarea:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+
+      .u3-vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+      }
+      .u3-vocab dt {
+        font-weight: 800;
+      }
+      .u3-vocab dd {
+        margin: 2px 0 0;
+        font-size: 0.9rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      /* Interactive equivalent-ratio explorer */
+      .u3-explorer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: center;
+      }
+      @media (max-width: 640px) {
+        .u3-explorer {
+          grid-template-columns: 1fr;
         }
-        .link-btn { border: 1px solid #999; background: #eee; color: #000; }
-        .check-btn, .sc-check-btn { display: none; }
-        input[type="text"], textarea { border: 1px solid #999; }
-        @page { margin: 1.5cm; }
+      }
+      .u3-slider-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 10px 0;
+      }
+      .u3-slider-row input[type="range"] {
+        flex: 1;
+        accent-color: #ea580c;
+      }
+      .u3-readout {
+        font-size: 1.15rem;
+        font-weight: 800;
+      }
+      .u3-readout .u3-rate {
+        color: #ea580c;
       }
 
-      /* ── Mobile ── */
-      @media (max-width: 600px) {
-        body { font-size: 17px; }
-        header.hero h1 { font-size: 24px; }
-        .link-row { flex-direction: column; }
-        .link-btn { text-align: center; }
-        .lt-meta { flex-direction: column; gap: 4px; }
-        table.rubric { font-size: 14px; }
-        table.rubric th, table.rubric td { padding: 7px 8px; }
+      @media print {
+        .u3-toc,
+        .u3-actions,
+        .u3-explorer input[type="range"],
+        .u3-explore a.u3-link::after {
+          display: none !important;
+        }
+        .u3-step {
+          break-inside: avoid;
+        }
       }
     </style>
   </head>
   <body class="nt-theme-aware">
-    <p class="top-nav"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
-    <a href="#engage" class="skip">Skip to content</a>
+    <div id="ntkit"></div>
 
-    <div class="wrap">
-      <!-- HERO -->
-      <header class="hero">
-        <span class="badge">Unit 3 · CCSS 6.RP.A.2–3</span>
-        <h1>Ratio Rally: Rates, Unit Rates &amp; Percent</h1>
-        <p class="sub">Tune the rates to win. Learn, practice, and show what you know.</p>
+    <main class="u3-wrap">
+      <header class="u3-hero">
+        <span class="u3-kicker">Grade 6 • Unit 3 HyperDoc</span>
+        <h1>Ratio Reasoning: Tables, Graphs &amp; the Better Deal</h1>
+        <p class="u3-sub">
+          Welcome to <strong>Maple Street Smoothie Co.</strong> — a small shop
+          that mixes fruit and yogurt by ratio. Today you are the shift manager:
+          you will scale recipes with ratio tables, graph them, and decide which
+          supplier offers the better deal.
+          <span class="u3-es"
+            >Hoy eres el encargado del turno en una tienda de batidos.</span
+          >
+        </p>
+        <div class="u3-meta">
+          <span class="u3-chip">Standard: 6.RP.A.3</span>
+          <span class="u3-chip">Topic: Equivalent &amp; Comparing Ratios</span>
+          <span class="u3-chip">MCAP-aligned</span>
+          <span class="u3-chip">Work time: ~45 min</span>
+        </div>
       </header>
 
-      <!-- NTKit bar -->
-      <div id="ntkit"></div>
+      <nav class="u3-toc" aria-label="HyperDoc sections">
+        <a href="#engage">1 · Engage</a>
+        <a href="#explore">2 · Explore</a>
+        <a href="#explain">3 · Explain</a>
+        <a href="#apply">4 · Apply</a>
+        <a href="#reflect">5 · Reflect</a>
+        <a href="#extend">6 · Extend</a>
+      </nav>
 
-      <!-- LEARNING TARGET -->
-      <div class="learning-target" role="region" aria-label="Learning Target">
-        <h2>Learning Target</h2>
-        <ul>
-          <li>I can find the <strong>unit rate</strong> by dividing two quantities.</li>
-          <li>I can identify and create <strong>equivalent ratios</strong>.</li>
-          <li>I can calculate a <strong>percent</strong> of a number using multiplication.</li>
-        </ul>
-        <div class="lt-meta">
-          <span><strong>Standard:</strong> CCSS 6.RP.A.2–3</span>
-          <span><strong>Estimated time:</strong> 45–55 minutes</span>
-          <span><strong>Materials:</strong> This page, pencil or scratch paper, calculator (optional)</span>
-          <span><strong>Branding:</strong> Neft Teacher</span>
-        </div>
-      </div>
+      <!-- ============ 1. ENGAGE ============ -->
+      <section class="u3-step" id="engage">
+        <h2><span class="u3-badge b1">1</span> Engage</h2>
+        <p class="u3-phase">Hook &amp; essential question</p>
 
-      <!-- TEACHER NOTES -->
-      <details class="teacher-notes" aria-label="Teacher Notes — not for students">
-        <summary>🍎 Teacher Notes (click to open)</summary>
-        <div class="teacher-notes-body">
-          <h3>Pacing</h3>
-          <p>Suggested flow: Engage 5 min → Explore 10 min (game/hub) → Explain 10 min → Apply 15 min → Reflect 5 min. Total ≈ 45–55 min.</p>
-          <h3>Grouping</h3>
-          <ul>
-            <li><strong>Whole class:</strong> Engage hook (think-pair-share the car question).</li>
-            <li><strong>Individual or pairs:</strong> Explore links, Explain reading.</li>
-            <li><strong>Individual:</strong> Apply self-check and main practice, Reflect writing.</li>
-          </ul>
-          <h3>Differentiation — Support</h3>
-          <ul>
-            <li>Provide a ratio table template for students who struggle with equivalent ratios.</li>
-            <li>Allow calculators for the Percent questions; focus on the concept of "per 100."</li>
-            <li>Pair with a peer during Explore; the 3D game gives immediate corrective feedback.</li>
-          </ul>
-          <h3>Differentiation — Challenge</h3>
-          <ul>
-            <li>Ask students to write their own word problem using unit rates from a real-world context.</li>
-            <li>Extension: find the percent discount if a $60 item is on sale for $45.</li>
-          </ul>
-          <h3>ESOL / Language Supports</h3>
-          <ul>
-            <li>Vocabulary table (Explain section) provides plain-language definitions — point students to it.</li>
-            <li>Key terms (rate, unit rate, percent, equivalent) are bolded throughout.</li>
-            <li>Sentence frames for Reflect: "I find a unit rate by ___." / "I see rates in real life when ___."</li>
-            <li>Allow bilingual dictionaries during reading portions.</li>
-          </ul>
-        </div>
-      </details>
-
-      <!-- ENGAGE -->
-      <section class="card" id="engage" aria-labelledby="engage-h">
-        <h2 id="engage-h"><span class="step-tag">1 · Engage</span> Hook</h2>
-        <p class="do-now">
-          Think: A car drives 120 miles in 2 hours. How many miles in 1 hour?
-        </p>
         <p>
-          That "miles in 1 hour" is a <strong>unit rate</strong>. Today you will race with
-          rates, unit rates, and percent. Ready your engine!
+          Two stands are selling the same lemonade at the school fair. Look at
+          their signs. <strong>Without a calculator</strong>, which stand is the
+          better deal — or are they the same?
+        </p>
+
+        <div class="u3-grid2">
+          <div class="u3-card u3-fig">
+            <svg
+              viewBox="0 0 220 150"
+              width="100%"
+              role="img"
+              aria-label="Sign for Sunny Stand: 3 cups of lemonade for 6 dollars."
+            >
+              <rect
+                x="10"
+                y="10"
+                width="200"
+                height="130"
+                rx="12"
+                fill="#fff7ed"
+                stroke="#ea580c"
+                stroke-width="3"
+              />
+              <text
+                x="110"
+                y="40"
+                font-size="16"
+                font-weight="700"
+                text-anchor="middle"
+                fill="#9a3412"
+              >
+                Sunny Stand
+              </text>
+              <text
+                x="110"
+                y="80"
+                font-size="22"
+                font-weight="800"
+                text-anchor="middle"
+                fill="#1c2330"
+              >
+                3 cups
+              </text>
+              <text
+                x="110"
+                y="112"
+                font-size="22"
+                font-weight="800"
+                text-anchor="middle"
+                fill="#0d9488"
+              >
+                $6
+              </text>
+            </svg>
+            <p class="u3-cap">Sunny Stand · 3 cups for $6</p>
+          </div>
+          <div class="u3-card u3-fig">
+            <svg
+              viewBox="0 0 220 150"
+              width="100%"
+              role="img"
+              aria-label="Sign for Cool Cart: 5 cups of lemonade for 8 dollars."
+            >
+              <rect
+                x="10"
+                y="10"
+                width="200"
+                height="130"
+                rx="12"
+                fill="#ecfeff"
+                stroke="#0ea5e9"
+                stroke-width="3"
+              />
+              <text
+                x="110"
+                y="40"
+                font-size="16"
+                font-weight="700"
+                text-anchor="middle"
+                fill="#0369a1"
+              >
+                Cool Cart
+              </text>
+              <text
+                x="110"
+                y="80"
+                font-size="22"
+                font-weight="800"
+                text-anchor="middle"
+                fill="#1c2330"
+              >
+                5 cups
+              </text>
+              <text
+                x="110"
+                y="112"
+                font-size="22"
+                font-weight="800"
+                text-anchor="middle"
+                fill="#0d9488"
+              >
+                $8
+              </text>
+            </svg>
+            <p class="u3-cap">Cool Cart · 5 cups for $8</p>
+          </div>
+        </div>
+
+        <p style="margin-top: 14px">
+          <strong>Quick think (no calculator):</strong> Make a first guess.
+          Which is the better deal for a buyer — <em>Sunny Stand</em>,
+          <em>Cool Cart</em>, or <em>the same</em>? Write your guess and one
+          reason in your notebook. You will test it in the Apply section using a
+          <strong>unit rate</strong> (price for 1 cup).
+        </p>
+
+        <p style="margin-top: 14px">
+          <strong>Essential question:</strong>
+          <em
+            >How can ratio tables, graphs, and unit rates help me scale a recipe
+            and decide which deal is best?</em
+          >
         </p>
       </section>
 
-      <!-- EXPLORE -->
-      <section class="card" id="explore" aria-labelledby="explore-h">
-        <h2 id="explore-h"><span class="step-tag">2 · Explore</span> Play &amp; Discover</h2>
-        <p>Open these. Look for how rates and percent work, then come back.</p>
-        <div class="link-row">
-          <a class="link-btn" href="/games/3d/unit-3/" target="_blank" rel="noopener noreferrer">▶ Play Ratio Rally (3D Game)</a>
-          <a class="link-btn" href="/math/" target="_blank" rel="noopener noreferrer">📚 Math Hub</a>
-          <a class="link-btn" href="/graphic-novels/" target="_blank" rel="noopener noreferrer">📖 Graphic Novels</a>
-        </div>
-      </section>
+      <!-- ============ 2. EXPLORE ============ -->
+      <section class="u3-step" id="explore">
+        <h2><span class="u3-badge b2">2</span> Explore</h2>
+        <p class="u3-phase">Investigate before the lesson</p>
 
-      <!-- EXPLAIN -->
-      <section class="card" id="explain" aria-labelledby="explain-h">
-        <h2 id="explain-h"><span class="step-tag">3 · Explain</span> Learn It</h2>
-        <p><strong>Ratio:</strong> compares two amounts. Example: 3 cups water to 1 cup juice = 3 : 1.</p>
-        <p><strong>Rate:</strong> a ratio with different units. Example: 120 miles in 2 hours.</p>
-        <p><strong>Unit rate:</strong> the rate for <strong>1</strong>. Divide to get it.</p>
-
-        <div class="worked" role="note" aria-label="Worked example: Unit rate">
-          <p><strong>Worked example — Unit rate</strong></p>
-          <p>A car goes 120 miles in 2 hours.</p>
-          <p>120 ÷ 2 = <strong>60</strong>. So the unit rate is <strong>60 miles per hour</strong>.</p>
-        </div>
-        <div class="worked" role="note" aria-label="Worked example: Percent">
-          <p><strong>Worked example — Percent</strong></p>
-          <p>Find 25% of 80. Percent means "out of 100."</p>
-          <p>25% = 0.25, and 0.25 × 80 = <strong>20</strong>.</p>
-        </div>
-
-        <table class="vocab" aria-label="Vocabulary">
-          <thead>
-            <tr><th scope="col">Word</th><th scope="col">Easy meaning</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Rate</td><td>How much of one thing for another (miles per hour)</td></tr>
-            <tr><td>Unit rate</td><td>The amount for just 1 (60 miles per 1 hour)</td></tr>
-            <tr><td>Percent</td><td>A number out of 100 (50% = 50 out of 100)</td></tr>
-            <tr><td>Equivalent ratios</td><td>Ratios that are equal (1:2 = 2:4)</td></tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- APPLY -->
-      <section class="card" id="apply" aria-labelledby="apply-h">
-        <h2 id="apply-h"><span class="step-tag">4 · Apply</span> Practice</h2>
-
-        <!-- ── Self-check (instant feedback) ── -->
-        <div style="margin-bottom:20px;" aria-label="Self-check questions">
-          <p style="font-weight:700;font-size:18px;margin:0 0 6px;">Quick Self-Check — pick the best answer, then press Check.</p>
-          <p style="color:var(--nt-muted);font-size:16px;margin:0 0 14px;">You will get instant feedback for each question.</p>
-
-          <!-- SC Q1 -->
-          <div class="sc-item" id="sc1">
-            <p class="sc-q">SC-1. A runner goes 18 miles in 3 hours. What is the unit rate?</p>
-            <div class="sc-options" role="radiogroup" aria-label="SC-1 options">
-              <label><input type="radio" name="sc1" value="a" /> A) 3 miles per hour</label>
-              <label><input type="radio" name="sc1" value="b" /> B) 54 miles per hour</label>
-              <label><input type="radio" name="sc1" value="c" /> C) 6 miles per hour</label>
-              <label><input type="radio" name="sc1" value="d" /> D) 9 miles per hour</label>
-            </div>
-            <button class="sc-check-btn" type="button" onclick="checkSC('sc1','c','Correct! 18 ÷ 3 = 6 miles per hour. Divide total distance by total time to get the unit rate.','Not quite. Divide 18 ÷ 3 = 6. Divide total distance by total time to get the unit rate.')">Check</button>
-            <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
-          </div>
-
-          <!-- SC Q2 -->
-          <div class="sc-item" id="sc2">
-            <p class="sc-q">SC-2. Which ratio is equivalent to 3 : 4?</p>
-            <div class="sc-options" role="radiogroup" aria-label="SC-2 options">
-              <label><input type="radio" name="sc2" value="a" /> A) 6 : 10</label>
-              <label><input type="radio" name="sc2" value="b" /> B) 6 : 8</label>
-              <label><input type="radio" name="sc2" value="c" /> C) 9 : 16</label>
-              <label><input type="radio" name="sc2" value="d" /> D) 4 : 3</label>
-            </div>
-            <button class="sc-check-btn" type="button" onclick="checkSC('sc2','b','Correct! 3×2 = 6 and 4×2 = 8, so 6:8 equals 3:4. Multiply both parts by the same number.','Not quite. Multiply both parts of 3:4 by 2 → 6:8. Both parts must be multiplied by the same number.')">Check</button>
-            <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
-          </div>
-
-          <!-- SC Q3 -->
-          <div class="sc-item" id="sc3">
-            <p class="sc-q">SC-3. What is 30% of 90?</p>
-            <div class="sc-options" role="radiogroup" aria-label="SC-3 options">
-              <label><input type="radio" name="sc3" value="a" /> A) 27</label>
-              <label><input type="radio" name="sc3" value="b" /> B) 30</label>
-              <label><input type="radio" name="sc3" value="c" /> C) 60</label>
-              <label><input type="radio" name="sc3" value="d" /> D) 3</label>
-            </div>
-            <button class="sc-check-btn" type="button" onclick="checkSC('sc3','a','Correct! 30% = 0.30, and 0.30 × 90 = 27. Convert percent to a decimal, then multiply.','Not quite. Change 30% to 0.30, then multiply: 0.30 × 90 = 27.')">Check</button>
-            <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
-          </div>
-
-          <!-- SC Q4 -->
-          <div class="sc-item" id="sc4">
-            <p class="sc-q">SC-4. A store sells 5 notebooks for $7.50. What is the cost for 1 notebook?</p>
-            <div class="sc-options" role="radiogroup" aria-label="SC-4 options">
-              <label><input type="radio" name="sc4" value="a" /> A) $2.50</label>
-              <label><input type="radio" name="sc4" value="b" /> B) $1.00</label>
-              <label><input type="radio" name="sc4" value="c" /> C) $1.50</label>
-              <label><input type="radio" name="sc4" value="d" /> D) $37.50</label>
-            </div>
-            <button class="sc-check-btn" type="button" onclick="checkSC('sc4','c','Correct! $7.50 ÷ 5 = $1.50 per notebook. Divide the total price by the number of items.','Not quite. Divide $7.50 ÷ 5 = $1.50. Divide total price by the number of items.')">Check</button>
-            <div class="sc-feedback" id="sc4-fb" role="alert" aria-live="polite"></div>
-          </div>
-        </div>
-
-        <!-- ── NTKit graded questions ── -->
-        <p style="font-weight:700;font-size:18px;margin:14px 0 6px;">Graded Practice — type your answers, then press Check My Answers.</p>
-        <p style="color:var(--nt-muted);font-size:16px;margin:0 0 14px;">These questions are scored and saved to your report.</p>
-
-        <div class="q">
-          <label for="q1">1. A car goes 150 miles in 3 hours. What is the unit rate?
-            <span class="hint">(miles per hour — type just the number)</span></label>
-          <input type="text" id="q1" inputmode="numeric" autocomplete="off" aria-describedby="q1-fb" />
-          <div class="sc-feedback" id="q1-fb" role="alert" aria-live="polite"></div>
-        </div>
-        <div class="q">
-          <label for="q2">2. 8 apples cost $4. What is the price for 1 apple?
-            <span class="hint">(type like 0.5)</span></label>
-          <input type="text" id="q2" inputmode="decimal" autocomplete="off" aria-describedby="q2-fb" />
-          <div class="sc-feedback" id="q2-fb" role="alert" aria-live="polite"></div>
-        </div>
-        <div class="q">
-          <label for="q3">3. The ratio 2 : 5 is equal to 4 : ___ ?
-            <span class="hint">(type the missing number)</span></label>
-          <input type="text" id="q3" inputmode="numeric" autocomplete="off" aria-describedby="q3-fb" />
-          <div class="sc-feedback" id="q3-fb" role="alert" aria-live="polite"></div>
-        </div>
-        <div class="q">
-          <label for="q4">4. What is 50% of 60?
-            <span class="hint">(type just the number)</span></label>
-          <input type="text" id="q4" inputmode="numeric" autocomplete="off" aria-describedby="q4-fb" />
-          <div class="sc-feedback" id="q4-fb" role="alert" aria-live="polite"></div>
-        </div>
-        <div class="q">
-          <label for="q5">5. What is 20% of 200?
-            <span class="hint">(type just the number)</span></label>
-          <input type="text" id="q5" inputmode="numeric" autocomplete="off" aria-describedby="q5-fb" />
-          <div class="sc-feedback" id="q5-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <button type="button" class="check-btn" id="checkBtn">Check My Answers</button>
-        <div id="score-banner" style="display:none;margin-top:14px;background:#dbeafe;border:2px solid var(--nt-accent);border-radius:12px;padding:14px 18px;font-size:18px;font-weight:700;color:var(--nt-accent);" aria-live="polite"></div>
-      </section>
-
-      <!-- RUBRIC -->
-      <section class="card" id="rubric" aria-labelledby="rubric-h">
-        <h2 id="rubric-h"><span class="step-tag">Rubric</span> How Your Work Is Scored</h2>
-        <table class="rubric" aria-label="Scoring rubric">
-          <thead>
-            <tr>
-              <th scope="col">Level</th>
-              <th scope="col">Score</th>
-              <th scope="col">What it looks like</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>4 — Expert</strong></td>
-              <td>5 / 5 graded + clear reflection</td>
-              <td>All answers correct; explains unit rate and percent in own words; real-world example is specific and accurate.</td>
-            </tr>
-            <tr>
-              <td><strong>3 — Proficient</strong></td>
-              <td>4 / 5 graded + adequate reflection</td>
-              <td>Most answers correct; explanation shows understanding; minor errors in wording or example.</td>
-            </tr>
-            <tr>
-              <td><strong>2 — Developing</strong></td>
-              <td>2–3 / 5 graded + partial reflection</td>
-              <td>Some correct answers; shows partial understanding; reflection is brief or missing the key idea.</td>
-            </tr>
-            <tr>
-              <td><strong>1 — Beginning</strong></td>
-              <td>0–1 / 5 graded</td>
-              <td>Answers are missing or mostly incorrect; little evidence of understanding rates or percent.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- REFLECT -->
-      <section class="card" id="reflect" aria-labelledby="reflect-h">
-        <h2 id="reflect-h"><span class="step-tag">5 · Reflect</span> Your Thinking</h2>
-        <p style="font-size:17px;margin:0 0 12px;">
-          Good mathematicians explain their thinking. Answer both prompts in complete sentences.
-          Use math vocabulary from the Explain section.
+        <p>
+          Explore each tool for a few minutes. Watch for
+          <strong>one big idea</strong>: equivalent ratios make a straight line
+          through the origin when you graph them, and the steepness of that line
+          is the unit rate.
         </p>
-        <div class="q">
-          <label for="r1">A. Tell one way you find a unit rate. Use your own words.
-            <span class="hint">(Example sentence starter: "To find a unit rate, I ___")</span>
-          </label>
-          <textarea id="r1" aria-required="true"></textarea>
+
+        <div class="u3-explore">
+          <a
+            class="u3-link"
+            href="/games/3d/unit-3/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🎮 Ratio Rush (3D Game)</strong>
+            <span
+              >Mix smoothies in 3D by keeping the fruit-to-yogurt ratio equal as
+              you scale up.</span
+            >
+          </a>
+          <a
+            class="u3-link"
+            href="/math/unit-3/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>📊 Unit 3 Math Hub</strong>
+            <span
+              >Worked examples for ratio tables, graphing ratios, and unit
+              rates.</span
+            >
+          </a>
+          <a
+            class="u3-link"
+            href="/webquests/unit-3/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🧭 Better Deal WebQuest</strong>
+            <span
+              >Compare real store prices and defend your pick with rates.</span
+            >
+          </a>
         </div>
-        <div class="q">
-          <label for="r2">B. Where do you see rates or percent in real life? Give one specific example.
-            <span class="hint">(Example: a store sale, miles per gallon, a grade on a test)</span>
-          </label>
-          <textarea id="r2" aria-required="true"></textarea>
-        </div>
-        <div class="reflect-deliverable" role="note">
-          <strong>Deliverable:</strong> When both text boxes are filled in, press
-          <strong>Save as PDF</strong> or <strong>Save as DOC</strong> at the top to submit
-          your completed HyperDoc. Your teacher will see your answers, your score, and
-          your reflection.
+
+        <div class="u3-card" style="margin-top: 14px">
+          <h3>Live explorer — scale the smoothie recipe</h3>
+          <p>
+            The house recipe is
+            <strong>2 cups of fruit for every 3 cups of yogurt</strong> (a 2 : 3
+            ratio). Drag the slider to make more batches. Notice the two numbers
+            grow together, but the <em>fruit-per-yogurt</em> rate never changes.
+          </p>
+
+          <div class="u3-explorer">
+            <div>
+              <div class="u3-slider-row">
+                <label for="u3-batch">Batches</label>
+                <input
+                  type="range"
+                  id="u3-batch"
+                  min="1"
+                  max="8"
+                  step="1"
+                  value="1"
+                  aria-label="Number of recipe batches"
+                />
+                <strong id="u3-batchval">1</strong>
+              </div>
+              <p class="u3-readout">
+                <span id="u3-fruit">2</span> cups fruit :
+                <span id="u3-yog">3</span> cups yogurt
+              </p>
+              <p>
+                Fruit per 1 cup yogurt:
+                <span class="u3-rate" id="u3-rate">0.67</span> cups
+                <span class="u3-es">· la tasa unitaria</span>
+              </p>
+            </div>
+            <div class="u3-fig">
+              <svg
+                id="u3-graph"
+                viewBox="0 0 220 200"
+                width="100%"
+                role="img"
+                aria-label="Coordinate graph plotting fruit on the x-axis and yogurt on the y-axis as the recipe scales up along a straight line through the origin."
+              >
+                <!-- axes -->
+                <line
+                  x1="30"
+                  y1="180"
+                  x2="210"
+                  y2="180"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <line
+                  x1="30"
+                  y1="180"
+                  x2="30"
+                  y2="10"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="120" y="197" font-size="10" text-anchor="middle">
+                  fruit (cups)
+                </text>
+                <text
+                  x="12"
+                  y="95"
+                  font-size="10"
+                  text-anchor="middle"
+                  transform="rotate(-90 12 95)"
+                >
+                  yogurt (cups)
+                </text>
+                <!-- ray through origin -->
+                <line
+                  id="u3-ray"
+                  x1="30"
+                  y1="180"
+                  x2="30"
+                  y2="180"
+                  stroke="#ea580c"
+                  stroke-width="2.5"
+                />
+                <!-- moving point -->
+                <circle
+                  id="u3-pt"
+                  cx="30"
+                  cy="180"
+                  r="5"
+                  fill="#0d9488"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                />
+              </svg>
+              <p class="u3-cap">
+                Each batch plots a new point — all on one straight line through
+                (0, 0).
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- ANSWER KEY (teacher-only) -->
-      <details class="answer-key" aria-label="Teacher Answer Key">
-        <summary>🔑 Answer Key — Teacher Only</summary>
-        <div class="answer-key-body">
-          <p><strong>Graded Practice:</strong></p>
+      <!-- ============ 3. EXPLAIN ============ -->
+      <section class="u3-step" id="explain">
+        <h2><span class="u3-badge b3">3</span> Explain</h2>
+        <p class="u3-phase">The math, in plain language</p>
+
+        <p>
+          A <strong>ratio</strong> compares two amounts. Two ratios are
+          <strong>equivalent</strong> when you can multiply (or divide)
+          <em>both</em> numbers by the same factor. A
+          <strong>unit rate</strong> is the amount for exactly
+          <strong>one</strong> of something — it is the fastest way to compare
+          two ratios.
+        </p>
+
+        <dl class="u3-vocab u3-card">
+          <div>
+            <dt>ratio</dt>
+            <dd>
+              compares two amounts, like 2 : 3
+              <span class="u3-es">· la razón</span>
+            </dd>
+          </div>
+          <div>
+            <dt>equivalent ratios</dt>
+            <dd>
+              same comparison, scaled up or down
+              <span class="u3-es">· razones equivalentes</span>
+            </dd>
+          </div>
+          <div>
+            <dt>ratio table</dt>
+            <dd>
+              a table of equivalent ratios
+              <span class="u3-es">· tabla de razones</span>
+            </dd>
+          </div>
+          <div>
+            <dt>unit rate</dt>
+            <dd>
+              amount for exactly 1 <span class="u3-es">· la tasa unitaria</span>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="u3-grid2">
+          <div class="u3-card">
+            <h3>Build a ratio table</h3>
+            <p>
+              Start with the recipe 2 cups fruit : 3 cups yogurt. Multiply
+              <em>both</em> rows by the same number to scale.
+            </p>
+            <table class="u3-table">
+              <caption>
+                Fruit : Yogurt (×1, ×2, ×3, ×4)
+              </caption>
+              <tbody>
+                <tr>
+                  <th class="u3-rowlabel">Fruit (cups)</th>
+                  <td>2</td>
+                  <td>4</td>
+                  <td>6</td>
+                  <td>8</td>
+                </tr>
+                <tr>
+                  <th class="u3-rowlabel">Yogurt (cups)</th>
+                  <td>3</td>
+                  <td>6</td>
+                  <td>9</td>
+                  <td>12</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              Every column is the same ratio: 2 : 3 = 4 : 6 = 6 : 9 = 8 : 12.
+            </p>
+          </div>
+
+          <div class="u3-card">
+            <h3>Graph the ratios</h3>
+            <div class="u3-fig">
+              <svg
+                viewBox="0 0 200 180"
+                width="100%"
+                role="img"
+                aria-label="Graph of the ratio table: points 2 comma 3, 4 comma 6, 6 comma 9, and 8 comma 12 all lie on a straight line through the origin."
+              >
+                <line
+                  x1="28"
+                  y1="160"
+                  x2="190"
+                  y2="160"
+                  stroke="#1c2330"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="28"
+                  y1="160"
+                  x2="28"
+                  y2="12"
+                  stroke="#1c2330"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="28"
+                  y1="160"
+                  x2="172"
+                  y2="16"
+                  stroke="#ea580c"
+                  stroke-width="2"
+                />
+                <circle cx="28" cy="160" r="3" fill="#94a3b8" />
+                <circle cx="64" cy="124" r="3.5" fill="#0d9488" />
+                <circle cx="100" cy="88" r="3.5" fill="#0d9488" />
+                <circle cx="136" cy="52" r="3.5" fill="#0d9488" />
+                <circle cx="172" cy="16" r="3.5" fill="#0d9488" />
+                <text x="110" y="176" font-size="9" text-anchor="middle">
+                  fruit →
+                </text>
+                <text
+                  x="10"
+                  y="90"
+                  font-size="9"
+                  text-anchor="middle"
+                  transform="rotate(-90 10 90)"
+                >
+                  yogurt →
+                </text>
+              </svg>
+            </div>
+            <p>Equivalent ratios always form a straight line through (0, 0).</p>
+          </div>
+        </div>
+
+        <div class="u3-card">
+          <h3>Worked example — the better deal (unit rate)</h3>
+          <p>
+            Back to the Engage signs. Find the price for
+            <strong>1 cup</strong> at each stand.
+          </p>
+          <p>
+            <strong>Sunny Stand:</strong> $6 ÷ 3 cups =
+            <span class="u3-formula">$2.00 per cup</span>
+          </p>
+          <p>
+            <strong>Cool Cart:</strong> $8 ÷ 5 cups =
+            <span class="u3-formula">$1.60 per cup</span>
+          </p>
+          <p>
+            $1.60 &lt; $2.00, so <strong>Cool Cart is the better deal</strong> —
+            you pay less for each cup. (How close was your Engage guess?)
+          </p>
+        </div>
+
+        <details class="u3-level">
+          <summary>
+            <span class="u3-tag l1">Level 1 · support</span> Step-by-step helper
+            / Ayuda paso a paso
+          </summary>
           <ol>
-            <li>150 ÷ 3 = <strong>50</strong> miles per hour</li>
-            <li>$4 ÷ 8 = <strong>0.5</strong> (or $0.50 per apple)</li>
-            <li>2 × 2 = 4, so 5 × 2 = <strong>10</strong></li>
-            <li>0.50 × 60 = <strong>30</strong></li>
-            <li>0.20 × 200 = <strong>40</strong></li>
+            <li>
+              To make an equivalent ratio, multiply
+              <strong>both</strong> numbers by the same factor (×2, ×3, …).
+            </li>
+            <li>
+              To find a unit rate, <strong>divide</strong> to get the amount for
+              1 (price ÷ cups).
+            </li>
+            <li>
+              To compare deals, the <strong>lower price per cup</strong> is the
+              better buy.
+            </li>
+            <li>
+              Keep the labels with your numbers (cups, dollars).
+              <span class="u3-es">Mantén las etiquetas con tus números.</span>
+            </li>
           </ol>
-          <p><strong>Self-Check:</strong> SC-1 = C (6 mph) · SC-2 = B (6:8) · SC-3 = A (27) · SC-4 = C ($1.50)</p>
-          <p><strong>Reflect sample answers:</strong></p>
-          <ul>
-            <li>A. "To find a unit rate, I divide the first quantity by the second quantity so I get the amount for just 1."</li>
-            <li>B. "I see percent when a store has a 20%-off sale. I multiply the price by 0.20 to find how much I save."</li>
-          </ul>
-        </div>
-      </details>
-    </div>
+        </details>
 
-    <script src="/assets/nt-activity-kit.js"></script>
+        <details class="u3-level">
+          <summary>
+            <span class="u3-tag l2">Level 2 · enrichment</span> Push your
+            thinking
+          </summary>
+          <p>
+            You can compare ratios two ways: price <em>per cup</em> (lower is
+            better) or cups <em>per dollar</em> (higher is better). Compute Cool
+            Cart both ways and explain why both methods agree on the same
+            winner. Which way is more useful when you have a fixed budget?
+          </p>
+        </details>
+      </section>
+
+      <!-- ============ 4. APPLY ============ -->
+      <section class="u3-step" id="apply">
+        <h2><span class="u3-badge b4">4</span> Apply</h2>
+        <p class="u3-phase">Show what you can do — auto-checked</p>
+
+        <form id="u3-quiz" novalidate>
+          <div
+            class="u3-q"
+            data-type="text"
+            data-answer="10"
+            data-tol="0"
+            id="q1"
+          >
+            <p class="u3-prompt">
+              1. Complete the ratio table for 2 cups fruit : 3 cups yogurt. If
+              there are <strong>15 cups of yogurt</strong>, how many cups of
+              fruit are needed? (number only)
+            </p>
+            <table class="u3-table" aria-hidden="false">
+              <tbody>
+                <tr>
+                  <th class="u3-rowlabel">Fruit</th>
+                  <td>2</td>
+                  <td>4</td>
+                  <td class="u3-fill">?</td>
+                </tr>
+                <tr>
+                  <th class="u3-rowlabel">Yogurt</th>
+                  <td>3</td>
+                  <td>6</td>
+                  <td>15</td>
+                </tr>
+              </tbody>
+            </table>
+            <label
+              >Fruit =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Cups of fruit"
+              />
+              <span class="u3-unit">cups</span></label
+            >
+            <p class="u3-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u3-q"
+            data-type="text"
+            data-answer="1.6"
+            data-tol="0.01"
+            id="q2"
+          >
+            <p class="u3-prompt">
+              2. Cool Cart sells 5 cups for $8. What is the unit rate (price for
+              1 cup)? Round to the nearest cent.
+            </p>
+            <label
+              >$
+              <input
+                type="number"
+                inputmode="decimal"
+                step="0.01"
+                aria-label="Price per cup in dollars"
+              />
+              <span class="u3-unit">per cup</span></label
+            >
+            <p class="u3-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u3-q" data-type="mc" data-answer="b" id="q3">
+            <p class="u3-prompt">
+              3. Sunny Stand is $2.00 per cup. Cool Cart is $1.60 per cup. Which
+              statement is true for someone buying lemonade?
+            </p>
+            <ul class="u3-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="a" /> Sunny Stand is the
+                  better deal.</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="b" /> Cool Cart is the
+                  better deal — it costs less per cup.</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="c" /> They are the same
+                  deal.</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="d" /> You cannot compare
+                  them.</label
+                >
+              </li>
+            </ul>
+            <p class="u3-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u3-q" data-type="mc" data-answer="c" id="q4">
+            <p class="u3-prompt">
+              4. The points (2, 3), (4, 6), and (6, 9) are graphed for a recipe.
+              What must be true about these points?
+            </p>
+            <div class="u3-fig" style="margin: 6px 0">
+              <svg
+                viewBox="0 0 200 160"
+                width="220"
+                role="img"
+                aria-label="Three points rising to the right that appear to line up."
+              >
+                <line
+                  x1="26"
+                  y1="140"
+                  x2="185"
+                  y2="140"
+                  stroke="#1c2330"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="26"
+                  y1="140"
+                  x2="26"
+                  y2="12"
+                  stroke="#1c2330"
+                  stroke-width="1.5"
+                />
+                <circle cx="70" cy="110" r="4" fill="#0d9488" />
+                <circle cx="110" cy="80" r="4" fill="#0d9488" />
+                <circle cx="150" cy="50" r="4" fill="#0d9488" />
+                <text x="106" y="156" font-size="9" text-anchor="middle">
+                  fruit →
+                </text>
+              </svg>
+            </div>
+            <ul class="u3-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="a" /> They form a
+                  curve.</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="b" /> They are scattered
+                  randomly.</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="c" /> They lie on a
+                  straight line through the origin (0, 0).</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="d" /> They form a
+                  horizontal line.</label
+                >
+              </li>
+            </ul>
+            <p class="u3-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u3-q"
+            data-type="text"
+            data-answer="35"
+            data-tol="0"
+            id="q5"
+          >
+            <p class="u3-prompt">
+              5. A trail-mix recipe uses 5 raisins for every 2 almonds. A big
+              batch uses <strong>14 almonds</strong>. Use a ratio table to find
+              how many raisins are needed.
+            </p>
+            <table class="u3-table">
+              <tbody>
+                <tr>
+                  <th class="u3-rowlabel">Raisins</th>
+                  <td>5</td>
+                  <td>10</td>
+                  <td class="u3-fill">?</td>
+                </tr>
+                <tr>
+                  <th class="u3-rowlabel">Almonds</th>
+                  <td>2</td>
+                  <td>4</td>
+                  <td>14</td>
+                </tr>
+              </tbody>
+            </table>
+            <label
+              >Raisins =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Number of raisins"
+            /></label>
+            <p class="u3-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u3-q" data-type="mc" data-answer="b" id="q6">
+            <p class="u3-prompt">
+              6. Two paints are sold by the can. Brand A: 6 cans for $30. Brand
+              B: 4 cans for $24. Using unit rate (price per can), which is
+              cheaper per can?
+            </p>
+            <ul class="u3-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q6" value="a" /> Brand B ($6 per
+                  can).</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q6" value="b" /> Brand A ($5 per
+                  can).</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q6" value="c" /> They cost the same
+                  per can.</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q6" value="d" /> Brand A ($6 per
+                  can).</label
+                >
+              </li>
+            </ul>
+            <p class="u3-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u3-actions">
+            <button type="button" class="u3-btn" id="u3-check">
+              Check my answers
+            </button>
+            <button type="button" class="u3-btn ghost" id="u3-reset">
+              Clear
+            </button>
+            <span class="u3-score" id="u3-scoreout" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <details class="u3-level" style="margin-top: 14px">
+          <summary>
+            <span class="u3-tag l1">Level 1 · support</span> Sentence starters
+            for explaining
+          </summary>
+          <p>
+            "I made an equivalent ratio by multiplying both numbers by ____. To
+            find the unit rate I divided ____ ÷ ____ = ____ per one. The better
+            deal is ____ because ____."
+          </p>
+          <p class="u3-es">
+            "Hice una razón equivalente multiplicando ambos números por ____.
+            Para hallar la tasa unitaria dividí ____ ÷ ____. La mejor oferta es
+            ____ porque ____."
+          </p>
+        </details>
+
+        <details class="u3-level">
+          <summary>
+            <span class="u3-tag l2">Level 2 · enrichment</span> Reverse it
+          </summary>
+          <p>
+            A juice has a unit rate of $1.25 per cup. The store sells it only in
+            packs that cost a whole number of dollars. List two possible
+            cups-and-price combinations that match this rate, then write the
+            rule you used.
+          </p>
+        </details>
+      </section>
+
+      <!-- ============ 5. REFLECT ============ -->
+      <section class="u3-step u3-reflect" id="reflect">
+        <h2><span class="u3-badge b5">5</span> Reflect</h2>
+        <p class="u3-phase">Think about your thinking</p>
+
+        <div class="u3-q">
+          <p class="u3-prompt">
+            A. A ratio table, a graph, and a unit rate can all show the same
+            relationship. Which one would you reach for first to compare two
+            deals, and why?
+          </p>
+          <textarea aria-label="Reflection A"></textarea>
+        </div>
+        <div class="u3-q">
+          <p class="u3-prompt">
+            B. Why do equivalent ratios always make a straight line through the
+            origin (0, 0) when you graph them?
+          </p>
+          <textarea aria-label="Reflection B"></textarea>
+        </div>
+        <div class="u3-q">
+          <p class="u3-prompt">
+            C. One thing that is now clear to me / Una cosa que ahora entiendo
+            bien:
+          </p>
+          <textarea aria-label="Reflection C"></textarea>
+        </div>
+        <p class="u3-cap">
+          Your reflections save with this HyperDoc when you use Save as PDF or
+          Save as DOC above.
+        </p>
+      </section>
+
+      <!-- ============ 6. EXTEND ============ -->
+      <section class="u3-step" id="extend">
+        <h2>
+          <span class="u3-badge b3" style="background: #475569">6</span> Extend
+        </h2>
+        <p class="u3-phase">Optional challenge project</p>
+        <div class="u3-card">
+          <h3>Run a price-comparison for Maple Street Smoothie Co.</h3>
+          <p>
+            Find three real prices for the same item (online or in a store) sold
+            in different sizes — for example juice, snacks, or notebooks. Then:
+          </p>
+          <ol>
+            <li>Make a ratio table for each item (amount and price).</li>
+            <li>Find the unit rate (price for 1) of each.</li>
+            <li>
+              Rank them from best deal to worst, and write one sentence
+              defending your #1 pick.
+            </li>
+            <li>
+              <strong>Challenge:</strong> Graph one item's ratio table and label
+              the point that shows the unit rate.
+            </li>
+          </ol>
+          <p class="u3-es">
+            Compara tres precios reales del mismo producto, halla la tasa
+            unitaria de cada uno y ordénalos de la mejor a la peor oferta.
+          </p>
+        </div>
+      </section>
+    </main>
+
     <script>
       (function () {
-        /* ── Self-check helper (radio questions) ── */
-        function checkSC(itemId, correctVal, correctMsg, wrongMsg) {
-          var radios = document.querySelectorAll('input[name="' + itemId + '"]');
-          var selected = null;
-          for (var i = 0; i < radios.length; i++) {
-            if (radios[i].checked) { selected = radios[i].value; break; }
-          }
-          var fb = document.getElementById(itemId + '-fb');
-          if (!fb) return;
-          if (!selected) {
-            fb.textContent = 'Please choose an answer first.';
-            fb.className = 'sc-feedback wrong';
-            fb.style.display = 'block';
-            return;
-          }
-          if (selected === correctVal) {
-            fb.textContent = '✓ ' + correctMsg;
-            fb.className = 'sc-feedback correct';
-          } else {
-            fb.textContent = '✗ ' + wrongMsg;
-            fb.className = 'sc-feedback wrong';
-          }
-          fb.style.display = 'block';
-        }
-        /* expose for inline onclick */
-        window.checkSC = checkSC;
+        "use strict";
 
-        /* ── Tolerant normaliser ── */
-        function normalise(raw) {
-          var s = String(raw).trim().toLowerCase();
-          s = s.replace(/\s+/g, '');
-          s = s.replace(/^\$/, '');
-          s = s.replace(/%$/, '');
-          s = s.replace(/,(\d{3})/g, '$1');
-          s = s.replace(/(mph|km|miles?|apples?|hours?|minutes?|units?|dollars?)$/, '');
-          return s;
-        }
-
-        /* Numeric equality with epsilon */
-        function numericMatch(a, b) {
-          var na = parseFloat(a);
-          var nb = parseFloat(b);
-          if (isNaN(na) || isNaN(nb)) { return false; }
-          return Math.abs(na - nb) < 1e-9;
-        }
-
-        function answersMatch(studentRaw, correctRaw) {
-          var s = normalise(studentRaw);
-          var c = normalise(correctRaw);
-          if (s === c) { return true; }
-          return numericMatch(s, c);
-        }
-
-        /* ── Graded questions config ── */
-        var gradedAnswers = {
-          q1: { correct: '50',  explanation: '150 miles ÷ 3 hours = 50 miles per hour.' },
-          q2: { correct: '0.5', explanation: '$4 ÷ 8 apples = $0.50 per apple.' },
-          q3: { correct: '10',  explanation: '2 × 2 = 4, so 5 × 2 = 10. The missing number is 10.' },
-          q4: { correct: '30',  explanation: '50% = 0.50, and 0.50 × 60 = 30.' },
-          q5: { correct: '40',  explanation: '20% = 0.20, and 0.20 × 200 = 40.' }
-        };
-
-        /* ── NTKit graded section ── */
-        if (typeof NTKit === 'undefined') return;
-        NTKit.mount('#ntkit');
-
-        function val(id) {
-          var el = document.getElementById(id);
-          return el ? el.value : '';
-        }
-
-        document.getElementById('checkBtn').addEventListener('click', function () {
-          var score = 0;
-          var total = Object.keys(gradedAnswers).length;
-
-          for (var k in gradedAnswers) {
-            var studentRaw = val(k);
-            var cfg = gradedAnswers[k];
-            var correct = answersMatch(studentRaw, cfg.correct);
-            if (correct) score++;
-            var fb = document.getElementById(k + '-fb');
-            if (fb) {
-              fb.className = 'sc-feedback ' + (correct ? 'correct' : 'wrong');
-              fb.textContent = (correct ? '✓ Correct! ' : '✗ Not quite. ') + cfg.explanation;
-              fb.style.display = 'block';
+        // ---- Mount the shared Neft Activity Kit (name bar + Save as PDF/DOC + results) ----
+        function mountKit() {
+          if (window.NTKit && typeof NTKit.mount === "function") {
+            try {
+              NTKit.mount("#ntkit");
+            } catch (e) {
+              /* kit optional */
             }
           }
+        }
+        if (document.readyState !== "loading") mountKit();
+        else document.addEventListener("DOMContentLoaded", mountKit);
 
-          var banner = document.getElementById('score-banner');
-          if (banner) {
-            banner.style.display = 'block';
-            banner.textContent = 'You got ' + score + ' out of ' + total + ' correct!';
+        // ---- Interactive equivalent-ratio explorer (Explore section) ----
+        var batch = document.getElementById("u3-batch");
+        if (batch) {
+          var batchval = document.getElementById("u3-batchval");
+          var fruitEl = document.getElementById("u3-fruit");
+          var yogEl = document.getElementById("u3-yog");
+          var rateEl = document.getElementById("u3-rate");
+          var ray = document.getElementById("u3-ray");
+          var pt = document.getElementById("u3-pt");
+
+          // graph geometry: origin at (30,180); x = fruit, y = yogurt
+          var ORIGIN_X = 30,
+            ORIGIN_Y = 180,
+            MAX_FRUIT = 16, // 8 batches * 2
+            MAX_YOG = 24, // 8 batches * 3
+            PX_W = 180, // 210 - 30
+            PX_H = 170; // 180 - 10
+
+          function updateExplorer() {
+            var n = parseInt(batch.value, 10);
+            var fruit = 2 * n;
+            var yog = 3 * n;
+            batchval.textContent = n;
+            fruitEl.textContent = fruit;
+            yogEl.textContent = yog;
+            // fruit per 1 cup yogurt = 2/3, constant
+            rateEl.textContent = (2 / 3).toFixed(2);
+
+            var px = ORIGIN_X + (fruit / MAX_FRUIT) * PX_W;
+            var py = ORIGIN_Y - (yog / MAX_YOG) * PX_H;
+            ray.setAttribute("x2", px.toFixed(1));
+            ray.setAttribute("y2", py.toFixed(1));
+            pt.setAttribute("cx", px.toFixed(1));
+            pt.setAttribute("cy", py.toFixed(1));
+          }
+          batch.addEventListener("input", updateExplorer);
+          updateExplorer();
+        }
+
+        // ---- Apply: auto-grading ----
+        var form = document.getElementById("u3-quiz");
+
+        function checkOne(q) {
+          var type = q.getAttribute("data-type");
+          var fb = q.querySelector(".u3-fb");
+          var correct = false,
+            answered = true;
+
+          if (type === "mc") {
+            var sel = q.querySelector('input[type="radio"]:checked');
+            answered = !!sel;
+            correct = answered && sel.value === q.getAttribute("data-answer");
+          } else {
+            var input = q.querySelector(
+              'input[type="number"], input[type="text"]',
+            );
+            var raw = (input.value || "").trim();
+            answered = raw !== "";
+            var ans = parseFloat(q.getAttribute("data-answer"));
+            var tol = parseFloat(q.getAttribute("data-tol") || "0");
+            var val = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+            correct = answered && !isNaN(val) && Math.abs(val - ans) <= tol;
           }
 
-          NTKit.grade({
-            activityId: 'hyperdoc-unit-3',
-            activityTitle: 'Unit 3 · Rates, Unit Rates & Percent — HyperDoc',
-            standard: '6.RP.A.2-3',
-            items: [
-              {
-                prompt: 'Unit rate: 150 miles in 3 hours (mph)',
-                studentAnswer: val('q1'),
-                correctAnswer: '50',
-                skill: 'Unit rate'
-              },
-              {
-                prompt: 'Price for 1 apple: 8 apples cost $4',
-                studentAnswer: val('q2'),
-                correctAnswer: '0.5',
-                skill: 'Unit rate'
-              },
-              {
-                prompt: 'Equivalent ratio: 2:5 = 4:?',
-                studentAnswer: val('q3'),
-                correctAnswer: '10',
-                skill: 'Equivalent ratios'
-              },
-              {
-                prompt: '50% of 60',
-                studentAnswer: val('q4'),
-                correctAnswer: '30',
-                skill: 'Percent'
-              },
-              {
-                prompt: '20% of 200',
-                studentAnswer: val('q5'),
-                correctAnswer: '40',
-                skill: 'Percent'
-              }
-            ]
+          if (fb) {
+            if (!answered) {
+              fb.textContent = "";
+              fb.className = "u3-fb";
+            } else if (correct) {
+              fb.textContent = "✓ Correct";
+              fb.className = "u3-fb ok";
+            } else {
+              fb.textContent =
+                "✗ Not yet — recheck your ratio, units, and division.";
+              fb.className = "u3-fb no";
+            }
+          }
+          return { correct: correct, answered: answered };
+        }
+
+        function checkAll() {
+          var qs = form.querySelectorAll(".u3-q[data-type]");
+          var score = 0,
+            total = qs.length;
+          var items = [];
+          qs.forEach(function (q, i) {
+            var r = checkOne(q);
+            if (r.correct) score++;
+            var promptEl = q.querySelector(".u3-prompt");
+            items.push({
+              id: q.id || "q" + (i + 1),
+              prompt: promptEl
+                ? promptEl.textContent.trim()
+                : "Question " + (i + 1),
+              correct: r.correct,
+            });
           });
-          var host = document.getElementById('ntkit-results');
-          if (host && host.scrollIntoView) host.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      }());
+
+          var out = document.getElementById("u3-scoreout");
+          var pct = Math.round((score / total) * 100);
+          out.textContent =
+            "Score: " + score + " / " + total + " (" + pct + "%)";
+
+          if (window.NTKit && typeof NTKit.grade === "function") {
+            try {
+              NTKit.grade({
+                activityId: "hyperdoc-unit-3-ratios",
+                activityTitle: "Unit 3 HyperDoc — Ratio Reasoning",
+                standard: "6.RP.A.3",
+                score: score,
+                total: total,
+                items: items,
+              });
+            } catch (e) {
+              /* fallback score already shown */
+            }
+          }
+        }
+
+        document.getElementById("u3-check").addEventListener("click", checkAll);
+        document
+          .getElementById("u3-reset")
+          .addEventListener("click", function () {
+            form.reset();
+            form.querySelectorAll(".u3-fb").forEach(function (f) {
+              f.textContent = "";
+              f.className = "u3-fb";
+            });
+            document.getElementById("u3-scoreout").textContent = "";
+          });
+      })();
     </script>
   </body>
 </html>
