@@ -1150,6 +1150,103 @@
             </div>
           </div>
         </div>
+
+        <!-- ══ Interactive: drag-to-build dot plot ══ -->
+        <div class="grid2" style="margin-top: 18px">
+          <div class="bp">
+            <svg
+              id="meanSvg"
+              viewBox="0 0 360 210"
+              role="img"
+              aria-label="Interactive dot plot. Drag each of the seven AQI dots left or right along the axis to build your own data set. A dashed line and readout show how the mean shifts as you move the dots."
+            >
+              <!-- axis -->
+              <line x1="30" y1="150" x2="345" y2="150" class="bp-axis" />
+              <g class="bp-axistext" text-anchor="middle">
+                <line x1="30" y1="150" x2="30" y2="156" class="bp-axis" />
+                <text x="30" y="170">36</text>
+                <line x1="106" y1="150" x2="106" y2="156" class="bp-axis" />
+                <text x="106" y="170">44</text>
+                <line x1="182" y1="150" x2="182" y2="156" class="bp-axis" />
+                <text x="182" y="170">52</text>
+                <line x1="259" y1="150" x2="259" y2="156" class="bp-axis" />
+                <text x="259" y="170">60</text>
+                <line x1="335" y1="150" x2="335" y2="156" class="bp-axis" />
+                <text x="335" y="170">68</text>
+              </g>
+              <text x="190" y="190" text-anchor="middle" class="bp-sub">
+                AQI (Air Quality Index)
+              </text>
+              <!-- live mean line + label drawn by JS -->
+              <line
+                id="meanLine"
+                x1="95"
+                y1="40"
+                x2="95"
+                y2="150"
+                class="dot-mean"
+              />
+              <text id="meanLabel" x="99" y="50" class="dot-meantext">
+                mean ≈ 42.9
+              </text>
+              <!-- draggable dots drawn by JS into this group -->
+              <g id="meanDots"></g>
+            </svg>
+            <div class="bp-cap">
+              <span>Drag the dots · 7 readings</span>
+              <span>1 right = ~0.5 AQI</span>
+            </div>
+          </div>
+          <div>
+            <p>
+              <strong>Build your own data set.</strong> Grab any dot and slide
+              it along the AQI axis. Watch the dashed <em>mean</em> line and the
+              live readout move with it — the mean is the
+              <em>balance point</em> of all seven readings.
+            </p>
+            <div class="readout" style="margin-top: 6px">
+              <div>
+                <span class="k">Live mean</span><br /><span
+                  class="v"
+                  id="meanVal"
+                  >42.9</span
+                >
+              </div>
+              <div>
+                <span class="k">Range</span><br /><span class="v" id="rangeVal"
+                  >12</span
+                >
+              </div>
+            </div>
+            <div class="row" style="margin-top: 10px">
+              <button type="button" class="btn ghost" id="meanReset">
+                Reset to Greenfield data
+              </button>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Drag <strong>one</strong> dot to the right (a higher AQI). The
+                dashed mean line slides right too — one big reading pulls the
+                mean up. Drag it back and the mean drops.
+              </p>
+              <span class="es"
+                >Español: Arrastra <strong>un</strong> punto a la derecha (AQI
+                más alto). La línea de la media se mueve con él. Un valor grande
+                sube la media.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Drag dots until the mean reads exactly <strong>50</strong> but
+                the range stays <strong>12 or less</strong>. Is more than one
+                data set possible? Explain why the mean can match while the dots
+                differ.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ══ TASK 3 · SPREAD (RANGE + MAD) ══ -->
@@ -2017,6 +2114,110 @@
               );
             }
           });
+
+        /* ── Interactive: drag-to-build dot plot (mean balance point) ── */
+        (function () {
+          var svg = document.getElementById("meanSvg");
+          if (!svg) return;
+          var SVGNS = "http://www.w3.org/2000/svg";
+          /* axis maps AQI 36..68 to x 30..335 */
+          var AX0 = 30,
+            AX1 = 335,
+            VMIN = 36,
+            VMAX = 68;
+          var START = [38, 40, 41, 42, 44, 45, 50];
+          var vals = START.slice();
+          var group = document.getElementById("meanDots");
+          var meanLine = document.getElementById("meanLine");
+          var meanLabel = document.getElementById("meanLabel");
+          var meanVal = document.getElementById("meanVal");
+          var rangeVal = document.getElementById("rangeVal");
+          var dragIndex = -1;
+
+          function valToX(v) {
+            return AX0 + ((v - VMIN) / (VMAX - VMIN)) * (AX1 - AX0);
+          }
+          function xToVal(px) {
+            var v = VMIN + ((px - AX0) / (AX1 - AX0)) * (VMAX - VMIN);
+            v = Math.round(v); /* whole AQI values */
+            return Math.max(VMIN, Math.min(VMAX, v));
+          }
+          function clientXToVal(clientX) {
+            var rect = svg.getBoundingClientRect();
+            var px = ((clientX - rect.left) / rect.width) * 360; /* viewBox w */
+            return xToVal(px);
+          }
+          function mean() {
+            var s = 0;
+            for (var i = 0; i < vals.length; i++) s += vals[i];
+            return s / vals.length;
+          }
+
+          function render() {
+            /* stack dots that share a value so duplicates are visible */
+            var seen = {};
+            while (group.firstChild) group.removeChild(group.firstChild);
+            for (var i = 0; i < vals.length; i++) {
+              var v = vals[i];
+              var stack = seen[v] || 0;
+              seen[v] = stack + 1;
+              var c = document.createElementNS(SVGNS, "circle");
+              c.setAttribute("cx", valToX(v));
+              c.setAttribute("cy", 138 - stack * 14);
+              c.setAttribute("r", "7");
+              c.setAttribute("class", "dot");
+              c.setAttribute("data-i", i);
+              c.style.cursor = "grab";
+              group.appendChild(c);
+            }
+            var m = mean();
+            var mx = valToX(m);
+            meanLine.setAttribute("x1", mx);
+            meanLine.setAttribute("x2", mx);
+            meanLabel.setAttribute("x", mx + 4 > 300 ? mx - 70 : mx + 4);
+            var mr = Math.round(m * 10) / 10;
+            meanLabel.textContent = "mean ≈ " + mr;
+            meanVal.textContent = mr;
+            var lo = Math.min.apply(null, vals),
+              hi = Math.max.apply(null, vals);
+            rangeVal.textContent = hi - lo;
+          }
+
+          function startDrag(e) {
+            var t = e.target;
+            if (!t || t.getAttribute("data-i") == null) return;
+            dragIndex = parseInt(t.getAttribute("data-i"), 10);
+            t.style.cursor = "grabbing";
+            e.preventDefault();
+          }
+          function moveDrag(e) {
+            if (dragIndex < 0) return;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            vals[dragIndex] = clientXToVal(cx);
+            render();
+            live("Mean is now " + meanVal.textContent + " A Q I.");
+            if (e.cancelable) e.preventDefault();
+          }
+          function endDrag() {
+            dragIndex = -1;
+          }
+          group.addEventListener("mousedown", startDrag);
+          group.addEventListener("touchstart", startDrag, { passive: false });
+          window.addEventListener("mousemove", moveDrag);
+          window.addEventListener("touchmove", moveDrag, { passive: false });
+          window.addEventListener("mouseup", endDrag);
+          window.addEventListener("touchend", endDrag);
+
+          var resetBtn = document.getElementById("meanReset");
+          if (resetBtn)
+            resetBtn.addEventListener("click", function () {
+              vals = START.slice();
+              render();
+              live("Dot plot reset to the Greenfield data.");
+            });
+
+          render();
+        })();
 
         report();
         paint();

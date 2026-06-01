@@ -1016,9 +1016,10 @@
         <div class="grid2">
           <div class="bp">
             <svg
+              id="rideSvg"
               viewBox="0 0 360 300"
               role="img"
-              aria-label="Coordinate graph. The horizontal axis is buses from 0 to 10. The vertical axis is riders from 0 to 800. A straight line through the origin passes through points (1,80), (3,240), and (5,400). One grid square across is one bus; one grid square up is 80 riders."
+              aria-label="Interactive coordinate graph. The horizontal axis is buses from 0 to 10. The vertical axis is riders from 0 to 800. A straight line through the origin passes through points (1,80), (3,240), and (5,400). Drag the orange point left or right along the line to read off how many riders any number of buses can carry. One grid square across is one bus; one grid square up is 80 riders."
             >
               <defs>
                 <pattern
@@ -1049,9 +1050,9 @@
               <circle cx="130" cy="178" r="5" class="bp-dot" />
               <!-- (5,400): x190 y130 -->
               <circle cx="190" cy="130" r="5" class="bp-dot" />
-              <!-- mystery point (7, 560): x250 y82 highlighted -->
-              <circle cx="250" cy="82" r="6" class="bp-dot2" />
+              <!-- draggable point on the line; JS positions it (starts at 7 buses, 560 riders) -->
               <line
+                id="rideVLine"
                 x1="250"
                 y1="82"
                 x2="250"
@@ -1060,6 +1061,7 @@
                 stroke-width="1.6"
               />
               <line
+                id="rideHLine"
                 x1="40"
                 y1="82"
                 x2="250"
@@ -1067,7 +1069,17 @@
                 class="bp-line2"
                 stroke-width="1.6"
               />
-              <text x="256" y="78" class="bp-label">?</text>
+              <circle
+                id="rideDot"
+                cx="250"
+                cy="82"
+                r="8"
+                class="bp-dot2"
+                style="cursor: grab"
+              />
+              <text id="rideLabel" x="256" y="74" class="bp-label">
+                7 → 560
+              </text>
               <!-- x ticks -->
               <text x="70" y="266" text-anchor="middle" class="bp-tick">1</text>
               <text x="130" y="266" text-anchor="middle" class="bp-tick">
@@ -1102,9 +1114,13 @@
               </text>
             </svg>
             <div class="bp-cap">
-              <span>Ridership vs. buses · line through (0,0)</span>
+              <span>Drag the orange point along the line</span>
               <span>1 right = 1 bus · 1 up = 80 riders</span>
             </div>
+            <p class="scale" id="rideReadout" style="margin: 8px 0 0">
+              At <strong>7 buses</strong> the line reads
+              <strong>560 riders</strong> &nbsp;(7 × 80).
+            </p>
           </div>
           <div>
             <div class="q" data-q="graph-read">
@@ -1877,6 +1893,80 @@
               );
             }
           });
+
+        /* ── Interactive: drag a point along the proportional ridership line ── */
+        (function () {
+          var svg = document.getElementById("rideSvg");
+          if (!svg) return;
+          var dot = document.getElementById("rideDot");
+          var vLine = document.getElementById("rideVLine");
+          var hLine = document.getElementById("rideHLine");
+          var label = document.getElementById("rideLabel");
+          var readout = document.getElementById("rideReadout");
+          /* plot: x = 40 + buses*30 (0..10 buses), y = 250 - riders*0.3 */
+          var RATE = 80; /* riders per bus */
+          var dragging = false;
+
+          function clientXToBuses(clientX) {
+            var rect = svg.getBoundingClientRect();
+            var px = ((clientX - rect.left) / rect.width) * 360; /* viewBox w */
+            var buses = (px - 40) / 30;
+            buses = Math.round(buses); /* snap to whole buses */
+            return Math.max(0, Math.min(10, buses));
+          }
+          function place(buses) {
+            var riders = buses * RATE;
+            var x = 40 + buses * 30;
+            var y = 250 - riders * 0.3;
+            dot.setAttribute("cx", x);
+            dot.setAttribute("cy", y);
+            vLine.setAttribute("x1", x);
+            vLine.setAttribute("x2", x);
+            vLine.setAttribute("y1", y);
+            hLine.setAttribute("x2", x);
+            hLine.setAttribute("y1", y);
+            hLine.setAttribute("y2", y);
+            label.setAttribute("x", x + 8 > 320 ? x - 56 : x + 8);
+            label.setAttribute("y", y - 8 < 14 ? y + 18 : y - 8);
+            label.textContent = buses + " → " + riders;
+            if (readout) {
+              readout.innerHTML =
+                "At <strong>" +
+                buses +
+                (buses === 1 ? " bus</strong> " : " buses</strong> ") +
+                "the line reads <strong>" +
+                riders +
+                " riders</strong> &nbsp;(" +
+                buses +
+                " × 80).";
+            }
+          }
+          function startDrag(e) {
+            dragging = true;
+            dot.style.cursor = "grabbing";
+            e.preventDefault();
+          }
+          function moveDrag(e) {
+            if (!dragging) return;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            var b = clientXToBuses(cx);
+            place(b);
+            live(b + " buses can carry " + b * RATE + " riders.");
+            if (e.cancelable) e.preventDefault();
+          }
+          function endDrag() {
+            dragging = false;
+            dot.style.cursor = "grab";
+          }
+          dot.addEventListener("mousedown", startDrag);
+          dot.addEventListener("touchstart", startDrag, { passive: false });
+          window.addEventListener("mousemove", moveDrag);
+          window.addEventListener("touchmove", moveDrag, { passive: false });
+          window.addEventListener("mouseup", endDrag);
+          window.addEventListener("touchend", endDrag);
+
+          place(7);
+        })();
 
         paint();
         mix();

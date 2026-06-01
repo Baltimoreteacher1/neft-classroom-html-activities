@@ -1155,7 +1155,8 @@
           <span class="tag-shape">Interactive model</span>
         </h2>
         <p>
-          Drag the sliders to set the <strong>trail span</strong> and
+          <strong>Drag the green handle</strong> on the plan to stretch the
+          <strong>trail span</strong>, or use the sliders to set the span and
           <strong>plank width</strong>. The scale plan redraws the planks live
           and the console reports how many whole planks fit and how much board
           is left over. Use it to <em>see</em> what
@@ -1204,6 +1205,28 @@
                 span = 8¼ ft
               </text>
               <g id="plankGroup"></g>
+              <!-- draggable span end-handle (JS positions cx to match the span) -->
+              <circle
+                id="spanHandle"
+                cx="336"
+                cy="40"
+                r="9"
+                fill="#33d6a6"
+                stroke="#0c1226"
+                stroke-width="3"
+                style="cursor: ew-resize"
+              />
+              <text
+                id="spanHandleHint"
+                x="336"
+                y="16"
+                text-anchor="middle"
+                font-family="ui-monospace, monospace"
+                font-size="10"
+                fill="#7fd8c6"
+              >
+                drag ↔
+              </text>
               <text
                 id="fitNote"
                 x="180"
@@ -1968,6 +1991,12 @@
           fitterSvg.insertBefore(defs, fitterSvg.firstChild);
         })();
 
+        /* span-handle scale: maps span 6..12 ft to dimension-track x 24..336 */
+        var SPAN_MIN = 6,
+          SPAN_MAX = 12,
+          SPAN_X0 = 24,
+          SPAN_X1 = 336;
+
         function updateFitter() {
           var span = num(document.getElementById("spanSlider").value);
           var width = num(document.getElementById("plankSlider").value);
@@ -1976,6 +2005,14 @@
             frac(width) + " ft";
           document.getElementById("spanDim").textContent =
             "span = " + frac(span) + " ft";
+          /* position the draggable span handle on the dimension track */
+          var hx =
+            SPAN_X0 +
+            ((span - SPAN_MIN) / (SPAN_MAX - SPAN_MIN)) * (SPAN_X1 - SPAN_X0);
+          var handle = document.getElementById("spanHandle");
+          var hint = document.getElementById("spanHandleHint");
+          if (handle) handle.setAttribute("cx", hx);
+          if (hint) hint.setAttribute("x", hx);
 
           var quotient = span / width;
           var whole = Math.floor(quotient + 1e-9);
@@ -2043,6 +2080,45 @@
         document
           .getElementById("plankSlider")
           .addEventListener("input", updateFitter);
+
+        /* Drag the span end-handle directly on the plan to set the trail span */
+        (function () {
+          var handle = document.getElementById("spanHandle");
+          var spanSlider = document.getElementById("spanSlider");
+          if (!handle || !spanSlider) return;
+          var step = num(spanSlider.step) || 0.25;
+          var dragging = false;
+
+          function clientXToSpan(clientX) {
+            var rect = fitterSvg.getBoundingClientRect();
+            var px = ((clientX - rect.left) / rect.width) * 360; /* viewBox w */
+            var span =
+              SPAN_MIN +
+              ((px - SPAN_X0) / (SPAN_X1 - SPAN_X0)) * (SPAN_MAX - SPAN_MIN);
+            span = Math.round(span / step) * step; /* snap to slider step */
+            return Math.max(SPAN_MIN, Math.min(SPAN_MAX, span));
+          }
+          function startDrag(e) {
+            dragging = true;
+            e.preventDefault();
+          }
+          function moveDrag(e) {
+            if (!dragging) return;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            spanSlider.value = clientXToSpan(cx);
+            updateFitter();
+            if (e.cancelable) e.preventDefault();
+          }
+          function endDrag() {
+            dragging = false;
+          }
+          handle.addEventListener("mousedown", startDrag);
+          handle.addEventListener("touchstart", startDrag, { passive: false });
+          window.addEventListener("mousemove", moveDrag);
+          window.addEventListener("touchmove", moveDrag, { passive: false });
+          window.addEventListener("mouseup", endDrag);
+          window.addEventListener("touchend", endDrag);
+        })();
 
         /* Task 4: supplier width chooser */
         document
