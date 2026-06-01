@@ -3,12 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unit 8 — Data Lab | Statistics (6.SP.A &amp; B)</title>
+    <title>
+      Unit 8 — City Air Quality Data Lab | Statistics &amp; Data (6.SP)
+    </title>
 
     <!-- Shared theme -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <script src="/assets/neft-theme.js" defer></script>
-
     <!-- Activity kit (grading + save) -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
     <script src="/assets/nt-activity-kit.js"></script>
@@ -19,1032 +20,2007 @@
       }
       body {
         margin: 0;
-        background: var(--nt-bg);
-        color: var(--nt-text);
         font-family:
           system-ui,
           -apple-system,
           "Segoe UI",
           Roboto,
           sans-serif;
-        font-size: 18px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
         line-height: 1.5;
+        font-size: 18px;
       }
       .wrap {
-        max-width: 880px;
+        max-width: 980px;
         margin: 0 auto;
-        padding: 20px 16px 64px;
+        padding: 20px 16px 72px;
       }
 
-      /* ---- Hero header ---- */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 20px 22px 16px;
-        margin-bottom: 4px;
-      }
-      .badge {
-        display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-weight: 700;
-        font-size: 14px;
-        padding: 4px 12px;
-        border-radius: 999px;
-        letter-spacing: 0.3px;
-      }
-      header.hero h1 {
-        font-size: 30px;
-        margin: 10px 0 4px;
-      }
-      .lead {
-        font-size: 18px;
-        margin: 0 0 12px;
-        border-left: 5px solid var(--nt-accent);
-        padding-left: 12px;
-      }
-
-      /* ---- Learning Target box ---- */
+      /* ── Learning target ── */
       .learning-target {
         background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin: 14px 0;
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
       }
       .learning-target h2 {
-        font-size: 1rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--nt-accent);
         margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
       }
       .learning-target ul {
         margin: 0 0 12px;
         padding-left: 1.4em;
       }
-      .learning-target ul li {
+      .learning-target li {
         margin-bottom: 4px;
       }
       .lt-meta {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        font-size: 0.88rem;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
         color: var(--nt-muted);
       }
       .lt-meta span {
         background: var(--nt-bg);
         border: 1px solid var(--nt-border);
-        border-radius: 6px;
-        padding: 2px 10px;
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
       }
 
-      /* ---- Teacher notes (collapsible) ---- */
-      details.teacher-notes {
-        background: var(--nt-surface);
-        border: 2px dashed var(--nt-border);
-        border-radius: 14px;
-        padding: 0;
-        margin: 14px 0;
+      /* ── Hero ── */
+      header.hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+        color: #e6fbf4;
+        background:
+          radial-gradient(
+            1100px 280px at 82% -40%,
+            rgba(45, 212, 170, 0.4),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #062f33, #04161c);
+        border: 1px solid rgba(45, 212, 170, 0.35);
       }
-      details.teacher-notes summary {
-        cursor: pointer;
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #7fe6cf;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 4vw, 34px);
+        line-height: 1.1;
+        color: #fff;
+      }
+      header.hero .lede {
+        margin: 0;
+        max-width: 64ch;
+        color: #bfeee2;
+        font-size: 16px;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .badge {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #e9fff8;
+      }
+
+      /* ── Investigation-cycle ribbon ── */
+      .cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 140px;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #d3f3ea;
+        background: rgba(45, 212, 170, 0.08);
+      }
+      .cycle b {
+        display: block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7fe6cf;
+        margin-bottom: 3px;
+      }
+
+      /* ── Progress ── */
+      .progress {
+        margin-top: 16px;
         font-weight: 700;
-        font-size: 1rem;
-        padding: 12px 16px;
-        list-style: none;
+        color: #e6fbf4;
+      }
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #2dd4aa, #38bdf8);
+        transition: width 0.3s ease;
+      }
+
+      /* ── Cards / tasks ── */
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 22px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        color: var(--nt-text);
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .card h3 {
+        margin: 16px 0 6px;
+        font-size: 16px;
+      }
+      .tag-shape {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: var(--nt-bg);
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+      }
+      .scale {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+
+      .grid2 {
+        display: grid;
+        gap: 18px;
+      }
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid3 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+      }
+
+      /* ── Data panel (dark "lab screen") ── */
+      .bp {
+        background: #04161c;
+        border: 1px solid rgba(45, 212, 170, 0.4);
         border-radius: 14px;
+        padding: 12px;
       }
-      details.teacher-notes summary::-webkit-details-marker {
-        display: none;
+      .bp svg {
+        display: block;
+        width: 100%;
+        height: auto;
       }
-      details.teacher-notes summary::before {
-        content: "▶";
-        font-size: 0.75rem;
-        transition: transform 0.2s;
+      .bp-grid {
+        stroke: rgba(45, 212, 170, 0.18);
+      }
+      .bp-axis {
+        stroke: #7fe6cf;
+        stroke-width: 1.6;
+      }
+      .bp-axistext {
+        fill: #bfeee2;
+        font:
+          600 11px ui-monospace,
+          monospace;
+      }
+      .bp-dimtext {
+        fill: #ffcc66;
+        font:
+          700 12px ui-monospace,
+          monospace;
+      }
+      .bar-a {
+        fill: rgba(45, 212, 170, 0.55);
+        stroke: #2dd4aa;
+        stroke-width: 1.5;
+      }
+      .bar-b {
+        fill: rgba(56, 189, 248, 0.5);
+        stroke: #38bdf8;
+        stroke-width: 1.5;
+      }
+      .bp-label {
+        fill: #eafff9;
+        font:
+          700 14px system-ui,
+          sans-serif;
+      }
+      .bp-sub {
+        fill: #b6ddd2;
+        font:
+          600 11px system-ui,
+          sans-serif;
+      }
+      .bp-cap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: #7fe6cf;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      /* ── Dot plot dots ── */
+      .dot {
+        fill: #38bdf8;
+        stroke: #04161c;
+        stroke-width: 1;
+      }
+      .dot-mean {
+        stroke: #ffcc66;
+        stroke-width: 2;
+        stroke-dasharray: 5 4;
+      }
+      .dot-meantext {
+        fill: #ffcc66;
+        font:
+          700 11px ui-monospace,
+          monospace;
+      }
+
+      /* ── Box plot ── */
+      .box-fill {
+        fill: rgba(56, 189, 248, 0.28);
+        stroke: #38bdf8;
+        stroke-width: 2;
+      }
+      .box-med {
+        stroke: #ffcc66;
+        stroke-width: 3;
+      }
+      .box-whisk {
+        stroke: #7fe6cf;
+        stroke-width: 2;
+      }
+
+      /* ── Stat figure cards ── */
+      .fig {
+        text-align: center;
+      }
+      .fig svg {
+        width: 100%;
+        max-width: 220px;
+        height: auto;
+      }
+      .fig figcaption {
+        font-weight: 700;
+        margin-top: 4px;
+        font-size: 15px;
+      }
+      .fcode {
+        font:
+          700 13px ui-monospace,
+          monospace;
         color: var(--nt-accent);
+        display: block;
+        margin-top: 2px;
       }
-      details.teacher-notes[open] summary::before {
-        transform: rotate(90deg);
-      }
-      details.teacher-notes summary:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
+
+      /* ── Question blocks ── */
+      .q {
+        margin: 14px 0;
+        padding: 14px;
         border-radius: 12px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
       }
-      .teacher-notes-body {
-        padding: 0 16px 16px;
-        font-size: 0.95rem;
-      }
-      .teacher-notes-body h3 {
-        font-size: 0.95rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        color: var(--nt-accent);
-        margin: 14px 0 4px;
-      }
-      .teacher-notes-body p,
-      .teacher-notes-body ul {
+      .q .lbl {
+        font-weight: 700;
         margin: 0 0 8px;
       }
-      .teacher-notes-body ul {
+      .q .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q input[type="text"] {
+        width: 130px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .q .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 8px 0 0;
+      }
+      .q .fb.ok {
+        color: #0f9d6b;
+      }
+      .q .fb.bad {
+        color: #d23f54;
+      }
+      .q input.ok {
+        border-color: #2dd4aa;
+        box-shadow: 0 0 0 3px rgba(45, 212, 170, 0.18);
+      }
+      .q input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+
+      /* ── Multiple-choice chips (statistical question sorter) ── */
+      .choices {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .choice {
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 11px 14px;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .choice .key {
+        font:
+          800 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+        border-radius: 6px;
+        padding: 1px 7px;
+        flex: none;
+      }
+      .choice[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        box-shadow: 0 0 0 3px rgba(45, 212, 170, 0.2);
+      }
+      .choice.ok {
+        border-color: #2dd4aa;
+        box-shadow: 0 0 0 3px rgba(45, 212, 170, 0.2);
+      }
+      .choice.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.18);
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      #submitBtn {
+        font-size: 1.2rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+
+      /* ── Differentiation callouts ── */
+      .lvl {
+        border-radius: 12px;
+        padding: 13px 15px;
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .lvl1 {
+        background: rgba(45, 212, 170, 0.12);
+        border: 1px solid rgba(45, 212, 170, 0.45);
+      }
+      .lvl1 .pill {
+        background: #0f9d6b;
+      }
+      .lvl2 {
+        background: rgba(155, 108, 255, 0.12);
+        border: 1px solid rgba(155, 108, 255, 0.45);
+      }
+      .lvl2 .pill {
+        background: #7b4fd0;
+      }
+      .lvl3 {
+        background: rgba(255, 204, 102, 0.14);
+        border: 1px solid rgba(255, 204, 102, 0.5);
+      }
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
+      /* ── Sensor / data table ── */
+      .datachips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 8px 0 2px;
+      }
+      .datachip {
+        font:
+          800 16px ui-monospace,
+          monospace;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 9px;
+        padding: 6px 11px;
+        color: var(--nt-text);
+      }
+      .datachip.hl {
+        border-color: var(--nt-accent);
+        color: var(--nt-accent);
+      }
+
+      /* ── Readout + table ── */
+      .readout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        border: 1px solid var(--nt-border);
+      }
+      .readout .k {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        letter-spacing: 0.06em;
+      }
+      .readout .v {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      .readout .v.big {
+        font-size: 26px;
+      }
+      table.bt {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+      }
+      table.bt th,
+      table.bt td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--nt-border);
+        text-align: left;
+        font-size: 15px;
+      }
+      table.bt thead th {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+      }
+      table.bt tfoot th {
+        font-size: 17px;
+      }
+      table.bt input {
+        font: inherit;
+        width: 110px;
+        font-weight: 700;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
         padding-left: 1.4em;
       }
 
-      /* ---- Progress ---- */
-      .progress-wrap {
-        height: 12px;
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 999px;
-        overflow: hidden;
-        margin: 14px 0 4px;
-      }
-      .progress-bar {
-        height: 100%;
-        width: 0%;
-        background: var(--nt-accent);
-        transition: width 0.25s ease;
-      }
-      .progress-label {
-        font-size: 15px;
-        color: var(--nt-muted);
-        margin: 0 0 22px;
-      }
-
-      /* ---- Task cards ---- */
-      .task {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 18px;
-        margin: 0 0 20px;
-      }
-      .task h2 {
-        font-size: 21px;
-        margin: 0 0 4px;
-      }
-      .task .dir {
-        font-size: 17px;
-        color: var(--nt-text);
-        margin: 0 0 14px;
-      }
-      .task .dir .tag {
-        display: inline-block;
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--nt-bg);
-        background: var(--nt-accent);
-        border-radius: 6px;
-        padding: 1px 8px;
-        margin-right: 6px;
-        vertical-align: 1px;
-      }
-
-      /* ---- Dot plot builder ---- */
-      .dotplot {
-        display: flex;
-        gap: 6px;
-        align-items: flex-end;
-        margin: 6px 0 8px;
-        flex-wrap: wrap;
-      }
-      .stack {
-        display: flex;
-        flex-direction: column-reverse;
-        align-items: center;
-        gap: 4px;
-        min-width: 46px;
-      }
-      .stack .dots {
-        display: flex;
-        flex-direction: column-reverse;
-        gap: 4px;
-        min-height: 0;
-      }
-      .dot {
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        background: var(--nt-accent);
-        border: 2px solid var(--nt-border);
-      }
-      .stack .num {
-        font-weight: 700;
-        font-size: 18px;
-        border-top: 2px solid var(--nt-border);
-        width: 100%;
-        text-align: center;
-        padding-top: 4px;
-      }
-      .stepbtns {
-        display: flex;
-        gap: 4px;
+      /* ── Rubric ── */
+      .rubric-wrap {
         margin-top: 6px;
+        overflow-x: auto;
       }
-      .stepbtns button {
-        font-size: 18px;
-        font-weight: 700;
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        border: 2px solid var(--nt-border);
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        cursor: pointer;
-      }
-      .stepbtns button:hover {
-        border-color: var(--nt-accent);
-      }
-      .stepbtns button:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      .readout {
-        font-size: 16px;
-        color: var(--nt-muted);
-        margin: 6px 0 0;
-      }
-      .readout b {
-        color: var(--nt-text);
-      }
-
-      /* ---- Data chips ---- */
-      .chips {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        font-size: 22px;
-        font-weight: 700;
-        margin: 4px 0 12px;
-      }
-      .chip {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        padding: 6px 12px;
-      }
-
-      label.q {
-        display: block;
-        font-size: 17px;
-        margin: 12px 0 6px;
-        font-weight: 600;
-      }
-      input[type="number"],
-      input[type="text"] {
-        font-size: 20px;
-        padding: 10px 12px;
-        width: 130px;
-        border-radius: 10px;
-        border: 2px solid var(--nt-border);
-        background: var(--nt-bg);
-        color: var(--nt-text);
-      }
-      input:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-        border-color: var(--nt-accent);
-      }
-      textarea:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-        border-color: var(--nt-accent);
-      }
-      .choices {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 6px 0 0;
-      }
-      .choices button {
-        font-size: 17px;
-        padding: 10px 14px;
-        border-radius: 10px;
-        border: 2px solid var(--nt-border);
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        cursor: pointer;
-      }
-      .choices button[aria-pressed="true"] {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border-color: var(--nt-accent);
-      }
-      .choices button:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-
-      .check-btn {
-        font-size: 21px;
-        font-weight: 700;
-        padding: 14px 26px;
-        border-radius: 12px;
-        border: 2px solid var(--nt-accent);
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        cursor: pointer;
-        margin: 4px 0 8px;
-      }
-      .check-btn:hover {
-        filter: brightness(1.05);
-      }
-      .check-btn:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 3px;
-      }
-      #ntkit {
-        margin-top: 12px;
-      }
-      .hint {
-        font-size: 14px;
-        color: var(--nt-muted);
-        margin: 4px 0 0;
-      }
-      .feedback-live {
-        font-size: 0.95rem;
-        min-height: 1.4em;
-        color: var(--nt-muted);
-        margin-top: 6px;
-      }
-
-      /* ---- Rubric ---- */
-      .rubric-section {
-        margin: 24px 0;
-      }
-      .rubric-section h2 {
-        font-size: 1.1rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        color: var(--nt-accent);
-        margin: 0 0 10px;
-      }
-      .rubric-table {
+      table.rubric {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.95rem;
+        font-size: 15px;
+        min-width: 480px;
       }
-      .rubric-table th,
-      .rubric-table td {
+      table.rubric th,
+      table.rubric td {
         border: 1px solid var(--nt-border);
-        padding: 8px 12px;
-        vertical-align: top;
+        padding: 9px 12px;
         text-align: left;
-        background: var(--nt-surface);
+        vertical-align: top;
       }
-      .rubric-table th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-weight: 700;
+      table.rubric thead th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+
+      #ntkit {
+        margin-top: 18px;
+      }
+      #a11y-feedback {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
         white-space: nowrap;
       }
-      .rubric-table tr:nth-child(even) td {
-        background: var(--nt-bg);
-      }
 
-      /* ---- Answer key (collapsible teacher) ---- */
-      details.answer-key {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 0;
-        margin: 14px 0;
-      }
-      details.answer-key summary {
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 1rem;
-        padding: 12px 16px;
-        list-style: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--nt-text);
-      }
-      details.answer-key summary::-webkit-details-marker {
-        display: none;
-      }
-      details.answer-key summary::before {
-        content: "▶";
-        font-size: 0.75rem;
-        transition: transform 0.2s;
-        color: var(--nt-accent);
-      }
-      details.answer-key[open] summary::before {
-        transform: rotate(90deg);
-      }
-      details.answer-key summary:focus-visible {
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
-        border-radius: 12px;
-      }
-      .answer-key-body {
-        padding: 0 16px 16px;
-        font-size: 0.95rem;
-      }
-      .answer-key-body ol {
-        margin: 0;
-        padding-left: 1.6em;
-      }
-      .answer-key-body ol li {
-        margin-bottom: 6px;
-      }
-      .answer-key-body strong {
-        color: var(--nt-accent);
       }
 
-      /* ---- Reflection / Deliverable ---- */
-      .reflection-section {
-        margin: 24px 0;
-      }
-      .reflection-section h2 {
-        font-size: 1.1rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        color: var(--nt-accent);
-        margin: 0 0 8px;
-      }
-      .deliverable {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 12px 16px;
-        font-size: 0.97rem;
-        margin-bottom: 14px;
-      }
-      .reflection-section label {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-      textarea.reflection-input {
-        width: 100%;
-        min-height: 100px;
-        font-size: 1rem;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        resize: vertical;
-        font-family: inherit;
-      }
-
-      /* ---- Print styles ---- */
       @media print {
-        details.teacher-notes,
-        details.answer-key {
+        details.teacher-only,
+        .actions,
+        #submitBtn,
+        .btn {
           display: none !important;
         }
-        .check-btn {
-          display: none !important;
+        .wrap {
+          padding-bottom: 0;
         }
-        .progress-wrap,
-        .progress-label {
-          display: none !important;
-        }
-        .stepbtns {
-          display: none !important;
+        .card {
+          break-inside: avoid;
         }
       }
     </style>
   </head>
 
   <body class="nt-theme-aware">
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
     <div class="wrap">
-
-      <!-- ============ HERO HEADER ============ -->
-      <header class="hero">
-        <span class="badge">CCSS 6.SP.A &amp; B</span>
-        <h1>Data Lab · Build the Plot, Read the Measures</h1>
-        <p class="lead">
-          <strong>What to do:</strong> Build dot plots with the + and − buttons. Then read
-          the data and type each answer. Press <strong>Check My Work</strong> at the bottom
-          to see your score.
-        </p>
-      </header>
-
-      <!-- ============ LEARNING TARGET ============ -->
-      <section class="learning-target" aria-labelledby="lt-heading">
-        <h2 id="lt-heading">Learning Targets</h2>
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
         <ul>
-          <li>I can recognize and ask a statistical question that expects variability in answers.</li>
-          <li>I can display data on a dot plot and describe its distribution.</li>
-          <li>I can calculate the mean, median, mode, and range of a data set.</li>
-          <li>I can build a data set to match a given measure of center.</li>
+          <li>
+            I can tell the difference between a statistical question (one that
+            has variability in the answers) and a non-statistical question.
+          </li>
+          <li>
+            I can find the mean, median, and mode of a data set and choose which
+            measure best describes the center.
+          </li>
+          <li>
+            I can find the mean absolute deviation (MAD) and use it to describe
+            how spread out a data set is.
+          </li>
+          <li>
+            I can build and read a dot plot, a histogram, and a box plot, and
+            describe the shape of a distribution (symmetric, skewed, clusters,
+            gaps, outliers).
+          </li>
         </ul>
         <div class="lt-meta">
-          <span>Standards: 6.SP.A.1, 6.SP.A.2, 6.SP.A.3, 6.SP.B.4, 6.SP.B.5</span>
-          <span>Time: ~40–50 min</span>
-          <span>Materials: This activity, pencil, optional calculator</span>
+          <span>Standard: CCSS 6.SP.A.1–3 &amp; 6.SP.B.4–5</span>
+          <span>Time: ~45 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
         </div>
       </section>
 
-      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
-      <details class="teacher-notes" aria-label="Teacher Notes">
-        <summary>Teacher Notes (collapse for students)</summary>
-        <div class="teacher-notes-body">
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
           <h3>Pacing</h3>
-          <p>Allow 5 minutes for the "What to do" orientation and vocabulary review. Tasks 1–2 take about 10 minutes together; Tasks 3–5 (mean/median/mode/range) take 15–20 minutes; Task 6 (build to a target median) is the challenge closer and may need 10 minutes. Reserve 5 minutes for the reflection.</p>
-
-          <h3>Grouping</h3>
-          <p>Tasks 1 and 6 (dot-plot building) work well in pairs so students discuss their dot-placement decisions aloud. Tasks 3–5 (calculations) are best done individually first, then compared with a partner.</p>
-
-          <h3>Differentiation — Support</h3>
           <ul>
-            <li>For mean: provide the addition step already computed (e.g., "The sum is 24.") so students focus on the division step.</li>
-            <li>For median: print or display the data set on number cards so students can physically sort and find the middle.</li>
-            <li>For Task 6: suggest starting with one dot on 3 (the target median) and then adding two dots on each side.</li>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Brief." Anchor the
+              context: a data scientist studies air quality (AQI) across the
+              city. Stress that a statistical question expects answers that
+              <em>vary</em>.
+            </li>
+            <li>
+              <strong>Analysis work (30–35 min):</strong> Students complete Task
+              1 → 5 in order. Task 5 (the Agency Report) pulls the center and
+              spread results from earlier tasks, so encourage them to check each
+              statistic as they go.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Discuss why the median is
+              safer than the mean when there is an outlier, and how MAD lets you
+              compare which neighborhood is more consistent.
+            </li>
           </ul>
-
-          <h3>Differentiation — Challenge</h3>
+          <h3>Differentiation</h3>
           <ul>
-            <li>Ask students to find a second arrangement in Task 6 with a different spread but the same median of 3.</li>
-            <li>Ask: "Can a data set have more than one mode? Give an example."</li>
-            <li>Extension: compare the mean and median of the Task 3 data set — why are they the same here?</li>
+            <li>
+              <strong>Level 1 (support):</strong> Use the green callouts and
+              bilingual (EN/ES) prompts. Provide a printed "order the numbers
+              first" reminder for median, and let students use a calculator for
+              the MAD averaging step.
+            </li>
+            <li>
+              <strong>Level 2 (enrichment):</strong> Students compare the two
+              neighborhoods using BOTH center and MAD, and justify a data-driven
+              recommendation in the report. They also explain why the Riverside
+              distribution is right-skewed.
+            </li>
           </ul>
-
-          <h3>ESOL / Language Supports</h3>
+          <h3>STEM Connection</h3>
           <ul>
-            <li>Preview the terms mean, median, mode, range with visual anchor charts (e.g., "mode = most often").</li>
-            <li>Use sentence frames: "The mean is __ because I added __ and divided by __."</li>
-            <li>The dot-plot builder is visual and language-light — use it as an entry point for emerging English speakers.</li>
+            <li>
+              This is an authentic data-science / environmental-engineering
+              task: Ask → Collect → Analyze (center + spread) → Visualize →
+              Report. Students do exactly what an environmental data analyst
+              does with real air-quality sensor networks.
+            </li>
+          </ul>
+          <h3>Answer key</h3>
+          <ul>
+            <li>Q1: statistical = B and D (variable); shown as multi-check.</li>
+            <li>
+              Greenfield AQI {42,38,45,40,50,41,44} → mean 42.857≈42.9, median
+              42, mode none/—. MAD = 2.9 (sum |dev| from 42.857 ≈ 20.3 / 7).
+            </li>
+            <li>
+              Riverside AQI {35,38,40,37,39,41,98} → median 39, mean 46.86;
+              outlier 98 → use median. Range 63.
+            </li>
+            <li>Histogram: 40–49 bin has the most days (count check).</li>
+            <li>Box plot Greenfield: min 38, Q1 40, med 42, Q3 45, max 50.</li>
           </ul>
         </div>
       </details>
 
-      <!-- ============ PROGRESS ============ -->
-      <div class="progress-wrap" aria-hidden="true">
-        <div class="progress-bar" id="pbar"></div>
-      </div>
-      <p class="progress-label" id="plabel" role="status" aria-live="polite">0 of 6 answered</p>
-
-      <!-- ============ TASK 1: Build a dot plot ============ -->
-      <section class="task" aria-labelledby="t1h">
-        <h2 id="t1h">1. Build the Dot Plot</h2>
-        <p class="dir">
-          <span class="tag">BUILD</span> Pet survey. Make this many dots:
-          <b>2</b> at 1, <b>3</b> at 2, <b>1</b> at 4. Use + and −.
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag">Unit 8 · Math Architect · Statistics (6.SP)</span>
+        <h1>Data Challenge: The City Air Quality Lab</h1>
+        <p class="lede">
+          You are a <strong>junior data scientist</strong> at the City
+          Environmental Agency. Air-quality sensors across two neighborhoods
+          send a stream of daily <strong>AQI</strong> readings. Your job: turn
+          that raw data into trustworthy statistics, build the right graphs, and
+          write a report that tells the city where the air is cleaner — and
+          which neighborhood is more consistent.
         </p>
-        <div class="dotplot" id="dp1" aria-label="Dot plot builder for task 1"></div>
-        <p class="readout">You built: <b id="dp1read">—</b></p>
-        <p class="hint">Goal: 2 dots over 1, 3 dots over 2, 1 dot over 4.</p>
-        <div class="feedback-live" id="dp1feedback" aria-live="polite"></div>
+        <div class="badges">
+          <span class="badge">6.SP.A.1–3</span>
+          <span class="badge">6.SP.B.4–5</span>
+          <span class="badge">Mean · Median · Mode</span>
+          <span class="badge">MAD &amp; Spread</span>
+          <span class="badge">Dot · Histogram · Box plot</span>
+        </div>
+        <div class="cycle">
+          <div>
+            <b>1 · Ask</b>Sort statistical from non-statistical questions.
+          </div>
+          <div>
+            <b>2 · Center</b>Find mean, median &amp; mode of the readings.
+          </div>
+          <div><b>3 · Spread</b>Measure variability with range &amp; MAD.</div>
+          <div><b>4 · Visualize</b>Read the histogram &amp; box plot.</div>
+          <div><b>5 · Report</b>Compare neighborhoods &amp; recommend.</div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Analyses verified: <span id="pcount">0</span> / 8
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="8"
+            aria-label="Analyses verified"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ BRIEF ══ -->
+      <section class="card" aria-label="The brief">
+        <h2>The Brief</h2>
+        <p>
+          The agency sends you one week of daily readings from each
+          neighborhood's sensor. The number is the
+          <strong>Air Quality Index (AQI)</strong> — lower is cleaner air. Every
+          task below uses this same field data set.
+        </p>
+        <p class="scale">
+          AQI scale&nbsp; 0–50 = Good (green) &nbsp;·&nbsp; 51–100 = Moderate
+          (yellow) &nbsp;·&nbsp; lower = cleaner air
+        </p>
+
+        <h3 style="margin-top: 6px">Sensor field data — daily AQI</h3>
+        <div class="grid2">
+          <div>
+            <p class="muted" style="margin: 0 0 4px">
+              <strong>Greenfield Park</strong> · 7 days
+            </p>
+            <div class="datachips" aria-label="Greenfield daily AQI readings">
+              <span class="datachip">42</span>
+              <span class="datachip">38</span>
+              <span class="datachip">45</span>
+              <span class="datachip">40</span>
+              <span class="datachip">50</span>
+              <span class="datachip">41</span>
+              <span class="datachip">44</span>
+            </div>
+          </div>
+          <div>
+            <p class="muted" style="margin: 0 0 4px">
+              <strong>Riverside Flats</strong> · 7 days
+            </p>
+            <div class="datachips" aria-label="Riverside daily AQI readings">
+              <span class="datachip">35</span>
+              <span class="datachip">38</span>
+              <span class="datachip">40</span>
+              <span class="datachip">37</span>
+              <span class="datachip">39</span>
+              <span class="datachip">41</span>
+              <span class="datachip hl">98</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid3" style="margin-top: 14px">
+          <div class="lvl lvl1" style="margin-top: 0">
+            <b>Deliverable 1</b><br />Report the center (mean &amp; median) for
+            each neighborhood.
+          </div>
+          <div class="lvl lvl2" style="margin-top: 0">
+            <b>Deliverable 2</b><br />Report the spread (range &amp; MAD) and
+            handle the outlier.
+          </div>
+          <div class="lvl lvl3" style="margin-top: 0">
+            <b>Deliverable 3</b><br />Recommend the cleaner, more
+            <em>consistent</em> neighborhood.
+          </div>
+        </div>
+
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            A <strong>data set</strong> is just a list of numbers collected by
+            asking the same question many times. The
+            <strong>center</strong> tells you a typical value; the
+            <strong>spread</strong> tells you how much the values bounce around.
+          </p>
+          <span class="es"
+            >Español: Un <strong>conjunto de datos</strong> es una lista de
+            números. El <strong>centro</strong> indica un valor típico; la
+            <strong>dispersión</strong> indica cuánto varían los datos.</span
+          >
+        </div>
       </section>
 
-      <!-- ============ TASK 2: Read a data set ============ -->
-      <section class="task" aria-labelledby="t2h">
-        <h2 id="t2h">2. Read the Data Set</h2>
-        <p class="dir">
-          <span class="tag">COUNT</span> A statistical question gives many
-          answers. Here is the data:
+      <!-- ══ TASK 1 · STATISTICAL QUESTION SORTER ══ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">
+          Task 1 · Ask the Right Question
+          <span class="tag-shape">Statistical questions</span>
+        </h2>
+        <p>
+          A <strong>statistical question</strong> is one you expect to get many
+          <em>different</em> answers to — its data <em>varies</em>. Before you
+          collect AQI data, decide which of these field questions are
+          statistical. Select <strong>all</strong> that are statistical, then
+          press Check.
         </p>
-        <div class="chips" aria-label="Data values: 3, 5, 5, 7, 10" role="list">
-          <span class="chip" role="listitem">3</span>
-          <span class="chip" role="listitem">5</span>
-          <span class="chip" role="listitem">5</span>
-          <span class="chip" role="listitem">7</span>
-          <span class="chip" role="listitem">10</span>
-        </div>
-        <label class="q" for="a2">How many data values are there?</label>
-        <input
-          type="number"
-          id="a2"
-          inputmode="numeric"
-          aria-label="number of data values"
-          aria-describedby="a2feedback"
-        />
-        <div class="feedback-live" id="a2feedback" aria-live="polite"></div>
-
-        <label class="q">Which question is a statistical question?</label>
         <div
           class="choices"
-          id="c2"
+          id="q1choices"
           role="group"
-          aria-label="statistical question choice"
+          aria-label="Select all statistical questions"
         >
-          <button type="button" data-v="A">A. How tall am I today?</button>
-          <button type="button" data-v="B">
-            B. How tall is each student in my class?
+          <button
+            type="button"
+            class="choice"
+            data-correct="0"
+            aria-pressed="false"
+          >
+            <span class="key">A</span>
+            <span>What was today's AQI reading at the Greenfield sensor?</span>
+          </button>
+          <button
+            type="button"
+            class="choice"
+            data-correct="1"
+            aria-pressed="false"
+          >
+            <span class="key">B</span>
+            <span
+              >How do the daily AQI readings vary across this week in
+              Greenfield?</span
+            >
+          </button>
+          <button
+            type="button"
+            class="choice"
+            data-correct="0"
+            aria-pressed="false"
+          >
+            <span class="key">C</span>
+            <span>How many sensors does the agency have on Main Street?</span>
+          </button>
+          <button
+            type="button"
+            class="choice"
+            data-correct="1"
+            aria-pressed="false"
+          >
+            <span class="key">D</span>
+            <span
+              >What is a typical daily AQI for the Riverside neighborhood?</span
+            >
           </button>
         </div>
-        <div class="feedback-live" id="c2feedback" aria-live="polite"></div>
-      </section>
-
-      <!-- ============ TASK 3: Mean ============ -->
-      <section class="task" aria-labelledby="t3h">
-        <h2 id="t3h">3. Find the Mean (Average)</h2>
-        <p class="dir">
-          <span class="tag">MEAN</span> Add all the values, then divide by how
-          many there are.
-        </p>
-        <div class="chips" aria-label="Data values: 4, 6, 6, 8" role="list">
-          <span class="chip" role="listitem">4</span>
-          <span class="chip" role="listitem">6</span>
-          <span class="chip" role="listitem">6</span>
-          <span class="chip" role="listitem">8</span>
+        <div class="row" style="margin-top: 12px">
+          <button type="button" class="btn" data-check="q1">Check</button>
+          <button type="button" class="btn ghost" data-hint="q1">Hint</button>
         </div>
-        <label class="q" for="a3">Mean = (4 + 6 + 6 + 8) ÷ 4 = ?</label>
-        <input type="number" id="a3" inputmode="numeric" aria-label="mean" aria-describedby="a3feedback" />
-        <div class="feedback-live" id="a3feedback" aria-live="polite"></div>
-      </section>
-
-      <!-- ============ TASK 4: Median ============ -->
-      <section class="task" aria-labelledby="t4h">
-        <h2 id="t4h">4. Find the Median (Middle)</h2>
-        <p class="dir">
-          <span class="tag">MEDIAN</span> The numbers are in order. The median
-          is the middle value.
-        </p>
-        <div class="chips" aria-label="Data values in order: 2, 5, 8, 9, 11" role="list">
-          <span class="chip" role="listitem">2</span>
-          <span class="chip" role="listitem">5</span>
-          <span class="chip" role="listitem">8</span>
-          <span class="chip" role="listitem">9</span>
-          <span class="chip" role="listitem">11</span>
+        <p class="fb" id="fb-q1"></p>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            Ask yourself: "Would this question get
+            <strong>one answer</strong> or
+            <strong>many different</strong> answers?" One answer =
+            <em>not</em> statistical. Many varying answers = statistical.
+          </p>
+          <span class="es"
+            >Español: ¿La pregunta tiene <strong>una</strong> respuesta o
+            <strong>muchas respuestas diferentes</strong>? Muchas respuestas que
+            varían = pregunta estadística.</span
+          >
         </div>
-        <label class="q" for="a4">What is the median?</label>
-        <input type="number" id="a4" inputmode="numeric" aria-label="median" aria-describedby="a4feedback" />
-        <div class="feedback-live" id="a4feedback" aria-live="polite"></div>
       </section>
 
-      <!-- ============ TASK 5: Mode + Range ============ -->
-      <section class="task" aria-labelledby="t5h">
-        <h2 id="t5h">5. Mode and Range</h2>
-        <p class="dir">
-          <span class="tag">SPREAD</span> The <b>mode</b> is the value that
-          shows up most. The <b>range</b> is biggest − smallest.
+      <!-- ══ TASK 2 · CENTER (MEAN, MEDIAN, MODE) ══ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">
+          Task 2 · Find the Center
+          <span class="tag-shape">Mean · Median · Mode</span>
+        </h2>
+        <p>
+          Start with <strong>Greenfield Park</strong>. The dot plot below shows
+          the seven daily readings. Find the three measures of center, then read
+          the dotted mean line to check yourself.
         </p>
-        <div class="chips" aria-label="Data values: 3, 3, 3, 6, 9" role="list">
-          <span class="chip" role="listitem">3</span>
-          <span class="chip" role="listitem">3</span>
-          <span class="chip" role="listitem">3</span>
-          <span class="chip" role="listitem">6</span>
-          <span class="chip" role="listitem">9</span>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 200"
+              role="img"
+              aria-label="Dot plot of Greenfield daily AQI readings: 38, 40, 41, 42, 44, 45, 50. A dashed line marks the mean near 43."
+            >
+              <!-- axis -->
+              <line x1="30" y1="150" x2="345" y2="150" class="bp-axis" />
+              <!-- ticks 36..52 step 2 → x = 30 + (v-36)*19 -->
+              <g class="bp-axistext" text-anchor="middle">
+                <line x1="30" y1="150" x2="30" y2="156" class="bp-axis" />
+                <text x="30" y="170">36</text>
+                <line x1="68" y1="150" x2="68" y2="156" class="bp-axis" />
+                <text x="68" y="170">40</text>
+                <line x1="106" y1="150" x2="106" y2="156" class="bp-axis" />
+                <text x="106" y="170">44</text>
+                <line x1="144" y1="150" x2="144" y2="156" class="bp-axis" />
+                <text x="144" y="170">48</text>
+                <line x1="182" y1="150" x2="182" y2="156" class="bp-axis" />
+                <text x="182" y="170">52</text>
+              </g>
+              <text x="190" y="190" text-anchor="middle" class="bp-sub">
+                AQI (Air Quality Index)
+              </text>
+              <!-- dots: x = 30 + (v-36)*9.5 ; one stack per value -->
+              <!-- 38 -->
+              <circle cx="49" cy="138" r="6" class="dot" />
+              <!-- 40 -->
+              <circle cx="68" cy="138" r="6" class="dot" />
+              <!-- 41 -->
+              <circle cx="77.5" cy="138" r="6" class="dot" />
+              <!-- 42 -->
+              <circle cx="87" cy="138" r="6" class="dot" />
+              <!-- 44 -->
+              <circle cx="106" cy="138" r="6" class="dot" />
+              <!-- 45 -->
+              <circle cx="115.5" cy="138" r="6" class="dot" />
+              <!-- 50 -->
+              <circle cx="163" cy="138" r="6" class="dot" />
+              <!-- mean line at 42.857 → x = 30 + 6.857*9.5 ≈ 95.1 -->
+              <line x1="95" y1="40" x2="95" y2="150" class="dot-mean" />
+              <text x="99" y="50" class="dot-meantext">mean ≈ 42.9</text>
+            </svg>
+            <div class="bp-cap">
+              <span>Greenfield · 7 readings</span><span>1 dot = 1 day</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="g-mean">
+              <p class="lbl">Q2.1 — Mean of Greenfield (round to the tenth)</p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-g-mean"
+                  data-ans="42.9"
+                  data-tol="0.15"
+                  data-why="Sum = 42+38+45+40+50+41+44 = 300. Mean = 300 ÷ 7 = 42.857 ≈ 42.9"
+                  aria-label="Greenfield mean"
+                />
+                <span class="unit">AQI</span>
+                <button type="button" class="btn" data-check="g-mean">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="g-mean">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-g-mean"></p>
+            </div>
+            <div class="q" data-q="g-median">
+              <p class="lbl">Q2.2 — Median of Greenfield</p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-g-median"
+                  data-ans="42"
+                  data-tol="0.4"
+                  data-why="Order: 38,40,41,[42],44,45,50. The middle (4th) value is 42."
+                  aria-label="Greenfield median"
+                />
+                <span class="unit">AQI</span>
+                <button type="button" class="btn" data-check="g-median">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="g-median">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-g-median"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                <strong>Mean</strong> = add all 7 numbers, then divide by 7.
+                <strong>Median</strong> = put the numbers <em>in order</em> and
+                find the middle one. With 7 values, the middle is the 4th.
+              </p>
+              <span class="es"
+                >Español: <strong>Media</strong> = suma los 7 números y divide
+                entre 7. <strong>Mediana</strong> = ordena los números y toma el
+                del medio (el 4.º).</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                The mode is "no mode" here — every reading appears once. When
+                would a city analyst actually care about the
+                <strong>mode</strong> instead of the mean? (Hint: think about
+                the <em>most common</em> alert color, not a typical number.)
+              </p>
+            </div>
+          </div>
         </div>
-        <label class="q" for="a5a">Mode = ?</label>
-        <input type="number" id="a5a" inputmode="numeric" aria-label="mode" aria-describedby="a5afeedback" />
-        <div class="feedback-live" id="a5afeedback" aria-live="polite"></div>
-        <label class="q" for="a5b">Range = 9 − 3 = ?</label>
-        <input type="number" id="a5b" inputmode="numeric" aria-label="range" aria-describedby="a5bfeedback" />
-        <div class="feedback-live" id="a5bfeedback" aria-live="polite"></div>
       </section>
 
-      <!-- ============ TASK 6: Build to match median ============ -->
-      <section class="task" aria-labelledby="t6h">
-        <h2 id="t6h">6. Build to Match the Median</h2>
-        <p class="dir">
-          <span class="tag">BUILD</span> Build a dot plot of <b>5 dots</b> so
-          the <b>median is 3</b>. (Place dots over 1–5. Tip: put one dot on 3.)
+      <!-- ══ TASK 3 · SPREAD (RANGE + MAD) ══ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">
+          Task 3 · Measure the Spread
+          <span class="tag-shape">Range &amp; MAD</span>
+        </h2>
+        <p>
+          The mean alone hides how much the air <em>bounces around</em> day to
+          day. Measure Greenfield's <strong>variability</strong>. The MAD
+          worktable below walks you through it: each |deviation| is the distance
+          of a reading from the mean (42.857).
         </p>
-        <div class="dotplot" id="dp6" aria-label="Dot plot builder for task 6"></div>
-        <p class="readout">
-          Total dots: <b id="dp6count">0</b> · Median:
-          <b id="dp6med">—</b>
-        </p>
-        <p class="hint">You need exactly 5 dots and a median of 3.</p>
-        <div class="feedback-live" id="dp6feedback" aria-live="polite"></div>
+        <div class="grid2">
+          <div>
+            <div class="q" data-q="g-range">
+              <p class="lbl">Q3.1 — Range of Greenfield (max − min)</p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-g-range"
+                  data-ans="12"
+                  data-tol="0.4"
+                  data-why="Range = 50 − 38 = 12"
+                  aria-label="Greenfield range"
+                />
+                <span class="unit">AQI</span>
+                <button type="button" class="btn" data-check="g-range">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="g-range">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-g-range"></p>
+            </div>
+
+            <h3>MAD worktable — distance from the mean (42.857)</h3>
+            <table class="bt">
+              <thead>
+                <tr>
+                  <th>Day AQI</th>
+                  <th>Mean</th>
+                  <th>|deviation|</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>42</td>
+                  <td>42.857</td>
+                  <td>0.857</td>
+                </tr>
+                <tr>
+                  <td>38</td>
+                  <td>42.857</td>
+                  <td>4.857</td>
+                </tr>
+                <tr>
+                  <td>45</td>
+                  <td>42.857</td>
+                  <td>2.143</td>
+                </tr>
+                <tr>
+                  <td>40</td>
+                  <td>42.857</td>
+                  <td>2.857</td>
+                </tr>
+                <tr>
+                  <td>50</td>
+                  <td>42.857</td>
+                  <td>7.143</td>
+                </tr>
+                <tr>
+                  <td>41</td>
+                  <td>42.857</td>
+                  <td>1.857</td>
+                </tr>
+                <tr>
+                  <td>44</td>
+                  <td>42.857</td>
+                  <td>1.143</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Sum of |deviations|</th>
+                  <th></th>
+                  <th>20.857</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div>
+            <div class="q" data-q="g-mad">
+              <p class="lbl">
+                Q3.2 — MAD of Greenfield = sum of |deviations| ÷ 7 (round to the
+                tenth)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-g-mad"
+                  data-ans="3.0"
+                  data-tol="0.2"
+                  data-why="MAD = 20.857 ÷ 7 = 2.98 ≈ 3.0. On a typical day Greenfield is about 3 AQI from the mean."
+                  aria-label="Greenfield MAD"
+                />
+                <span class="unit">AQI</span>
+                <button type="button" class="btn" data-check="g-mad">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="g-mad">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-g-mad"></p>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Center (mean)</span><br /><span class="v"
+                  >≈ 42.9</span
+                >
+              </div>
+              <div>
+                <span class="k">Typical spread (MAD)</span><br /><span class="v"
+                  >≈ 3.0</span
+                >
+              </div>
+            </div>
+            <p class="muted" style="margin-top: 10px">
+              Read it like an analyst: "Greenfield's AQI is
+              <strong>about 43, give or take 3</strong>." You will compare this
+              MAD against Riverside's spread in your final report.
+            </p>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                <strong>MAD</strong> = mean absolute deviation. Step 1: find
+                each reading's distance from the mean (already done in the
+                table). Step 2: average those distances (add the |deviations|,
+                divide by 7).
+              </p>
+              <span class="es"
+                >Español: <strong>MAD</strong> = desviación media absoluta. Suma
+                las distancias a la media y divide entre 7.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                A small MAD means a <em>consistent</em> sensor; a big MAD means
+                the air swings a lot. Predict: will Riverside's MAD be larger or
+                smaller than Greenfield's, and why? (Look at that 98 reading.)
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- ============ SUBMIT ============ -->
-      <button class="check-btn" id="checkBtn" type="button" aria-label="Check my work and see score">
-        Check My Work
-      </button>
+      <!-- ══ TASK 4 · OUTLIER + HISTOGRAM ══ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">
+          Task 4 · The Outlier &amp; the Histogram
+          <span class="tag-shape">Distribution shape</span>
+        </h2>
+        <p>
+          Now look at <strong>Riverside Flats</strong>:
+          <span class="scale">35, 38, 40, 37, 39, 41, 98</span>. One sensor day
+          spiked to <strong>98</strong> (a nearby brush fire). The histogram
+          below bins the seven readings into AQI ranges so you can see the
+          distribution's <strong>shape</strong>.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 220"
+              role="img"
+              aria-label="Histogram of Riverside AQI readings in bins of ten. The 30 to 39 bin has 3 days, the 40 to 49 bin has 3 days, the 50 to 59 through 80 to 89 bins are empty, and the 90 to 99 bin has 1 day. The shape is right-skewed with a gap and a high outlier."
+            >
+              <!-- y axis -->
+              <line x1="40" y1="20" x2="40" y2="170" class="bp-axis" />
+              <!-- x axis -->
+              <line x1="40" y1="170" x2="350" y2="170" class="bp-axis" />
+              <!-- gridline counts: y for count c (max 3): y = 170 - c*42 -->
+              <g class="bp-axistext" text-anchor="end">
+                <text x="34" y="174">0</text>
+                <text x="34" y="132">1</text>
+                <text x="34" y="90">2</text>
+                <text x="34" y="48">3</text>
+              </g>
+              <!-- bars: 6 bins width 46, gap, x start 46 -->
+              <!-- 30-39 : count 3 -->
+              <rect x="48" y="44" width="42" height="126" class="bar-b" />
+              <!-- 40-49 : count 3 -->
+              <rect x="96" y="44" width="42" height="126" class="bar-b" />
+              <!-- 50-59 : 0 -->
+              <!-- 60-69 : 0 -->
+              <!-- 70-79 : 0 -->
+              <!-- 80-89 : 0 -->
+              <!-- 90-99 : count 1 -->
+              <rect x="288" y="128" width="42" height="42" class="bar-a" />
+              <!-- bin labels -->
+              <g class="bp-axistext" text-anchor="middle">
+                <text x="69" y="184">30s</text>
+                <text x="117" y="184">40s</text>
+                <text x="165" y="184">50s</text>
+                <text x="213" y="184">60s</text>
+                <text x="261" y="184">70-80s</text>
+                <text x="309" y="184">90s</text>
+              </g>
+              <text x="195" y="206" text-anchor="middle" class="bp-sub">
+                AQI range (bin width 10)
+              </text>
+              <text x="309" y="120" text-anchor="middle" class="bp-dimtext">
+                outlier
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Riverside · histogram</span
+              ><span>1 bar = days in range</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="r-median">
+              <p class="lbl">
+                Q4.1 — Median of Riverside (order all 7, take the middle)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-r-median"
+                  data-ans="39"
+                  data-tol="0.4"
+                  data-why="Order: 35,37,38,[39],40,41,98. Middle = 39. The outlier 98 barely moves the median."
+                  aria-label="Riverside median"
+                />
+                <span class="unit">AQI</span>
+                <button type="button" class="btn" data-check="r-median">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="r-median">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-r-median"></p>
+            </div>
+            <div class="q" data-q="r-mean">
+              <p class="lbl">Q4.2 — Mean of Riverside (round to the tenth)</p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-r-mean"
+                  data-ans="46.9"
+                  data-tol="0.2"
+                  data-why="Sum = 35+38+40+37+39+41+98 = 328. Mean = 328 ÷ 7 = 46.857 ≈ 46.9 — pulled UP by the outlier."
+                  aria-label="Riverside mean"
+                />
+                <span class="unit">AQI</span>
+                <button type="button" class="btn" data-check="r-mean">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="r-mean">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-r-mean"></p>
+            </div>
+            <div class="lvl lvl3">
+              <p style="margin: 0">
+                <strong>Analyst's insight:</strong> the median is
+                <strong>39</strong> but the mean jumps to
+                <strong>46.9</strong> — that one fire-day reading of 98 drags
+                the mean upward. When a distribution has an outlier, the
+                <strong>median</strong> describes the typical day more honestly.
+              </p>
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                The histogram has most readings in the 30s–40s, then a
+                <strong>gap</strong> and a single bar way out at 90s. That makes
+                the distribution <strong>right-skewed</strong>. Explain in one
+                sentence why the mean ends up greater than the median for a
+                right-skewed shape.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <!-- NTKit mounts here: name, score, Save PDF / DOC -->
-      <div id="ntkit"></div>
+      <!-- ══ TASK 5 · BOX PLOT (FIVE-NUMBER SUMMARY) ══ -->
+      <section class="card" aria-labelledby="t5h">
+        <h2 id="t5h">
+          Task 5 · Build the Box Plot
+          <span class="tag-shape">Five-number summary</span>
+        </h2>
+        <p>
+          For the city dashboard you need a <strong>box plot</strong> of
+          Greenfield's week. The five-number summary is drawn below from the
+          ordered data <span class="scale">38, 40, 41, 42, 44, 45, 50</span>.
+          Read the plot and confirm the key values.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 170"
+              role="img"
+              aria-label="Box plot of Greenfield AQI. Minimum 38, first quartile 40, median 42, third quartile 45, maximum 50. The box runs from 40 to 45 with the median line at 42; whiskers reach 38 and 50."
+            >
+              <!-- scale: x = 20 + (v-36)*19 ; 36..52 -->
+              <line x1="20" y1="120" x2="345" y2="120" class="bp-axis" />
+              <g class="bp-axistext" text-anchor="middle">
+                <line x1="20" y1="120" x2="20" y2="126" class="bp-axis" />
+                <text x="20" y="140">36</text>
+                <line x1="96" y1="120" x2="96" y2="126" class="bp-axis" />
+                <text x="96" y="140">40</text>
+                <line x1="172" y1="120" x2="172" y2="126" class="bp-axis" />
+                <text x="172" y="140">44</text>
+                <line x1="248" y1="120" x2="248" y2="126" class="bp-axis" />
+                <text x="248" y="140">48</text>
+                <line x1="324" y1="120" x2="324" y2="126" class="bp-axis" />
+                <text x="324" y="140">52</text>
+              </g>
+              <text x="182" y="158" text-anchor="middle" class="bp-sub">
+                AQI
+              </text>
+              <!-- min 38 → x=58 ; Q1 40 → 96 ; med 42 → 134 ; Q3 45 → 191 ; max 50 → 286 -->
+              <!-- left whisker 38..40 -->
+              <line x1="58" y1="60" x2="96" y2="60" class="box-whisk" />
+              <line x1="58" y1="46" x2="58" y2="74" class="box-whisk" />
+              <!-- box 40..45 -->
+              <rect x="96" y="40" width="95" height="40" class="box-fill" />
+              <!-- median 42 -->
+              <line x1="134" y1="40" x2="134" y2="80" class="box-med" />
+              <!-- right whisker 45..50 -->
+              <line x1="191" y1="60" x2="286" y2="60" class="box-whisk" />
+              <line x1="286" y1="46" x2="286" y2="74" class="box-whisk" />
+              <!-- labels -->
+              <g class="bp-dimtext" text-anchor="middle">
+                <text x="58" y="34">38</text>
+                <text x="96" y="34">40</text>
+                <text x="134" y="34">42</text>
+                <text x="191" y="34">45</text>
+                <text x="286" y="34">50</text>
+              </g>
+            </svg>
+            <div class="bp-cap">
+              <span>Greenfield · box plot</span
+              ><span>min · Q1 · med · Q3 · max</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="g-iqr">
+              <p class="lbl">
+                Q5.1 — Interquartile range = Q3 − Q1 (the box width)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-g-iqr"
+                  data-ans="5"
+                  data-tol="0.4"
+                  data-why="IQR = Q3 − Q1 = 45 − 40 = 5. The middle half of Greenfield's days span just 5 AQI."
+                  aria-label="Greenfield IQR"
+                />
+                <span class="unit">AQI</span>
+                <button type="button" class="btn" data-check="g-iqr">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="g-iqr">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-g-iqr"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                A box plot shows five points:
+                <strong>min, Q1, median, Q3, max</strong>. The
+                <strong>box</strong> holds the middle half of the data. Its
+                width is <strong>Q3 − Q1</strong>. The whiskers stretch to the
+                smallest and largest readings.
+              </p>
+              <span class="es"
+                >Español: La <strong>caja</strong> contiene la mitad central de
+                los datos. Su ancho es Q3 − Q1. Los bigotes llegan al mínimo y
+                al máximo.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Greenfield's box plot is short and centered (IQR = 5).
+                Riverside's would have a tiny box but a whisker stretched all
+                the way to 98. What does the <em>length of a whisker</em> tell a
+                city planner about that neighborhood's air?
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <!-- ============ RUBRIC ============ -->
-      <section class="rubric-section" aria-labelledby="rubric-heading">
-        <h2 id="rubric-heading">Scoring Rubric</h2>
-        <div style="overflow-x:auto">
-          <table class="rubric-table" role="table">
+      <!-- ══ TASK 6 · AGENCY REPORT (DECISION) ══ -->
+      <section class="card" aria-labelledby="t6h">
+        <h2 id="t6h">
+          Task 6 · The Agency Report
+          <span class="tag-shape">Compare &amp; recommend</span>
+        </h2>
+        <p>
+          Bring your statistics together in the city report card. Enter the two
+          missing values; the comparison verdict updates live so you can see
+          which neighborhood the data supports.
+        </p>
+        <div class="grid2">
+          <div>
+            <table class="bt">
+              <thead>
+                <tr>
+                  <th>Statistic</th>
+                  <th>Greenfield</th>
+                  <th>Riverside</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Median (typical day)</td>
+                  <td>42</td>
+                  <td>39</td>
+                </tr>
+                <tr>
+                  <td>Mean</td>
+                  <td>42.9</td>
+                  <td>46.9</td>
+                </tr>
+                <tr>
+                  <td>Range (max − min)</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="cGRange"
+                      placeholder="?"
+                      aria-label="Greenfield range for report"
+                    />
+                  </td>
+                  <td>63</td>
+                </tr>
+                <tr>
+                  <td>MAD (consistency)</td>
+                  <td>3.0</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="cRMad"
+                      value="18.4"
+                      readonly
+                      aria-label="Riverside MAD (given)"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="muted">
+              Greenfield range = 50 − 38. Compute it and enter it to confirm you
+              can pull spread from raw data.
+            </p>
+          </div>
+          <div>
+            <div class="readout">
+              <div>
+                <span class="k">Lower typical AQI</span><br /><span
+                  class="v big"
+                  id="cleanerName"
+                  >—</span
+                >
+              </div>
+              <div>
+                <span class="k">More consistent</span><br /><span
+                  class="v big"
+                  id="steadyName"
+                  >—</span
+                >
+              </div>
+            </div>
+            <p
+              class="fb"
+              id="verdict"
+              style="margin-top: 12px; font-size: 15px"
+            ></p>
+            <button type="button" class="btn" id="reportBtn">
+              Run comparison
+            </button>
+
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Riverside has the lower <strong>median</strong> (39 vs 42) — its
+                typical day is cleaner. But its <strong>MAD is 18.4</strong> vs
+                Greenfield's 3.0, so its air is far less consistent. Write your
+                recommendation: which neighborhood would you call "reliably good
+                air," and which statistic settles it — center or spread?
+              </p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                <strong>Lower median</strong> = cleaner typical day.
+                <strong>Smaller MAD</strong> = steadier, more consistent air.
+                Compare the two columns to fill the verdict.
+              </p>
+              <span class="es"
+                >Español: <strong>Mediana más baja</strong> = aire más limpio
+                típico. <strong>MAD más pequeño</strong> = aire más
+                constante.</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SIGN-OFF ══ -->
+      <section class="card" aria-label="Analyst sign-off">
+        <h2>Data Scientist's Sign-off</h2>
+        <p class="muted" style="margin-top: 0">
+          When every analysis checks out, file your report with the city. Enter
+          your name in the field below, then press
+          <strong>Submit report &amp; grade</strong> to save your score as a PDF
+          or DOC.
+        </p>
+        <button type="button" class="btn" id="submitBtn">
+          Submit report &amp; grade
+        </button>
+        <div id="ntkit"></div>
+      </section>
+
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>Performance Rubric — Air Quality Data Challenge (6.SP)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
             <thead>
               <tr>
-                <th scope="col">Score (out of 8)</th>
-                <th scope="col">Level</th>
-                <th scope="col">Description</th>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>7–8</td>
-                <td><strong>Exceeding</strong></td>
-                <td>Accurately builds dot plots, identifies statistical questions, and calculates mean, median, mode, and range with no errors. Can construct a data set to match a given median.</td>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>8 / 8</td>
+                <td>
+                  Sorts statistical questions correctly and computes mean,
+                  median, range, MAD, and IQR accurately for both data sets.
+                  Reads the histogram and box plot, explains why the outlier
+                  makes the median the better measure, and writes a data-driven
+                  recommendation using both center and spread.
+                </td>
               </tr>
               <tr>
-                <td>5–6</td>
-                <td><strong>Meeting</strong></td>
-                <td>Correctly completes most tasks; may have one arithmetic error in mean or one error distinguishing median from mode. Understands statistical vs. non-statistical questions.</td>
+                <td><strong>3 — Meets</strong></td>
+                <td>6–7 / 8</td>
+                <td>
+                  Computes most measures of center and spread with at most one
+                  arithmetic slip. Reads the graphs and reaches a reasonable
+                  recommendation.
+                </td>
               </tr>
               <tr>
-                <td>3–4</td>
-                <td><strong>Approaching</strong></td>
-                <td>Demonstrates partial understanding; confuses mean and median, or mode and range. Can build a dot plot but struggles to match a target median. Needs guided practice with the algorithm.</td>
+                <td><strong>2 — Approaching</strong></td>
+                <td>4–5 / 8</td>
+                <td>
+                  Finds simple measures (mean, median, range) but struggles with
+                  MAD or with interpreting the outlier and distribution shape.
+                  Partial report.
+                </td>
               </tr>
               <tr>
-                <td>0–2</td>
-                <td><strong>Beginning</strong></td>
-                <td>Has difficulty reading or building a dot plot and identifying measures of center/spread. Requires direct instruction with small, concrete data sets before attempting this activity.</td>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–3 / 8</td>
+                <td>
+                  Few correct statistics. Confuses mean with median, or cannot
+                  order data to find the median. Needs reteaching on measures of
+                  center, spread, and reading data displays.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
-
-      <!-- ============ ANSWER KEY (teacher only, hidden in print) ============ -->
-      <details class="answer-key" aria-label="Answer Key">
-        <summary>Answer Key (Teacher Use Only)</summary>
-        <div class="answer-key-body">
-          <ol>
-            <li><strong>Task 1 — Build the dot plot:</strong> Exactly 2 dots over 1, 3 dots over 2, 0 dots over 3, 1 dot over 4, 0 dots over 5. Total: 6 data points.</li>
-            <li><strong>Task 2a — Number of data values:</strong> 5. Count: 3, 5, 5, 7, 10 = five values.</li>
-            <li><strong>Task 2b — Statistical question:</strong> B ("How tall is each student in my class?"). It anticipates variability; option A has one fixed answer.</li>
-            <li><strong>Task 3 — Mean of 4, 6, 6, 8:</strong> (4 + 6 + 6 + 8) ÷ 4 = 24 ÷ 4 = <strong>6</strong>.</li>
-            <li><strong>Task 4 — Median of 2, 5, 8, 9, 11:</strong> 5 values, middle is the 3rd = <strong>8</strong>.</li>
-            <li><strong>Task 5a — Mode of 3, 3, 3, 6, 9:</strong> <strong>3</strong> (appears 3 times, more than any other).</li>
-            <li><strong>Task 5b — Range of 3, 3, 3, 6, 9:</strong> 9 − 3 = <strong>6</strong>.</li>
-            <li><strong>Task 6 — Build 5 dots, median = 3:</strong> Any arrangement with exactly 5 dots where the 3rd value in sorted order equals 3. Example valid sets: {1,2,3,4,5}, {2,3,3,4,5}, {1,3,3,3,4}, etc. The dot plot must have the 3rd dot (from smallest) over 3.</li>
-          </ol>
-        </div>
-      </details>
-
-      <!-- ============ REFLECTION ============ -->
-      <section class="reflection-section" aria-labelledby="reflection-heading">
-        <h2 id="reflection-heading">Reflection</h2>
-        <div class="deliverable">
-          <strong>Deliverable:</strong> Complete all 6 tasks and the reflection below. Press <em>Check My Work</em> to save your score. Your teacher will collect your score and this reflection.
-        </div>
-        <label for="reflectionInput">
-          In your own words: explain the difference between the mean and the median. When might they give different results? Write at least 2 sentences.
-        </label>
-        <textarea
-          id="reflectionInput"
-          class="reflection-input"
-          aria-label="Reflection: explain the difference between mean and median in your own words"
-          placeholder="The mean is… The median is… They can be different when…"
-        ></textarea>
-      </section>
-
-    </div><!-- /.wrap -->
+    </div>
 
     <script>
-      /* ---------- Dot-plot builder factory ---------- */
-      function buildDotPlot(containerId, values) {
-        var c = document.getElementById(containerId);
-        var counts = {};
-        values.forEach(function (v) { counts[v] = 0; });
-        function render() {
-          c.innerHTML = "";
-          values.forEach(function (v) {
-            var stack = document.createElement("div");
-            stack.className = "stack";
+      (function () {
+        "use strict";
 
-            var dots = document.createElement("div");
-            dots.className = "dots";
-            for (var i = 0; i < counts[v]; i++) {
-              var d = document.createElement("span");
-              d.className = "dot";
-              d.setAttribute("aria-hidden", "true");
-              dots.appendChild(d);
-            }
-
-            var num = document.createElement("div");
-            num.className = "num";
-            num.textContent = v;
-
-            var btns = document.createElement("div");
-            btns.className = "stepbtns";
-            var minus = document.createElement("button");
-            minus.type = "button";
-            minus.textContent = "−";
-            minus.setAttribute("aria-label", "remove a dot over " + v);
-            minus.addEventListener("click", function () {
-              if (counts[v] > 0) counts[v]--;
-              render();
-              if (onChange) onChange();
-            });
-            var plus = document.createElement("button");
-            plus.type = "button";
-            plus.textContent = "+";
-            plus.setAttribute("aria-label", "add a dot over " + v);
-            plus.addEventListener("click", function () {
-              if (counts[v] < 9) counts[v]++;
-              render();
-              if (onChange) onChange();
-            });
-            btns.appendChild(minus);
-            btns.appendChild(plus);
-
-            stack.appendChild(dots);
-            stack.appendChild(num);
-            stack.appendChild(btns);
-            c.appendChild(stack);
-          });
+        function num(s) {
+          return parseFloat(String(s == null ? "" : s).replace(/[$,\s]/g, ""));
         }
-        var onChange = null;
-        render();
-        return {
-          counts: counts,
-          values: values,
-          setOnChange: function (fn) { onChange = fn; },
-          data: function () {
-            var out = [];
-            values.forEach(function (v) {
-              for (var i = 0; i < counts[v]; i++) out.push(v);
-            });
-            return out;
+        function live(msg) {
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) fb.textContent = msg;
+        }
+
+        /* ── Numeric auto-graded problems ── */
+        var problems = [
+          {
+            id: "g-mean",
+            ans: "42.9",
+            skill: "Mean (measure of center)",
+            prompt: "Greenfield mean: 300 ÷ 7",
           },
-        };
-      }
+          {
+            id: "g-median",
+            ans: "42",
+            skill: "Median (measure of center)",
+            prompt: "Greenfield median of 38,40,41,42,44,45,50",
+          },
+          {
+            id: "g-range",
+            ans: "12",
+            skill: "Range (measure of spread)",
+            prompt: "Greenfield range: 50 − 38",
+          },
+          {
+            id: "g-mad",
+            ans: "3.0",
+            skill: "Mean absolute deviation (MAD)",
+            prompt: "Greenfield MAD: 20.857 ÷ 7",
+          },
+          {
+            id: "r-median",
+            ans: "39",
+            skill: "Median with an outlier",
+            prompt: "Riverside median of 35,37,38,39,40,41,98",
+          },
+          {
+            id: "r-mean",
+            ans: "46.9",
+            skill: "Outlier effect on the mean",
+            prompt: "Riverside mean: 328 ÷ 7",
+          },
+          {
+            id: "g-iqr",
+            ans: "5",
+            skill: "IQR from a box plot",
+            prompt: "Greenfield IQR: Q3 − Q1 = 45 − 40",
+          },
+        ];
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {}; /* tracks ALL 8 verifications (7 numeric + q1) */
 
-      function median(arr) {
-        if (!arr.length) return null;
-        var s = arr.slice().sort(function (a, b) { return a - b; });
-        var m = Math.floor(s.length / 2);
-        return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
-      }
+        var TOTAL = 8;
 
-      var dp1 = buildDotPlot("dp1", [1, 2, 3, 4, 5]);
-      var dp6 = buildDotPlot("dp6", [1, 2, 3, 4, 5]);
-
-      function updateDp1() {
-        var c = dp1.counts;
-        document.getElementById("dp1read").textContent =
-          c[1] + " at 1, " + c[2] + " at 2, " + c[3] + " at 3, " + c[4] + " at 4, " + c[5] + " at 5";
-        var fb = document.getElementById("dp1feedback");
-        if (dp1Done()) {
-          fb.textContent = "Plot matches the goal!";
-        } else {
-          fb.textContent = "Goal: 2 at 1, 3 at 2, 0 at 3, 1 at 4, 0 at 5.";
+        function inputFor(id) {
+          return document.getElementById("q-" + id);
         }
-        updateProgress();
-      }
-      function updateDp6() {
-        var d = dp6.data();
-        document.getElementById("dp6count").textContent = d.length;
-        var med = d.length ? median(d) : null;
-        document.getElementById("dp6med").textContent = med !== null ? med : "—";
-        var fb = document.getElementById("dp6feedback");
-        if (dp6Done()) {
-          fb.textContent = "5 dots with median 3 — great!";
-        } else if (d.length === 5) {
-          fb.textContent = "5 dots placed, but median is " + med + ". Try moving a dot.";
-        } else if (d.length > 5) {
-          fb.textContent = "Too many dots (" + d.length + "). Remove " + (d.length - 5) + ".";
-        } else {
-          fb.textContent = "Add " + (5 - d.length) + " more dot(s). Median needs to be 3.";
+        function isCorrect(id) {
+          var inp = inputFor(id);
+          if (!inp) return false;
+          var got = num(inp.value);
+          var want = num(inp.getAttribute("data-ans"));
+          var tol = num(inp.getAttribute("data-tol")) || 0.4;
+          return !isNaN(got) && Math.abs(got - want) <= tol;
         }
-        updateProgress();
-      }
-      dp1.setOnChange(updateDp1);
-      dp6.setOnChange(updateDp6);
-      updateDp1();
-      updateDp6();
 
-      /* ---------- Choice buttons (task 2) ---------- */
-      var c2val = "";
-      var c2 = document.getElementById("c2");
-      Array.prototype.forEach.call(c2.querySelectorAll("button"), function (b) {
-        b.setAttribute("aria-pressed", "false");
-        b.addEventListener("click", function () {
-          c2val = b.getAttribute("data-v");
-          Array.prototype.forEach.call(c2.querySelectorAll("button"), function (x) {
-            x.setAttribute("aria-pressed", x === b ? "true" : "false");
+        function paint() {
+          var n = 0;
+          Object.keys(correct).forEach(function (k) {
+            if (correct[k]) n++;
           });
-          var fb = document.getElementById("c2feedback");
-          fb.textContent = c2val === "B"
-            ? "Correct — B varies across many people."
-            : "Try again. A has only one answer; B varies.";
-          updateProgress();
+          document.getElementById("pcount").textContent = n;
+          document.getElementById("pbar").style.width = (n / TOTAL) * 100 + "%";
+          document.getElementById("progBar").setAttribute("aria-valuenow", n);
+        }
+
+        function check(id) {
+          var p = pById[id];
+          if (!p) return;
+          var inp = inputFor(id);
+          var fb = document.getElementById("fb-" + id);
+          var ok = isCorrect(id);
+          if (inp) {
+            inp.classList.toggle("ok", ok);
+            inp.classList.toggle("bad", !ok);
+          }
+          if (fb) {
+            fb.className = "fb " + (ok ? "ok" : "bad");
+            fb.textContent = ok
+              ? "✓ Verified — " + inp.getAttribute("data-why")
+              : "✗ Not yet. Re-read the data, set up the formula, then compute carefully.";
+          }
+          correct[id] = ok;
+          live(ok ? "Analysis verified." : "Not correct yet, try again.");
+          paint();
+        }
+
+        /* ── Task 1: multi-select statistical question sorter ── */
+        var q1box = document.getElementById("q1choices");
+        q1box.addEventListener("click", function (e) {
+          var c = e.target.closest(".choice");
+          if (!c) return;
+          var pressed = c.getAttribute("aria-pressed") === "true";
+          c.setAttribute("aria-pressed", pressed ? "false" : "true");
+          c.classList.remove("ok", "bad");
         });
-      });
+        function checkQ1() {
+          var ok = true;
+          q1box.querySelectorAll(".choice").forEach(function (c) {
+            var want = c.getAttribute("data-correct") === "1";
+            var got = c.getAttribute("aria-pressed") === "true";
+            c.classList.toggle("ok", want && got);
+            c.classList.toggle("bad", want !== got);
+            if (want !== got) ok = false;
+          });
+          var fb = document.getElementById("fb-q1");
+          fb.className = "fb " + (ok ? "ok" : "bad");
+          fb.textContent = ok
+            ? "✓ Verified — B and D are statistical: they expect answers that vary. A and C each have just one fixed answer."
+            : "✗ Not quite. A statistical question gives many DIFFERENT answers. Re-check which ones expect variability.";
+          correct["q1"] = ok;
+          live(ok ? "Question sort verified." : "Not correct yet, try again.");
+          paint();
+        }
 
-      /* ---------- Inline feedback on number inputs ---------- */
-      function attachFeedback(id, correct, feedbackId) {
-        var el = document.getElementById(id);
-        var fb = document.getElementById(feedbackId);
-        if (!el || !fb) return;
-        el.addEventListener("input", function () {
-          var v = el.value.trim();
-          if (v === "") { fb.textContent = ""; return; }
-          fb.textContent = v === String(correct) ? "Correct!" : "Not quite — check your work.";
+        /* ── Event delegation for Check / Hint ── */
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var c = e.target.closest("[data-check]");
+          if (c) {
+            var id = c.getAttribute("data-check");
+            if (id === "q1") checkQ1();
+            else check(id);
+            return;
+          }
+          var h = e.target.closest("[data-hint]");
+          if (h) {
+            var hid = h.getAttribute("data-hint");
+            if (hid === "q1") {
+              var fbq = document.getElementById("fb-q1");
+              fbq.className = "fb";
+              fbq.textContent =
+                "Hint: 'What was TODAY'S reading?' has one answer. 'How do readings VARY?' has many. Pick the varying ones.";
+              return;
+            }
+            var inp = inputFor(hid);
+            var fb = document.getElementById("fb-" + hid);
+            if (inp && fb) {
+              fb.className = "fb";
+              fb.textContent =
+                "Hint: " +
+                inp.getAttribute("data-why").split("=")[0].trim() +
+                " = …  Set up the formula first, then plug in the data.";
+            }
+          }
         });
-      }
-      attachFeedback("a2", 5, "a2feedback");
-      attachFeedback("a3", 6, "a3feedback");
-      attachFeedback("a4", 8, "a4feedback");
-      attachFeedback("a5a", 3, "a5afeedback");
-      attachFeedback("a5b", 6, "a5bfeedback");
-
-      /* ---------- Progress ---------- */
-      function dp1Done() {
-        var c = dp1.counts;
-        return c[1] === 2 && c[2] === 3 && c[3] === 0 && c[4] === 1 && c[5] === 0;
-      }
-      function dp6Done() {
-        var d = dp6.data();
-        return d.length === 5 && median(d) === 3;
-      }
-      function val(id) { return document.getElementById(id).value.trim(); }
-      function updateProgress() {
-        var done = 0;
-        if (dp1Done()) done++;
-        if (val("a2") !== "" && c2val !== "") done++;
-        if (val("a3") !== "") done++;
-        if (val("a4") !== "") done++;
-        if (val("a5a") !== "" && val("a5b") !== "") done++;
-        if (dp6Done()) done++;
-        document.getElementById("pbar").style.width = (done / 6) * 100 + "%";
-        document.getElementById("plabel").textContent = done + " of 6 answered";
-      }
-      ["a2", "a3", "a4", "a5a", "a5b"].forEach(function (id) {
-        document.getElementById(id).addEventListener("input", updateProgress);
-      });
-      updateProgress();
-
-      /* ---------- Mount kit ---------- */
-      NTKit.mount("#ntkit");
-
-      /* ---------- Check / submit ---------- */
-      document.getElementById("checkBtn").addEventListener("click", function () {
-        NTKit.grade({
-          activityId: "architect-unit-8",
-          activityTitle: "Unit 8 · Data Lab — Statistics",
-          standard: "6.SP.A-B",
-          items: [
-            {
-              prompt: "Build a dot plot: 2 dots at 1, 3 dots at 2, 1 dot at 4",
-              studentAnswer: dp1Done() ? "correct plot" : "not yet",
-              correctAnswer: "correct plot",
-              points: 1,
-              skill: "Display data on a dot plot (6.SP.B.4)",
-            },
-            {
-              prompt: "How many data values in 3, 5, 5, 7, 10?",
-              studentAnswer: val("a2"),
-              correctAnswer: "5",
-              points: 1,
-              skill: "Number of observations (6.SP.B.5a)",
-            },
-            {
-              prompt: "Which is a statistical question? (B = varies across class)",
-              studentAnswer: c2val,
-              correctAnswer: "B",
-              points: 1,
-              skill: "Recognize a statistical question (6.SP.A.1)",
-            },
-            {
-              prompt: "Mean of 4, 6, 6, 8",
-              studentAnswer: val("a3"),
-              correctAnswer: "6",
-              points: 1,
-              skill: "Find the mean / center (6.SP.A.3, 6.SP.B.5c)",
-            },
-            {
-              prompt: "Median of 2, 5, 8, 9, 11",
-              studentAnswer: val("a4"),
-              correctAnswer: "8",
-              points: 1,
-              skill: "Find the median / center (6.SP.A.2, 6.SP.B.5c)",
-            },
-            {
-              prompt: "Mode of 3, 3, 3, 6, 9",
-              studentAnswer: val("a5a"),
-              correctAnswer: "3",
-              points: 1,
-              skill: "Find the mode (6.SP.B.5c)",
-            },
-            {
-              prompt: "Range of 3, 3, 3, 6, 9 (9 − 3)",
-              studentAnswer: val("a5b"),
-              correctAnswer: "6",
-              points: 1,
-              skill: "Measure of spread / range (6.SP.A.3, 6.SP.B.5c)",
-            },
-            {
-              prompt: "Build 5 dots so the median is 3",
-              studentAnswer: dp6Done() ? "5 dots, median 3" : "not yet",
-              correctAnswer: "5 dots, median 3",
-              points: 1,
-              skill: "Build data to a given center (6.SP.B.4-5)",
-            },
-          ],
+        problems.forEach(function (p) {
+          var inp = inputFor(p.id);
+          if (inp)
+            inp.addEventListener("keydown", function (e) {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                check(p.id);
+              }
+            });
         });
-        document.getElementById("ntkit").scrollIntoView({ behavior: "smooth", block: "start" });
-      });
+
+        /* ── Task 6: live comparison verdict ── */
+        var G = { median: 42, mad: 3.0 };
+        var R = { median: 39, mad: 18.4 };
+        function report() {
+          var cleaner = R.median < G.median ? "Riverside" : "Greenfield";
+          var steady = G.mad < R.mad ? "Greenfield" : "Riverside";
+          document.getElementById("cleanerName").textContent = cleaner;
+          document.getElementById("steadyName").textContent = steady;
+          var v = document.getElementById("verdict");
+          var gr = num((document.getElementById("cGRange") || {}).value);
+          if (isNaN(gr)) {
+            v.className = "fb";
+            v.textContent =
+              "Enter Greenfield's range, then run the comparison.";
+            return;
+          }
+          if (Math.abs(gr - 12) > 0.4) {
+            v.className = "fb bad";
+            v.textContent =
+              "✗ Greenfield range should be 50 − 38 = 12. Re-check, then run again.";
+            return;
+          }
+          v.className = "fb ok";
+          v.textContent =
+            "✓ Report ready. Riverside has the lower typical AQI (median 39), " +
+            "but Greenfield is far more consistent (MAD 3.0 vs 18.4). " +
+            "Recommend Greenfield as 'reliably good air'; flag Riverside's outlier day for the fire team.";
+        }
+        var grIn = document.getElementById("cGRange");
+        if (grIn) grIn.addEventListener("input", report);
+        var rb = document.getElementById("reportBtn");
+        if (rb) rb.addEventListener("click", report);
+
+        /* ── Mount NTKit + grade on submit ── */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", function () {
+            var items = problems.map(function (p) {
+              var inp = inputFor(p.id);
+              return {
+                prompt: p.prompt,
+                studentAnswer: inp ? String(inp.value || "").trim() : "",
+                correctAnswer: p.ans,
+                points: 1,
+                skill: p.skill,
+              };
+            });
+            /* Task 1 graded item */
+            var q1sel = [];
+            q1box.querySelectorAll(".choice").forEach(function (c) {
+              if (c.getAttribute("aria-pressed") === "true")
+                q1sel.push(c.querySelector(".key").textContent);
+            });
+            items.unshift({
+              prompt:
+                "Which field questions are statistical (have variability)?",
+              studentAnswer: q1sel.length ? q1sel.join(", ") : "(none)",
+              correctAnswer: "B, D",
+              points: 1,
+              skill: "Recognize a statistical question",
+            });
+
+            if (window.NTKit && NTKit.grade) {
+              NTKit.grade({
+                activityId: "architect-unit-8",
+                activityTitle:
+                  "Unit 8 · Math Architect — City Air Quality Data Lab (Statistics Design Challenge)",
+                standard: "6.SP.A.1-3, 6.SP.B.4-5",
+                items: items,
+              });
+              var panel = document.getElementById("ntkit");
+              if (panel && panel.scrollIntoView)
+                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              var n = items.filter(function (x) {
+                return (
+                  String(x.studentAnswer).replace(/\s/g, "") ===
+                  String(x.correctAnswer).replace(/\s/g, "")
+                );
+              }).length;
+              alert(
+                "Report submitted: " +
+                  n +
+                  " of " +
+                  items.length +
+                  " analyses correct.",
+              );
+            }
+          });
+
+        report();
+        paint();
+      })();
     </script>
   </body>
 </html>

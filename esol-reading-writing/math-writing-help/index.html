@@ -802,6 +802,74 @@
         border-color: rgba(255, 255, 255, 0.3);
       }
 
+      .btn-solid-teal {
+        background: var(--primary);
+        color: var(--white);
+      }
+
+      .btn-solid-teal:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      /* Student name capture for export / print header */
+      .submission-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+      }
+
+      .submission-bar label {
+        font-size: 0.74rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .submission-bar input {
+        flex: 1 1 220px;
+        min-width: 160px;
+        padding: 9px 14px;
+        border-radius: var(--radius-field);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 0.85rem;
+        outline: none;
+      }
+
+      .submission-bar input::placeholder {
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .submission-bar input:focus {
+        border-color: var(--primary);
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      /* Print: show the student/lesson identity header on the worksheet */
+      .print-identity {
+        display: none;
+      }
+      @media print {
+        .print-identity {
+          display: block !important;
+          margin-bottom: 18px;
+          font-size: 0.95rem;
+          color: black !important;
+          border-bottom: 2px solid #333;
+          padding-bottom: 10px;
+        }
+        .submission-bar {
+          display: none !important;
+        }
+      }
+
       /* ── Retro Diagnostics Command Terminal Overlay ── */
       .diag-overlay {
         position: fixed;
@@ -870,7 +938,8 @@
         .diag-overlay,
         #speakBtn,
         #copyBtn,
-        #printBtn {
+        #printBtn,
+        #downloadBtn {
           display: none !important;
         }
         .glass-panel {
@@ -1292,6 +1361,28 @@
               </div>
             </div>
 
+            <!-- Print-only identity header (student name + lesson) -->
+            <div class="print-identity" id="printIdentity">
+              <strong>Name:</strong>
+              <span id="printName">__________________</span>
+              &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+              <strong>Lesson:</strong> <span id="printLesson"></span>
+              &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+              <strong>Date:</strong> ______________
+            </div>
+
+            <!-- Student name capture for submission / export -->
+            <div class="submission-bar">
+              <label for="studentName">✎ Your name</label>
+              <input
+                type="text"
+                id="studentName"
+                placeholder="Type your name so your teacher knows whose work this is"
+                autocomplete="off"
+                oninput="onStudentNameInput()"
+              />
+            </div>
+
             <!-- Dynamic Speech-Highlightable Draft display -->
             <div class="paragraph-canvas" id="cerTextOutput">
               Construct your Claim, Evidence, and Reasoning above...
@@ -1320,11 +1411,18 @@
                   🖨️ Print / Save PDF
                 </button>
                 <button
-                  class="action-btn btn-solid-gold"
+                  class="action-btn btn-outline-white"
                   id="copyBtn"
                   onclick="copyCERParagraph()"
                 >
                   📎 Copy Draft
+                </button>
+                <button
+                  class="action-btn btn-solid-teal"
+                  id="downloadBtn"
+                  onclick="downloadMyWriting()"
+                >
+                  ⬇️ Download My Writing (.doc)
                 </button>
               </div>
             </div>
@@ -1459,7 +1557,7 @@
         geomBase: 6,
         geomHeight: 4,
         geomFoldProgress: 0,
-        dataPoints: [1, 2, 2, 3, 3, 3, 4]
+        dataPoints: [1, 2, 2, 3, 3, 3, 4],
       };
 
       let availableSystemVoices = [];
@@ -1468,115 +1566,1106 @@
       // All 64 Reveal Math lessons dynamically
       const CURRICULUM_DATA = [
         // UNIT 1: Foundations (7 lessons)
-        { id: "1-1", title: "Prime Factorization", unit: "Unit 1", standard: "6.NS.4", desc: "decompose composite values into products of prime bases.", model: "venn", terms: ["factor", "prime", "composite", "product", "exponent", "base", "divisor", "multiple"] },
-        { id: "1-2", title: "Greatest Common Factor", unit: "Unit 1", standard: "6.NS.4", desc: "find the greatest common divisor for groupings.", model: "venn", terms: ["factor", "greatest", "intersection", "divisor", "common", "overlap"] },
-        { id: "1-3", title: "Least Common Multiple", unit: "Unit 1", standard: "6.NS.4", desc: "calculate the first shared cycle where repetitions align.", model: "venn", terms: ["multiple", "least", "cycle", "overlap", "interval", "common"] },
-        { id: "1-4", title: "Add & Subtract Decimals", unit: "Unit 1", standard: "6.NS.3", desc: "align decimal points by place value to combine values.", model: "bar", terms: ["decimal", "align", "place value", "sum", "difference", "grid", "tenth", "hundredth"] },
-        { id: "1-5", title: "Multiply Decimals", unit: "Unit 1", standard: "6.NS.3", desc: "calculate decimal product using scaling factors.", model: "bar", terms: ["decimal", "product", "factor", "scaling", "place value", "power of ten"] },
-        { id: "1-6", title: "Divide Decimals", unit: "Unit 1", standard: "6.NS.3", desc: "shift place values to convert divisors into whole numbers.", model: "bar", terms: ["divisor", "dividend", "quotient", "shift", "place value", "power of ten"] },
-        { id: "1-7", title: "Divide Multi-Digit Numbers", unit: "Unit 1", standard: "6.NS.2", desc: "perform long division algorithms to yield integer quotients.", model: "bar", terms: ["dividend", "divisor", "quotient", "remainder", "algorithm", "divide"] },
+        {
+          id: "1-1",
+          title: "Prime Factorization",
+          unit: "Unit 1",
+          standard: "6.NS.4",
+          desc: "decompose composite values into products of prime bases.",
+          model: "venn",
+          terms: [
+            "factor",
+            "prime",
+            "composite",
+            "product",
+            "exponent",
+            "base",
+            "divisor",
+            "multiple",
+          ],
+        },
+        {
+          id: "1-2",
+          title: "Greatest Common Factor",
+          unit: "Unit 1",
+          standard: "6.NS.4",
+          desc: "find the greatest common divisor for groupings.",
+          model: "venn",
+          terms: [
+            "factor",
+            "greatest",
+            "intersection",
+            "divisor",
+            "common",
+            "overlap",
+          ],
+        },
+        {
+          id: "1-3",
+          title: "Least Common Multiple",
+          unit: "Unit 1",
+          standard: "6.NS.4",
+          desc: "calculate the first shared cycle where repetitions align.",
+          model: "venn",
+          terms: [
+            "multiple",
+            "least",
+            "cycle",
+            "overlap",
+            "interval",
+            "common",
+          ],
+        },
+        {
+          id: "1-4",
+          title: "Add & Subtract Decimals",
+          unit: "Unit 1",
+          standard: "6.NS.3",
+          desc: "align decimal points by place value to combine values.",
+          model: "bar",
+          terms: [
+            "decimal",
+            "align",
+            "place value",
+            "sum",
+            "difference",
+            "grid",
+            "tenth",
+            "hundredth",
+          ],
+        },
+        {
+          id: "1-5",
+          title: "Multiply Decimals",
+          unit: "Unit 1",
+          standard: "6.NS.3",
+          desc: "calculate decimal product using scaling factors.",
+          model: "bar",
+          terms: [
+            "decimal",
+            "product",
+            "factor",
+            "scaling",
+            "place value",
+            "power of ten",
+          ],
+        },
+        {
+          id: "1-6",
+          title: "Divide Decimals",
+          unit: "Unit 1",
+          standard: "6.NS.3",
+          desc: "shift place values to convert divisors into whole numbers.",
+          model: "bar",
+          terms: [
+            "divisor",
+            "dividend",
+            "quotient",
+            "shift",
+            "place value",
+            "power of ten",
+          ],
+        },
+        {
+          id: "1-7",
+          title: "Divide Multi-Digit Numbers",
+          unit: "Unit 1",
+          standard: "6.NS.2",
+          desc: "perform long division algorithms to yield integer quotients.",
+          model: "bar",
+          terms: [
+            "dividend",
+            "divisor",
+            "quotient",
+            "remainder",
+            "algorithm",
+            "divide",
+          ],
+        },
 
         // UNIT 2: Fractions (5 lessons)
-        { id: "2-1", title: "Interpret Fractions as Division", unit: "Unit 2", standard: "6.NS.1", desc: "represent division of whole numbers as fraction shares.", model: "bar", terms: ["fraction", "division", "share", "numerator", "denominator", "quotient"] },
-        { id: "2-2", title: "Multiply Fractions", unit: "Unit 2", standard: "6.NS.1", desc: "calculate fractional parts of another fraction.", model: "bar", terms: ["fraction", "multiply", "product", "numerator", "denominator", "simplify"] },
-        { id: "2-3", title: "Divide Fractions", unit: "Unit 2", standard: "6.NS.1", desc: "calculate how many fractional divisors fit in a dividend.", model: "bar", terms: ["fraction", "division", "reciprocal", "divisor", "dividend", "partition"] },
-        { id: "2-4", title: "Divide Mixed Numbers", unit: "Unit 2", standard: "6.NS.1", desc: "convert mixed values to improper fractions to divide.", model: "bar", terms: ["mixed number", "improper fraction", "division", "reciprocal", "divisor", "dividend"] },
-        { id: "2-5", title: "Solve Fraction Problems", unit: "Unit 2", standard: "6.NS.1", desc: "model contextual story fractions using partition blocks.", model: "bar", terms: ["fraction", "word problem", "partition", "model", "reciprocal", "operation"] },
+        {
+          id: "2-1",
+          title: "Interpret Fractions as Division",
+          unit: "Unit 2",
+          standard: "6.NS.1",
+          desc: "represent division of whole numbers as fraction shares.",
+          model: "bar",
+          terms: [
+            "fraction",
+            "division",
+            "share",
+            "numerator",
+            "denominator",
+            "quotient",
+          ],
+        },
+        {
+          id: "2-2",
+          title: "Multiply Fractions",
+          unit: "Unit 2",
+          standard: "6.NS.1",
+          desc: "calculate fractional parts of another fraction.",
+          model: "bar",
+          terms: [
+            "fraction",
+            "multiply",
+            "product",
+            "numerator",
+            "denominator",
+            "simplify",
+          ],
+        },
+        {
+          id: "2-3",
+          title: "Divide Fractions",
+          unit: "Unit 2",
+          standard: "6.NS.1",
+          desc: "calculate how many fractional divisors fit in a dividend.",
+          model: "bar",
+          terms: [
+            "fraction",
+            "division",
+            "reciprocal",
+            "divisor",
+            "dividend",
+            "partition",
+          ],
+        },
+        {
+          id: "2-4",
+          title: "Divide Mixed Numbers",
+          unit: "Unit 2",
+          standard: "6.NS.1",
+          desc: "convert mixed values to improper fractions to divide.",
+          model: "bar",
+          terms: [
+            "mixed number",
+            "improper fraction",
+            "division",
+            "reciprocal",
+            "divisor",
+            "dividend",
+          ],
+        },
+        {
+          id: "2-5",
+          title: "Solve Fraction Problems",
+          unit: "Unit 2",
+          standard: "6.NS.1",
+          desc: "model contextual story fractions using partition blocks.",
+          model: "bar",
+          terms: [
+            "fraction",
+            "word problem",
+            "partition",
+            "model",
+            "reciprocal",
+            "operation",
+          ],
+        },
 
         // UNIT 3: Ratios + Rates (7 lessons)
-        { id: "3-1", title: "Understand Ratios", unit: "Unit 3", standard: "6.RP.1", desc: "compare two quantities multiplicatively.", model: "grid", terms: ["ratio", "comparison", "multiplicative", "part-to-part", "part-to-whole"] },
-        { id: "3-2", title: "Ratio Tables", unit: "Unit 3", standard: "6.RP.3a", desc: "scale columns up or down maintaining equivalent ratios.", model: "grid", terms: ["ratio table", "equivalent", "scaling", "column", "multiplier", "constant"] },
-        { id: "3-3", title: "Graph Ratios", unit: "Unit 3", standard: "6.RP.3a", desc: "plot ordered pairs derived from ratio tables on a grid.", model: "grid", terms: ["graph", "ordered pair", "coordinate", "ratio", "scaling", "origin"] },
-        { id: "3-4", title: "Equivalent Ratios", unit: "Unit 3", standard: "6.RP.3", desc: "verify if two rates/ratios maintain identical constants.", model: "grid", terms: ["ratio", "equivalent", "constant", "scaling", "cross-product", "proportion"] },
-        { id: "3-5", title: "Compare Ratios", unit: "Unit 3", standard: "6.RP.3a", desc: "use double number lines to compare distinct ratios.", model: "grid", terms: ["comparison", "double number line", "equivalent", "scaling", "unit rate"] },
-        { id: "3-6", title: "Unit Rates", unit: "Unit 3", standard: "6.RP.2", desc: "find the rate per single unit of measurement.", model: "grid", terms: ["unit rate", "ratio", "denominator", "rate", "cost", "constant"] },
-        { id: "3-7", title: "Convert Measurement Units", unit: "Unit 3", standard: "6.RP.3d", desc: "multiply by unit conversion ratios to switch units.", model: "grid", terms: ["conversion", "ratio", "factor", "measurement", "scaling", "unit rate"] },
+        {
+          id: "3-1",
+          title: "Understand Ratios",
+          unit: "Unit 3",
+          standard: "6.RP.1",
+          desc: "compare two quantities multiplicatively.",
+          model: "grid",
+          terms: [
+            "ratio",
+            "comparison",
+            "multiplicative",
+            "part-to-part",
+            "part-to-whole",
+          ],
+        },
+        {
+          id: "3-2",
+          title: "Ratio Tables",
+          unit: "Unit 3",
+          standard: "6.RP.3a",
+          desc: "scale columns up or down maintaining equivalent ratios.",
+          model: "grid",
+          terms: [
+            "ratio table",
+            "equivalent",
+            "scaling",
+            "column",
+            "multiplier",
+            "constant",
+          ],
+        },
+        {
+          id: "3-3",
+          title: "Graph Ratios",
+          unit: "Unit 3",
+          standard: "6.RP.3a",
+          desc: "plot ordered pairs derived from ratio tables on a grid.",
+          model: "grid",
+          terms: [
+            "graph",
+            "ordered pair",
+            "coordinate",
+            "ratio",
+            "scaling",
+            "origin",
+          ],
+        },
+        {
+          id: "3-4",
+          title: "Equivalent Ratios",
+          unit: "Unit 3",
+          standard: "6.RP.3",
+          desc: "verify if two rates/ratios maintain identical constants.",
+          model: "grid",
+          terms: [
+            "ratio",
+            "equivalent",
+            "constant",
+            "scaling",
+            "cross-product",
+            "proportion",
+          ],
+        },
+        {
+          id: "3-5",
+          title: "Compare Ratios",
+          unit: "Unit 3",
+          standard: "6.RP.3a",
+          desc: "use double number lines to compare distinct ratios.",
+          model: "grid",
+          terms: [
+            "comparison",
+            "double number line",
+            "equivalent",
+            "scaling",
+            "unit rate",
+          ],
+        },
+        {
+          id: "3-6",
+          title: "Unit Rates",
+          unit: "Unit 3",
+          standard: "6.RP.2",
+          desc: "find the rate per single unit of measurement.",
+          model: "grid",
+          terms: [
+            "unit rate",
+            "ratio",
+            "denominator",
+            "rate",
+            "cost",
+            "constant",
+          ],
+        },
+        {
+          id: "3-7",
+          title: "Convert Measurement Units",
+          unit: "Unit 3",
+          standard: "6.RP.3d",
+          desc: "multiply by unit conversion ratios to switch units.",
+          model: "grid",
+          terms: [
+            "conversion",
+            "ratio",
+            "factor",
+            "measurement",
+            "scaling",
+            "unit rate",
+          ],
+        },
 
         // UNIT 4: Decimal Operations / Percents (7 lessons)
-        { id: "4-1", title: "Understand Percents", unit: "Unit 4", standard: "6.RP.3c", desc: "represent parts per hundred using double percent bars.", model: "bar", terms: ["percent", "hundred", "bar model", "ratio", "part", "whole"] },
-        { id: "4-2", title: "Fractions, Decimals & Percents", unit: "Unit 4", standard: "6.RP.3c", desc: "convert between identical mathematical representations.", model: "bar", terms: ["fraction", "decimal", "percent", "equivalent", "hundredth", "place value"] },
-        { id: "4-3", title: "Percent of a Number", unit: "Unit 4", standard: "6.RP.3c", desc: "calculate a part given the percent and the whole.", model: "bar", terms: ["percent", "whole", "part", "bar model", "multiplication", "savings"] },
-        { id: "4-4", title: "Find the Whole", unit: "Unit 4", standard: "6.RP.3c", desc: "calculate the original whole given a part and percent.", model: "bar", terms: ["whole", "part", "percent", "proportion", "scaling", "divisor"] },
-        { id: "4-5", title: "Financial Literacy", unit: "Unit 4", standard: "6.RP.3c", desc: "calculate tax, tips, and total prices.", model: "bar", terms: ["tax", "tip", "percent", "discount", "total", "original cost"] },
-        { id: "4-6", title: "Simple Interest", unit: "Unit 4", standard: "6.RP.3c", desc: "use principal and interest rates to calculate growth.", model: "bar", terms: ["interest", "principal", "rate", "percent", "time", "product"] },
-        { id: "4-7", title: "Solve Percent Problems", unit: "Unit 4", standard: "6.RP.3c", desc: "model and solve multi-step percentage stories.", model: "bar", terms: ["percent", "proportion", "savings", "sale price", "whole", "part"] },
+        {
+          id: "4-1",
+          title: "Understand Percents",
+          unit: "Unit 4",
+          standard: "6.RP.3c",
+          desc: "represent parts per hundred using double percent bars.",
+          model: "bar",
+          terms: ["percent", "hundred", "bar model", "ratio", "part", "whole"],
+        },
+        {
+          id: "4-2",
+          title: "Fractions, Decimals & Percents",
+          unit: "Unit 4",
+          standard: "6.RP.3c",
+          desc: "convert between identical mathematical representations.",
+          model: "bar",
+          terms: [
+            "fraction",
+            "decimal",
+            "percent",
+            "equivalent",
+            "hundredth",
+            "place value",
+          ],
+        },
+        {
+          id: "4-3",
+          title: "Percent of a Number",
+          unit: "Unit 4",
+          standard: "6.RP.3c",
+          desc: "calculate a part given the percent and the whole.",
+          model: "bar",
+          terms: [
+            "percent",
+            "whole",
+            "part",
+            "bar model",
+            "multiplication",
+            "savings",
+          ],
+        },
+        {
+          id: "4-4",
+          title: "Find the Whole",
+          unit: "Unit 4",
+          standard: "6.RP.3c",
+          desc: "calculate the original whole given a part and percent.",
+          model: "bar",
+          terms: [
+            "whole",
+            "part",
+            "percent",
+            "proportion",
+            "scaling",
+            "divisor",
+          ],
+        },
+        {
+          id: "4-5",
+          title: "Financial Literacy",
+          unit: "Unit 4",
+          standard: "6.RP.3c",
+          desc: "calculate tax, tips, and total prices.",
+          model: "bar",
+          terms: [
+            "tax",
+            "tip",
+            "percent",
+            "discount",
+            "total",
+            "original cost",
+          ],
+        },
+        {
+          id: "4-6",
+          title: "Simple Interest",
+          unit: "Unit 4",
+          standard: "6.RP.3c",
+          desc: "use principal and interest rates to calculate growth.",
+          model: "bar",
+          terms: [
+            "interest",
+            "principal",
+            "rate",
+            "percent",
+            "time",
+            "product",
+          ],
+        },
+        {
+          id: "4-7",
+          title: "Solve Percent Problems",
+          unit: "Unit 4",
+          standard: "6.RP.3c",
+          desc: "model and solve multi-step percentage stories.",
+          model: "bar",
+          terms: [
+            "percent",
+            "proportion",
+            "savings",
+            "sale price",
+            "whole",
+            "part",
+          ],
+        },
 
         // UNIT 5: Geometry + Measurement (5 lessons)
-        { id: "5-1", title: "Area of Parallelograms", unit: "Unit 5", standard: "6.G.1", desc: "relate base times height of parallelograms to rectangles.", model: "geometry", terms: ["area", "parallelogram", "base", "height", "rectangle", "decompose"] },
-        { id: "5-2", title: "Area of Triangles", unit: "Unit 5", standard: "6.G.1", desc: "show why a triangle occupies exactly half of a parallelogram.", model: "geometry", terms: ["area", "triangle", "parallelogram", "base", "height", "half", "compose"] },
-        { id: "5-3", title: "Area of Trapezoids", unit: "Unit 5", standard: "6.G.1", desc: "decompose trapezoids into triangles and rectangles.", model: "geometry", terms: ["area", "trapezoid", "base", "height", "decompose", "triangle", "rectangle"] },
-        { id: "5-4", title: "Area of Regular Polygons", unit: "Unit 5", standard: "6.G.1", desc: "divide polygons into identical congruent triangles.", model: "geometry", terms: ["area", "polygon", "triangle", "base", "height", "decompose", "sum"] },
-        { id: "5-5", title: "Area of Composite Figures", unit: "Unit 5", standard: "6.G.1", desc: "sum up areas of distinct sub-shapes to find total area.", model: "geometry", terms: ["area", "composite", "decompose", "sum", "triangle", "rectangle", "height"] },
+        {
+          id: "5-1",
+          title: "Area of Parallelograms",
+          unit: "Unit 5",
+          standard: "6.G.1",
+          desc: "relate base times height of parallelograms to rectangles.",
+          model: "geometry",
+          terms: [
+            "area",
+            "parallelogram",
+            "base",
+            "height",
+            "rectangle",
+            "decompose",
+          ],
+        },
+        {
+          id: "5-2",
+          title: "Area of Triangles",
+          unit: "Unit 5",
+          standard: "6.G.1",
+          desc: "show why a triangle occupies exactly half of a parallelogram.",
+          model: "geometry",
+          terms: [
+            "area",
+            "triangle",
+            "parallelogram",
+            "base",
+            "height",
+            "half",
+            "compose",
+          ],
+        },
+        {
+          id: "5-3",
+          title: "Area of Trapezoids",
+          unit: "Unit 5",
+          standard: "6.G.1",
+          desc: "decompose trapezoids into triangles and rectangles.",
+          model: "geometry",
+          terms: [
+            "area",
+            "trapezoid",
+            "base",
+            "height",
+            "decompose",
+            "triangle",
+            "rectangle",
+          ],
+        },
+        {
+          id: "5-4",
+          title: "Area of Regular Polygons",
+          unit: "Unit 5",
+          standard: "6.G.1",
+          desc: "divide polygons into identical congruent triangles.",
+          model: "geometry",
+          terms: [
+            "area",
+            "polygon",
+            "triangle",
+            "base",
+            "height",
+            "decompose",
+            "sum",
+          ],
+        },
+        {
+          id: "5-5",
+          title: "Area of Composite Figures",
+          unit: "Unit 5",
+          standard: "6.G.1",
+          desc: "sum up areas of distinct sub-shapes to find total area.",
+          model: "geometry",
+          terms: [
+            "area",
+            "composite",
+            "decompose",
+            "sum",
+            "triangle",
+            "rectangle",
+            "height",
+          ],
+        },
 
         // UNIT 6: Number System / Expressions (7 lessons)
-        { id: "6-1", title: "Write Numerical Expressions", unit: "Unit 6", standard: "6.EE.1", desc: "translate written values into expressions with exponents.", model: "scale", terms: ["expression", "exponent", "base", "term", "constant", "numerical"] },
-        { id: "6-2", title: "Evaluate Expressions", unit: "Unit 6", standard: "6.EE.2c", desc: "substitute values and solve using order of operations.", model: "scale", terms: ["evaluate", "substitution", "order of operations", "term", "simplify", "parentheses"] },
-        { id: "6-3", title: "Properties of Operations", unit: "Unit 6", standard: "6.EE.3", desc: "apply commutative, associative, and distributive properties.", model: "scale", terms: ["commutative", "associative", "distributive", "property", "equivalent", "simplify"] },
-        { id: "6-4", title: "Equivalent Expressions", unit: "Unit 6", standard: "6.EE.4", desc: "verify if expressions balance for all variable inputs.", model: "scale", terms: ["expression", "equivalent", "variable", "coefficient", "simplify", "balance"] },
-        { id: "6-5", title: "Write Algebraic Expressions", unit: "Unit 6", standard: "6.EE.2a", desc: "translate story scenarios into variable expressions.", model: "scale", terms: ["algebraic", "expression", "variable", "term", "coefficient", "constant"] },
-        { id: "6-6", title: "Identify Parts of Expressions", unit: "Unit 6", standard: "6.EE.2b", desc: "label coefficients, variables, and constants.", model: "scale", terms: ["variable", "coefficient", "constant", "term", "expression", "algebraic"] },
-        { id: "6-7", title: "Generate Equivalent Expressions", unit: "Unit 6", standard: "6.EE.3", desc: "factor or expand algebraic terms to match values.", model: "scale", terms: ["expression", "equivalent", "distributive", "factor", "simplify", "variable"] },
+        {
+          id: "6-1",
+          title: "Write Numerical Expressions",
+          unit: "Unit 6",
+          standard: "6.EE.1",
+          desc: "translate written values into expressions with exponents.",
+          model: "scale",
+          terms: [
+            "expression",
+            "exponent",
+            "base",
+            "term",
+            "constant",
+            "numerical",
+          ],
+        },
+        {
+          id: "6-2",
+          title: "Evaluate Expressions",
+          unit: "Unit 6",
+          standard: "6.EE.2c",
+          desc: "substitute values and solve using order of operations.",
+          model: "scale",
+          terms: [
+            "evaluate",
+            "substitution",
+            "order of operations",
+            "term",
+            "simplify",
+            "parentheses",
+          ],
+        },
+        {
+          id: "6-3",
+          title: "Properties of Operations",
+          unit: "Unit 6",
+          standard: "6.EE.3",
+          desc: "apply commutative, associative, and distributive properties.",
+          model: "scale",
+          terms: [
+            "commutative",
+            "associative",
+            "distributive",
+            "property",
+            "equivalent",
+            "simplify",
+          ],
+        },
+        {
+          id: "6-4",
+          title: "Equivalent Expressions",
+          unit: "Unit 6",
+          standard: "6.EE.4",
+          desc: "verify if expressions balance for all variable inputs.",
+          model: "scale",
+          terms: [
+            "expression",
+            "equivalent",
+            "variable",
+            "coefficient",
+            "simplify",
+            "balance",
+          ],
+        },
+        {
+          id: "6-5",
+          title: "Write Algebraic Expressions",
+          unit: "Unit 6",
+          standard: "6.EE.2a",
+          desc: "translate story scenarios into variable expressions.",
+          model: "scale",
+          terms: [
+            "algebraic",
+            "expression",
+            "variable",
+            "term",
+            "coefficient",
+            "constant",
+          ],
+        },
+        {
+          id: "6-6",
+          title: "Identify Parts of Expressions",
+          unit: "Unit 6",
+          standard: "6.EE.2b",
+          desc: "label coefficients, variables, and constants.",
+          model: "scale",
+          terms: [
+            "variable",
+            "coefficient",
+            "constant",
+            "term",
+            "expression",
+            "algebraic",
+          ],
+        },
+        {
+          id: "6-7",
+          title: "Generate Equivalent Expressions",
+          unit: "Unit 6",
+          standard: "6.EE.3",
+          desc: "factor or expand algebraic terms to match values.",
+          model: "scale",
+          terms: [
+            "expression",
+            "equivalent",
+            "distributive",
+            "factor",
+            "simplify",
+            "variable",
+          ],
+        },
 
         // UNIT 7: Integers + Coordinate Plane (7 lessons)
-        { id: "7-1", title: "Equations and Solutions", unit: "Unit 7", standard: "6.EE.5", desc: "verify if a substituted value makes an equation true.", model: "scale", terms: ["equation", "solution", "equality", "variable", "substitute", "balance"] },
-        { id: "7-2", title: "Solve One-Step Equations", unit: "Unit 7", standard: "6.EE.7", desc: "use inverse operations to isolate the variable.", model: "scale", terms: ["equation", "inverse", "isolate", "operation", "equality", "balance"] },
-        { id: "7-3", title: "Write & Solve Equations", unit: "Unit 7", standard: "6.EE.7", desc: "translate contexts into equations and isolate variables.", model: "scale", terms: ["equation", "variable", "isolate", "inverse", "operation", "constant"] },
-        { id: "7-4", title: "Solve Inequalities", unit: "Unit 7", standard: "6.EE.8", desc: "find all values that satisfy inequality boundary limits.", model: "scale", terms: ["inequality", "boundary", "solution", "variable", "limit", "less than"] },
-        { id: "7-5", title: "Graph Inequalities", unit: "Unit 7", standard: "6.EE.8", desc: "plot solutions on a shaded, open/closed dot number line.", model: "scale", terms: ["inequality", "graph", "number line", "boundary", "open circle", "closed circle"] },
-        { id: "7-6", title: "Dependent & Independent Variables", unit: "Unit 7", standard: "6.EE.9", desc: "relate how the output value depends on the input factor.", model: "scale", terms: ["dependent", "independent", "variable", "equation", "input", "output"] },
-        { id: "7-7", title: "Patterns & Relationships", unit: "Unit 7", standard: "6.EE.9", desc: "isolate variable rules in coordinate lists.", model: "scale", terms: ["pattern", "relationship", "variable", "equation", "table", "graph"] },
+        {
+          id: "7-1",
+          title: "Equations and Solutions",
+          unit: "Unit 7",
+          standard: "6.EE.5",
+          desc: "verify if a substituted value makes an equation true.",
+          model: "scale",
+          terms: [
+            "equation",
+            "solution",
+            "equality",
+            "variable",
+            "substitute",
+            "balance",
+          ],
+        },
+        {
+          id: "7-2",
+          title: "Solve One-Step Equations",
+          unit: "Unit 7",
+          standard: "6.EE.7",
+          desc: "use inverse operations to isolate the variable.",
+          model: "scale",
+          terms: [
+            "equation",
+            "inverse",
+            "isolate",
+            "operation",
+            "equality",
+            "balance",
+          ],
+        },
+        {
+          id: "7-3",
+          title: "Write & Solve Equations",
+          unit: "Unit 7",
+          standard: "6.EE.7",
+          desc: "translate contexts into equations and isolate variables.",
+          model: "scale",
+          terms: [
+            "equation",
+            "variable",
+            "isolate",
+            "inverse",
+            "operation",
+            "constant",
+          ],
+        },
+        {
+          id: "7-4",
+          title: "Solve Inequalities",
+          unit: "Unit 7",
+          standard: "6.EE.8",
+          desc: "find all values that satisfy inequality boundary limits.",
+          model: "scale",
+          terms: [
+            "inequality",
+            "boundary",
+            "solution",
+            "variable",
+            "limit",
+            "less than",
+          ],
+        },
+        {
+          id: "7-5",
+          title: "Graph Inequalities",
+          unit: "Unit 7",
+          standard: "6.EE.8",
+          desc: "plot solutions on a shaded, open/closed dot number line.",
+          model: "scale",
+          terms: [
+            "inequality",
+            "graph",
+            "number line",
+            "boundary",
+            "open circle",
+            "closed circle",
+          ],
+        },
+        {
+          id: "7-6",
+          title: "Dependent & Independent Variables",
+          unit: "Unit 7",
+          standard: "6.EE.9",
+          desc: "relate how the output value depends on the input factor.",
+          model: "scale",
+          terms: [
+            "dependent",
+            "independent",
+            "variable",
+            "equation",
+            "input",
+            "output",
+          ],
+        },
+        {
+          id: "7-7",
+          title: "Patterns & Relationships",
+          unit: "Unit 7",
+          standard: "6.EE.9",
+          desc: "isolate variable rules in coordinate lists.",
+          model: "scale",
+          terms: [
+            "pattern",
+            "relationship",
+            "variable",
+            "equation",
+            "table",
+            "graph",
+          ],
+        },
 
         // UNIT 8: Equations + Inequalities (7 lessons)
-        { id: "8-1", title: "Statistical Questions", unit: "Unit 8", standard: "6.SP.1", desc: "define questions that expect variability in answers.", model: "data", terms: ["statistical question", "variability", "data", "spread", "mean", "median"] },
-        { id: "8-2", title: "Mean, Median, and Mode", unit: "Unit 8", standard: "6.SP.3", desc: "measure center values of a data distribution.", model: "data", terms: ["mean", "median", "mode", "distribution", "center", "data"] },
-        { id: "8-3", title: "Mean Absolute Deviation", unit: "Unit 8", standard: "6.SP.5c", desc: "calculate absolute differences to measure variability.", model: "data", terms: ["mean absolute deviation", "variability", "absolute", "distance", "mean", "spread"] },
-        { id: "8-4", title: "Display Data", unit: "Unit 8", standard: "6.SP.4", desc: "render data points on a structured dot plot.", model: "data", terms: ["data", "dot plot", "frequency", "axis", "distribution", "spread"] },
-        { id: "8-5", title: "Describe Data Distributions", unit: "Unit 8", standard: "6.SP.5", desc: "identify peaks, clusters, gaps, and outliers.", model: "data", terms: ["distribution", "peak", "cluster", "gap", "outlier", "skewed", "symmetric"] },
-        { id: "8-6", title: "Summarize Data", unit: "Unit 8", standard: "6.SP.5d", desc: "calculate central tendencies to summarize ranges.", model: "data", terms: ["summarize", "data", "mean", "median", "range", "deviation"] },
-        { id: "8-7", title: "Choose Appropriate Measures", unit: "Unit 8", standard: "6.SP.5d", desc: "select mean or median based on distribution skew.", model: "data", terms: ["measure of center", "skew", "outlier", "mean", "median", "distribution"] },
+        {
+          id: "8-1",
+          title: "Statistical Questions",
+          unit: "Unit 8",
+          standard: "6.SP.1",
+          desc: "define questions that expect variability in answers.",
+          model: "data",
+          terms: [
+            "statistical question",
+            "variability",
+            "data",
+            "spread",
+            "mean",
+            "median",
+          ],
+        },
+        {
+          id: "8-2",
+          title: "Mean, Median, and Mode",
+          unit: "Unit 8",
+          standard: "6.SP.3",
+          desc: "measure center values of a data distribution.",
+          model: "data",
+          terms: ["mean", "median", "mode", "distribution", "center", "data"],
+        },
+        {
+          id: "8-3",
+          title: "Mean Absolute Deviation",
+          unit: "Unit 8",
+          standard: "6.SP.5c",
+          desc: "calculate absolute differences to measure variability.",
+          model: "data",
+          terms: [
+            "mean absolute deviation",
+            "variability",
+            "absolute",
+            "distance",
+            "mean",
+            "spread",
+          ],
+        },
+        {
+          id: "8-4",
+          title: "Display Data",
+          unit: "Unit 8",
+          standard: "6.SP.4",
+          desc: "render data points on a structured dot plot.",
+          model: "data",
+          terms: [
+            "data",
+            "dot plot",
+            "frequency",
+            "axis",
+            "distribution",
+            "spread",
+          ],
+        },
+        {
+          id: "8-5",
+          title: "Describe Data Distributions",
+          unit: "Unit 8",
+          standard: "6.SP.5",
+          desc: "identify peaks, clusters, gaps, and outliers.",
+          model: "data",
+          terms: [
+            "distribution",
+            "peak",
+            "cluster",
+            "gap",
+            "outlier",
+            "skewed",
+            "symmetric",
+          ],
+        },
+        {
+          id: "8-6",
+          title: "Summarize Data",
+          unit: "Unit 8",
+          standard: "6.SP.5d",
+          desc: "calculate central tendencies to summarize ranges.",
+          model: "data",
+          terms: ["summarize", "data", "mean", "median", "range", "deviation"],
+        },
+        {
+          id: "8-7",
+          title: "Choose Appropriate Measures",
+          unit: "Unit 8",
+          standard: "6.SP.5d",
+          desc: "select mean or median based on distribution skew.",
+          model: "data",
+          terms: [
+            "measure of center",
+            "skew",
+            "outlier",
+            "mean",
+            "median",
+            "distribution",
+          ],
+        },
 
         // UNIT 9: Expressions + Relationships (7 lessons)
-        { id: "9-1", title: "Graph on the Coordinate Plane", unit: "Unit 9", standard: "6.NS.6", desc: "locate points in four quadrants by horizontal/vertical direction.", model: "grid", terms: ["coordinate plane", "quadrant", "origin", "axis", "coordinates", "ordered pair"] },
-        { id: "9-2", title: "Ordered Pairs", unit: "Unit 9", standard: "6.NS.6b", desc: "relate ordered coordinates to horizontal/vertical offsets.", model: "grid", terms: ["ordered pair", "coordinate", "origin", "x-axis", "y-axis", "reflection"] },
-        { id: "9-3", title: "Absolute Value", unit: "Unit 9", standard: "6.NS.7c", desc: "explain absolute magnitude as positive distance from zero.", model: "grid", terms: ["absolute value", "distance", "origin", "magnitude", "positive", "axis"] },
-        { id: "9-4", title: "Compare & Order Integers", unit: "Unit 9", standard: "6.NS.7", desc: "arrange negative and positive numbers on a line.", model: "grid", terms: ["integer", "comparison", "greater than", "less than", "number line", "absolute value"] },
-        { id: "9-5", title: "Distance on the Coordinate Plane", unit: "Unit 9", standard: "6.NS.8", desc: "use absolute coordinates to find spacing across quadrants.", model: "grid", terms: ["distance", "absolute value", "coordinate", "quadrant", "axis", "sum"] },
-        { id: "9-6", title: "Polygons on the Coordinate Plane", unit: "Unit 9", standard: "6.G.3", desc: "find vertex coordinates to calculate side lengths.", model: "grid", terms: ["polygon", "vertex", "coordinate", "distance", "perimeter", "axis"] },
-        { id: "9-7", title: "Problem Solving with Coordinates", unit: "Unit 9", standard: "6.NS.8", desc: "solve multi-step mapping scenarios using coordinates.", model: "grid", terms: ["coordinate", "distance", "quadrant", "origin", "absolute value", "axis"] },
+        {
+          id: "9-1",
+          title: "Graph on the Coordinate Plane",
+          unit: "Unit 9",
+          standard: "6.NS.6",
+          desc: "locate points in four quadrants by horizontal/vertical direction.",
+          model: "grid",
+          terms: [
+            "coordinate plane",
+            "quadrant",
+            "origin",
+            "axis",
+            "coordinates",
+            "ordered pair",
+          ],
+        },
+        {
+          id: "9-2",
+          title: "Ordered Pairs",
+          unit: "Unit 9",
+          standard: "6.NS.6b",
+          desc: "relate ordered coordinates to horizontal/vertical offsets.",
+          model: "grid",
+          terms: [
+            "ordered pair",
+            "coordinate",
+            "origin",
+            "x-axis",
+            "y-axis",
+            "reflection",
+          ],
+        },
+        {
+          id: "9-3",
+          title: "Absolute Value",
+          unit: "Unit 9",
+          standard: "6.NS.7c",
+          desc: "explain absolute magnitude as positive distance from zero.",
+          model: "grid",
+          terms: [
+            "absolute value",
+            "distance",
+            "origin",
+            "magnitude",
+            "positive",
+            "axis",
+          ],
+        },
+        {
+          id: "9-4",
+          title: "Compare & Order Integers",
+          unit: "Unit 9",
+          standard: "6.NS.7",
+          desc: "arrange negative and positive numbers on a line.",
+          model: "grid",
+          terms: [
+            "integer",
+            "comparison",
+            "greater than",
+            "less than",
+            "number line",
+            "absolute value",
+          ],
+        },
+        {
+          id: "9-5",
+          title: "Distance on the Coordinate Plane",
+          unit: "Unit 9",
+          standard: "6.NS.8",
+          desc: "use absolute coordinates to find spacing across quadrants.",
+          model: "grid",
+          terms: [
+            "distance",
+            "absolute value",
+            "coordinate",
+            "quadrant",
+            "axis",
+            "sum",
+          ],
+        },
+        {
+          id: "9-6",
+          title: "Polygons on the Coordinate Plane",
+          unit: "Unit 9",
+          standard: "6.G.3",
+          desc: "find vertex coordinates to calculate side lengths.",
+          model: "grid",
+          terms: [
+            "polygon",
+            "vertex",
+            "coordinate",
+            "distance",
+            "perimeter",
+            "axis",
+          ],
+        },
+        {
+          id: "9-7",
+          title: "Problem Solving with Coordinates",
+          unit: "Unit 9",
+          standard: "6.NS.8",
+          desc: "solve multi-step mapping scenarios using coordinates.",
+          model: "grid",
+          terms: [
+            "coordinate",
+            "distance",
+            "quadrant",
+            "origin",
+            "absolute value",
+            "axis",
+          ],
+        },
 
         // UNIT 10: Review + Extension (5 lessons)
-        { id: "10-1", title: "Volume of Rectangular Prisms", unit: "Unit 10", standard: "6.G.2", desc: "calculate space capacity inside three-dimensional prisms.", model: "geometry", terms: ["volume", "prism", "three-dimensional", "filling", "base", "height"] },
-        { id: "10-2", title: "Volume with Fractions", unit: "Unit 10", standard: "6.G.2", desc: "multiply fractional dimensions to determine volume.", model: "geometry", terms: ["volume", "fraction", "prism", "dimension", "multiplying", "capacity"] },
-        { id: "10-3", title: "Surface Area of Prisms", unit: "Unit 10", standard: "6.G.4", desc: "sum the areas of six outer bounding faces.", model: "geometry", terms: ["surface area", "prism", "face", "net", "wrapping", "two-dimensional"] },
-        { id: "10-4", title: "Surface Area of Pyramids", unit: "Unit 10", standard: "6.G.4", desc: "sum the triangular faces and square base area.", model: "geometry", terms: ["surface area", "pyramid", "net", "face", "triangle", "base"] },
-        { id: "10-5", title: "Nets & Surface Area", unit: "Unit 10", standard: "6.G.4", desc: "unfold 3D geometry into 2D maps to wrap solids.", model: "geometry", terms: ["net", "surface area", "unfold", "wrapping", "two-dimensional", "face"] }
+        {
+          id: "10-1",
+          title: "Volume of Rectangular Prisms",
+          unit: "Unit 10",
+          standard: "6.G.2",
+          desc: "calculate space capacity inside three-dimensional prisms.",
+          model: "geometry",
+          terms: [
+            "volume",
+            "prism",
+            "three-dimensional",
+            "filling",
+            "base",
+            "height",
+          ],
+        },
+        {
+          id: "10-2",
+          title: "Volume with Fractions",
+          unit: "Unit 10",
+          standard: "6.G.2",
+          desc: "multiply fractional dimensions to determine volume.",
+          model: "geometry",
+          terms: [
+            "volume",
+            "fraction",
+            "prism",
+            "dimension",
+            "multiplying",
+            "capacity",
+          ],
+        },
+        {
+          id: "10-3",
+          title: "Surface Area of Prisms",
+          unit: "Unit 10",
+          standard: "6.G.4",
+          desc: "sum the areas of six outer bounding faces.",
+          model: "geometry",
+          terms: [
+            "surface area",
+            "prism",
+            "face",
+            "net",
+            "wrapping",
+            "two-dimensional",
+          ],
+        },
+        {
+          id: "10-4",
+          title: "Surface Area of Pyramids",
+          unit: "Unit 10",
+          standard: "6.G.4",
+          desc: "sum the triangular faces and square base area.",
+          model: "geometry",
+          terms: ["surface area", "pyramid", "net", "face", "triangle", "base"],
+        },
+        {
+          id: "10-5",
+          title: "Nets & Surface Area",
+          unit: "Unit 10",
+          standard: "6.G.4",
+          desc: "unfold 3D geometry into 2D maps to wrap solids.",
+          model: "geometry",
+          terms: [
+            "net",
+            "surface area",
+            "unfold",
+            "wrapping",
+            "two-dimensional",
+            "face",
+          ],
+        },
       ];
 
       // Comprehensive Multilingual ESOL dictionary translations
       const DICTIONARY_LOOKUP = {
-        factor: { es: "Factor (divisor exacto de un número)", ar: "عامل (قاسم يقسم عددًا آخر بالتساوي)", vi: "Ước số (số chia hết cho số khác)" },
-        prime: { es: "Primo (número con solo dos divisores)", ar: "أولي (له قاسمان فقط)", vi: "Số nguyên tố (chỉ chia hết cho 1 và chính nó)" },
-        composite: { es: "Compuesto (más de dos divisores)", ar: "مركب (له أكثر من قاسمين)", vi: "Hợp số (có nhiều hơn 2 ước)" },
-        product: { es: "Producto (resultado de multiplicación)", ar: "حاصل الضرب", vi: "Tích số (kết quả phép nhân)" },
-        exponent: { es: "Exponente (número de potencias)", ar: "الأس", vi: "Lũy thừa (số mũ)" },
+        factor: {
+          es: "Factor (divisor exacto de un número)",
+          ar: "عامل (قاسم يقسم عددًا آخر بالتساوي)",
+          vi: "Ước số (số chia hết cho số khác)",
+        },
+        prime: {
+          es: "Primo (número con solo dos divisores)",
+          ar: "أولي (له قاسمان فقط)",
+          vi: "Số nguyên tố (chỉ chia hết cho 1 và chính nó)",
+        },
+        composite: {
+          es: "Compuesto (más de dos divisores)",
+          ar: "مركب (له أكثر من قاسمين)",
+          vi: "Hợp số (có nhiều hơn 2 ước)",
+        },
+        product: {
+          es: "Producto (resultado de multiplicación)",
+          ar: "حاصل الضرب",
+          vi: "Tích số (kết quả phép nhân)",
+        },
+        exponent: {
+          es: "Exponente (número de potencias)",
+          ar: "الأس",
+          vi: "Lũy thừa (số mũ)",
+        },
         base: { es: "Base (número multiplicado)", ar: "الأساس", vi: "Cơ số" },
         divisor: { es: "Divisor (el que divide)", ar: "القاسم", vi: "Số chia" },
-        multiple: { es: "Múltiplo (producto entero)", ar: "مضاعف", vi: "Bội số (tích với số nguyên)" },
-        greatest: { es: "Máximo (el de mayor tamaño)", ar: "الأكبر", vi: "Lớn nhất" },
-        least: { es: "Mínimo (el primero en común)", ar: "الأصغر", vi: "Nhỏ nhất" },
-        intersection: { es: "Intersección (elementos comunes)", ar: "التقاطع", vi: "Điểm giao" },
+        multiple: {
+          es: "Múltiplo (producto entero)",
+          ar: "مضاعف",
+          vi: "Bội số (tích với số nguyên)",
+        },
+        greatest: {
+          es: "Máximo (el de mayor tamaño)",
+          ar: "الأكبر",
+          vi: "Lớn nhất",
+        },
+        least: {
+          es: "Mínimo (el primero en común)",
+          ar: "الأصغر",
+          vi: "Nhỏ nhất",
+        },
+        intersection: {
+          es: "Intersección (elementos comunes)",
+          ar: "التقاطع",
+          vi: "Điểm giao",
+        },
         cycle: { es: "Ciclo (evento que se repite)", ar: "دورة", vi: "Chu kỳ" },
-        overlap: { es: "Solaparse (coincidir a la vez)", ar: "تطابق", vi: "Trùng nhau" },
+        overlap: {
+          es: "Solaparse (coincidir a la vez)",
+          ar: "تطابق",
+          vi: "Trùng nhau",
+        },
         decimal: { es: "Decimal", ar: "عشري", vi: "Thập phân" },
         align: { es: "Alinear", ar: "محاذاة", vi: "Căn lề" },
-        "place value": { es: "Valor de posición", ar: "القيمة المنزلية", vi: "Giá trị hàng số" },
+        "place value": {
+          es: "Valor de posición",
+          ar: "القيمة المنزلية",
+          vi: "Giá trị hàng số",
+        },
         sum: { es: "Suma", ar: "المجموع", vi: "Tổng số" },
         difference: { es: "Diferencia", ar: "الفرق", vi: "Hiệu số" },
         dividend: { es: "Dividendo", ar: "المقسوم", vi: "Số bị chia" },
-        quotient: { es: "Cociente (resultado división)", ar: "ناتج القسمة", vi: "Thương số" },
+        quotient: {
+          es: "Cociente (resultado división)",
+          ar: "ناتج القسمة",
+          vi: "Thương số",
+        },
         equivalent: { es: "Equivalente", ar: "متكافئ", vi: "Tương đương" },
         fraction: { es: "Fracción", ar: "كسر", vi: "Phân số" },
-        reciprocal: { es: "Recíproco (inverso multiplicativo)", ar: "مقلوب الكسر", vi: "Nghịch đảo" },
+        reciprocal: {
+          es: "Recíproco (inverso multiplicativo)",
+          ar: "مقلوب الكسر",
+          vi: "Nghịch đảo",
+        },
         partition: { es: "Partición", ar: "تقسيم", vi: "Phần chia" },
         ratio: { es: "Razón / Proporción", ar: "نسبة", vi: "Tỷ số" },
         graph: { es: "Gráfica", ar: "رسم بياني", vi: "Đồ thị" },
@@ -1585,32 +2674,72 @@
         area: { es: "Área", ar: "المساحة", vi: "Diện tích" },
         volume: { es: "Volumen", ar: "الحجم", vi: "Thể tích" },
         prism: { es: "Prisma", ar: "منشور", vi: "Hình lăng trụ" },
-        net: { es: "Red de caras / Plantilla", ar: "شبكة المجسم", vi: "Hình khai triển" },
+        net: {
+          es: "Red de caras / Plantilla",
+          ar: "شبكة المجسم",
+          vi: "Hình khai triển",
+        },
         equation: { es: "Ecuación", ar: "معادلة", vi: "Phương trình" },
         variable: { es: "Variable", ar: "متغير", vi: "Biến số" },
         balance: { es: "Balanza / Equilibrio", ar: "توازن", vi: "Thăng bằng" },
         solve: { es: "Resolver", ar: "حل", vi: "Giải toán" },
-        inequality: { es: "Desigualdad", ar: "متباينة", vi: "Bất phương trình" },
+        inequality: {
+          es: "Desigualdad",
+          ar: "متباينة",
+          vi: "Bất phương trình",
+        },
         data: { es: "Datos", ar: "بيانات", vi: "Dữ liệu" },
-        mean: { es: "Media (Promedio)", ar: "المتوسط الحسابي", vi: "Số trung bình" },
+        mean: {
+          es: "Media (Promedio)",
+          ar: "المتوسط الحسابي",
+          vi: "Số trung bình",
+        },
         median: { es: "Mediana", ar: "الوسيط", vi: "Số trung vị" },
         mode: { es: "Moda", ar: "المنوال", vi: "Yếu vị" },
         distribution: { es: "Distribución", ar: "التوزيع", vi: "Sự phân bố" },
         variability: { es: "Variabilidad", ar: "التباين", vi: "Độ biến thiên" },
         absolute: { es: "Absoluto", ar: "مطلق", vi: "Tuyệt đối" },
-        "mean absolute deviation": { es: "Desviación absoluta media", ar: "متوسط الانحراف المطلق", vi: "Độ lệch tuyệt đối trung bình" },
-        "dot plot": { es: "Diagrama de puntos", ar: "مخطط النقاط", vi: "Biểu đồ chấm" },
+        "mean absolute deviation": {
+          es: "Desviación absoluta media",
+          ar: "متوسط الانحراف المطلق",
+          vi: "Độ lệch tuyệt đối trung bình",
+        },
+        "dot plot": {
+          es: "Diagrama de puntos",
+          ar: "مخطط النقاط",
+          vi: "Biểu đồ chấm",
+        },
         outlier: { es: "Valor atípico", ar: "قيمة متطرفة", vi: "Điểm dị biệt" },
         skewed: { es: "Sesgado", ar: "منحرف", vi: "Lệch" },
         symmetric: { es: "Simétrico", ar: "متماثل", vi: "Đối xứng" },
         "x-axis": { es: "Eje X", ar: "المحور السيني X", vi: "Trục hoành X" },
         "y-axis": { es: "Eje Y", ar: "المحور الصادي Y", vi: "Trục tung Y" },
-        origin: { es: "Origen (0,0)", ar: "نقطة الأصل", vi: "Gốc tọa độ (0,0)" },
-        quadrant: { es: "Cuadrante", ar: "ربع دائرة / ربع الإحداثي", vi: "Góc phần tư" },
-        "surface area": { es: "Área de superficie", ar: "مساحة السطح", vi: "Diện tích toàn phần" },
-        face: { es: "Cara (superficie plana)", ar: "وجه المجسم", vi: "Mặt phẳng" },
+        origin: {
+          es: "Origen (0,0)",
+          ar: "نقطة الأصل",
+          vi: "Gốc tọa độ (0,0)",
+        },
+        quadrant: {
+          es: "Cuadrante",
+          ar: "ربع دائرة / ربع الإحداثي",
+          vi: "Góc phần tư",
+        },
+        "surface area": {
+          es: "Área de superficie",
+          ar: "مساحة السطح",
+          vi: "Diện tích toàn phần",
+        },
+        face: {
+          es: "Cara (superficie plana)",
+          ar: "وجه المجسم",
+          vi: "Mặt phẳng",
+        },
         perimeter: { es: "Perímetro", ar: "المحيط", vi: "Chu vi" },
-        "ordered pair": { es: "Par ordenado", ar: "زوج مرتب", vi: "Cặp thứ tự" }
+        "ordered pair": {
+          es: "Par ordenado",
+          ar: "زوج مرتب",
+          vi: "Cặp thứ tự",
+        },
       };
 
       // Helper to calculate prime factors of a number
@@ -1640,15 +2769,21 @@
 
           if (type === "success") {
             // Elegant major rising arpeggio (C Major 7th)
-            const notes = [261.63, 329.63, 392.00, 493.88, 523.25]; // C4, E4, G4, B4, C5
+            const notes = [261.63, 329.63, 392.0, 493.88, 523.25]; // C4, E4, G4, B4, C5
             notes.forEach((freq, idx) => {
               const osc = ctx.createOscillator();
               const gain = ctx.createGain();
               osc.type = "sine";
               osc.frequency.value = freq;
               gain.gain.setValueAtTime(0, ctx.currentTime);
-              gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + idx * 0.08);
-              gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.08 + 0.4);
+              gain.gain.linearRampToValueAtTime(
+                0.12,
+                ctx.currentTime + idx * 0.08,
+              );
+              gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                ctx.currentTime + idx * 0.08 + 0.4,
+              );
 
               osc.connect(gain);
               gain.connect(ctx.destination);
@@ -1657,15 +2792,21 @@
             });
           } else if (type === "balance") {
             // High pitch pleasant double chime
-            const notes = [587.33, 880.00]; // D5, A5
+            const notes = [587.33, 880.0]; // D5, A5
             notes.forEach((freq, idx) => {
               const osc = ctx.createOscillator();
               const gain = ctx.createGain();
               osc.type = "triangle";
               osc.frequency.value = freq;
               gain.gain.setValueAtTime(0, ctx.currentTime);
-              gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + idx * 0.12);
-              gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.12 + 0.3);
+              gain.gain.linearRampToValueAtTime(
+                0.1,
+                ctx.currentTime + idx * 0.12,
+              );
+              gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                ctx.currentTime + idx * 0.12 + 0.3,
+              );
 
               osc.connect(gain);
               gain.connect(ctx.destination);
@@ -1674,13 +2815,16 @@
             });
           }
         } catch (err) {
-          logToTerminal("Web Audio API not allowed to start until user gesture.", "orange");
+          logToTerminal(
+            "Web Audio API not allowed to start until user gesture.",
+            "orange",
+          );
         }
       }
 
       // ── High-Fidelity SVG visual lab drawing sub-engines (Truly Dynamic & Interactive) ──
       const SVG_SUB_ENGINES = {
-        venn: function(state) {
+        venn: function (state) {
           // Venn diagrams with dynamic GCF / LCM factor sorting
           const valA = STORE.vennA || 12;
           const valB = STORE.vennB || 18;
@@ -1691,7 +2835,7 @@
           // Find intersection primes (GCF components)
           const intersection = [];
           const tempB = [...primesB];
-          primesA.forEach(p => {
+          primesA.forEach((p) => {
             const idx = tempB.indexOf(p);
             if (idx > -1) {
               intersection.push(p);
@@ -1701,36 +2845,39 @@
 
           // Find specific outer primes
           const leftPrimes = [...primesA];
-          intersection.forEach(p => {
+          intersection.forEach((p) => {
             const idx = leftPrimes.indexOf(p);
             if (idx > -1) leftPrimes.splice(idx, 1);
           });
           const rightPrimes = [...primesB];
-          intersection.forEach(p => {
+          intersection.forEach((p) => {
             const idx = rightPrimes.indexOf(p);
             if (idx > -1) rightPrimes.splice(idx, 1);
           });
 
           // Calculate GCF and LCM
-          const gcf = intersection.length > 0 ? intersection.reduce((a, b) => a * b, 1) : 1;
+          const gcf =
+            intersection.length > 0
+              ? intersection.reduce((a, b) => a * b, 1)
+              : 1;
           const lcm = (valA * valB) / gcf;
 
           // Draw factors as SVG text elements
           let leftTextSvg = "";
           leftPrimes.forEach((p, idx) => {
-            const y = 120 + (idx * 28);
+            const y = 120 + idx * 28;
             leftTextSvg += `<text x="120" y="${y}" fill="var(--primary)" font-weight="900" font-size="16" text-anchor="middle">${p}</text>`;
           });
 
           let centerTextSvg = "";
           intersection.forEach((p, idx) => {
-            const y = 120 + (idx * 28);
+            const y = 120 + idx * 28;
             centerTextSvg += `<text x="200" y="${y}" fill="var(--navy-deep)" font-weight="900" font-size="16" text-anchor="middle">${p}</text>`;
           });
 
           let rightTextSvg = "";
           rightPrimes.forEach((p, idx) => {
-            const y = 120 + (idx * 28);
+            const y = 120 + idx * 28;
             rightTextSvg += `<text x="280" y="${y}" fill="var(--coral)" font-weight="900" font-size="16" text-anchor="middle">${p}</text>`;
           });
 
@@ -1763,7 +2910,7 @@
           </svg>`;
         },
 
-        bar: function(state) {
+        bar: function (state) {
           // Dynamic Tap-to-Shade Tape Bar Model
           const divs = STORE.barPartitions || 4;
           let partitionsHtml = "";
@@ -1771,7 +2918,7 @@
 
           let shadedCount = 0;
           for (let i = 0; i < divs; i++) {
-            const x = 50 + (i * boxWidth);
+            const x = 50 + i * boxWidth;
             const isShaded = STORE.barShaded[i] || false;
             if (isShaded) shadedCount++;
 
@@ -1780,13 +2927,13 @@
             partitionsHtml += `
               <g style="cursor:pointer;" onclick="toggleTapePartition(${i})">
                 <rect x="${x}" y="100" width="${boxWidth}" height="60" fill="${fill}" stroke="var(--navy)" stroke-width="3" />
-                <text x="${x + boxWidth/2}" y="136" text-anchor="middle" font-size="12" font-weight="900" fill="${textFill}">1/${divs}</text>
+                <text x="${x + boxWidth / 2}" y="136" text-anchor="middle" font-size="12" font-weight="900" fill="${textFill}">1/${divs}</text>
               </g>
             `;
           }
 
           const ratio = (shadedCount / divs).toFixed(3);
-          const percent = (shadedCount / divs * 100).toFixed(1);
+          const percent = ((shadedCount / divs) * 100).toFixed(1);
 
           return `<svg width="400" height="300" style="background:white; border: 2px solid var(--line-muted);" viewBox="0 0 400 300">
             <text x="200" y="45" text-anchor="middle" font-size="15" font-weight="900" fill="var(--navy-deep)">Interactive Tape Block Model</text>
@@ -1800,14 +2947,14 @@
           </svg>`;
         },
 
-        scale: function(state) {
+        scale: function (state) {
           // Tilting mechanical balance scale with variable bags and weight cubes
           const solution = STORE.scaleXSolution || 3;
           const leftBags = STORE.scaleLeftBags || 1;
           const leftCubes = STORE.scaleLeftCubes || 2;
           const rightCubes = STORE.scaleRightCubes || 5;
 
-          const leftWeight = (leftBags * solution) + leftCubes;
+          const leftWeight = leftBags * solution + leftCubes;
           const rightWeight = rightCubes;
 
           // Tilting physics
@@ -1826,7 +2973,7 @@
           // Bag icons left
           let bagsHtml = "";
           for (let i = 0; i < leftBags; i++) {
-            const bx = -22 + (i * 14);
+            const bx = -22 + i * 14;
             bagsHtml += `
               <g transform="translate(${bx}, -28)">
                 <path d="M 0 16 C 0 8, 4 4, 8 4 C 12 4, 16 8, 16 16 Z" fill="var(--amber)" stroke="var(--navy-deep)" stroke-width="1.5" />
@@ -1839,7 +2986,7 @@
           // Cube counts left
           let leftCubesHtml = "";
           for (let i = 0; i < leftCubes; i++) {
-            const cx = -18 + (i * 12);
+            const cx = -18 + i * 12;
             leftCubesHtml += `<rect x="${cx}" y="-10" width="10" height="10" fill="var(--primary)" stroke="var(--navy-deep)" stroke-width="1" />`;
           }
 
@@ -1848,15 +2995,15 @@
           for (let i = 0; i < rightCubes; i++) {
             const rRow = Math.floor(i / 5);
             const rCol = i % 5;
-            const rx = -26 + (rCol * 11);
-            const ry = -10 - (rRow * 11);
+            const rx = -26 + rCol * 11;
+            const ry = -10 - rRow * 11;
             rightCubesHtml += `<rect x="${rx}" y="${ry}" width="10" height="10" fill="var(--primary)" stroke="var(--navy-deep)" stroke-width="1" />`;
           }
 
           return `<svg width="400" height="300" style="background:white; border: 2px solid var(--line-muted);" viewBox="0 0 400 300">
             <text x="200" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">Equated Mechanical Balance Scale</text>
-            <text x="200" y="52" text-anchor="middle" font-size="12" font-weight="900" fill="${weightDiff === 0 ? 'var(--green-success)' : 'var(--coral)'}">
-              ${weightDiff === 0 ? '✓ Balanced (Equality Verified)' : '⚠️ Unbalanced (Inequality)'}
+            <text x="200" y="52" text-anchor="middle" font-size="12" font-weight="900" fill="${weightDiff === 0 ? "var(--green-success)" : "var(--coral)"}">
+              ${weightDiff === 0 ? "✓ Balanced (Equality Verified)" : "⚠️ Unbalanced (Inequality)"}
             </text>
 
             <!-- Stand -->
@@ -1897,23 +3044,23 @@
             </g>
 
             <text x="200" y="275" text-anchor="middle" font-size="11" font-weight="800" fill="var(--slate-muted)">
-              Model Formula: ${leftBags}x + ${leftCubes} ${weightDiff === 0 ? '=' : '&ne;'} ${rightCubes} (Solving for x = ${solution})
+              Model Formula: ${leftBags}x + ${leftCubes} ${weightDiff === 0 ? "=" : "&ne;"} ${rightCubes} (Solving for x = ${solution})
             </text>
           </svg>`;
         },
 
-        grid: function(state) {
+        grid: function (state) {
           // Interactive Coordinate Grid with quadrants and reflection offsets
           const px = STORE.gridPtX || 3;
           const py = STORE.gridPtY || 2;
 
-          const svgX = 200 + (px * 25);
-          const svgY = 150 - (py * 25);
+          const svgX = 200 + px * 25;
+          const svgY = 150 - py * 25;
 
           let reflectionPointsHtml = "";
 
           if (STORE.gridReflectX) {
-            const rxY = 150 - (-py * 25);
+            const rxY = 150 - -py * 25;
             reflectionPointsHtml += `
               <circle cx="${svgX}" cy="${rxY}" r="6.5" fill="var(--coral)" />
               <line x1="${svgX}" y1="${svgY}" x2="${svgX}" y2="${rxY}" stroke="var(--coral)" stroke-dasharray="3" stroke-width="1.5" />
@@ -1921,7 +3068,7 @@
             `;
           }
           if (STORE.gridReflectY) {
-            const ryX = 200 + (-px * 25);
+            const ryX = 200 + -px * 25;
             reflectionPointsHtml += `
               <circle cx="${ryX}" cy="${svgY}" r="6.5" fill="var(--amber)" />
               <line x1="${svgX}" y1="${svgY}" x2="${ryX}" y2="${svgY}" stroke="var(--amber)" stroke-dasharray="3" stroke-width="1.5" />
@@ -1931,8 +3078,8 @@
 
           let linesHtml = "";
           for (let i = 1; i < 6; i++) {
-            const positiveOffset = 150 - (i * 25);
-            const negativeOffset = 150 + (i * 25);
+            const positiveOffset = 150 - i * 25;
+            const negativeOffset = 150 + i * 25;
             linesHtml += `
               <line x1="20" y1="${positiveOffset}" x2="380" y2="${positiveOffset}" stroke="var(--line-muted)" stroke-width="0.75" />
               <line x1="20" y1="${negativeOffset}" x2="380" y2="${negativeOffset}" stroke="var(--line-muted)" stroke-width="0.75" />
@@ -1971,7 +3118,7 @@
           </svg>`;
         },
 
-        geometry: function(state) {
+        geometry: function (state) {
           // Geometric 2D area polygon scaling or 3D folded net models
           const b = STORE.geomBase || 6;
           const h = STORE.geomHeight || 4;
@@ -1993,10 +3140,11 @@
             const baseOffset = 150;
 
             // Face projection vectors
-            const leftRotateX = 200 - (boxW / 2) - (boxD / 2) * Math.cos(foldRad);
+            const leftRotateX = 200 - boxW / 2 - (boxD / 2) * Math.cos(foldRad);
             const leftRotateY = baseOffset - (boxD / 2) * Math.sin(foldRad);
 
-            const rightRotateX = 200 + (boxW / 2) + (boxD / 2) * Math.cos(foldRad);
+            const rightRotateX =
+              200 + boxW / 2 + (boxD / 2) * Math.cos(foldRad);
             const rightRotateY = baseOffset - (boxD / 2) * Math.sin(foldRad);
 
             return `<svg width="400" height="300" style="background:white; border: 2px solid var(--line-muted);" viewBox="0 0 400 300">
@@ -2004,16 +3152,16 @@
               <text x="200" y="52" text-anchor="middle" font-size="10" font-weight="800" fill="var(--primary)">FOLD SLIDER PROGRESS = ${fold}%</text>
 
               <!-- Base face (Center anchor) -->
-              <rect x="${200 - boxW/2}" y="${baseOffset - boxH/2}" width="${boxW}" height="${boxH}" fill="rgba(15, 118, 110, 0.15)" stroke="var(--primary)" stroke-width="2" />
+              <rect x="${200 - boxW / 2}" y="${baseOffset - boxH / 2}" width="${boxW}" height="${boxH}" fill="rgba(15, 118, 110, 0.15)" stroke="var(--primary)" stroke-width="2" />
               <text x="200" y="${baseOffset + 4}" text-anchor="middle" font-size="10" font-weight="900" fill="var(--primary)">Base (2D)</text>
 
               <!-- Left flap (folds inward) -->
-              <rect x="${200 - boxW/2 - boxD}" y="${baseOffset - boxH/2}" width="${boxD}" height="${boxH}" fill="rgba(234, 88, 12, 0.1)" stroke="var(--coral)" stroke-width="1.5"
-                transform="translate(${200 - boxW/2}, ${baseOffset}) scale(${Math.cos(foldRad)}, ${Math.sin(foldRad) > 0 ? Math.sin(foldRad) : 1}) translate(${-(200 - boxW/2)}, ${-baseOffset})" />
+              <rect x="${200 - boxW / 2 - boxD}" y="${baseOffset - boxH / 2}" width="${boxD}" height="${boxH}" fill="rgba(234, 88, 12, 0.1)" stroke="var(--coral)" stroke-width="1.5"
+                transform="translate(${200 - boxW / 2}, ${baseOffset}) scale(${Math.cos(foldRad)}, ${Math.sin(foldRad) > 0 ? Math.sin(foldRad) : 1}) translate(${-(200 - boxW / 2)}, ${-baseOffset})" />
 
               <!-- Right flap (folds inward) -->
-              <rect x="${200 + boxW/2}" y="${baseOffset - boxH/2}" width="${boxD}" height="${boxH}" fill="rgba(234, 88, 12, 0.1)" stroke="var(--coral)" stroke-width="1.5"
-                transform="translate(${200 + boxW/2}, ${baseOffset}) scale(${Math.cos(foldRad)}, ${Math.sin(foldRad) > 0 ? Math.sin(foldRad) : 1}) translate(${-(200 + boxW/2)}, ${-baseOffset})" />
+              <rect x="${200 + boxW / 2}" y="${baseOffset - boxH / 2}" width="${boxD}" height="${boxH}" fill="rgba(234, 88, 12, 0.1)" stroke="var(--coral)" stroke-width="1.5"
+                transform="translate(${200 + boxW / 2}, ${baseOffset}) scale(${Math.cos(foldRad)}, ${Math.sin(foldRad) > 0 ? Math.sin(foldRad) : 1}) translate(${-(200 + boxW / 2)}, ${-baseOffset})" />
 
               <text x="200" y="275" text-anchor="middle" font-size="11" font-weight="800" fill="var(--slate-muted)">
                 Dimensions: Width = 8cm &middot; Height = 4cm &middot; Depth = 6cm
@@ -2033,8 +3181,8 @@
               <!-- Dashed height marker -->
               <line x1="100" y1="${180 - hOffset}" x2="100" y2="180" stroke="var(--coral)" stroke-width="2.5" stroke-dasharray="4" />
 
-              <text x="90" y="${180 - hOffset/2}" text-anchor="end" font-size="12" fill="var(--coral)" font-weight="900">Height: ${h} units</text>
-              <text x="${60 + baseLen/2}" y="202" text-anchor="middle" font-size="12" fill="var(--primary)" font-weight="900">Base Length: ${b} units</text>
+              <text x="90" y="${180 - hOffset / 2}" text-anchor="end" font-size="12" fill="var(--coral)" font-weight="900">Height: ${h} units</text>
+              <text x="${60 + baseLen / 2}" y="202" text-anchor="middle" font-size="12" fill="var(--primary)" font-weight="900">Base Length: ${b} units</text>
 
               <rect x="50" y="230" width="300" height="50" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
               <text x="200" y="260" text-anchor="middle" font-size="14" font-weight="900" fill="var(--navy-deep)">
@@ -2044,38 +3192,41 @@
           }
         },
 
-        data: function(state) {
+        data: function (state) {
           // Statistical Dot Plot with live Mean & Median tracking
           const points = [...STORE.dataPoints];
           points.sort((a, b) => a - b);
 
           const counts = [0, 0, 0, 0, 0, 0];
-          points.forEach(p => {
+          points.forEach((p) => {
             if (p >= 0 && p <= 5) counts[p]++;
           });
 
           let dotsHtml = "";
           counts.forEach((freq, val) => {
-            const vx = 80 + (val * 48);
+            const vx = 80 + val * 48;
             for (let i = 0; i < freq; i++) {
-              const vy = 195 - (i * 16);
+              const vy = 195 - i * 16;
               dotsHtml += `<circle cx="${vx}" cy="${vy}" r="7" fill="var(--primary)" stroke="var(--navy-deep)" stroke-width="1" />`;
             }
           });
 
           // Calculations
           const sum = points.reduce((a, b) => a + b, 0);
-          const mean = points.length > 0 ? (sum / points.length) : 0;
+          const mean = points.length > 0 ? sum / points.length : 0;
 
           let median = 0;
           if (points.length > 0) {
             const mid = Math.floor(points.length / 2);
-            median = points.length % 2 !== 0 ? points[mid] : (points[mid - 1] + points[mid]) / 2;
+            median =
+              points.length % 2 !== 0
+                ? points[mid]
+                : (points[mid - 1] + points[mid]) / 2;
           }
 
           // Draw Mean/Median lines on coordinate
-          const meanX = 80 + (mean * 48);
-          const medianX = 80 + (median * 48);
+          const meanX = 80 + mean * 48;
+          const medianX = 80 + median * 48;
 
           return `<svg width="400" height="300" style="background:white; border: 2px solid var(--line-muted);" viewBox="0 0 400 300">
             <text x="200" y="32" text-anchor="middle" font-size="15" font-weight="900" fill="var(--navy-deep)">Interactive Data Plot Laboratory</text>
@@ -2105,13 +3256,13 @@
               Total Data Points: ${points.length} &middot; Mode: ${getModes(points).join(", ") || "None"}
             </text>
           </svg>`;
-        }
+        },
       };
 
       function getModes(arr) {
         const freq = {};
         let max = 0;
-        arr.forEach(x => {
+        arr.forEach((x) => {
           freq[x] = (freq[x] || 0) + 1;
           if (freq[x] > max) max = freq[x];
         });
@@ -2144,9 +3295,15 @@
 
       // ── LocalStorage State Recovery ──
       function autoSaveDraftToStorage() {
-        localStorage.setItem("neft_math_cer_store", JSON.stringify(STORE.cerDraftValues));
+        localStorage.setItem(
+          "neft_math_cer_store",
+          JSON.stringify(STORE.cerDraftValues),
+        );
         localStorage.setItem("neft_math_hybrid_text", STORE.hybridText);
-        localStorage.setItem("neft_math_active_idx", STORE.activeConceptIdx.toString());
+        localStorage.setItem(
+          "neft_math_active_idx",
+          STORE.activeConceptIdx.toString(),
+        );
         logToTerminal("Draft autosaved to LocalStorage.");
       }
 
@@ -2159,9 +3316,17 @@
           if (savedDraft) STORE.cerDraftValues = JSON.parse(savedDraft);
           if (savedText) {
             STORE.hybridText = savedText;
-            document.getElementById('hybridDraftBox').value = savedText;
+            document.getElementById("hybridDraftBox").value = savedText;
           }
           if (savedIdx) STORE.activeConceptIdx = parseInt(savedIdx);
+
+          const savedName = localStorage.getItem("neft_math_student_name");
+          if (savedName) {
+            STORE.studentName = savedName;
+            const nameField = document.getElementById("studentName");
+            if (nameField) nameField.value = savedName;
+            onStudentNameInput();
+          }
 
           logToTerminal("Draft successfully recovered from LocalStorage.");
         } catch (err) {
@@ -2176,22 +3341,28 @@
         particles: [],
         active: false,
 
-        init: function() {
-          this.canvas = document.getElementById('confettiCanvas');
-          this.ctx = this.canvas.getContext('2d');
+        init: function () {
+          this.canvas = document.getElementById("confettiCanvas");
+          this.ctx = this.canvas.getContext("2d");
           this.resize();
-          window.addEventListener('resize', () => this.resize());
+          window.addEventListener("resize", () => this.resize());
         },
 
-        resize: function() {
+        resize: function () {
           this.canvas.width = window.innerWidth;
           this.canvas.height = window.innerHeight;
         },
 
-        trigger: function() {
+        trigger: function () {
           this.particles = [];
           this.active = true;
-          const colors = ["#0f766e", "#ea580c", "#fbbf24", "#3b82f6", "#10b981"];
+          const colors = [
+            "#0f766e",
+            "#ea580c",
+            "#fbbf24",
+            "#3b82f6",
+            "#10b981",
+          ];
 
           for (let i = 0; i < 150; i++) {
             this.particles.push({
@@ -2202,18 +3373,18 @@
               speedY: Math.random() * 5 + 3,
               speedX: Math.random() * 4 - 2,
               rotation: Math.random() * 360,
-              rotationSpeed: Math.random() * 4 - 2
+              rotationSpeed: Math.random() * 4 - 2,
             });
           }
           this.animate();
         },
 
-        animate: function() {
+        animate: function () {
           if (!this.active) return;
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
           let finished = true;
 
-          this.particles.forEach(p => {
+          this.particles.forEach((p) => {
             p.y += p.speedY;
             p.x += p.speedX;
             p.rotation += p.rotationSpeed;
@@ -2222,9 +3393,9 @@
               finished = false;
               this.ctx.save();
               this.ctx.translate(p.x, p.y);
-              this.ctx.rotate(p.rotation * Math.PI / 180);
+              this.ctx.rotate((p.rotation * Math.PI) / 180);
               this.ctx.fillStyle = p.color;
-              this.ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+              this.ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
               this.ctx.restore();
             }
           });
@@ -2234,33 +3405,37 @@
           } else {
             requestAnimationFrame(() => this.animate());
           }
-        }
+        },
       };
 
       // ── App Startup ──
-      window.addEventListener('DOMContentLoaded', () => {
+      window.addEventListener("DOMContentLoaded", () => {
         ConfettiCelebrator.init();
         recoverStateFromStorage();
         setupEventListeners();
         filterLessonsByUnit();
+        loadLessonWorkspace(STORE.activeConceptIdx);
         loadAllSystemVoices();
       });
 
       // ── Sidebar list builder with active filters ──
       function filterLessonsByUnit() {
-        const filter = document.getElementById('unitFilter').value;
-        const nav = document.getElementById('sidebarNav');
-        nav.innerHTML = '';
+        const filter = document.getElementById("unitFilter").value;
+        const nav = document.getElementById("sidebarNav");
+        nav.innerHTML = "";
 
-        const filtered = (filter === "all")
-          ? CURRICULUM_DATA
-          : CURRICULUM_DATA.filter(l => l.unit === filter);
+        const filtered =
+          filter === "all"
+            ? CURRICULUM_DATA
+            : CURRICULUM_DATA.filter((l) => l.unit === filter);
 
         filtered.forEach((lesson) => {
-          const globalIdx = CURRICULUM_DATA.findIndex(l => l.id === lesson.id);
+          const globalIdx = CURRICULUM_DATA.findIndex(
+            (l) => l.id === lesson.id,
+          );
 
-          const btn = document.createElement('button');
-          btn.className = `concept-card ${globalIdx === STORE.activeConceptIdx ? 'active' : ''}`;
+          const btn = document.createElement("button");
+          btn.className = `concept-card ${globalIdx === STORE.activeConceptIdx ? "active" : ""}`;
           btn.onclick = () => switchLesson(globalIdx);
           btn.innerHTML = `
             <span class="unit-badge">${lesson.unit} &middot; ${lesson.standard}</span>
@@ -2271,16 +3446,22 @@
 
         // Auto select first filtered if active is not in set
         const currentActiveLesson = CURRICULUM_DATA[STORE.activeConceptIdx];
-        if (filter !== "all" && currentActiveLesson.unit !== filter && filtered.length > 0) {
-          const newFirstIdx = CURRICULUM_DATA.findIndex(l => l.id === filtered[0].id);
+        if (
+          filter !== "all" &&
+          currentActiveLesson.unit !== filter &&
+          filtered.length > 0
+        ) {
+          const newFirstIdx = CURRICULUM_DATA.findIndex(
+            (l) => l.id === filtered[0].id,
+          );
           switchLesson(newFirstIdx);
         }
       }
 
       function switchLesson(index) {
         STORE.activeConceptIdx = index;
-        document.querySelectorAll('.concept-card').forEach((card) => {
-          card.classList.remove('active');
+        document.querySelectorAll(".concept-card").forEach((card) => {
+          card.classList.remove("active");
         });
 
         // Clear interactive variables
@@ -2296,7 +3477,7 @@
       // ── Load selected lesson attributes ──
       function loadLessonWorkspace(index) {
         const lesson = CURRICULUM_DATA[index];
-        document.getElementById('standardTag').textContent = lesson.standard;
+        document.getElementById("standardTag").textContent = lesson.standard;
 
         // Render interactive sliders based on coordinates
         renderModelControlPanel(lesson.model);
@@ -2313,26 +3494,31 @@
 
         // Populate hybrid textarea from dropdown compiled if empty
         STORE.hybridText = compileFullParagraphText();
-        document.getElementById('hybridDraftBox').value = STORE.hybridText;
+        document.getElementById("hybridDraftBox").value = STORE.hybridText;
 
         // Update sidebar visual indicator
-        const activeCardBtn = Array.from(document.querySelectorAll('.concept-card')).find(c => c.textContent.includes(`L${lesson.id} `));
-        if (activeCardBtn) activeCardBtn.classList.add('active');
+        const activeCardBtn = Array.from(
+          document.querySelectorAll(".concept-card"),
+        ).find((c) => c.textContent.includes(`L${lesson.id} `));
+        if (activeCardBtn) activeCardBtn.classList.add("active");
+
+        // Keep the printable/exportable lesson identity in sync.
+        refreshPrintIdentity();
 
         logToTerminal(`Lesson activated: L${lesson.id} [${lesson.title}]`);
       }
 
       // ── Programmatic SVG Canvas Drawer ──
       function drawSVGModelCanvas(type) {
-        const container = document.getElementById('modelCanvas');
-        const builder = SVG_SUB_ENGINES[type] || SVG_SUB_ENGINES['venn'];
+        const container = document.getElementById("modelCanvas");
+        const builder = SVG_SUB_ENGINES[type] || SVG_SUB_ENGINES["venn"];
         container.innerHTML = builder({});
       }
 
       // ── Render Dynamic Interactive Control Panels ──
       function renderModelControlPanel(type) {
-        const ctrl = document.getElementById('modelControls');
-        ctrl.innerHTML = '';
+        const ctrl = document.getElementById("modelControls");
+        ctrl.innerHTML = "";
 
         if (type === "venn") {
           ctrl.innerHTML = `
@@ -2412,103 +3598,123 @@
       // Dynamic state setters for Interactive controls
       function updateVennA(val) {
         STORE.vennA = parseInt(val);
-        document.getElementById('lblVennA').textContent = val;
+        document.getElementById("lblVennA").textContent = val;
         drawSVGModelCanvas("venn");
         autoSaveDraftToStorage();
       }
       function updateVennB(val) {
         STORE.vennB = parseInt(val);
-        document.getElementById('lblVennB').textContent = val;
+        document.getElementById("lblVennB").textContent = val;
         drawSVGModelCanvas("venn");
         autoSaveDraftToStorage();
       }
       function updateBarPartitions(val) {
         STORE.barPartitions = parseInt(val);
-        document.getElementById('lblBar').textContent = val;
+        document.getElementById("lblBar").textContent = val;
         drawSVGModelCanvas("bar");
         autoSaveDraftToStorage();
       }
       function adjustScaleLeftBags(val) {
-        STORE.scaleLeftBags = Math.max(1, Math.min(3, (STORE.scaleLeftBags || 1) + val));
+        STORE.scaleLeftBags = Math.max(
+          1,
+          Math.min(3, (STORE.scaleLeftBags || 1) + val),
+        );
         drawSVGModelCanvas("scale");
         autoSaveDraftToStorage();
       }
       function adjustScaleLeftCubes(val) {
-        STORE.scaleLeftCubes = Math.max(0, Math.min(10, (STORE.scaleLeftCubes || 2) + val));
+        STORE.scaleLeftCubes = Math.max(
+          0,
+          Math.min(10, (STORE.scaleLeftCubes || 2) + val),
+        );
         drawSVGModelCanvas("scale");
         autoSaveDraftToStorage();
       }
       function adjustScaleRightCubes(val) {
-        STORE.scaleRightCubes = Math.max(1, Math.min(15, (STORE.scaleRightCubes || 5) + val));
+        STORE.scaleRightCubes = Math.max(
+          1,
+          Math.min(15, (STORE.scaleRightCubes || 5) + val),
+        );
         drawSVGModelCanvas("scale");
         autoSaveDraftToStorage();
       }
       function updateGridX(val) {
         STORE.gridPtX = parseInt(val);
-        document.getElementById('lblGridX').textContent = val;
+        document.getElementById("lblGridX").textContent = val;
         drawSVGModelCanvas("grid");
         autoSaveDraftToStorage();
       }
       function updateGridY(val) {
         STORE.gridPtY = parseInt(val);
-        document.getElementById('lblGridY').textContent = val;
+        document.getElementById("lblGridY").textContent = val;
         drawSVGModelCanvas("grid");
         autoSaveDraftToStorage();
       }
       function toggleReflectX() {
         STORE.gridReflectX = !STORE.gridReflectX;
-        document.getElementById('btnRefX').style.background = STORE.gridReflectX ? "var(--primary-light)" : "var(--white)";
-        document.getElementById('btnRefX').style.color = STORE.gridReflectX ? "var(--primary)" : "var(--slate-ink)";
+        document.getElementById("btnRefX").style.background = STORE.gridReflectX
+          ? "var(--primary-light)"
+          : "var(--white)";
+        document.getElementById("btnRefX").style.color = STORE.gridReflectX
+          ? "var(--primary)"
+          : "var(--slate-ink)";
         drawSVGModelCanvas("grid");
         autoSaveDraftToStorage();
       }
       function toggleReflectY() {
         STORE.gridReflectY = !STORE.gridReflectY;
-        document.getElementById('btnRefY').style.background = STORE.gridReflectY ? "var(--primary-light)" : "var(--white)";
-        document.getElementById('btnRefY').style.color = STORE.gridReflectY ? "var(--primary)" : "var(--slate-ink)";
+        document.getElementById("btnRefY").style.background = STORE.gridReflectY
+          ? "var(--primary-light)"
+          : "var(--white)";
+        document.getElementById("btnRefY").style.color = STORE.gridReflectY
+          ? "var(--primary)"
+          : "var(--slate-ink)";
         drawSVGModelCanvas("grid");
         autoSaveDraftToStorage();
       }
       function updateGeomBase(val) {
         STORE.geomBase = parseInt(val);
-        document.getElementById('lblBase').textContent = val;
+        document.getElementById("lblBase").textContent = val;
         drawSVGModelCanvas("geometry");
         autoSaveDraftToStorage();
       }
       function updateGeomHeight(val) {
         STORE.geomHeight = parseInt(val);
-        document.getElementById('lblHeight').textContent = val;
+        document.getElementById("lblHeight").textContent = val;
         drawSVGModelCanvas("geometry");
         autoSaveDraftToStorage();
       }
       function updateFoldProgress(val) {
         STORE.geomFoldProgress = parseInt(val);
-        document.getElementById('lblFold').textContent = val + "%";
+        document.getElementById("lblFold").textContent = val + "%";
         drawSVGModelCanvas("geometry");
         autoSaveDraftToStorage();
       }
 
       function populateWordWall(terms) {
-        const container = document.getElementById('wordWallContainer');
-        container.innerHTML = '';
+        const container = document.getElementById("wordWallContainer");
+        container.innerHTML = "";
 
-        terms.forEach(word => {
-          const chip = document.createElement('span');
-          chip.className = 'vocab-card';
+        terms.forEach((word) => {
+          const chip = document.createElement("span");
+          chip.className = "vocab-card";
           chip.textContent = word;
           chip.dataset.word = word;
 
-          const translatedText = (DICTIONARY_LOOKUP[word] && DICTIONARY_LOOKUP[word][STORE.activeDictionaryLang])
-            ? DICTIONARY_LOOKUP[word][STORE.activeDictionaryLang]
-            : word;
+          const translatedText =
+            DICTIONARY_LOOKUP[word] &&
+            DICTIONARY_LOOKUP[word][STORE.activeDictionaryLang]
+              ? DICTIONARY_LOOKUP[word][STORE.activeDictionaryLang]
+              : word;
 
           chip.innerHTML += `<span class="tooltip-bubble"><strong>${word}</strong><br>Translation: ${translatedText}</span>`;
 
           chip.onclick = () => {
-            const textbox = document.getElementById('hybridDraftBox');
+            const textbox = document.getElementById("hybridDraftBox");
             const cursor = textbox.selectionStart;
             const text = textbox.value;
-            textbox.value = text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
+            textbox.value =
+              text.slice(0, cursor) + " " + word + " " + text.slice(cursor);
             STORE.hybridText = textbox.value;
 
             updateParagraphDraft();
@@ -2521,6 +3727,530 @@
         triggerVocabHighlightScanner();
       }
 
+      // ── Lesson-specific Claim-Evidence-Reasoning frame library ──
+      // Keyed by lesson id. Each entry tailors the Claim/Evidence/Reasoning
+      // sentence frames + dropdown options to that exact lesson's topic and
+      // vocabulary. Lessons without a dedicated entry fall back to the
+      // unit-level generic frames below (which are still lesson-aware via
+      // title/standard/id interpolation), so all 64 lessons stay functional.
+      const LESSON_CER_FRAMES = {
+        // ── UNIT 1 · Number System Foundations ──
+        "1-1": {
+          claim: {
+            template: `I claim that the number {0} is a composite number whose prime factorization is {1}.`,
+            options: [
+              ["text-input", "the number"],
+              ["text-input", "e.g. 2 × 2 × 3"],
+            ],
+          },
+          evidence: {
+            template: `My factor tree shows that {0} breaks into prime bases of {1}, and no factor can be divided further because each is prime.`,
+            options: [
+              ["text-input", "the number"],
+              ["text-input", "list the primes"],
+            ],
+          },
+          reasoning: {
+            template: `This proves my claim because the {0} of a number is the unique set of {1} numbers that multiply back to it, by the Fundamental Theorem of Arithmetic.`,
+            options: [
+              ["prime factorization", "product of primes", "factor tree"],
+              ["prime", "composite"],
+            ],
+          },
+        },
+        "1-2": {
+          claim: {
+            template: `I claim that the greatest common factor (GCF) of {0} and {1} is {2}.`,
+            options: [
+              ["text-input", "first number"],
+              ["text-input", "second number"],
+              ["text-input", "the GCF"],
+            ],
+          },
+          evidence: {
+            template: `In the Venn model, the primes {0} sit in the overlapping intersection of both sets, and their product is {1}.`,
+            options: [
+              ["text-input", "shared primes"],
+              ["text-input", "the product"],
+            ],
+          },
+          reasoning: {
+            template: `This is the GCF because the {0} of a Venn diagram holds only the factors {1} to both numbers, giving the largest factor they share.`,
+            options: [
+              ["intersection", "overlap"],
+              ["common", "divisor"],
+            ],
+          },
+        },
+        "1-3": {
+          claim: {
+            template: `I claim that the least common multiple (LCM) of {0} and {1} is {2}.`,
+            options: [
+              ["text-input", "first number"],
+              ["text-input", "second number"],
+              ["text-input", "the LCM"],
+            ],
+          },
+          evidence: {
+            template: `The LCM uses every prime from both sets — {0} — so multiplying them gives the first shared {1} of {2}.`,
+            options: [
+              ["text-input", "all primes used"],
+              ["multiple", "cycle"],
+              ["text-input", "the LCM"],
+            ],
+          },
+          reasoning: {
+            template: `This works because the LCM is the smallest value both numbers divide into, found where their repeating {0} first {1}.`,
+            options: [
+              ["cycles", "intervals", "multiples"],
+              ["align", "overlap"],
+            ],
+          },
+        },
+        "1-4": {
+          claim: {
+            template: `I claim that when I add or subtract {0} and {1}, I must {2} the decimal points first.`,
+            options: [
+              ["text-input", "first decimal"],
+              ["text-input", "second decimal"],
+              ["align", "line up", "stack"],
+            ],
+          },
+          evidence: {
+            template: `Lining up by place value, the tenths and hundredths columns match, and the {0} of the two values is {1}.`,
+            options: [
+              ["sum", "difference"],
+              ["text-input", "the answer"],
+            ],
+          },
+          reasoning: {
+            template: `Aligning the {0} is required because you can only combine digits that share the same {1}.`,
+            options: [
+              ["decimal points", "place values"],
+              ["place value", "column"],
+            ],
+          },
+        },
+        // ── UNIT 2 · Fractions ──
+        "2-2": {
+          claim: {
+            template: `I claim that {0} of {1} equals {2}.`,
+            options: [
+              ["text-input", "first fraction"],
+              ["text-input", "second fraction"],
+              ["text-input", "the product"],
+            ],
+          },
+          evidence: {
+            template: `In the area model, shading {0} of one direction and {1} of the other overlaps on {2} of the whole grid.`,
+            options: [
+              ["text-input", "first fraction"],
+              ["text-input", "second fraction"],
+              ["text-input", "overlap fraction"],
+            ],
+          },
+          reasoning: {
+            template: `Multiplying fractions works because I multiply the {0} together and the {1} together, then {2} the result.`,
+            options: [["numerators"], ["denominators"], ["simplify", "reduce"]],
+          },
+        },
+        "2-3": {
+          claim: {
+            template: `I claim that {0} ÷ {1} equals {2} because dividing by a fraction means multiplying by its reciprocal.`,
+            options: [
+              ["text-input", "dividend"],
+              ["text-input", "divisor"],
+              ["text-input", "quotient"],
+            ],
+          },
+          evidence: {
+            template: `The reciprocal of {0} is {1}, so the partition model shows {2} groups fit inside the dividend.`,
+            options: [
+              ["text-input", "the divisor"],
+              ["text-input", "its reciprocal"],
+              ["text-input", "the quotient"],
+            ],
+          },
+          reasoning: {
+            template: `This is valid because dividing by a fraction asks how many copies of the {0} fit in the {1}, which equals multiplying by the {2}.`,
+            options: [["divisor"], ["dividend"], ["reciprocal"]],
+          },
+        },
+        // ── UNIT 3 · Ratios & Rates ──
+        "3-1": {
+          claim: {
+            template: `I claim that the ratio of {0} to {1} is {2} and compares the two quantities multiplicatively.`,
+            options: [
+              ["text-input", "quantity A"],
+              ["text-input", "quantity B"],
+              ["text-input", "the ratio"],
+            ],
+          },
+          evidence: {
+            template: `In the model, for every {0} of the first quantity there are {1} of the second, which is a {2} comparison.`,
+            options: [
+              ["text-input", "amount A"],
+              ["text-input", "amount B"],
+              ["part-to-part", "part-to-whole"],
+            ],
+          },
+          reasoning: {
+            template: `A ratio is {0} because it tells how many times one quantity contains the other, not how much {1} there is.`,
+            options: [["multiplicative"], ["more", "less"]],
+          },
+        },
+        "3-6": {
+          claim: {
+            template: `I claim that the unit rate for {0} is {1} per single unit.`,
+            options: [
+              ["text-input", "the situation"],
+              ["text-input", "the rate"],
+            ],
+          },
+          evidence: {
+            template: `Dividing {0} by {1} gives a rate of {2} for exactly one unit.`,
+            options: [
+              ["text-input", "total amount"],
+              ["text-input", "number of units"],
+              ["text-input", "unit rate"],
+            ],
+          },
+          reasoning: {
+            template: `This is a unit rate because the {0} is reduced to {1}, letting me compare and scale fairly.`,
+            options: [
+              ["denominator", "second quantity"],
+              ["one", "a single unit"],
+            ],
+          },
+        },
+        // ── UNIT 4 · Percents ──
+        "4-3": {
+          claim: {
+            template: `I claim that {0}% of {1} is {2}.`,
+            options: [
+              ["text-input", "the percent"],
+              ["text-input", "the whole"],
+              ["text-input", "the part"],
+            ],
+          },
+          evidence: {
+            template: `On the percent bar, {0}% lines up with a part value of {1} out of the whole {2}.`,
+            options: [
+              ["text-input", "the percent"],
+              ["text-input", "the part"],
+              ["text-input", "the whole"],
+            ],
+          },
+          reasoning: {
+            template: `This works because a percent is a ratio out of {0}, so I multiply the whole by the decimal form of {1}.`,
+            options: [["100", "one hundred"], ["the percent"]],
+          },
+        },
+        "4-5": {
+          claim: {
+            template: `I claim that after adding {0} of {1}, the total price becomes {2}.`,
+            options: [
+              ["text-input", "tax/tip percent"],
+              ["text-input", "original cost"],
+              ["text-input", "total"],
+            ],
+          },
+          evidence: {
+            template: `The {0} of {1}% on a cost of {2} adds {3} to the original price.`,
+            options: [
+              ["tax", "tip", "discount"],
+              ["text-input", "percent"],
+              ["text-input", "original cost"],
+              ["text-input", "added amount"],
+            ],
+          },
+          reasoning: {
+            template: `This is correct because a {0} is a percent of the {1}, calculated before being combined with the original total.`,
+            options: [
+              ["tax", "tip", "discount"],
+              ["original cost", "whole"],
+            ],
+          },
+        },
+        // ── UNIT 5 · Area ──
+        "5-2": {
+          claim: {
+            template: `I claim that the area of a triangle with base {0} and height {1} is {2} square units.`,
+            options: [
+              ["text-input", "base"],
+              ["text-input", "height"],
+              ["text-input", "area"],
+            ],
+          },
+          evidence: {
+            template: `In the model, the triangle fills exactly {0} of a parallelogram whose area is base × height = {1}.`,
+            options: [
+              ["half", "one-half"],
+              ["text-input", "parallelogram area"],
+            ],
+          },
+          reasoning: {
+            template: `The formula ½ × base × height works because two identical triangles {0} to form a {1}.`,
+            options: [
+              ["compose", "join", "combine"],
+              ["parallelogram", "rectangle"],
+            ],
+          },
+        },
+        "5-3": {
+          claim: {
+            template: `I claim that the trapezoid can be solved by {0} it into simpler shapes with a total area of {1} square units.`,
+            options: [
+              ["decomposing", "splitting", "breaking down"],
+              ["text-input", "total area"],
+            ],
+          },
+          evidence: {
+            template: `I split the trapezoid into a {0} and {1}, whose areas of {2} add to the total.`,
+            options: [
+              ["rectangle", "triangle"],
+              ["two triangles", "a triangle"],
+              ["text-input", "the sub-areas"],
+            ],
+          },
+          reasoning: {
+            template: `Decomposition is valid because the {0} of the parts equals the area of the whole {1}.`,
+            options: [["sum"], ["trapezoid", "composite figure"]],
+          },
+        },
+        // ── UNIT 6 · Expressions ──
+        "6-2": {
+          claim: {
+            template: `I claim that evaluating the expression {0} when the variable equals {1} gives {2}.`,
+            options: [
+              ["text-input", "the expression"],
+              ["text-input", "the value"],
+              ["text-input", "the result"],
+            ],
+          },
+          evidence: {
+            template: `Substituting {0} into the expression and following the order of operations, I get {1} step by step.`,
+            options: [
+              ["text-input", "the value"],
+              ["text-input", "the result"],
+            ],
+          },
+          reasoning: {
+            template: `This is correct because the {0} (PEMDAS) tells me to {1} before adding or subtracting.`,
+            options: [
+              ["order of operations"],
+              ["multiply and divide", "evaluate parentheses and exponents"],
+            ],
+          },
+        },
+        "6-3": {
+          claim: {
+            template: `I claim that the expressions {0} and {1} are equivalent by the {2} property.`,
+            options: [
+              ["text-input", "first expression"],
+              ["text-input", "second expression"],
+              ["distributive", "commutative", "associative"],
+            ],
+          },
+          evidence: {
+            template: `Applying the {0} property rewrites {1} as {2}, showing they have the same value for every input.`,
+            options: [
+              ["distributive", "commutative", "associative"],
+              ["text-input", "original"],
+              ["text-input", "rewritten"],
+            ],
+          },
+          reasoning: {
+            template: `These are equivalent because the {0} property guarantees the same result while letting me {1} the terms.`,
+            options: [
+              ["distributive", "commutative", "associative"],
+              ["rearrange", "expand", "regroup"],
+            ],
+          },
+        },
+        // ── UNIT 7 · Equations & Inequalities ──
+        "7-2": {
+          claim: {
+            template: `I claim that the solution to the equation {0} is x = {1}.`,
+            options: [
+              ["text-input", "the equation"],
+              ["text-input", "the solution"],
+            ],
+          },
+          evidence: {
+            template: `On the balance scale, undoing the operation with its inverse keeps both sides equal, isolating x = {0}.`,
+            options: [["text-input", "the solution"]],
+          },
+          reasoning: {
+            template: `This is correct because applying the {0} operation to {1} sides keeps the equation {2}.`,
+            options: [["inverse", "opposite"], ["both"], ["balanced", "equal"]],
+          },
+        },
+        "7-4": {
+          claim: {
+            template: `I claim that the inequality {0} is true for all values that are {1} the boundary of {2}.`,
+            options: [
+              ["text-input", "the inequality"],
+              ["less than", "greater than", "at or beyond"],
+              ["text-input", "boundary value"],
+            ],
+          },
+          evidence: {
+            template: `Testing a value like {0} makes the inequality {1}, which shows it lies in the solution region.`,
+            options: [
+              ["text-input", "a test value"],
+              ["true", "false"],
+            ],
+          },
+          reasoning: {
+            template: `An inequality has many solutions because every value {0} the {1} satisfies the same condition.`,
+            options: [
+              ["beyond", "on one side of"],
+              ["boundary", "limit"],
+            ],
+          },
+        },
+        // ── UNIT 8 · Statistics ──
+        "8-2": {
+          claim: {
+            template: `I claim that for this data set the {0} is {1}, which best describes its center.`,
+            options: [
+              ["mean", "median", "mode"],
+              ["text-input", "the value"],
+            ],
+          },
+          evidence: {
+            template: `The dot plot data adds to {0} across {1} points, so the mean is {2} and the median is {3}.`,
+            options: [
+              ["text-input", "sum"],
+              ["text-input", "count"],
+              ["text-input", "mean"],
+              ["text-input", "median"],
+            ],
+          },
+          reasoning: {
+            template: `I chose the {0} because the distribution is {1}, and that measure of center is most representative.`,
+            options: [
+              ["mean", "median", "mode"],
+              ["symmetric", "skewed", "clustered"],
+            ],
+          },
+        },
+        "8-3": {
+          claim: {
+            template: `I claim that the mean absolute deviation (MAD) of this data is {0}, showing the spread around the mean.`,
+            options: [["text-input", "the MAD"]],
+          },
+          evidence: {
+            template: `Each point's distance from the mean of {0} averages to {1}, which is the MAD.`,
+            options: [
+              ["text-input", "the mean"],
+              ["text-input", "the MAD"],
+            ],
+          },
+          reasoning: {
+            template: `A larger MAD means the data is more {0}, because points sit farther from the {1} on average.`,
+            options: [
+              ["spread out", "variable"],
+              ["mean", "center"],
+            ],
+          },
+        },
+        // ── UNIT 9 · Coordinate Plane & Integers ──
+        "9-1": {
+          claim: {
+            template: `I claim that the point ({0}, {1}) is located in Quadrant {2}.`,
+            options: [
+              ["text-input", "x-coordinate"],
+              ["text-input", "y-coordinate"],
+              ["I", "II", "III", "IV"],
+            ],
+          },
+          evidence: {
+            template: `Moving {0} along the x-axis and {1} along the y-axis from the origin lands on the point.`,
+            options: [
+              ["text-input", "x distance/direction"],
+              ["text-input", "y distance/direction"],
+            ],
+          },
+          reasoning: {
+            template: `The quadrant is determined by the {0} of the coordinates, because each axis splits the plane at the {1}.`,
+            options: [["signs", "positive/negative values"], ["origin"]],
+          },
+        },
+        "9-3": {
+          claim: {
+            template: `I claim that the absolute value of {0} is {1}.`,
+            options: [
+              ["text-input", "the integer"],
+              ["text-input", "the absolute value"],
+            ],
+          },
+          evidence: {
+            template: `On the number line, {0} sits {1} units away from zero in either direction.`,
+            options: [
+              ["text-input", "the integer"],
+              ["text-input", "the distance"],
+            ],
+          },
+          reasoning: {
+            template: `Absolute value is always {0} because it measures {1} from zero, ignoring direction.`,
+            options: [
+              ["positive", "non-negative"],
+              ["distance", "magnitude"],
+            ],
+          },
+        },
+        // ── UNIT 10 · Volume & Surface Area ──
+        "10-1": {
+          claim: {
+            template: `I claim that the volume of a rectangular prism with dimensions {0} is {1} cubic units.`,
+            options: [
+              ["text-input", "L × W × H"],
+              ["text-input", "the volume"],
+            ],
+          },
+          evidence: {
+            template: `Filling the prism with unit cubes, the base layer holds {0} cubes and there are {1} layers, giving {2}.`,
+            options: [
+              ["text-input", "base cubes"],
+              ["text-input", "number of layers"],
+              ["text-input", "total volume"],
+            ],
+          },
+          reasoning: {
+            template: `Volume equals length × width × height because each cube fills one unit of {0} space inside the {1}.`,
+            options: [
+              ["three-dimensional", "cubic"],
+              ["prism", "solid"],
+            ],
+          },
+        },
+        "10-3": {
+          claim: {
+            template: `I claim that the surface area of the prism is {0} square units, the sum of all {1} faces.`,
+            options: [
+              ["text-input", "surface area"],
+              ["six", "outer"],
+            ],
+          },
+          evidence: {
+            template: `Unfolding the net shows {0} rectangles whose areas add to {1}.`,
+            options: [
+              ["text-input", "number of faces"],
+              ["text-input", "total surface area"],
+            ],
+          },
+          reasoning: {
+            template: `Surface area sums the {0} faces because the {1} flattens the 3-D solid into measurable 2-D regions.`,
+            options: [
+              ["outer", "bounding"],
+              ["net", "unfolding"],
+            ],
+          },
+        },
+      };
+
       // ── 10 Custom Unit Mathematical Sentence Frame Generators ──
       function getLessonTemplateFrame(tab) {
         const lesson = CURRICULUM_DATA[STORE.activeConceptIdx];
@@ -2530,209 +4260,302 @@
         const t = lesson.terms;
         const unit = lesson.unit;
 
+        // Prefer a lesson-specific frame when one is authored for this lesson.
+        const lessonFrames = LESSON_CER_FRAMES[lesson.id];
+        if (lessonFrames && lessonFrames[tab]) {
+          return lessonFrames[tab];
+        }
+
         // 10 distinct mathematical framing schemas based on the Reveal Unit category
         if (unit === "Unit 1") {
           if (tab === "claim") {
             return {
               template: `In Unit 1 Foundations, to decompose composite values like in L${lesson.id} (${title}), I must apply standard ${standard} because the mathematical goal is to find {0}.`,
-              options: [["prime factorization", "the greatest common factor", "the least common multiple", "a standard aligned product"]]
+              options: [
+                [
+                  "prime factorization",
+                  "the greatest common factor",
+                  "the least common multiple",
+                  "a standard aligned product",
+                ],
+              ],
             };
           } else if (tab === "evidence") {
             return {
               template: `Analyzing the quantitative variables in our visual lab model demonstrates that the prime basis values are {0} and {1}. This provides numeric proof that {2} holds a product factor value of {3}.`,
-              options: [["text-input", "first value"], ["text-input", "second value"], [t[0] || "factor", t[1] || "prime"], ["text-input", "calculated output"]]
+              options: [
+                ["text-input", "first value"],
+                ["text-input", "second value"],
+                [t[0] || "factor", t[1] || "prime"],
+                ["text-input", "calculated output"],
+              ],
             };
           } else {
             return {
               template: `This makes logical sense because the definition of {0} dictates that composite elements are composed of prime building blocks. Therefore, applying standard arithmetic rules justifies that {1}.`,
-              options: [[t[0] || "composite", t[1] || "base"], ["we can decompose standard decimal numbers", "factors align exactly to divide values"]]
+              options: [
+                [t[0] || "composite", t[1] || "base"],
+                [
+                  "we can decompose standard decimal numbers",
+                  "factors align exactly to divide values",
+                ],
+              ],
             };
           }
-        }
-
-        else if (unit === "Unit 2") {
+        } else if (unit === "Unit 2") {
           if (tab === "claim") {
             return {
               template: `For Unit 2 fractions operations, standard ${standard} requires us to solve division or multiplication by representing {0}.`,
-              options: [["reciprocal multiplying quotients", "segmented tape partition models", "fractional composite shares"]]
+              options: [
+                [
+                  "reciprocal multiplying quotients",
+                  "segmented tape partition models",
+                  "fractional composite shares",
+                ],
+              ],
             };
           } else if (tab === "evidence") {
             return {
               template: `Inside our tape model laboratory, we divide our wholes into {0} identical partition segments. Shading {1} of these blocks represents the fraction {2}.`,
-              options: [["text-input", "denominator count"], ["text-input", "shaded counts"], ["text-input", "output fraction"]]
+              options: [
+                ["text-input", "denominator count"],
+                ["text-input", "shaded counts"],
+                ["text-input", "output fraction"],
+              ],
             };
           } else {
             return {
               template: `This aligns with fractional rules because dividing by a fraction {0} is mathematically equivalent to multiplying by its reciprocal. Consequently, the quotient is {1}.`,
-              options: [[t[2] || "reciprocal", "partition value"], ["larger than the original dividend", "smaller than the whole"]]
+              options: [
+                [t[2] || "reciprocal", "partition value"],
+                ["larger than the original dividend", "smaller than the whole"],
+              ],
             };
           }
-        }
-
-        else if (unit === "Unit 3") {
+        } else if (unit === "Unit 3") {
           if (tab === "claim") {
             return {
               template: `To understand ratios and rates in L${lesson.id}, standard ${standard} dictates comparing two distinct quantities {0}.`,
-              options: [["multiplicatively", "additively", "as a unit rate constant"]]
+              options: [
+                ["multiplicatively", "additively", "as a unit rate constant"],
+              ],
             };
           } else if (tab === "evidence") {
             return {
               template: `Evaluating the columns in the ratio table shows that scaling the first quantity by a factor multiplier of {0} yields a corresponding value of {1}, establishing an equivalent ratio.`,
-              options: [["text-input", "constant multiplier"], ["text-input", "scaled output"]]
+              options: [
+                ["text-input", "constant multiplier"],
+                ["text-input", "scaled output"],
+              ],
             };
           } else {
             return {
               template: `This is correct because an equivalent ratio retains a constant value {0}. When plotted as ordered pairs on a coordinate plane, they map a straight line crossing the origin.`,
-              options: [[t[2] || "constant", "unit rate scale"]]
+              options: [[t[2] || "constant", "unit rate scale"]],
             };
           }
-        }
-
-        else if (unit === "Unit 4") {
+        } else if (unit === "Unit 4") {
           if (tab === "claim") {
             return {
               template: `In Unit 4 percent operations, we convert between representations by modeling percentages as {0}.`,
-              options: [["parts per hundred", "decimal division factors", "scaled interest rates"]]
+              options: [
+                [
+                  "parts per hundred",
+                  "decimal division factors",
+                  "scaled interest rates",
+                ],
+              ],
             };
           } else if (tab === "evidence") {
             return {
               template: `Examining the visual percent bar shows that a part value of {0} corresponds directly to {1}%, which mathematically establishes the original whole value as {2}.`,
-              options: [["text-input", "part value"], ["text-input", "percentage"], ["text-input", "whole value"]]
+              options: [
+                ["text-input", "part value"],
+                ["text-input", "percentage"],
+                ["text-input", "whole value"],
+              ],
             };
           } else {
             return {
               template: `This works because a percent is a ratio whose denominator is always 100. By setting up equivalent ratios, we can isolate the {0} using multiplication properties.`,
-              options: [["part", "whole", "discount rate"]]
+              options: [["part", "whole", "discount rate"]],
             };
           }
-        }
-
-        else if (unit === "Unit 5") {
+        } else if (unit === "Unit 5") {
           if (tab === "claim") {
             return {
               template: `For standard ${standard} geometry, we calculate the area of composite or 2D polygons by {0}.`,
-              options: [["decomposing shapes into rectangles and triangles", "multiplying base dimensions by height coordinates"]]
+              options: [
+                [
+                  "decomposing shapes into rectangles and triangles",
+                  "multiplying base dimensions by height coordinates",
+                ],
+              ],
             };
           } else if (tab === "evidence") {
             return {
               template: `Our visual polygon laboratory scales to base {0} units and height {1} units. Applying area formulas yields a computed result of {2} square units.`,
-              options: [["text-input", "base value"], ["text-input", "height value"], ["text-input", "computed area"]]
+              options: [
+                ["text-input", "base value"],
+                ["text-input", "height value"],
+                ["text-input", "computed area"],
+              ],
             };
           } else {
             return {
               template: `This decomposition is justified because a triangle occupies exactly {0} the area of a bounding parallelogram. Adding the component sub-areas yields the composite total.`,
-              options: [["half", "double", "one-third"]]
+              options: [["half", "double", "one-third"]],
             };
           }
-        }
-
-        else if (unit === "Unit 6") {
+        } else if (unit === "Unit 6") {
           if (tab === "claim") {
             return {
               template: `To balance and evaluate numerical expressions, standard ${standard} requires us to apply {0}.`,
-              options: [["order of operations (PEMDAS)", "distributive operations", "constant substitutions"]]
+              options: [
+                [
+                  "order of operations (PEMDAS)",
+                  "distributive operations",
+                  "constant substitutions",
+                ],
+              ],
             };
           } else if (tab === "evidence") {
             return {
               template: `In L${lesson.id}, substituting {0} for the variable coefficient in the expression {1} evaluates to {2}.`,
-              options: [["text-input", "substitution number"], ["text-input", "expression"], ["text-input", "computed output"]]
+              options: [
+                ["text-input", "substitution number"],
+                ["text-input", "expression"],
+                ["text-input", "computed output"],
+              ],
             };
           } else {
             return {
               template: `This mathematical step is justified by applying the {0} property, which allows us to expand or simplify equivalent variables.`,
-              options: [["distributive", "associative", "commutative"]]
+              options: [["distributive", "associative", "commutative"]],
             };
           }
-        }
-
-        else if (unit === "Unit 7") {
+        } else if (unit === "Unit 7") {
           if (tab === "claim") {
             return {
               template: `To write and solve one-step equations, standard ${standard} requires us to maintain balance by {0}.`,
-              options: [["applying inverse operations on both sides", "substituting constants", "shattering inequalities"]]
+              options: [
+                [
+                  "applying inverse operations on both sides",
+                  "substituting constants",
+                  "shattering inequalities",
+                ],
+              ],
             };
           } else if (tab === "evidence") {
             return {
               template: `Our mechanical balance scale reaches perfect equilibrium when we place {0} constant weights on one side and a bag of x plus {1} on the other. This proves that x equals {2}.`,
-              options: [["text-input", "right cubes"], ["text-input", "left cubes"], ["text-input", "solution"]]
+              options: [
+                ["text-input", "right cubes"],
+                ["text-input", "left cubes"],
+                ["text-input", "solution"],
+              ],
             };
           } else {
             return {
               template: `This is correct because the inverse operation of {0} is utilized to isolate the variable, balancing the equation scale.`,
-              options: [["addition", "subtraction", "multiplication", "division"]]
+              options: [
+                ["addition", "subtraction", "multiplication", "division"],
+              ],
             };
           }
-        }
-
-        else if (unit === "Unit 8") {
+        } else if (unit === "Unit 8") {
           if (tab === "claim") {
             return {
               template: `To study statistical questions, standard ${standard} requires analyzing distributions for measures of {0}.`,
-              options: [["center (mean/median) and variability (MAD)", "skewness and outlier deviations"]]
+              options: [
+                [
+                  "center (mean/median) and variability (MAD)",
+                  "skewness and outlier deviations",
+                ],
+              ],
             };
           } else if (tab === "evidence") {
-            template: `Evaluating the interactive dot plot shows that our data point clusters range from {0} to {1}. Adding an outlier at {2} pulls the statistical mean to {3}.`,
-            options: [["text-input", "range min"], ["text-input", "range max"], ["text-input", "outlier value"], ["text-input", "shifted mean"]]
+            return {
+              template: `Evaluating the interactive dot plot shows that our data point clusters range from {0} to {1}. Adding an outlier at {2} pulls the statistical mean to {3}.`,
+              options: [
+                ["text-input", "range min"],
+                ["text-input", "range max"],
+                ["text-input", "outlier value"],
+                ["text-input", "shifted mean"],
+              ],
+            };
           } else {
             return {
               template: `This proves that the mean is highly sensitive to outliers, whereas the {0} remains a highly robust measure of center for skewed data.`,
-              options: [["median", "mode", "variability"]]
+              options: [["median", "mode", "variability"]],
             };
           }
-        }
-
-        else if (unit === "Unit 9") {
+        } else if (unit === "Unit 9") {
           if (tab === "claim") {
             return {
               template: `Mapping coordinate planes under standard ${standard} requires plotting ordered pairs $(x,y)$ across {0}.`,
-              options: [["all four quadrants based on integer signs", "positive absolute values from the origin"]]
+              options: [
+                [
+                  "all four quadrants based on integer signs",
+                  "positive absolute values from the origin",
+                ],
+              ],
             };
           } else if (tab === "evidence") {
             return {
               template: `Plotting point P at coordinate ({0}, {1}) places it inside Quadrant {2}. Reflecting it over the x-axis shifts it to coordinate ({3}, {4}).`,
-              options: [["text-input", "x"], ["text-input", "y"], ["text-input", "quadrant"], ["text-input", "reflect x"], ["text-input", "reflect y"]]
+              options: [
+                ["text-input", "x"],
+                ["text-input", "y"],
+                ["text-input", "quadrant"],
+                ["text-input", "reflect x"],
+                ["text-input", "reflect y"],
+              ],
             };
           } else {
             return {
               template: `This holds true because absolute value represents positive distance from {0}. The reflections preserve magnitude offsets.`,
-              options: [["the origin (0,0)", "the coordinate axis"]]
+              options: [["the origin (0,0)", "the coordinate axis"]],
             };
           }
-        }
-
-        else {
+        } else {
           // Unit 10 3D Volume & nets
           if (tab === "claim") {
             return {
               template: `To measure volume and surface area, standard ${standard} relates 3D solid capacities to {0}.`,
-              options: [["2D net packaging layouts", "fractional cubic dimension scaling"]]
+              options: [
+                [
+                  "2D net packaging layouts",
+                  "fractional cubic dimension scaling",
+                ],
+              ],
             };
           } else if (tab === "evidence") {
             return {
               template: `Folding our rectangular prism net creates 6 faces. Summing their respective 2D composite surfaces yields a total surface area of {0} square centimeters.`,
-              options: [["text-input", "surface area"]]
+              options: [["text-input", "surface area"]],
             };
           } else {
             return {
               template: `This volume is correct because multiplying length by width by height establishes the exact capacity inside the 3D solid.`,
-              options: []
+              options: [],
             };
           }
         }
       }
 
       function renderSentenceForms() {
-        const container = document.getElementById('cerScaffolderForm');
-        container.innerHTML = '';
+        const container = document.getElementById("cerScaffolderForm");
+        container.innerHTML = "";
 
         const schema = getLessonTemplateFrame(STORE.activeCerTab);
         if (!schema) return;
 
-        const row = document.createElement('div');
-        row.className = 'sentence-row';
+        const row = document.createElement("div");
+        row.className = "sentence-row";
         const parts = schema.template.split(/(\{\d\})/);
 
-        parts.forEach(part => {
+        parts.forEach((part) => {
           const match = part.match(/\{(\d)\}/);
           if (match) {
             const index = parseInt(match[1]);
@@ -2741,17 +4564,20 @@
             if (!options) return;
 
             if (options[0] === "text-input") {
-              const input = document.createElement('input');
-              input.type = 'text';
-              input.className = 'frame-input';
+              const input = document.createElement("input");
+              input.type = "text";
+              input.className = "frame-input";
               input.placeholder = options[1] || "Enter value...";
               input.dataset.index = index;
-              input.value = STORE.cerDraftValues[STORE.activeCerTab][index] || "";
+              input.value =
+                STORE.cerDraftValues[STORE.activeCerTab][index] || "";
 
               input.oninput = (e) => {
-                STORE.cerDraftValues[STORE.activeCerTab][index] = e.target.value;
+                STORE.cerDraftValues[STORE.activeCerTab][index] =
+                  e.target.value;
                 STORE.hybridText = compileFullParagraphText();
-                document.getElementById('hybridDraftBox').value = STORE.hybridText;
+                document.getElementById("hybridDraftBox").value =
+                  STORE.hybridText;
                 updateParagraphDraft();
                 triggerVocabHighlightScanner();
                 checkTabCompletionStatus();
@@ -2759,27 +4585,30 @@
               };
               row.appendChild(input);
             } else {
-              const select = document.createElement('select');
-              select.className = 'frame-select';
+              const select = document.createElement("select");
+              select.className = "frame-select";
               select.dataset.index = index;
 
-              const baseOpt = document.createElement('option');
+              const baseOpt = document.createElement("option");
               baseOpt.value = "";
               baseOpt.textContent = `[Select detail...]`;
               select.appendChild(baseOpt);
 
-              options.forEach(opt => {
-                const o = document.createElement('option');
+              options.forEach((opt) => {
+                const o = document.createElement("option");
                 o.value = opt;
                 o.textContent = opt;
                 select.appendChild(o);
               });
 
-              select.value = STORE.cerDraftValues[STORE.activeCerTab][index] || "";
+              select.value =
+                STORE.cerDraftValues[STORE.activeCerTab][index] || "";
               select.onchange = (e) => {
-                STORE.cerDraftValues[STORE.activeCerTab][index] = e.target.value;
+                STORE.cerDraftValues[STORE.activeCerTab][index] =
+                  e.target.value;
                 STORE.hybridText = compileFullParagraphText();
-                document.getElementById('hybridDraftBox').value = STORE.hybridText;
+                document.getElementById("hybridDraftBox").value =
+                  STORE.hybridText;
                 updateParagraphDraft();
                 triggerVocabHighlightScanner();
                 checkTabCompletionStatus();
@@ -2797,29 +4626,37 @@
 
       // ── Active Vocabulary Scanner with Robust Regex Plural Matching ──
       function triggerVocabHighlightScanner() {
-        const paragraph = (STORE.hybridText || compileFullParagraphText()).toLowerCase();
-        const chips = document.querySelectorAll('.vocab-card');
+        const paragraph = (
+          STORE.hybridText || compileFullParagraphText()
+        ).toLowerCase();
+        const chips = document.querySelectorAll(".vocab-card");
         let totalUsed = 0;
 
-        chips.forEach(chip => {
+        chips.forEach((chip) => {
           const text = chip.dataset.word.toLowerCase();
           // Escape special chars and check for word boundary, supporting plural 's' or 'es'
-          const escapedText = text.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-          const regex = new RegExp(`\\b${escapedText}(s|es)?\\b`, 'i');
+          const escapedText = text.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+          const regex = new RegExp(`\\b${escapedText}(s|es)?\\b`, "i");
 
           const exists = regex.test(paragraph);
-          chip.classList.toggle('word-active', exists);
+          chip.classList.toggle("word-active", exists);
           if (exists) totalUsed++;
         });
 
         // Trigger canvas confetti celebration if student uses ALL key vocabulary terms!
         const currentLesson = CURRICULUM_DATA[STORE.activeConceptIdx];
-        if (totalUsed === currentLesson.terms.length && totalUsed > 0 && !STORE.vocabCelebrated) {
+        if (
+          totalUsed === currentLesson.terms.length &&
+          totalUsed > 0 &&
+          !STORE.vocabCelebrated
+        ) {
           ConfettiCelebrator.trigger();
           playChime("success");
           showMinimalToast("🎉 Exceptional Vocab mastery achieved!");
           STORE.vocabCelebrated = true;
-          logToTerminal("Vocab checklist 100% complete! Particles emitted and chime played.");
+          logToTerminal(
+            "Vocab checklist 100% complete! Particles emitted and chime played.",
+          );
         } else if (totalUsed < currentLesson.terms.length) {
           STORE.vocabCelebrated = false;
         }
@@ -2837,23 +4674,31 @@
             complete = false;
           }
         });
-        document.getElementById(`step-${STORE.activeCerTab}`).classList.toggle('step-done', complete);
+        document
+          .getElementById(`step-${STORE.activeCerTab}`)
+          .classList.toggle("step-done", complete);
       }
 
       // ── Interactive Scorecard Calculations ──
       function updateOnScreenScorecard() {
-        const claimVal = parseInt(document.getElementById('rubricClaim').value) || 0;
-        const evidenceVal = parseInt(document.getElementById('rubricEvidence').value) || 0;
-        const reasoningVal = parseInt(document.getElementById('rubricReasoning').value) || 0;
+        const claimVal =
+          parseInt(document.getElementById("rubricClaim").value) || 0;
+        const evidenceVal =
+          parseInt(document.getElementById("rubricEvidence").value) || 0;
+        const reasoningVal =
+          parseInt(document.getElementById("rubricReasoning").value) || 0;
 
         // Calculate vocab points automatically: 0=0pts, 1-2=1pt, 3-4=2pts, 5+=3pts
-        const activeChips = document.querySelectorAll('.vocab-card.word-active').length;
+        const activeChips = document.querySelectorAll(
+          ".vocab-card.word-active",
+        ).length;
         let vocabVal = 0;
         if (activeChips >= 5) vocabVal = 3;
         else if (activeChips >= 3) vocabVal = 2;
         else if (activeChips >= 1) vocabVal = 1;
 
-        document.getElementById('rubricVocabDisplay').textContent = `${vocabVal} / 3 pts (${activeChips} words)`;
+        document.getElementById("rubricVocabDisplay").textContent =
+          `${vocabVal} / 3 pts (${activeChips} words)`;
 
         const totalScore = claimVal + evidenceVal + reasoningVal + vocabVal;
         let scoreTag = "Developing";
@@ -2861,45 +4706,51 @@
         else if (totalScore >= 8) scoreTag = "Proficient";
         else if (totalScore >= 4) scoreTag = "Emerging";
 
-        document.getElementById('liveScoreBadge').textContent = `${totalScore} / 12 (${scoreTag})`;
+        document.getElementById("liveScoreBadge").textContent =
+          `${totalScore} / 12 (${scoreTag})`;
 
         if (totalScore >= 11) {
-          document.getElementById('liveScoreBadge').style.background = "var(--green-light)";
-          document.getElementById('liveScoreBadge').style.color = "var(--green-success)";
+          document.getElementById("liveScoreBadge").style.background =
+            "var(--green-light)";
+          document.getElementById("liveScoreBadge").style.color =
+            "var(--green-success)";
         } else {
-          document.getElementById('liveScoreBadge').style.background = "var(--amber-light)";
-          document.getElementById('liveScoreBadge').style.color = "var(--amber)";
+          document.getElementById("liveScoreBadge").style.background =
+            "var(--amber-light)";
+          document.getElementById("liveScoreBadge").style.color =
+            "var(--amber)";
         }
       }
 
       function setupEventListeners() {
-        const steps = document.querySelectorAll('.timeline-step');
-        steps.forEach(step => {
+        const steps = document.querySelectorAll(".timeline-step");
+        steps.forEach((step) => {
           step.onclick = () => {
-            steps.forEach(s => s.classList.remove('active'));
-            step.classList.add('active');
+            steps.forEach((s) => s.classList.remove("active"));
+            step.classList.add("active");
             STORE.activeCerTab = step.dataset.step;
             renderSentenceForms();
           };
         });
 
-        const langBtns = document.querySelectorAll('.lang-chip');
-        langBtns.forEach(btn => {
+        const langBtns = document.querySelectorAll(".lang-chip");
+        langBtns.forEach((btn) => {
           btn.onclick = () => {
-            langBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            langBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
             STORE.activeDictionaryLang = btn.dataset.lang;
             const lesson = CURRICULUM_DATA[STORE.activeConceptIdx];
             populateWordWall(lesson.terms);
           };
         });
 
-        document.getElementById('speedSlider').oninput = (e) => {
-          document.getElementById('speedDisplay').textContent = `${e.target.value}x`;
+        document.getElementById("speedSlider").oninput = (e) => {
+          document.getElementById("speedDisplay").textContent =
+            `${e.target.value}x`;
         };
 
         // Bind free text-area dynamic editing to central store
-        const draftBox = document.getElementById('hybridDraftBox');
+        const draftBox = document.getElementById("hybridDraftBox");
         draftBox.oninput = (e) => {
           STORE.hybridText = e.target.value;
           updateParagraphDraft();
@@ -2909,18 +4760,18 @@
       }
 
       function updateActiveTimelineUI() {
-        document.querySelectorAll('.timeline-step').forEach(step => {
-          step.classList.remove('active');
-          step.classList.remove('step-done');
+        document.querySelectorAll(".timeline-step").forEach((step) => {
+          step.classList.remove("active");
+          step.classList.remove("step-done");
           if (step.dataset.step === STORE.activeCerTab) {
-            step.classList.add('active');
+            step.classList.add("active");
           }
         });
       }
 
       function compileFullParagraphText() {
         let list = [];
-        ["claim", "evidence", "reasoning"].forEach(tab => {
+        ["claim", "evidence", "reasoning"].forEach((tab) => {
           const schema = getLessonTemplateFrame(tab);
           if (!schema) return;
 
@@ -2935,23 +4786,27 @@
       }
 
       function updateParagraphDraft() {
-        const canvas = document.getElementById('cerTextOutput');
+        const canvas = document.getElementById("cerTextOutput");
         canvas.textContent = STORE.hybridText || compileFullParagraphText();
 
         const containsEmpty = (STORE.hybridText || "").includes("[___]");
-        document.getElementById('draftStatus').textContent = containsEmpty ? "Status: Formulating draft..." : "Status: Draft Complete! Paste-Ready.";
-        document.getElementById('draftStatus').style.color = containsEmpty ? "var(--slate-muted)" : "var(--primary)";
+        document.getElementById("draftStatus").textContent = containsEmpty
+          ? "Status: Formulating draft..."
+          : "Status: Draft Complete! Paste-Ready.";
+        document.getElementById("draftStatus").style.color = containsEmpty
+          ? "var(--slate-muted)"
+          : "var(--primary)";
       }
 
       // ── Accented Voice Oral Reading & Highlight Engine ──
       function loadAllSystemVoices() {
-        if (!('speechSynthesis' in window)) return;
+        if (!("speechSynthesis" in window)) return;
         const populate = () => {
           availableSystemVoices = window.speechSynthesis.getVoices();
-          const select = document.getElementById('voiceSelect');
-          select.innerHTML = '';
-          availableSystemVoices.forEach(voice => {
-            const opt = document.createElement('option');
+          const select = document.getElementById("voiceSelect");
+          select.innerHTML = "";
+          availableSystemVoices.forEach((voice) => {
+            const opt = document.createElement("option");
             opt.value = voice.name;
             opt.textContent = `${voice.name} (${voice.lang})`;
             select.appendChild(opt);
@@ -2964,7 +4819,7 @@
       }
 
       function speakCERParagraph() {
-        if (!('speechSynthesis' in window)) {
+        if (!("speechSynthesis" in window)) {
           showMinimalToast("Voice playback unsupported.");
           return;
         }
@@ -2978,15 +4833,17 @@
         const rawText = STORE.hybridText || compileFullParagraphText();
         const sanitizedText = rawText.replace(/\[___\]/g, "blank space");
         activeSpeechUtterance = new SpeechSynthesisUtterance(sanitizedText);
-        activeSpeechUtterance.rate = parseFloat(document.getElementById('speedSlider').value);
+        activeSpeechUtterance.rate = parseFloat(
+          document.getElementById("speedSlider").value,
+        );
 
-        const name = document.getElementById('voiceSelect').value;
-        const voice = availableSystemVoices.find(v => v.name === name);
+        const name = document.getElementById("voiceSelect").value;
+        const voice = availableSystemVoices.find((v) => v.name === name);
         if (voice) activeSpeechUtterance.voice = voice;
 
         // Dynamic Word-by-Word Highlight binding using Web Speech boundaries!
         activeSpeechUtterance.onboundary = (event) => {
-          if (event.name === 'word') {
+          if (event.name === "word") {
             const charIndex = event.charIndex;
             const remainingText = sanitizedText.slice(charIndex);
             const wordMatch = remainingText.match(/^[\w'-]+/);
@@ -2995,8 +4852,9 @@
             const word = sanitizedText.slice(charIndex, charIndex + wordLength);
 
             // Re-render draft display with highlights
-            const canvas = document.getElementById('cerTextOutput');
-            canvas.innerHTML = sanitizedText.slice(0, charIndex) +
+            const canvas = document.getElementById("cerTextOutput");
+            canvas.innerHTML =
+              sanitizedText.slice(0, charIndex) +
               `<span class="spoken-word-highlight">${word}</span>` +
               sanitizedText.slice(charIndex + wordLength);
           }
@@ -3014,8 +4872,8 @@
 
       function setSpeechPlaybackState(speaking) {
         STORE.isSpeaking = speaking;
-        const btn = document.getElementById('speakBtn');
-        const visualizer = document.getElementById('equalizer');
+        const btn = document.getElementById("speakBtn");
+        const visualizer = document.getElementById("equalizer");
         if (speaking) {
           btn.innerHTML = "⏹️ Stop Playback";
           btn.style.background = "var(--coral)";
@@ -3034,39 +4892,153 @@
         });
       }
 
+      // Keep the print-only identity header in sync with the name field + lesson.
+      function onStudentNameInput() {
+        const name = (
+          document.getElementById("studentName").value || ""
+        ).trim();
+        STORE.studentName = name;
+        const printName = document.getElementById("printName");
+        if (printName) printName.textContent = name || "__________________";
+        try {
+          localStorage.setItem("neft_math_student_name", name);
+        } catch (e) {}
+      }
+
+      function refreshPrintIdentity() {
+        const lesson = CURRICULUM_DATA[STORE.activeConceptIdx];
+        const printLesson = document.getElementById("printLesson");
+        if (printLesson)
+          printLesson.textContent = `L${lesson.id} ${lesson.title} (${lesson.standard})`;
+      }
+
       function printWorksheet() {
+        refreshPrintIdentity();
+        onStudentNameInput();
         window.print();
       }
 
+      // ── Download finished writing as an editable Word (.doc) submission ──
+      function downloadMyWriting() {
+        const lesson = CURRICULUM_DATA[STORE.activeConceptIdx];
+        const name = (
+          document.getElementById("studentName").value || ""
+        ).trim();
+        const paragraph = (
+          STORE.hybridText || compileFullParagraphText()
+        ).replace(/\[___\]/g, "________");
+
+        // Vocabulary the student actually used (green chips), for the report.
+        const usedVocab = Array.from(
+          document.querySelectorAll(".vocab-card.word-active"),
+        ).map((c) => c.dataset.word);
+
+        // Live self-assessment score readout.
+        const scoreText =
+          document.getElementById("liveScoreBadge").textContent || "";
+
+        const today = new Date().toLocaleDateString();
+
+        const blocks = [
+          { t: "title", text: "Math Writing Help Studio — My CER Response" },
+          {
+            t: "p",
+            text: `Name: ${name || "________________________"}        Date: ${today}`,
+          },
+          {
+            t: "h2",
+            text: `Lesson L${lesson.id}: ${lesson.title}`,
+          },
+          { t: "p", text: `Standard: ${lesson.standard}` },
+          { t: "h3", text: "My Claim–Evidence–Reasoning Paragraph" },
+        ];
+
+        // Split the compiled paragraph into its CER parts for readability.
+        paragraph
+          .split(/\n\n+/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .forEach((part) => blocks.push({ t: "p", text: part }));
+
+        blocks.push({ t: "h3", text: "Math Vocabulary I Used" });
+        if (usedVocab.length) {
+          usedVocab.forEach((w) => blocks.push({ t: "bullet", text: w }));
+        } else {
+          blocks.push({
+            t: "p",
+            text: "(No target vocabulary terms detected yet.)",
+          });
+        }
+
+        blocks.push({ t: "h3", text: "Self-Assessment" });
+        blocks.push({ t: "p", text: `Scorecard: ${scoreText}` });
+        blocks.push({
+          t: "p",
+          text: "Teacher feedback: ________________________________________________",
+        });
+
+        if (
+          !window.NeftDocx ||
+          typeof window.NeftDocx.buildDocx !== "function"
+        ) {
+          showMinimalToast("Download helper not loaded.");
+          return;
+        }
+
+        const blob = window.NeftDocx.buildDocx(blocks);
+        const safeName = (name || "student")
+          .replace(/[\\/:*?"<>|]+/g, " ")
+          .replace(/\s+/g, "-")
+          .toLowerCase()
+          .slice(0, 40);
+        const fileName = `math-writing-${safeName}-L${lesson.id}.docx`;
+
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          URL.revokeObjectURL(a.href);
+          a.remove();
+        }, 1500);
+
+        showMinimalToast("⬇️ Your writing downloaded as a Word document!");
+        logToTerminal(`Writing exported to ${fileName}`);
+      }
+
       function showMinimalToast(msg) {
-        const toast = document.createElement('div');
-        toast.style.position = 'fixed';
-        toast.style.bottom = '32px';
-        toast.style.left = '50%';
-        toast.style.transform = 'translateX(-50%)';
-        toast.style.background = 'var(--navy-deep)';
-        toast.style.color = '#fbbf24';
-        toast.style.padding = '12px 24px';
-        toast.style.borderRadius = '30px';
-        toast.style.zIndex = '10000';
+        const toast = document.createElement("div");
+        toast.style.position = "fixed";
+        toast.style.bottom = "32px";
+        toast.style.left = "50%";
+        toast.style.transform = "translateX(-50%)";
+        toast.style.background = "var(--navy-deep)";
+        toast.style.color = "#fbbf24";
+        toast.style.padding = "12px 24px";
+        toast.style.borderRadius = "30px";
+        toast.style.zIndex = "10000";
         toast.textContent = msg;
         document.body.appendChild(toast);
         setTimeout(() => {
-          toast.style.opacity = '0';
+          toast.style.opacity = "0";
           setTimeout(() => toast.remove(), 250);
         }, 2500);
       }
 
       // Diagnostics overlay panel (Ctrl + D)
       function toggleDiagnostics() {
-        const term = document.getElementById('diagTerminal');
-        const hidden = term.style.display === 'none' || term.style.display === '';
-        term.style.display = hidden ? 'flex' : 'none';
+        const term = document.getElementById("diagTerminal");
+        const hidden =
+          term.style.display === "none" || term.style.display === "";
+        term.style.display = hidden ? "flex" : "none";
         if (hidden) {
-          const consoleNode = document.getElementById('diagConsole');
-          consoleNode.innerHTML = '';
+          const consoleNode = document.getElementById("diagConsole");
+          consoleNode.innerHTML = "";
           logConsole("Next-Gen diagnostics suite active...", "#fbbf24");
-          logConsole(`CENTRAL STORE check: Indexed lessons count [${CURRICULUM_DATA.length}/64]`);
+          logConsole(
+            `CENTRAL STORE check: Indexed lessons count [${CURRICULUM_DATA.length}/64]`,
+          );
           logConsole(`Interactive SVG variables validated.`);
           logConsole(`Web Audio API synthesizers loaded.`);
           logConsole("System verification complete.");
@@ -3074,18 +5046,19 @@
       }
 
       function logConsole(msg, color = "#00ff66") {
-        const node = document.getElementById('diagConsole');
+        const node = document.getElementById("diagConsole");
         node.innerHTML += `<div style="color:${color}; border-bottom:1px solid #14213d; padding:4px 0;">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
       }
 
-      function logToTerminal(msg, level="info") {
-        const term = document.getElementById('diagConsole');
+      function logToTerminal(msg, level = "info") {
+        const term = document.getElementById("diagConsole");
         if (term) {
           const color = level === "orange" ? "#fbbf24" : "#00ff66";
           logConsole(msg, color);
         }
       }
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/docx-export.js"></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
   </body>
 </html>

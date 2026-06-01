@@ -1,854 +1,1727 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nt-theme-aware">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Unit 9 WebQuest — Chart the Star Map (Coordinate Plane) | Neft Teacher</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      WebQuest · Unit 9 · Deep Six Salvage — Integers &amp; the Coordinate Plane
+      | Neft Teacher
+    </title>
+    <meta
+      name="description"
+      content="A Grade 6 integers WebQuest: pilot a deep-sea salvage sub using a depth gauge and a four-quadrant sonar grid — compare and order integers, use absolute value, plot rational coordinates, reflect points across the axes, and find distance (6.NS.5–8)."
+    />
+
+    <!-- Shared Neft design system -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
-    <script src="/assets/neft-theme.js" defer></script>
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/nt-activity-kit.js"></script>
+
     <style>
+      /* ============================================================
+     Unit 9 WebQuest — uses shared --nt-* theme variables.
+     Scoped styles only; visuals are SVG/divs (no ASCII art).
+     ============================================================ */
+      :root {
+        --wq-deep: #0b3a5b;
+        --wq-mid: #0e6ba8;
+        --wq-glow: #22d3ee;
+        --wq-sonar: #34d399;
+        --wq-hull: #f59e0b;
+        --wq-warn: #ef4444;
+        --wq-q1: #34d399;
+        --wq-q2: #38bdf8;
+        --wq-q3: #f472b6;
+        --wq-q4: #fbbf24;
+      }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
         font-size: 18px;
-        line-height: 1.65;
       }
-      .wrap {
-        max-width: 880px;
+      .wq-wrap {
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 24px 20px 80px;
-      }
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 24px 26px;
-        margin-bottom: 28px;
-      }
-      .badge {
-        display: inline-block;
-        background: var(--nt-accent);
-        color: #fff;
-        font-weight: 700;
-        padding: 5px 14px;
-        border-radius: 999px;
-        font-size: 15px;
-        letter-spacing: 0.4px;
-      }
-      h1 {
-        font-size: 34px;
-        margin: 12px 0 6px;
-        line-height: 1.2;
-      }
-      h2 {
-        font-size: 26px;
-        margin: 0 0 12px;
-        border-bottom: 3px solid var(--nt-accent);
-        padding-bottom: 6px;
-      }
-      h3 {
-        font-size: 20px;
-        margin: 18px 0 6px;
-      }
-      p, li { font-size: 18px; }
-      .sub {
-        color: var(--nt-muted);
-        font-size: 17px;
-        margin: 0;
-      }
-      section {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 20px 24px;
-        margin-bottom: 22px;
-      }
-      ol.steps { padding-left: 22px; }
-      ol.steps > li { margin-bottom: 14px; }
-      .tip {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin: 14px 0;
-        font-size: 17px;
-      }
-      a.reslink {
-        display: block;
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 14px 16px;
-        margin: 10px 0;
-        color: var(--nt-text);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      a.reslink:hover, a.reslink:focus-visible {
-        border-color: var(--nt-accent);
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      a.reslink .what {
-        display: block;
-        font-weight: 400;
-        font-size: 16px;
-        color: var(--nt-muted);
-        margin-top: 2px;
+        padding: 20px 18px 80px;
       }
 
-      /* ── Learning Target box ── */
-      .learning-target {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          165deg,
+          #07263c 0%,
+          #0b3a5b 45%,
+          #0e6ba8 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(7, 38, 60, 0.4);
+      }
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        letter-spacing: 0.2px;
+      }
+      .wq-hero .wq-kicker {
+        display: inline-block;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 62ch;
+        font-size: 1.05rem;
+        color: #e6f6ff;
+      }
+      .wq-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -6px;
+        bottom: -10px;
+        width: 220px;
+        opacity: 0.95;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
+      }
+
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      }
+      .wq-card > h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--nt-accent, #245ea8);
+      }
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
+      }
+      .wq-lead {
+        font-size: 1.08rem;
+      }
+
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
+      }
+      .wq-l1 {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.45);
+      }
+      .wq-l2 {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .wq-l1 .wq-tag {
+        background: #0f766e;
+      }
+      .wq-l2 .wq-tag {
+        background: #7c3aed;
+      }
+      .wq-es {
+        display: block;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
+      }
+
+      /* ---------- Concept reference cards ---------- */
+      .wq-concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .wq-concept {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-bg, #f8fafc);
+        text-align: center;
+      }
+      .wq-concept svg {
+        display: block;
+        margin: 0 auto 8px;
+      }
+      .wq-concept .wq-cname {
+        font-weight: 700;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-concept .wq-ceq {
+        display: inline-block;
+        margin-top: 4px;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1rem;
+        background: rgba(36, 94, 168, 0.1);
+        padding: 3px 10px;
+        border-radius: 8px;
+        color: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Mission / task layout ---------- */
+      .wq-mission {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: center;
+      }
+      @media (max-width: 720px) {
+        .wq-mission {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-grid-frame {
+        border-radius: 16px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        background: #06263b;
+        padding: 10px;
+      }
+      .wq-deliverables {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .wq-deliverables li {
+        position: relative;
+        padding: 8px 8px 8px 34px;
+        border-bottom: 1px dashed var(--nt-border, #dbe3ee);
+      }
+      .wq-deliverables li:last-child {
+        border-bottom: none;
+      }
+      .wq-deliverables li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 13px;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Depth gauge / log table ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
         border-radius: 12px;
-        padding: 16px 20px;
-        margin-bottom: 18px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        margin-top: 8px;
       }
-      .learning-target h3 {
-        margin: 0 0 10px;
-        font-size: 19px;
-        color: var(--nt-accent);
+      table.wq-data {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 480px;
+        font-size: 0.98rem;
       }
-      .learning-target ul { margin: 0; padding-left: 20px; }
-      .learning-target li { margin-bottom: 5px; }
-      .lt-meta {
+      table.wq-data th,
+      table.wq-data td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-data thead th {
+        background: var(--wq-deep);
+        color: #fff;
+      }
+      table.wq-data tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-data td:first-child {
+        font-weight: 700;
+      }
+
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
+      }
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
+        font-weight: 700;
+        margin: 0;
+      }
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Worked example ---------- */
+      .wq-example {
+        border-left: 5px solid var(--nt-accent, #245ea8);
+        background: rgba(36, 94, 168, 0.06);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .wq-example b {
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-work {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+      }
+
+      /* ---------- Rubric table ---------- */
+      table.wq-rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+        font-size: 0.96rem;
+      }
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-rubric thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--nt-accent, #245ea8);
+      }
+      .wq-num,
+      .wq-text {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        width: 150px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-text {
+        width: 200px;
+      }
+      .wq-num:focus,
+      .wq-text:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--nt-accent, #245ea8);
+      }
+      .wq-hint {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: none;
+      }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(16, 185, 129, 0.14);
+        color: #065f46;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(239, 68, 68, 0.14);
+        color: #991b1b;
+      }
+
+      .wq-actions {
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
-        margin-top: 12px;
-        font-size: 15px;
-        color: var(--nt-muted);
+        margin-top: 18px;
       }
-      .lt-meta span {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 6px;
-        padding: 3px 10px;
-      }
-
-      /* ── Teacher Notes (details/summary) ── */
-      details.teacher-notes {
-        background: #fffbeb;
-        border: 2px dashed #d97706;
-        border-radius: 12px;
-        padding: 14px 20px;
-        margin-bottom: 22px;
-        font-size: 17px;
-      }
-      details.teacher-notes summary {
+      .wq-btn {
+        font-size: 1rem;
         font-weight: 700;
-        font-size: 18px;
-        cursor: pointer;
-        color: #92400e;
-        list-style: none;
-      }
-      details.teacher-notes summary::-webkit-details-marker { display: none; }
-      details.teacher-notes summary::before { content: "▶ "; }
-      details.teacher-notes[open] summary::before { content: "▼ "; }
-      details.teacher-notes h4 { margin: 14px 0 4px; color: #78350f; }
-      details.teacher-notes p, details.teacher-notes li { color: #1c1917; }
-
-      /* ── Rubric ── */
-      table.rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 16px;
-      }
-      table.rubric th, table.rubric td {
-        border: 1px solid var(--nt-border);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      table.rubric th { background: var(--nt-accent); color: #fff; }
-      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
-      .rubric-level-1 { color: #b91c1c; font-weight: 600; }
-
-      /* ── Self-check quiz ── */
-      .q {
-        margin: 0 0 22px;
-        padding: 16px;
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
+        border: none;
         border-radius: 12px;
-      }
-      .q legend {
-        font-weight: 700;
-        font-size: 18px;
-        padding: 0 6px;
-      }
-      .q .opt {
-        display: block;
-        padding: 8px 6px;
-        font-size: 18px;
+        padding: 12px 20px;
         cursor: pointer;
-        border-radius: 8px;
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        transition: filter 0.12s ease;
       }
-      .q .opt:hover { background: var(--nt-surface); }
-      .q input[type="radio"], .q input[type="text"] {
-        margin-right: 8px;
-        transform: scale(1.25);
+      .wq-btn:hover {
+        filter: brightness(1.08);
       }
-      .q input[type="text"] {
-        transform: none;
-        font-size: 18px;
-        padding: 8px 10px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        min-width: 120px;
-      }
-      .q-feedback {
-        display: none;
-        margin-top: 8px;
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-      }
-      .q-feedback.correct {
-        background: #d1fae5;
-        color: #065f46;
-        border: 1px solid #6ee7b7;
-        display: block;
-      }
-      .q-feedback.wrong {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fca5a5;
-        display: block;
-      }
-      input:focus-visible, .opt:focus-within, button:focus-visible,
-      details summary:focus-visible {
-        outline: 3px solid var(--nt-focus);
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
         outline-offset: 2px;
       }
-      .checkbtn {
-        background: var(--nt-accent);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 13px 26px;
-        font-size: 20px;
-        font-weight: 700;
-        cursor: pointer;
-        margin-top: 4px;
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--nt-accent, #245ea8);
+        border: 2px solid var(--nt-accent, #245ea8);
       }
-      .checkbtn:hover { filter: brightness(1.08); }
-      .checkbtn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
-      #sc-summary {
-        display: none;
+      #wq-score {
         margin-top: 16px;
-        padding: 14px 18px;
-        border-radius: 10px;
-        font-size: 18px;
-        font-weight: 700;
-        text-align: center;
-      }
-      #sc-summary.show { display: block; }
-
-      /* ── NTKit grading panel ── */
-      #ntkit { margin-top: 18px; }
-
-      /* ── Answer key ── */
-      details.answer-key {
-        background: #f0fdf4;
-        border: 2px solid #16a34a;
+        font-size: 1.15rem;
+        font-weight: 800;
         border-radius: 12px;
-        padding: 14px 20px;
-        margin-top: 14px;
-        font-size: 17px;
+        padding: 14px 16px;
+        display: none;
       }
-      details.answer-key summary {
-        font-weight: 700;
-        font-size: 18px;
-        cursor: pointer;
-        color: #15803d;
-        list-style: none;
+      #wq-score.show {
+        display: block;
+        background: rgba(36, 94, 168, 0.1);
+        border: 1px solid var(--nt-accent, #245ea8);
       }
-      details.answer-key summary::-webkit-details-marker { display: none; }
-      details.answer-key summary::before { content: "▶ "; }
-      details.answer-key[open] summary::before { content: "▼ "; }
-      details.answer-key ol { margin: 10px 0 0; padding-left: 22px; }
-      details.answer-key li { margin-bottom: 6px; color: #14532d; }
 
-      /* ── Reflection / Deliverable ── */
-      .reflect-box {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin-top: 14px;
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
       }
-      .reflect-box textarea {
-        width: 100%;
-        min-height: 90px;
-        font-size: 17px;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        box-sizing: border-box;
-        resize: vertical;
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
       }
-      .deliverable-box {
-        background: #eff6ff;
-        border: 2px solid #3b82f6;
-        border-radius: 10px;
-        padding: 12px 16px;
-        margin-top: 14px;
-        font-size: 17px;
-        color: #1e3a8a;
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--nt-accent, #245ea8);
       }
-      .deliverable-box strong { display: block; margin-bottom: 4px; }
-
-      /* ── Print ── */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
       @media print {
-        body { font-size: 14px; background: #fff; color: #000; }
-        .wrap { padding: 0; }
-        details.teacher-notes, details.answer-key { display: none !important; }
-        .checkbtn, .reflect-box textarea { display: none; }
-        section { border: 1px solid #ccc; page-break-inside: avoid; }
-        a.reslink { border: 1px solid #ccc; }
-        table.rubric th { background: #666 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      }
-
-      /* ── Mobile ── */
-      @media (max-width: 600px) {
-        h1 { font-size: 26px; }
-        h2 { font-size: 21px; }
-        .checkbtn { width: 100%; }
-        table.rubric { font-size: 14px; }
-        table.rubric th, table.rubric td { padding: 7px 8px; }
-        .lt-meta { flex-direction: column; gap: 6px; }
+        .wq-actions,
+        .wq-btn {
+          display: none;
+        }
+        .wq-hero {
+          box-shadow: none;
+        }
       }
     </style>
   </head>
-  <body class="nt-theme-aware">
-    <div class="wrap">
-      <p style="font:14px system-ui;padding:10px 0;"><a href="/webquests/">&#8592; All WebQuests</a> &middot; <a href="/math/">Math Hub</a></p>
+  <body>
+    <div id="ntkit"></div>
 
-      <header class="hero">
-        <span class="badge">Unit 9 WebQuest &mdash; Neft Teacher</span>
-        <h1>Chart the Star Map: The Coordinate Plane</h1>
-        <p class="sub">Grade 6 Math &middot; Standards 6.NS.C.6 &amp; 6.G.A.3</p>
+    <main class="wq-wrap">
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker">Grade 6 Math WebQuest · Unit 9 · 6.NS.5–8</span>
+        <h1>Deep Six Salvage</h1>
+        <p>
+          A cargo plane went down over the Mariana Trench, and
+          <strong>Deep Six Salvage Co.</strong> has hired you as the sub's sonar
+          navigator. You'll ride the depth gauge down through positive and
+          negative water, then sweep a four-quadrant sonar grid to map every
+          piece of wreckage. Plot the debris, reflect the recovery beacon, and
+          measure the distances your robot arm must travel — before the oxygen
+          runs low.
+        </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 2–3 class periods</span>
+          <span class="wq-badge">🌊 Integers &amp; absolute value</span>
+          <span class="wq-badge">🧭 Four quadrants</span>
+          <span class="wq-badge">📏 Distance &amp; reflections</span>
+        </div>
+        <!-- decorative submarine + sonar SVG -->
+        <svg class="wq-hero-art" viewBox="0 0 200 200" aria-hidden="true">
+          <g opacity="0.9">
+            <circle
+              cx="100"
+              cy="100"
+              r="78"
+              fill="none"
+              stroke="#22d3ee"
+              stroke-width="2"
+              opacity="0.5"
+            />
+            <circle
+              cx="100"
+              cy="100"
+              r="52"
+              fill="none"
+              stroke="#22d3ee"
+              stroke-width="2"
+              opacity="0.4"
+            />
+            <circle
+              cx="100"
+              cy="100"
+              r="26"
+              fill="none"
+              stroke="#22d3ee"
+              stroke-width="2"
+              opacity="0.3"
+            />
+            <line
+              x1="22"
+              y1="100"
+              x2="178"
+              y2="100"
+              stroke="#22d3ee"
+              stroke-width="1.5"
+              opacity="0.5"
+            />
+            <line
+              x1="100"
+              y1="22"
+              x2="100"
+              y2="178"
+              stroke="#22d3ee"
+              stroke-width="1.5"
+              opacity="0.5"
+            />
+            <!-- submarine -->
+            <g transform="translate(58,82)">
+              <ellipse cx="42" cy="18" rx="44" ry="18" fill="#f59e0b" />
+              <rect
+                x="30"
+                y="-4"
+                width="26"
+                height="12"
+                rx="4"
+                fill="#fbbf24"
+              />
+              <circle cx="62" cy="18" r="6" fill="#06263b" />
+              <circle cx="44" cy="18" r="6" fill="#06263b" />
+              <path d="M-8,18 L-22,6 L-22,30 Z" fill="#d97706" />
+            </g>
+            <circle cx="150" cy="58" r="5" fill="#34d399" />
+            <circle cx="56" cy="150" r="5" fill="#f472b6" />
+          </g>
+        </svg>
       </header>
 
-      <!-- ══ LEARNING TARGET ══ -->
-      <section aria-labelledby="lt-h">
-        <h2 id="lt-h">Learning Target</h2>
-        <div class="learning-target">
-          <h3>I can&hellip;</h3>
-          <ul>
-            <li>Name and plot ordered pairs <strong>(x, y)</strong> in all four quadrants of the coordinate plane.</li>
-            <li>Identify which quadrant a point belongs to by the signs of its coordinates.</li>
-            <li>Reflect a point across an axis and explain the change in sign.</li>
-            <li>Find the distance between two points that share an x- or y-coordinate by counting units or using absolute value.</li>
-            <li>Plot the vertices of a polygon on the coordinate plane and find a side length.</li>
-          </ul>
-          <div class="lt-meta">
-            <span>Standards: 6.NS.C.6 &amp; 6.G.A.3</span>
-            <span>Estimated time: 45&ndash;60 min</span>
-            <span>Materials: grid paper, pencil, ruler (optional)</span>
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Welcome Aboard
+          the
+          <em>Nereus</em>
+        </h2>
+        <p class="wq-lead">
+          Below the surface there is no "zero feet." Sea level is just the
+          starting line, and everything important happens
+          <strong>above and below</strong> it. Depth, temperature, and pressure
+          all swing between positive and negative — so a navigator who can read
+          integers, judge how far a number sits from zero, and pinpoint a target
+          on a grid is the most valuable person on the sub.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >How do negative numbers, absolute value, and the coordinate plane
+            let us describe and measure positions in a world that goes both up
+            and down?</strong
+          >
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          A <strong>negative number</strong> is below zero, like −300 ft (300
+          feet underwater). <strong>Absolute value</strong>, written |−300|,
+          just asks "how far from zero?" — the answer is always positive (|−300|
+          = 300). Deeper water = a more negative number = a bigger absolute
+          value.
+          <span class="wq-es"
+            >En español: Un número negativo está debajo de cero, como −300 pies
+            (300 pies bajo el agua). El valor absoluto |−300| pregunta "¿qué tan
+            lejos de cero?" y siempre es positivo (|−300| = 300). Agua más
+            profunda = número más negativo = valor absoluto más grande.</span
+          >
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Watch the two meanings of a negative carefully on this mission. On the
+          depth gauge, −300 is a <em>position</em> (where you are). When you
+          compare a fish at −120 to one at −250, the deeper fish has the
+          <em>smaller</em> number but the <em>larger</em> distance from the
+          surface. Keeping "less than" and "farther from zero" separate is the
+          whole skill.
+        </div>
+      </section>
+
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>The Mission
+        </h2>
+        <div class="wq-mission">
+          <div>
+            <p>
+              By the end of this WebQuest you will hand the captain a completed
+              <strong>Salvage Log</strong>. A mission-ready log must:
+            </p>
+            <ul class="wq-deliverables">
+              <li>
+                <strong>Order the dive checkpoints</strong> from shallowest to
+                deepest using the depth gauge.
+              </li>
+              <li>
+                Use <strong>absolute value</strong> to report how deep each
+                checkpoint is (its distance from sea level).
+              </li>
+              <li>
+                <strong>Plot four wreck pieces</strong> on the sonar grid —
+                including a coordinate with a fraction.
+              </li>
+              <li>
+                <strong>Reflect the recovery beacon</strong> across an axis and
+                name its new coordinates.
+              </li>
+              <li>
+                Find the <strong>distance</strong> between two pieces that share
+                a row or column.
+              </li>
+              <li>
+                Pass the <strong>Check Your Understanding</strong> self-check at
+                the bottom.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="wq-grid-frame"
+            aria-label="Sonar grid with four wreck pieces"
+          >
+            <svg viewBox="0 0 240 240" role="img" aria-labelledby="sonar-title">
+              <title id="sonar-title">
+                A four-quadrant sonar grid showing the sub at the origin and
+                four wreck pieces in the four quadrants
+              </title>
+              <rect x="0" y="0" width="240" height="240" fill="#06263b" />
+              <!-- grid lines -->
+              <g stroke="#0e6ba8" stroke-width="1" opacity="0.6">
+                <line x1="40" y1="20" x2="40" y2="220" />
+                <line x1="80" y1="20" x2="80" y2="220" />
+                <line x1="160" y1="20" x2="160" y2="220" />
+                <line x1="200" y1="20" x2="200" y2="220" />
+                <line x1="20" y1="60" x2="220" y2="60" />
+                <line x1="20" y1="100" x2="220" y2="100" />
+                <line x1="20" y1="140" x2="220" y2="140" />
+                <line x1="20" y1="180" x2="220" y2="180" />
+              </g>
+              <!-- axes -->
+              <line
+                x1="20"
+                y1="120"
+                x2="220"
+                y2="120"
+                stroke="#22d3ee"
+                stroke-width="2"
+              />
+              <line
+                x1="120"
+                y1="20"
+                x2="120"
+                y2="220"
+                stroke="#22d3ee"
+                stroke-width="2"
+              />
+              <text x="224" y="124" font-size="11" fill="#cbeafe">x</text>
+              <text x="124" y="18" font-size="11" fill="#cbeafe">y</text>
+              <!-- sub at origin -->
+              <circle cx="120" cy="120" r="6" fill="#f59e0b" />
+              <text x="126" y="134" font-size="10" fill="#fbbf24">
+                sub (0,0)
+              </text>
+              <!-- A (3,2) Q1 -->
+              <circle cx="180" cy="80" r="6" fill="var(--wq-q1)" />
+              <text x="186" y="78" font-size="11" fill="#a7f3d0">A (3, 2)</text>
+              <!-- B (-2,3) Q2 -->
+              <circle cx="80" cy="60" r="6" fill="var(--wq-q2)" />
+              <text x="20" y="54" font-size="11" fill="#bae6fd">B (−2, 3)</text>
+              <!-- C (-3,-2) Q3 -->
+              <circle cx="60" cy="160" r="6" fill="var(--wq-q3)" />
+              <text x="14" y="176" font-size="11" fill="#fbcfe8">
+                C (−3, −2)
+              </text>
+              <!-- D (2,-3) Q4 -->
+              <circle cx="160" cy="180" r="6" fill="var(--wq-q4)" />
+              <text x="166" y="196" font-size="11" fill="#fde68a">
+                D (2, −3)
+              </text>
+            </svg>
           </div>
         </div>
       </section>
 
-      <!-- ══ TEACHER NOTES ══ -->
-      <details class="teacher-notes" aria-label="Teacher Notes — not for students">
-        <summary>Teacher Notes (click to expand)</summary>
-
-        <h4>Pacing</h4>
-        <p>This WebQuest is designed for one 45&ndash;60 minute class period. Suggested breakdown: Introduction + Task (5 min) &rarr; Process Steps 1&ndash;3 (15 min) &rarr; 3D game (10 min) &rarr; Shape activity + Self-Check (15 min) &rarr; Reflection (5 min). The NTKit check can be assigned as homework if time is short.</p>
-
-        <h4>Grouping Suggestions</h4>
-        <p><strong>Pairs</strong> work well for Steps 1&ndash;3 (discuss quadrant rules together). The 3D game can be played individually or in pairs sharing a screen. The Self-Check quiz should be completed <em>independently</em> for grading purposes.</p>
-
-        <h4>Differentiation — Support</h4>
-        <ul>
-          <li>Provide a printed coordinate-plane anchor chart with quadrant labels and sign rules (I = +,+; II = &#8722;,+; III = &#8722;,&#8722;; IV = +,&#8722;).</li>
-          <li>Allow students to use a number line to reason about positive/negative direction before plotting.</li>
-          <li>Pair struggling students with a peer for Steps 1&ndash;3; transition to independent work for the quiz.</li>
-          <li>Accept verbal explanation of distance in lieu of written for students with writing supports.</li>
-        </ul>
-
-        <h4>Differentiation — Challenge</h4>
-        <ul>
-          <li>Ask students to plot a polygon with a given perimeter, then justify their vertex choices.</li>
-          <li>Have students reflect a rectangle across <em>both</em> axes and describe the transformation in writing.</li>
-          <li>Extend Q5 (self-check): ask what would happen to the distance if one endpoint moved to (6, 10).</li>
-        </ul>
-
-        <h4>ESOL / Language Supports</h4>
-        <ul>
-          <li>Preview vocabulary in L1 if available: <em>ordered pair, quadrant, axis, origin, reflect</em>.</li>
-          <li>Use sentence frames: <em>"The point (__, __) is in Quadrant __ because x is __ and y is __."</em></li>
-          <li>Allow students to label the axes in their home language on scratch paper.</li>
-          <li>Visuals: the coordinate plane diagram in the 3D game doubles as a visual glossary; direct students to the game before the quiz.</li>
-        </ul>
-      </details>
-
-      <!-- ══ INTRODUCTION ══ -->
-      <section aria-labelledby="intro-h">
-        <h2 id="intro-h">Introduction</h2>
-        <p>
-          You are a space navigator. Each star sits at an
-          <strong>ordered pair</strong> like <strong>(x, y)</strong> on a star map.
-          The map is a <strong>coordinate plane</strong> with four parts called
-          <strong>quadrants</strong>. Your job is to read points, plot points, and
-          draw shapes so your ship can reach every star.
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Run the dive in order. Each step fills one section of your Salvage
+          Log.
         </p>
-        <div class="tip">
-          Key words: <strong>x-axis</strong> (left/right) &middot;
-          <strong>y-axis</strong> (up/down) &middot;
-          <strong>origin</strong> (0, 0) &middot;
-          <strong>ordered pair</strong> (x, y) &middot;
-          <strong>quadrant</strong> (one of four regions)
-        </div>
-      </section>
 
-      <!-- ══ TASK ══ -->
-      <section aria-labelledby="task-h">
-        <h2 id="task-h">Your Task</h2>
-        <p>By the end you will:</p>
-        <ul>
-          <li>Name and plot points like (&minus;3, 4) in all four quadrants.</li>
-          <li>Find which quadrant a point is in by its signs.</li>
-          <li>Reflect a point across an axis and describe how the sign changes.</li>
-          <li>Plot the corners of a shape and find a side length by counting units or using absolute value.</li>
-          <li>Pass the Self-Check (5 items) and complete a written reflection.</li>
-        </ul>
-        <div class="deliverable-box">
-          <strong>Deliverable</strong>
-          Complete all process steps, pass the Self-Check with at least 4/5, write your reflection, then press <em>Check My Answers</em> in the NTKit panel and save as PDF or DOC to turn in.
-        </div>
-      </section>
-
-      <!-- ══ PROCESS ══ -->
-      <section aria-labelledby="proc-h">
-        <h2 id="proc-h">Process &mdash; Follow the Steps</h2>
-        <ol class="steps">
-          <li>
-            <strong>Learn the words.</strong> The <strong>x-axis</strong> goes left and right. The <strong>y-axis</strong> goes up and down. They cross at the <strong>origin</strong> (0, 0).
-          </li>
-          <li>
-            <strong>Read a point.</strong> In (x, y), the first number is x (left/right). The second number is y (up/down). Right and up are positive (+). Left and down are negative (&minus;).
-          </li>
-          <li>
-            <strong>Know the quadrants.</strong>
-            Quadrant I = (+, +) &middot; II = (&minus;, +) &middot; III = (&minus;, &minus;) &middot; IV = (+, &minus;).
-          </li>
-          <li>
-            <strong>Understand reflections.</strong> Reflecting a point across the y-axis flips the sign of x. Example: (3, &minus;2) becomes (&minus;3, &minus;2). Reflecting across the x-axis flips the sign of y.
-          </li>
-          <li>
-            <strong>Play the 3D game</strong> below to plot stars and practice.
-          </li>
-          <li>
-            <strong>Draw a shape.</strong> Plot 4 corners on grid paper. To find a side length when two points share a y-value, add their distances from 0 (absolute values). Example: (&minus;2, 5) to (6, 5) &rarr; |&minus;2| + |6| = 2 + 6 = <strong>8 units</strong>.
-          </li>
-          <li>
-            <strong>Complete the Self-Check</strong> below. Check each answer, read the feedback, then use the NTKit form to save your work.
-          </li>
-        </ol>
-        <div class="tip">
-          Tip: To find the distance between two points on the same row or column, subtract the smaller absolute value from the larger, or add if they are on opposite sides of zero.
-        </div>
-      </section>
-
-      <!-- ══ RESOURCES ══ -->
-      <section aria-labelledby="res-h">
-        <h2 id="res-h">Resources</h2>
-        <a class="reslink" href="/games/3d/unit-9/">
-          Coordinate Quest &mdash; 3D Game
-          <span class="what">Plot stars and move the beacon to (x, y).</span>
-        </a>
-        <a class="reslink" href="/math/">
-          Math Hub
-          <span class="what">Lessons and tools for Unit 9.</span>
-        </a>
-        <a class="reslink" href="/graphic-novels/unit9/graphic-novel-1.html">
-          Unit 9 Graphic Novel
-          <span class="what">Read the coordinate-plane story.</span>
-        </a>
-      </section>
-
-      <!-- ══ EVALUATION ══ -->
-      <section aria-labelledby="eval-h">
-        <h2 id="eval-h">Evaluation &mdash; Rubric</h2>
-        <table class="rubric">
-          <thead>
-            <tr>
-              <th scope="col">Skill</th>
-              <th scope="col">4 &mdash; Expert</th>
-              <th scope="col">3 &mdash; Proficient</th>
-              <th scope="col">2 &mdash; Developing</th>
-              <th scope="col">1 &mdash; Beginning</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Name &amp; plot ordered pairs</strong></td>
-              <td>All points correct in every quadrant; explains the x-then-y rule.</td>
-              <td>Most points correct; minor counting errors only.</td>
-              <td>Some points correct; consistently confuses x and y.</td>
-              <td class="rubric-level-1">Needs significant support to plot any point.</td>
-            </tr>
-            <tr>
-              <td><strong>Identify quadrants by signs</strong></td>
-              <td>Always uses signs correctly; can explain why without the diagram.</td>
-              <td>Usually correct; rare sign mix-up.</td>
-              <td>Mixes up some quadrants, especially II and IV.</td>
-              <td class="rubric-level-1">Cannot yet use signs to locate a quadrant.</td>
-            </tr>
-            <tr>
-              <td><strong>Reflections across axes</strong></td>
-              <td>Reflects correctly across both axes; explains the sign change.</td>
-              <td>Reflects correctly across one axis; minor errors on the other.</td>
-              <td>Understands direction of reflection but sign error present.</td>
-              <td class="rubric-level-1">Reflection concept not yet demonstrated.</td>
-            </tr>
-            <tr>
-              <td><strong>Distance / side lengths</strong></td>
-              <td>Uses absolute value correctly; exact answer every time.</td>
-              <td>Counts units correctly; occasional small slip.</td>
-              <td>Needs help setting up the count; some answers correct.</td>
-              <td class="rubric-level-1">Cannot yet find the distance between points.</td>
-            </tr>
-            <tr>
-              <td><strong>Self-Check score</strong></td>
-              <td>5/5 correct</td>
-              <td>4/5 correct</td>
-              <td>2&ndash;3/5 correct</td>
-              <td class="rubric-level-1">0&ndash;1/5 correct</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- ══ SELF-CHECK ══ -->
-      <section aria-labelledby="sc-h">
-        <h2 id="sc-h">Self-Check: 5 Quick Questions</h2>
-        <p class="sub">Answer each question, then press <strong>Check This Answer</strong> to see instant feedback.</p>
-
-        <!-- Q1 -->
-        <fieldset class="q" id="sc-q1">
-          <legend>1. In the point (x, y), what does the first number (x) tell you?</legend>
-          <label class="opt"><input type="radio" name="sc1" value="A" /> A. How far up or down</label>
-          <label class="opt"><input type="radio" name="sc1" value="B" /> B. How far left or right</label>
-          <label class="opt"><input type="radio" name="sc1" value="C" /> C. The color of the star</label>
-          <button type="button" class="checkbtn" style="font-size:16px;padding:9px 18px;margin-top:8px;" onclick="checkSC(1,'B','B','The x-coordinate tells you horizontal position: positive = right, negative = left.')">Check This Answer</button>
-          <div class="q-feedback" id="sc-fb1" aria-live="polite"></div>
-        </fieldset>
-
-        <!-- Q2 -->
-        <fieldset class="q" id="sc-q2">
-          <legend>2. Which point is in Quadrant II (&#8722;, +)?</legend>
-          <label class="opt"><input type="radio" name="sc2" value="A" /> A. (4, 2)</label>
-          <label class="opt"><input type="radio" name="sc2" value="B" /> B. (&minus;5, 3)</label>
-          <label class="opt"><input type="radio" name="sc2" value="C" /> C. (&minus;2, &minus;6)</label>
-          <button type="button" class="checkbtn" style="font-size:16px;padding:9px 18px;margin-top:8px;" onclick="checkSC(2,'B','B','Quadrant II has negative x and positive y. (&minus;5, 3) fits: x = &minus;5 &lt; 0, y = 3 &gt; 0.')">Check This Answer</button>
-          <div class="q-feedback" id="sc-fb2" aria-live="polite"></div>
-        </fieldset>
-
-        <!-- Q3 -->
-        <fieldset class="q" id="sc-q3">
-          <legend>3. Point P is at (4, &minus;7). It is reflected across the y-axis. What are the new coordinates?</legend>
-          <label class="opt"><input type="radio" name="sc3" value="A" /> A. (&minus;4, 7)</label>
-          <label class="opt"><input type="radio" name="sc3" value="B" /> B. (&minus;4, &minus;7)</label>
-          <label class="opt"><input type="radio" name="sc3" value="C" /> C. (4, 7)</label>
-          <button type="button" class="checkbtn" style="font-size:16px;padding:9px 18px;margin-top:8px;" onclick="checkSC(3,'B','B','Reflecting across the y-axis flips only the x-sign: 4 becomes &minus;4. The y-value stays &minus;7.')">Check This Answer</button>
-          <div class="q-feedback" id="sc-fb3" aria-live="polite"></div>
-        </fieldset>
-
-        <!-- Q4 -->
-        <fieldset class="q" id="sc-q4">
-          <legend>4. Point A is at (&minus;2, 5). Point B is at (6, 5). How many units long is segment AB? (Type a whole number.)</legend>
-          <label class="opt">
-            <input type="text" name="sc4" id="sc4-input" inputmode="numeric" aria-label="Answer for question 4" placeholder="number of units" style="transform:none;" />
-          </label>
-          <button type="button" class="checkbtn" style="font-size:16px;padding:9px 18px;margin-top:8px;" onclick="checkSCText(4,'8','|&minus;2| + |6| = 2 + 6 = 8. The points are on opposite sides of the y-axis, so add the distances from zero.')">Check This Answer</button>
-          <div class="q-feedback" id="sc-fb4" aria-live="polite"></div>
-        </fieldset>
-
-        <!-- Q5 -->
-        <fieldset class="q" id="sc-q5">
-          <legend>5. A rectangle has corners at (1, 2), (5, 2), (5, &minus;3), and (1, &minus;3). What is its width (horizontal side length)?</legend>
-          <label class="opt"><input type="radio" name="sc5" value="A" /> A. 4 units</label>
-          <label class="opt"><input type="radio" name="sc5" value="B" /> B. 5 units</label>
-          <label class="opt"><input type="radio" name="sc5" value="C" /> C. 6 units</label>
-          <button type="button" class="checkbtn" style="font-size:16px;padding:9px 18px;margin-top:8px;" onclick="checkSC(5,'A','A','From x = 1 to x = 5, the distance is |5 &minus; 1| = 4 units. Both corners are in the same half, so subtract.')">Check This Answer</button>
-          <div class="q-feedback" id="sc-fb5" aria-live="polite"></div>
-        </fieldset>
-
-        <div id="sc-summary" role="status"></div>
-
-        <!-- Answer key for teacher -->
-        <details class="answer-key">
-          <summary>Teacher Answer Key (Self-Check)</summary>
-          <ol>
-            <li><strong>Q1:</strong> B &mdash; The x-coordinate tells horizontal position.</li>
-            <li><strong>Q2:</strong> B &mdash; (&minus;5, 3) is Quadrant II (negative x, positive y).</li>
-            <li><strong>Q3:</strong> B &mdash; (&minus;4, &minus;7); reflecting across y-axis negates x only.</li>
-            <li><strong>Q4:</strong> 8 &mdash; |&minus;2| + |6| = 2 + 6 = 8 units.</li>
-            <li><strong>Q5:</strong> A &mdash; 4 units; |5 &minus; 1| = 4.</li>
-          </ol>
-        </details>
-      </section>
-
-      <!-- ══ NTKit GRADING ══ -->
-      <section aria-labelledby="ntcheck-h">
-        <h2 id="ntcheck-h">Check Your Understanding (for Grading)</h2>
-        <p class="sub">Type your name in the panel, answer the 6 grading questions, then press <em>Check My Answers</em> and save as PDF or DOC.</p>
-
-        <form id="quiz">
-          <fieldset class="q">
-            <legend>1. In the point (x, y), what does the first number tell you?</legend>
-            <label class="opt"><input type="radio" name="q1" value="A" /> A. How far up or down</label>
-            <label class="opt"><input type="radio" name="q1" value="B" /> B. How far left or right</label>
-            <label class="opt"><input type="radio" name="q1" value="C" /> C. The color of the star</label>
-          </fieldset>
-
-          <fieldset class="q">
-            <legend>2. Which point is in Quadrant II (&#8722;, +)?</legend>
-            <label class="opt"><input type="radio" name="q2" value="A" /> A. (4, 2)</label>
-            <label class="opt"><input type="radio" name="q2" value="B" /> B. (&minus;5, 3)</label>
-            <label class="opt"><input type="radio" name="q2" value="C" /> C. (&minus;2, &minus;6)</label>
-          </fieldset>
-
-          <fieldset class="q">
-            <legend>3. The point (0, 0) is called the &mdash;</legend>
-            <label class="opt"><input type="radio" name="q3" value="A" /> A. origin</label>
-            <label class="opt"><input type="radio" name="q3" value="B" /> B. quadrant</label>
-            <label class="opt"><input type="radio" name="q3" value="C" /> C. y-axis</label>
-          </fieldset>
-
-          <fieldset class="q">
-            <legend>4. Type the ordered pair that is 3 left and 4 down from the origin. (Use this form: &minus;3,&minus;4)</legend>
-            <label class="opt">
-              <input type="text" name="q4" inputmode="text" aria-label="Answer for question 4" placeholder="-3,-4" />
-            </label>
-          </fieldset>
-
-          <fieldset class="q">
-            <legend>5. Point A is at (&minus;2, 5). Point B is at (6, 5). How many units long is segment AB? (Type a number.)</legend>
-            <label class="opt">
-              <input type="text" name="q5" inputmode="numeric" aria-label="Answer for question 5" placeholder="number" />
-            </label>
-          </fieldset>
-
-          <fieldset class="q">
-            <legend>6. Which quadrant holds points where BOTH numbers are negative (&#8722;, &#8722;)?</legend>
-            <label class="opt"><input type="radio" name="q6" value="A" /> A. Quadrant I</label>
-            <label class="opt"><input type="radio" name="q6" value="B" /> B. Quadrant III</label>
-            <label class="opt"><input type="radio" name="q6" value="C" /> C. Quadrant IV</label>
-          </fieldset>
-
-          <button type="button" class="checkbtn" id="checkBtnQuiz">Check My Answers</button>
-        </form>
-
-        <div id="ntkit"></div>
-      </section>
-
-      <!-- ══ CONCLUSION ══ -->
-      <section aria-labelledby="con-h">
-        <h2 id="con-h">Conclusion</h2>
+        <h3>Step 1 — Read the navigator's toolbox</h3>
         <p>
-          Great work, navigator! You can now read and plot ordered pairs, name
-          quadrants by their signs, reflect points across axes, and use the grid
-          to find side lengths. These coordinate-plane skills help with maps,
-          graphs, and geometry all year.
+          Four ideas power this whole mission. Keep this reference open while
+          you work.
         </p>
+        <div class="wq-concept-grid">
+          <div class="wq-concept">
+            <svg width="46" height="68" viewBox="0 0 46 68" aria-hidden="true">
+              <line
+                x1="23"
+                y1="4"
+                x2="23"
+                y2="64"
+                stroke="#0b3a5b"
+                stroke-width="2"
+              />
+              <line
+                x1="14"
+                y1="22"
+                x2="32"
+                y2="22"
+                stroke="#34d399"
+                stroke-width="2"
+              />
+              <line
+                x1="14"
+                y1="34"
+                x2="32"
+                y2="34"
+                stroke="#22d3ee"
+                stroke-width="3"
+              />
+              <line
+                x1="14"
+                y1="50"
+                x2="32"
+                y2="50"
+                stroke="#ef4444"
+                stroke-width="2"
+              />
+              <text x="34" y="25" font-size="8" fill="#0b3a5b">+</text>
+              <text x="34" y="54" font-size="8" fill="#0b3a5b">−</text>
+            </svg>
+            <div class="wq-cname">Integers on a gauge</div>
+            <span class="wq-ceq">above 0 = +, below 0 = −</span>
+          </div>
+          <div class="wq-concept">
+            <svg width="70" height="46" viewBox="0 0 70 46" aria-hidden="true">
+              <line
+                x1="6"
+                y1="30"
+                x2="64"
+                y2="30"
+                stroke="#0b3a5b"
+                stroke-width="2"
+              />
+              <circle cx="35" cy="30" r="3" fill="#0b3a5b" />
+              <circle cx="15" cy="30" r="4" fill="#ef4444" />
+              <circle cx="55" cy="30" r="4" fill="#34d399" />
+              <path
+                d="M15,30 L15,14 L35,14"
+                fill="none"
+                stroke="#ef4444"
+                stroke-dasharray="2 2"
+              />
+              <text x="30" y="10" font-size="8" fill="#0b3a5b">distance</text>
+            </svg>
+            <div class="wq-cname">Absolute value</div>
+            <span class="wq-ceq">|n| = distance from 0</span>
+          </div>
+          <div class="wq-concept">
+            <svg width="64" height="56" viewBox="0 0 64 56" aria-hidden="true">
+              <line
+                x1="4"
+                y1="28"
+                x2="60"
+                y2="28"
+                stroke="#22d3ee"
+                stroke-width="1.5"
+              />
+              <line
+                x1="32"
+                y1="4"
+                x2="32"
+                y2="52"
+                stroke="#22d3ee"
+                stroke-width="1.5"
+              />
+              <text x="44" y="18" font-size="8" fill="#0b3a5b">(+,+)</text>
+              <text x="8" y="18" font-size="8" fill="#0b3a5b">(−,+)</text>
+              <text x="8" y="46" font-size="8" fill="#0b3a5b">(−,−)</text>
+              <text x="44" y="46" font-size="8" fill="#0b3a5b">(+,−)</text>
+            </svg>
+            <div class="wq-cname">Four quadrants</div>
+            <span class="wq-ceq">(x, y) signs</span>
+          </div>
+          <div class="wq-concept">
+            <svg width="64" height="56" viewBox="0 0 64 56" aria-hidden="true">
+              <line
+                x1="32"
+                y1="4"
+                x2="32"
+                y2="52"
+                stroke="#22d3ee"
+                stroke-width="2"
+              />
+              <circle cx="14" cy="20" r="4" fill="#34d399" />
+              <circle cx="50" cy="20" r="4" fill="#f472b6" />
+              <path d="M16,20 L48,20" stroke="#0b3a5b" stroke-dasharray="2 2" />
+            </svg>
+            <div class="wq-cname">Reflection</div>
+            <span class="wq-ceq">flip a sign across an axis</span>
+          </div>
+        </div>
+
+        <h3>Step 2 — Order the dive checkpoints</h3>
+        <p>
+          The sub passes these checkpoints on the way down. The reading is the
+          elevation relative to sea level (0 ft). Order them from
+          <strong>shallowest (closest to the surface) to deepest</strong>.
+        </p>
+        <div class="wq-table-scroll">
+          <table class="wq-data">
+            <thead>
+              <tr>
+                <th>Checkpoint</th>
+                <th>Elevation reading</th>
+                <th>What's there</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Buoy</td>
+                <td>+12 ft</td>
+                <td>Surface marker</td>
+              </tr>
+              <tr>
+                <td>Thermocline</td>
+                <td>−85 ft</td>
+                <td>Cold-water layer</td>
+              </tr>
+              <tr>
+                <td>Reef shelf</td>
+                <td>−140 ft</td>
+                <td>Coral wall</td>
+              </tr>
+              <tr>
+                <td>Wreck field</td>
+                <td>−310 ft</td>
+                <td>Cargo debris</td>
+              </tr>
+              <tr>
+                <td>Trench lip</td>
+                <td>−455 ft</td>
+                <td>Drop-off edge</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="wq-example">
+          <p><b>Worked example — ordering negatives:</b></p>
+          <p class="wq-work">
+            On the gauge, the lower a number sits, the smaller it is. So −455
+            &lt; −310 &lt; −140 &lt; −85 &lt; +12. Shallowest → deepest:
+            <b>Buoy, Thermocline, Reef shelf, Wreck field, Trench lip.</b>
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Picture an elevator. Going down makes the number more negative. −455
+          is farther down than −85, so −455 is the smaller (deeper) number.
+          <span class="wq-es"
+            >En español: Imagina un ascensor. Bajar hace el número más negativo.
+            −455 está más abajo que −85, así que −455 es el número menor (más
+            profundo).</span
+          >
+        </div>
+
+        <h3>Step 3 — Report depth with absolute value</h3>
+        <p>
+          The captain doesn't want the sign — she wants the
+          <strong>depth</strong>: how far each checkpoint is from sea level.
+          That is the absolute value of the elevation.
+        </p>
+        <div class="wq-example">
+          <p><b>Worked example:</b></p>
+          <p class="wq-work">
+            Wreck field elevation = −310 ft → depth = |−310| =
+            <b>310 ft below sea level.</b>
+          </p>
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          A diver at −85 ft and a drone at +85 ft (a hovering camera) are at
+          <em>different</em> positions but the <em>same</em> distance from sea
+          level: |−85| = |85| = 85. Explain to your partner why two different
+          elevations can share one depth value.
+        </div>
+
+        <h3>Step 4 — Sweep the sonar grid (plot the wreckage)</h3>
+        <p>
+          Switch from the gauge (a vertical line) to the full
+          <strong>coordinate plane</strong>. The sub sits at the origin
+          <strong>(0, 0)</strong>. Each ping returns an ordered pair
+          <strong>(x, y)</strong>: x is east(+)/west(−), y is north(+)/south(−).
+          Plot these four pieces and name each quadrant.
+        </p>
+        <ul>
+          <li><strong>Piece A — engine block:</strong> (3, 2)</li>
+          <li><strong>Piece B — wing section:</strong> (−2, 3)</li>
+          <li><strong>Piece C — tail fin:</strong> (−3, −2)</li>
+          <li><strong>Piece D — cargo crate:</strong> (2, −3½)</li>
+        </ul>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Read x first, then y — "in the door (x), then up the stairs (y)." For
+          (−2, 3): move 2 left, then 3 up. A fraction like −3½ just means stop
+          halfway between −3 and −4.
+          <span class="wq-es"
+            >En español: Lee x primero, luego y — "entra por la puerta (x),
+            luego sube las escaleras (y)." Para (−2, 3): muévete 2 a la
+            izquierda, luego 3 hacia arriba. Una fracción como −3½ significa
+            parar a mitad de camino entre −3 y −4.</span
+          >
+        </div>
+
+        <h3>Step 5 — Reflect the recovery beacon</h3>
+        <p>
+          You drop a recovery beacon at <strong>(3, 2)</strong>, right on top of
+          the engine block. The current sweeps it
+          <strong>across the y-axis</strong> to the opposite side. Reflecting
+          across the y-axis flips the sign of <strong>x only</strong>; the y
+          stays the same.
+        </p>
+        <div class="wq-example">
+          <p><b>Worked example — reflect (3, 2) across the y-axis:</b></p>
+          <p class="wq-work">
+            x changes sign, y stays: (3, 2) → <b>(−3, 2).</b> The beacon and its
+            reflection are the same distance from the y-axis, like a mirror.
+          </p>
+        </div>
+
+        <h3>Step 6 — Measure the robot arm's reach (distance)</h3>
+        <p>
+          When two points share a row (same y) or a column (same x), the
+          distance between them is the
+          <strong>distance on a number line</strong> — you can find it with
+          absolute value, no diagonal needed.
+        </p>
+        <div class="wq-example">
+          <p><b>Worked example:</b></p>
+          <p class="wq-work">
+            Pieces at (−4, 1) and (5, 1) share the row y = 1. Distance = |−4 −
+            5| = |−9| = <b>9 units.</b> (Opposite sides of zero? Add the
+            absolute values. Same side? Subtract.)
+          </p>
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          When the two points are on opposite sides of an axis (one negative,
+          one positive coordinate), the distance is the <em>sum</em> of their
+          absolute values. When both are on the same side, it's the
+          <em>difference</em>. Predict which rule you'll need before you
+          calculate.
+        </div>
       </section>
 
-      <!-- ══ REFLECTION ══ -->
-      <section aria-labelledby="refl-h">
-        <h2 id="refl-h">Student Reflection</h2>
-        <p>Answer both questions in your own words. Write in complete sentences.</p>
-        <div class="reflect-box">
-          <p><strong>1. Which part of the coordinate plane was hardest for you today, and how did you figure it out?</strong></p>
-          <textarea aria-label="Reflection answer 1" placeholder="Write your answer here..."></textarea>
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you dive. They open in the same window
+          — use your back button to return to the sub.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-9/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 9 · 3D Coordinate Diver</span
+              ><span class="wq-rdesc"
+                >Fly the sub through a 3D grid and plot points in all four
+                quadrants.</span
+              ></span
+            >
+          </a>
+          <a href="/activities/architect/unit-9/">
+            <span class="wq-ricon" aria-hidden="true">🧭</span>
+            <span
+              ><span class="wq-rtitle">Integer &amp; Coordinate Activity</span
+              ><span class="wq-rdesc"
+                >Practice ordering integers, absolute value, and reflections
+                step by step.</span
+              ></span
+            >
+          </a>
+          <a href="/reveal-evidence-studio/">
+            <span class="wq-ricon" aria-hidden="true">🔍</span>
+            <span
+              ><span class="wq-rtitle">Reveal Evidence Studio</span
+              ><span class="wq-rdesc"
+                >Write the Claim–Evidence–Reasoning for your salvage
+                report.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
         </div>
-        <div class="reflect-box" style="margin-top:12px;">
-          <p><strong>2. Give one real-world example where someone would need to use an ordered pair or a coordinate plane.</strong></p>
-          <textarea aria-label="Reflection answer 2" placeholder="Write your answer here..."></textarea>
-        </div>
-        <div class="deliverable-box" style="margin-top:14px;">
-          <strong>Turn-in Checklist</strong>
-          <ul style="margin:6px 0 0;padding-left:20px;">
-            <li>Self-Check: 5 questions answered with feedback reviewed</li>
-            <li>NTKit Grading: 6 questions submitted and score saved</li>
-            <li>Reflection: both questions answered in complete sentences</li>
-            <li>File saved as PDF or DOC and uploaded to your teacher</li>
-          </ul>
+        <h3>Key vocabulary · Vocabulario clave</h3>
+        <ul>
+          <li>
+            <strong>Integer / Entero</strong> — a whole number that can be
+            positive, negative, or zero (…−2, −1, 0, 1, 2…).
+          </li>
+          <li>
+            <strong>Absolute value / Valor absoluto</strong> — a number's
+            distance from zero, always positive: |−7| = 7.
+          </li>
+          <li>
+            <strong>Ordered pair / Par ordenado</strong> — (x, y), the address
+            of a point on the grid.
+          </li>
+          <li>
+            <strong>Quadrant / Cuadrante</strong> — one of the four regions of
+            the coordinate plane.
+          </li>
+          <li>
+            <strong>Reflection / Reflexión</strong> — a mirror flip across the
+            x-axis or y-axis.
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Salvage Log will be scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>4 · Captain</th>
+                <th>3 · Navigator</th>
+                <th>2 · Trainee</th>
+                <th>1 · Stowaway</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Compare &amp; order</td>
+                <td>All checkpoints ordered correctly with reasoning.</td>
+                <td>One ordering slip.</td>
+                <td>Several ordering errors.</td>
+                <td>Order not shown or incorrect.</td>
+              </tr>
+              <tr>
+                <td>Absolute value</td>
+                <td>All depths reported as positive distances.</td>
+                <td>Mostly correct depths.</td>
+                <td>Confuses sign with distance.</td>
+                <td>No depths given.</td>
+              </tr>
+              <tr>
+                <td>Plotting &amp; quadrants</td>
+                <td>All 4 pieces plotted; quadrants named (incl. fraction).</td>
+                <td>3 pieces plotted correctly.</td>
+                <td>Some points or quadrants wrong.</td>
+                <td>Points not plotted.</td>
+              </tr>
+              <tr>
+                <td>Reflection &amp; distance</td>
+                <td>Reflection and distance both correct and justified.</td>
+                <td>One of the two correct.</td>
+                <td>Attempts with errors.</td>
+                <td>Not attempted.</td>
+              </tr>
+              <tr>
+                <td>Labels &amp; reasoning</td>
+                <td>Units (ft, units) labeled; clear explanation.</td>
+                <td>Most answers labeled.</td>
+                <td>Some labels missing.</td>
+                <td>No units or reasoning.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
-    </div>
 
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
+        <p>
+          Answer all six. Click <strong>Check My Answers</strong> when you are
+          done. These match the steps in your Salvage Log.
+        </p>
+
+        <!-- Q1 ordering -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="radio"
+          data-answer="c"
+          data-skill="Compare and order integers"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span
+              >Four checkpoints read −85 ft, −455 ft, +12 ft, and −310 ft. Which
+              list goes from <strong>deepest to shallowest</strong>?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q1" value="a" /> +12, −85, −310,
+            −455</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q1" value="b" /> −85, −310, −455,
+            +12</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q1" value="c" /> −455, −310, −85,
+            +12</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q1" value="d" /> −310, −455, −85,
+            +12</label
+          >
+          <div class="wq-hint">
+            Hint / Pista: Deepest = most negative = smallest number.
+          </div>
+          <div class="wq-fb" id="fb1" role="status"></div>
+        </div>
+
+        <!-- Q2 absolute value depth -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="455"
+          data-tol="0.5"
+          data-skill="Absolute value as distance"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span
+              >The trench lip elevation is −455 ft. Using absolute value, how
+              many feet <strong>below sea level</strong> is it? Enter
+              |−455|.</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="160"
+              height="60"
+              viewBox="0 0 160 60"
+              role="img"
+              aria-label="Number line showing zero and a point at negative 455"
+            >
+              <line
+                x1="10"
+                y1="30"
+                x2="150"
+                y2="30"
+                stroke="#0b3a5b"
+                stroke-width="2"
+              />
+              <circle cx="140" cy="30" r="4" fill="#0b3a5b" />
+              <text x="132" y="48" font-size="10">0</text>
+              <circle cx="20" cy="30" r="5" fill="#ef4444" />
+              <text x="6" y="20" font-size="10">−455</text>
+              <path
+                d="M20,30 L140,30"
+                stroke="#ef4444"
+                stroke-dasharray="3 3"
+              />
+            </svg>
+          </div>
+          <label for="q2in" class="sr-only">Depth in feet</label>
+          <input
+            id="q2in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="ft"
+          />
+          <div class="wq-hint">
+            Hint / Pista: |−455| = distance from 0, always positive.
+          </div>
+          <div class="wq-fb" id="fb2" role="status"></div>
+        </div>
+
+        <!-- Q3 quadrant -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Identify quadrant of an ordered pair"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span
+              >Piece B, the wing section, pinged at <strong>(−2, 3)</strong>. In
+              which quadrant is it?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="120"
+              height="120"
+              viewBox="0 0 120 120"
+              role="img"
+              aria-label="Coordinate plane with the four quadrants labeled and a point in quadrant two"
+            >
+              <line
+                x1="10"
+                y1="60"
+                x2="110"
+                y2="60"
+                stroke="#22d3ee"
+                stroke-width="2"
+              />
+              <line
+                x1="60"
+                y1="10"
+                x2="60"
+                y2="110"
+                stroke="#22d3ee"
+                stroke-width="2"
+              />
+              <text x="82" y="34" font-size="11" fill="#5b6b80">I</text>
+              <text x="34" y="34" font-size="11" fill="#5b6b80">II</text>
+              <text x="34" y="92" font-size="11" fill="#5b6b80">III</text>
+              <text x="82" y="92" font-size="11" fill="#5b6b80">IV</text>
+              <circle cx="40" cy="30" r="5" fill="var(--wq-q2)" />
+            </svg>
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="a" /> Quadrant I (+, +)</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="b" /> Quadrant II (−,
+            +)</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="c" /> Quadrant III (−,
+            −)</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q3" value="d" /> Quadrant IV (+,
+            −)</label
+          >
+          <div class="wq-hint">Hint / Pista: x is negative, y is positive.</div>
+          <div class="wq-fb" id="fb3" role="status"></div>
+        </div>
+
+        <!-- Q4 reflection -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="text"
+          data-answer="(-3,2)"
+          data-skill="Reflect a point across the y-axis"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >The beacon at <strong>(3, 2)</strong> is swept
+              <strong>across the y-axis</strong>. What are its new coordinates?
+              Type them as (x, y).</span
+            >
+          </div>
+          <label for="q4in" class="sr-only"
+            >Reflected coordinates as an ordered pair</label
+          >
+          <input
+            id="q4in"
+            class="wq-text"
+            type="text"
+            placeholder="(x, y)"
+            autocomplete="off"
+          />
+          <div class="wq-hint">
+            Hint / Pista: Reflecting across the y-axis flips the sign of x only.
+          </div>
+          <div class="wq-fb" id="fb4" role="status"></div>
+        </div>
+
+        <!-- Q5 distance opposite sides -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="num"
+          data-answer="9"
+          data-tol="0.5"
+          data-skill="Distance on a coordinate line"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >Two wreck pieces sit at <strong>(−4, 1)</strong> and
+              <strong>(5, 1)</strong>. They share the same row (y = 1). How many
+              units apart are they?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="200"
+              height="56"
+              viewBox="0 0 200 56"
+              role="img"
+              aria-label="Number line with points at negative 4 and positive 5 on the same row"
+            >
+              <line
+                x1="10"
+                y1="30"
+                x2="190"
+                y2="30"
+                stroke="#0b3a5b"
+                stroke-width="2"
+              />
+              <line
+                x1="100"
+                y1="20"
+                x2="100"
+                y2="40"
+                stroke="#22d3ee"
+                stroke-width="2"
+              />
+              <text x="96" y="52" font-size="10">0</text>
+              <circle cx="28" cy="30" r="5" fill="var(--wq-q3)" />
+              <text x="16" y="18" font-size="10">−4</text>
+              <circle cx="172" cy="30" r="5" fill="var(--wq-q1)" />
+              <text x="166" y="18" font-size="10">5</text>
+            </svg>
+          </div>
+          <label for="q5in" class="sr-only">Distance in units</label>
+          <input
+            id="q5in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="units"
+          />
+          <div class="wq-hint">
+            Hint / Pista: Opposite sides of zero — add the absolute values: |−4|
+            + |5|.
+          </div>
+          <div class="wq-fb" id="fb5" role="status"></div>
+        </div>
+
+        <!-- Q6 rational coordinate / reflection across x-axis -->
+        <div
+          class="wq-q"
+          data-q="6"
+          data-type="radio"
+          data-answer="d"
+          data-skill="Rational coordinates and reflection across x-axis"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">6.</span
+            ><span
+              >Piece D, the cargo crate, is at <strong>(2, −3½)</strong>. You
+              reflect it <strong>across the x-axis</strong> to mark its mirror.
+              Where does the mirror land, and in which quadrant is the
+              original?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="a" /> Mirror (−2, −3½);
+            original in Quadrant III.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="b" /> Mirror (2, 3½); original
+            in Quadrant I.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="c" /> Mirror (−2, 3½);
+            original in Quadrant II.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="d" /> Mirror (2, 3½); original
+            in Quadrant IV.</label
+          >
+          <div class="wq-hint">
+            Hint / Pista: Across the x-axis flips the sign of y only. (+, −) is
+            Quadrant IV.
+          </div>
+          <div class="wq-fb" id="fb6" role="status"></div>
+        </div>
+
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You navigated a world that goes both up and down. You ordered depths,
+          turned negatives into distances with absolute value, mapped wreckage
+          across all four quadrants, mirrored a beacon, and measured a robot
+          arm's reach — every piece of 6.NS.5–8 working together. The
+          <em>Nereus</em> surfaces with a complete Salvage Log. Mission
+          accomplished, navigator.
+        </p>
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              The robot arm must travel from Piece C (−3, −2) to a new ping at
+              (2, −2). They share row y = −2. Find that distance, then plan the
+              shortest path that visits all four pieces.
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              Two checkpoints, −85 ft and +12 ft, are different elevations.
+              Could two <em>different</em> elevations ever have the same
+              absolute value? Explain. ¿Pueden dos elevaciones diferentes tener
+              el mismo valor absoluto?
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Submarine pilots, marine biologists, and video-game level
+              designers all use signed coordinates and distance every day — the
+              exact skills you just used.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
+    <script src="/assets/nt-activity-kit.js"></script>
     <script>
-      /* ─────────────────────────────────────────────────────────
-         Answer normaliser — tolerant of common formatting variants.
-         For coordinate answers like (-3,-4) or (-3, -4):
-         strip spaces but preserve minus signs.
-         ───────────────────────────────────────────────────────── */
-      function normalise(raw) {
-        var s = String(raw).trim().toLowerCase();
-        s = s.replace(/\s+/g, '');
-        s = s.replace(/^\$/, '');
-        s = s.replace(/%$/, '');
-        /* Strip outer parentheses from coordinate pairs like (3,2) or (-3,-4) */
-        s = s.replace(/^\((.+)\)$/, '$1');
-        s = s.replace(/,(\d{3})/g, '$1');
-        s = s.replace(/(cubicunits?|cubicinches?|units?|dollars?|hours?|minutes?)$/, '');
-        return s;
-      }
-
-      function numericMatch(a, b) {
-        var na = parseFloat(a);
-        var nb = parseFloat(b);
-        if (isNaN(na) || isNaN(nb)) { return false; }
-        return Math.abs(na - nb) < 1e-9;
-      }
-
-      function answersMatch(studentRaw, correctRaw) {
-        var s = normalise(studentRaw);
-        var c = normalise(correctRaw);
-        if (s === c) { return true; }
-        return numericMatch(s, c);
-      }
-
-      /* ── Self-Check logic ── */
       (function () {
-        function checkSC(qNum, correctVal, displayCorrect, explanation) {
-          var selected = document.querySelector('[name="sc' + qNum + '"]:checked');
-          var fb = document.getElementById('sc-fb' + qNum);
-          if (!selected) {
-            fb.className = 'q-feedback wrong';
-            fb.innerHTML = 'Please choose an answer first.';
-            return;
-          }
-          if (selected.value === correctVal) {
-            fb.className = 'q-feedback correct';
-            fb.innerHTML = '&#10003; Correct! ' + explanation;
-          } else {
-            fb.className = 'q-feedback wrong';
-            fb.innerHTML = '&#10007; Not quite. Correct answer: ' + displayCorrect + '. ' + explanation;
-          }
-          updateSCSummary();
+        "use strict";
+        // Mount the shared student-name / save bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
+
+        var ACTIVITY_ID = "webquest-unit-9-salvage";
+        var ACTIVITY_TITLE = "WebQuest · Unit 9 · Deep Six Salvage";
+        var STANDARD = "6.NS.C.5-8";
+
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
+
+        // Normalize a typed ordered-pair answer like "(-3, 2)" -> "(-3,2)".
+        function normPair(s) {
+          return s
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .replace(/[−–—]/g, "-") // unicode minus/dashes -> hyphen
+            .replace(/[\[\{]/g, "(")
+            .replace(/[\]\}]/g, ")");
         }
 
-        function checkSCText(qNum, correctVal, explanation) {
-          var input = document.getElementById('sc' + qNum + '-input');
-          var fb = document.getElementById('sc-fb' + qNum);
-          if (!input) return;
-          var raw = input.value;
-          if (answersMatch(raw, correctVal)) {
-            fb.className = 'q-feedback correct';
-            fb.innerHTML = '&#10003; Correct! ' + explanation;
-          } else {
-            fb.className = 'q-feedback wrong';
-            fb.innerHTML = '&#10007; Not quite. Correct answer: ' + correctVal + '. ' + explanation;
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
           }
-          updateSCSummary();
+          var input = card.querySelector("input.wq-num, input.wq-text");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
         }
 
-        function updateSCSummary() {
-          var correct = document.querySelectorAll('.q-feedback.correct').length;
-          var attempted = document.querySelectorAll('.q-feedback.correct, .q-feedback.wrong').length;
-          var summary = document.getElementById('sc-summary');
-          if (attempted > 0) {
-            summary.className = 'sc-summary show';
-            summary.style.display = 'block';
-            summary.style.background = correct === attempted ? '#d1fae5' : '#fef3c7';
-            summary.style.border = '2px solid ' + (correct === attempted ? '#6ee7b7' : '#fcd34d');
-            summary.style.borderRadius = '10px';
-            summary.style.padding = '14px 18px';
-            summary.style.color = '#1c1917';
-            summary.innerHTML = 'Self-Check progress: <strong>' + correct + ' / ' + attempted + '</strong> checked so far.';
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          if (type === "radio")
+            return resp === card.getAttribute("data-answer");
+          if (type === "text") {
+            return (
+              normPair(resp) === normPair(card.getAttribute("data-answer"))
+            );
           }
+          var ans = parseFloat(card.getAttribute("data-answer"));
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          var val = parseFloat(resp);
+          if (isNaN(val)) return false;
+          return Math.abs(val - ans) <= tol;
         }
 
-        window.checkSC = checkSC;
-        window.checkSCText = checkSCText;
-      })();
-
-      /* ── NTKit grading ── */
-      (function () {
-        function val(name) {
-          var el = document.querySelector('[name="' + name + '"]:checked');
-          if (el) return el.value;
-          var t = document.querySelector('input[name="' + name + '"][type="text"]');
-          return t ? t.value : '';
+        function showFeedback(card, ok) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck the rule and try again. Inténtalo de nuevo.";
         }
-        function ready() {
-          if (!window.NTKit) { return setTimeout(ready, 50); }
-          NTKit.mount('#ntkit');
-          var btn = document.getElementById('checkBtnQuiz');
-          btn.addEventListener('click', function () {
-            NTKit.grade({
-              activityId: 'webquest-unit-9',
-              activityTitle: 'Unit 9 WebQuest — Chart the Star Map (Coordinate Plane)',
-              standard: '6.NS.C.6 & 6.G.A.3',
-              gradeItem: function(studentRaw, correctRaw) {
-                return answersMatch(studentRaw, correctRaw);
-              },
-              items: [
-                {
-                  prompt: '1. In (x, y), the first number tells you...',
-                  studentAnswer: val('q1'),
-                  correctAnswer: 'B',
-                  points: 1,
-                  skill: 'Read points'
-                },
-                {
-                  prompt: '2. Which point is in Quadrant II (−, +)?',
-                  studentAnswer: val('q2'),
-                  correctAnswer: 'B',
-                  points: 1,
-                  skill: 'Quadrants'
-                },
-                {
-                  prompt: '3. The point (0, 0) is called the...',
-                  studentAnswer: val('q3'),
-                  correctAnswer: 'A',
-                  points: 1,
-                  skill: 'Vocabulary'
-                },
-                {
-                  prompt: '4. Ordered pair 3 left and 4 down from the origin.',
-                  studentAnswer: val('q4'),
-                  correctAnswer: '-3,-4',
-                  points: 1,
-                  skill: 'Plot points'
-                },
-                {
-                  prompt: '5. Length of segment AB from (−2, 5) to (6, 5).',
-                  studentAnswer: val('q5'),
-                  correctAnswer: '8',
-                  points: 1,
-                  skill: 'Distance / side length'
-                },
-                {
-                  prompt: '6. Quadrant where both numbers are negative (−, −).',
-                  studentAnswer: val('q6'),
-                  correctAnswer: 'B',
-                  points: 1,
-                  skill: 'Quadrants'
-                }
-              ]
-            });
-            document.getElementById('ntkit').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        function buildItems() {
+          // Payload for the shared NTKit grader (auto-graded items).
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              id: "u9-q" + card.getAttribute("data-q"),
+              skill:
+                card.getAttribute("data-skill") || "Integers & coordinates",
+              correct: isCorrect(card, resp),
+              response: resp === null ? "(blank)" : resp,
+              expected: card.getAttribute("data-answer"),
+            };
           });
         }
-        ready();
+
+        document
+          .getElementById("wq-check")
+          .addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var ok = isCorrect(card, readResponse(card));
+              if (ok) correctCount++;
+              showFeedback(card, ok);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
+
+            // Prefer the shared kit grader so results save to the dashboard.
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {}
+
+            // Always show an inline score so the page is fully self-contained.
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%)." +
+              (correctCount === total
+                ? " Log complete — the Nereus surfaces! ¡Misión cumplida!"
+                : " Review the items marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+
+        document
+          .getElementById("wq-reset")
+          .addEventListener("click", function () {
+            qs.forEach(function (card) {
+              card
+                .querySelectorAll("input.wq-num, input.wq-text")
+                .forEach(function (input) {
+                  input.value = "";
+                });
+              card.querySelectorAll("input[type=radio]").forEach(function (r) {
+                r.checked = false;
+              });
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
       })();
     </script>
   </body>

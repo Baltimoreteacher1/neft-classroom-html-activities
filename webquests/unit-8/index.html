@@ -1,977 +1,1771 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nt-theme-aware">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebQuest: Unit 8 — Statistics (6.SP.A &amp; B) | Neft Teacher</title>
+    <title>
+      WebQuest · Unit 8 · The Cafeteria Comeback — Statistics &amp; Data | Neft
+      Teacher
+    </title>
+    <meta
+      name="description"
+      content="A Grade 6 statistics WebQuest: join the Student Data Council, write statistical questions, and use mean, median, mode, MAD, box plots, histograms, and distribution shape to fix the school cafeteria (6.SP.A.1–3, 6.SP.B.4–5)."
+    />
 
-    <!-- Shared theme -->
+    <!-- Shared Neft design system -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
-    <script src="/assets/neft-theme.js" defer></script>
-
-    <!-- Activity kit -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      /* ── Base ── */
+      /* ============================================================
+     Unit 8 WebQuest — uses shared --nt-* theme variables.
+     Scoped styles only; all visuals are SVG/divs (no ASCII art).
+     ============================================================ */
+      :root {
+        --wq-data-1: #2563eb; /* survey blue   */
+        --wq-data-2: #0d9488; /* teal          */
+        --wq-data-3: #f59e0b; /* amber         */
+        --wq-data-4: #ef4444; /* red flag      */
+        --wq-data-5: #8b5cf6; /* violet        */
+        --wq-data-6: #ec4899; /* magenta       */
+        --wq-grid: #cbd5e1;
+      }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        font-size: 19px;
-        line-height: 1.65;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
+        font-size: 18px;
       }
-      .wrap {
-        max-width: 880px;
+      .wq-wrap {
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 24px 20px 80px;
+        padding: 20px 18px 80px;
       }
-
-      /* ── Hero ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 28px 26px;
-        margin-bottom: 28px;
+      .wq-backlink {
+        font-size: 0.95rem;
+        margin: 4px 0 14px;
       }
-      .badge {
-        display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-weight: 700;
-        padding: 6px 14px;
-        border-radius: 999px;
-        font-size: 16px;
-        letter-spacing: 0.3px;
+      .wq-backlink a {
+        color: var(--nt-accent, #245ea8);
+        text-decoration: none;
+        font-weight: 600;
       }
-      h1 {
-        font-size: 34px;
-        line-height: 1.2;
-        margin: 14px 0 6px;
-      }
-      h2 {
-        font-size: 26px;
-        margin: 0 0 12px;
-        border-bottom: 3px solid var(--nt-accent);
-        padding-bottom: 6px;
-      }
-      h3 {
-        font-size: 21px;
-        margin: 18px 0 6px;
-      }
-      p, li { font-size: 19px; }
-      .lead { font-size: 21px; color: var(--nt-text); }
-      .muted { color: var(--nt-muted); }
-
-      /* ── Cards ── */
-      section.card {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 22px 24px;
-        margin-bottom: 24px;
-      }
-
-      /* ── Learning Target box ── */
-      .lt-box {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin: 0 0 16px;
-      }
-      .lt-box h3 {
-        margin: 0 0 8px;
-        font-size: 17px;
-        color: var(--nt-accent);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .lt-box ul { margin: 0 0 10px; padding-left: 20px; }
-      .lt-box ul li { margin: 4px 0; font-size: 18px; }
-      .lt-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        font-size: 15px;
-        color: var(--nt-muted);
-        border-top: 1px solid var(--nt-border);
-        padding-top: 8px;
-        margin-top: 8px;
-      }
-      .lt-meta span::before { content: "• "; }
-
-      /* ── Teacher Notes ── */
-      details.teacher-notes {
-        background: #fff8e1;
-        border: 2px solid #f9a825;
-        border-radius: 12px;
-        padding: 12px 18px;
-        margin: 16px 0;
-      }
-      details.teacher-notes summary {
-        font-weight: 700;
-        font-size: 16px;
-        color: #5d4037;
-        cursor: pointer;
-        list-style: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      details.teacher-notes summary::before {
-        content: "▶";
-        font-size: 12px;
-        transition: transform 0.2s;
-      }
-      details.teacher-notes[open] summary::before { transform: rotate(90deg); }
-      details.teacher-notes p,
-      details.teacher-notes li { font-size: 16px; color: #3e2723; }
-      details.teacher-notes h4 { margin: 12px 0 4px; color: #5d4037; font-size: 16px; }
-
-      /* ── Steps ── */
-      ol.steps { padding-left: 22px; }
-      ol.steps > li { margin-bottom: 14px; }
-
-      /* ── Resources ── */
-      .resources a {
-        color: var(--nt-accent);
-        font-weight: 700;
+      .wq-backlink a:hover {
         text-decoration: underline;
       }
-      ul.res-list {
-        list-style: none;
-        padding-left: 0;
-      }
-      ul.res-list li {
-        padding: 12px 14px;
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        margin-bottom: 10px;
-        background: var(--nt-bg);
-      }
 
-      /* ── Formulas ── */
-      .tip {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin: 14px 0;
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          135deg,
+          #0f766e 0%,
+          #1d4ed8 55%,
+          #6d28d9 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
       }
-      .formula {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        font-size: 20px;
-        margin: 10px 0;
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+        letter-spacing: 0.2px;
       }
-      .formula strong { font-size: 22px; }
-      .dataset {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        font-size: 22px;
+      .wq-hero .wq-kicker {
+        display: inline-block;
         font-weight: 700;
-        letter-spacing: 1px;
-        margin: 10px 0;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
+        border-radius: 999px;
       }
-
-      /* ── Dot-plot visual ── */
-      .dotplot {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin: 10px 0;
-        font-family: monospace;
-        font-size: 18px;
-        overflow-x: auto;
-        white-space: nowrap;
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 62ch;
+        font-size: 1.05rem;
+        color: #eef2ff;
       }
-      .dotplot .dp-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 4px; }
-      .dotplot .dp-axis { border-top: 2px solid var(--nt-text); padding-top: 4px; display: flex; gap: 10px; }
-      .dotplot .dp-col { text-align: center; min-width: 28px; }
-      .dotplot .dp-dot { color: var(--nt-accent); font-size: 20px; line-height: 1; }
-
-      /* ── Rubric ── */
-      table.rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 18px;
-      }
-      table.rubric th,
-      table.rubric td {
-        border: 2px solid var(--nt-border);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      table.rubric th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-      }
-      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
-      @media (max-width: 600px) {
-        table.rubric { font-size: 15px; }
-        table.rubric th, table.rubric td { padding: 8px; }
-      }
-
-      /* ── Self-check quiz ── */
-      .sc-item {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 14px 0;
-      }
-      .sc-item .sc-prompt {
-        font-weight: 700;
-        font-size: 18px;
-        margin-bottom: 10px;
-      }
-      .sc-item .sc-choices {
+      .wq-badges {
         display: flex;
-        flex-direction: column;
+        flex-wrap: wrap;
         gap: 8px;
-        margin-bottom: 10px;
+        margin-top: 16px;
       }
-      .sc-item .sc-choices label {
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -6px;
+        bottom: -10px;
+        width: 240px;
+        opacity: 0.95;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
+      }
+
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      }
+      .wq-card > h2 {
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-size: 17px;
-        cursor: pointer;
-        padding: 8px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
+        gap: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
       }
-      .sc-item .sc-choices label:hover { border-color: var(--nt-accent); }
-      .sc-item .sc-choices input[type="radio"] { width: 18px; height: 18px; cursor: pointer; }
-      .sc-btn {
-        font-size: 16px;
-        font-weight: 700;
-        padding: 10px 22px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--nt-accent, #245ea8);
       }
-      .sc-btn:hover { filter: brightness(1.08); }
-      .sc-feedback {
-        margin-top: 10px;
-        font-size: 16px;
-        padding: 8px 14px;
-        border-radius: 8px;
-        display: none;
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--nt-accent, #245ea8);
       }
-      .sc-feedback.correct {
-        background: #e8f5e9;
-        border: 2px solid #388e3c;
-        color: #1b5e20;
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
       }
-      .sc-feedback.wrong {
-        background: #fce4ec;
-        border: 2px solid #c62828;
-        color: #b71c1c;
+      .wq-lead {
+        font-size: 1.08rem;
       }
 
-      /* ── NTKit quiz ── */
-      .q { margin-bottom: 22px; }
-      .q label.qprompt {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 20px;
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
       }
-      .q .hint {
-        color: var(--nt-muted);
-        font-size: 16px;
-        display: block;
-        margin-bottom: 8px;
+      .wq-l1 {
+        background: rgba(13, 148, 136, 0.1);
+        border-color: rgba(13, 148, 136, 0.45);
       }
-      .q input[type="text"],
-      .q select {
-        font-size: 19px;
-        padding: 10px 12px;
-        width: 100%;
-        max-width: 360px;
-        border: 2px solid var(--nt-border);
+      .wq-l2 {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .wq-l1 .wq-tag {
+        background: #0d9488;
+      }
+      .wq-l2 .wq-tag {
+        background: #7c3aed;
+      }
+      .wq-es {
+        display: block;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
+      }
+
+      /* ---------- Stat reference cards ---------- */
+      .wq-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .wq-stat {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-stat .wq-sname {
+        font-weight: 800;
+        color: var(--nt-text, #17212f);
+      }
+      .wq-stat .wq-seq {
+        display: inline-block;
+        margin-top: 6px;
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 0.98rem;
+        background: rgba(36, 94, 168, 0.1);
+        padding: 3px 10px;
         border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
+        color: var(--nt-accent, #245ea8);
       }
-      .check-btn {
-        font-size: 20px;
-        font-weight: 700;
-        padding: 14px 28px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
+      .wq-stat p {
+        margin: 0.5em 0 0;
+        font-size: 0.95rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Mission / task panel ---------- */
+      .wq-mission {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: center;
+      }
+      @media (max-width: 720px) {
+        .wq-mission {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-panel {
+        border-radius: 16px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        background: var(--nt-bg, #f8fafc);
+        padding: 12px;
+      }
+      .wq-deliverables {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .wq-deliverables li {
+        position: relative;
+        padding: 8px 8px 8px 34px;
+        border-bottom: 1px dashed var(--nt-border, #dbe3ee);
+      }
+      .wq-deliverables li:last-child {
+        border-bottom: none;
+      }
+      .wq-deliverables li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 13px;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: var(--nt-accent, #245ea8);
+      }
+
+      /* ---------- Question-sorter (statistical vs not) ---------- */
+      .wq-qsort {
+        display: grid;
+        gap: 10px;
         margin-top: 8px;
       }
-      .check-btn:hover { filter: brightness(1.08); }
-
-      /* ── Answer key ── */
-      details.answer-key {
-        background: #e8f5e9;
-        border: 2px solid #388e3c;
+      .wq-qsort .wq-qitem {
+        border: 1px solid var(--nt-border, #dbe3ee);
         border-radius: 12px;
-        padding: 12px 18px;
-        margin: 14px 0;
+        padding: 12px 14px;
+        background: var(--nt-surface, #fff);
       }
-      details.answer-key summary {
-        font-weight: 700;
-        color: #1b5e20;
-        cursor: pointer;
-        list-style: none;
+      .wq-qsort .wq-qtext {
+        font-weight: 600;
+      }
+      .wq-chip-row {
         display: flex;
-        align-items: center;
         gap: 8px;
-        font-size: 16px;
+        margin-top: 8px;
+        flex-wrap: wrap;
       }
-      details.answer-key summary::before {
-        content: "▶";
-        font-size: 12px;
-        transition: transform 0.2s;
-      }
-      details.answer-key[open] summary::before { transform: rotate(90deg); }
-      details.answer-key ol { margin: 10px 0 0; padding-left: 20px; }
-      details.answer-key li { font-size: 16px; color: #1b5e20; margin: 6px 0; }
-
-      /* ── Reflection ── */
-      .reflect-box {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin: 14px 0;
-      }
-      .reflect-box label {
+      .wq-chip {
+        font-size: 0.92rem;
         font-weight: 700;
-        display: block;
-        margin-bottom: 8px;
-        font-size: 17px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+        border-radius: 999px;
+        padding: 6px 14px;
+        cursor: pointer;
       }
-      .reflect-box textarea {
-        width: 100%;
-        min-height: 80px;
-        font-size: 17px;
-        font-family: inherit;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        box-sizing: border-box;
-        resize: vertical;
+      .wq-chip[aria-pressed="true"] {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        border-color: var(--nt-accent, #245ea8);
       }
-      .deliverable-box {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin: 14px 0;
-        font-size: 17px;
-        font-weight: 700;
-      }
-
-      /* ── Focus & accessibility ── */
-      a:focus-visible, input:focus-visible, select:focus-visible,
-      button:focus-visible, textarea:focus-visible,
-      details summary:focus-visible {
-        outline: 3px solid var(--nt-focus);
+      .wq-chip:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
         outline-offset: 2px;
       }
 
-      /* ── Print ── */
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin-top: 8px;
+      }
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
+      }
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
+        font-weight: 700;
+        margin: 0;
+      }
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+      }
+
+      /* ---------- Worked example ---------- */
+      .wq-example {
+        border-left: 5px solid var(--nt-accent, #245ea8);
+        background: rgba(36, 94, 168, 0.06);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 14px 0;
+      }
+      .wq-example b {
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-work {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.02rem;
+      }
+
+      /* ---------- Rubric table ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+        font-size: 0.96rem;
+      }
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-rubric thead th {
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--nt-accent, #245ea8);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--nt-accent, #245ea8);
+      }
+      .wq-num {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        width: 140px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-num:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--nt-accent, #245ea8);
+      }
+      .wq-hint {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: none;
+      }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(16, 185, 129, 0.14);
+        color: #065f46;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(239, 68, 68, 0.14);
+        color: #991b1b;
+      }
+
+      .wq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .wq-btn {
+        font-size: 1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        cursor: pointer;
+        background: var(--nt-accent, #245ea8);
+        color: #fff;
+        transition: filter 0.12s ease;
+      }
+      .wq-btn:hover {
+        filter: brightness(1.08);
+      }
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--nt-accent, #245ea8);
+        border: 2px solid var(--nt-accent, #245ea8);
+      }
+      #wq-score {
+        margin-top: 16px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: none;
+      }
+      #wq-score.show {
+        display: block;
+        background: rgba(36, 94, 168, 0.1);
+        border: 1px solid var(--nt-accent, #245ea8);
+      }
+
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--nt-accent, #245ea8);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
       @media print {
-        body { font-size: 13px; line-height: 1.4; background: #fff; color: #000; }
-        .wrap { max-width: 100%; padding: 0 12px 20px; }
-        header.hero { break-after: avoid; }
-        section.card { break-inside: avoid; border: 1px solid #ccc; margin: 10px 0; padding: 10px 14px; }
-        .check-btn, .sc-btn, details.teacher-notes, .deliverable-box { display: none; }
-        details.answer-key { display: none; }
-        a { color: #000; text-decoration: none; }
-        table.rubric th { background: #555; color: #fff; }
-        .sc-choices label { border: 1px solid #ccc; }
-        .dotplot { overflow: visible; white-space: normal; }
+        .wq-actions,
+        .wq-btn {
+          display: none;
+        }
+        .wq-hero {
+          box-shadow: none;
+        }
       }
     </style>
   </head>
+  <body>
+    <div id="ntkit"></div>
 
-  <body class="nt-theme-aware">
-    <div class="wrap">
-      <!-- Back-link -->
-      <p style="font:14px system-ui;padding:10px 0;">
-        <a href="/webquests/">← All WebQuests</a> · <a href="/math/">Math Hub</a>
+    <main class="wq-wrap">
+      <p class="wq-backlink">
+        <a href="/webquests/">← All WebQuests</a> ·
+        <a href="/math/">Math Hub</a>
       </p>
 
-      <!-- HERO -->
-      <header class="hero">
-        <span class="badge">WebQuest · Unit 8 · CCSS 6.SP.A &amp; B</span>
-        <h1>&#128202; The Data Lab WebQuest</h1>
-        <p class="lead">Statistics — collect data, build plots, and find the center!</p>
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker"
+          >Grade 6 Math WebQuest · Unit 8 · 6.SP.A.1–3 · 6.SP.B.4–5</span
+        >
+        <h1>The Cafeteria Comeback</h1>
+        <p>
+          The lunch line is a mess: kids wait too long, the food gets cold, and
+          nobody can agree on what to fix. The principal is giving
+          <strong>your Student Data Council</strong> one shot. Run a real
+          survey, study the numbers with statistics, and walk into the meeting
+          with a data-backed plan to win our cafeteria back.
+        </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 2–3 class periods</span>
+          <span class="wq-badge">📋 Statistical questions</span>
+          <span class="wq-badge">📊 Mean · Median · Mode · MAD</span>
+          <span class="wq-badge">📈 Box plots &amp; histograms</span>
+        </div>
+        <!-- decorative bar-chart + tray SVG (no ASCII art) -->
+        <svg class="wq-hero-art" viewBox="0 0 200 200" aria-hidden="true">
+          <rect
+            x="14"
+            y="150"
+            width="172"
+            height="34"
+            rx="8"
+            fill="rgba(255,255,255,0.9)"
+            stroke="#0b1f33"
+            stroke-width="3"
+          />
+          <circle cx="44" cy="167" r="9" fill="#f59e0b" />
+          <rect x="70" y="158" width="40" height="18" rx="3" fill="#0d9488" />
+          <rect x="124" y="158" width="46" height="18" rx="3" fill="#ef4444" />
+          <g stroke="#0b1f33" stroke-width="2">
+            <rect x="30" y="108" width="22" height="36" fill="#60a5fa" />
+            <rect x="60" y="78" width="22" height="66" fill="#34d399" />
+            <rect x="90" y="40" width="22" height="104" fill="#fbbf24" />
+            <rect x="120" y="92" width="22" height="52" fill="#a78bfa" />
+            <rect x="150" y="120" width="22" height="24" fill="#f472b6" />
+          </g>
+        </svg>
       </header>
 
-      <!-- Student identity bar + Save PDF/DOC + results panel -->
-      <div id="ntkit"></div>
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Your Council Gets
+          the Case
+        </h2>
+        <p class="wq-lead">
+          Anybody can <em>complain</em> about lunch. A data scientist
+          <em>measures</em> it. In this WebQuest you become a
+          <strong>student data analyst</strong>: you will collect a set of
+          numbers, find out what is typical, find out how spread out the data
+          is, and picture the whole story with graphs — then recommend the one
+          change that helps the most students.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >How can one set of numbers be summarized by its center, its spread,
+            and its shape to make a fair decision for a whole school?</strong
+          >
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          A <strong>statistical question</strong> is one you expect to get
+          <em>different answers</em> to. "How long did each 6th grader wait in
+          line today?" is statistical — the answers vary. "How long did
+          <em>I</em> wait today?" is not — it has one answer.
+          <span class="wq-es"
+            >En español: Una pregunta estadística espera respuestas que varían.
+            "¿Cuánto esperó cada estudiante en la fila?" varía. "¿Cuánto esperé
+            yo?" tiene una sola respuesta, así que no es estadística.</span
+          >
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          A good analyst never reports just one number. The
+          <strong>center</strong> (mean, median, mode) says what is typical, the
+          <strong>spread</strong> (range, MAD, IQR) says how much it varies, and
+          the <strong>shape</strong> (symmetric, skewed, clusters, gaps, peaks)
+          warns you when a single average could mislead the whole school.
+        </div>
+      </section>
 
-      <!-- LEARNING TARGET -->
-      <section class="card" aria-label="Learning Target">
-        <h2>Learning Target</h2>
-        <div class="lt-box">
-          <h3>I can…</h3>
-          <ul>
-            <li>Tell the difference between a statistical and a non-statistical question (6.SP.A.1).</li>
-            <li>Describe a data set using mean, median, mode, and range (6.SP.A.3).</li>
-            <li>Calculate mean absolute deviation (MAD) to describe spread (6.SP.B.5c).</li>
-            <li>Read and interpret a dot plot, histogram, and box plot (6.SP.B.4).</li>
-            <li>Describe the shape of a distribution (symmetric, skewed) (6.SP.A.2).</li>
-          </ul>
-          <div class="lt-meta">
-            <span>Standards: 6.SP.A.1–3, 6.SP.B.4–5</span>
-            <span>Estimated time: 50–60 min</span>
-            <span>Materials: pencil, graph paper or device, calculator (optional)</span>
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>The Task
+        </h2>
+        <div class="wq-mission">
+          <div>
+            <p>
+              By the end of this WebQuest your council will submit a
+              <strong>Cafeteria Data Report</strong>. To pass review, your
+              report must:
+            </p>
+            <ul class="wq-deliverables">
+              <li>
+                Sort four survey questions into
+                <strong>statistical vs. not statistical</strong>.
+              </li>
+              <li>
+                Find the <strong>mean, median, and mode</strong> of the
+                wait-time data set.
+              </li>
+              <li>
+                Measure the spread with the
+                <strong>range and the MAD</strong> (mean absolute deviation).
+              </li>
+              <li>
+                Read a <strong>box plot</strong> and a
+                <strong>histogram</strong> and describe the
+                <strong>shape</strong> of the data.
+              </li>
+              <li>
+                Recommend <strong>one change</strong> and back it with two
+                numbers from your analysis.
+              </li>
+              <li>
+                Pass the <strong>Check Your Understanding</strong> self-check at
+                the bottom.
+              </li>
+            </ul>
+          </div>
+          <div class="wq-panel" aria-label="The wait-time data set">
+            <svg
+              viewBox="0 0 280 220"
+              role="img"
+              aria-labelledby="dotplot-title"
+            >
+              <title id="dotplot-title">
+                Dot plot of lunch line wait times in minutes for twelve
+                students.
+              </title>
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="220"
+                fill="var(--nt-bg,#f8fafc)"
+              />
+              <text
+                x="14"
+                y="22"
+                font-size="12"
+                font-weight="700"
+                fill="#17212f"
+              >
+                Lunch-line wait (minutes)
+              </text>
+              <!-- number line -->
+              <line
+                x1="28"
+                y1="180"
+                x2="262"
+                y2="180"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <!-- ticks 2..14 mapped: x = 28 + (v-2)*18 -->
+              <g font-size="11" fill="#5b6b80" text-anchor="middle">
+                <line x1="28" y1="176" x2="28" y2="184" stroke="#0b1f33" />
+                <text x="28" y="198">2</text>
+                <line x1="64" y1="176" x2="64" y2="184" stroke="#0b1f33" />
+                <text x="64" y="198">4</text>
+                <line x1="100" y1="176" x2="100" y2="184" stroke="#0b1f33" />
+                <text x="100" y="198">6</text>
+                <line x1="136" y1="176" x2="136" y2="184" stroke="#0b1f33" />
+                <text x="136" y="198">8</text>
+                <line x1="172" y1="176" x2="172" y2="184" stroke="#0b1f33" />
+                <text x="172" y="198">10</text>
+                <line x1="208" y1="176" x2="208" y2="184" stroke="#0b1f33" />
+                <text x="208" y="198">12</text>
+                <line x1="244" y1="176" x2="244" y2="184" stroke="#0b1f33" />
+                <text x="244" y="198">14</text>
+              </g>
+              <!-- dots: data = 4,5,5,6,6,6,7,7,8,9,11,14 ; x=28+(v-2)*18 -->
+              <g fill="var(--wq-data-1)">
+                <circle cx="64" cy="166" r="6" />
+                <circle cx="82" cy="166" r="6" />
+                <circle cx="82" cy="152" r="6" />
+                <circle cx="100" cy="166" r="6" />
+                <circle cx="100" cy="152" r="6" />
+                <circle cx="100" cy="138" r="6" />
+                <circle cx="118" cy="166" r="6" />
+                <circle cx="118" cy="152" r="6" />
+                <circle cx="136" cy="166" r="6" />
+                <circle cx="154" cy="166" r="6" />
+                <circle cx="190" cy="166" r="6" fill="var(--wq-data-3)" />
+                <circle cx="244" cy="166" r="6" fill="var(--wq-data-4)" />
+              </g>
+              <text x="14" y="216" font-size="10" fill="#5b6b80">
+                12 students surveyed · each dot = 1 student
+              </text>
+            </svg>
           </div>
         </div>
-
-        <!-- TEACHER NOTES -->
-        <details class="teacher-notes" aria-label="Teacher Notes — hidden from print">
-          <summary>Teacher Notes (click to expand)</summary>
-          <h4>Pacing</h4>
-          <p>
-            Intro + vocab: 8 min · Steps 1–2 (learn concepts): 10 min ·
-            Game (Step 3): 10 min · Dataset practice (Step 4): 8 min ·
-            Self-check quiz: 8 min · NTKit quiz + save: 8 min · Reflection: 5 min.
-            Total ≈ 57 min. Reduce game time to 5 min for a 50-min class.
-          </p>
-          <h4>Grouping</h4>
-          <p>
-            Steps 1–4: pairs (discuss each formula together). Step 4 dataset: individual with pair check.
-            Self-check quiz: individual. NTKit quiz: individual.
-          </p>
-          <h4>Differentiation — Support</h4>
-          <ul>
-            <li>Provide a reference card with the four formulas (mean, median, mode, range) pre-filled.</li>
-            <li>For the dataset practice, pre-sort the numbers so students focus on finding median/mode rather than sorting.</li>
-            <li>Allow use of a calculator for the mean calculation.</li>
-            <li>Use the dot-plot visual in the self-check section to anchor the concept of mode visually.</li>
-          </ul>
-          <h4>Differentiation — Challenge</h4>
-          <ul>
-            <li>Have students collect their own class data (e.g., number of siblings) and calculate all four measures.</li>
-            <li>Introduce mean absolute deviation (MAD): find the distance of each data point from the mean, then average those distances.</li>
-            <li>Ask students to compare two data sets by their median and range and write a conclusion sentence.</li>
-            <li>Extension: identify whether a distribution is symmetric or skewed-right / skewed-left from a dot plot or histogram.</li>
-          </ul>
-          <h4>ESOL / Language Supports</h4>
-          <ul>
-            <li>Post a word wall: data, statistical question, mean, median, mode, range, dot plot, histogram, box plot, distribution.</li>
-            <li>Use color-coded formula cards (mean = blue, median = green, mode = orange, range = red).</li>
-            <li>Allow native-language calculation scratch work; require English labels on final answers.</li>
-            <li>Sentence frames: "The mean of this data set is ___ because ___." / "This is a statistical question because it has many possible answers."</li>
-            <li>Pair ESOL students with a bilingual partner for the game step.</li>
-          </ul>
-        </details>
-      </section>
-
-      <!-- INTRODUCTION -->
-      <section class="card">
-        <h2>1. Introduction</h2>
         <p>
-          Welcome to the <strong>Data Lab</strong>! Today you are a
-          <strong>data scientist</strong>. Your job is to collect numbers, show
-          them in a plot, and describe them.
-        </p>
-        <p>
-          A <strong>statistical question</strong> is a question that has many
-          different answers (for example: "How many pets do students have?"). A
-          non-statistical question has exactly one answer (e.g., "How many pets
-          does Maya have?"). We use the <strong>mean</strong>,
-          <strong>median</strong>, <strong>mode</strong>, <strong>range</strong>,
-          and plots to describe and display the data set.
+          <strong>Your data set</strong> (wait time in minutes for 12 students):
+          <strong>4, 5, 5, 6, 6, 6, 7, 7, 8, 9, 11, 14</strong>. Keep it handy —
+          you will use it in almost every step.
         </p>
       </section>
 
-      <!-- TASK -->
-      <section class="card">
-        <h2>2. Task</h2>
-        <p>By the end of this WebQuest, you will be able to:</p>
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Work the steps in order. Each step fills one section of your Cafeteria
+          Data Report.
+        </p>
+
+        <!-- STEP 1 : statistical questions -->
+        <h3>Step 1 — Decide what is worth measuring</h3>
+        <p>
+          Your council drafted four questions. Tap a chip to label each one. A
+          question is <strong>statistical</strong> only if you expect the
+          answers to <em>vary</em> from student to student.
+        </p>
+        <div class="wq-qsort" id="wq-sorter">
+          <div class="wq-qitem">
+            <div class="wq-qtext">
+              A. "How many minutes did <em>each</em> 6th grader wait in line
+              today?"
+            </div>
+            <div class="wq-chip-row" data-correct="stat">
+              <button class="wq-chip" type="button" data-val="stat">
+                Statistical
+              </button>
+              <button class="wq-chip" type="button" data-val="not">
+                Not statistical
+              </button>
+            </div>
+          </div>
+          <div class="wq-qitem">
+            <div class="wq-qtext">
+              B. "How many minutes did <em>Mr. Lopez's</em> clock show at
+              12:05?"
+            </div>
+            <div class="wq-chip-row" data-correct="not">
+              <button class="wq-chip" type="button" data-val="stat">
+                Statistical
+              </button>
+              <button class="wq-chip" type="button" data-val="not">
+                Not statistical
+              </button>
+            </div>
+          </div>
+          <div class="wq-qitem">
+            <div class="wq-qtext">
+              C. "How many lunch items does each student usually buy?"
+            </div>
+            <div class="wq-chip-row" data-correct="stat">
+              <button class="wq-chip" type="button" data-val="stat">
+                Statistical
+              </button>
+              <button class="wq-chip" type="button" data-val="not">
+                Not statistical
+              </button>
+            </div>
+          </div>
+          <div class="wq-qitem">
+            <div class="wq-qtext">
+              D. "What is today's date on the cafeteria calendar?"
+            </div>
+            <div class="wq-chip-row" data-correct="not">
+              <button class="wq-chip" type="button" data-val="stat">
+                Statistical
+              </button>
+              <button class="wq-chip" type="button" data-val="not">
+                Not statistical
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Ask yourself: "If I asked 30 students, would I get
+          <em>different</em> answers?" If yes → statistical. If everyone gives
+          the same one answer → not statistical.
+          <span class="wq-es"
+            >En español: Pregúntate: "Si pregunto a 30 estudiantes, ¿obtendría
+            respuestas diferentes?" Si sí → estadística.</span
+          >
+        </div>
+
+        <!-- STEP 2 : center -->
+        <h3>Step 2 — Find the center (mean, median, mode)</h3>
+        <p>
+          The center tells the principal what a <em>typical</em> wait looks
+          like. Use your 12-value data set.
+        </p>
+        <div class="wq-stat-grid">
+          <div class="wq-stat">
+            <span class="wq-sname">Mean</span><br />
+            <span class="wq-seq">add all ÷ how many</span>
+            <p>
+              The balance point — the "fair share" if everyone waited equally.
+            </p>
+          </div>
+          <div class="wq-stat">
+            <span class="wq-sname">Median</span><br />
+            <span class="wq-seq">middle of the sorted list</span>
+            <p>With 12 values, average the 6th and 7th numbers.</p>
+          </div>
+          <div class="wq-stat">
+            <span class="wq-sname">Mode</span><br />
+            <span class="wq-seq">value that appears most</span>
+            <p>The most common single wait time.</p>
+          </div>
+        </div>
+        <div class="wq-example">
+          <p><b>Worked example — the mean:</b></p>
+          <p class="wq-work">
+            Sum = 4+5+5+6+6+6+7+7+8+9+11+14 = 88. Mean = 88 ÷ 12 =
+            <b>7.33 min</b> (about 7⅓).
+          </p>
+        </div>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          The mean (7.33) is larger than the median (6.5). When the mean is
+          pulled <em>above</em> the median, an unusually large value is
+          stretching the data to the right. Which student's wait is doing that?
+        </div>
+
+        <!-- STEP 3 : spread / MAD -->
+        <h3>Step 3 — Measure the spread (range and MAD)</h3>
+        <p>
+          Two cafeterias can have the same mean but feel totally different — one
+          steady, one wild. <strong>Spread</strong> captures that. The
+          <strong>range</strong> is max − min. The <strong>MAD</strong> (mean
+          absolute deviation) is the average distance of each value from the
+          mean.
+        </p>
+        <div class="wq-example">
+          <p><b>How to find the MAD (3 moves):</b></p>
+          <p class="wq-work">
+            1) Distance of each value from the mean (7.33).<br />
+            2) Add up all 12 distances.<br />
+            3) Divide that total by 12. A
+            <em>larger</em> MAD means a more inconsistent lunch line.
+          </p>
+        </div>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          "Absolute" just means distance is never negative. Whether a value is
+          above or below the mean, write the gap as a positive number, then
+          average those gaps.
+          <span class="wq-es"
+            >En español: "Absoluto" significa que la distancia nunca es
+            negativa. Escribe cada diferencia como número positivo y luego saca
+            el promedio.</span
+          >
+        </div>
+
+        <!-- STEP 4 : graphs / shape -->
+        <h3>Step 4 — Picture the data (box plot &amp; histogram)</h3>
+        <p>
+          A graph reveals the <strong>shape</strong> at a glance. Study the box
+          plot and histogram below — they show the same 12 wait times two ways.
+        </p>
+        <div class="wq-mission">
+          <!-- BOX PLOT -->
+          <div class="wq-panel">
+            <svg viewBox="0 0 280 150" role="img" aria-labelledby="box-title">
+              <title id="box-title">
+                Box plot of wait times: minimum 4, lower quartile 5.5, median
+                6.5, upper quartile 8.5, maximum 14.
+              </title>
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="150"
+                fill="var(--nt-bg,#f8fafc)"
+              />
+              <text
+                x="14"
+                y="20"
+                font-size="12"
+                font-weight="700"
+                fill="#17212f"
+              >
+                Box plot · wait (min)
+              </text>
+              <!-- axis: x = 28 + (v-2)*18, v from 2..14 -->
+              <line
+                x1="28"
+                y1="120"
+                x2="262"
+                y2="120"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <g font-size="10" fill="#5b6b80" text-anchor="middle">
+                <text x="28" y="138">2</text>
+                <text x="100" y="138">6</text>
+                <text x="172" y="138">10</text>
+                <text x="244" y="138">14</text>
+              </g>
+              <!-- whiskers: min 4 (x=64), max 14 (x=244) -->
+              <line
+                x1="64"
+                y1="70"
+                x2="64"
+                y2="90"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <line
+                x1="244"
+                y1="70"
+                x2="244"
+                y2="90"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <line
+                x1="64"
+                y1="80"
+                x2="91"
+                y2="80"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <line
+                x1="145"
+                y1="80"
+                x2="244"
+                y2="80"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <!-- box Q1=5.5 (x=91) to Q3=8.5 (x=145) -->
+              <rect
+                x="91"
+                y="58"
+                width="54"
+                height="44"
+                fill="rgba(37,99,235,0.25)"
+                stroke="var(--wq-data-1)"
+                stroke-width="2"
+              />
+              <!-- median 6.5 (x=109) -->
+              <line
+                x1="109"
+                y1="58"
+                x2="109"
+                y2="102"
+                stroke="var(--wq-data-4)"
+                stroke-width="3"
+              />
+              <text x="84" y="50" font-size="9" fill="#5b6b80">Q1 5.5</text>
+              <text x="100" y="116" font-size="9" fill="var(--wq-data-4)">
+                Med 6.5
+              </text>
+              <text x="138" y="50" font-size="9" fill="#5b6b80">Q3 8.5</text>
+              <text x="52" y="64" font-size="9" fill="#5b6b80">min 4</text>
+              <text x="226" y="64" font-size="9" fill="#5b6b80">max 14</text>
+            </svg>
+          </div>
+          <!-- HISTOGRAM -->
+          <div class="wq-panel">
+            <svg viewBox="0 0 280 150" role="img" aria-labelledby="hist-title">
+              <title id="hist-title">
+                Histogram of wait times in 3-minute bins: 3 to 5 has 3 students,
+                6 to 8 has 6 students, 9 to 11 has 2 students, 12 to 14 has 1
+                student.
+              </title>
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="150"
+                fill="var(--nt-bg,#f8fafc)"
+              />
+              <text
+                x="14"
+                y="20"
+                font-size="12"
+                font-weight="700"
+                fill="#17212f"
+              >
+                Histogram · 3-min bins
+              </text>
+              <line
+                x1="34"
+                y1="118"
+                x2="266"
+                y2="118"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <!-- bars: max freq 6 -> 84px tall; scale 14px per unit -->
+              <g stroke="#0b1f33" stroke-width="1.5">
+                <rect
+                  x="44"
+                  y="76"
+                  width="46"
+                  height="42"
+                  fill="var(--wq-data-2)"
+                />
+                <rect
+                  x="92"
+                  y="34"
+                  width="46"
+                  height="84"
+                  fill="var(--wq-data-3)"
+                />
+                <rect
+                  x="140"
+                  y="90"
+                  width="46"
+                  height="28"
+                  fill="var(--wq-data-5)"
+                />
+                <rect
+                  x="188"
+                  y="104"
+                  width="46"
+                  height="14"
+                  fill="var(--wq-data-4)"
+                />
+              </g>
+              <g
+                font-size="9"
+                fill="#fff"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                <text x="67" y="98">3</text>
+                <text x="115" y="58">6</text>
+                <text x="163" y="108">2</text>
+                <text x="211" y="115">1</text>
+              </g>
+              <g font-size="8.5" fill="#5b6b80" text-anchor="middle">
+                <text x="67" y="132">3–5</text>
+                <text x="115" y="132">6–8</text>
+                <text x="163" y="132">9–11</text>
+                <text x="211" y="132">12–14</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <p>
+          Both graphs show most students bunched around
+          <strong>6–8 minutes</strong>, with a thin
+          <strong>tail stretching right</strong> toward 11 and 14. That makes
+          this distribution <strong>skewed right</strong>.
+        </p>
+        <div class="wq-diff wq-l2">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Because the data is skewed right, the <strong>median (6.5)</strong>
+          describes a typical student better than the
+          <strong>mean (7.33)</strong>, which the 14-minute wait pulls upward.
+          In your report, argue which "average" the principal should trust — and
+          why.
+        </div>
+
+        <!-- STEP 5 : recommendation -->
+        <h3>Step 5 — Make the call</h3>
+        <p>
+          Write one clear recommendation and support it with
+          <strong>two numbers</strong> from your analysis (for example: "median
+          wait 6.5 min" and "MAD shows lines vary"). Decide whether a single
+          average is enough, or whether the principal needs the spread and shape
+          too.
+        </p>
+        <div class="wq-diff wq-l1">
+          <span class="wq-tag">Level 1 · Support</span>
+          Sentence frame: "The data shows ______. Because the ______ is ______,
+          our council recommends ______."
+          <span class="wq-es"
+            >En español: "Los datos muestran ______. Como el/la ______ es
+            ______, nuestro consejo recomienda ______."</span
+          >
+        </div>
+      </section>
+
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you work. They open in the same window
+          — use your back button to return.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-8/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 8 · 3D Data Lab</span
+              ><span class="wq-rdesc"
+                >Drop data points and watch the mean, median, and graphs update
+                live.</span
+              ></span
+            >
+          </a>
+          <a href="/activities/architect/unit-8/">
+            <span class="wq-ricon" aria-hidden="true">📊</span>
+            <span
+              ><span class="wq-rtitle">Statistics Activity</span
+              ><span class="wq-rdesc"
+                >Practice MAD, box plots, and histograms step by step.</span
+              ></span
+            >
+          </a>
+          <a href="/reveal-evidence-studio/">
+            <span class="wq-ricon" aria-hidden="true">🔍</span>
+            <span
+              ><span class="wq-rtitle">Reveal Evidence Studio</span
+              ><span class="wq-rdesc"
+                >Build the Claim–Evidence–Reasoning for your
+                recommendation.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
+        </div>
+        <h3>Key vocabulary · Vocabulario clave</h3>
         <ul>
-          <li>Tell a <strong>statistical question</strong> from a non-statistical one.</li>
-          <li>Find the <strong>mean</strong> (average), <strong>median</strong> (middle), and <strong>mode</strong> (most common).</li>
-          <li>Find the <strong>range</strong> (biggest − smallest).</li>
-          <li>Read a <strong>dot plot</strong> and explain the shape of the data.</li>
-          <li>Finish the self-check quiz and the graded Check Your Understanding.</li>
+          <li>
+            <strong>Statistical question / Pregunta estadística</strong> — a
+            question whose answers are expected to vary.
+          </li>
+          <li>
+            <strong>Mean · Median · Mode / Media · Mediana · Moda</strong> —
+            three measures of the center.
+          </li>
+          <li>
+            <strong>MAD / Desviación media absoluta</strong> — the average
+            distance of values from the mean (a measure of spread).
+          </li>
+          <li>
+            <strong>Distribution / Distribución</strong> — the overall shape:
+            symmetric, skewed, clusters, gaps, peaks.
+          </li>
         </ul>
       </section>
 
-      <!-- PROCESS -->
-      <section class="card">
-        <h2>3. Process</h2>
-        <p class="muted">Do the steps in order. Read each one carefully.</p>
-        <ol class="steps">
-          <li>
-            <h3>Step 1 — Learn the words</h3>
-            <p>
-              <strong>Data</strong> = the numbers you collect.
-              <strong>Mean</strong> = average.
-              <strong>Median</strong> = middle number when sorted.
-              <strong>Mode</strong> = number seen most.
-              <strong>Range</strong> = how spread out the data is.
-              <strong>Distribution</strong> = the shape of how data is spread.
-              <strong>MAD</strong> = mean absolute deviation (average distance from the mean).
-            </p>
-          </li>
-          <li>
-            <h3>Step 2 — Learn how to find each one</h3>
-            <div class="formula">
-              Mean: <strong>add all numbers, then divide by how many</strong>
-            </div>
-            <div class="formula">
-              Median: <strong>sort the numbers, pick the middle one (average the two middle numbers if even count)</strong>
-            </div>
-            <div class="formula">
-              Mode: <strong>the number that shows up most often</strong>
-            </div>
-            <div class="formula">
-              Range: <strong>biggest number − smallest number</strong>
-            </div>
-            <div class="formula">
-              MAD: <strong>find each value's distance from the mean, then average those distances</strong>
-            </div>
-          </li>
-          <li>
-            <h3>Step 3 — Play the 3D game</h3>
-            <p>
-              Open the <a href="/games/3d/unit-8/" style="color:var(--nt-accent);font-weight:700;">Data Lab 3D game</a>.
-              Stack blocks to match the numbers, then pick the right answer pad for the mean, median, or mode.
-            </p>
-          </li>
-          <li>
-            <h3>Step 4 — Practice with one data set</h3>
-            <p>Use this data set of pets per student in a class:</p>
-            <div class="dataset" aria-label="Data set: 2, 3, 3, 4, 8">2, 3, 3, 4, 8</div>
-            <p>
-              Find the mean, median, mode, and range before the quiz.<br>
-              <em>Mean = (2+3+3+4+8) ÷ 5 = 20 ÷ 5 = 4 | Median = 3 | Mode = 3 | Range = 8 − 2 = 6</em>
-            </p>
-            <p>
-              Below is a <strong>dot plot</strong> of the same data. Each dot = one student.
-              The number with the most dots is the mode.
-            </p>
-            <div class="dotplot" aria-label="Dot plot: 2 has one dot, 3 has two dots, 4 has one dot, 8 has one dot">
-              <div style="display:flex;gap:18px;align-items:flex-end;padding-bottom:4px;">
-                <div style="text-align:center;min-width:28px;">
-                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
-                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">2</div>
-                </div>
-                <div style="text-align:center;min-width:28px;">
-                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
-                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
-                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">3</div>
-                </div>
-                <div style="text-align:center;min-width:28px;">
-                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
-                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">4</div>
-                </div>
-                <div style="text-align:center;min-width:28px;">
-                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">5</div>
-                </div>
-                <div style="text-align:center;min-width:28px;">
-                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">6</div>
-                </div>
-                <div style="text-align:center;min-width:28px;">
-                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">7</div>
-                </div>
-                <div style="text-align:center;min-width:28px;">
-                  <div style="color:var(--nt-accent);font-size:20px;">&#9679;</div>
-                  <div style="border-top:2px solid var(--nt-text);padding-top:4px;">8</div>
-                </div>
-              </div>
-              <p style="font-size:15px;color:var(--nt-muted);margin:4px 0 0;">Number of pets per student</p>
-            </div>
-          </li>
-          <li>
-            <h3>Step 5 — Show what you know</h3>
-            <p>
-              Type your name in the bar above, complete the self-check and the graded quiz,
-              then <strong>Save as PDF</strong> or <strong>DOC</strong> to turn in.
-            </p>
-          </li>
-        </ol>
-        <div class="tip">
-          <strong>Tip:</strong> Always <em>sort the numbers from smallest to biggest</em>
-          before you look for the median or range.
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Cafeteria Data Report will be scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>4 · Lead Analyst</th>
+                <th>3 · Analyst</th>
+                <th>2 · Apprentice</th>
+                <th>1 · Getting started</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Statistical questions</td>
+                <td>All 4 questions sorted correctly with a reason.</td>
+                <td>3 of 4 sorted correctly.</td>
+                <td>2 of 4 sorted correctly.</td>
+                <td>0–1 sorted correctly.</td>
+              </tr>
+              <tr>
+                <td>Center</td>
+                <td>Mean, median, and mode all correct.</td>
+                <td>Two of three correct.</td>
+                <td>One correct.</td>
+                <td>None correct.</td>
+              </tr>
+              <tr>
+                <td>Spread (range &amp; MAD)</td>
+                <td>Range and MAD both correct and labeled.</td>
+                <td>One of two correct.</td>
+                <td>Attempts MAD with errors.</td>
+                <td>No spread shown.</td>
+              </tr>
+              <tr>
+                <td>Graphs &amp; shape</td>
+                <td>Reads box plot &amp; histogram; names the shape.</td>
+                <td>Reads one graph; shape unclear.</td>
+                <td>Partial graph reading.</td>
+                <td>No graph interpretation.</td>
+              </tr>
+              <tr>
+                <td>Recommendation</td>
+                <td>Clear call backed by two numbers.</td>
+                <td>Call with one number.</td>
+                <td>Call with no data.</td>
+                <td>No recommendation.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <!-- RESOURCES -->
-      <section class="card resources">
-        <h2>4. Resources</h2>
-        <p>Use these to help you:</p>
-        <ul class="res-list">
-          <li>&#127918; <a href="/games/3d/unit-8/">Unit 8 — Data Lab 3D Game</a> — build plots and read the measures.</li>
-          <li>&#128216; <a href="/math/">Math Lessons Hub</a> — review statistics.</li>
-          <li>&#128218; <a href="/graphic-novels/unit8/graphic-novel-1.html">Unit 8 Graphic Novel</a> — the data story.</li>
-          <li>&#128221; <a href="/math/unit-8/">Unit 8 Practice Activities</a> — extra practice.</li>
-        </ul>
-      </section>
-
-      <!-- SELF-CHECK (interactive, instant feedback) -->
-      <section class="card" aria-label="Self-Check — instant feedback">
-        <h2>5. Self-Check</h2>
-        <p class="muted">
-          Answer each question and press <strong>Check</strong> for instant feedback.
-          These help you learn — they do <em>not</em> affect your grade.
-        </p>
-
-        <!-- SC1 -->
-        <div class="sc-item" id="sc1">
-          <p class="sc-prompt">1. Which is a statistical question?</p>
-          <div class="sc-choices">
-            <label><input type="radio" name="sc1" value="a"> How old is my teacher?</label>
-            <label><input type="radio" name="sc1" value="b"> How old are the students in my school?</label>
-            <label><input type="radio" name="sc1" value="c"> What is 6 times 7?</label>
-          </div>
-          <button class="sc-btn" type="button" onclick="checkSC('sc1','b','A statistical question expects a variety of answers — ages of many students will vary. The other two have a single answer.')">Check</button>
-          <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC2 -->
-        <div class="sc-item" id="sc2">
-          <p class="sc-prompt">2. Find the mean of: 4, 6, 8, 10, 12.</p>
-          <div class="sc-choices">
-            <label><input type="radio" name="sc2" value="6"> 6</label>
-            <label><input type="radio" name="sc2" value="8"> 8</label>
-            <label><input type="radio" name="sc2" value="10"> 10</label>
-          </div>
-          <button class="sc-btn" type="button" onclick="checkSC('sc2','8','Mean = (4+6+8+10+12) ÷ 5 = 40 ÷ 5 = 8. Add all values, then divide by the count.')">Check</button>
-          <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC3 -->
-        <div class="sc-item" id="sc3">
-          <p class="sc-prompt">3. Find the median of: 1, 3, 5, 7, 9.</p>
-          <div class="sc-choices">
-            <label><input type="radio" name="sc3" value="3"> 3</label>
-            <label><input type="radio" name="sc3" value="5"> 5</label>
-            <label><input type="radio" name="sc3" value="7"> 7</label>
-          </div>
-          <button class="sc-btn" type="button" onclick="checkSC('sc3','5','Already sorted: 1, 3, 5, 7, 9 — the middle value (3rd of 5) is 5.')">Check</button>
-          <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC4 -->
-        <div class="sc-item" id="sc4">
-          <p class="sc-prompt">4. What is the range of: 3, 8, 15, 2, 10?</p>
-          <div class="sc-choices">
-            <label><input type="radio" name="sc4" value="11"> 11</label>
-            <label><input type="radio" name="sc4" value="13"> 13</label>
-            <label><input type="radio" name="sc4" value="12"> 12</label>
-          </div>
-          <button class="sc-btn" type="button" onclick="checkSC('sc4','13','Range = biggest − smallest = 15 − 2 = 13. Sorted: 2, 3, 8, 10, 15.')">Check</button>
-          <div class="sc-feedback" id="sc4-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC5 -->
-        <div class="sc-item" id="sc5">
-          <p class="sc-prompt">5. A dot plot of test scores shows: 70 has 1 dot, 80 has 3 dots, 90 has 2 dots. What is the mode?</p>
-          <div class="sc-choices">
-            <label><input type="radio" name="sc5" value="70"> 70</label>
-            <label><input type="radio" name="sc5" value="80"> 80</label>
-            <label><input type="radio" name="sc5" value="90"> 90</label>
-          </div>
-          <button class="sc-btn" type="button" onclick="checkSC('sc5','80','The mode is the value with the most dots. 80 has 3 dots — more than 70 (1 dot) or 90 (2 dots).')">Check</button>
-          <div class="sc-feedback" id="sc5-fb" role="alert" aria-live="polite"></div>
-        </div>
-      </section>
-
-      <!-- EVALUATION (Rubric) -->
-      <section class="card">
-        <h2>6. Evaluation (Rubric)</h2>
-        <table class="rubric">
-          <thead>
-            <tr>
-              <th scope="col">Skill</th>
-              <th scope="col">4 — Expert</th>
-              <th scope="col">3 — Proficient</th>
-              <th scope="col">2 — Developing</th>
-              <th scope="col">1 — Beginning</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Statistical questions (6.SP.A.1)</strong></td>
-              <td>Correctly identifies statistical vs. non-statistical in all cases and explains why.</td>
-              <td>Correctly identifies them; explanation is incomplete.</td>
-              <td>Identifies them correctly most of the time.</td>
-              <td>Needs help telling them apart.</td>
-            </tr>
-            <tr>
-              <td><strong>Mean &amp; median (6.SP.A.3 / 6.SP.B.5c)</strong></td>
-              <td>Calculates mean and median with no errors; explains which is better for skewed data.</td>
-              <td>Calculates mean and median correctly.</td>
-              <td>Finds one of the two correctly.</td>
-              <td>Mean and median not yet found correctly.</td>
-            </tr>
-            <tr>
-              <td><strong>Mode &amp; range (6.SP.A.3)</strong></td>
-              <td>Finds mode and range with no errors; uses range to describe spread.</td>
-              <td>Finds mode and range with minor errors.</td>
-              <td>Finds one of the two correctly.</td>
-              <td>Cannot yet find mode or range correctly.</td>
-            </tr>
-            <tr>
-              <td><strong>Data displays (6.SP.B.4)</strong></td>
-              <td>Reads dot plot, histogram, and box plot accurately; describes shape (symmetric/skewed).</td>
-              <td>Reads dot plot accurately; can identify mode from plot.</td>
-              <td>Can read a dot plot with some support.</td>
-              <td>Cannot yet read a data display independently.</td>
-            </tr>
-            <tr>
-              <td><strong>Quiz score</strong></td>
-              <td>6 of 6 correct (100%)</td>
-              <td>5 of 6 correct</td>
-              <td>3–4 of 6 correct</td>
-              <td>0–2 of 6 correct</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- CONCLUSION -->
-      <section class="card">
-        <h2>7. Conclusion</h2>
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
         <p>
-          Great work, data scientist! You can now spot a <strong>statistical question</strong>
-          and find the <strong>mean</strong>, <strong>median</strong>, <strong>mode</strong>,
-          and <strong>range</strong> of a data set. You can also read a dot plot and
-          describe the shape of the data. These same skills help you read graphs,
-          sports stats, and surveys in real life.
-        </p>
-      </section>
-
-      <!-- CHECK YOUR UNDERSTANDING (NTKit graded) -->
-      <section class="card">
-        <h2>8. Check Your Understanding</h2>
-        <p class="muted">
-          Answer all 6. Then press <strong>Check My Answers</strong>. Type numbers only when asked.
+          Answer all six using the data set
+          <strong>4, 5, 5, 6, 6, 6, 7, 7, 8, 9, 11, 14</strong>. Click
+          <strong>Check My Answers</strong> when you are done.
         </p>
 
-        <div class="q">
-          <label class="qprompt" for="q1">Q1. Which one is a <strong>statistical question</strong>?</label>
-          <select id="q1" aria-required="true">
-            <option value="">— Choose one —</option>
-            <option value="How tall are the students in my class?">How tall are the students in my class?</option>
-            <option value="How tall am I?">How tall am I?</option>
-            <option value="What is 5 + 5?">What is 5 + 5?</option>
-            <option value="What day is today?">What day is today?</option>
-          </select>
+        <!-- Q1 statistical question (radio) -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Statistical questions (6.SP.A.1)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span
+              >Which question is a <strong>statistical</strong> question?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q1" value="a" /> "How tall is our
+            principal?"</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q1" value="b" /> "How tall is each
+            student in Grade 6?"</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q1" value="c" /> "What day is lunch
+            served on Friday?"</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q1" value="d" /> "How many minutes are in
+            one hour?"</label
+          >
+          <div class="wq-fb" id="fb1" role="status"></div>
         </div>
 
-        <div class="q">
-          <label class="qprompt" for="q2">Q2. Find the <strong>mean</strong> of: 2, 4, 6, 8.</label>
-          <span class="hint">Add them all (total = 20), then divide by 4.</span>
-          <input type="text" id="q2" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
+        <!-- Q2 mean (num) -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="7.33"
+          data-tol="0.1"
+          data-skill="Mean (6.SP.B.5)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span
+              >The 12 wait times add up to <strong>88</strong>. What is the
+              <strong>mean</strong>? (Round to two decimal places.)</span
+            >
+          </div>
+          <label for="q2in" class="sr-only">Mean wait time in minutes</label>
+          <input
+            id="q2in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="min"
+          />
+          <div class="wq-hint">
+            Hint / Pista: mean = sum ÷ how many = 88 ÷ 12.
+          </div>
+          <div class="wq-fb" id="fb2" role="status"></div>
         </div>
 
-        <div class="q">
-          <label class="qprompt" for="q3">Q3. Find the <strong>median</strong> of: 3, 7, 9, 12, 20.</label>
-          <span class="hint">Sort them (already sorted), then pick the middle number (3rd of 5).</span>
-          <input type="text" id="q3" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
+        <!-- Q3 median (num) -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="num"
+          data-answer="6.5"
+          data-tol="0.05"
+          data-skill="Median (6.SP.B.5)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span
+              >The data is already in order. With 12 values, the
+              <strong>median</strong> is the average of the 6th and 7th values
+              (6 and 7). What is it?</span
+            >
+          </div>
+          <label for="q3in" class="sr-only">Median wait time in minutes</label>
+          <input
+            id="q3in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="min"
+          />
+          <div class="wq-hint">Hint / Pista: median = (6 + 7) ÷ 2.</div>
+          <div class="wq-fb" id="fb3" role="status"></div>
         </div>
 
-        <div class="q">
-          <label class="qprompt" for="q4">Q4. Find the <strong>mode</strong> of: 5, 8, 8, 8, 10, 12.</label>
-          <span class="hint">The number seen most often.</span>
-          <input type="text" id="q4" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
+        <!-- Q4 mode (num) -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="num"
+          data-answer="6"
+          data-tol="0.01"
+          data-skill="Mode (6.SP.B.5)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >Which wait time appears <strong>most often</strong> (the
+              mode)?</span
+            >
+          </div>
+          <label for="q4in" class="sr-only"
+            >Mode of the wait times in minutes</label
+          >
+          <input
+            id="q4in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="min"
+          />
+          <div class="wq-hint">
+            Hint / Pista: count how many times each value appears. Which shows
+            up three times?
+          </div>
+          <div class="wq-fb" id="fb4" role="status"></div>
         </div>
 
-        <div class="q">
-          <label class="qprompt" for="q5">Q5. Find the <strong>range</strong> of: 4, 9, 15, 20.</label>
-          <span class="hint">Biggest − smallest = 20 − 4 = ?</span>
-          <input type="text" id="q5" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
+        <!-- Q5 range (num) -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="num"
+          data-answer="10"
+          data-tol="0.01"
+          data-skill="Range / spread (6.SP.B.5)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >The longest wait is 14 min and the shortest is 4 min. What is the
+              <strong>range</strong>?</span
+            >
+          </div>
+          <label for="q5in" class="sr-only"
+            >Range of the wait times in minutes</label
+          >
+          <input
+            id="q5in"
+            class="wq-num"
+            type="number"
+            inputmode="decimal"
+            step="any"
+            placeholder="min"
+          />
+          <div class="wq-hint">Hint / Pista: range = maximum − minimum.</div>
+          <div class="wq-fb" id="fb5" role="status"></div>
         </div>
 
-        <div class="q">
-          <label class="qprompt" for="q6">Q6. A dot plot shows: 1 has 2 dots, 2 has 3 dots, 3 has 1 dot. What is the <strong>mode</strong>?</label>
-          <span class="hint">Which number has the most dots?</span>
-          <input type="text" id="q6" inputmode="numeric" autocomplete="off" placeholder="your answer" aria-required="true" />
+        <!-- Q6 shape from graphs (radio) -->
+        <div
+          class="wq-q"
+          data-q="6"
+          data-type="radio"
+          data-answer="c"
+          data-skill="Distribution shape (6.SP.A.2, B.4)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">6.</span
+            ><span
+              >Most students wait 6–8 min, with a thin tail reaching out to 11
+              and 14. Look at the histogram below. Which best describes the
+              <strong>shape</strong>?</span
+            >
+          </div>
+          <div class="wq-qfig">
+            <svg
+              width="220"
+              height="110"
+              viewBox="0 0 220 110"
+              role="img"
+              aria-label="Histogram with a tall bar just left of center and bars getting shorter to the right"
+            >
+              <line
+                x1="20"
+                y1="90"
+                x2="210"
+                y2="90"
+                stroke="#0b1f33"
+                stroke-width="2"
+              />
+              <g stroke="#0b1f33" stroke-width="1.5">
+                <rect
+                  x="26"
+                  y="58"
+                  width="40"
+                  height="32"
+                  fill="var(--wq-data-2)"
+                />
+                <rect
+                  x="68"
+                  y="22"
+                  width="40"
+                  height="68"
+                  fill="var(--wq-data-3)"
+                />
+                <rect
+                  x="110"
+                  y="66"
+                  width="40"
+                  height="24"
+                  fill="var(--wq-data-5)"
+                />
+                <rect
+                  x="152"
+                  y="78"
+                  width="40"
+                  height="12"
+                  fill="var(--wq-data-4)"
+                />
+              </g>
+              <g font-size="8.5" fill="#5b6b80" text-anchor="middle">
+                <text x="46" y="104">3–5</text>
+                <text x="88" y="104">6–8</text>
+                <text x="130" y="104">9–11</text>
+                <text x="172" y="104">12–14</text>
+              </g>
+            </svg>
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="a" /> Perfectly symmetric —
+            the mean and median are equal.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="b" /> Skewed left — the long
+            tail points to the smaller numbers.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="c" /> Skewed right — the long
+            tail stretches toward the larger numbers.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q6" value="d" /> No shape — graphs can't
+            show shape.</label
+          >
+          <div class="wq-fb" id="fb6" role="status"></div>
         </div>
 
-        <button type="button" class="check-btn" id="checkBtn">Check My Answers</button>
-        <p class="muted" style="margin-top:14px;">
-          Your score and a check or X for each question will appear in the panel at the top.
-          Then use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to turn it in.
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You did what real data analysts do every day: you turned a noisy
+          complaint into evidence. You measured the center, the spread, and the
+          shape — and you saw why a single average like the mean (7.33) can hide
+          the real story when one 14-minute wait stretches the data. Walk into
+          that principal's meeting knowing your recommendation stands on
+          numbers, not opinions.
         </p>
-      </section>
-
-      <!-- ANSWER KEY (teacher-only) -->
-      <section class="card" aria-label="Answer Key — Teacher Only">
-        <h2>Answer Key</h2>
-        <details class="answer-key">
-          <summary>Teacher Answer Key — Click to Reveal</summary>
-          <ol>
-            <li><strong>Q1:</strong> "How tall are the students in my class?" — statistical because answers vary. Standard: 6.SP.A.1.</li>
-            <li><strong>Q2:</strong> 5 — Mean of 2, 4, 6, 8: (2+4+6+8) ÷ 4 = 20 ÷ 4 = 5. Standard: 6.SP.A.3.</li>
-            <li><strong>Q3:</strong> 9 — Sorted: 3, 7, 9, 12, 20 — middle value is 9. Standard: 6.SP.A.3.</li>
-            <li><strong>Q4:</strong> 8 — appears 3 times (more than any other value). Standard: 6.SP.A.3.</li>
-            <li><strong>Q5:</strong> 16 — Range = 20 − 4 = 16. Standard: 6.SP.A.3.</li>
-            <li><strong>Q6:</strong> 2 — has 3 dots, the most of any value. Standard: 6.SP.B.4.</li>
-          </ol>
-          <p style="margin-top:8px;"><em>Self-Check answers: 1-b, 2-8, 3-5, 4-13, 5-80.</em></p>
-        </details>
-      </section>
-
-      <!-- REFLECTION + DELIVERABLE -->
-      <section class="card">
-        <h2>9. Reflection &amp; Deliverable</h2>
-
-        <div class="reflect-box">
-          <label for="reflect1">Reflection 1: In your own words, explain the difference between mean and median. When might one be more useful than the other?</label>
-          <textarea id="reflect1" aria-required="true" placeholder="Write your answer here…"></textarea>
-        </div>
-        <div class="reflect-box">
-          <label for="reflect2">Reflection 2: Give a real-world example of a statistical question you could ask at your school. What data would you collect and how would you display it?</label>
-          <textarea id="reflect2" placeholder="Write your answer here…"></textarea>
-        </div>
-
-        <div class="deliverable-box" role="note">
-          Deliverable: Save your completed page as a PDF or DOC with your first and last name in the filename (Example: JaneDoe_Unit8_WebQuest.pdf) and submit it to your teacher.
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              Suppose a new express line removes the 14- and 11-minute waits.
+              Recompute the mean and median. Did your recommendation get
+              stronger?
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              Should the principal trust the mean or the median for this data,
+              and why? Explain in 2–3 sentences. ¿Debería confiar en la media o
+              en la mediana, y por qué?
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Sports analysts, school nurses, and city planners all summarize
+              messy data with center, spread, and shape — exactly the skills you
+              just used.
+            </p>
+          </div>
         </div>
       </section>
-    </div>
+    </main>
 
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
+    <script src="/assets/nt-activity-kit.js"></script>
     <script>
-      NTKit.mount("#ntkit");
+      (function () {
+        "use strict";
+        // Mount the shared student-name / save bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
 
-      /* ─────────────────────────────────────────────────────────
-         Answer normaliser — tolerant of common formatting variants
-         ───────────────────────────────────────────────────────── */
-      function normalise(raw) {
-        var s = String(raw).trim().toLowerCase();
-        s = s.replace(/\s+/g, "");
-        s = s.replace(/^\$/, "");
-        s = s.replace(/%$/, "");
-        s = s.replace(/,(\d{3})/g, "$1");
-        s = s.replace(/(cubicunits?|cubicinches?|cubicfeet?|cubiccm|cm3|cm³|cm2|cm²|cm|m3|m³|m2|m²|mph|km|units?|dollars?|students?|hours?|minutes?)$/, "");
-        return s;
-      }
+        var ACTIVITY_ID = "webquest-unit-8-cafeteria";
+        var ACTIVITY_TITLE = "WebQuest · Unit 8 · The Cafeteria Comeback";
+        var STANDARD = "6.SP.A.1-3, 6.SP.B.4-5";
 
-      function numericMatch(a, b) {
-        var na = parseFloat(a);
-        var nb = parseFloat(b);
-        if (isNaN(na) || isNaN(nb)) { return false; }
-        return Math.abs(na - nb) < 1e-9;
-      }
-
-      function answersMatch(studentRaw, correctRaw) {
-        var s = normalise(studentRaw);
-        var c = normalise(correctRaw);
-        if (s === c) { return true; }
-        return numericMatch(s, c);
-      }
-
-      /* ── Self-check helper (radio) ── */
-      function checkSC(id, correct, explanation) {
-        var chosen = null;
-        var radios = document.getElementsByName(id);
-        for (var i = 0; i < radios.length; i++) {
-          if (radios[i].checked) { chosen = radios[i].value; break; }
+        // ----- Step 1 interactive chip sorter (formative, not graded) -----
+        var sorter = document.getElementById("wq-sorter");
+        if (sorter) {
+          sorter.addEventListener("click", function (e) {
+            var btn = e.target.closest(".wq-chip");
+            if (!btn) return;
+            var row = btn.parentNode;
+            var want = row.getAttribute("data-correct");
+            var chips = row.querySelectorAll(".wq-chip");
+            chips.forEach(function (c) {
+              c.setAttribute("aria-pressed", "false");
+              // reset any prior cue text back to the base label
+              c.textContent =
+                c.getAttribute("data-val") === "stat"
+                  ? "Statistical"
+                  : "Not statistical";
+            });
+            btn.setAttribute("aria-pressed", "true");
+            var ok = btn.getAttribute("data-val") === want;
+            btn.textContent += ok ? "  ✓" : "  ✗";
+          });
         }
-        var fb = document.getElementById(id + "-fb");
-        if (!fb) return;
-        if (chosen === null) {
-          fb.style.display = "block";
-          fb.className = "sc-feedback wrong";
-          fb.textContent = "Please select an answer first.";
-          return;
-        }
-        if (chosen === correct) {
-          fb.className = "sc-feedback correct";
-          fb.innerHTML = "<strong>Correct!</strong> " + explanation;
-        } else {
-          fb.className = "sc-feedback wrong";
-          fb.innerHTML = "<strong>Not quite.</strong> " + explanation;
-        }
-        fb.style.display = "block";
-      }
 
-      /* ── NTKit graded quiz ── */
-      function val(id) {
-        var n = document.getElementById(id);
-        return n ? n.value : "";
-      }
+        // ----- Graded Check Your Understanding -----
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
 
-      document.getElementById("checkBtn").addEventListener("click", function () {
-        NTKit.grade({
-          activityId: "webquest-unit-8",
-          activityTitle: "WebQuest · Unit 8 — Statistics (Data Lab)",
-          standard: "6.SP.A-B",
-          gradeItem: function(studentRaw, correctRaw) {
-            return answersMatch(studentRaw, correctRaw);
-          },
-          items: [
-            {
-              prompt: "Q1. Which one is a statistical question?",
-              studentAnswer: val("q1"),
-              correctAnswer: "How tall are the students in my class?",
-              points: 1,
-              skill: "Statistical questions"
-            },
-            {
-              prompt: "Q2. Mean of 2, 4, 6, 8 = ?",
-              studentAnswer: val("q2"),
-              correctAnswer: "5",
-              points: 1,
-              skill: "Mean"
-            },
-            {
-              prompt: "Q3. Median of 3, 7, 9, 12, 20 = ?",
-              studentAnswer: val("q3"),
-              correctAnswer: "9",
-              points: 1,
-              skill: "Median"
-            },
-            {
-              prompt: "Q4. Mode of 5, 8, 8, 8, 10, 12 = ?",
-              studentAnswer: val("q4"),
-              correctAnswer: "8",
-              points: 1,
-              skill: "Mode"
-            },
-            {
-              prompt: "Q5. Range of 4, 9, 15, 20 = ?",
-              studentAnswer: val("q5"),
-              correctAnswer: "16",
-              points: 1,
-              skill: "Range"
-            },
-            {
-              prompt: "Q6. Mode of dot plot 1(2 dots), 2(3 dots), 3(1 dot) = ?",
-              studentAnswer: val("q6"),
-              correctAnswer: "2",
-              points: 1,
-              skill: "Mode (dot plot)"
-            }
-          ]
-        });
-        var panel = document.getElementById("ntkit");
-        if (panel && panel.scrollIntoView)
-          panel.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
+          }
+          var input = card.querySelector("input.wq-num");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
+        }
+
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          if (type === "radio")
+            return resp === card.getAttribute("data-answer");
+          var ans = parseFloat(card.getAttribute("data-answer"));
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          var val = parseFloat(resp);
+          if (isNaN(val)) return false;
+          return Math.abs(val - ans) <= tol;
+        }
+
+        function showFeedback(card, ok) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck the data and try again. Inténtalo de nuevo.";
+        }
+
+        function buildItems() {
+          // Payload for the shared NTKit grader (auto-graded items).
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              id: "u8-q" + card.getAttribute("data-q"),
+              skill: card.getAttribute("data-skill") || "Statistics",
+              correct: isCorrect(card, resp),
+              response: resp === null ? "(blank)" : resp,
+              expected: card.getAttribute("data-answer"),
+            };
+          });
+        }
+
+        document
+          .getElementById("wq-check")
+          .addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var ok = isCorrect(card, readResponse(card));
+              if (ok) correctCount++;
+              showFeedback(card, ok);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
+
+            // Prefer the shared kit grader so results save to the dashboard.
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {}
+
+            // Always show an inline score so the page is fully self-contained.
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%)." +
+              (correctCount === total
+                ? " Report approved — your council saves the cafeteria! ¡Felicidades!"
+                : " Review the items marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+
+        document
+          .getElementById("wq-reset")
+          .addEventListener("click", function () {
+            qs.forEach(function (card) {
+              var input = card.querySelector("input.wq-num");
+              if (input) input.value = "";
+              card.querySelectorAll("input[type=radio]").forEach(function (r) {
+                r.checked = false;
+              });
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
+      })();
     </script>
   </body>
 </html>

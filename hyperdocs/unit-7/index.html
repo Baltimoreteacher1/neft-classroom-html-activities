@@ -2,881 +2,1565 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Unit 7 HyperDoc — Integers &amp; the Number Line (6.NS.C.5–7) | Neft Teacher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 7 HyperDoc — Equations &amp; Inequalities | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Grade 6 interactive HyperDoc for Unit 7: write and solve one-step equations, and write and graph inequalities (6.EE.5–8)."
+    />
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/neft-theme.js" defer></script>
-    <script src="/assets/nt-activity-kit.js"></script>
+    <script defer src="/assets/neft-theme.js"></script>
+    <script defer src="/assets/nt-activity-kit.js"></script>
     <style>
-      /* ── Base ── */
-      body {
-        margin: 0;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        line-height: 1.65;
-        font-size: 19px;
-      }
-      .wrap {
-        max-width: 880px;
+      /* ---- Unit 7 HyperDoc: scoped styles layered on the shared Neft theme ---- */
+      .u7-wrap {
+        max-width: 920px;
         margin: 0 auto;
-        padding: 24px 20px 80px;
+        padding: 0 18px 64px;
       }
-      /* ── Skip link ── */
-      .skip {
-        position: absolute;
-        left: -999px;
+
+      .u7-hero {
+        position: relative;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background:
+          radial-gradient(
+            900px 240px at 10% -10%,
+            rgba(124, 58, 237, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            700px 220px at 96% 0%,
+            rgba(245, 158, 11, 0.18),
+            transparent 55%
+          ),
+          var(--nt-surface, #fff);
+        border-radius: 22px;
+        padding: 26px 26px 22px;
+        margin: 18px 0 22px;
+        overflow: hidden;
       }
-      .skip:focus {
-        left: 8px;
-        top: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        padding: 8px 14px;
-        border-radius: 8px;
-        z-index: 50;
-        text-decoration: none;
+      .u7-hero h1 {
+        margin: 6px 0 4px;
+        font-size: clamp(1.5rem, 1.1rem + 2vw, 2.2rem);
+        line-height: 1.15;
       }
-      /* ── Breadcrumb ── */
-      .breadcrumb {
-        font-size: 14px;
-        padding: 10px 16px;
-        color: var(--nt-muted);
+      .u7-hero .u7-sub {
+        color: var(--nt-muted, #5b6472);
+        margin: 0 0 12px;
+        font-size: 1.02rem;
       }
-      .breadcrumb a {
-        color: var(--nt-accent);
-        font-weight: 700;
-        text-decoration: none;
-      }
-      .breadcrumb a:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-        border-radius: 4px;
-      }
-      /* ── Hero ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 24px;
-        margin-bottom: 22px;
-      }
-      header.hero h1 {
-        margin: 0 0 6px;
-        font-size: 30px;
-        color: var(--nt-text);
-      }
-      .standard {
-        display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 999px;
-        font-size: 15px;
-        margin-bottom: 8px;
-      }
-      .muted {
-        color: var(--nt-muted);
-        font-size: 16px;
-      }
-      /* ── Learning Target box ── */
-      .lt-box {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-accent);
-        border-radius: 14px;
-        padding: 18px 22px;
-        margin-bottom: 22px;
-      }
-      .lt-box h2 {
-        margin: 0 0 10px;
-        font-size: 20px;
-        color: var(--nt-accent);
-      }
-      .lt-box ul {
-        margin: 0 0 12px 20px;
-        padding: 0;
-        font-size: 18px;
-      }
-      .lt-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        font-size: 15px;
-        color: var(--nt-muted);
-      }
-      .lt-meta span {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 8px;
-        padding: 4px 10px;
-      }
-      /* ── Sections ── */
-      section {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 22px;
-        margin: 0 0 22px;
-      }
-      section h2 {
-        margin-top: 0;
-        font-size: 24px;
-        color: var(--nt-text);
-        border-bottom: 3px solid var(--nt-accent);
-        padding-bottom: 8px;
-      }
-      .pill {
-        color: var(--nt-accent);
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        font-size: 14px;
-        display: block;
-        margin-bottom: 4px;
-      }
-      /* ── Hint / how box ── */
-      .hint {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 12px;
-        padding: 12px 16px;
-        margin: 12px 0;
-        font-size: 18px;
-      }
-      /* ── Links ── */
-      .links a {
-        display: inline-block;
-        margin: 6px 10px 6px 0;
-        padding: 12px 18px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        text-decoration: none;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 18px;
-      }
-      .links a:hover {
-        opacity: 0.88;
-      }
-      .links a:focus-visible,
-      a:focus-visible {
-        outline: 4px solid var(--nt-focus);
-        outline-offset: 3px;
-      }
-      /* ── Vocabulary ── */
-      .vocab {
-        display: grid;
-        gap: 10px;
-      }
-      .vocab div {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 10px 14px;
-      }
-      .vocab b {
-        color: var(--nt-accent);
-      }
-      /* ── Number line ── */
-      .numline {
-        font-size: 22px;
-        font-weight: 700;
-        text-align: center;
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 14px;
-        letter-spacing: 0.12em;
-        margin: 14px 0;
-        overflow-x: auto;
-      }
-      /* ── Worked example ── */
-      .worked {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 8px;
-        padding: 14px 18px;
-        margin: 14px 0;
-      }
-      /* ── Apply questions ── */
-      .q {
-        margin: 18px 0;
-        padding: 16px;
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 12px;
-      }
-      .q label,
-      .q legend {
-        display: block;
-        font-weight: 700;
-        font-size: 19px;
-        margin-bottom: 8px;
-      }
-      .q .num { color: var(--nt-accent); }
-      input[type="text"],
-      textarea,
-      select {
-        font-size: 19px;
-        padding: 10px 12px;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        font-family: inherit;
-      }
-      input[type="text"]:focus,
-      textarea:focus,
-      select:focus {
-        outline: 4px solid var(--nt-focus);
-        outline-offset: 2px;
-        border-color: var(--nt-accent);
-      }
-      fieldset { border: none; padding: 0; margin: 0; }
-      .opts label {
+      .u7-kicker {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        font-weight: 600;
-        margin: 6px 16px 6px 0;
-        font-size: 19px;
-        cursor: pointer;
-      }
-      .opts input { width: auto; transform: scale(1.4); margin-right: 4px; }
-      textarea { min-height: 90px; }
-      .checkbtn {
-        font-size: 21px;
-        font-weight: 800;
-        padding: 14px 28px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        margin-top: 10px;
-      }
-      .checkbtn:hover { opacity: 0.88; }
-      .checkbtn:focus-visible { outline: 4px solid var(--nt-focus); outline-offset: 3px; }
-      /* ── Self-check feedback ── */
-      .sc-item {
-        margin: 14px 0;
-        padding: 14px 16px;
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 12px;
-      }
-      .sc-item label {
-        display: block;
         font-weight: 700;
-        font-size: 19px;
-        margin-bottom: 8px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        color: var(--nt-accent, #2563eb);
+        background: color-mix(
+          in srgb,
+          var(--nt-accent, #2563eb) 12%,
+          transparent
+        );
+        border-radius: 999px;
+        padding: 5px 12px;
       }
-      .sc-item .opts label { font-weight: 600; }
-      .sc-feedback {
-        margin-top: 8px;
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 17px;
+      .u7-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .u7-chip {
+        font-size: 0.78rem;
         font-weight: 600;
+        background: var(--nt-bg, #f4f6fb);
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 4px 11px;
+      }
+
+      .u7-toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 8px;
+      }
+      .u7-toc a {
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 6px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u7-toc a:hover {
+        border-color: var(--nt-accent, #2563eb);
+        color: var(--nt-accent, #2563eb);
+      }
+      .u7-toc a:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+
+      .u7-step {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        border-radius: 18px;
+        padding: 22px 22px 20px;
+        margin: 16px 0;
+      }
+      .u7-step > h2 {
+        margin: 0 0 4px;
+        font-size: 1.28rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .u7-badge {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: inline-grid;
+        place-items: center;
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .b1 {
+        background: #2563eb;
+      }
+      .b2 {
+        background: #0ea5e9;
+      }
+      .b3 {
+        background: #0d9488;
+      }
+      .b4 {
+        background: #7c3aed;
+      }
+      .b5 {
+        background: #db2777;
+      }
+      .u7-step .u7-phase {
+        color: var(--nt-muted, #5b6472);
+        font-weight: 700;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 10px 40px;
+      }
+
+      .u7-card {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 12px 0;
+        background: var(--nt-bg, #f7f9fc);
+      }
+      .u7-card h3 {
+        margin: 0 0 6px;
+        font-size: 1.02rem;
+      }
+
+      .u7-grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 640px) {
+        .u7-grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .u7-fig {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .u7-fig svg {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      .u7-cap {
+        font-size: 0.82rem;
+        color: var(--nt-muted, #5b6472);
+        text-align: center;
+      }
+
+      .u7-formula {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        background: var(--nt-text, #1c2330);
+        color: #fff;
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: inline-block;
+        font-size: 1rem;
+      }
+
+      details.u7-level {
+        border: 1px dashed var(--nt-border, #c3cad6);
+        border-radius: 12px;
+        padding: 4px 14px;
+        margin: 12px 0;
+        background: var(--nt-surface, #fff);
+      }
+      details.u7-level > summary {
+        cursor: pointer;
+        font-weight: 700;
+        padding: 8px 0;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      details.u7-level > summary::-webkit-details-marker {
         display: none;
       }
-      .sc-feedback.correct {
-        background: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-        display: block;
+      details.u7-level > summary::before {
+        content: "▸";
+        transition: transform 0.15s;
+        color: var(--nt-accent, #2563eb);
       }
-      .sc-feedback.wrong {
-        background: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-        display: block;
+      details.u7-level[open] > summary::before {
+        transform: rotate(90deg);
       }
-      /* ── Rubric ── */
-      .rubric-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 14px 0;
-        font-size: 17px;
+      .u7-tag {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        color: #fff;
       }
-      .rubric-table th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        padding: 10px 12px;
-        text-align: left;
-        font-weight: 700;
+      .u7-tag.l1 {
+        background: #0d9488;
       }
-      .rubric-table td {
-        border: 1px solid var(--nt-border);
-        padding: 9px 12px;
-        vertical-align: top;
+      .u7-tag.l2 {
+        background: #7c3aed;
       }
-      .rubric-table tr:nth-child(even) td {
-        background: var(--nt-bg);
+      .u7-es {
+        color: var(--nt-muted, #5b6472);
+        font-style: italic;
       }
-      /* ── Details / Answer Key ── */
-      details {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 12px 16px;
+
+      .u7-q {
         margin: 14px 0;
       }
-      details summary {
+      .u7-q p.u7-prompt {
+        font-weight: 600;
+        margin: 0 0 8px;
+      }
+      .u7-q input[type="text"],
+      .u7-q input[type="number"] {
+        font: inherit;
+        padding: 9px 11px;
+        border-radius: 10px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        width: 160px;
+        max-width: 100%;
+      }
+      .u7-q input:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+      .u7-opts {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .u7-opts li label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 11px;
+        padding: 10px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u7-opts li label:hover {
+        border-color: var(--nt-accent, #2563eb);
+      }
+      .u7-unit {
+        color: var(--nt-muted, #5b6472);
+        margin-left: 6px;
+      }
+      .u7-fb {
+        margin-top: 7px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        min-height: 1.1em;
+      }
+      .u7-fb.ok {
+        color: #0d9488;
+      }
+      .u7-fb.no {
+        color: #db2777;
+      }
+
+      .u7-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
+      }
+      .u7-btn {
+        font: inherit;
         font-weight: 700;
         cursor: pointer;
-        font-size: 17px;
-        color: var(--nt-accent);
-        list-style: none;
-        padding: 2px 0;
+        border: 1px solid var(--nt-accent, #2563eb);
+        background: var(--nt-accent, #2563eb);
+        color: #fff;
+        border-radius: 11px;
+        padding: 11px 18px;
       }
-      details summary::-webkit-details-marker { display: none; }
-      details summary::before { content: "▶ "; font-size: 13px; }
-      details[open] summary::before { content: "▼ "; }
-      details[open] { padding-bottom: 16px; }
-      .ak-table {
+      .u7-btn.ghost {
+        background: transparent;
+        color: var(--nt-accent, #2563eb);
+      }
+      .u7-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+      .u7-score {
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+
+      .u7-explore {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .u7-explore a.u7-link {
+        text-decoration: none;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        display: block;
+      }
+      .u7-explore a.u7-link:hover {
+        border-color: var(--nt-accent, #2563eb);
+        transform: translateY(-1px);
+      }
+      .u7-explore .u7-link strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 3px;
+      }
+      .u7-explore .u7-link span {
+        font-size: 0.85rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      .u7-reflect textarea {
         width: 100%;
-        border-collapse: collapse;
-        font-size: 16px;
+        min-height: 96px;
+        font: inherit;
+        padding: 11px 13px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        resize: vertical;
+      }
+      .u7-reflect textarea:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+
+      .u7-vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+      }
+      .u7-vocab dt {
+        font-weight: 800;
+      }
+      .u7-vocab dd {
+        margin: 2px 0 0;
+        font-size: 0.9rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      /* Interactive balance + inequality mini-tools */
+      .u7-tool {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 12px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .u7-tool h3 {
+        margin: 0 0 8px;
+      }
+      .u7-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
         margin-top: 10px;
       }
-      .ak-table th {
-        background: var(--nt-surface);
-        padding: 8px 10px;
-        text-align: left;
-        border: 1px solid var(--nt-border);
+      .u7-controls label {
+        font-weight: 600;
+        font-size: 0.92rem;
+      }
+      .u7-controls input[type="range"] {
+        flex: 1 1 180px;
+        accent-color: var(--nt-accent, #2563eb);
+      }
+      .u7-readout {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
         font-weight: 700;
+        color: var(--nt-text, #1c2330);
       }
-      .ak-table td {
-        border: 1px solid var(--nt-border);
-        padding: 8px 10px;
-        vertical-align: top;
+      .u7-readout.bal {
+        color: #0d9488;
       }
-      /* ── Teacher Notes ── */
-      .teacher-notes {
-        background: #fffde7;
-        border: 2px solid #f9a825;
-        border-radius: 14px;
-        padding: 18px 22px;
-        margin-bottom: 22px;
-        font-size: 17px;
+      .u7-readout.unbal {
+        color: #db2777;
       }
-      .teacher-notes h2 {
-        color: #e65100;
-        margin-top: 0;
-        font-size: 20px;
-      }
-      .teacher-notes h3 {
-        color: #bf360c;
-        font-size: 17px;
-        margin: 14px 0 6px;
-      }
-      .teacher-notes ul {
-        margin: 4px 0 8px 18px;
-        padding: 0;
-      }
-      /* ── Print ── */
+
       @media print {
-        body { font-size: 14px; background: #fff; color: #000; }
-        .teacher-notes, .breadcrumb { display: none; }
-        section, header.hero, .lt-box {
-          border: 1px solid #999;
-          box-shadow: none;
+        .u7-toc,
+        .u7-actions,
+        .u7-controls,
+        .u7-explore a.u7-link::after {
+          display: none !important;
+        }
+        .u7-step {
           break-inside: avoid;
         }
-        .checkbtn, .sc-btn { display: none; }
-        .sc-feedback { display: none !important; }
-        a[href]::after { content: " (" attr(href) ")"; font-size: 12px; color: #555; }
-      }
-      /* ── Mobile ── */
-      @media (max-width: 600px) {
-        body { font-size: 17px; }
-        header.hero h1 { font-size: 24px; }
-        section h2 { font-size: 20px; }
-        .lt-meta { flex-direction: column; }
-        .rubric-table { font-size: 14px; }
-        .opts label { margin: 4px 8px 4px 0; font-size: 17px; }
       }
     </style>
   </head>
   <body class="nt-theme-aware">
-    <a href="#main-content" class="skip">Skip to main content</a>
-    <p class="breadcrumb"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
-    <div class="wrap">
+    <div id="ntkit"></div>
 
-      <!-- HERO -->
-      <header class="hero">
-        <span class="standard">CCSS 6.NS.C.5–7</span>
-        <h1>Unit 7 — Integers &amp; the Number Line</h1>
-        <p class="muted">Dive the number line like a submarine. 0 is sea level. Going up is positive (+). Going down is negative (−).</p>
-        <p class="muted" style="margin-top:6px;font-size:14px;"><strong>Neft Teacher</strong> · Grade 6 Mathematics</p>
+    <main class="u7-wrap">
+      <header class="u7-hero">
+        <span class="u7-kicker">Grade 6 • Unit 7 HyperDoc</span>
+        <h1>Solve for the Unknown: Equations &amp; Inequalities</h1>
+        <p class="u7-sub">
+          You just got hired as the <strong>logistics planner</strong> for the
+          <strong>Maker Market</strong> — the school's pop-up shop. Boxes,
+          budgets, and table space all hide an unknown number. Your job is to
+          write an equation or inequality, then solve it to keep the market
+          running.
+          <span class="u7-es"
+            >Eres el planificador del mercado escolar. Tu trabajo es escribir y
+            resolver ecuaciones y desigualdades.</span
+          >
+        </p>
+        <div class="u7-meta">
+          <span class="u7-chip">Standards: 6.EE.5–8</span>
+          <span class="u7-chip">Topic: Equations &amp; Inequalities</span>
+          <span class="u7-chip">MCAP-aligned</span>
+          <span class="u7-chip">Work time: ~45 min</span>
+        </div>
       </header>
 
-      <!-- LEARNING TARGET -->
-      <div class="lt-box" role="region" aria-label="Learning Target">
-        <h2>Learning Target</h2>
-        <ul>
-          <li><strong>I can</strong> describe positive and negative numbers in real-world contexts. <em>(6.NS.C.5)</em></li>
-          <li><strong>I can</strong> place integers on a number line and find their opposites. <em>(6.NS.C.6)</em></li>
-          <li><strong>I can</strong> compare and order integers and explain using absolute value. <em>(6.NS.C.7)</em></li>
-        </ul>
-        <div class="lt-meta">
-          <span>📐 Standards: 6.NS.C.5 · 6.NS.C.6 · 6.NS.C.7</span>
-          <span>⏱ Estimated time: 50 minutes</span>
-          <span>📦 Materials: pencil, this HyperDoc, optional number-line handout</span>
-          <span>👥 Format: individual or pair work</span>
+      <nav class="u7-toc" aria-label="HyperDoc sections">
+        <a href="#engage">1 · Engage</a>
+        <a href="#explore">2 · Explore</a>
+        <a href="#explain">3 · Explain</a>
+        <a href="#apply">4 · Apply</a>
+        <a href="#reflect">5 · Reflect</a>
+        <a href="#extend">6 · Extend</a>
+      </nav>
+
+      <!-- ============ 1. ENGAGE ============ -->
+      <section class="u7-step" id="engage">
+        <h2><span class="u7-badge b1">1</span> Engage</h2>
+        <p class="u7-phase">Hook &amp; essential question</p>
+
+        <p>
+          A shipment arrives for the Maker Market. The pan balance below holds
+          one mystery box (we call its weight <strong>x</strong>) plus a 3-pound
+          weight on the left. The right pan holds a 10-pound weight. The pans
+          are <strong>level</strong> — perfectly balanced.
+        </p>
+
+        <div class="u7-card">
+          <div class="u7-fig">
+            <svg
+              viewBox="0 0 320 180"
+              width="340"
+              role="img"
+              aria-label="A level pan balance. The left pan holds a mystery box labeled x and a 3-pound weight. The right pan holds a 10-pound weight."
+            >
+              <!-- stand -->
+              <rect x="152" y="40" width="6" height="110" fill="#5b6472" />
+              <polygon
+                points="120,170 200,170 175,150 145,150"
+                fill="#5b6472"
+              />
+              <!-- beam (level) -->
+              <rect
+                x="60"
+                y="44"
+                width="200"
+                height="6"
+                rx="3"
+                fill="#1c2330"
+              />
+              <!-- left hangers -->
+              <line
+                x1="80"
+                y1="50"
+                x2="80"
+                y2="78"
+                stroke="#5b6472"
+                stroke-width="2"
+              />
+              <line
+                x1="80"
+                y1="50"
+                x2="55"
+                y2="78"
+                stroke="#5b6472"
+                stroke-width="2"
+              />
+              <line
+                x1="80"
+                y1="50"
+                x2="105"
+                y2="78"
+                stroke="#5b6472"
+                stroke-width="2"
+              />
+              <path
+                d="M48 78 H112 L100 104 H60 Z"
+                fill="#ede0ff"
+                stroke="#7c3aed"
+                stroke-width="2"
+              />
+              <!-- right hangers -->
+              <line
+                x1="240"
+                y1="50"
+                x2="240"
+                y2="78"
+                stroke="#5b6472"
+                stroke-width="2"
+              />
+              <line
+                x1="240"
+                y1="50"
+                x2="215"
+                y2="78"
+                stroke="#5b6472"
+                stroke-width="2"
+              />
+              <line
+                x1="240"
+                y1="50"
+                x2="265"
+                y2="78"
+                stroke="#5b6472"
+                stroke-width="2"
+              />
+              <path
+                d="M208 78 H272 L260 104 H220 Z"
+                fill="#fff3d6"
+                stroke="#f59e0b"
+                stroke-width="2"
+              />
+              <!-- left contents: box x + 3 -->
+              <rect
+                x="58"
+                y="80"
+                width="20"
+                height="20"
+                rx="3"
+                fill="#7c3aed"
+              />
+              <text
+                x="68"
+                y="94"
+                font-size="12"
+                fill="#fff"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                x
+              </text>
+              <circle cx="92" cy="92" r="10" fill="#a78bfa" />
+              <text
+                x="92"
+                y="96"
+                font-size="10"
+                fill="#1c2330"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                3
+              </text>
+              <!-- right contents: 10 -->
+              <circle cx="240" cy="92" r="13" fill="#fbbf24" />
+              <text
+                x="240"
+                y="97"
+                font-size="12"
+                fill="#1c2330"
+                text-anchor="middle"
+                font-weight="700"
+              >
+                10
+              </text>
+              <text
+                x="80"
+                y="128"
+                font-size="12"
+                text-anchor="middle"
+                fill="#1c2330"
+              >
+                left = x + 3
+              </text>
+              <text
+                x="240"
+                y="128"
+                font-size="12"
+                text-anchor="middle"
+                fill="#1c2330"
+              >
+                right = 10
+              </text>
+            </svg>
+            <p class="u7-cap">
+              The balance is level, so the two sides weigh the same.
+            </p>
+          </div>
+          <p>
+            <strong>Quick think (no calculator):</strong> If the box plus 3
+            pounds equals 10 pounds, how heavy is the mystery box? Write your
+            guess and one sentence explaining how you got it. You will check it
+            in the Apply section.
+          </p>
         </div>
-      </div>
 
-      <!-- TEACHER NOTES -->
-      <div class="teacher-notes" role="region" aria-label="Teacher Notes">
-        <h2>Teacher Notes (not for student display)</h2>
-        <h3>Pacing</h3>
-        <ul>
-          <li><strong>Engage</strong> — 5 min: pose the submarine hook aloud; cold-call 2 students before they begin.</li>
-          <li><strong>Explore</strong> — 10 min: 3D game + 5 min debrief on number-line placement.</li>
-          <li><strong>Explain</strong> — 8 min: vocabulary card review with pair-share on absolute value.</li>
-          <li><strong>Apply</strong> — 15 min (self-check) + 5 min NTKit auto-graded set.</li>
-          <li><strong>Reflect</strong> — 7 min: individual writing; collect deliverable at class end.</li>
-        </ul>
-        <h3>Grouping</h3>
-        <ul>
-          <li>Pair students for Explore; individual for Apply and Reflect.</li>
-          <li>Small-group option: compare self-check answers before pressing "Check My Answers."</li>
-        </ul>
-        <h3>Differentiation — Support</h3>
-        <ul>
-          <li>Provide a printed number line from −20 to +20 for Q1 and Q6.</li>
-          <li>Allow students to draw the number line on scratch paper during Apply.</li>
-          <li>Reduce Apply to Q1–Q4 for students needing scaffolding.</li>
-        </ul>
-        <h3>Differentiation — Challenge</h3>
-        <ul>
-          <li>Ask: "If |a| = |b|, does a = b? Explain with examples."</li>
-          <li>Extension: place rational numbers (½, −¾) on the number line.</li>
-        </ul>
-        <h3>ESOL / Language Supports</h3>
-        <ul>
-          <li>Display a bilingual word wall: <em>entero/integer, valor absoluto/absolute value, opuesto/opposite</em>.</li>
-          <li>Use the submarine diagram as a non-linguistic representation throughout.</li>
-          <li>Accept numeric answers without written justification for emerging English learners.</li>
-        </ul>
-      </div>
+        <p style="margin-top: 14px">
+          <strong>Essential question:</strong>
+          <em
+            >How can I turn a real situation into an equation or inequality, and
+            then undo the steps to find the unknown?</em
+          >
+        </p>
+      </section>
 
-      <main id="main-content">
+      <!-- ============ 2. EXPLORE ============ -->
+      <section class="u7-step" id="explore">
+        <h2><span class="u7-badge b2">2</span> Explore</h2>
+        <p class="u7-phase">Investigate before the lesson</p>
 
-        <!-- ENGAGE -->
-        <section aria-labelledby="h-engage">
-          <span class="pill">Step 1 · Engage · Think</span>
-          <h2 id="h-engage">A submarine dives below the sea</h2>
+        <p>
+          Explore each tool below for a few minutes. As you go, watch for
+          <strong>one big idea</strong>: to keep an equation true, whatever you
+          do to one side you must do to the <em>other</em> side too.
+        </p>
+
+        <div class="u7-explore">
+          <a
+            class="u7-link"
+            href="/games/3d/unit-7/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🎮 Balance Breakout (3D Game)</strong>
+            <span
+              >Add and remove blocks from a giant balance to solve equations in
+              3D.</span
+            >
+          </a>
+          <a
+            class="u7-link"
+            href="/math/unit-7/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>📐 Unit 7 Math Hub</strong>
+            <span
+              >Worked examples for one-step equations and graphing
+              inequalities.</span
+            >
+          </a>
+          <a
+            class="u7-link"
+            href="/webquests/unit-7/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🧭 Maker Market WebQuest</strong>
+            <span>Plan a real pop-up shop and defend every equation.</span>
+          </a>
+        </div>
+
+        <!-- Interactive balance tool -->
+        <div class="u7-tool">
+          <h3>Try it: keep the balance level</h3>
           <p>
-            A submarine sits at <b>0</b> (sea level). It dives to <b>−30</b> meters.
-            A bird flies <b>+30</b> meters above the sea.
+            The left pan is <strong>x + 3</strong>. The right pan is
+            <strong>10</strong>. Slide to change <strong>x</strong>. The pans
+            stay level only when both sides are equal.
+            <span class="u7-es">Mantén la balanza nivelada.</span>
           </p>
+          <div class="u7-fig">
+            <svg
+              id="u7-balsvg"
+              viewBox="0 0 320 150"
+              width="320"
+              role="img"
+              aria-label="An interactive pan balance that tilts when the two sides are not equal."
+            >
+              <rect x="152" y="36" width="6" height="92" fill="#5b6472" />
+              <polygon
+                points="122,140 198,140 175,124 145,124"
+                fill="#5b6472"
+              />
+              <!-- rotating beam group -->
+              <g id="u7-beam" transform="rotate(0 155 40)">
+                <rect
+                  x="60"
+                  y="37"
+                  width="190"
+                  height="6"
+                  rx="3"
+                  fill="#1c2330"
+                />
+                <line
+                  x1="80"
+                  y1="43"
+                  x2="80"
+                  y2="66"
+                  stroke="#5b6472"
+                  stroke-width="2"
+                />
+                <path
+                  d="M55 66 H105 L96 88 H64 Z"
+                  fill="#ede0ff"
+                  stroke="#7c3aed"
+                  stroke-width="2"
+                />
+                <line
+                  x1="230"
+                  y1="43"
+                  x2="230"
+                  y2="66"
+                  stroke="#5b6472"
+                  stroke-width="2"
+                />
+                <path
+                  d="M205 66 H255 L246 88 H214 Z"
+                  fill="#fff3d6"
+                  stroke="#f59e0b"
+                  stroke-width="2"
+                />
+                <text
+                  id="u7-balleft"
+                  x="80"
+                  y="80"
+                  font-size="12"
+                  text-anchor="middle"
+                  font-weight="700"
+                  fill="#1c2330"
+                >
+                  x+3
+                </text>
+                <text
+                  x="230"
+                  y="80"
+                  font-size="12"
+                  text-anchor="middle"
+                  font-weight="700"
+                  fill="#1c2330"
+                >
+                  10
+                </text>
+              </g>
+            </svg>
+          </div>
+          <div class="u7-controls">
+            <label for="u7-balx">x = <span id="u7-balxval">2</span></label>
+            <input
+              id="u7-balx"
+              type="range"
+              min="0"
+              max="14"
+              value="2"
+              step="1"
+              aria-label="Value of x on the balance"
+            />
+            <span
+              id="u7-balstate"
+              class="u7-readout unbal"
+              aria-live="polite"
+            ></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 3. EXPLAIN ============ -->
+      <section class="u7-step" id="explain">
+        <h2><span class="u7-badge b3">3</span> Explain</h2>
+        <p class="u7-phase">The math, in plain language</p>
+
+        <p>
+          An <strong>equation</strong> says two amounts are <em>equal</em> (it
+          has an = sign). A <strong>variable</strong> like
+          <strong>x</strong> stands for the unknown number. To solve a one-step
+          equation, you <strong>undo</strong> the operation using its
+          <strong>inverse</strong> — keeping both sides equal, just like a level
+          balance.
+        </p>
+
+        <dl class="u7-vocab u7-card">
+          <div>
+            <dt>variable</dt>
+            <dd>
+              a letter that stands for an unknown number
+              <span class="u7-es">· la variable</span>
+            </dd>
+          </div>
+          <div>
+            <dt>equation</dt>
+            <dd>
+              two expressions joined by = (they are equal)
+              <span class="u7-es">· la ecuación</span>
+            </dd>
+          </div>
+          <div>
+            <dt>inverse operation</dt>
+            <dd>
+              the opposite move (+ undoes −, × undoes ÷)
+              <span class="u7-es">· la operación inversa</span>
+            </dd>
+          </div>
+          <div>
+            <dt>inequality</dt>
+            <dd>
+              a comparison using &lt;, &gt;, ≤, or ≥
+              <span class="u7-es">· la desigualdad</span>
+            </dd>
+          </div>
+          <div>
+            <dt>solution</dt>
+            <dd>
+              the value that makes it true
+              <span class="u7-es">· la solución</span>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="u7-grid2">
+          <div class="u7-card">
+            <h3>Addition equation</h3>
+            <p class="u7-formula">x + 3 = 10 → x = 7</p>
+            <p>
+              Subtract 3 from <em>both</em> sides. 10 − 3 = 7. Adding was the
+              problem, so subtracting is the inverse.
+            </p>
+          </div>
+          <div class="u7-card">
+            <h3>Subtraction equation</h3>
+            <p class="u7-formula">x − 4 = 9 → x = 13</p>
+            <p>Add 4 to both sides. 9 + 4 = 13.</p>
+          </div>
+          <div class="u7-card">
+            <h3>Multiplication equation</h3>
+            <p class="u7-formula">5x = 35 → x = 7</p>
+            <p>Divide both sides by 5. 35 ÷ 5 = 7.</p>
+          </div>
+          <div class="u7-card">
+            <h3>Division equation</h3>
+            <p class="u7-formula">x ÷ 6 = 4 → x = 24</p>
+            <p>Multiply both sides by 6. 4 × 6 = 24.</p>
+          </div>
+        </div>
+
+        <div class="u7-card">
+          <h3>Worked example — the mystery box</h3>
+          <p>Back to the Engage balance: <strong>x + 3 = 10</strong>.</p>
+          <p>Subtract 3 from both sides: x + 3 − 3 = 10 − 3</p>
+          <p>So <strong>x = 7</strong>. The box weighs 7 pounds.</p>
           <p>
-            <b>Question:</b> Are −30 and +30 the same distance from 0? Which one is lower?
-            You will find out in this HyperDoc.
+            <strong>Check:</strong> put 7 back in → 7 + 3 = 10 ✓. (How close was
+            your Engage guess?)
           </p>
-          <div class="numline" aria-label="Number line from negative 4 to positive 4">
-            −4 −3 −2 −1 &nbsp;0&nbsp; +1 +2 +3 +4
-          </div>
-          <div class="hint">
-            <strong>Think:</strong> On the number line above, point to where −30 and +30 would go.
-            Which direction is "down"?
-          </div>
-        </section>
+        </div>
 
-        <!-- EXPLORE -->
-        <section aria-labelledby="h-explore">
-          <span class="pill">Step 2 · Explore · Play</span>
-          <h2 id="h-explore">Try the Unit 7 tools</h2>
-          <p>Open a link in a new tab. Play, then come back to finish.</p>
-          <div class="links">
-            <a href="/games/3d/unit-7/" target="_blank" rel="noopener">3D Game: Submarine Dive</a>
-            <a href="/math/" target="_blank" rel="noopener">Math Hub</a>
-            <a href="/graphic-novels/" target="_blank" rel="noopener">Graphic Novels</a>
-          </div>
-          <p class="muted" style="margin-top:12px;">After playing: What was the deepest integer you used in the game? Write it on scratch paper.</p>
-        </section>
-
-        <!-- EXPLAIN -->
-        <section aria-labelledby="h-explain">
-          <span class="pill">Step 3 · Explain · Learn</span>
-          <h2 id="h-explain">What you need to know</h2>
-          <div class="vocab" role="list">
-            <div role="listitem"><b>Integer:</b> a whole number that can be positive, negative, or zero. Like −3, 0, or +5.</div>
-            <div role="listitem"><b>Negative number:</b> a number less than 0. It has a minus sign (−). Like −7.</div>
-            <div role="listitem"><b>Opposite:</b> the same distance from 0, but the other side. The opposite of +6 is −6.</div>
-            <div role="listitem"><b>Absolute value:</b> how far a number is from 0. We write it like |−8| = 8. It is never negative.</div>
-          </div>
-          <div class="worked">
-            <p><b>Worked example:</b> Order −2, 3, −5 from least to greatest.</p>
-            <p>On a number line, numbers on the <b>left are smaller</b>. So: <b>−5, −2, 3</b>.</p>
-            <p>Absolute value: |−5| = 5 because −5 is 5 steps from 0.</p>
-          </div>
-          <p class="hint">
-            Rule: the more negative a number is, the smaller it is. −5 is less than −2.
-          </p>
-        </section>
-
-        <!-- APPLY: Self-check first, then NTKit graded -->
-        <section aria-labelledby="h-apply">
-          <span class="pill">Step 4 · Apply · Do</span>
-          <h2 id="h-apply">Show what you know</h2>
-
-          <!-- SELF-CHECK (instant feedback, no deps) -->
-          <h3 style="font-size:20px;margin-bottom:4px;">Quick Self-Check</h3>
-          <p style="margin:0 0 14px;">Answer each question, then press <strong>Check</strong> to see if you are right. Read the explanation!</p>
-
-          <!-- SC1 -->
-          <div class="sc-item">
-            <label id="sc1-label"><span style="color:var(--nt-accent);font-weight:800;">A.</span> A fish is at −8 meters. It swims 5 meters <em>deeper</em>. What integer tells the new depth?</label>
-            <div class="opts" role="radiogroup" aria-labelledby="sc1-label">
-              <label><input type="radio" name="sc1" value="a" />−3</label>
-              <label><input type="radio" name="sc1" value="b" />−13</label>
-              <label><input type="radio" name="sc1" value="c" />+13</label>
-            </div>
-            <button type="button" class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(1,'b','Correct! Deeper means more negative. −8 − 5 = −13.')">Check</button>
-            <div class="sc-feedback" id="sc1-fb" aria-live="polite"></div>
-          </div>
-
-          <!-- SC2 -->
-          <div class="sc-item">
-            <label id="sc2-label"><span style="color:var(--nt-accent);font-weight:800;">B.</span> What is |−22|?</label>
-            <div class="opts" role="radiogroup" aria-labelledby="sc2-label">
-              <label><input type="radio" name="sc2" value="a" />−22</label>
-              <label><input type="radio" name="sc2" value="b" />0</label>
-              <label><input type="radio" name="sc2" value="c" />22</label>
-            </div>
-            <button type="button" class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(2,'c','Correct! Absolute value is the distance from 0, always positive. |−22| = 22.')">Check</button>
-            <div class="sc-feedback" id="sc2-fb" aria-live="polite"></div>
-          </div>
-
-          <!-- SC3 -->
-          <div class="sc-item">
-            <label id="sc3-label"><span style="color:var(--nt-accent);font-weight:800;">C.</span> Which list is in order from <em>least</em> to <em>greatest</em>?</label>
-            <div class="opts" role="radiogroup" aria-labelledby="sc3-label">
-              <label><input type="radio" name="sc3" value="a" />−1, −4, 0, 3</label>
-              <label><input type="radio" name="sc3" value="b" />−4, −1, 0, 3</label>
-              <label><input type="radio" name="sc3" value="c" />3, 0, −1, −4</label>
-            </div>
-            <button type="button" class="checkbtn" style="font-size:17px;padding:10px 20px;" onclick="checkSC(3,'b','Correct! On the number line, −4 is farthest left (smallest). Order: −4, −1, 0, 3.')">Check</button>
-            <div class="sc-feedback" id="sc3-fb" aria-live="polite"></div>
-          </div>
-
-          <!-- DIVIDER before NTKit graded section -->
-          <hr style="border:none;border-top:2px dashed var(--nt-border);margin:28px 0;" />
-
-          <h3 style="font-size:20px;margin-bottom:4px;">Graded Questions</h3>
+        <div class="u7-card">
+          <h3>Inequalities tell you a range, not one answer</h3>
           <p>
-            Type your answers. Use a minus sign (−) or a dash (-) for negatives.
-            Then press <b>Check my answers</b>.
+            Each market table fits at most 8 boxes. If <strong>n</strong> is the
+            number of boxes, then <span class="u7-formula">n ≤ 8</span>. That is
+            true for 0, 1, 2, … all the way up to 8. We show every solution on a
+            number line.
           </p>
-          <p class="muted">First, write your name in the box below so your work can be saved.</p>
-
-          <!-- NTKit identity bar + actions + results mount here -->
-          <div id="ntkit"></div>
-
-          <form id="apply" novalidate>
-            <div class="q">
-              <label for="q1"><span class="num">1.</span> A diver is at −12 meters. Write the integer for "8 meters lower than −12". (6.NS.C.5)</label>
-              <input type="text" id="q1" inputmode="text" autocomplete="off" aria-describedby="q1h" />
-              <span id="q1h" class="muted">Hint: going lower means more negative.</span>
-            </div>
-
-            <div class="q">
-              <label for="q2"><span class="num">2.</span> What is the opposite of +9? (6.NS.C.6a)</label>
-              <input type="text" id="q2" inputmode="text" autocomplete="off" />
-            </div>
-
-            <div class="q">
-              <label for="q3"><span class="num">3.</span> Find the absolute value: |−15| = ? (6.NS.C.7c)</label>
-              <input type="text" id="q3" inputmode="text" autocomplete="off" />
-            </div>
-
-            <div class="q">
-              <fieldset>
-                <legend><span class="num">4.</span> Which number is the smallest? (6.NS.C.7a)</legend>
-                <div class="opts">
-                  <label><input type="radio" name="q4" value="-8" />−8</label>
-                  <label><input type="radio" name="q4" value="-3" />−3</label>
-                  <label><input type="radio" name="q4" value="0" />0</label>
-                  <label><input type="radio" name="q4" value="5" />5</label>
-                </div>
-              </fieldset>
-            </div>
-
-            <div class="q">
-              <fieldset>
-                <legend><span class="num">5.</span> Which comparison is TRUE? (6.NS.C.7a–b)</legend>
-                <div class="opts">
-                  <label><input type="radio" name="q5" value="a" />−6 &gt; −2</label>
-                  <label><input type="radio" name="q5" value="b" />−2 &gt; −6</label>
-                  <label><input type="radio" name="q5" value="c" />−6 = −2</label>
-                </div>
-              </fieldset>
-            </div>
-
-            <div class="q">
-              <label for="q6"><span class="num">6.</span> A temperature is −4°C. It gets 4 degrees colder. Write the new temperature as an integer. (6.NS.C.5)</label>
-              <input type="text" id="q6" inputmode="text" autocomplete="off" />
-            </div>
-
-            <button type="submit" class="checkbtn" id="checkBtn">Check my answers</button>
-          </form>
-        </section>
-
-        <!-- RUBRIC -->
-        <section aria-labelledby="h-rubric">
-          <span class="pill">Rubric</span>
-          <h2 id="h-rubric">How Your Work Is Scored</h2>
-          <div style="overflow-x:auto;">
-            <table class="rubric-table" aria-label="Scoring rubric">
-              <thead>
-                <tr>
-                  <th>Level</th>
-                  <th>Score</th>
-                  <th>What this looks like</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>4 — Exceeds</strong></td>
-                  <td>6/6</td>
-                  <td>All 6 graded questions correct AND both reflection responses are detailed with examples. Self-check completed before graded section.</td>
-                </tr>
-                <tr>
-                  <td><strong>3 — Meets</strong></td>
-                  <td>5–6/6</td>
-                  <td>At least 5 graded questions correct. Both reflections answered in complete sentences. Minor errors in absolute value or ordering.</td>
-                </tr>
-                <tr>
-                  <td><strong>2 — Approaching</strong></td>
-                  <td>3–4/6</td>
-                  <td>Some correct answers; confuses positive/negative direction or absolute value sign. At least one reflection attempted.</td>
-                </tr>
-                <tr>
-                  <td><strong>1 — Beginning</strong></td>
-                  <td>0–2/6</td>
-                  <td>Fewer than 3 correct; confuses negative integers with absolute value or ordering. Reflections missing or incomplete.</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="u7-fig">
+            <svg
+              viewBox="0 0 360 70"
+              width="100%"
+              role="img"
+              aria-label="A number line from 0 to 10. A closed dot sits on 8 with a ray shaded to the left, showing n is less than or equal to 8."
+            >
+              <line
+                x1="20"
+                y1="40"
+                x2="340"
+                y2="40"
+                stroke="#1c2330"
+                stroke-width="2"
+              />
+              <!-- ticks 0..10 -->
+              <g font-size="11" fill="#1c2330" text-anchor="middle">
+                <line
+                  x1="20"
+                  y1="34"
+                  x2="20"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="20" y="60">0</text>
+                <line
+                  x1="52"
+                  y1="34"
+                  x2="52"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="52" y="60">1</text>
+                <line
+                  x1="84"
+                  y1="34"
+                  x2="84"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="84" y="60">2</text>
+                <line
+                  x1="116"
+                  y1="34"
+                  x2="116"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="116" y="60">3</text>
+                <line
+                  x1="148"
+                  y1="34"
+                  x2="148"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="148" y="60">4</text>
+                <line
+                  x1="180"
+                  y1="34"
+                  x2="180"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="180" y="60">5</text>
+                <line
+                  x1="212"
+                  y1="34"
+                  x2="212"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="212" y="60">6</text>
+                <line
+                  x1="244"
+                  y1="34"
+                  x2="244"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="244" y="60">7</text>
+                <line
+                  x1="276"
+                  y1="34"
+                  x2="276"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="276" y="60">8</text>
+                <line
+                  x1="308"
+                  y1="34"
+                  x2="308"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="308" y="60">9</text>
+                <line
+                  x1="340"
+                  y1="34"
+                  x2="340"
+                  y2="46"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <text x="340" y="60">10</text>
+              </g>
+              <!-- shaded ray to the left of 8 -->
+              <line
+                x1="20"
+                y1="40"
+                x2="276"
+                y2="40"
+                stroke="#7c3aed"
+                stroke-width="5"
+              />
+              <polygon points="20,40 32,34 32,46" fill="#7c3aed" />
+              <!-- closed dot on 8 -->
+              <circle cx="276" cy="40" r="7" fill="#7c3aed" />
+            </svg>
           </div>
-        </section>
+          <p>
+            A <strong>closed (filled) dot</strong> means "and including" (≤ or
+            ≥). An <strong>open (hollow) dot</strong> means "but not" (&lt; or
+            &gt;).
+          </p>
+        </div>
 
-        <!-- REFLECT -->
-        <section aria-labelledby="h-reflect">
-          <span class="pill">Step 5 · Reflect · Write</span>
-          <h2 id="h-reflect">Think Back</h2>
-          <p>Write in complete sentences. Use math vocabulary from the Explain section.</p>
+        <details class="u7-level">
+          <summary>
+            <span class="u7-tag l1">Level 1 · support</span> Step-by-step helper
+            / Ayuda paso a paso
+          </summary>
+          <ol>
+            <li>
+              Find the variable (the letter) and what is happening to it (+, −,
+              ×, or ÷).
+            </li>
+            <li>
+              Do the <strong>inverse</strong> operation to both sides. + undoes
+              −. × undoes ÷.
+            </li>
+            <li>
+              The variable should now be alone. Write
+              <strong>x = your number</strong>.
+            </li>
+            <li>
+              <strong>Check:</strong> put your number back in. Does the equation
+              stay true?
+              <span class="u7-es">Comprueba tu respuesta.</span>
+            </li>
+          </ol>
+        </details>
 
-          <div class="q">
-            <label for="r1">1. In your own words, what does <em>absolute value</em> mean? Give one real-world example.</label>
-            <textarea id="r1" aria-required="true" placeholder="Example: Absolute value means the distance from zero…"></textarea>
+        <details class="u7-level">
+          <summary>
+            <span class="u7-tag l2">Level 2 · enrichment</span> Push your
+            thinking
+          </summary>
+          <p>
+            The inequality <span class="u7-formula">n ≤ 8</span> has many
+            solutions, but in the real market <strong>n</strong> must also be a
+            whole number that is 0 or more. How many <em>real</em> values of
+            <strong>n</strong> actually work? Explain why a number line and the
+            real situation can disagree about which solutions count.
+          </p>
+        </details>
+      </section>
+
+      <!-- ============ 4. APPLY ============ -->
+      <section class="u7-step" id="apply">
+        <h2><span class="u7-badge b4">4</span> Apply</h2>
+        <p class="u7-phase">Show what you can do — auto-checked</p>
+
+        <form id="u7-quiz" novalidate>
+          <div
+            class="u7-q"
+            data-type="text"
+            data-answer="7"
+            data-tol="0"
+            id="q1"
+          >
+            <p class="u7-prompt">
+              1. Solve the Engage balance: <strong>x + 3 = 10</strong>. What
+              does the mystery box weigh? (number only)
+            </p>
+            <label
+              >x =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Value of x"
+              />
+              <span class="u7-unit">lb</span></label
+            >
+            <p class="u7-fb" aria-live="polite"></p>
           </div>
-          <div class="q">
-            <label for="r2">2. Why is −5 less than −2? Use the number line idea to explain.</label>
-            <textarea id="r2" aria-required="true" placeholder="On the number line, −5 is to the left of −2 because…"></textarea>
+
+          <div
+            class="u7-q"
+            data-type="text"
+            data-answer="6"
+            data-tol="0"
+            id="q2"
+          >
+            <p class="u7-prompt">
+              2. The market sold tickets and now has <strong>$54</strong> in the
+              cash box. Each ticket cost $9. Write and solve
+              <strong>9t = 54</strong> to find how many tickets,
+              <strong>t</strong>, were sold.
+            </p>
+            <label
+              >t =
+              <input
+                type="number"
+                inputmode="numeric"
+                aria-label="Number of tickets"
+              />
+              <span class="u7-unit">tickets</span></label
+            >
+            <p class="u7-fb" aria-live="polite"></p>
           </div>
 
-          <div style="background:var(--nt-bg);border:2px solid var(--nt-accent);border-radius:10px;padding:14px 16px;margin-top:14px;">
-            <strong>Deliverable:</strong> When you are done, press <strong>Save as PDF</strong> above and upload it to your class folder.
-            Your two reflection responses and your score will be included in the document.
+          <div class="u7-q" data-type="mc" data-answer="c" id="q3">
+            <p class="u7-prompt">
+              3. A stack lost 4 boxes and now has 11 boxes left. The equation is
+              <strong>b − 4 = 11</strong>. Which inverse step solves it
+              correctly?
+            </p>
+            <ul class="u7-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="a" /> Subtract 4 from
+                  both sides → b = 7</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="b" /> Divide both sides
+                  by 4 → b = 2.75</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="c" /> Add 4 to both
+                  sides → b = 15</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="d" /> Multiply both
+                  sides by 4 → b = 44</label
+                >
+              </li>
+            </ul>
+            <p class="u7-fb" aria-live="polite"></p>
           </div>
 
-          <p class="muted" style="margin-top:10px;">Your reflection is saved when you press "Save as PDF" or "Save as DOC" above.</p>
-        </section>
+          <div class="u7-q" data-type="mc" data-answer="b" id="q4">
+            <p class="u7-prompt">
+              4. Each table can hold <strong>at most</strong> 8 boxes. Which
+              inequality matches "the number of boxes <strong>n</strong> is no
+              more than 8"?
+            </p>
+            <div class="u7-fig" style="margin: 6px 0">
+              <svg
+                viewBox="0 0 300 56"
+                width="240"
+                role="img"
+                aria-label="A number line with a closed dot on 8 and shading to the left."
+              >
+                <line
+                  x1="20"
+                  y1="34"
+                  x2="280"
+                  y2="34"
+                  stroke="#1c2330"
+                  stroke-width="2"
+                />
+                <line
+                  x1="20"
+                  y1="34"
+                  x2="232"
+                  y2="34"
+                  stroke="#7c3aed"
+                  stroke-width="5"
+                />
+                <polygon points="20,34 32,28 32,40" fill="#7c3aed" />
+                <circle cx="232" cy="34" r="7" fill="#7c3aed" />
+                <text
+                  x="232"
+                  y="52"
+                  font-size="11"
+                  text-anchor="middle"
+                  fill="#1c2330"
+                >
+                  8
+                </text>
+              </svg>
+            </div>
+            <ul class="u7-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="a" /> n &gt; 8</label
+                >
+              </li>
+              <li>
+                <label><input type="radio" name="q4" value="b" /> n ≤ 8</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q4" value="c" /> n ≥ 8</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q4" value="d" /> n = 8</label>
+              </li>
+            </ul>
+            <p class="u7-fb" aria-live="polite"></p>
+          </div>
 
-        <!-- ANSWER KEY (teacher only) -->
-        <section aria-label="Teacher Answer Key">
-          <span class="pill">Teacher Resource</span>
-          <h2>Answer Key</h2>
-          <details>
-            <summary>Show / Hide Answer Key (Teacher Only)</summary>
-            <table class="ak-table" aria-label="Answer key table">
-              <thead>
-                <tr><th>#</th><th>Question</th><th>Correct Answer</th><th>Standard</th><th>Explanation</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Self-Check A</td><td>Fish at −8, swims 5 deeper</td><td>−13</td><td>6.NS.C.5</td><td>−8 − 5 = −13; deeper = more negative.</td></tr>
-                <tr><td>Self-Check B</td><td>|−22|</td><td>22</td><td>6.NS.C.7c</td><td>Absolute value = distance from 0.</td></tr>
-                <tr><td>Self-Check C</td><td>Least to greatest</td><td>−4, −1, 0, 3</td><td>6.NS.C.7a</td><td>More negative = farther left on the number line.</td></tr>
-                <tr><td>Q1</td><td>8 meters lower than −12</td><td>−20</td><td>6.NS.C.5</td><td>−12 − 8 = −20.</td></tr>
-                <tr><td>Q2</td><td>Opposite of +9</td><td>−9</td><td>6.NS.C.6a</td><td>Opposites are equidistant from 0 on opposite sides.</td></tr>
-                <tr><td>Q3</td><td>|−15|</td><td>15</td><td>6.NS.C.7c</td><td>Distance from 0 is always non-negative.</td></tr>
-                <tr><td>Q4</td><td>Smallest: −8, −3, 0, 5</td><td>−8</td><td>6.NS.C.7a</td><td>−8 is farthest left on the number line.</td></tr>
-                <tr><td>Q5</td><td>True comparison</td><td>−2 &gt; −6</td><td>6.NS.C.7b</td><td>−2 is to the right of −6, so −2 is greater.</td></tr>
-                <tr><td>Q6</td><td>−4°C, 4 degrees colder</td><td>−8</td><td>6.NS.C.5</td><td>−4 − 4 = −8.</td></tr>
-              </tbody>
-            </table>
-          </details>
-        </section>
+          <div class="u7-q" data-type="mc" data-answer="d" id="q5">
+            <p class="u7-prompt">
+              5. The market needs <strong>more than</strong> 12 volunteers,
+              written <strong>v &gt; 12</strong>. Which graph shows it?
+            </p>
+            <ul class="u7-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q5" value="a" /> A closed dot on
+                  12, shaded right</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q5" value="b" /> A closed dot on
+                  12, shaded left</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q5" value="c" /> An open dot on 12,
+                  shaded left</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q5" value="d" /> An open dot on 12,
+                  shaded right</label
+                >
+              </li>
+            </ul>
+            <p class="u7-fb" aria-live="polite"></p>
+          </div>
 
-      </main><!-- /#main-content -->
-    </div><!-- /.wrap -->
+          <div
+            class="u7-q"
+            data-type="text"
+            data-answer="3"
+            data-tol="0"
+            id="q6"
+          >
+            <p class="u7-prompt">
+              6. A box of flyers was split evenly among helpers:
+              <strong>f ÷ 5 = 3</strong>. The market planner says "x is the
+              number in each pile." Solve for <strong>f</strong>, then check: is
+              <strong>f = 15</strong> the total? Type the value that goes in
+              <strong>each</strong> pile.
+            </p>
+            <label
+              >each pile =
+              <input
+                type="number"
+                inputmode="numeric"
+                aria-label="Flyers in each pile"
+              />
+              <span class="u7-unit">flyers</span></label
+            >
+            <p class="u7-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u7-actions">
+            <button type="button" class="u7-btn" id="u7-check">
+              Check my answers
+            </button>
+            <button type="button" class="u7-btn ghost" id="u7-reset">
+              Clear
+            </button>
+            <span class="u7-score" id="u7-scoreout" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <details class="u7-level" style="margin-top: 14px">
+          <summary>
+            <span class="u7-tag l1">Level 1 · support</span> Sentence starters
+            for explaining
+          </summary>
+          <p>
+            "The variable is ____. The operation is ____, so the inverse is
+            ____. I did ____ to both sides. My answer is x = ____, and when I
+            check it the equation is still true."
+          </p>
+          <p class="u7-es">
+            "La variable es ____. La operación es ____, así que la inversa es
+            ____. Hice ____ en ambos lados. Mi respuesta es x = ____."
+          </p>
+        </details>
+
+        <details class="u7-level">
+          <summary>
+            <span class="u7-tag l2">Level 2 · enrichment</span> Write the story
+          </summary>
+          <p>
+            Write your own Maker Market word problem that solves to
+            <strong>x = 9</strong> using a multiplication equation, AND a
+            separate situation that graphs to <strong>x &lt; 5</strong>. Trade
+            with a partner and solve each other's.
+          </p>
+        </details>
+      </section>
+
+      <!-- ============ 5. REFLECT ============ -->
+      <section class="u7-step u7-reflect" id="reflect">
+        <h2><span class="u7-badge b5">5</span> Reflect</h2>
+        <p class="u7-phase">Think about your thinking</p>
+
+        <div class="u7-q">
+          <p class="u7-prompt">
+            A. Why must you do the same operation to <em>both</em> sides of an
+            equation? Use the balance idea in your answer.
+          </p>
+          <textarea aria-label="Reflection A"></textarea>
+        </div>
+        <div class="u7-q">
+          <p class="u7-prompt">
+            B. An equation usually has one answer, but an inequality has many.
+            Explain the difference in your own words.
+          </p>
+          <textarea aria-label="Reflection B"></textarea>
+        </div>
+        <div class="u7-q">
+          <p class="u7-prompt">
+            C. One thing that is now clear to me / Una cosa que ahora entiendo
+            bien:
+          </p>
+          <textarea aria-label="Reflection C"></textarea>
+        </div>
+        <p class="u7-cap">
+          Your reflections save with this HyperDoc when you use Save as PDF or
+          Save as DOC above.
+        </p>
+      </section>
+
+      <!-- ============ 6. EXTEND ============ -->
+      <section class="u7-step" id="extend">
+        <h2>
+          <span class="u7-badge b3" style="background: #475569">6</span> Extend
+        </h2>
+        <p class="u7-phase">Optional challenge project</p>
+        <div class="u7-card">
+          <h3>Plan the Maker Market budget</h3>
+          <p>
+            You have a budget and some unknowns to solve. On paper or a slide,
+            do all four:
+          </p>
+          <ol>
+            <li>
+              The market spent $48 on supplies, split equally across 6 booths.
+              Write and solve an equation for the cost per booth.
+            </li>
+            <li>
+              Each booth needs <strong>at least</strong> 5 posters. Write an
+              inequality for the number of posters <strong>p</strong>, and graph
+              it on a number line.
+            </li>
+            <li>
+              Tickets sell for $4 each. The market wants
+              <strong>more than</strong> $200. Write an inequality for the
+              number of tickets <strong>t</strong>.
+            </li>
+            <li>Check every answer by substituting it back in.</li>
+          </ol>
+          <p class="u7-es">
+            Planifica el presupuesto del mercado: escribe y resuelve ecuaciones,
+            y grafica desigualdades en una recta numérica.
+          </p>
+        </div>
+      </section>
+    </main>
 
     <script>
       (function () {
+        "use strict";
 
-        /* ─────────────────────────────────────────────────────────
-           Answer normaliser — tolerant of common formatting
-           variations without changing any correct answer.
-           Preserves leading minus sign (negative integers).
-           ───────────────────────────────────────────────────────── */
-        function normalise(raw) {
-          var s = String(raw).trim().toLowerCase();
-          // Preserve a leading minus before stripping whitespace
-          var neg = s.charAt(0) === '-';
-          // Collapse internal whitespace
-          s = s.replace(/\s+/g, '');
-          // Strip leading dollar sign
-          s = s.replace(/^\$/, '');
-          // Strip trailing percent sign
-          s = s.replace(/%$/, '');
-          // Strip commas used as thousands separators (1,000 → 1000)
-          s = s.replace(/,(\d{3})/g, '$1');
-          // Strip common trailing unit words (whole-word at end)
-          s = s.replace(/(°c|°f|meters?|m|cm|km|mph|kg|lbs?|hours?|minutes?|seconds?|units?|dollars?|degrees?)$/, '');
-          // Re-apply leading minus if it was present but got stripped
-          if (neg && s.charAt(0) !== '-') { s = '-' + s; }
-          return s;
-        }
-
-        /* Numeric equality with epsilon (handles −20 vs −20.0) */
-        function numericMatch(a, b) {
-          var na = parseFloat(a);
-          var nb = parseFloat(b);
-          if (isNaN(na) || isNaN(nb)) { return false; }
-          return Math.abs(na - nb) < 1e-9;
-        }
-
-        /* Core comparison for a student answer vs expected */
-        function answersMatch(studentRaw, correctRaw) {
-          var s = normalise(studentRaw);
-          var c = normalise(correctRaw);
-          if (s === c) { return true; }
-          // Numeric fallback: −20 vs −20.0, 15 vs 15.0, etc.
-          return numericMatch(s, c);
-        }
-
-        /* ── Self-check logic (radio buttons only — no change needed) ── */
-        function checkSC(num, correct, explanation) {
-          var selected = document.querySelector('input[name="sc' + num + '"]:checked');
-          var fb = document.getElementById('sc' + num + '-fb');
-          if (!fb) return;
-          if (!selected) {
-            fb.className = 'sc-feedback wrong';
-            fb.textContent = 'Please choose an answer first.';
-            return;
+        // ---- Mount the shared Neft Activity Kit (name bar + Save as PDF/DOC + results) ----
+        function mountKit() {
+          if (window.NTKit && typeof NTKit.mount === "function") {
+            try {
+              NTKit.mount("#ntkit");
+            } catch (e) {
+              /* kit optional */
+            }
           }
-          if (selected.value === correct) {
-            fb.className = 'sc-feedback correct';
-            fb.textContent = '✅ ' + explanation;
+        }
+        if (document.readyState !== "loading") mountKit();
+        else document.addEventListener("DOMContentLoaded", mountKit);
+
+        // ---- Interactive balance in Explore ----
+        var balX = document.getElementById("u7-balx");
+        if (balX) {
+          var beam = document.getElementById("u7-beam");
+          var xval = document.getElementById("u7-balxval");
+          var state = document.getElementById("u7-balstate");
+          var leftLabel = document.getElementById("u7-balleft");
+          function updateBalance() {
+            var x = parseInt(balX.value, 10);
+            var left = x + 3;
+            var right = 10;
+            xval.textContent = x;
+            leftLabel.textContent = "x+3 = " + left;
+            var diff = left - right; // tilt direction
+            var tilt = Math.max(-8, Math.min(8, diff)) * 1.4;
+            beam.setAttribute("transform", "rotate(" + tilt + " 155 40)");
+            if (diff === 0) {
+              state.textContent =
+                "✓ Level! " + left + " = " + right + "  (x = 7)";
+              state.className = "u7-readout bal";
+            } else if (diff < 0) {
+              state.textContent =
+                "Left is lighter (" +
+                left +
+                " < " +
+                right +
+                ") — make x bigger";
+              state.className = "u7-readout unbal";
+            } else {
+              state.textContent =
+                "Left is heavier (" +
+                left +
+                " > " +
+                right +
+                ") — make x smaller";
+              state.className = "u7-readout unbal";
+            }
+          }
+          balX.addEventListener("input", updateBalance);
+          updateBalance();
+        }
+
+        // ---- Apply: auto-grading ----
+        var form = document.getElementById("u7-quiz");
+
+        function checkOne(q) {
+          var type = q.getAttribute("data-type");
+          var fb = q.querySelector(".u7-fb");
+          var correct = false,
+            answered = true;
+
+          if (type === "mc") {
+            var sel = q.querySelector('input[type="radio"]:checked');
+            answered = !!sel;
+            correct = answered && sel.value === q.getAttribute("data-answer");
           } else {
-            fb.className = 'sc-feedback wrong';
-            fb.textContent = '❌ Not quite. ' + explanation;
+            var input = q.querySelector(
+              'input[type="number"], input[type="text"]',
+            );
+            var raw = (input.value || "").trim();
+            answered = raw !== "";
+            var ans = parseFloat(q.getAttribute("data-answer"));
+            var tol = parseFloat(q.getAttribute("data-tol") || "0");
+            var val = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+            correct = answered && !isNaN(val) && Math.abs(val - ans) <= tol;
           }
+
+          if (fb) {
+            if (!answered) {
+              fb.textContent = "";
+              fb.className = "u7-fb";
+            } else if (correct) {
+              fb.textContent = "✓ Correct";
+              fb.className = "u7-fb ok";
+            } else {
+              fb.textContent =
+                "✗ Not yet — recheck the inverse operation and the symbol.";
+              fb.className = "u7-fb no";
+            }
+          }
+          return { correct: correct, answered: answered };
         }
-        /* expose to inline onclick */
-        window.checkSC = checkSC;
 
-        /* ── NTKit + graded form ── */
-        function start() {
-          if (!window.NTKit) { setTimeout(start, 60); return; }
-          NTKit.mount('#ntkit');
-
-          function val(id) {
-            var e = document.getElementById(id);
-            return e ? e.value.trim() : '';
-          }
-          function radio(name) {
-            var r = document.querySelector('input[name="' + name + '"]:checked');
-            return r ? r.value : '';
-          }
-
-          /* Wrap NTKit.grade to apply tolerant comparison for text inputs */
-          function gradeTolerantly(cfg) {
-            var items = cfg.items.map(function (item) {
-              if (item._radio) {
-                // Radio: exact match (value strings are already normalised tokens)
-                return item;
-              }
-              // Text input: apply tolerant match; pass pre-normalised strings so
-              // NTKit sees the same canonical form for both sides.
-              var matched = answersMatch(item.studentAnswer, item.correctAnswer);
-              return {
-                prompt:         item.prompt,
-                studentAnswer:  item.studentAnswer,
-                correctAnswer:  item.correctAnswer,
-                points:         item.points,
-                skill:          item.skill,
-                // NTKit compares studentAnswer === correctAnswer internally;
-                // override both to the same canonical string when correct.
-                _override:      matched
-              };
+        function checkAll() {
+          var qs = form.querySelectorAll(".u7-q[data-type]");
+          var score = 0,
+            total = qs.length;
+          var items = [];
+          qs.forEach(function (q, i) {
+            var r = checkOne(q);
+            if (r.correct) score++;
+            var promptEl = q.querySelector(".u7-prompt");
+            items.push({
+              id: q.id || "q" + (i + 1),
+              prompt: promptEl
+                ? promptEl.textContent.trim()
+                : "Question " + (i + 1),
+              correct: r.correct,
             });
-            // Build items list NTKit can grade straight (override matched ones)
-            var ntItems = items.map(function (item) {
-              if (item._override === true) {
-                return {
-                  prompt:        item.prompt,
-                  studentAnswer: normalise(item.correctAnswer),
-                  correctAnswer: normalise(item.correctAnswer),
-                  points:        item.points,
-                  skill:         item.skill
-                };
-              }
-              if (item._radio) {
-                return {
-                  prompt:        item.prompt,
-                  studentAnswer: item.studentAnswer,
-                  correctAnswer: item.correctAnswer,
-                  points:        item.points,
-                  skill:         item.skill
-                };
-              }
-              return {
-                prompt:        item.prompt,
-                studentAnswer: normalise(item.studentAnswer),
-                correctAnswer: normalise(item.correctAnswer),
-                points:        item.points,
-                skill:         item.skill
-              };
-            });
-            NTKit.grade({
-              activityId:    cfg.activityId,
-              activityTitle: cfg.activityTitle,
-              standard:      cfg.standard,
-              items:         ntItems
-            });
-          }
-
-          document.getElementById('apply').addEventListener('submit', function (e) {
-            e.preventDefault();
-            gradeTolerantly({
-              activityId: 'hyperdoc-unit-7',
-              activityTitle: 'Unit 7 HyperDoc — Integers & the Number Line',
-              standard: '6.NS.C.5-7',
-              items: [
-                { prompt: '8 meters lower than −12',  studentAnswer: val('q1'),   correctAnswer: '-20', points: 1, skill: '6.NS.C.5 Real-world integers' },
-                { prompt: 'Opposite of +9',            studentAnswer: val('q2'),   correctAnswer: '-9',  points: 1, skill: '6.NS.C.6a Opposites' },
-                { prompt: '|−15|',                    studentAnswer: val('q3'),   correctAnswer: '15',  points: 1, skill: '6.NS.C.7c Absolute value' },
-                { prompt: 'Smallest number',          studentAnswer: radio('q4'), correctAnswer: '-8',  points: 1, skill: '6.NS.C.7a Order integers',  _radio: true },
-                { prompt: 'True comparison',          studentAnswer: radio('q5'), correctAnswer: 'b',   points: 1, skill: '6.NS.C.7b Compare integers', _radio: true },
-                { prompt: '−4°C, 4 degrees colder',   studentAnswer: val('q6'),   correctAnswer: '-8',  points: 1, skill: '6.NS.C.5 Real-world integers' }
-              ]
-            });
-            var res = document.getElementById('ntkit');
-            if (res && res.scrollIntoView) res.scrollIntoView({ behavior: 'smooth', block: 'start' });
           });
+
+          var out = document.getElementById("u7-scoreout");
+          var pct = Math.round((score / total) * 100);
+          out.textContent =
+            "Score: " + score + " / " + total + " (" + pct + "%)";
+
+          if (window.NTKit && typeof NTKit.grade === "function") {
+            try {
+              NTKit.grade({
+                activityId: "hyperdoc-unit-7-equations",
+                activityTitle: "Unit 7 HyperDoc — Equations & Inequalities",
+                standard: "6.EE.5-8",
+                score: score,
+                total: total,
+                items: items,
+              });
+            } catch (e) {
+              /* fallback score already shown */
+            }
+          }
         }
-        start();
+
+        document.getElementById("u7-check").addEventListener("click", checkAll);
+        document
+          .getElementById("u7-reset")
+          .addEventListener("click", function () {
+            form.reset();
+            form.querySelectorAll(".u7-fb").forEach(function (f) {
+              f.textContent = "";
+              f.className = "u7-fb";
+            });
+            document.getElementById("u7-scoreout").textContent = "";
+          });
       })();
     </script>
   </body>
