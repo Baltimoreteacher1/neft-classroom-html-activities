@@ -1873,7 +1873,17 @@
         <h2>Sign in to your school</h2>
         <p class="sub">
           Role-based access. Your data is saved locally per school in this
-          browser. Enter the access code to continue.
+          browser.
+        </p>
+        <button
+          class="btn primary"
+          onclick="nshQuickEnter()"
+          style="width: 100%; margin-bottom: 16px"
+        >
+          ⚡ Enter demo as Principal (1 click)
+        </button>
+        <p class="gate-hint" style="margin: -6px 0 16px">
+          …or sign in with a role below.
         </p>
         <div class="field">
           <label for="gateCode">Access code</label
@@ -1881,6 +1891,7 @@
             id="gateCode"
             type="password"
             autocomplete="off"
+            value="neft2026"
             placeholder="Access code"
             onkeydown="if (event.key === 'Enter') nshSignIn();"
           />
@@ -3767,9 +3778,18 @@
       function getAccessCode() {
         return lsGet("nsh:accesscode", NSH.code);
       }
+      function nshQuickEnter() {
+        // Frictionless demo entry: principal at the first school, no typing.
+        document.getElementById("gateCode").value = getAccessCode();
+        document.getElementById("gateName").value =
+          document.getElementById("gateName").value.trim() || "Demo Principal";
+        document.getElementById("gateRole").value = "principal";
+        nshSignIn();
+      }
       function nshSignIn() {
         const code = document.getElementById("gateCode").value.trim();
-        if (code !== getAccessCode()) {
+        // Blank code is accepted in the demo; only a wrong non-empty code blocks.
+        if (code && code !== getAccessCode()) {
           document.getElementById("gateErr").style.display = "block";
           return;
         }
