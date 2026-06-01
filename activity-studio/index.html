@@ -1,33 +1,1170 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Neft Teacher Activity Studio builds printable and interactive activity packs from pasted text or uploaded DOCX, PPTX, PDF, TXT, MD, or CSV files.">
-<title>Neft Teacher Activity Studio</title>
-<style>
-:root{--navy:#16324f;--teal:#2f7f7b;--sage:#dfe9df;--cream:#fbf7ef;--ink:#142033;--muted:#546173;--line:#ccd8e4;--shadow:0 18px 45px rgba(22,50,79,.10)}*{box-sizing:border-box}body{margin:0;font-family:Calibri,Arial,sans-serif;color:var(--ink);background:radial-gradient(circle at top left,rgba(47,127,123,.16),transparent 34rem),linear-gradient(180deg,var(--cream),#fff);line-height:1.5}button,input,select,textarea{font:inherit}.shell{width:min(1220px,calc(100% - 32px));margin:auto;padding:22px 0 48px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:18px}.brand{display:flex;gap:10px;align-items:center;font-weight:900;color:var(--navy)}.mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;display:grid;place-items:center}.btn,a.btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:999px;padding:10px 14px;font-weight:900;text-decoration:none;cursor:pointer}.primary{border:0;background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;box-shadow:var(--shadow)}.hero{background:rgba(255,255,255,.9);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:30px;padding:clamp(22px,4vw,40px);display:grid;grid-template-columns:1.1fr .9fr;gap:24px}.eyebrow{font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);font-size:.82rem}h1{font-size:clamp(2.4rem,6vw,4.8rem);line-height:.95;margin:8px 0 12px;color:var(--navy);letter-spacing:-.045em}.lead{font-size:1.12rem;color:var(--muted);margin:0}.heroCard{background:var(--navy);color:#fff;border-radius:24px;padding:24px;display:grid;align-content:space-between;min-height:280px}.mini{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}.mini div{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);border-radius:16px;padding:12px}.grid{display:grid;grid-template-columns:420px 1fr;gap:20px;margin-top:22px;align-items:start}.panel{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 34px rgba(22,50,79,.06)}form.panel{padding:20px;position:sticky;top:14px}h2,h3{color:var(--navy);line-height:1.1}label{display:block;color:var(--navy);font-weight:900;margin:14px 0 6px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;color:var(--ink)}input:focus,select:focus,textarea:focus{outline:0;border-color:var(--teal);box-shadow:0 0 0 3px rgba(47,127,123,.16)}textarea{min-height:150px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fileBox{border:2px dashed var(--line);background:#fbfdff;border-radius:18px;padding:14px}.hint{color:var(--muted);font-size:.92rem;margin:6px 0 0}.status{display:none;margin-top:12px;border:1px solid #b9dcd7;background:#edf7f5;color:#174d4a;border-radius:14px;padding:10px 12px;font-weight:900}.tabs{display:flex;flex-wrap:wrap;gap:8px;padding:12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(255,255,255,.96);border-radius:22px 22px 0 0}.tab{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--navy);padding:9px 12px;font-weight:900;cursor:pointer}.tab[aria-selected=true]{background:var(--navy);color:#fff}.out{padding:18px}.pane{display:none}.pane.active{display:block}.artifact{border:1px solid var(--line);background:#fff;border-radius:18px;padding:22px;margin-bottom:14px}.pill{display:inline-block;border-radius:999px;background:var(--sage);color:var(--navy);font-weight:900;font-size:.88rem;padding:6px 10px;margin:0 6px 8px 0}.page{width:min(100%,820px);min-height:960px;margin:0 auto 18px;padding:34px;border:2px solid #111;background:#fff;color:#111;box-shadow:0 10px 24px rgba(22,50,79,.08);font-size:15px}.page h2{color:#111;border-bottom:2px solid #111;padding-bottom:6px}.meta,.two{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.meta{grid-template-columns:1.2fr .8fr .8fr}.box{border:2px solid #111;min-height:150px;padding:10px;margin:8px 0 15px}.big{min-height:240px}table{width:100%;border-collapse:collapse}td,th{border:2px solid #111;padding:8px;text-align:left}.qa{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.qa div{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fbfdff}pre{white-space:pre-wrap;word-break:break-word;background:#101827;color:#f7fbff;border-radius:18px;padding:18px;max-height:620px;overflow:auto}.toast{position:fixed;right:18px;bottom:18px;background:var(--navy);color:#fff;padding:12px 14px;border-radius:14px;box-shadow:var(--shadow);opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s;font-weight:900}.toast.show{opacity:1;transform:translateY(0)}footer{text-align:center;color:var(--muted);font-weight:800;margin-top:24px}@media(max-width:980px){.hero,.grid{grid-template-columns:1fr}form.panel{position:static}}@media(max-width:650px){.shell{width:min(100% - 22px,1220px)}.top{align-items:flex-start;flex-direction:column}.row,.mini,.meta,.two,.qa{grid-template-columns:1fr}.tabs{position:static}.page{padding:20px}}@media print{body{background:#fff}.top,.hero,form.panel,.tabs,.actions,.toast,footer,.screen{display:none!important}.shell,.grid{width:100%;margin:0;padding:0;display:block}.panel,.out{border:0;box-shadow:none;padding:0}.pane{display:none!important}#packet{display:block!important}.page{box-shadow:none;page-break-after:always;margin:0 auto}}
-</style>
-</head><body><main class="shell">
-<nav class="top"><div class="brand"><span class="mark">NT</span><span>Neft Teacher</span></div><div><a class="btn" href="/">Classroom Home</a> <button class="btn" id="demo" type="button">Load Demo</button></div></nav>
-<section class="hero"><div><div class="eyebrow">File Ingestion · ESOL Access · Printable + Interactive</div><h1>Activity Studio</h1><p class="lead">Upload a DOCX, PPTX, PDF, TXT, MD, or CSV file—or paste lesson text—and generate a classroom-ready activity pack with large student workspaces, teacher guide, QA gate, and interactive HTML export.</p><p><span class="pill">DOCX/PPTX/PDF import</span><span class="pill">Printable packet</span><span class="pill">Interactive HTML</span><span class="pill">QA gate</span></p></div><aside class="heroCard"><div><h2 style="color:#fff;margin-top:0">Upload. Extract. Build.</h2><p>Files are read locally in your browser. Nothing uploads to a server. The extracted lesson text fills the source box for source-fidelity review.</p></div><div class="mini"><div><b>1</b><br>Upload or paste</div><div><b>2</b><br>Extract source</div><div><b>3</b><br>Generate pack</div><div><b>4</b><br>Export + teach</div></div></aside></section>
-<section class="grid"><form class="panel" id="form"><h2>Build Settings</h2><label for="topic">Topic or activity title</label><input id="topic" value="Mean, Median, Mode, and Range"><div class="row"><div><label for="grade">Grade</label><select id="grade"><option>3</option><option>4</option><option>5</option><option selected>6</option><option>7</option><option>8</option></select></div><div><label for="level">Language support</label><select id="level"><option value="newcomer">Newcomer / heavy ESOL</option><option value="developing" selected>Developing ESOL</option><option value="mixed">Mixed ESOL + general</option><option value="general">General education</option></select></div></div><div class="row"><div><label for="style">Activity style</label><select id="style"><option value="choice">Choose-your-own-adventure</option><option value="stations">Stations rotation</option><option value="project">Mini project</option><option value="review">Review quest</option><option value="worksheet">Guided worksheet</option></select></div><div><label for="minutes">Class time</label><select id="minutes"><option value="20">20 minutes</option><option value="45">45 minutes</option><option value="65" selected>65–75 minutes</option></select></div></div><label for="file">Upload source file</label><div class="fileBox"><b>Supported:</b> DOCX, PPTX, PDF, TXT, MD, CSV<input id="file" type="file" accept=".docx,.pptx,.pdf,.txt,.md,.csv,text/plain,application/pdf"><p class="hint">Scanned PDFs may need manual paste because they do not contain selectable text.</p></div><div id="fileStatus" class="status"></div><label for="source">Lesson source text</label><textarea id="source">Students will review mean, median, mode, and range. They need to sort numbers from least to greatest, identify the middle number, find the number that appears most often, calculate the average, and subtract the smallest value from the largest value. Students should explain their thinking using math vocabulary.</textarea><div class="row"><div><label for="product">Product</label><select id="product"><option>Printable packet</option><option>Interactive HTML</option><option selected>Both</option></select></div><div><label for="work">Workspace size</label><select id="work"><option value="large" selected>Large elementary workspaces</option><option value="standard">Standard middle-school workspaces</option><option value="compact">Compact review handout</option></select></div></div><div class="actions"><button class="btn primary" type="submit">Generate Activity Pack</button><button class="btn" id="reset" type="button">Reset</button></div><div id="status" class="status"></div></form>
-<section class="panel"><div class="tabs" role="tablist"><button class="tab" aria-selected="true" data-tab="summary">Summary</button><button class="tab" aria-selected="false" data-tab="packet">Student Packet</button><button class="tab" aria-selected="false" data-tab="guide">Teacher Guide</button><button class="tab" aria-selected="false" data-tab="html">Interactive HTML</button><button class="tab" aria-selected="false" data-tab="qa">QA Gate</button></div><div class="out"><div class="actions screen" style="margin-top:0;margin-bottom:14px"><button class="btn" id="copy" type="button">Copy Current Tab</button><button class="btn" id="doc" type="button">Download Word-Compatible Packet</button><button class="btn" id="htmlDown" type="button">Download Interactive HTML</button><button class="btn" id="print" type="button">Print Packet</button></div><div id="summary" class="pane active"></div><div id="packet" class="pane"></div><div id="guide" class="pane"></div><div id="html" class="pane"></div><div id="qa" class="pane"></div></div></section></section><footer>Neft Teacher Activity Studio · Browser-only file extraction · No student data is sent to a server</footer></main><div id="toast" class="toast"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script>
-const $=id=>document.getElementById(id);const state={tab:'summary',out:null,src:{kind:'typed',name:'Manual source',chars:0}};
-const prof={newcomer:{label:'Newcomer / heavy ESOL',note:'Use short sentences, examples first, visuals, word banks, partner talk, and sentence frames.',frames:['I notice ___ because ___.','First, I ___. Next, I ___.','The answer is ___ because ___.','I agree/disagree because ___.']},developing:{label:'Developing ESOL',note:'Use clear steps, vocabulary boxes, sentence starters, partner checks, and guided response spaces.',frames:['I solved it by ___.','The data show ___ because ___.','My strategy was ___, so ___.','One mistake to avoid is ___.']},mixed:{label:'Mixed ESOL + general',note:'Use concise directions, optional frames, collaborative talk, and challenge prompts.',frames:['My evidence is ___.','This strategy works because ___.','Another way to solve is ___.','The most important step is ___.']},general:{label:'General education',note:'Use precise directions, checks for understanding, reasoning prompts, and extension choices.',frames:['My reasoning is ___.','The pattern suggests ___.','A second method is ___.','This connects to ___ because ___.']}};
-function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}function clean(s){return String(s||'').replace(/[<>]/g,'').trim()}function title(s){s=clean(s);return s?s[0].toUpperCase()+s.slice(1):'Classroom Activity'}function baseName(n){return String(n||'').replace(/\.[^.]+$/,'').replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim()}function toast(m){$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}function status(id,m,bad=false){const x=$(id);x.textContent=m;x.style.display='block';x.style.background=bad?'#fff1f1':'#edf7f5';x.style.borderColor=bad?'#e0a5a5':'#b9dcd7';x.style.color=bad?'#842929':'#174d4a'}function dec(t){const a=document.createElement('textarea');a.innerHTML=t;return a.value}function xmlText(x){return dec(String(x).replace(/<\/?(a:t|w:t|p:t|a:p|w:p|w:tab|a:br)[^>]*>/g,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim())}
-async function zipText(file,ext){if(!window.JSZip)throw new Error('DOCX/PPTX extractor did not load. Try again with internet access.');const zip=await JSZip.loadAsync(await file.arrayBuffer());const files=Object.values(zip.files).filter(e=>!e.dir&&(ext==='docx'?/^word\/(document|footnotes|endnotes|header\d+|footer\d+)\.xml$/.test(e.name):/^ppt\/slides\/slide\d+\.xml$/.test(e.name)||/^ppt\/notesSlides\/notesSlide\d+\.xml$/.test(e.name))).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));const out=[];for(const f of files){const t=xmlText(await f.async('string'));if(t)out.push(t)}return out.join('\n\n')}
-async function pdfText(file){if(!window.pdfjsLib)throw new Error('PDF extractor did not load. Try again with internet access.');pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;const out=[];for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const content=await page.getTextContent();const text=content.items.map(a=>a.str).join(' ').replace(/\s+/g,' ').trim();if(text)out.push('Page '+i+': '+text)}return out.join('\n\n')}
-async function extract(file){const ext=(file.name.split('.').pop()||'').toLowerCase();if(['txt','md','csv'].includes(ext)||file.type.startsWith('text/'))return file.text();if(['docx','pptx'].includes(ext))return zipText(file,ext);if(ext==='pdf'||file.type==='application/pdf')return pdfText(file);throw new Error('Unsupported file type. Use DOCX, PPTX, PDF, TXT, MD, or CSV.')}
-$('file').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;status('fileStatus','Reading '+file.name+'...');try{const text=(await extract(file)).replace(/\s+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();if(!text)throw new Error('No selectable text was found. If this is scanned, paste the text manually.');$('source').value=text;if(!$('topic').value.trim())$('topic').value=baseName(file.name);state.src={kind:'file',name:file.name,chars:text.length,type:file.type||file.name.split('.').pop()};status('fileStatus','Imported '+text.length.toLocaleString()+' characters from '+file.name+'.');toast('Source imported')}catch(err){console.error(err);status('fileStatus',err.message,true);toast('File import needs attention')}});
-function cfg(){return{topic:title($('topic').value),grade:$('grade').value,level:$('level').value,style:$('style').value,minutes:$('minutes').value,source:clean($('source').value),work:$('work').value,src:state.src}}function vocab(c){const s=(c.topic+' '+c.source).toLowerCase();if(['mean','median','mode','range','data'].some(w=>s.includes(w)))return[['Mean','The average. Add the numbers and divide by how many numbers there are.'],['Median','The middle number after the data are sorted from least to greatest.'],['Mode','The number that appears the most.'],['Range','The largest value minus the smallest value.'],['Data','A group of numbers or information.']];if(['variable','equation','solution','inverse'].some(w=>s.includes(w)))return[['Variable','A letter or symbol for an unknown number.'],['Equation','A math sentence with an equal sign.'],['Solution','The value that makes the equation true.'],['Inverse operation','An opposite operation used to undo a step.'],['Check','Put the answer back into the problem.']];if(['area','surface','volume','net','face'].some(w=>s.includes(w)))return[['Area','The number of square units covering a flat surface.'],['Surface area','The total area of all outside faces.'],['Volume','The space inside a 3D figure.'],['Net','A flat pattern that folds into a 3D figure.'],['Face','A flat side of a 3D figure.']];return[['Key idea','The main concept in '+c.topic+'.'],['Evidence','Information that supports an answer.'],['Strategy','A method used to solve.'],['Explain','Tell how and why your answer works.'],['Reflect','Think about what worked and what to improve.']]}
-function acts(c){let a=[['Be Curious','Write two things you notice and one question you have.','Notice/Wonder response'],['Vocabulary Match','Match each key word to a definition. Add a picture or example for two words.','Vocabulary map'],['Guided Example','Follow the model. Circle important information and complete the steps.','Solved model + explanation'],['Partner Check','Solve one problem, then explain your steps to a partner.','Solved problem + partner note'],['Create Your Own','Create one original '+c.topic+' question. Solve it and write an answer key.','Student-created problem'],['Reflect + Exit Ticket','Explain what you learned, then complete the final check.','Reflection + exit ticket']].map(([t,task,product])=>({t,task,product}));if(c.style==='stations')a=a.map((x,i)=>({...x,t:'Station '+(i+1)+': '+x.t}));if(c.style==='review')a=a.map((x,i)=>({...x,t:'Quest '+(i+1)+': '+x.t}));if(c.style==='project')a=[['Project Launch','Choose a real-life situation where this skill helps someone decide.','Project idea'],['Collect or Use Data','Gather numbers, details, or examples in a table.','Organized table'],['Analyze','Use the target skill to solve, compare, or explain.','Completed analysis'],['Design','Create a mini-poster, slide, or written explanation.','Final product draft'],['Peer Review','Trade with a partner. Give one glow and one grow.','Peer feedback'],['Final Reflection','Explain what your work shows and why it matters.','Reflection']].map(([t,task,product])=>({t,task,product}));return a}function box(c){return c.work==='compact'?'box':'box big'}
-function summary(c,v,a){const p=prof[c.level];return`<article class="artifact"><h2>${esc(c.topic)}</h2><p><span class="pill">Grade ${c.grade}</span><span class="pill">${p.label}</span><span class="pill">${c.minutes} min</span><span class="pill">Source: ${esc(c.src.name)}</span></p><p><b>Student goal:</b> I can practice ${esc(c.topic.toLowerCase())} by using clear steps, explaining my thinking, and checking that my answer makes sense.</p><p><b>Language goal:</b> I can use academic vocabulary and sentence frames to explain my strategy.</p><p><b>Source status:</b> ${c.src.kind==='file'?`Imported ${c.src.chars.toLocaleString()} characters from ${esc(c.src.name)}.`:'Built from manually typed/pasted source text.'}</p></article><article class="artifact"><h3>Activity Map</h3><ol>${a.map(x=>`<li><b>${esc(x.t)}:</b> ${esc(x.task)}</li>`).join('')}</ol></article>`}
-function packet(c,v,a){const p=prof[c.level],b=box(c),rows=v.map(([t,d])=>`<tr><td><b>${esc(t)}</b></td><td>${esc(d)}</td><td>Draw or write an example.</td></tr>`).join(''),pages=a.map(x=>`<section class="page"><h2>${esc(x.t)}</h2><p><b>Task:</b> ${esc(x.task)}</p><p><b>Turn in:</b> ${esc(x.product)}</p><div class="two"><div><h3>Plan</h3><div class="box">First, I will...<br><br>Important words/numbers:<br><br>Question I need to answer:</div></div><div><h3>Sentence Support</h3><ul>${p.frames.slice(0,3).map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div></div><h3>Workspace</h3><div class="${b}"></div><h3>Explain Your Thinking</h3><div class="box">I know my answer makes sense because...</div></section>`).join('');return`<section class="page"><h2>${esc(c.topic)}</h2><div class="meta"><div class="box" style="min-height:40px">Name:</div><div class="box" style="min-height:40px">Class:</div><div class="box" style="min-height:40px">Date:</div></div><p><b>Student goal:</b> I can practice ${esc(c.topic.toLowerCase())} and explain my thinking clearly.</p><p><b>Directions:</b> Complete each part. Use the word bank and sentence frames. Show your work in the boxes.</p><h3>Warm-Up: Notice / Wonder</h3><div class="two"><div><b>I notice...</b><div class="box"></div></div><div><b>I wonder...</b><div class="box"></div></div></div><h3>Key Vocabulary</h3><table><thead><tr><th>Word</th><th>Meaning</th><th>My Example</th></tr></thead><tbody>${rows}</tbody></table></section><section class="page"><h2>Guided Notes + Model</h2><p><b>Source idea:</b> ${esc(c.source.slice(0,1000)||'Practice '+c.topic+'.')}</p><ol><li>Read the question carefully.</li><li>Circle or list important information.</li><li>Choose a strategy.</li><li>Show each step.</li><li>Check that the answer makes sense.</li></ol><h3>Teacher Model / Class Example</h3><div class="${b}"></div><h3>My Turn</h3><div class="${b}"></div></section>${pages}<section class="page"><h2>Final Reflection + Exit Ticket</h2><p>Choose one frame and complete it in a full sentence.</p><ul>${p.frames.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="box big"></div><h3>Exit Ticket</h3><p>Create or solve one final ${esc(c.topic.toLowerCase())} problem. Show your work and explain your answer.</p><div class="box big"></div></section>`}
-function guide(c,v,a){const p=prof[c.level],t=c.minutes==='20'?['3 min launch','5 min model','8 min practice','4 min exit ticket']:c.minutes==='45'?['5 min launch','8 min vocabulary/model','22 min activity work','5 min partner share','5 min exit ticket']:['7 min launch','10 min vocabulary/model','35 min work time','10 min partner/class share','8 min reflection + exit ticket'];return`<article class="artifact"><h2>Teacher Guide: ${esc(c.topic)}</h2><p><b>Audience:</b> Grade ${c.grade}; ${p.label}</p><p><b>Source:</b> ${c.src.kind==='file'?esc(c.src.name)+' ('+c.src.chars.toLocaleString()+' extracted characters)':'Manual source text'}</p><h3>Timing</h3><ul>${t.map(x=>`<li>${x}</li>`).join('')}</ul><h3>Teacher Moves</h3><ol><li>Start with Notice/Wonder and accept multiple entry points.</li><li>Preview vocabulary with an example, sketch, or gesture.</li><li>Model one problem slowly while thinking aloud.</li><li>Release students into ${esc(c.style)} work and circulate for misconceptions.</li><li>Close with written explanation and exit ticket.</li></ol><h3>Supports</h3><ul><li>${esc(p.note)}</li><li>Allow partner rehearsal before writing.</li><li>Use large workspaces for drawing, sorting, listing steps, or calculations.</li></ul></article>`}
-function qa(c,v,a){const q=[['File ingestion',c.src.kind==='file'?`Imported source text from ${esc(c.src.name)}.`:'Manual source text used; upload is available.'],['Source fidelity',c.source.length>20?'Source/topic text captured and used in guided notes.':'Add source text for stronger fidelity.'],['Grade access','Grade '+c.grade+' directions use direct, student-facing language.'],['ESOL support',prof[c.level].label+' supports included.'],['Workspace size',c.work==='large'?'Large writing/work boxes included.':'Workspace setting applied.'],['Print quality','White background, black text, and 2 pt black borders for student pages.'],['Activity clarity',a.length+' activities include task directions and expected product.'],['Completion','Summary, packet, teacher guide, HTML, and QA generated.']];return`<article class="artifact"><h2>QA Gate</h2><div class="qa">${q.map(([n,d])=>`<div><b>✓ ${n}</b><p>${d}</p></div>`).join('')}</div><h3>Teacher final check</h3><ul><li>For scanned PDFs, confirm extracted text is complete.</li><li>Add exact source problems if students need a specific set.</li><li>Print one test page before mass copying.</li></ul></article>`}
-function studentHtml(c,v,a){const p=prof[c.level];return`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(c.topic)} Interactive Activity</title><style>body{margin:0;font-family:Calibri,Arial,sans-serif;background:#fbf7ef;color:#142033;line-height:1.5}.shell{width:min(980px,calc(100% - 28px));margin:auto;padding:24px 0}header,.card{border-radius:22px;padding:24px;margin:14px 0}header{background:#16324f;color:#fff}.card{background:#fff;border:1px solid #ccd8e4}textarea,input{width:100%;border:2px solid #ccd8e4;border-radius:14px;padding:12px;font:inherit;box-sizing:border-box}textarea{min-height:110px}button{border:0;border-radius:999px;background:#2f7f7b;color:white;padding:12px 16px;font-weight:900}</style></head><body><main class="shell"><header><h1>${esc(c.topic)}</h1><p>Grade ${c.grade} · ${esc(p.label)}</p><input id="name" placeholder="Student name"></header><button onclick="window.print()">Print / Save PDF</button> <button onclick="downloadWork()">Download My Work</button><section class="card"><h2>Vocabulary</h2><ul>${v.map(([t,d])=>`<li><b>${esc(t)}:</b> ${esc(d)}</li>`).join('')}</ul></section>${a.map((x,i)=>`<section class="card"><h2>Step ${i+1}: ${esc(x.t)}</h2><p><b>Task:</b> ${esc(x.task)}</p><label>My work</label><textarea></textarea><label>Explain</label><textarea placeholder="${esc(p.frames[i%p.frames.length])}"></textarea></section>`).join('')}</main><script>function downloadWork(){const n=document.getElementById('name').value||'student';const text=[...document.querySelectorAll('textarea')].map((b,i)=>'Response '+(i+1)+':\n'+b.value).join('\n\n');const blob=new Blob([document.title+'\nName: '+n+'\n\n'+text],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=n.replace(/\s+/g,'-')+'-work.txt';a.click();URL.revokeObjectURL(a.href)}<\/script></body></html>`}
-function build(){const c=cfg(),v=vocab(c),a=acts(c),h=studentHtml(c,v,a);state.out={summary:summary(c,v,a),packet:packet(c,v,a),guide:guide(c,v,a),html:h,qa:qa(c,v,a)};$('summary').innerHTML=state.out.summary;$('packet').innerHTML=state.out.packet;$('guide').innerHTML=state.out.guide;$('html').innerHTML='<article class="artifact"><h2>Interactive HTML Export</h2><p>Use the download button above to save this as a student-facing HTML activity.</p></article><pre>'+esc(h)+'</pre>';$('qa').innerHTML=state.out.qa;tab('summary');status('status','Activity pack generated. Review tabs and export.');toast('Activity pack generated')}function tab(id){state.tab=id;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===id)));document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id===id))}function save(name,content,type){const blob=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}function docHtml(){return`<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:Calibri,Arial,sans-serif}.page{page-break-after:always;border:2pt solid #111;padding:24px;margin:auto;max-width:8in;min-height:9.5in}.box{border:2pt solid #111;min-height:120px;padding:8px}.big{min-height:210px}table{border-collapse:collapse;width:100%}td,th{border:2pt solid #111;padding:8px}.two,.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px}.meta{grid-template-columns:1.2fr .8fr .8fr}</style></head><body>${state.out?.packet||''}</body></html>`}
-$('form').addEventListener('submit',e=>{e.preventDefault();build()});$('source').addEventListener('input',()=>state.src={kind:'typed',name:'Manual source',chars:$('source').value.length});$('demo').onclick=()=>{$('topic').value='Mean, Median, Mode, and Range';$('source').value='Students will review mean, median, mode, and range. They need to sort numbers from least to greatest, identify the middle number, find the number that appears most often, calculate the average, and subtract the smallest value from the largest value. Students should explain their thinking using math vocabulary.';state.src={kind:'typed',name:'Demo source',chars:$('source').value.length};toast('Demo loaded')};$('reset').onclick=()=>{$('topic').value='';$('source').value='';$('file').value='';state.src={kind:'typed',name:'Manual source',chars:0};status('status','Form reset.')};document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>tab(b.dataset.tab));$('copy').onclick=async()=>{await navigator.clipboard.writeText($(state.tab).innerText||'');toast('Copied current tab')};$('doc').onclick=()=>state.out?save('neft-teacher-activity-packet.doc',docHtml(),'application/msword'):toast('Generate first');$('htmlDown').onclick=()=>state.out?save('neft-teacher-interactive-activity.html',state.out.html,'text/html'):toast('Generate first');$('print').onclick=()=>{if(!state.out)return toast('Generate first');tab('packet');setTimeout(()=>window.print(),100)};document.addEventListener('DOMContentLoaded',()=>{state.src={kind:'typed',name:'Manual source',chars:$('source').value.length};build()});
-</script>    <script src="/assets/nt-page-enhance.js" defer></script>
-  </body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Neft Teacher Activity Studio builds printable and interactive activity packs from pasted text or uploaded DOCX, PPTX, PDF, TXT, MD, or CSV files."
+    />
+    <title>Neft Teacher Activity Studio</title>
+    <style>
+      :root {
+        --navy: #16324f;
+        --teal: #2f7f7b;
+        --sage: #dfe9df;
+        --cream: #fbf7ef;
+        --ink: #142033;
+        --muted: #546173;
+        --line: #ccd8e4;
+        --shadow: 0 18px 45px rgba(22, 50, 79, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Calibri, Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(47, 127, 123, 0.16),
+            transparent 34rem
+          ),
+          linear-gradient(180deg, var(--cream), #fff);
+        line-height: 1.5;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      .shell {
+        width: min(1220px, calc(100% - 32px));
+        margin: auto;
+        padding: 22px 0 48px;
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .brand {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--navy), var(--teal));
+        color: #fff;
+        display: grid;
+        place-items: center;
+      }
+      .btn,
+      a.btn {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-weight: 900;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .primary {
+        border: 0;
+        background: linear-gradient(135deg, var(--navy), var(--teal));
+        color: #fff;
+        box-shadow: var(--shadow);
+      }
+      .hero {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        border-radius: 30px;
+        padding: clamp(22px, 4vw, 40px);
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 24px;
+      }
+      .eyebrow {
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--teal);
+        font-size: 0.82rem;
+      }
+      h1 {
+        font-size: clamp(2.4rem, 6vw, 4.8rem);
+        line-height: 0.95;
+        margin: 8px 0 12px;
+        color: var(--navy);
+        letter-spacing: -0.045em;
+      }
+      .lead {
+        font-size: 1.12rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .heroCard {
+        background: var(--navy);
+        color: #fff;
+        border-radius: 24px;
+        padding: 24px;
+        display: grid;
+        align-content: space-between;
+        min-height: 280px;
+      }
+      .mini {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .mini div {
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 20px;
+        margin-top: 22px;
+        align-items: start;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: 0 12px 34px rgba(22, 50, 79, 0.06);
+      }
+      form.panel {
+        padding: 20px;
+        position: sticky;
+        top: 14px;
+      }
+      h2,
+      h3 {
+        color: var(--navy);
+        line-height: 1.1;
+      }
+      label {
+        display: block;
+        color: var(--navy);
+        font-weight: 900;
+        margin: 14px 0 6px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+        background: #fff;
+        color: var(--ink);
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 0;
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px rgba(47, 127, 123, 0.16);
+      }
+      textarea {
+        min-height: 150px;
+        resize: vertical;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .fileBox {
+        border: 2px dashed var(--line);
+        background: #fbfdff;
+        border-radius: 18px;
+        padding: 14px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.92rem;
+        margin: 6px 0 0;
+      }
+      .status {
+        display: none;
+        margin-top: 12px;
+        border: 1px solid #b9dcd7;
+        background: #edf7f5;
+        color: #174d4a;
+        border-radius: 14px;
+        padding: 10px 12px;
+        font-weight: 900;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 22px 22px 0 0;
+      }
+      .tab {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--navy);
+        padding: 9px 12px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+      .tab[aria-selected="true"] {
+        background: var(--navy);
+        color: #fff;
+      }
+      .out {
+        padding: 18px;
+      }
+      .pane {
+        display: none;
+      }
+      .pane.active {
+        display: block;
+      }
+      .artifact {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 18px;
+        padding: 22px;
+        margin-bottom: 14px;
+      }
+      .pill {
+        display: inline-block;
+        border-radius: 999px;
+        background: var(--sage);
+        color: var(--navy);
+        font-weight: 900;
+        font-size: 0.88rem;
+        padding: 6px 10px;
+        margin: 0 6px 8px 0;
+      }
+      .page {
+        width: min(100%, 820px);
+        min-height: 960px;
+        margin: 0 auto 18px;
+        padding: 34px;
+        border: 2px solid #111;
+        background: #fff;
+        color: #111;
+        box-shadow: 0 10px 24px rgba(22, 50, 79, 0.08);
+        font-size: 15px;
+      }
+      .page h2 {
+        color: #111;
+        border-bottom: 2px solid #111;
+        padding-bottom: 6px;
+      }
+      .meta,
+      .two {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .meta {
+        grid-template-columns: 1.2fr 0.8fr 0.8fr;
+      }
+      .box {
+        border: 2px solid #111;
+        min-height: 150px;
+        padding: 10px;
+        margin: 8px 0 15px;
+      }
+      .big {
+        min-height: 240px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      td,
+      th {
+        border: 2px solid #111;
+        padding: 8px;
+        text-align: left;
+      }
+      .qa {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .qa div {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        background: #fbfdff;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: #101827;
+        color: #f7fbff;
+        border-radius: 18px;
+        padding: 18px;
+        max-height: 620px;
+        overflow: auto;
+      }
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        background: var(--navy);
+        color: #fff;
+        padding: 12px 14px;
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        opacity: 0;
+        transform: translateY(12px);
+        pointer-events: none;
+        transition: 0.2s;
+        font-weight: 900;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-weight: 800;
+        margin-top: 24px;
+      }
+      @media (max-width: 980px) {
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        form.panel {
+          position: static;
+        }
+      }
+      @media (max-width: 650px) {
+        .shell {
+          width: min(100% - 22px, 1220px);
+        }
+        .top {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .row,
+        .mini,
+        .meta,
+        .two,
+        .qa {
+          grid-template-columns: 1fr;
+        }
+        .tabs {
+          position: static;
+        }
+        .page {
+          padding: 20px;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        .top,
+        .hero,
+        form.panel,
+        .tabs,
+        .actions,
+        .toast,
+        footer,
+        .screen {
+          display: none !important;
+        }
+        .shell,
+        .grid {
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          display: block;
+        }
+        .panel,
+        .out {
+          border: 0;
+          box-shadow: none;
+          padding: 0;
+        }
+        .pane {
+          display: none !important;
+        }
+        #packet {
+          display: block !important;
+        }
+        .page {
+          box-shadow: none;
+          page-break-after: always;
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="top">
+        <div class="brand">
+          <span class="mark">NT</span><span>Neft Teacher</span>
+        </div>
+        <div>
+          <a class="btn" href="/">Classroom Home</a>
+          <button class="btn" id="demo" type="button">Load Demo</button>
+        </div>
+      </nav>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">
+            File Ingestion · Language Support · Printable + Interactive
+          </div>
+          <h1>Activity Studio</h1>
+          <p class="lead">
+            Upload a DOCX, PPTX, PDF, TXT, MD, or CSV file—or paste lesson
+            text—and generate a classroom-ready activity pack with large student
+            workspaces, teacher guide, QA gate, and interactive HTML export.
+          </p>
+          <p>
+            <span class="pill">DOCX/PPTX/PDF import</span
+            ><span class="pill">Printable packet</span
+            ><span class="pill">Interactive HTML</span
+            ><span class="pill">QA gate</span>
+          </p>
+        </div>
+        <aside class="heroCard">
+          <div>
+            <h2 style="color: #fff; margin-top: 0">Upload. Extract. Build.</h2>
+            <p>
+              Files are read locally in your browser. Nothing uploads to a
+              server. The extracted lesson text fills the source box for
+              source-fidelity review.
+            </p>
+          </div>
+          <div class="mini">
+            <div><b>1</b><br />Upload or paste</div>
+            <div><b>2</b><br />Extract source</div>
+            <div><b>3</b><br />Generate pack</div>
+            <div><b>4</b><br />Export + teach</div>
+          </div>
+        </aside>
+      </section>
+      <section class="grid">
+        <form class="panel" id="form">
+          <h2>Build Settings</h2>
+          <label for="topic">Topic or activity title</label
+          ><input id="topic" value="Mean, Median, Mode, and Range" />
+          <div class="row">
+            <div>
+              <label for="grade">Grade</label
+              ><select id="grade">
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option selected>6</option>
+                <option>7</option>
+                <option>8</option>
+              </select>
+            </div>
+            <div>
+              <label for="level">Language support</label
+              ><select id="level">
+                <option value="newcomer">Newcomer / Level 1 support</option>
+                <option value="developing" selected>
+                  Developing / Level 1
+                </option>
+                <option value="mixed">Mixed levels</option>
+                <option value="general">General education</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="style">Activity style</label
+              ><select id="style">
+                <option value="choice">Choose-your-own-adventure</option>
+                <option value="stations">Stations rotation</option>
+                <option value="project">Mini project</option>
+                <option value="review">Review quest</option>
+                <option value="worksheet">Guided worksheet</option>
+              </select>
+            </div>
+            <div>
+              <label for="minutes">Class time</label
+              ><select id="minutes">
+                <option value="20">20 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="65" selected>65–75 minutes</option>
+              </select>
+            </div>
+          </div>
+          <label for="file">Upload source file</label>
+          <div class="fileBox">
+            <b>Supported:</b> DOCX, PPTX, PDF, TXT, MD, CSV<input
+              id="file"
+              type="file"
+              accept=".docx,.pptx,.pdf,.txt,.md,.csv,text/plain,application/pdf"
+            />
+            <p class="hint">
+              Scanned PDFs may need manual paste because they do not contain
+              selectable text.
+            </p>
+          </div>
+          <div id="fileStatus" class="status"></div>
+          <label for="source">Lesson source text</label
+          ><textarea id="source">
+Students will review mean, median, mode, and range. They need to sort numbers from least to greatest, identify the middle number, find the number that appears most often, calculate the average, and subtract the smallest value from the largest value. Students should explain their thinking using math vocabulary.</textarea
+          >
+          <div class="row">
+            <div>
+              <label for="product">Product</label
+              ><select id="product">
+                <option>Printable packet</option>
+                <option>Interactive HTML</option>
+                <option selected>Both</option>
+              </select>
+            </div>
+            <div>
+              <label for="work">Workspace size</label
+              ><select id="work">
+                <option value="large" selected>
+                  Large elementary workspaces
+                </option>
+                <option value="standard">
+                  Standard middle-school workspaces
+                </option>
+                <option value="compact">Compact review handout</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="submit">
+              Generate Activity Pack</button
+            ><button class="btn" id="reset" type="button">Reset</button>
+          </div>
+          <div id="status" class="status"></div>
+        </form>
+        <section class="panel">
+          <div class="tabs" role="tablist">
+            <button class="tab" aria-selected="true" data-tab="summary">
+              Summary</button
+            ><button class="tab" aria-selected="false" data-tab="packet">
+              Student Packet</button
+            ><button class="tab" aria-selected="false" data-tab="guide">
+              Teacher Guide</button
+            ><button class="tab" aria-selected="false" data-tab="html">
+              Interactive HTML</button
+            ><button class="tab" aria-selected="false" data-tab="qa">
+              QA Gate
+            </button>
+          </div>
+          <div class="out">
+            <div
+              class="actions screen"
+              style="margin-top: 0; margin-bottom: 14px"
+            >
+              <button class="btn" id="copy" type="button">
+                Copy Current Tab</button
+              ><button class="btn" id="doc" type="button">
+                Download Word-Compatible Packet</button
+              ><button class="btn" id="htmlDown" type="button">
+                Download Interactive HTML</button
+              ><button class="btn" id="print" type="button">
+                Print Packet
+              </button>
+            </div>
+            <div id="summary" class="pane active"></div>
+            <div id="packet" class="pane"></div>
+            <div id="guide" class="pane"></div>
+            <div id="html" class="pane"></div>
+            <div id="qa" class="pane"></div>
+          </div>
+        </section>
+      </section>
+      <footer>
+        Neft Teacher Activity Studio · Browser-only file extraction · No student
+        data is sent to a server
+      </footer>
+    </main>
+    <div id="toast" class="toast"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const state = {
+        tab: "summary",
+        out: null,
+        src: { kind: "typed", name: "Manual source", chars: 0 },
+      };
+      const prof = {
+        newcomer: {
+          label: "Newcomer / Level 1 support",
+          note: "Use short sentences, examples first, visuals, word banks, partner talk, and sentence frames.",
+          frames: [
+            "I notice ___ because ___.",
+            "First, I ___. Next, I ___.",
+            "The answer is ___ because ___.",
+            "I agree/disagree because ___.",
+          ],
+        },
+        developing: {
+          label: "Developing / Level 1",
+          note: "Use clear steps, vocabulary boxes, sentence starters, partner checks, and guided response spaces.",
+          frames: [
+            "I solved it by ___.",
+            "The data show ___ because ___.",
+            "My strategy was ___, so ___.",
+            "One mistake to avoid is ___.",
+          ],
+        },
+        mixed: {
+          label: "Mixed levels",
+          note: "Use concise directions, optional frames, collaborative talk, and challenge prompts.",
+          frames: [
+            "My evidence is ___.",
+            "This strategy works because ___.",
+            "Another way to solve is ___.",
+            "The most important step is ___.",
+          ],
+        },
+        general: {
+          label: "General education",
+          note: "Use precise directions, checks for understanding, reasoning prompts, and extension choices.",
+          frames: [
+            "My reasoning is ___.",
+            "The pattern suggests ___.",
+            "A second method is ___.",
+            "This connects to ___ because ___.",
+          ],
+        },
+      };
+      function esc(s) {
+        return String(s ?? "").replace(
+          /[&<>'"]/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              "'": "&#39;",
+              '"': "&quot;",
+            })[c],
+        );
+      }
+      function clean(s) {
+        return String(s || "")
+          .replace(/[<>]/g, "")
+          .trim();
+      }
+      function title(s) {
+        s = clean(s);
+        return s ? s[0].toUpperCase() + s.slice(1) : "Classroom Activity";
+      }
+      function baseName(n) {
+        return String(n || "")
+          .replace(/\.[^.]+$/, "")
+          .replace(/[-_]+/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+      function toast(m) {
+        $("toast").textContent = m;
+        $("toast").classList.add("show");
+        setTimeout(() => $("toast").classList.remove("show"), 2200);
+      }
+      function status(id, m, bad = false) {
+        const x = $(id);
+        x.textContent = m;
+        x.style.display = "block";
+        x.style.background = bad ? "#fff1f1" : "#edf7f5";
+        x.style.borderColor = bad ? "#e0a5a5" : "#b9dcd7";
+        x.style.color = bad ? "#842929" : "#174d4a";
+      }
+      function dec(t) {
+        const a = document.createElement("textarea");
+        a.innerHTML = t;
+        return a.value;
+      }
+      function xmlText(x) {
+        return dec(
+          String(x)
+            .replace(/<\/?(a:t|w:t|p:t|a:p|w:p|w:tab|a:br)[^>]*>/g, " ")
+            .replace(/<[^>]+>/g, " ")
+            .replace(/\s+/g, " ")
+            .trim(),
+        );
+      }
+      async function zipText(file, ext) {
+        if (!window.JSZip)
+          throw new Error(
+            "DOCX/PPTX extractor did not load. Try again with internet access.",
+          );
+        const zip = await JSZip.loadAsync(await file.arrayBuffer());
+        const files = Object.values(zip.files)
+          .filter(
+            (e) =>
+              !e.dir &&
+              (ext === "docx"
+                ? /^word\/(document|footnotes|endnotes|header\d+|footer\d+)\.xml$/.test(
+                    e.name,
+                  )
+                : /^ppt\/slides\/slide\d+\.xml$/.test(e.name) ||
+                  /^ppt\/notesSlides\/notesSlide\d+\.xml$/.test(e.name)),
+          )
+          .sort((a, b) =>
+            a.name.localeCompare(b.name, undefined, { numeric: true }),
+          );
+        const out = [];
+        for (const f of files) {
+          const t = xmlText(await f.async("string"));
+          if (t) out.push(t);
+        }
+        return out.join("\n\n");
+      }
+      async function pdfText(file) {
+        if (!window.pdfjsLib)
+          throw new Error(
+            "PDF extractor did not load. Try again with internet access.",
+          );
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        const pdf = await pdfjsLib.getDocument({
+          data: await file.arrayBuffer(),
+        }).promise;
+        const out = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const text = content.items
+            .map((a) => a.str)
+            .join(" ")
+            .replace(/\s+/g, " ")
+            .trim();
+          if (text) out.push("Page " + i + ": " + text);
+        }
+        return out.join("\n\n");
+      }
+      async function extract(file) {
+        const ext = (file.name.split(".").pop() || "").toLowerCase();
+        if (["txt", "md", "csv"].includes(ext) || file.type.startsWith("text/"))
+          return file.text();
+        if (["docx", "pptx"].includes(ext)) return zipText(file, ext);
+        if (ext === "pdf" || file.type === "application/pdf")
+          return pdfText(file);
+        throw new Error(
+          "Unsupported file type. Use DOCX, PPTX, PDF, TXT, MD, or CSV.",
+        );
+      }
+      $("file").addEventListener("change", async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        status("fileStatus", "Reading " + file.name + "...");
+        try {
+          const text = (await extract(file))
+            .replace(/\s+\n/g, "\n")
+            .replace(/\n{3,}/g, "\n\n")
+            .trim();
+          if (!text)
+            throw new Error(
+              "No selectable text was found. If this is scanned, paste the text manually.",
+            );
+          $("source").value = text;
+          if (!$("topic").value.trim()) $("topic").value = baseName(file.name);
+          state.src = {
+            kind: "file",
+            name: file.name,
+            chars: text.length,
+            type: file.type || file.name.split(".").pop(),
+          };
+          status(
+            "fileStatus",
+            "Imported " +
+              text.length.toLocaleString() +
+              " characters from " +
+              file.name +
+              ".",
+          );
+          toast("Source imported");
+        } catch (err) {
+          console.error(err);
+          status("fileStatus", err.message, true);
+          toast("File import needs attention");
+        }
+      });
+      function cfg() {
+        return {
+          topic: title($("topic").value),
+          grade: $("grade").value,
+          level: $("level").value,
+          style: $("style").value,
+          minutes: $("minutes").value,
+          source: clean($("source").value),
+          work: $("work").value,
+          src: state.src,
+        };
+      }
+      function vocab(c) {
+        const s = (c.topic + " " + c.source).toLowerCase();
+        if (
+          ["mean", "median", "mode", "range", "data"].some((w) => s.includes(w))
+        )
+          return [
+            [
+              "Mean",
+              "The average. Add the numbers and divide by how many numbers there are.",
+            ],
+            [
+              "Median",
+              "The middle number after the data are sorted from least to greatest.",
+            ],
+            ["Mode", "The number that appears the most."],
+            ["Range", "The largest value minus the smallest value."],
+            ["Data", "A group of numbers or information."],
+          ];
+        if (
+          ["variable", "equation", "solution", "inverse"].some((w) =>
+            s.includes(w),
+          )
+        )
+          return [
+            ["Variable", "A letter or symbol for an unknown number."],
+            ["Equation", "A math sentence with an equal sign."],
+            ["Solution", "The value that makes the equation true."],
+            ["Inverse operation", "An opposite operation used to undo a step."],
+            ["Check", "Put the answer back into the problem."],
+          ];
+        if (
+          ["area", "surface", "volume", "net", "face"].some((w) =>
+            s.includes(w),
+          )
+        )
+          return [
+            ["Area", "The number of square units covering a flat surface."],
+            ["Surface area", "The total area of all outside faces."],
+            ["Volume", "The space inside a 3D figure."],
+            ["Net", "A flat pattern that folds into a 3D figure."],
+            ["Face", "A flat side of a 3D figure."],
+          ];
+        return [
+          ["Key idea", "The main concept in " + c.topic + "."],
+          ["Evidence", "Information that supports an answer."],
+          ["Strategy", "A method used to solve."],
+          ["Explain", "Tell how and why your answer works."],
+          ["Reflect", "Think about what worked and what to improve."],
+        ];
+      }
+      function acts(c) {
+        let a = [
+          [
+            "Be Curious",
+            "Write two things you notice and one question you have.",
+            "Notice/Wonder response",
+          ],
+          [
+            "Vocabulary Match",
+            "Match each key word to a definition. Add a picture or example for two words.",
+            "Vocabulary map",
+          ],
+          [
+            "Guided Example",
+            "Follow the model. Circle important information and complete the steps.",
+            "Solved model + explanation",
+          ],
+          [
+            "Partner Check",
+            "Solve one problem, then explain your steps to a partner.",
+            "Solved problem + partner note",
+          ],
+          [
+            "Create Your Own",
+            "Create one original " +
+              c.topic +
+              " question. Solve it and write an answer key.",
+            "Student-created problem",
+          ],
+          [
+            "Reflect + Exit Ticket",
+            "Explain what you learned, then complete the final check.",
+            "Reflection + exit ticket",
+          ],
+        ].map(([t, task, product]) => ({ t, task, product }));
+        if (c.style === "stations")
+          a = a.map((x, i) => ({ ...x, t: "Station " + (i + 1) + ": " + x.t }));
+        if (c.style === "review")
+          a = a.map((x, i) => ({ ...x, t: "Quest " + (i + 1) + ": " + x.t }));
+        if (c.style === "project")
+          a = [
+            [
+              "Project Launch",
+              "Choose a real-life situation where this skill helps someone decide.",
+              "Project idea",
+            ],
+            [
+              "Collect or Use Data",
+              "Gather numbers, details, or examples in a table.",
+              "Organized table",
+            ],
+            [
+              "Analyze",
+              "Use the target skill to solve, compare, or explain.",
+              "Completed analysis",
+            ],
+            [
+              "Design",
+              "Create a mini-poster, slide, or written explanation.",
+              "Final product draft",
+            ],
+            [
+              "Peer Review",
+              "Trade with a partner. Give one glow and one grow.",
+              "Peer feedback",
+            ],
+            [
+              "Final Reflection",
+              "Explain what your work shows and why it matters.",
+              "Reflection",
+            ],
+          ].map(([t, task, product]) => ({ t, task, product }));
+        return a;
+      }
+      function box(c) {
+        return c.work === "compact" ? "box" : "box big";
+      }
+      function summary(c, v, a) {
+        const p = prof[c.level];
+        return `<article class="artifact"><h2>${esc(c.topic)}</h2><p><span class="pill">Grade ${c.grade}</span><span class="pill">${p.label}</span><span class="pill">${c.minutes} min</span><span class="pill">Source: ${esc(c.src.name)}</span></p><p><b>Student goal:</b> I can practice ${esc(c.topic.toLowerCase())} by using clear steps, explaining my thinking, and checking that my answer makes sense.</p><p><b>Language goal:</b> I can use academic vocabulary and sentence frames to explain my strategy.</p><p><b>Source status:</b> ${c.src.kind === "file" ? `Imported ${c.src.chars.toLocaleString()} characters from ${esc(c.src.name)}.` : "Built from manually typed/pasted source text."}</p></article><article class="artifact"><h3>Activity Map</h3><ol>${a.map((x) => `<li><b>${esc(x.t)}:</b> ${esc(x.task)}</li>`).join("")}</ol></article>`;
+      }
+      function packet(c, v, a) {
+        const p = prof[c.level],
+          b = box(c),
+          rows = v
+            .map(
+              ([t, d]) =>
+                `<tr><td><b>${esc(t)}</b></td><td>${esc(d)}</td><td>Draw or write an example.</td></tr>`,
+            )
+            .join(""),
+          pages = a
+            .map(
+              (x) =>
+                `<section class="page"><h2>${esc(x.t)}</h2><p><b>Task:</b> ${esc(x.task)}</p><p><b>Turn in:</b> ${esc(x.product)}</p><div class="two"><div><h3>Plan</h3><div class="box">First, I will...<br><br>Important words/numbers:<br><br>Question I need to answer:</div></div><div><h3>Sentence Support</h3><ul>${p.frames
+                  .slice(0, 3)
+                  .map((f) => `<li>${esc(f)}</li>`)
+                  .join(
+                    "",
+                  )}</ul></div></div><h3>Workspace</h3><div class="${b}"></div><h3>Explain Your Thinking</h3><div class="box">I know my answer makes sense because...</div></section>`,
+            )
+            .join("");
+        return `<section class="page"><h2>${esc(c.topic)}</h2><div class="meta"><div class="box" style="min-height:40px">Name:</div><div class="box" style="min-height:40px">Class:</div><div class="box" style="min-height:40px">Date:</div></div><p><b>Student goal:</b> I can practice ${esc(c.topic.toLowerCase())} and explain my thinking clearly.</p><p><b>Directions:</b> Complete each part. Use the word bank and sentence frames. Show your work in the boxes.</p><h3>Warm-Up: Notice / Wonder</h3><div class="two"><div><b>I notice...</b><div class="box"></div></div><div><b>I wonder...</b><div class="box"></div></div></div><h3>Key Vocabulary</h3><table><thead><tr><th>Word</th><th>Meaning</th><th>My Example</th></tr></thead><tbody>${rows}</tbody></table></section><section class="page"><h2>Guided Notes + Model</h2><p><b>Source idea:</b> ${esc(c.source.slice(0, 1000) || "Practice " + c.topic + ".")}</p><ol><li>Read the question carefully.</li><li>Circle or list important information.</li><li>Choose a strategy.</li><li>Show each step.</li><li>Check that the answer makes sense.</li></ol><h3>Teacher Model / Class Example</h3><div class="${b}"></div><h3>My Turn</h3><div class="${b}"></div></section>${pages}<section class="page"><h2>Final Reflection + Exit Ticket</h2><p>Choose one frame and complete it in a full sentence.</p><ul>${p.frames.map((f) => `<li>${esc(f)}</li>`).join("")}</ul><div class="box big"></div><h3>Exit Ticket</h3><p>Create or solve one final ${esc(c.topic.toLowerCase())} problem. Show your work and explain your answer.</p><div class="box big"></div></section>`;
+      }
+      function guide(c, v, a) {
+        const p = prof[c.level],
+          t =
+            c.minutes === "20"
+              ? [
+                  "3 min launch",
+                  "5 min model",
+                  "8 min practice",
+                  "4 min exit ticket",
+                ]
+              : c.minutes === "45"
+                ? [
+                    "5 min launch",
+                    "8 min vocabulary/model",
+                    "22 min activity work",
+                    "5 min partner share",
+                    "5 min exit ticket",
+                  ]
+                : [
+                    "7 min launch",
+                    "10 min vocabulary/model",
+                    "35 min work time",
+                    "10 min partner/class share",
+                    "8 min reflection + exit ticket",
+                  ];
+        return `<article class="artifact"><h2>Teacher Guide: ${esc(c.topic)}</h2><p><b>Audience:</b> Grade ${c.grade}; ${p.label}</p><p><b>Source:</b> ${c.src.kind === "file" ? esc(c.src.name) + " (" + c.src.chars.toLocaleString() + " extracted characters)" : "Manual source text"}</p><h3>Timing</h3><ul>${t.map((x) => `<li>${x}</li>`).join("")}</ul><h3>Teacher Moves</h3><ol><li>Start with Notice/Wonder and accept multiple entry points.</li><li>Preview vocabulary with an example, sketch, or gesture.</li><li>Model one problem slowly while thinking aloud.</li><li>Release students into ${esc(c.style)} work and circulate for misconceptions.</li><li>Close with written explanation and exit ticket.</li></ol><h3>Supports</h3><ul><li>${esc(p.note)}</li><li>Allow partner rehearsal before writing.</li><li>Use large workspaces for drawing, sorting, listing steps, or calculations.</li></ul></article>`;
+      }
+      function qa(c, v, a) {
+        const q = [
+          [
+            "File ingestion",
+            c.src.kind === "file"
+              ? `Imported source text from ${esc(c.src.name)}.`
+              : "Manual source text used; upload is available.",
+          ],
+          [
+            "Source fidelity",
+            c.source.length > 20
+              ? "Source/topic text captured and used in guided notes."
+              : "Add source text for stronger fidelity.",
+          ],
+          [
+            "Grade access",
+            "Grade " +
+              c.grade +
+              " directions use direct, student-facing language.",
+          ],
+          ["Language support", prof[c.level].label + " supports included."],
+          [
+            "Workspace size",
+            c.work === "large"
+              ? "Large writing/work boxes included."
+              : "Workspace setting applied.",
+          ],
+          [
+            "Print quality",
+            "White background, black text, and 2 pt black borders for student pages.",
+          ],
+          [
+            "Activity clarity",
+            a.length +
+              " activities include task directions and expected product.",
+          ],
+          [
+            "Completion",
+            "Summary, packet, teacher guide, HTML, and QA generated.",
+          ],
+        ];
+        return `<article class="artifact"><h2>QA Gate</h2><div class="qa">${q.map(([n, d]) => `<div><b>✓ ${n}</b><p>${d}</p></div>`).join("")}</div><h3>Teacher final check</h3><ul><li>For scanned PDFs, confirm extracted text is complete.</li><li>Add exact source problems if students need a specific set.</li><li>Print one test page before mass copying.</li></ul></article>`;
+      }
+      function studentHtml(c, v, a) {
+        const p = prof[c.level];
+        return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(c.topic)} Interactive Activity</title><style>body{margin:0;font-family:Calibri,Arial,sans-serif;background:#fbf7ef;color:#142033;line-height:1.5}.shell{width:min(980px,calc(100% - 28px));margin:auto;padding:24px 0}header,.card{border-radius:22px;padding:24px;margin:14px 0}header{background:#16324f;color:#fff}.card{background:#fff;border:1px solid #ccd8e4}textarea,input{width:100%;border:2px solid #ccd8e4;border-radius:14px;padding:12px;font:inherit;box-sizing:border-box}textarea{min-height:110px}button{border:0;border-radius:999px;background:#2f7f7b;color:white;padding:12px 16px;font-weight:900}</style></head><body><main class="shell"><header><h1>${esc(c.topic)}</h1><p>Grade ${c.grade} · ${esc(p.label)}</p><input id="name" placeholder="Student name"></header><button onclick="window.print()">Print / Save PDF</button> <button onclick="downloadWork()">Download My Work</button><section class="card"><h2>Vocabulary</h2><ul>${v.map(([t, d]) => `<li><b>${esc(t)}:</b> ${esc(d)}</li>`).join("")}</ul></section>${a.map((x, i) => `<section class="card"><h2>Step ${i + 1}: ${esc(x.t)}</h2><p><b>Task:</b> ${esc(x.task)}</p><label>My work</label><textarea></textarea><label>Explain</label><textarea placeholder="${esc(p.frames[i % p.frames.length])}"></textarea></section>`).join("")}</main><script>function downloadWork(){const n=document.getElementById('name').value||'student';const text=[...document.querySelectorAll('textarea')].map((b,i)=>'Response '+(i+1)+':\n'+b.value).join('\n\n');const blob=new Blob([document.title+'\nName: '+n+'\n\n'+text],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=n.replace(/\s+/g,'-')+'-work.txt';a.click();URL.revokeObjectURL(a.href)}<\/script></body></html>`;
+      }
+      function build() {
+        const c = cfg(),
+          v = vocab(c),
+          a = acts(c),
+          h = studentHtml(c, v, a);
+        state.out = {
+          summary: summary(c, v, a),
+          packet: packet(c, v, a),
+          guide: guide(c, v, a),
+          html: h,
+          qa: qa(c, v, a),
+        };
+        $("summary").innerHTML = state.out.summary;
+        $("packet").innerHTML = state.out.packet;
+        $("guide").innerHTML = state.out.guide;
+        $("html").innerHTML =
+          '<article class="artifact"><h2>Interactive HTML Export</h2><p>Use the download button above to save this as a student-facing HTML activity.</p></article><pre>' +
+          esc(h) +
+          "</pre>";
+        $("qa").innerHTML = state.out.qa;
+        tab("summary");
+        status("status", "Activity pack generated. Review tabs and export.");
+        toast("Activity pack generated");
+      }
+      function tab(id) {
+        state.tab = id;
+        document
+          .querySelectorAll(".tab")
+          .forEach((b) =>
+            b.setAttribute("aria-selected", String(b.dataset.tab === id)),
+          );
+        document
+          .querySelectorAll(".pane")
+          .forEach((p) => p.classList.toggle("active", p.id === id));
+      }
+      function save(name, content, type) {
+        const blob = new Blob([content], { type });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = name;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+      function docHtml() {
+        return `<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:Calibri,Arial,sans-serif}.page{page-break-after:always;border:2pt solid #111;padding:24px;margin:auto;max-width:8in;min-height:9.5in}.box{border:2pt solid #111;min-height:120px;padding:8px}.big{min-height:210px}table{border-collapse:collapse;width:100%}td,th{border:2pt solid #111;padding:8px}.two,.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px}.meta{grid-template-columns:1.2fr .8fr .8fr}</style></head><body>${state.out?.packet || ""}</body></html>`;
+      }
+      $("form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        build();
+      });
+      $("source").addEventListener(
+        "input",
+        () =>
+          (state.src = {
+            kind: "typed",
+            name: "Manual source",
+            chars: $("source").value.length,
+          }),
+      );
+      $("demo").onclick = () => {
+        $("topic").value = "Mean, Median, Mode, and Range";
+        $("source").value =
+          "Students will review mean, median, mode, and range. They need to sort numbers from least to greatest, identify the middle number, find the number that appears most often, calculate the average, and subtract the smallest value from the largest value. Students should explain their thinking using math vocabulary.";
+        state.src = {
+          kind: "typed",
+          name: "Demo source",
+          chars: $("source").value.length,
+        };
+        toast("Demo loaded");
+      };
+      $("reset").onclick = () => {
+        $("topic").value = "";
+        $("source").value = "";
+        $("file").value = "";
+        state.src = { kind: "typed", name: "Manual source", chars: 0 };
+        status("status", "Form reset.");
+      };
+      document
+        .querySelectorAll(".tab")
+        .forEach((b) => (b.onclick = () => tab(b.dataset.tab)));
+      $("copy").onclick = async () => {
+        await navigator.clipboard.writeText($(state.tab).innerText || "");
+        toast("Copied current tab");
+      };
+      $("doc").onclick = () =>
+        state.out
+          ? save(
+              "neft-teacher-activity-packet.doc",
+              docHtml(),
+              "application/msword",
+            )
+          : toast("Generate first");
+      $("htmlDown").onclick = () =>
+        state.out
+          ? save(
+              "neft-teacher-interactive-activity.html",
+              state.out.html,
+              "text/html",
+            )
+          : toast("Generate first");
+      $("print").onclick = () => {
+        if (!state.out) return toast("Generate first");
+        tab("packet");
+        setTimeout(() => window.print(), 100);
+      };
+      document.addEventListener("DOMContentLoaded", () => {
+        state.src = {
+          kind: "typed",
+          name: "Manual source",
+          chars: $("source").value.length,
+        };
+        build();
+      });
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
+</html>
