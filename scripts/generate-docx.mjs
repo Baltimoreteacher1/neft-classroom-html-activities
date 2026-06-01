@@ -24,6 +24,7 @@ import {
   Packer,
   Paragraph,
   TextRun,
+  ImageRun,
   HeadingLevel,
   AlignmentType,
   BorderStyle,
@@ -31,10 +32,48 @@ import {
   Header,
   Footer,
 } from "docx";
+import { Resvg } from "@resvg/resvg-js";
 import { deriveTWR } from "../engine/core/twr.js";
+import { resolveVocabImage } from "../engine/core/vocab-images.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
+
+// Rasterize a term's vocab illustration (an SVG on disk) to a PNG buffer so it
+// embeds in Word natively (no SVG-fallback quirks). Memoized per file. Returns
+// { data, width, height } sized for a tidy ~130px-wide figure, or null if the
+// asset is missing — callers degrade gracefully (text only) rather than crash.
+const _vocabPngCache = new Map();
+function vocabPng(term) {
+  const webPath = resolveVocabImage(term); // e.g. "/assets/vocab-images/triangle.svg"
+  if (_vocabPngCache.has(webPath)) return _vocabPngCache.get(webPath);
+  let out = null;
+  try {
+    const file = join(root, webPath.replace(/^\//, ""));
+    if (existsSync(file)) {
+      // Strip <title>/<desc> before rasterizing: some assets contain raw "<"/">"
+      // inside their accessible title (valid for lenient browsers, but rejected
+      // by resvg's strict XML parser). They aren't needed for rendering.
+      const svg = readFileSync(file, "utf8")
+        .replace(/<title[\s\S]*?<\/title>/gi, "")
+        .replace(/<desc[\s\S]*?<\/desc>/gi, "");
+      const r = new Resvg(svg, { fitTo: { mode: "width", value: 360 } });
+      const png = r.render();
+      const buf = png.asPng();
+      const display = 130; // points-ish width in the doc
+      const scale = display / png.width;
+      out = {
+        data: buf,
+        width: Math.round(png.width * scale),
+        height: Math.round(png.height * scale),
+      };
+    }
+  } catch {
+    out = null;
+  }
+  _vocabPngCache.set(webPath, out);
+  return out;
+}
 const lessonsDir = join(root, "lessons");
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
@@ -99,16 +138,39 @@ function writeline(n = 1) {
 // ── content sections ──────────────────────────────────────────────────────────
 function vocabParas(vocab = []) {
   if (!vocab.length) return [];
-  const out = [h2("Key Vocabulary  (Level 1 support)")];
+  const out = [
+    h2("Key Vocabulary  (Level 1 support)"),
+    muted("Picture first, then the word, then a plain-language meaning."),
+  ];
   for (const v of vocab) {
+    // Picture first (mirrors the HTML/PDF packet), centered, then term + meaning.
+    const pic = vocabPng(v.term);
+    if (pic) {
+      out.push(
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { before: 120, after: 20 },
+          keepNext: true,
+          children: [
+            new ImageRun({
+              type: "png",
+              data: pic.data,
+              transformation: { width: pic.width, height: pic.height },
+            }),
+          ],
+        }),
+      );
+    }
     out.push(
-      para([
-        new TextRun({ text: v.term, bold: true, color: NAVY, size: 23 }),
-        v.termEs ? new TextRun({ text: `  ·  ${v.termEs}`, italics: true, color: MUTED, size: 20 }) : new TextRun(""),
-      ]),
+      para(
+        [
+          new TextRun({ text: v.term, bold: true, color: NAVY, size: 23 }),
+          v.termEs ? new TextRun({ text: `  ·  ${v.termEs}`, italics: true, color: MUTED, size: 20 }) : new TextRun(""),
+        ],
+        { spacing: { after: 20 }, keepNext: true },
+      ),
     );
-    out.push(para(new TextRun({ text: v.definition || "", size: 21 })));
-    if (v.visual) out.push(muted(v.visual));
+    out.push(para(new TextRun({ text: v.definition || "", size: 21 }), { spacing: { after: 160 } }));
   }
   return out;
 }
