@@ -2,6 +2,7 @@
 // Build structures whose footprint matches a target area by placing rectangular
 // and right-triangular pieces on a grid. Premium rebuild against engine3d.
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import {
   rectArea,
@@ -159,6 +160,11 @@ export default {
     const cfg = makeLevel(level);
     const N = cfg.grid;
     const half = (N * CELL) / 2;
+
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
 
     // ---- Coordinate helpers --------------------------------------------------
     const cellCenter = (col, row) => ({
@@ -454,6 +460,16 @@ export default {
 
       updateLabel(cardLabel, cardText());
 
+      if (clarity) {
+        const shapeName =
+          round.kind === "triangle"
+            ? "right triangle"
+            : round.kind === "rect"
+              ? "rectangle"
+              : `${round.kind.replace("shape", "")}-shaped figure`;
+        clarity.setTarget(`${shapeName} · ${targetArea} sq units`);
+      }
+
       announce(
         `Round ${roundIndex + 1} of ${cfg.rounds.length}. Fill the gold shape. The area is ${targetArea} square units.`,
       );
@@ -478,11 +494,12 @@ export default {
 
     function updateLive() {
       const area = liveArea();
-      hud.setObjective(
+      const text =
         `Fill the gold shape: ${targetArea} sq units. ` +
-          `Filled ${area} of ${targetArea}. ` +
-          (anchor ? "Move, then drop the block." : "Press to set a corner."),
-      );
+        `Filled ${area} of ${targetArea}. ` +
+        (anchor ? "Move, then drop the block." : "Press to set a corner.");
+      hud.setObjective(text);
+      if (clarity) clarity.setObjective(text);
     }
 
     // ---- Rectangle helpers (cell-based) -------------------------------------
@@ -818,6 +835,15 @@ export default {
       announce(
         `All rounds complete. You built ${solvedCount} shapes with a best streak of ${bestStreak}. Great work, Architect.`,
       );
+
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "Studio complete!",
+          badge: "📐",
+          stats: `You filled all ${cfg.rounds.length} shapes. Best streak ${bestStreak}. Score saved.`,
+        });
+      }
     }
 
     // ---- Input ---------------------------------------------------------------
@@ -948,26 +974,86 @@ export default {
 
     return {
       start() {
+        // Camera intro + idle motion run immediately behind the start overlay;
+        // only the interactive round loop + input wait for Start.
         cameraIntro();
-        startRound();
 
-        unbindPress = input.onPress((name) => {
-          if (name === "up") moveCursor(0, -1);
-          else if (name === "down") moveCursor(0, 1);
-          else if (name === "left") moveCursor(-1, 0);
-          else if (name === "right") moveCursor(1, 0);
-          else if (name === "action") primaryAction();
-          else if (name === "confirm") secondaryAction();
-        });
+        // Begin the actual round loop only after the student presses Start in the
+        // clarity overlay. Single entry point for first play and Play Again.
+        function beginGameplay() {
+          roundIndex = 0;
+          startRound();
 
-        unbindTap = input.onTap(() => {
-          if (solved || !introDone) return;
-          const cell = pointerToTarget();
-          if (!cell) return;
-          cursor.col = cell.col;
-          cursor.row = cell.row;
-          refreshGhost();
-          primaryAction();
+          unbindPress = input.onPress((name) => {
+            if (name === "up") moveCursor(0, -1);
+            else if (name === "down") moveCursor(0, 1);
+            else if (name === "left") moveCursor(-1, 0);
+            else if (name === "right") moveCursor(1, 0);
+            else if (name === "action") primaryAction();
+            else if (name === "confirm") secondaryAction();
+          });
+
+          unbindTap = input.onTap(() => {
+            if (solved || !introDone) return;
+            const cell = pointerToTarget();
+            if (!cell) return;
+            cursor.col = cell.col;
+            cursor.row = cell.row;
+            refreshGhost();
+            primaryAction();
+          });
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Area Architect — Build to the Target Area",
+          objectiveEn:
+            "Fill the glowing gold shape exactly by placing blocks so the area you build equals the target square units.",
+          objectiveEs:
+            "Llena la figura dorada colocando bloques para que el área sea igual a las unidades cuadradas indicadas.",
+          standard: "6.G.A.1 · Area of Polygons & Composite Figures",
+          controls: [
+            {
+              key: "← ↑ → ↓",
+              actionEn: "Move the build cursor across the grid",
+              actionEs: "Mueve el cursor por la cuadrícula",
+            },
+            {
+              key: "Space",
+              actionEn:
+                "Set a corner, then press again to drop a block (or place the triangle)",
+              actionEs:
+                "Fija una esquina, luego presiona otra vez para soltar un bloque",
+            },
+            {
+              key: "Enter",
+              actionEn:
+                "Cancel the corner you set (on triangle rounds, show the area rule)",
+              actionEs:
+                "Cancela la esquina fijada (o muestra la regla del área)",
+            },
+            {
+              key: "Tap / Click",
+              actionEn:
+                "Tap a grid square to move there and set a corner / drop a block",
+              actionEs:
+                "Toca una casilla para fijar la esquina o soltar el bloque",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Cover the gold shape so the filled area exactly equals the target — no overflow. Rectangle area = length × width; right triangle = leg × leg ÷ 2. Fill every shape to win.",
+          howToWinEs:
+            "Cubre la figura dorada hasta igualar el área exacta. Completa todas las figuras para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
         });
 
         // Idle motion: gentle cursor pulse + slow card bob (reduced-motion gated).
@@ -987,6 +1073,7 @@ export default {
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         frameUnbinders.forEach((u) => u && u());

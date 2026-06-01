@@ -1,5 +1,6 @@
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /* =============================================================================
  * Unit 4 — Factory Line: Package the Order
@@ -216,6 +217,13 @@ export default {
     const cfg = makeLevel(level);
     const reduced = feel.reducedMotion;
 
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount is the same positioned container that hosts the canvas. Drives
+    // nothing in the 3D scene — purely the start overlay, how-to-play, persistent
+    // help button, mini-HUD, and win screen.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
+
     // ---- Scene root ---------------------------------------------------------
     const group = new THREE.Group();
     scene.add(group);
@@ -423,6 +431,23 @@ export default {
       }
     }
 
+    // Short "current target" chip text for the clarity mini-HUD.
+    function targetChip(r) {
+      switch (r.kind) {
+        case "gcf":
+          return `GCF of ${r.a} and ${r.b}`;
+        case "lcm":
+          return `LCM of ${r.a} and ${r.b}`;
+        case "decimal-sum":
+        case "decimal-prod":
+          return `${fmt(r.a)} ${r.op} ${fmt(r.b)} = ?`;
+        case "distributive":
+          return `GCF of ${r.a} and ${r.b}`;
+        default:
+          return null;
+      }
+    }
+
     // The equation the operator is currently building.
     function equationText() {
       switch (round.kind) {
@@ -489,6 +514,10 @@ export default {
       );
       caption(round.prompt);
       hud.setObjective(round.prompt);
+      if (clarity) {
+        clarity.setObjective(round.prompt);
+        clarity.setTarget(targetChip(round));
+      }
 
       if (cfg.hints)
         hud.message(hintFor(round), { tone: "info", duration: 3400 });
@@ -624,6 +653,14 @@ export default {
       announce(
         `Done. You packed ${solvedCount} orders. Best streak ${bestStreak}.`,
       );
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "Shift complete!",
+          badge: "🏭",
+          stats: `You packed all ${cfg.rounds.length} orders. Best streak: ${bestStreak}. Score saved.`,
+        });
+      }
     }
 
     return {
@@ -654,28 +691,8 @@ export default {
           feel.syncCamera();
         }
 
-        startRound();
-
-        unbindPress = input.onPress((name) => {
-          if (name === "up" || name === "right") adjust(1);
-          else if (name === "down" || name === "left") adjust(-1);
-          else if (name === "action" || name === "confirm") confirm();
-        });
-
-        // Touch: tap the dial/upper area raises, lower area lowers; tap the
-        // floating answer card confirms.
-        unbindTap = input.onTap(() => {
-          if (locked) return;
-          const hits = input.raycast(camera, [cardLabel, dial], false);
-          if (hits.length && hits[0].object === cardLabel) {
-            confirm();
-            return;
-          }
-          const ndcY = input.state.ndc ? input.state.ndc.y : 0;
-          adjust(ndcY >= 0 ? 1 : -1);
-        });
-
-        // Idle motion (gated behind reduced-motion).
+        // Idle motion (gated behind reduced-motion). Safe to run behind the
+        // start overlay; it touches only decorative meshes.
         if (!reduced) {
           unbindFrame = onFrame((dt, t) => {
             for (const r of rollers) r.rotation.y = t * 1.6;
@@ -684,9 +701,88 @@ export default {
             cardLabel.position.y = 4.1 + Math.sin(t * 1.6) * 0.07;
           });
         }
+
+        // Begin the actual round loop + bind input only after the student
+        // presses Start in the clarity overlay. Single entry point for first
+        // play and for Play Again.
+        function beginGameplay() {
+          roundIndex = 0;
+          startRound();
+
+          unbindPress = input.onPress((name) => {
+            if (name === "up" || name === "right") adjust(1);
+            else if (name === "down" || name === "left") adjust(-1);
+            else if (name === "action" || name === "confirm") confirm();
+          });
+
+          // Touch: tap the dial/upper area raises, lower area lowers; tap the
+          // floating answer card confirms.
+          unbindTap = input.onTap(() => {
+            if (locked) return;
+            const hits = input.raycast(camera, [cardLabel, dial], false);
+            if (hits.length && hits[0].object === cardLabel) {
+              confirm();
+              return;
+            }
+            const ndcY = input.state.ndc ? input.state.ndc.y : 0;
+            adjust(ndcY >= 0 ? 1 : -1);
+          });
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Factory Line — Package the Order",
+          objectiveEn:
+            "Read each order, set the dial to the right number (GCF, LCM, or a decimal answer), then ship it.",
+          objectiveEs:
+            "Lee cada orden, ajusta el dial al número correcto (MCD, mcm o un decimal) y envíalo.",
+          standard: "6.NS.B.2–4 · GCF, LCM, Distributive & Decimal Operations",
+          controls: [
+            {
+              key: "↑ / → (or W / D)",
+              actionEn: "Raise the dial (the answer goes up)",
+              actionEs: "Sube el dial (la respuesta aumenta)",
+            },
+            {
+              key: "↓ / ← (or S / A)",
+              actionEn: "Lower the dial (the answer goes down)",
+              actionEs: "Baja el dial (la respuesta disminuye)",
+            },
+            {
+              key: "Space / Enter",
+              actionEn: "Ship the order — check if your dial answer is correct",
+              actionEs: "Envía la orden — revisa si tu respuesta es correcta",
+            },
+            {
+              key: "Tap upper / lower",
+              actionEn: "Tap the top half to raise, the bottom half to lower",
+              actionEs: "Toca arriba para subir, abajo para bajar",
+            },
+            {
+              key: "Tap the problem card",
+              actionEn: "Ship the order (same as Space)",
+              actionEs: "Envía la orden (igual que Espacio)",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Set the dial to the correct answer for each order and ship it. Pack all the orders to finish your shift — build your streak for bonus points!",
+          howToWinEs:
+            "Pon el dial en la respuesta correcta y envía. Completa todas las órdenes para terminar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();

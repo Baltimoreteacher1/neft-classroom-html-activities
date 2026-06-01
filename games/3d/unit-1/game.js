@@ -1,4 +1,5 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
 // Unit 1 — Smoothie Stand  ·  Ratios & Unit Rates (6.RP.A.1–3)
@@ -146,6 +147,11 @@ export default {
 
     const cfg = makeLevel(level);
     const reduced = feel.reducedMotion;
+
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
 
     // ---- Disposable registry (geometries/materials/textures) ----
     const disposables = [];
@@ -480,9 +486,9 @@ export default {
     }
 
     function updateRatioLive() {
-      hud.setObjective(
-        `Make ${round.a} red : ${round.b} yellow. You have ${ratioText()}. Then tap Serve.`,
-      );
+      const text = `Make ${round.a} red : ${round.b} yellow. You have ${ratioText()}. Then tap Serve.`;
+      hud.setObjective(text);
+      if (clarity) clarity.setObjective(text);
     }
 
     function ratioMatches() {
@@ -511,9 +517,9 @@ export default {
 
     // ---- Unit-rate rounds ---------------------------------------------------
     function rateObjective() {
-      hud.setObjective(
-        `Find ${round.total} ÷ ${round.count}. Use + and −, then tap Serve. Now: ${round.unit}${rateGuess}`,
-      );
+      const text = `Find ${round.total} ÷ ${round.count}. Use + and −, then tap Serve. Now: ${round.unit}${rateGuess}`;
+      hud.setObjective(text);
+      if (clarity) clarity.setObjective(text);
     }
     function buildRate() {
       rateGuess = 0;
@@ -632,6 +638,14 @@ export default {
         );
       }
       announce("All orders complete. Great work at the Smoothie Stand.");
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.win({
+          titleEn: "All orders served!",
+          badge: "🥤",
+          stats: `You finished all ${cfg.rounds.length} orders. Score saved.`,
+        });
+      }
     }
 
     function startRound() {
@@ -641,7 +655,10 @@ export default {
         hud.setProgress(roundIndex, cfg.rounds.length);
       renderControls();
       feel.sfx("pop");
+      if (clarity)
+        clarity.setObjective(`Round ${roundIndex + 1} of ${cfg.rounds.length}`);
       if (round.kind === "rate") {
+        if (clarity) clarity.setTarget(round.prompt);
         buildRate();
         return;
       }
@@ -649,6 +666,7 @@ export default {
         round.baseLabel != null
           ? `${round.a} : ${round.b}  (${round.baseLabel})`
           : `${round.a} : ${round.b}`;
+      if (clarity) clarity.setTarget(`${round.a} red : ${round.b} yellow`);
       setCard(["Order — red : yellow", targetTxt], "#1fa6a2");
       updateRatioLive();
       announce(
@@ -789,12 +807,7 @@ export default {
         injectControlStyles();
         controlHost.appendChild(controlBar);
 
-        startRound();
-
-        unbindPress = input.onPress(onPress);
-        unbindTap = input.onTap(onTapWorld);
-
-        // Idle motion (gated on reduced motion).
+        // Idle motion (gated on reduced motion). Safe to run behind overlay.
         if (!reduced) {
           unbindFrame = onFrame((dt, t) => {
             blenderGroup.rotation.y = Math.sin(t * 0.4) * 0.06;
@@ -802,9 +815,72 @@ export default {
             if (card) card.position.y = 5.6 + Math.sin(t * 1.4) * 0.06;
           });
         }
+
+        // Begin the actual round loop only after the student presses Start in
+        // the clarity overlay. This is the single entry point both for first
+        // play and for Play Again.
+        function beginGameplay() {
+          roundIndex = 0;
+          unbindPress = input.onPress(onPress);
+          unbindTap = input.onTap(onTapWorld);
+          startRound();
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Smoothie Stand — Match the Ratio",
+          objectiveEn:
+            "Read each order, then add red and yellow scoops to match the ratio and Serve.",
+          objectiveEs:
+            "Lee cada orden y agrega bolas rojas y amarillas para igualar la razón.",
+          standard: "6.RP.A.1–3 · Ratios & Unit Rates",
+          controls: [
+            {
+              key: "🍓 / 🍌",
+              actionEn:
+                "Tap a fruit bin (or the on-screen + buttons) to add a scoop",
+              actionEs: "Toca una fruta o los botones + para agregar una bola",
+            },
+            {
+              key: "← / ↑",
+              actionEn: "Add a red (strawberry) scoop",
+              actionEs: "Agrega una bola roja (fresa)",
+            },
+            {
+              key: "→ / ↓",
+              actionEn: "Add a yellow (banana) scoop",
+              actionEs: "Agrega una bola amarilla (plátano)",
+            },
+            {
+              key: "Enter",
+              actionEn: "Remove the last scoop (the − buttons also remove)",
+              actionEs: "Quita la última bola (los botones − también quitan)",
+            },
+            {
+              key: "Space",
+              actionEn: "Serve — check if your scoops match the order",
+              actionEs: "Sirve — revisa si tus bolas igualan la orden",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Match every order's ratio (or find the unit rate) and Serve. Clear all orders to win. Equivalent ratios like 2:3 and 4:6 both count!",
+          howToWinEs:
+            "Iguala la razón de cada orden y sirve. Completa todas para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();

@@ -1,6 +1,7 @@
 import { createGrid } from "/games/engine3d/grid.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /**
  * Unit 9 — Coordinate Quest.
@@ -121,7 +122,10 @@ export default {
       onScore,
       onFrame,
     } = ctx;
-    void renderer;
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
 
     const cfg = makeLevel(level);
     const N = cfg.grid;
@@ -373,10 +377,24 @@ export default {
     }
 
     function updateHud() {
-      hud.setObjective(
-        `${objectiveText()}   Beacon now at (${cursor.x}, ${cursor.y})`,
-      );
+      const obj = `${objectiveText()}   Beacon now at (${cursor.x}, ${cursor.y})`;
+      hud.setObjective(obj);
       setCard(`${objectiveText()}\nBeacon: (${cursor.x}, ${cursor.y})`);
+      if (clarity) clarity.setObjective(obj);
+    }
+
+    // Plain-language "current target" chip text for the clarity mini-HUD.
+    function targetChipText() {
+      if (!task) return null;
+      if (task.kind === "plot") return `Plot (${task.x}, ${task.y})`;
+      if (task.kind === "identify") return "Find the gold ring";
+      if (task.kind === "reflect") {
+        const want = reflectTarget(task);
+        return `Flip over ${task.axis}-axis → (${want.x}, ${want.y})`;
+      }
+      if (task.kind === "distance")
+        return `Measure to (${task.b.x}, ${task.b.y})`;
+      return null;
     }
 
     function reflectTarget(t) {
@@ -389,6 +407,7 @@ export default {
       task = cfg.tasks[taskIndex];
       targetRing.visible = false;
       hud.setProgress(taskIndex, cfg.tasks.length);
+      if (clarity) clarity.setTarget(targetChipText());
       setCursor(0, 0);
 
       if (task.kind === "plot") {
@@ -493,6 +512,14 @@ export default {
         { color: COLORS.beacon, count: 60, spread: 6, life: 1.4 },
       );
       feel.shake(0.32, 0.5);
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "Quest complete!",
+          badge: "🗺️",
+          stats: `You charted ${solvedCount} of ${cfg.tasks.length} points. Best streak: ${bestStreak}. Score saved.`,
+        });
+      }
     }
 
     function reject(msg) {
@@ -653,29 +680,87 @@ export default {
         camera.lookAt(0, 0, 0);
         feel.syncCamera();
 
-        startTask();
+        // Begin the interactive task loop + bind input only after the student
+        // presses Start in the clarity overlay. The camera intro and idle
+        // animation below may run immediately behind the overlay.
+        function beginGameplay() {
+          taskIndex = 0;
+          startTask();
 
-        unbinders.push(
-          input.onPress((name) => {
-            if (name === "up") move(0, 1);
-            else if (name === "down") move(0, -1);
-            else if (name === "left") move(-1, 0);
-            else if (name === "right") move(1, 0);
-            else if (name === "action" || name === "confirm") attempt();
-          }),
-        );
+          unbinders.push(
+            input.onPress((name) => {
+              if (name === "up") move(0, 1);
+              else if (name === "down") move(0, -1);
+              else if (name === "left") move(-1, 0);
+              else if (name === "right") move(1, 0);
+              else if (name === "action" || name === "confirm") attempt();
+            }),
+          );
 
-        unbinders.push(
-          input.onTap(() => {
-            if (solved) return;
-            const c = pointerToCoord();
-            if (!c) return;
-            setCursor(c.x, c.y, true);
-            feel.sfx("pop");
-            announce(`Beacon at ${c.x}, ${c.y}.`);
-            attempt();
-          }),
-        );
+          unbinders.push(
+            input.onTap(() => {
+              if (solved) return;
+              const c = pointerToCoord();
+              if (!c) return;
+              setCursor(c.x, c.y, true);
+              feel.sfx("pop");
+              announce(`Beacon at ${c.x}, ${c.y}.`);
+              attempt();
+            }),
+          );
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Coordinate Quest — Chart the Star Map",
+          objectiveEn:
+            "Pilot the beacon across the coordinate plane to plot ordered pairs, reflect points over an axis, and measure distances.",
+          objectiveEs:
+            "Mueve la baliza por el plano de coordenadas para ubicar pares ordenados, reflejar puntos y medir distancias.",
+          standard: "6.NS.C.6 · 6.NS.C.8 · 6.G.A.3 — Coordinate Plane",
+          controls: [
+            {
+              key: "← / → (or A / D)",
+              actionEn: "Move the beacon left or right — changes the x value",
+              actionEs: "Mueve la baliza izquierda o derecha — cambia la x",
+            },
+            {
+              key: "↑ / ↓ (or W / S)",
+              actionEn: "Move the beacon up or down — changes the y value",
+              actionEs: "Mueve la baliza arriba o abajo — cambia la y",
+            },
+            {
+              key: "Space / Enter",
+              actionEn:
+                "Place the beacon to check the point (the ● button too)",
+              actionEs: "Coloca la baliza para revisar el punto (botón ●)",
+            },
+            {
+              key: "Tap / Click",
+              actionEn: "Tap a grid spot to jump the beacon there and check it",
+              actionEs: "Toca un punto de la cuadrícula para saltar y revisar",
+            },
+            {
+              key: "D-pad",
+              actionEn: "On touch screens, use the on-screen arrows to move",
+              actionEs: "En pantalla táctil, usa las flechas para mover",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Move to the right spot, then place the beacon. Plot pairs like (x, y), flip points over an axis, and count steps for distance. Clear every task to win!",
+          howToWinEs:
+            "Llega al lugar correcto y coloca la baliza. Completa todas las tareas para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
 
         if (!feel.reducedMotion) {
           unbinders.push(
@@ -695,6 +780,7 @@ export default {
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         unbinders.forEach((u) => u && u());
         unbinders.length = 0;
         timers.forEach(clearTimeout);

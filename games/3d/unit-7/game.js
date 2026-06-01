@@ -1,5 +1,6 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
 // Unit 7 — Submarine: Dive the Number Line
@@ -132,6 +133,11 @@ export default {
     const RANGE_MIN = cfg.min;
     const RANGE_MAX = cfg.max;
     const reduced = feel.reducedMotion;
+
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
 
     const yFor = (n) => n * UNIT;
 
@@ -482,7 +488,9 @@ export default {
     }
 
     function updateHud() {
-      hud.setObjective(`${roundObjective()} (You are at ${pos}.)`);
+      const text = `${roundObjective()} (You are at ${pos}.)`;
+      hud.setObjective(text);
+      if (clarity) clarity.setObjective(text);
     }
 
     function startRound() {
@@ -514,6 +522,11 @@ export default {
       markerMat.color.setHex(COLORS.target);
       markerMat.emissive.setHex(COLORS.target);
       marker.visible = true;
+
+      if (clarity) {
+        clarity.setObjective(`Round ${roundIndex + 1} of ${cfg.rounds.length}`);
+        clarity.setTarget(`Dive to ${targetInt}`);
+      }
 
       if (typeof hud.setProgress === "function")
         hud.setProgress(roundIndex, cfg.rounds.length);
@@ -698,6 +711,14 @@ export default {
           ),
         );
       }
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "All depths reached!",
+          badge: "🤿",
+          stats: `You reached ${solvedCount} of ${cfg.rounds.length} depths. Best streak: ${bestStreak}. Score saved.`,
+        });
+      }
     }
 
     // ---- Animated camera intro ----------------------------------------------
@@ -729,43 +750,53 @@ export default {
       });
     }
 
+    // Begin the actual round loop + input binding only after the student
+    // presses Start in the clarity overlay. Single entry point for first play
+    // and (via page reload) for Play Again. The camera intro + spawn-pop and
+    // idle animation run immediately behind the overlay; only the interactive
+    // round loop and input wait for Start.
+    function beginGameplay() {
+      started = true;
+      // Spawn-pop the submarine in.
+      if (!reduced) {
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.4,
+          onUpdate: (t) => subGroup.scale.setScalar(t),
+          onComplete: () => subGroup.scale.setScalar(1),
+        });
+      } else {
+        subGroup.scale.setScalar(1);
+      }
+      feel.sfx("pop");
+
+      unbindPress = input.onPress((name) => {
+        if (name === "up") move(1);
+        else if (name === "down") move(-1);
+        else if (name === "action") confirmArrival();
+        else if (name === "confirm") readOut();
+      });
+
+      unbindTap = input.onTap(() => {
+        if (solved || !started) return;
+        const hits = input.raycast(camera, [marker, subGroup], true);
+        if (hits.length) {
+          confirmArrival();
+          return;
+        }
+        const ny = input.state.ndc ? input.state.ndc.y : 0;
+        move(ny >= 0 ? 1 : -1);
+      });
+
+      roundIndex = 0;
+      startRound();
+    }
+
     return {
       start() {
-        cameraIntro(() => {
-          started = true;
-          // Spawn-pop the submarine in.
-          if (!reduced) {
-            feel.tween({
-              from: 0,
-              to: 1,
-              duration: 0.4,
-              onUpdate: (t) => subGroup.scale.setScalar(t),
-              onComplete: () => subGroup.scale.setScalar(1),
-            });
-          } else {
-            subGroup.scale.setScalar(1);
-          }
-          feel.sfx("pop");
-          startRound();
-        });
-
-        unbindPress = input.onPress((name) => {
-          if (name === "up") move(1);
-          else if (name === "down") move(-1);
-          else if (name === "action") confirmArrival();
-          else if (name === "confirm") readOut();
-        });
-
-        unbindTap = input.onTap(() => {
-          if (solved || !started) return;
-          const hits = input.raycast(camera, [marker, subGroup], true);
-          if (hits.length) {
-            confirmArrival();
-            return;
-          }
-          const ny = input.state.ndc ? input.state.ndc.y : 0;
-          move(ny >= 0 ? 1 : -1);
-        });
+        // Camera intro runs immediately, behind the start overlay.
+        cameraIntro(() => {});
 
         if (!reduced) {
           unbindFrame = onFrame((dt, t) => {
@@ -782,9 +813,67 @@ export default {
             portMat.emissiveIntensity = 0.7 + Math.sin(t * 2.5) * 0.3;
           });
         }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Submarine — Dive the Number Line",
+          objectiveEn:
+            "Pilot the submarine up and down the number line to the integer each round asks for, then dock with Space.",
+          objectiveEs:
+            "Pilotea el submarino por la recta numérica hasta el número entero de cada ronda y atraca con Espacio.",
+          standard: "6.NS.C.5–7 · Integers, Opposites & Absolute Value",
+          controls: [
+            {
+              key: "↑ / W",
+              actionEn:
+                "Rise — move the sub up the number line (toward positives)",
+              actionEs: "Sube — mueve el submarino hacia los positivos",
+            },
+            {
+              key: "↓ / S",
+              actionEn:
+                "Dive — move the sub down the number line (toward negatives)",
+              actionEs: "Baja — mueve el submarino hacia los negativos",
+            },
+            {
+              key: "Space",
+              actionEn: "Dock — check if you reached the target integer",
+              actionEs: "Atraca — revisa si llegaste al número correcto",
+            },
+            {
+              key: "Enter",
+              actionEn:
+                "Read out your depth and its distance from 0 (absolute value)",
+              actionEs:
+                "Di tu profundidad y su distancia desde 0 (valor absoluto)",
+            },
+            {
+              key: "Tap",
+              actionEn:
+                "Tap the green target band to dock, or tap above/below the sub to move it",
+              actionEs:
+                "Toca la banda verde para atracar, o toca arriba/abajo para mover el submarino",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Each round names a target — a number to dive to, an opposite, an absolute value, or the greater/least of a set. Move to that integer and press Space to dock. Dock all rounds to win. A 3+ streak earns bonus points!",
+          howToWinEs:
+            "Llega al número entero de cada ronda y atraca con Espacio. Completa todas las rondas para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();

@@ -1,5 +1,6 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
 // Unit 6 — "Expression Engine"  (CCSS 6.EE.A.1–4)
@@ -412,6 +413,10 @@ export default {
     const palette = makePalette(level);
     const reduced = feel.reducedMotion;
 
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
+
     const group = new THREE.Group();
     scene.add(group);
 
@@ -674,14 +679,15 @@ export default {
 
     function updateObjective() {
       const str = exprString(currentTokens());
+      let text;
       if (round.mode === "equivalent") {
-        hud.setObjective(`${round.prompt}  You built: ${str}. Press Enter.`);
+        text = `${round.prompt}  You built: ${str}. Press Enter.`;
       } else {
         const v = liveValue();
-        hud.setObjective(
-          `${round.prompt}  You have: ${str} = ${v == null ? "?" : v}. Goal: ${round.target}. Press Enter.`,
-        );
+        text = `${round.prompt}  You have: ${str} = ${v == null ? "?" : v}. Goal: ${round.target}. Press Enter.`;
       }
+      hud.setObjective(text);
+      if (clarity) clarity.setObjective(text);
       refreshLive();
     }
 
@@ -732,6 +738,20 @@ export default {
         cardText = `Target = ${round.target}   (x = ${round.x})`;
       }
       updateLabel(problemSprite, cardText);
+
+      if (clarity) {
+        let targetChip;
+        if (round.mode === "eval") {
+          targetChip = `Evaluate ${exprString(round.expr)} at x = ${round.x}`;
+        } else if (round.mode === "equivalent") {
+          targetChip = `Match ${exprString(round.targetExpr)} for any x`;
+        } else {
+          targetChip = `Reach ${round.target} when x = ${round.x}`;
+        }
+        clarity.setTarget(
+          `Round ${roundIndex + 1}/${cfg.rounds.length} · ${targetChip}`,
+        );
+      }
 
       updateObjective();
       feel.sfx("select");
@@ -957,6 +977,14 @@ export default {
           ),
         );
       }
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "Engine complete!",
+          badge: "⚙️",
+          stats: `You solved ${solvedCount} of ${cfg.rounds.length} rounds · best streak ${bestStreak}. Score saved.`,
+        });
+      }
     }
 
     // ---- Input --------------------------------------------------------------
@@ -997,26 +1025,8 @@ export default {
 
     return {
       start() {
-        started = true;
+        // Camera intro + idle motion run immediately, behind the start overlay.
         cameraIntro();
-        startRound();
-
-        // Keyboard: ←/→ select, Space place, Enter/↑ submit, ↓ remove.
-        unbinders.push(
-          input.onPress((name) => {
-            if (name === "left") moveCursor(-1);
-            else if (name === "right") moveCursor(1);
-            else if (name === "action") placeToken(palette[palIndex]);
-            else if (name === "confirm" || name === "up") submit();
-            else if (name === "down") removeLast();
-          }),
-        );
-        unbinders.push(input.onTap(() => pointerPick()));
-
-        caption(
-          "← → to pick a block. Space to drop it. Enter to check. ↓ to remove. Do × before +.",
-        );
-        later(() => caption(""), 6000);
 
         // Idle motion: cursor breathe, palette block bob, pylon shimmer.
         if (!reduced) {
@@ -1037,9 +1047,89 @@ export default {
             }),
           );
         }
+
+        // Begin the round loop + bind input only after Start is pressed in the
+        // clarity overlay. Single entry point for first play and Play Again.
+        function beginGameplay() {
+          if (started) return;
+          started = true;
+          roundIndex = 0;
+          startRound();
+
+          // Keyboard: ←/→ select, Space place, Enter/↑ submit, ↓ remove.
+          unbinders.push(
+            input.onPress((name) => {
+              if (name === "left") moveCursor(-1);
+              else if (name === "right") moveCursor(1);
+              else if (name === "action") placeToken(palette[palIndex]);
+              else if (name === "confirm" || name === "up") submit();
+              else if (name === "down") removeLast();
+            }),
+          );
+          unbinders.push(input.onTap(() => pointerPick()));
+
+          caption(
+            "← → to pick a block. Space to drop it. Enter to check. ↓ to remove. Do × before +.",
+          );
+          later(() => caption(""), 6000);
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Expression Engine — Build the Expression",
+          objectiveEn:
+            "Feed number, variable, and operation blocks into the machine to build an expression that hits the target value (or is equal for any x), then press Enter to check.",
+          objectiveEs:
+            "Mete bloques de números, variables y operaciones en la máquina para formar una expresión que llegue al valor objetivo, luego presiona Enter.",
+          standard: "6.EE.A.1–4 · Expressions, Exponents & Equivalence",
+          controls: [
+            {
+              key: "← / →",
+              actionEn: "Move the cursor to pick a block from the palette",
+              actionEs: "Mueve el cursor para elegir un bloque de la paleta",
+            },
+            {
+              key: "Space",
+              actionEn: "Drop the selected block into the engine",
+              actionEs: "Suelta el bloque elegido en la máquina",
+            },
+            {
+              key: "Enter / ↑",
+              actionEn: "Check — submit your expression",
+              actionEs: "Revisa — envía tu expresión",
+            },
+            {
+              key: "↓",
+              actionEn: "Take the last block back out",
+              actionEs: "Quita el último bloque",
+            },
+            {
+              key: "Tap / Click",
+              actionEn:
+                "Tap a palette block to drop it, or tap the last placed block to remove it",
+              actionEs:
+                "Toca un bloque de la paleta para soltarlo, o el último bloque para quitarlo",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Build an expression that equals the target value (use × before +), or matches the target for every x. Remember order of operations: parentheses, exponents, then × before + and −. Solve every round to win.",
+          howToWinEs:
+            "Forma una expresión que llegue al objetivo (haz × antes de +) y resuelve todas las rondas para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         unbinders.forEach((u) => {
           try {
             u && u();

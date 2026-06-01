@@ -1,5 +1,6 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /* ---------------------------------------------------------------------------
  * Unit 2 — Fraction Kitchen (Bakery)
@@ -121,6 +122,11 @@ export default {
 
     const cfg = makeLevel(level);
     const reduced = feel.reducedMotion;
+
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
 
     const group = new THREE.Group();
     scene.add(group);
@@ -387,6 +393,16 @@ export default {
       updateLive();
       refreshSelection();
       feel.sfx("pop");
+
+      if (clarity) {
+        let targetTxt = "";
+        if (round.type === "divide")
+          targetTxt = round.whole + " ÷ 1/" + round.unitDenom;
+        else if (round.type === "combine")
+          targetTxt = round._sum.n + "/" + round._sum.d;
+        else targetTxt = round._orderTxt;
+        clarity.setTarget(targetTxt);
+      }
     }
 
     function addToolLabel(text, x, z) {
@@ -636,6 +652,14 @@ export default {
             ".",
         );
       }
+      if (clarity)
+        clarity.setObjective(
+          "Round " +
+            (roundIndex + 1) +
+            " of " +
+            cfg.rounds.length +
+            ": match the order, then SERVE.",
+        );
     }
 
     // ---- Add / remove slices ------------------------------------------------
@@ -885,6 +909,22 @@ export default {
           bestStreak +
           ". Wonderful work at the Fraction Kitchen.",
       );
+
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "Bakery closed!",
+          badge: "🧁",
+          stats:
+            "You filled " +
+            solvedCount +
+            " of " +
+            cfg.rounds.length +
+            " orders. Best streak: " +
+            bestStreak +
+            ". Score saved.",
+        });
+      }
     }
 
     // ---- Pointer picking ----------------------------------------------------
@@ -937,23 +977,81 @@ export default {
           });
         }
 
-        startRound();
         caption("Match the gold order, then tap green SERVE.");
 
-        unbinders.push(
-          input.onPress((name) => {
-            if (busy) return;
-            if (name === "left") moveSelection(-1);
-            else if (name === "right") moveSelection(1);
-            else if (name === "up") moveSelection(-1);
-            else if (name === "down") moveSelection(1);
-            else if (name === "action") {
-              const it = sceneItems[selected];
-              if (it) activateKind(it.userData.kind);
-            } else if (name === "confirm") serve();
-          }),
-        );
-        unbinders.push(input.onTap(pointerPick));
+        // Begin the actual round loop + input binding only after the student
+        // presses Start in the clarity overlay. This is the single entry point
+        // both for first play and for Play Again.
+        function beginGameplay() {
+          roundIndex = 0;
+          solvedCount = 0;
+          startRound();
+
+          unbinders.push(
+            input.onPress((name) => {
+              if (busy) return;
+              if (name === "left") moveSelection(-1);
+              else if (name === "right") moveSelection(1);
+              else if (name === "up") moveSelection(-1);
+              else if (name === "down") moveSelection(1);
+              else if (name === "action") {
+                const it = sceneItems[selected];
+                if (it) activateKind(it.userData.kind);
+              } else if (name === "confirm") serve();
+            }),
+          );
+          unbinders.push(input.onTap(pointerPick));
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Fraction Kitchen — Fill the Orders",
+          objectiveEn:
+            "Read each bakery order, build or scoop the exact fraction on the plate, then Serve to fill it.",
+          objectiveEs:
+            "Lee cada orden, arma o sirve la fracción exacta en el plato y pulsa Servir.",
+          standard: "6.NS.A.1 · Dividing Fractions & Mixed Numbers",
+          controls: [
+            {
+              key: "Tap / Click",
+              actionEn:
+                "Tap a tool (Add 1/d, Remove, Scoop) to use it, or tap the green SERVE button to check",
+              actionEs:
+                "Toca una herramienta para usarla, o el botón verde SERVE para revisar",
+            },
+            {
+              key: "← / → (or ↑ / ↓)",
+              actionEn: "Move the highlight to the next tool",
+              actionEs: "Mueve el resaltado a la siguiente herramienta",
+            },
+            {
+              key: "Space",
+              actionEn:
+                "Use the highlighted tool — add or remove a slice, or scoop a serving",
+              actionEs:
+                "Usa la herramienta resaltada — agrega/quita una porción o sirve",
+            },
+            {
+              key: "Enter",
+              actionEn: "SERVE — check if the plate matches the order",
+              actionEs: "SERVE — revisa si el plato coincide con la orden",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Make the gold order exactly — build the fraction from slices, or scoop the right number of servings — then Serve. Fill every order to win.",
+          howToWinEs:
+            "Haz la orden dorada exacta y sirve. Completa todas las órdenes para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
 
         // Idle motion: gentle serve-button pulse + slow oven-glow shimmer.
         if (!reduced) {
@@ -970,6 +1068,7 @@ export default {
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         unbinders.forEach((u) => u && u());
         unbinders.length = 0;
         timers.forEach(clearTimeout);
