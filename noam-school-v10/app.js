@@ -284,6 +284,9 @@
         // Google Calendar (read-only, client-side OAuth). Only the Web Client ID
         // is persisted — the access token lives in memory and is never stored.
         googleClientId: "",
+        // Selected Google calendar IDs to include (read-only). Only the ID
+        // strings are persisted — never tokens. Empty = default to "primary".
+        gcalCalendars: [],
       },
       classes: [
         c("Math", "#147c78"),
@@ -296,8 +299,9 @@
       // repeat: "none"|"daily"|"weekdays"|"weekly"; recurring "done" = done-for-today.
       reminders: [],
       todos: [], // [{ id, text, done, date, createdAt }] quick daily to-dos
-      // Cached Google Calendar events (read-only). { events:[...], fetchedAt }
-      gcal: { events: [], fetchedAt: "" },
+      // Cached Google Calendar events (read-only).
+      // { events:[...], fetchedAt, calendars:[{id,name,color,primary}] }
+      gcal: { events: [], fetchedAt: "", calendars: [] },
       // Cached Gmail messages (read-only). { messages:[...], fetchedAt }
       gmail: { messages: [], fetchedAt: "" },
       // Quick morning check-in: { dateKey: { mood, priority } }
@@ -337,6 +341,10 @@
       : "07:15";
     s.leaveByTime = TIME_RE.test(s.leaveByTime) ? s.leaveByTime : "";
     s.googleClientId = String(s.googleClientId || "").slice(0, 200);
+    // Selected Google calendar IDs — keep only non-empty strings, capped.
+    s.gcalCalendars = (Array.isArray(s.gcalCalendars) ? s.gcalCalendars : [])
+      .filter((id) => typeof id === "string" && id.trim())
+      .slice(0, 50);
     return {
       ...base,
       ...x,
@@ -366,8 +374,14 @@
         x.captureLog && typeof x.captureLog === "object" ? x.captureLog : {},
       gcal:
         x.gcal && Array.isArray(x.gcal.events)
-          ? { events: x.gcal.events, fetchedAt: x.gcal.fetchedAt || "" }
-          : { events: [], fetchedAt: "" },
+          ? {
+              events: x.gcal.events,
+              fetchedAt: x.gcal.fetchedAt || "",
+              calendars: Array.isArray(x.gcal.calendars)
+                ? x.gcal.calendars
+                : [],
+            }
+          : { events: [], fetchedAt: "", calendars: [] },
       gmail:
         x.gmail && Array.isArray(x.gmail.messages)
           ? { messages: x.gmail.messages, fetchedAt: x.gmail.fetchedAt || "" }
@@ -1541,7 +1555,7 @@ Due May 31"></textarea>
           `
           <div class="field"><label>Google OAuth Web Client ID</label><input id="gClientId" value="${esc(s.googleClientId)}" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off"></div>
           <button class="btn primary" data-act="save-google-id">Save Client ID</button>
-          ${s.googleClientId.trim() ? `<button class="btn navy" data-act="gcal-connect" style="margin-left:8px">Connect now</button><button class="btn" data-act="view-mail" style="margin-left:8px">Open School Mail</button>` : ""}
+          ${s.googleClientId.trim() ? `<button class="btn navy" data-act="gcal-connect" style="margin-left:8px">Connect now</button><button class="btn" data-act="gcal-choose" style="margin-left:8px">📋 Choose calendars</button><button class="btn" data-act="view-mail" style="margin-left:8px">Open School Mail</button>` : ""}
           <div class="note" style="margin-top:12px"><b>One-time setup</b> (an adult does this once):
             <ol style="margin:6px 0 0;padding-left:18px;line-height:1.6">
               <li>Go to <b>Google Cloud Console</b> → APIs &amp; Services.</li>
@@ -1551,7 +1565,7 @@ Due May 31"></textarea>
               <li>On the <b>OAuth consent screen</b>, add the scope <code>gmail.readonly</code> (a sensitive scope — fine for the owner's own / test-user account; full public verification is a later step).</li>
               <li>Copy the Client ID (ends in <code>.apps.googleusercontent.com</code>) and paste it above.</li>
             </ol>
-            The same Client ID powers Calendar and <b>School Mail</b>. Only this Client ID is saved. Google sign-in gives temporary access tokens that stay in memory and are never stored. Scopes used: <code>calendar.readonly</code> and <code>gmail.readonly</code> (Gmail is requested separately when you connect School Mail).
+            The same Client ID powers Calendar and <b>School Mail</b>. Only this Client ID and your chosen calendar list are saved — never tokens. After connecting, tap <b>Choose calendars</b> to pick which of your Google calendars to show; their events are merged into one list and color-coded by calendar. Google sign-in gives temporary access tokens that stay in memory and are never stored. Scopes used: <code>calendar.readonly</code> and <code>gmail.readonly</code> (Gmail is requested separately when you connect School Mail).
           </div>
         `,
         ) +
@@ -2420,8 +2434,11 @@ Due May 31"></textarea>
   // Google Calendar (client-side, read-only, no backend)
   // ---------------------------------------------------------------------------
   // Uses Google Identity Services (GIS) token client to get a short-lived access
-  // token IN MEMORY (never persisted), then reads upcoming primary-calendar
-  // events via the Calendar REST API. The only thing stored is the Web Client ID.
+  // token IN MEMORY (never persisted), then reads upcoming events from EACH of
+  // the user's SELECTED calendars via the Calendar REST API, merging them into a
+  // single time-sorted list tagged with the source calendar's name + color.
+  // Persisted: the Web Client ID and the list of selected calendar IDs only.
+  // Never persisted: tokens.
   const GCAL_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
   const GIS_SRC = "https://accounts.google.com/gsi/client";
   const gcal = {
@@ -2431,6 +2448,11 @@ Due May 31"></textarea>
     _gisLoaded: false,
     clientId() {
       return state.settings.googleClientId.trim();
+    },
+    // The calendar IDs to include. Defaults to ["primary"] when none chosen yet.
+    selectedIds() {
+      const ids = state.settings.gcalCalendars;
+      return Array.isArray(ids) && ids.length ? ids : ["primary"];
     },
     // Dynamically load the GIS script once (only external dependency allowed).
     loadGis() {
@@ -2459,7 +2481,10 @@ Due May 31"></textarea>
         document.head.appendChild(s);
       });
     },
-    async connect() {
+    // Connect (or refresh the token). `after` is what to do once we have a
+    // token: "events" (default) syncs events, "picker" opens the calendar
+    // chooser after refreshing the calendar list.
+    async connect(after = "events") {
       const cid = this.clientId();
       if (!cid) {
         toast("Add your Google Client ID in Settings first.");
@@ -2474,11 +2499,15 @@ Due May 31"></textarea>
       this.tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: cid,
         scope: GCAL_SCOPE,
-        callback: (resp) => {
+        callback: async (resp) => {
           if (resp && resp.access_token) {
             this.token = resp.access_token;
             this.connected = true;
-            this.fetchEvents();
+            // Always refresh the calendar list so the picker stays current and
+            // events can be labeled with calendar names/colors.
+            await this.fetchCalendarList();
+            if (after === "picker") this.openPicker();
+            else this.fetchEvents();
           } else {
             toast("Google sign-in was cancelled.");
           }
@@ -2489,48 +2518,134 @@ Due May 31"></textarea>
       // Empty prompt = use existing consent when possible; shows picker otherwise.
       this.tokenClient.requestAccessToken({ prompt: "" });
     },
+    // List the user's calendars (id, name, color, primary) for the picker. The
+    // metadata is cached so events stay labeled even offline.
+    async fetchCalendarList() {
+      if (!this.token) return [];
+      try {
+        const res = await fetch(
+          "https://www.googleapis.com/calendar/v3/users/me/calendarList?" +
+            new URLSearchParams({ minAccessRole: "reader", maxResults: "250" }),
+          { headers: { Authorization: "Bearer " + this.token } },
+        );
+        if (!res.ok) {
+          if (res.status === 401) {
+            this.token = "";
+            this.connected = false;
+          }
+          return state.gcal?.calendars || [];
+        }
+        const data = await res.json();
+        const calendars = (data.items || []).map((c) => ({
+          id: c.id,
+          name: c.summaryOverride || c.summary || c.id,
+          color: c.backgroundColor || "#4285f4",
+          primary: !!c.primary,
+        }));
+        state.gcal = {
+          ...(state.gcal || { events: [], fetchedAt: "" }),
+          calendars,
+        };
+        save();
+        return calendars;
+      } catch {
+        return state.gcal?.calendars || [];
+      }
+    },
+    // Fetch upcoming events from EVERY selected calendar, merge into one
+    // time-sorted list, and tag each event with its source calendar.
     async fetchEvents() {
       if (!this.token) return this.connect();
       try {
         const timeMin = new Date().toISOString();
-        const url =
-          "https://www.googleapis.com/calendar/v3/calendars/primary/events?" +
+        const ids = this.selectedIds();
+        // Map known calendar metadata for labeling (name + color).
+        const meta = {};
+        (state.gcal?.calendars || []).forEach((c) => (meta[c.id] = c));
+        const params = (calId) =>
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calId)}/events?` +
           new URLSearchParams({
             timeMin,
             singleEvents: "true",
             orderBy: "startTime",
             maxResults: "50",
           });
-        const res = await fetch(url, {
-          headers: { Authorization: "Bearer " + this.token },
-        });
-        if (!res.ok) {
-          if (res.status === 401) {
-            this.token = "";
-            this.connected = false;
-          }
+        const results = await Promise.all(
+          ids.map((calId) =>
+            fetch(params(calId), {
+              headers: { Authorization: "Bearer " + this.token },
+            })
+              .then((r) => (r.ok ? r.json().then((d) => ({ calId, d })) : null))
+              .catch(() => null),
+          ),
+        );
+        // 401 anywhere means the token expired — drop it so a reconnect prompts.
+        if (results.every((r) => r === null)) {
+          this.token = "";
+          this.connected = false;
           toast("Couldn't load Google events.");
           return;
         }
-        const data = await res.json();
-        const events = (data.items || [])
-          .map((e) => ({
-            id: e.id,
-            title: e.summary || "(no title)",
-            // All-day events use .date (YYYY-MM-DD); timed use .dateTime.
-            start: e.start?.dateTime || e.start?.date || "",
-            allDay: !e.start?.dateTime,
-            location: e.location || "",
-            htmlLink: e.htmlLink || "",
-          }))
-          .filter((e) => e.start);
-        state.gcal = { events, fetchedAt: new Date().toISOString() };
+        const events = results
+          .filter(Boolean)
+          .flatMap(({ calId, d }) => {
+            const cal = meta[calId] || {};
+            const calName =
+              cal.name || (calId === "primary" ? "Primary" : calId);
+            const calColor = cal.color || "#4285f4";
+            return (d.items || []).map((e) => ({
+              id: e.id,
+              title: e.summary || "(no title)",
+              // All-day events use .date (YYYY-MM-DD); timed use .dateTime.
+              start: e.start?.dateTime || e.start?.date || "",
+              allDay: !e.start?.dateTime,
+              location: e.location || "",
+              htmlLink: e.htmlLink || "",
+              // Source-calendar tags so multiple calendars are distinguishable.
+              calId,
+              calName,
+              calColor,
+            }));
+          })
+          .filter((e) => e.start)
+          .sort((a, b) => (a.start < b.start ? -1 : 1));
+        state.gcal = {
+          ...(state.gcal || { calendars: [] }),
+          events,
+          fetchedAt: new Date().toISOString(),
+        };
         save();
         render();
-        toast(`Google Calendar synced (${events.length}) 📅`);
+        toast(
+          `Google Calendar synced (${events.length}) from ${ids.length} calendar${ids.length === 1 ? "" : "s"} 📅`,
+        );
       } catch {
         toast("Couldn't reach Google Calendar.");
       }
+    },
+    // Show the calendar picker (checkboxes). Requires a token + calendar list.
+    openPicker() {
+      const cals = state.gcal?.calendars || [];
+      if (!cals.length) {
+        // No cached list yet — connect first, then reopen the picker.
+        return this.connect("picker");
+      }
+      const selected = new Set(this.selectedIds());
+      const rows = cals
+        .map(
+          (c) => `<label class="gcal-pick-row">
+            <input type="checkbox" data-check="gcal-cal" data-id="${esc(c.id)}" ${selected.has(c.id) ? "checked" : ""}>
+            <span class="gcal-dot" style="background:${safeColor(c.color)}"></span>
+            <span class="steptext">${esc(c.name)}${c.primary ? ' <span class="muted">(primary)</span>' : ""}</span>
+          </label>`,
+        )
+        .join("");
+      openModal(
+        "Choose calendars",
+        `<p class="sub">Pick which Google calendars to show. Events from all checked calendars are merged into one list, color-coded by calendar.</p>
+         <div class="gcal-pick-list">${rows}</div>
+         <div class="row" style="margin-top:12px"><button class="btn primary" data-act="gcal-apply-picker">Done</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
+      );
     },
     disconnect() {
       try {
@@ -2539,7 +2654,7 @@ Due May 31"></textarea>
       } catch {}
       this.token = "";
       this.connected = false;
-      state.gcal = { events: [], fetchedAt: "" };
+      state.gcal = { events: [], fetchedAt: "", calendars: [] };
       save();
       render();
       toast("Disconnected from Google Calendar.");
@@ -2566,9 +2681,16 @@ Due May 31"></textarea>
       .filter((e) => gcalDayKey(e) === iso)
       .sort((a, b) => (a.start < b.start ? -1 : 1));
   const gcalToday = () => gcalEventsForDay(todayKey());
-  // A compact, read-only Google event row, clearly marked as Google.
-  const gcalRow = (e) =>
-    `<div class="item gcal-item"><div class="head"><div><h4><span class="gcal-badge" title="From Google Calendar">G</span>${esc(e.title)}</h4><p class="meta">📅 ${esc(gcalTimeLabel(e))}${e.location ? " · " + esc(e.location) : ""} · <span class="muted">Google · read-only</span></p></div>${e.htmlLink ? `<div class="row"><a class="btn sm" href="${esc(e.htmlLink)}" target="_blank" rel="noopener">Open</a></div>` : ""}</div></div>`;
+  // A compact, read-only Google event row, clearly marked as Google. When the
+  // event carries a source calendar, color the left border + badge to match and
+  // show the calendar name so multiple calendars are distinguishable.
+  const gcalRow = (e) => {
+    const color = safeColor(e.calColor || "#4285f4");
+    const calChip = e.calName
+      ? `<span class="gcal-cal-chip" style="--gc:${color}" title="From ${esc(e.calName)}">${esc(e.calName)}</span>`
+      : "";
+    return `<div class="item gcal-item" style="border-left-color:${color}"><div class="head"><div><h4><span class="gcal-badge" style="background:${color}" title="From Google Calendar${e.calName ? " · " + esc(e.calName) : ""}">G</span>${esc(e.title)}</h4><p class="meta">📅 ${esc(gcalTimeLabel(e))}${e.location ? " · " + esc(e.location) : ""}${calChip ? " · " + calChip : ""} · <span class="muted">Google · read-only</span></p></div>${e.htmlLink ? `<div class="row"><a class="btn sm" href="${esc(e.htmlLink)}" target="_blank" rel="noopener">Open</a></div>` : ""}</div></div>`;
+  };
 
   // Google Calendar connect/refresh/disconnect panel (calendar view + settings).
   function gcalPanel() {
@@ -2586,14 +2708,31 @@ Due May 31"></textarea>
          <button class="btn primary" data-act="view-settings">Set it up in Settings</button>`,
       );
     }
-    const status = count
+    const connected = gcal.connected || count > 0;
+    const status = connected
       ? `<span class="pill green">● Connected · ${count} events</span>`
       : `<span class="pill">Not loaded yet</span>`;
+    // Summarize which calendars are included (selected IDs → cached names).
+    const cals = state.gcal?.calendars || [];
+    const selIds = state.settings.gcalCalendars || [];
+    const nameFor = (id) =>
+      cals.find((c) => c.id === id)?.name ||
+      (id === "primary" ? "Primary" : id);
+    const colorFor = (id) =>
+      safeColor(cals.find((c) => c.id === id)?.color || "#4285f4");
+    const selChips = (selIds.length ? selIds : ["primary"])
+      .map(
+        (id) =>
+          `<span class="gcal-cal-chip" style="--gc:${colorFor(id)}">${esc(nameFor(id))}</span>`,
+      )
+      .join(" ");
+    const pickerLine = `<p class="muted" style="font-size:.8rem;margin-top:8px">Showing: ${selChips}${selIds.length ? "" : ' <span class="muted">(default)</span>'}</p>`;
     return `<section class="card" data-card="gcal"><div class="head"><div><h3>📅 Google Calendar</h3><p class="sub">Read-only — your Google events, shown alongside school work.</p></div>${status}</div>
       <div class="row">
-        <button class="btn ${count ? "" : "primary"}" data-act="gcal-connect">${count ? "🔄 Reconnect" : "Connect Google Calendar"}</button>
-        ${count ? `<button class="btn navy" data-act="gcal-refresh">🔄 Refresh</button><button class="btn danger" data-act="gcal-disconnect">Disconnect</button>` : ""}
+        <button class="btn ${connected ? "" : "primary"}" data-act="gcal-connect">${connected ? "🔄 Reconnect" : "Connect Google Calendar"}</button>
+        ${connected ? `<button class="btn navy" data-act="gcal-refresh">🔄 Refresh</button><button class="btn" data-act="gcal-choose">📋 Choose calendars</button><button class="btn danger" data-act="gcal-disconnect">Disconnect</button>` : ""}
       </div>
+      ${connected ? pickerLine : ""}
       ${fetched ? `<p class="muted" style="font-size:.8rem;margin-top:8px">Last synced: ${esc(fetched)}. Events are cached so they show even offline.</p>` : ""}
       ${count ? `<div class="section-title" style="margin-top:12px">Upcoming Google events</div>${(state.gcal.events || []).slice(0, 12).map(gcalRow).join("")}` : ""}
     </section>`;
@@ -3544,6 +3683,31 @@ ${name}`;
     "gcal-confirm-disconnect": () => {
       closeModal();
       gcal.disconnect();
+    },
+    // Open the multi-calendar picker. If we have a cached calendar list, show it
+    // immediately; otherwise connect first then open the picker.
+    "gcal-choose": () => {
+      if (!navigator.onLine && !(state.gcal?.calendars || []).length)
+        return toast("Connect to the internet to choose calendars.");
+      gcal.openPicker();
+    },
+    // Persist the checked calendar IDs, then refresh events with the new set.
+    "gcal-apply-picker": () => {
+      const ids = [
+        ...document.querySelectorAll(
+          '#modalBody input[data-check="gcal-cal"]:checked',
+        ),
+      ].map((b) => b.dataset.id);
+      // Empty selection falls back to the primary calendar.
+      state.settings.gcalCalendars = ids;
+      save();
+      closeModal();
+      toast(
+        ids.length
+          ? `${ids.length} calendar${ids.length === 1 ? "" : "s"} selected`
+          : "Showing your primary calendar",
+      );
+      gcal.token ? gcal.fetchEvents() : render();
     },
 
     "gmail-connect": () => gmail.connect(),
