@@ -281,6 +281,9 @@
         morningBriefingTime: "07:15",
         leaveByTime: "",
         sync: { enabled: false, code: "", lastAt: "" },
+        // Google Calendar (read-only, client-side OAuth). Only the Web Client ID
+        // is persisted — the access token lives in memory and is never stored.
+        googleClientId: "",
       },
       classes: [
         c("Math", "#147c78"),
@@ -289,8 +292,14 @@
         c("Social Studies", "#d99028"),
       ],
       assignments: [],
-      reminders: [], // [{ id, text, date, time, done, createdAt }] simple reminders
+      // [{ id, text, date, time, done, createdAt, repeat, lastShown, lastDone }]
+      // repeat: "none"|"daily"|"weekdays"|"weekly"; recurring "done" = done-for-today.
+      reminders: [],
       todos: [], // [{ id, text, done, date, createdAt }] quick daily to-dos
+      // Cached Google Calendar events (read-only). { events:[...], fetchedAt }
+      gcal: { events: [], fetchedAt: "" },
+      // Quick morning check-in: { dateKey: { mood, priority } }
+      checkins: {},
       routines: DEFAULT_ROUTINES(),
       routineLog: {}, // { dateKey: { routineId: [doneItemIds] } }
       activity: {}, // { dateKey: { tasks, focusMin, routines } }
@@ -325,6 +334,7 @@
       ? s.morningBriefingTime
       : "07:15";
     s.leaveByTime = TIME_RE.test(s.leaveByTime) ? s.leaveByTime : "";
+    s.googleClientId = String(s.googleClientId || "").slice(0, 200);
     return {
       ...base,
       ...x,
@@ -352,6 +362,11 @@
       daily: { ...base.daily, ...(x.daily || {}) },
       captureLog:
         x.captureLog && typeof x.captureLog === "object" ? x.captureLog : {},
+      gcal:
+        x.gcal && Array.isArray(x.gcal.events)
+          ? { events: x.gcal.events, fetchedAt: x.gcal.fetchedAt || "" }
+          : { events: [], fetchedAt: "" },
+      checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
     };
   }
 
@@ -380,6 +395,7 @@
     };
   }
 
+  const REPEATS = ["none", "daily", "weekdays", "weekly"];
   function normalizeReminder(r) {
     r = r || {};
     return {
@@ -389,6 +405,10 @@
       time: TIME_RE.test(r.time) ? r.time : "",
       done: !!r.done,
       createdAt: r.createdAt || Date.now(),
+      // Recurrence + notification bookkeeping.
+      repeat: REPEATS.includes(r.repeat) ? r.repeat : "none",
+      lastShown: DATE_RE.test(r.lastShown) ? r.lastShown : "", // last notify date
+      lastDone: DATE_RE.test(r.lastDone) ? r.lastDone : "", // last done-for-today date
     };
   }
 
@@ -458,6 +478,10 @@
     const write = () => {
       idb.set(STATE_KEY, state);
       if (state.settings.sync.enabled && !suppressPush) cloud.push();
+      // Re-arm the local notification scheduler whenever data changes (added,
+      // edited, or completed reminders all shift what's due today). Defined later;
+      // guarded so early saves during init don't throw.
+      if (typeof scheduleReminders === "function") scheduleReminders();
     };
     clearTimeout(saveTimer);
     if (immediate) return write();
@@ -473,26 +497,77 @@
       color: "#147c78",
     };
   const openTasks = () => state.assignments.filter((a) => a.status !== "done");
+
+  // ---- Reminder recurrence helpers --------------------------------------------
+  const isWeekday = (iso) => {
+    const d = parseLocal(iso).getDay(); // 0=Sun..6=Sat
+    return d >= 1 && d <= 5;
+  };
+  // Does a recurring reminder's schedule include the given ISO day?
+  function recurOccursOn(r, iso) {
+    if (r.repeat === "daily") return true;
+    if (r.repeat === "weekdays") return isWeekday(iso);
+    if (r.repeat === "weekly") {
+      // Weekly anchored on the reminder's date (or its creation day).
+      const anchor = r.date || new Date(r.createdAt).toISOString().slice(0, 10);
+      if (!DATE_RE.test(anchor)) return true;
+      return parseLocal(iso).getDay() === parseLocal(anchor).getDay();
+    }
+    return false;
+  }
+  // Next ISO day (today onward, within ~1 year) this recurring reminder happens.
+  function nextRecurDate(r, fromIso = todayKey()) {
+    const from = parseLocal(fromIso);
+    for (let i = 0; i < 366; i++) {
+      const d = new Date(from);
+      d.setDate(d.getDate() + i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      if (recurOccursOn(r, iso)) return iso;
+    }
+    return fromIso;
+  }
+  const isRecurring = (r) => r.repeat && r.repeat !== "none";
+  // "Done for display": one-time uses .done; recurring = done-for-today only.
+  const reminderDoneToday = (r) =>
+    isRecurring(r) ? r.lastDone === todayKey() : !!r.done;
+  // The date a reminder effectively shows on (recurring = next occurrence).
+  const reminderShownDate = (r) => (isRecurring(r) ? nextRecurDate(r) : r.date);
+  const REPEAT_LABEL = {
+    none: "",
+    daily: "Every day",
+    weekdays: "Weekdays",
+    weekly: "Weekly",
+  };
+
   // Reminders sorted: open first, then by date/time (undated last), newest-created last.
-  const reminderSortKey = (r) =>
-    r.date ? r.date + (r.time || "99:99") : "9999-99-99";
+  const reminderSortKey = (r) => {
+    const d = reminderShownDate(r);
+    return d ? d + (r.time || "99:99") : "9999-99-99";
+  };
   function sortedReminders() {
-    return [...state.reminders].sort((a, b) =>
-      a.done !== b.done
-        ? a.done
+    return [...state.reminders].sort((a, b) => {
+      const ad = reminderDoneToday(a),
+        bd = reminderDoneToday(b);
+      return ad !== bd
+        ? ad
           ? 1
           : -1
         : reminderSortKey(a) === reminderSortKey(b)
           ? a.createdAt - b.createdAt
           : reminderSortKey(a) < reminderSortKey(b)
             ? -1
-            : 1,
-    );
+            : 1;
+    });
   }
-  // Today's (or overdue, undated) open reminders for the home screen.
+  // Today's (or overdue, undated) reminders not yet done-for-today — home screen.
+  // Recurring reminders surface on the days their schedule includes today.
   const todaysReminders = () => {
     const t = todayKey();
-    return sortedReminders().filter((r) => !r.done && (!r.date || r.date <= t));
+    return sortedReminders().filter((r) => {
+      if (reminderDoneToday(r)) return false;
+      if (isRecurring(r)) return recurOccursOn(r, t);
+      return !r.date || r.date <= t;
+    });
   };
   // Today's to-dos = those dated today plus any still-open from earlier days.
   const todaysTodos = () => {
@@ -868,6 +943,7 @@
     const dayItems = state.assignments.filter(
       (a) => a.status !== "done" && a.due === sel,
     );
+    const dayGcal = gcalEventsForDay(sel);
     const detail = `
       <div class="cal-detail">
         <div class="section-title" style="margin-top:14px">${esc(niceDate(sel))}</div>
@@ -879,8 +955,11 @@
                   return `<div class="item"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button></div></div></div>`;
                 })
                 .join("")
-            : `<p class="muted" style="font-size:.84rem;margin:4px">Nothing due this day.</p>`
+            : dayGcal.length
+              ? ""
+              : `<p class="muted" style="font-size:.84rem;margin:4px">Nothing due this day.</p>`
         }
+        ${dayGcal.map(gcalRow).join("")}
       </div>`;
 
     const body =
@@ -925,10 +1004,13 @@
     const total = todaysReminders().length;
     const rows = list.length
       ? `<ul class="steps">${list
-          .map(
-            (r) =>
-              `<li><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${r.done ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span class="steptext ${r.done ? "done" : ""}">${esc(r.text)}${r.time ? ` <small class="muted">· ${esc(r.time)}</small>` : ""}</span></li>`,
-          )
+          .map((r) => {
+            const dn = reminderDoneToday(r);
+            const rep = isRecurring(r)
+              ? ` <small class="muted">· 🔁 ${esc(REPEAT_LABEL[r.repeat])}</small>`
+              : "";
+            return `<li><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${dn ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span class="steptext ${dn ? "done" : ""}">${esc(r.text)}${r.time ? ` <small class="muted">· ${esc(r.time)}</small>` : ""}${rep}</span></li>`;
+          })
           .join(
             "",
           )}${total > list.length ? `<li><button class="btn sm" data-act="nav" data-arg="reminders">See all ${total} →</button></li>` : ""}</ul>`
@@ -977,28 +1059,85 @@
     );
   }
 
+  // "Today at a glance" — one strip merging local due items + today's reminders
+  // + today's Google events, so everything happening today is in one place.
+  function glanceCard() {
+    const open = openTasks();
+    const due = sortByUrgency(
+      open.filter((a) => daysUntil(a.due) !== null && daysUntil(a.due) <= 0),
+    ).slice(0, 4);
+    const rem = todaysReminders().slice(0, 4);
+    const gev = gcalToday();
+    const remRow = (r) =>
+      `<div class="item"><div class="head"><div><h4>🔔 ${esc(r.text)}</h4><p class="meta">${r.time ? "⏰ " + esc(r.time) : "Reminder"}${isRecurring(r) ? " · 🔁 " + esc(REPEAT_LABEL[r.repeat]) : ""}</p></div><div class="row"><button class="btn primary sm" data-act="reminder-done" data-id="${r.id}" aria-label="Mark done: ${esc(r.text)}">✓</button></div></div></div>`;
+    const body =
+      due.length || rem.length || gev.length
+        ? due.map((a) => taskItem(a)).join("") +
+          rem.map(remRow).join("") +
+          gev.map(gcalRow).join("")
+        : emptyState("🌤", "Nothing on the calendar today. Nice.");
+    const parts = [];
+    if (due.length) parts.push(`${due.length} due`);
+    if (rem.length)
+      parts.push(`${rem.length} reminder${rem.length === 1 ? "" : "s"}`);
+    if (gev.length) parts.push(`${gev.length} Google`);
+    return card(
+      "glance",
+      "Today at a glance",
+      parts.length ? parts.join(" · ") : "",
+      body,
+    );
+  }
+
+  // Quick morning check-in (mood + one priority), surfaced at the top of home.
+  const MOODS = [
+    ["great", "😃", "Great"],
+    ["ok", "🙂", "OK"],
+    ["meh", "😕", "Meh"],
+    ["rough", "😣", "Rough"],
+  ];
+  function checkinBanner() {
+    const today = state.checkins[todayKey()];
+    if (today) {
+      const m = MOODS.find((x) => x[0] === today.mood);
+      return `<div class="capture-banner" role="region" aria-label="Today's check-in">
+        <div class="capture-text"><b>${m ? m[1] + " " : ""}Today's focus</b><small>${today.priority ? esc(today.priority) : "No single priority set — that's OK."}</small></div>
+        <div class="capture-actions"><button class="btn sm" data-act="checkin-open">Edit</button></div>
+      </div>`;
+    }
+    // Only nudge in the morning so it feels like a fresh-start ritual, not nagging.
+    if (new Date().getHours() >= 14) return "";
+    return `<div class="capture-banner" role="region" aria-label="Morning check-in">
+      <div class="capture-text"><b>👋 Quick morning check-in</b><small>How are you feeling, and what's your one priority today?</small></div>
+      <div class="capture-actions"><button class="btn primary sm" data-act="checkin-open">Check in</button></div>
+    </div>`;
+  }
+  function checkinForm() {
+    const c = state.checkins[todayKey()] || { mood: "", priority: "" };
+    return `
+      <p class="sub">A 10-second start to the day. Both are optional.</p>
+      <div class="field"><label>How are you feeling?</label>
+        <div class="seg" id="ciMood" role="group" aria-label="Mood">${MOODS.map(
+          (m) =>
+            `<button type="button" data-act="checkin-mood" data-arg="${m[0]}" aria-pressed="${c.mood === m[0]}">${m[1]} ${m[2]}</button>`,
+        ).join("")}</div>
+      </div>
+      <div class="field"><label>My one priority today</label><input id="ciPriority" value="${esc(c.priority || "")}" placeholder="Finish my math worksheet"></div>
+      <button class="btn primary block" data-act="save-checkin">Save check-in</button>`;
+  }
+
   // ---------------------------------------------------------------------------
   // Views
   // ---------------------------------------------------------------------------
   const VIEWS = {
     home() {
       const open = openTasks();
-      const today = sortByUrgency(
-        open.filter((a) => daysUntil(a.due) !== null && daysUntil(a.due) <= 0),
-      ).slice(0, 4);
       const next = sortByUrgency(
         open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7),
       ).slice(0, 3);
       const routine = pickRoutineForNow();
       const map = {
-        glance: card(
-          "glance",
-          "Today at a glance",
-          today.length ? "Most important first." : "",
-          today.length
-            ? today.map((a) => taskItem(a)).join("")
-            : emptyState("🌤", "Nothing is due today. Nice."),
-        ),
+        glance: glanceCard(),
         calendar: calendarCard(),
         todos: todoCard(),
         reminders: remindersCard(),
@@ -1017,13 +1156,14 @@
       const order = state.settings.homeOrder.filter(
         (k) => !state.settings.hiddenCards.includes(k),
       );
-      return `${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
+      return `${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
     },
 
     calendar() {
       const upcoming = upcomingItems(20);
       return `
         ${calendarCard({ full: true })}
+        ${gcalPanel()}
         <div class="section-title">Upcoming (${upcoming.length})</div>
         ${
           upcoming.length
@@ -1255,23 +1395,29 @@
 
     reminders() {
       const list = sortedReminders();
-      const open = list.filter((r) => !r.done);
-      const done = list.filter((r) => r.done);
+      const open = list.filter((r) => !reminderDoneToday(r));
+      const done = list.filter((r) => reminderDoneToday(r));
       const row = (r) => {
-        const when = r.date
-          ? dueLabel(r.date, r.time)
+        const dn = reminderDoneToday(r);
+        // Recurring reminders always show their NEXT occurrence.
+        const shownDate = reminderShownDate(r);
+        const when = shownDate
+          ? dueLabel(shownDate, r.time)
           : r.time
             ? "At " + r.time
             : "";
-        const n = r.date ? daysUntil(r.date) : null;
-        return `<div class="item ${!r.done && n !== null && n < 0 ? "overdue" : ""}"><div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap"><label class="row" style="align-items:flex-start;gap:10px;flex:1;min-width:0;cursor:pointer"><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${r.done ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span style="min-width:0"><span class="steptext ${r.done ? "done" : ""}" style="font-weight:800;display:block">${esc(r.text)}</span>${when ? `<span class="meta" style="display:block;margin-top:2px">${r.date ? dueIcon(n) + " " : "⏰ "}${esc(when)}</span>` : ""}</span></label><span class="row" style="gap:6px"><button class="btn sm" data-act="edit-reminder" data-id="${r.id}">Edit</button><button class="btn danger sm" data-act="del-reminder" data-id="${r.id}" aria-label="Delete reminder: ${esc(r.text)}">✕</button></span></div></div>`;
+        const n = shownDate ? daysUntil(shownDate) : null;
+        const rep = isRecurring(r)
+          ? ` · 🔁 ${esc(REPEAT_LABEL[r.repeat])}`
+          : "";
+        return `<div class="item ${!dn && n !== null && n < 0 ? "overdue" : ""}"><div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap"><label class="row" style="align-items:flex-start;gap:10px;flex:1;min-width:0;cursor:pointer"><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${dn ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span style="min-width:0"><span class="steptext ${dn ? "done" : ""}" style="font-weight:800;display:block">${esc(r.text)}</span>${when || rep ? `<span class="meta" style="display:block;margin-top:2px">${shownDate ? dueIcon(n) + " " : r.time ? "⏰ " : ""}${esc(when)}${rep}</span>` : ""}</span></label><span class="row" style="gap:6px">${dn ? "" : `<button class="btn sm" data-act="snooze-reminder" data-id="${r.id}" data-arg="10" title="Snooze 10 minutes">😴 10m</button><button class="btn sm" data-act="snooze-reminder" data-id="${r.id}" data-arg="tonight" title="Snooze until tonight">🌙</button>`}<button class="btn sm" data-act="edit-reminder" data-id="${r.id}">Edit</button><button class="btn danger sm" data-act="del-reminder" data-id="${r.id}" aria-label="Delete reminder: ${esc(r.text)}">✕</button></span></div></div>`;
       };
       return (
         backHeader("Reminders", "more") +
         `<div class="view-head"><h2 class="view-title" style="font-size:1rem">Reminders</h2><button class="btn primary" data-act="add-reminder">＋ Add reminder</button></div>
         <p class="view-intro">Quick nudges for things to remember — bring something, ask a teacher, sign a form.</p>
         ${open.length ? `<div class="section-title">To remember (${open.length})</div>${open.map(row).join("")}` : emptyState("🔔", "No reminders yet. Add one above.")}
-        ${done.length ? `<div class="section-title">✓ Done (${done.length})</div>${done.map(row).join("")}<button class="btn sm" data-act="clear-done-reminders" style="margin-top:8px">Clear done</button>` : ""}`
+        ${done.length ? `<div class="section-title">✓ Done for today (${done.length})</div>${done.map(row).join("")}<button class="btn sm" data-act="clear-done-reminders" style="margin-top:8px">Clear finished</button>` : ""}`
       );
     },
 
@@ -1360,12 +1506,32 @@ Due May 31"></textarea>
           "Reminders & briefing",
           "Gentle nudges so the app gets opened.",
           `
-          <div class="toggle-row"><div class="label"><b>Reminders &amp; morning briefing</b><small>${notifSupport() ? "A morning hello and due-soon nudges while the app is open" : "Not supported on this device"}</small></div>
+          <div class="toggle-row"><div class="label"><b>Reminders &amp; morning briefing</b><small>${notifSupport() ? (s.notifications ? "On — reminders pop up at their set times, plus due-soon nudges" : "Turn on to get pop-up reminders at their set times") : "Not supported on this device"}</small></div>
           <label class="seg"><button data-act="toggle-notify" aria-pressed="${s.notifications}" ${notifSupport() ? "" : "disabled"}>${s.notifications ? "On" : "Off"}</button></label></div>
           <div class="field"><label>Morning briefing time</label><input type="time" id="setBriefTime" value="${esc(s.morningBriefingTime)}"></div>
           <div class="field"><label>“Leave by” time (optional, shown in guided routine)</label><input type="time" id="setLeaveBy" value="${esc(s.leaveByTime)}"></div>
           <button class="btn primary" data-act="save-reminder-times">Save times</button>
-          <p class="muted" style="font-size:.8rem;margin:10px 0 0">Tip: for the most reliable nudges, install the app (More → Install) and open it each morning.</p>
+          <div class="note" style="margin-top:12px"><b>Good to know:</b> reminders pop up while the app is open or installed and running in the background. They can’t wake your computer when the app is <b>fully closed</b> — that needs a push server, which this private offline app doesn’t use. For the most reliable nudges, install the app (More → Install) and keep it open or pinned.</div>
+        `,
+        ) +
+        card(
+          "gcal",
+          "📅 Google Calendar",
+          "Show your Google events in the app (read-only).",
+          `
+          <div class="field"><label>Google OAuth Web Client ID</label><input id="gClientId" value="${esc(s.googleClientId)}" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off"></div>
+          <button class="btn primary" data-act="save-google-id">Save Client ID</button>
+          ${s.googleClientId.trim() ? `<button class="btn navy" data-act="gcal-connect" style="margin-left:8px">Connect now</button>` : ""}
+          <div class="note" style="margin-top:12px"><b>One-time setup</b> (an adult does this once):
+            <ol style="margin:6px 0 0;padding-left:18px;line-height:1.6">
+              <li>Go to <b>Google Cloud Console</b> → APIs &amp; Services.</li>
+              <li><b>Enable</b> the <b>Google Calendar API</b>.</li>
+              <li>Create an <b>OAuth client ID</b> of type <b>Web application</b>.</li>
+              <li>Under <b>Authorized JavaScript origins</b> add: <code>https://neft-classroom-html-activities.pages.dev</code></li>
+              <li>Copy the Client ID (ends in <code>.apps.googleusercontent.com</code>) and paste it above.</li>
+            </ol>
+            Only this Client ID is saved. Google sign-in gives a temporary access token that stays in memory and is never stored. Scope used: <code>calendar.readonly</code>.
+          </div>
         `,
         ) +
         card(
@@ -1682,12 +1848,17 @@ Due May 31"></textarea>
 
   function reminderForm(r) {
     r = r || {};
+    const rep = REPEATS.includes(r.repeat) ? r.repeat : "none";
+    const opt = (v, label) =>
+      `<option value="${v}" ${rep === v ? "selected" : ""}>${label}</option>`;
     return `
       <div class="field"><label>Reminder</label><input id="rmText" value="${esc(r.text || "")}" placeholder="Bring gym clothes"></div>
       <div class="g2 grid">
         <div class="field"><label>Date (optional)</label><input type="date" id="rmDate" value="${esc(r.date || "")}"></div>
         <div class="field"><label>Time (optional)</label><input type="time" id="rmTime" value="${esc(r.time || "")}"></div>
       </div>
+      <div class="field"><label>Repeat</label><select id="rmRepeat">${opt("none", "Just once")}${opt("daily", "Every day")}${opt("weekdays", "Weekdays (Mon–Fri)")}${opt("weekly", "Weekly (same weekday)")}</select></div>
+      <p class="muted" style="font-size:.8rem;margin:-2px 0 8px">A repeating reminder comes back each day — checking it off just clears it for today.</p>
       <button class="btn primary block" data-act="save-reminder" data-id="${esc(r.id || "")}">${r.id ? "Save changes" : "Add reminder"}</button>`;
   }
 
@@ -2071,6 +2242,70 @@ Due May 31"></textarea>
         });
       }
     });
+    // Reminders: fire any of today's timed reminders whose moment has passed and
+    // weren't shown yet today (covers app-open-after-the-time + the 60s loop).
+    dueRemindersForToday().forEach((r) => {
+      if (!r.time) return; // untimed reminders just live in the list
+      const [hh, mm] = r.time.split(":").map(Number);
+      const cur = now.getHours() * 60 + now.getMinutes();
+      if (hh * 60 + mm <= cur) fireReminder(r);
+    });
+  }
+
+  // Reminders that are scheduled for today (one-time dated today, or recurring
+  // whose schedule includes today) and aren't already done-for-today.
+  function dueRemindersForToday() {
+    const t = todayKey();
+    return state.reminders.filter((r) => {
+      if (reminderDoneToday(r)) return false;
+      if (isRecurring(r)) return recurOccursOn(r, t);
+      return r.date === t;
+    });
+  }
+
+  // Show a reminder notification at most once per day (guarded by lastShown).
+  function fireReminder(r) {
+    if (
+      !state.settings.notifications ||
+      !notifSupport() ||
+      Notification.permission !== "granted"
+    )
+      return;
+    if (r.lastShown === todayKey()) return;
+    r.lastShown = todayKey();
+    save({ touch: false });
+    showNotif("🔔 Reminder", {
+      body: r.text,
+      tag: "reminder:" + r.id + ":" + todayKey(),
+      icon: "icons/icon-192.png",
+    });
+  }
+
+  // setTimeout-based scheduler for today's still-upcoming reminder times. This
+  // fires precisely while the app/SW is alive. NOTE: true *background* push when
+  // the app is fully closed needs a push server and is out of scope here.
+  let reminderTimers = [];
+  function scheduleReminders() {
+    reminderTimers.forEach((id) => clearTimeout(id));
+    reminderTimers = [];
+    if (
+      !state.settings.notifications ||
+      !notifSupport() ||
+      Notification.permission !== "granted"
+    )
+      return;
+    const now = new Date();
+    const cur =
+      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    dueRemindersForToday().forEach((r) => {
+      if (!r.time || r.lastShown === todayKey()) return;
+      const [hh, mm] = r.time.split(":").map(Number);
+      const at = hh * 3600 + mm * 60;
+      if (at <= cur) return; // already passed — checkReminders handles it
+      const ms = (at - cur) * 1000;
+      // setTimeout caps near 24.8 days; our window is < 24h so this is safe.
+      reminderTimers.push(setTimeout(() => fireReminder(r), ms));
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -2159,6 +2394,189 @@ Due May 31"></textarea>
       return false;
     },
   };
+
+  // ---------------------------------------------------------------------------
+  // Google Calendar (client-side, read-only, no backend)
+  // ---------------------------------------------------------------------------
+  // Uses Google Identity Services (GIS) token client to get a short-lived access
+  // token IN MEMORY (never persisted), then reads upcoming primary-calendar
+  // events via the Calendar REST API. The only thing stored is the Web Client ID.
+  const GCAL_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
+  const GIS_SRC = "https://accounts.google.com/gsi/client";
+  const gcal = {
+    token: "", // access token — memory only
+    tokenClient: null,
+    connected: false,
+    _gisLoaded: false,
+    clientId() {
+      return state.settings.googleClientId.trim();
+    },
+    // Dynamically load the GIS script once (only external dependency allowed).
+    loadGis() {
+      if (this._gisLoaded && window.google?.accounts?.oauth2)
+        return Promise.resolve(true);
+      return new Promise((resolve) => {
+        if (window.google?.accounts?.oauth2) {
+          this._gisLoaded = true;
+          return resolve(true);
+        }
+        const existing = document.querySelector(`script[src="${GIS_SRC}"]`);
+        if (existing) {
+          existing.addEventListener("load", () => resolve(true));
+          existing.addEventListener("error", () => resolve(false));
+          return;
+        }
+        const s = document.createElement("script");
+        s.src = GIS_SRC;
+        s.async = true;
+        s.defer = true;
+        s.onload = () => {
+          this._gisLoaded = true;
+          resolve(true);
+        };
+        s.onerror = () => resolve(false);
+        document.head.appendChild(s);
+      });
+    },
+    async connect() {
+      const cid = this.clientId();
+      if (!cid) {
+        toast("Add your Google Client ID in Settings first.");
+        setView("settings");
+        return;
+      }
+      if (!navigator.onLine) return toast("Connect to the internet to sync.");
+      const ok = await this.loadGis();
+      if (!ok || !window.google?.accounts?.oauth2)
+        return toast("Couldn't load Google sign-in. Try again online.");
+      toast("Opening Google sign-in…");
+      this.tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: cid,
+        scope: GCAL_SCOPE,
+        callback: (resp) => {
+          if (resp && resp.access_token) {
+            this.token = resp.access_token;
+            this.connected = true;
+            this.fetchEvents();
+          } else {
+            toast("Google sign-in was cancelled.");
+          }
+        },
+        error_callback: () =>
+          toast("Google sign-in failed. Check your Client ID."),
+      });
+      // Empty prompt = use existing consent when possible; shows picker otherwise.
+      this.tokenClient.requestAccessToken({ prompt: "" });
+    },
+    async fetchEvents() {
+      if (!this.token) return this.connect();
+      try {
+        const timeMin = new Date().toISOString();
+        const url =
+          "https://www.googleapis.com/calendar/v3/calendars/primary/events?" +
+          new URLSearchParams({
+            timeMin,
+            singleEvents: "true",
+            orderBy: "startTime",
+            maxResults: "50",
+          });
+        const res = await fetch(url, {
+          headers: { Authorization: "Bearer " + this.token },
+        });
+        if (!res.ok) {
+          if (res.status === 401) {
+            this.token = "";
+            this.connected = false;
+          }
+          toast("Couldn't load Google events.");
+          return;
+        }
+        const data = await res.json();
+        const events = (data.items || [])
+          .map((e) => ({
+            id: e.id,
+            title: e.summary || "(no title)",
+            // All-day events use .date (YYYY-MM-DD); timed use .dateTime.
+            start: e.start?.dateTime || e.start?.date || "",
+            allDay: !e.start?.dateTime,
+            location: e.location || "",
+            htmlLink: e.htmlLink || "",
+          }))
+          .filter((e) => e.start);
+        state.gcal = { events, fetchedAt: new Date().toISOString() };
+        save();
+        render();
+        toast(`Google Calendar synced (${events.length}) 📅`);
+      } catch {
+        toast("Couldn't reach Google Calendar.");
+      }
+    },
+    disconnect() {
+      try {
+        if (this.token && window.google?.accounts?.oauth2)
+          google.accounts.oauth2.revoke(this.token, () => {});
+      } catch {}
+      this.token = "";
+      this.connected = false;
+      state.gcal = { events: [], fetchedAt: "" };
+      save();
+      render();
+      toast("Disconnected from Google Calendar.");
+    },
+  };
+
+  // Parse a Google event's start into a local ISO date key (YYYY-MM-DD).
+  const gcalDayKey = (e) => {
+    if (!e.start) return "";
+    if (e.allDay) return e.start.slice(0, 10);
+    const d = new Date(e.start);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+  const gcalTimeLabel = (e) => {
+    if (e.allDay) return "All day";
+    const d = new Date(e.start);
+    return d.toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
+  const gcalEventsForDay = (iso) =>
+    (state.gcal?.events || [])
+      .filter((e) => gcalDayKey(e) === iso)
+      .sort((a, b) => (a.start < b.start ? -1 : 1));
+  const gcalToday = () => gcalEventsForDay(todayKey());
+  // A compact, read-only Google event row, clearly marked as Google.
+  const gcalRow = (e) =>
+    `<div class="item gcal-item"><div class="head"><div><h4><span class="gcal-badge" title="From Google Calendar">G</span>${esc(e.title)}</h4><p class="meta">📅 ${esc(gcalTimeLabel(e))}${e.location ? " · " + esc(e.location) : ""} · <span class="muted">Google · read-only</span></p></div>${e.htmlLink ? `<div class="row"><a class="btn sm" href="${esc(e.htmlLink)}" target="_blank" rel="noopener">Open</a></div>` : ""}</div></div>`;
+
+  // Google Calendar connect/refresh/disconnect panel (calendar view + settings).
+  function gcalPanel() {
+    const hasId = !!state.settings.googleClientId.trim();
+    const count = (state.gcal?.events || []).length;
+    const fetched = state.gcal?.fetchedAt
+      ? new Date(state.gcal.fetchedAt).toLocaleString()
+      : "";
+    if (!hasId) {
+      return card(
+        "gcal",
+        "📅 Google Calendar",
+        "Read-only — show your Google events here.",
+        `<p class="sub" style="margin-top:0">To connect, add a Google OAuth <b>Web Client ID</b> in Settings → Google Calendar. It's a one-time setup.</p>
+         <button class="btn primary" data-act="view-settings">Set it up in Settings</button>`,
+      );
+    }
+    const status = count
+      ? `<span class="pill green">● Connected · ${count} events</span>`
+      : `<span class="pill">Not loaded yet</span>`;
+    return `<section class="card" data-card="gcal"><div class="head"><div><h3>📅 Google Calendar</h3><p class="sub">Read-only — your Google events, shown alongside school work.</p></div>${status}</div>
+      <div class="row">
+        <button class="btn ${count ? "" : "primary"}" data-act="gcal-connect">${count ? "🔄 Reconnect" : "Connect Google Calendar"}</button>
+        ${count ? `<button class="btn navy" data-act="gcal-refresh">🔄 Refresh</button><button class="btn danger" data-act="gcal-disconnect">Disconnect</button>` : ""}
+      </div>
+      ${fetched ? `<p class="muted" style="font-size:.8rem;margin-top:8px">Last synced: ${esc(fetched)}. Events are cached so they show even offline.</p>` : ""}
+      ${count ? `<div class="section-title" style="margin-top:12px">Upcoming Google events</div>${(state.gcal.events || []).slice(0, 12).map(gcalRow).join("")}` : ""}
+    </section>`;
+  }
 
   // ---------------------------------------------------------------------------
   // Install prompt (Add to desktop)
@@ -2496,15 +2914,18 @@ Due May 31"></textarea>
     "save-reminder": (id) => {
       const text = $("#rmText").value.trim();
       if (!text) return toast("Type the reminder first.");
+      const prev = id ? state.reminders.find((x) => x.id === id) : null;
       const r = normalizeReminder({
         id: id || uid("rm"),
         text,
         date: $("#rmDate").value,
         time: $("#rmTime").value,
-        done: id ? !!state.reminders.find((x) => x.id === id)?.done : false,
-        createdAt: id
-          ? state.reminders.find((x) => x.id === id)?.createdAt
-          : Date.now(),
+        repeat: $("#rmRepeat")?.value || "none",
+        done: id ? !!prev?.done : false,
+        // Preserve bookkeeping so an edit doesn't re-fire today's notification.
+        lastShown: prev?.lastShown || "",
+        lastDone: prev?.lastDone || "",
+        createdAt: id ? prev?.createdAt : Date.now(),
       });
       if (id) {
         const i = state.reminders.findIndex((x) => x.id === id);
@@ -2535,6 +2956,66 @@ Due May 31"></textarea>
       state.reminders = state.reminders.filter((r) => !r.done);
       save();
       render();
+    },
+    // Mark a reminder done (recurring = done-for-today). Used by the glance strip.
+    "reminder-done": (id) => {
+      const r = state.reminders.find((x) => x.id === id);
+      if (!r) return;
+      if (isRecurring(r)) r.lastDone = todayKey();
+      else r.done = true;
+      save();
+      render();
+      toast("Got it ✓");
+    },
+    // Snooze: bump the reminder's time so it nudges again later today.
+    "snooze-reminder": (id, arg) => {
+      const r = state.reminders.find((x) => x.id === id);
+      if (!r) return;
+      const now = new Date();
+      let target;
+      if (arg === "tonight") {
+        target = new Date();
+        target.setHours(19, 0, 0, 0);
+        if (target <= now) target = new Date(now.getTime() + 10 * 60000);
+      } else {
+        target = new Date(now.getTime() + 10 * 60000); // +10 min
+      }
+      r.date = todayKey();
+      r.time = `${String(target.getHours()).padStart(2, "0")}:${String(target.getMinutes()).padStart(2, "0")}`;
+      r.lastShown = ""; // allow it to fire again at the new time
+      if (isRecurring(r)) r.lastDone = "";
+      else r.done = false;
+      save();
+      render();
+      toast(
+        arg === "tonight" ? "Snoozed till tonight 🌙" : "Snoozed 10 min ⏰",
+      );
+    },
+
+    // ---- Daily check-in ----
+    "checkin-open": () => openModal("Morning check-in", checkinForm()),
+    "checkin-mood": (_, arg, ev) => {
+      $$("#ciMood [data-act='checkin-mood']").forEach((b) =>
+        b.setAttribute("aria-pressed", b.dataset.arg === arg),
+      );
+    },
+    "save-checkin": () => {
+      const mood =
+        $$("#ciMood [data-act='checkin-mood']").find(
+          (b) => b.getAttribute("aria-pressed") === "true",
+        )?.dataset.arg || "";
+      const priority = ($("#ciPriority")?.value || "").trim();
+      state.checkins[todayKey()] = { mood, priority };
+      // If they named a priority, mirror it into the daily goal so "Right now"
+      // and the Today view reflect it too (only if no goal set yet today).
+      if (priority && state.daily.goalDate !== todayKey()) {
+        state.daily.goal = priority;
+        state.daily.goalDate = todayKey();
+      }
+      save();
+      closeModal();
+      render();
+      toast("Check-in saved 👋");
     },
 
     "add-routine": () => openModal("New routine", routineForm()),
@@ -2837,6 +3318,29 @@ ${name}`;
       toast(pulled ? "Pulled newer data ⬇️" : "Synced 🔄");
     },
 
+    // ---- Google Calendar ----
+    "gcal-connect": () => gcal.connect(),
+    "gcal-refresh": () => {
+      toast("Refreshing Google Calendar…");
+      gcal.token ? gcal.fetchEvents() : gcal.connect();
+    },
+    "gcal-disconnect": () => {
+      openModal(
+        "Disconnect Google Calendar?",
+        `<p class="sub">This removes the cached Google events from this app. Your Google account isn't changed.</p><div class="row"><button class="btn danger" data-act="gcal-confirm-disconnect">Disconnect</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
+      );
+    },
+    "gcal-confirm-disconnect": () => {
+      closeModal();
+      gcal.disconnect();
+    },
+    "save-google-id": () => {
+      state.settings.googleClientId = ($("#gClientId")?.value || "").trim();
+      save();
+      render();
+      toast("Google Client ID saved");
+    },
+
     "close-modal": () => closeModal(),
   };
 
@@ -2925,7 +3429,12 @@ ${name}`;
       } else if (kind === "reminder") {
         const r = state.reminders.find((x) => x.id === id);
         if (r) {
-          r.done = box.checked;
+          if (isRecurring(r)) {
+            // Recurring: "done" means done-for-today only — it returns tomorrow.
+            r.lastDone = box.checked ? todayKey() : "";
+          } else {
+            r.done = box.checked;
+          }
           save();
           // Re-render so the reminder moves between Open/Done groups cleanly.
           render();
@@ -3084,8 +3593,17 @@ ${name}`;
 
     // calm one-line briefing on open, plus the reminders loop
     dailyBriefing();
-    checkReminders();
+    checkReminders(); // fires anything already due (incl. passed reminder times)
+    scheduleReminders(); // arms precise setTimeouts for today's upcoming times
     setInterval(checkReminders, 60000);
+    // Re-arm timers when the tab is refocused (a backgrounded tab can throttle
+    // timers; refocusing recomputes them and catches anything missed).
+    addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        checkReminders();
+        scheduleReminders();
+      }
+    });
 
     // register service worker + let the user know when an update is ready
     if ("serviceWorker" in navigator) {
