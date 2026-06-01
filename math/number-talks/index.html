@@ -1,0 +1,1458 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Number Talks Studio &middot; Neft Teacher</title>
+    <meta
+      name="description"
+      content="Projectable daily number-sense routines for Grade 6 with talk frames, think-time timer, and teacher strategy hints."
+    />
+    <style>
+      /* ============================================================
+         Number Talks Studio — self-contained projector tool
+         Calm, high-contrast styling for front-of-room display.
+         ============================================================ */
+      :root {
+        --bg: #0e1f2b;
+        --bg-soft: #143040;
+        --panel: #ffffff;
+        --ink: #0e1f2b;
+        --muted: #5b6773;
+        --line: #d8dfdc;
+        --teal: #0f766e;
+        --teal-dark: #115e59;
+        --gold: #b7791f;
+        --coral: #c2410c;
+        --accent: #1fb6a6;
+        --frame-bg: #fff8ec;
+        --frame-line: #e8c887;
+        --strat-bg: #eef6f5;
+        --good: #15803d;
+        --radius: 18px;
+        --shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        background: radial-gradient(
+            1200px 800px at 50% -10%,
+            #1a3b4d 0%,
+            var(--bg) 60%
+          )
+          fixed;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ---------------- Top bar ---------------- */
+      header.bar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding: 0.85rem 1.4rem;
+        background: rgba(8, 22, 30, 0.72);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(6px);
+      }
+
+      .brand {
+        font-weight: 800;
+        font-size: 1.15rem;
+        letter-spacing: 0.01em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .brand .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 4px rgba(31, 182, 166, 0.25);
+      }
+      .brand small {
+        font-weight: 600;
+        color: #9fc3c0;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .controls {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      select,
+      button {
+        font: inherit;
+        cursor: pointer;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        padding: 0.55rem 0.9rem;
+        font-weight: 600;
+        transition:
+          transform 0.08s ease,
+          background 0.15s ease,
+          border-color 0.15s ease;
+      }
+      select option {
+        color: #111;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #06241f;
+        font-weight: 800;
+      }
+      button.primary:hover {
+        background: #2bcab9;
+      }
+      button:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #ffd479;
+        outline-offset: 2px;
+      }
+
+      /* ---------------- Stage ---------------- */
+      main {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        padding: clamp(0.8rem, 2vw, 2rem);
+      }
+
+      .stage {
+        width: min(1280px, 100%);
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 1.25rem;
+        align-items: start;
+      }
+
+      @media (max-width: 900px) {
+        .stage {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: var(--panel);
+        color: var(--ink);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: clamp(1.1rem, 2.4vw, 2.2rem);
+      }
+
+      /* Routine meta */
+      .meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.4rem;
+      }
+      .tag {
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 0.28rem 0.7rem;
+        border-radius: 999px;
+        background: var(--strat-bg);
+        color: var(--teal-dark);
+        border: 1px solid #cfe5e2;
+      }
+      .tag.type {
+        background: #fff3e0;
+        color: var(--coral);
+        border-color: #f3d3b3;
+      }
+      .counter {
+        margin-left: auto;
+        font-weight: 700;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .routine-title {
+        font-size: clamp(1.3rem, 2.6vw, 2rem);
+        font-weight: 800;
+        margin: 0.2rem 0 0.2rem;
+        color: var(--teal-dark);
+      }
+      .routine-question {
+        font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+        color: var(--muted);
+        font-weight: 600;
+        margin: 0 0 1rem;
+      }
+
+      /* Steps (number strings reveal one at a time) */
+      .steps {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        margin: 0.5rem 0 0.5rem;
+      }
+      .step {
+        font-size: clamp(2.2rem, 6vw, 4.4rem);
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: 0.01em;
+        color: var(--ink);
+        background: linear-gradient(180deg, #ffffff, #f3f8f7);
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        padding: 0.55rem 1rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
+      }
+      .step.show {
+        display: flex;
+        animation: pop 0.22s ease;
+      }
+      .step .idx {
+        font-size: 0.42em;
+        color: var(--accent);
+        font-weight: 900;
+        background: #06322c;
+        border-radius: 10px;
+        padding: 0.2em 0.55em;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.96);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* Big single prompt (estimation / T-F / percent) */
+      .bigprompt {
+        font-size: clamp(2.4rem, 7vw, 5rem);
+        font-weight: 900;
+        line-height: 1.08;
+        margin: 0.6rem 0;
+        color: var(--ink);
+      }
+      .choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        margin: 0.6rem 0;
+      }
+      .choice {
+        font-size: clamp(1.4rem, 3vw, 2.2rem);
+        font-weight: 800;
+        padding: 0.5rem 1.2rem;
+        border-radius: 14px;
+        background: #f0f7f6;
+        border: 2px solid #cfe5e2;
+        color: var(--teal-dark);
+      }
+
+      /* Dot image SVG */
+      .dotwrap {
+        display: flex;
+        justify-content: center;
+        margin: 0.4rem 0 0.6rem;
+      }
+      .dotwrap svg {
+        width: min(100%, 460px);
+        height: auto;
+        background: #fbfdfc;
+        border: 2px solid var(--line);
+        border-radius: 16px;
+        padding: 12px;
+      }
+
+      /* Reveal areas */
+      .reveal {
+        margin-top: 1rem;
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        display: none;
+      }
+      .reveal.show {
+        display: block;
+        animation: pop 0.22s ease;
+      }
+      .reveal.answer {
+        background: #e9f7ee;
+        border: 2px solid #b7e3c5;
+      }
+      .reveal.strategies {
+        background: var(--strat-bg);
+        border: 2px solid #cfe5e2;
+      }
+      .reveal h3 {
+        margin: 0 0 0.5rem;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--teal-dark);
+      }
+      .reveal.answer h3 {
+        color: var(--good);
+      }
+      .reveal p,
+      .reveal li {
+        font-size: clamp(1rem, 1.5vw, 1.25rem);
+        line-height: 1.5;
+        margin: 0.3rem 0;
+      }
+      .reveal ul {
+        margin: 0.2rem 0;
+        padding-left: 1.2rem;
+      }
+      .reveal .ans {
+        font-weight: 900;
+        font-size: clamp(1.4rem, 2.4vw, 2rem);
+        color: var(--good);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 1.2rem;
+        align-items: center;
+      }
+      .actions button {
+        color: #06241f;
+        background: #e9f3f1;
+        border-color: #cfe5e2;
+      }
+      .actions button:hover {
+        background: #d8ebe8;
+      }
+      .actions button.toggled {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+      }
+
+      /* ---------------- Side panel ---------------- */
+      .side {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+      }
+
+      .panel {
+        background: var(--panel);
+        color: var(--ink);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.1rem 1.2rem;
+      }
+      .panel h2 {
+        margin: 0 0 0.7rem;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--teal-dark);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* Timer */
+      .timer {
+        text-align: center;
+      }
+      .timer .clock {
+        font-size: clamp(3rem, 9vw, 5rem);
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        color: var(--teal-dark);
+        line-height: 1;
+        margin: 0.2rem 0 0.6rem;
+      }
+      .timer .clock.low {
+        color: var(--coral);
+      }
+      .timer.running .clock {
+        color: var(--accent);
+      }
+      .timer-btns {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .timer-btns button {
+        color: #06241f;
+        background: #e9f3f1;
+        border-color: #cfe5e2;
+      }
+      .timer-presets {
+        display: flex;
+        gap: 0.4rem;
+        justify-content: center;
+        margin-top: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .timer-presets button {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.85rem;
+      }
+      .timer-presets button.sel {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+      }
+
+      /* Signal reminder */
+      .signal {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: var(--frame-bg);
+        border: 2px solid var(--frame-line);
+        border-radius: 14px;
+        padding: 0.8rem 1rem;
+        color: #5a4413;
+        font-weight: 600;
+        font-size: 1.02rem;
+      }
+      .signal .emoji {
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      /* Talk frames */
+      .frames li {
+        list-style: none;
+        background: var(--frame-bg);
+        border: 1.5px solid var(--frame-line);
+        border-radius: 12px;
+        padding: 0.6rem 0.85rem;
+        margin-bottom: 0.5rem;
+        font-size: clamp(1rem, 1.5vw, 1.2rem);
+        font-weight: 600;
+        color: #5a4413;
+      }
+      .frames ul {
+        margin: 0;
+        padding: 0;
+      }
+      .frames .hint {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--gold);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin: 0 0 0.5rem;
+      }
+
+      footer {
+        text-align: center;
+        color: #8fb2b0;
+        font-size: 0.8rem;
+        padding: 0.8rem 1rem 1.2rem;
+      }
+      footer kbd {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        padding: 0.1rem 0.4rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar">
+      <div class="brand">
+        <span class="dot" aria-hidden="true"></span>
+        Number Talks Studio
+        <small>Neft Teacher &middot; Grade 6</small>
+      </div>
+      <div class="controls">
+        <label class="visually-hidden" for="focusFilter">Filter by focus</label>
+        <select id="focusFilter" aria-label="Filter by math focus">
+          <option value="all">All focuses</option>
+          <option value="operations">Operations</option>
+          <option value="fractions">Fractions</option>
+          <option value="decimals">Decimals</option>
+          <option value="ratios">Ratios &amp; Percent</option>
+          <option value="estimation">Estimation</option>
+        </select>
+        <select id="typeFilter" aria-label="Filter by routine type">
+          <option value="all">All types</option>
+          <option value="string">Number string</option>
+          <option value="dots">Dot image</option>
+          <option value="truefalse">True / False</option>
+          <option value="estimation">Which is closest?</option>
+          <option value="percent">Ratio &amp; percent</option>
+        </select>
+        <button id="prevBtn" title="Previous">&larr; Prev</button>
+        <button id="randomBtn" title="Random routine">&#127922; Random</button>
+        <button id="nextBtn" class="primary" title="Next (Space)">
+          Next &rarr;
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <div class="stage">
+        <!-- Routine card -->
+        <section class="card" id="routineCard" aria-live="polite">
+          <div class="meta">
+            <span class="tag type" id="typeTag">Number string</span>
+            <span class="tag" id="focusTag">Operations</span>
+            <span class="counter" id="counter">1 / 30</span>
+          </div>
+          <h1 class="routine-title" id="title">Title</h1>
+          <p class="routine-question" id="question">Question</p>
+
+          <div class="steps" id="steps"></div>
+          <div class="bigprompt hidden" id="bigprompt"></div>
+          <div class="choices hidden" id="choices"></div>
+          <div class="dotwrap hidden" id="dotwrap"></div>
+
+          <div class="reveal strategies" id="strategyBox">
+            <h3>Sample strategies (teacher-facing)</h3>
+            <div id="strategyBody"></div>
+          </div>
+
+          <div class="reveal answer" id="answerBox">
+            <h3>Answer &amp; discussion</h3>
+            <div id="answerBody"></div>
+          </div>
+
+          <div class="actions">
+            <button id="revealStepBtn">Reveal next step</button>
+            <button id="strategyBtn">Sample strategies</button>
+            <button id="answerBtn">Show answer / discussion</button>
+          </div>
+        </section>
+
+        <!-- Side panel -->
+        <aside class="side">
+          <div class="panel timer" id="timerPanel">
+            <h2>&#9203; Think Time</h2>
+            <div class="clock" id="clock">1:00</div>
+            <div class="timer-btns">
+              <button id="timerStart">Start</button>
+              <button id="timerReset">Reset</button>
+            </div>
+            <div class="timer-presets" id="presets">
+              <button data-sec="30">30s</button>
+              <button data-sec="60" class="sel">60s</button>
+              <button data-sec="90">90s</button>
+              <button data-sec="120">2 min</button>
+            </div>
+          </div>
+
+          <div class="signal">
+            <span class="emoji" aria-hidden="true">&#128077;</span>
+            <span
+              >Silent signal: <strong>thumb up on your chest</strong> when you
+              have an answer. A second thumb = another strategy.</span
+            >
+          </div>
+
+          <div class="panel frames">
+            <h2>&#128172; Talk Frames</h2>
+            <p class="hint">Use these to explain your thinking</p>
+            <ul>
+              <li>&ldquo;I noticed ___ so I ___.&rdquo;</li>
+              <li>&ldquo;First I ___, then I ___.&rdquo;</li>
+              <li>&ldquo;I agree / disagree because ___.&rdquo;</li>
+              <li>&ldquo;My strategy was ___.&rdquo;</li>
+              <li>&ldquo;I know ___ so ___ must be ___.&rdquo;</li>
+              <li>&ldquo;Another way to see it is ___.&rdquo;</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer>
+      <kbd>Space</kbd> reveal / next &middot; <kbd>&rarr;</kbd> next &middot;
+      <kbd>&larr;</kbd> prev &middot; <kbd>R</kbd> random &middot;
+      <kbd>S</kbd> strategies &middot; <kbd>A</kbd> answer &middot;
+      <kbd>T</kbd> start/stop timer &middot; ~10 minutes &middot; one routine a
+      day
+    </footer>
+
+    <script>
+      "use strict";
+
+      /* ======================================================
+         ROUTINE BANK — Grade 6 number sense
+         type: string | dots | truefalse | estimation | percent
+         focus: operations | fractions | decimals | ratios | estimation
+         ====================================================== */
+      const ROUTINES = [
+        /* ---------- NUMBER STRINGS ---------- */
+        {
+          type: "string",
+          focus: "operations",
+          title: "Quarters (×25)",
+          q: "Solve each mentally. How does the one before help you?",
+          steps: ["4 × 25", "8 × 25", "16 × 25", "16 × 26"],
+          strategies:
+            "4×25 = 100 anchors everything. Doubling 4→8→16 doubles the product (100→200→400). For 16×26, use 16×25 then add one more 16: 400 + 16 = 416. Watch for students who multiply from scratch each time vs. those who use the previous answer.",
+          answer:
+            "100, 200, 400, 416. Each factor doubles, so each product doubles; the last problem is one extra group of 16.",
+        },
+        {
+          type: "string",
+          focus: "operations",
+          title: "Doubling & halving",
+          q: "Find a friendlier equivalent problem.",
+          steps: ["16 × 5", "8 × 10", "4 × 20", "2 × 40"],
+          strategies:
+            "All equal 80. Halving one factor and doubling the other keeps the product the same. Highlight 8×10 as the easiest 'landing spot'. Great lead-in to flexible multiplication.",
+          answer:
+            "All four equal 80. Doubling and halving the factors does not change the product.",
+        },
+        {
+          type: "string",
+          focus: "operations",
+          title: "Multiplying by 9",
+          q: "Use a friendly number near 9.",
+          steps: ["6 × 10", "6 × 9", "12 × 9", "13 × 9"],
+          strategies:
+            "6×10=60, then subtract one group of 6 → 54. 12×9 = 12×10 − 12 = 108. 13×9 = 130 − 13 = 117. 'Multiply by 10 and back off' is the big idea.",
+          answer:
+            "60, 54, 108, 117. For ×9, multiply by 10 then subtract one group.",
+        },
+        {
+          type: "string",
+          focus: "decimals",
+          title: "Decimal place-value string",
+          q: "What stays the same? What changes?",
+          steps: ["6 × 4", "0.6 × 4", "0.6 × 0.4", "0.06 × 0.4"],
+          strategies:
+            "Compute 6×4=24, then track the decimal point by counting decimal places. 0.6×4=2.4 (one place), 0.6×0.4=0.24 (two places), 0.06×0.4=0.024 (three places). Push students to justify place value, not 'move the dot'.",
+          answer:
+            "24, 2.4, 0.24, 0.024. The digits stay 24; each factor's decimal places add together.",
+        },
+        {
+          type: "string",
+          focus: "fractions",
+          title: "Fraction of a number",
+          q: "How does each step build on the one before?",
+          steps: ["1/2 of 60", "1/4 of 60", "3/4 of 60", "2/3 of 60"],
+          strategies:
+            "1/2 of 60 = 30; 1/4 is half of that = 15; 3/4 = three of those fourths = 45. For 2/3, find 1/3 (=20) then double → 40. Unit-fraction thinking is the anchor.",
+          answer:
+            "30, 15, 45, 40. Find the unit fraction first, then scale up.",
+        },
+        {
+          type: "string",
+          focus: "operations",
+          title: "Subtracting by adding up",
+          q: "How far apart are these numbers?",
+          steps: ["100 − 60", "100 − 68", "150 − 68", "152 − 68"],
+          strategies:
+            "Encourage 'adding up' from the subtrahend: 68→100 is 32; 68→150 is 82; 68→152 is 84. Compare with the 'count back' crowd. Constant-difference: 152−68 = 154−70 = 84.",
+          answer:
+            "40, 32, 82, 84. Adding up from the smaller number keeps it mental.",
+        },
+        {
+          type: "string",
+          focus: "ratios",
+          title: "Scaling a ratio (3 : 4)",
+          q: "If 3 maps to 4, what maps to...?",
+          steps: ["3 → 4", "6 → ?", "30 → ?", "45 → ?"],
+          strategies:
+            "Multiply both parts by the same scale factor. 6 is ×2 → 8. 30 is ×10 → 40. 45 is ×15 → 60. Some will use 'for every 3, add 4' additively — surface and test that.",
+          answer:
+            "8, 40, 60. Whatever you multiply the first quantity by, multiply the second by the same factor.",
+        },
+        {
+          type: "string",
+          focus: "decimals",
+          title: "Dividing by 0.5 and 0.25",
+          q: "What does dividing by a number less than 1 do?",
+          steps: ["12 ÷ 1", "12 ÷ 0.5", "12 ÷ 0.25", "9 ÷ 0.25"],
+          strategies:
+            "Dividing by 0.5 = 'how many halves' = ×2 → 24. Dividing by 0.25 = 'how many quarters' = ×4 → 48, and 9÷0.25 = 36. Confront the misconception that dividing always makes smaller.",
+          answer:
+            "12, 24, 48, 36. Dividing by 1/2 doubles; dividing by 1/4 quadruples.",
+        },
+        {
+          type: "string",
+          focus: "fractions",
+          title: "Adding fractions with friendly denominators",
+          q: "Find a common whole.",
+          steps: ["1/2 + 1/4", "1/2 + 1/8", "3/4 + 1/8", "3/4 + 5/8"],
+          strategies:
+            "Rename to eighths or fourths. 1/2+1/4=3/4. 1/2+1/8=5/8. 3/4+1/8=7/8. 3/4+5/8=6/8+5/8=11/8=1 3/8. Watch for adding denominators.",
+          answer:
+            "3/4, 5/8, 7/8, and 1 3/8. Rename to a common denominator first.",
+        },
+        {
+          type: "string",
+          focus: "operations",
+          title: "Partial products (×11, ×12)",
+          q: "Break the larger factor apart.",
+          steps: ["14 × 10", "14 × 11", "14 × 12", "24 × 12"],
+          strategies:
+            "14×11 = 140 + 14 = 154. 14×12 = 140 + 28 = 168. 24×12 = 240 + 48 = 288. Distributive property in action: a×(10+b).",
+          answer:
+            "140, 154, 168, 288. Split into ×10 plus the leftover groups.",
+        },
+        {
+          type: "string",
+          focus: "ratios",
+          title: "Percent string from 10%",
+          q: "Use 10% as your building block.",
+          steps: ["10% of 80", "20% of 80", "5% of 80", "25% of 80"],
+          strategies:
+            "10% of 80 = 8. 20% = double = 16. 5% = half of 10% = 4. 25% = 1/4 of 80 = 20. Building percents from 10% and halves is the key Grade-6 move.",
+          answer:
+            "8, 16, 4, 20. Find 10% first, then double, halve, or combine.",
+        },
+        {
+          type: "string",
+          focus: "decimals",
+          title: "Money string (decimals)",
+          q: "Think in dollars and cents.",
+          steps: ["$1.25 × 4", "$1.25 × 8", "$2.50 × 4", "$2.50 × 6"],
+          strategies:
+            "$1.25×4 = $5.00 (four quarters past a dollar). ×8 doubles → $10.00. $2.50×4=$10.00; ×6 = $15.00. Quarters/halves anchor the decimals.",
+          answer:
+            "$5.00, $10.00, $10.00, $15.00. $1.25 is one-and-a-quarter dollars; scale it up.",
+        },
+        {
+          type: "string",
+          focus: "operations",
+          title: "Order of operations string",
+          q: "Same numbers, different grouping. Does the answer change?",
+          steps: ["2 + 3 × 4", "(2 + 3) × 4", "2 × 3 + 4", "2 × (3 + 4)"],
+          strategies:
+            "14, 20, 10, 14. Grouping symbols change which operation happens first. Great for exposing 'left-to-right' over-generalization.",
+          answer:
+            "14, 20, 10, 14. Multiply/divide before add/subtract — unless parentheses say otherwise.",
+        },
+
+        /* ---------- DOT / VISUAL IMAGES ---------- */
+        {
+          type: "dots",
+          focus: "operations",
+          title: "How many dots?",
+          q: "How many dots? How did you SEE them (no counting one-by-one)?",
+          dot: "grid",
+          dotData: { rows: 3, cols: 4 },
+          strategies:
+            "Look for 3 rows of 4, 4 columns of 3, or two groups of 6. Each way reveals the commutative property: 3×4 = 4×3 = 12.",
+          answer:
+            "12 dots. 3 rows of 4 or 4 columns of 3 — both make 12 (3×4 = 4×3).",
+        },
+        {
+          type: "dots",
+          focus: "operations",
+          title: "See the array",
+          q: "How many dots? Show two different ways to group them.",
+          dot: "grid",
+          dotData: { rows: 4, cols: 6 },
+          strategies:
+            "24 dots. Common groupings: 4×6, 6×4, two halves of 12 (split down the middle), or 4 groups of 6. Connect to area model.",
+          answer:
+            "24 dots. Many groupings work: 4×6, 6×4, or splitting into 2 halves of 12.",
+        },
+        {
+          type: "dots",
+          focus: "operations",
+          title: "Almost a square",
+          q: "How many dots? Could you use a full square to help?",
+          dot: "almost",
+          dotData: { size: 5, missing: 3 },
+          strategies:
+            "Full 5×5 = 25, minus the 3 missing corner dots = 22. 'Build the whole, then subtract' is a powerful strategy (compensation).",
+          answer:
+            "22 dots. A full 5×5 square is 25; subtract the 3 missing dots → 22.",
+        },
+        {
+          type: "dots",
+          focus: "operations",
+          title: "Two rows of five (ten-frame)",
+          q: "How many dots? How does the ten-frame help?",
+          dot: "tenframe",
+          dotData: { filled: 7 },
+          strategies:
+            "Ten-frame shows 7 as 5 + 2, or as 10 − 3 (three empty). Subitizing in fives builds fluency.",
+          answer: "7 dots. See it as 5 + 2, or as 10 − 3 (three empty boxes).",
+        },
+        {
+          type: "dots",
+          focus: "ratios",
+          title: "Ratio of dark to light",
+          q: "What is the ratio of dark dots to light dots? In simplest form?",
+          dot: "ratio",
+          dotData: { dark: 4, light: 6 },
+          strategies:
+            "4 dark : 6 light = 2 : 3 simplified. Also discuss part-to-whole: 4 out of 10 are dark = 2/5 = 40%.",
+          answer:
+            "4 : 6, which simplifies to 2 : 3. (Dark is 4/10 = 2/5 = 40% of the whole.)",
+        },
+
+        /* ---------- TRUE / FALSE ---------- */
+        {
+          type: "truefalse",
+          focus: "fractions",
+          title: "True or False?",
+          q: "Decide WITHOUT computing exactly. Justify with reasoning.",
+          claim: "1/2 + 1/3 = 2/5",
+          strategies:
+            "FALSE. You can't add numerators and denominators. 1/2 + 1/3 = 3/6 + 2/6 = 5/6. Also 2/5 is less than 1/2, but a half plus anything positive must exceed 1/2.",
+          answer:
+            "FALSE. 1/2 + 1/3 = 5/6, not 2/5. Adding tops and bottoms doesn't work.",
+        },
+        {
+          type: "truefalse",
+          focus: "decimals",
+          title: "True or False?",
+          q: "Reason about place value. No exact calculation needed.",
+          claim: "0.45 > 0.5",
+          strategies:
+            "FALSE. 0.5 = 0.50, and 0.50 > 0.45. Common error: 'more digits = bigger'. Compare to a half.",
+          answer: "FALSE. 0.5 equals 0.50, which is greater than 0.45.",
+        },
+        {
+          type: "truefalse",
+          focus: "operations",
+          title: "Is it reasonable?",
+          q: "True or false — is the answer reasonable?",
+          claim: "48 × 5 = 240",
+          strategies:
+            "TRUE. 48×5 = 48×10÷2 = 480÷2 = 240. Or 50×5=250 minus 2×5=10 → 240. Estimation confirms it lands near 250.",
+          answer: "TRUE. 48 × 5 = 240 (50×5 = 250, minus 2×5 = 10).",
+        },
+        {
+          type: "truefalse",
+          focus: "fractions",
+          title: "True or False?",
+          q: "Use benchmark reasoning, not the algorithm.",
+          claim: "7/8 + 11/12 < 2",
+          strategies:
+            "TRUE. Each fraction is less than 1, so the sum is less than 2. (Exactly: 7/8≈0.875, 11/12≈0.917, sum ≈ 1.79.)",
+          answer: "TRUE. Both fractions are under 1, so their sum is under 2.",
+        },
+        {
+          type: "truefalse",
+          focus: "ratios",
+          title: "True or False?",
+          q: "Reason about equivalent ratios.",
+          claim: "3/4 = 9/12",
+          strategies:
+            "TRUE. Multiply 3/4 top and bottom by 3 → 9/12. Equivalent fractions. Could also simplify 9/12 ÷3 → 3/4.",
+          answer: "TRUE. 3/4 × 3/3 = 9/12 — equivalent fractions.",
+        },
+        {
+          type: "truefalse",
+          focus: "decimals",
+          title: "Is it reasonable?",
+          q: "True or false — estimate first.",
+          claim: "6.2 × 4.9 ≈ 30",
+          strategies:
+            "TRUE (reasonable). 6×5 = 30. The exact value is 30.38, very close. Rounding both factors to friendly numbers confirms it.",
+          answer: "TRUE — about 30. Round to 6 × 5 = 30 (exact: 30.38).",
+        },
+        {
+          type: "truefalse",
+          focus: "operations",
+          title: "True or False?",
+          q: "Think about the meaning of division.",
+          claim: "20 ÷ 0.5 = 10",
+          strategies:
+            "FALSE. Dividing by 1/2 asks 'how many halves in 20?' = 40, not 10. Dividing by a number less than 1 makes the result larger.",
+          answer: "FALSE. 20 ÷ 0.5 = 40 (there are forty halves in twenty).",
+        },
+
+        /* ---------- ESTIMATION / WHICH IS CLOSEST ---------- */
+        {
+          type: "estimation",
+          focus: "estimation",
+          title: "Which is closest?",
+          q: "Estimate — don't compute exactly. Which is closest?",
+          prompt: "19 × 21",
+          choices: ["360", "400", "440"],
+          strategies:
+            "19×21 is close to 20×20 = 400. Exact is 399. The 'one above, one below 20' pattern lands just under 400.",
+          answer: "400 (exact: 399). Both factors hug 20, so 20×20 ≈ 400.",
+        },
+        {
+          type: "estimation",
+          focus: "estimation",
+          title: "Which is closest?",
+          q: "Estimate the sum. Which benchmark is closest?",
+          prompt: "7/8 + 1/12",
+          choices: ["1/2", "1", "2"],
+          strategies:
+            "7/8 is nearly 1; 1/12 is tiny. Sum ≈ just under 1. Benchmark each fraction to 0, 1/2, or 1.",
+          answer: "1. 7/8 ≈ 1 and 1/12 ≈ 0, so the sum is about 1.",
+        },
+        {
+          type: "estimation",
+          focus: "estimation",
+          title: "Which is closest?",
+          q: "About how much? Estimate the product.",
+          prompt: "3.9 × 52",
+          choices: ["150", "200", "250"],
+          strategies:
+            "Round to 4 × 50 = 200. Exact is 202.8. Friendly rounding of both factors.",
+          answer: "200 (exact: 202.8). Round to 4 × 50.",
+        },
+        {
+          type: "estimation",
+          focus: "estimation",
+          title: "Which is closest?",
+          q: "Estimate the quotient.",
+          prompt: "298 ÷ 6",
+          choices: ["30", "50", "70"],
+          strategies:
+            "298 ≈ 300; 300÷6 = 50. Exact ≈ 49.7. Round the dividend to a friendly multiple of 6.",
+          answer: "50 (exact ≈ 49.7). Use 300 ÷ 6.",
+        },
+        {
+          type: "estimation",
+          focus: "estimation",
+          title: "Which is closest?",
+          q: "Estimate the difference of fractions.",
+          prompt: "5 1/8 − 2 7/8",
+          choices: ["2", "2 1/4", "3"],
+          strategies:
+            "5 1/8 ≈ 5, 2 7/8 ≈ 3, so ≈ 2. Exact: 5 1/8 − 2 7/8 = 2 2/8 = 2 1/4. Both estimates near 2.25.",
+          answer: "2 1/4 (exact). Rounding gives about 2; precise is 2 2/8.",
+        },
+
+        /* ---------- RATIO & PERCENT REASONING ---------- */
+        {
+          type: "percent",
+          focus: "ratios",
+          title: "About how much?",
+          q: "Reason it out mentally. About how much?",
+          prompt: "30% of 60",
+          strategies:
+            "10% of 60 = 6, so 30% = 3 × 6 = 18. Or 1/3 of 60 ≈ 20 (a touch high since 30% < 1/3).",
+          answer: "18. Find 10% (= 6) then triple it.",
+        },
+        {
+          type: "percent",
+          focus: "ratios",
+          title: "About how much?",
+          q: "Use friendly percents to reason.",
+          prompt: "15% tip on $40",
+          strategies:
+            "10% of 40 = 4; 5% = 2; 15% = 4 + 2 = 6. Combining 10% and 5% is the everyday tip strategy.",
+          answer: "$6. 10% is $4, half of that (5%) is $2, total $6.",
+        },
+        {
+          type: "percent",
+          focus: "ratios",
+          title: "About how much?",
+          q: "Estimate the percent of the number.",
+          prompt: "25% of 88",
+          strategies:
+            "25% = 1/4. 88 ÷ 4 = 22. Or 1/2 of 88 = 44, then half again = 22.",
+          answer: "22. 25% is one quarter; 88 ÷ 4 = 22.",
+        },
+        {
+          type: "percent",
+          focus: "ratios",
+          title: "Better deal?",
+          q: "Which is the better buy? Reason with ratios.",
+          prompt: "6 pens for $3, or 10 pens for $4?",
+          strategies:
+            "6 for $3 = $0.50 each. 10 for $4 = $0.40 each. Unit rate (price per pen) decides. The 10-pack is cheaper per pen.",
+          answer: "10 pens for $4 ($0.40 each) beats 6 for $3 ($0.50 each).",
+        },
+        {
+          type: "percent",
+          focus: "ratios",
+          title: "About how much?",
+          q: "Estimate the discount, then the sale price.",
+          prompt: "20% off a $35 shirt",
+          strategies:
+            "10% of 35 = 3.50; 20% = 7. Discount $7, so sale price = 35 − 7 = $28. Building from 10% again.",
+          answer: "Save $7 → pay $28. (10% = $3.50, double for 20% = $7.)",
+        },
+        {
+          type: "percent",
+          focus: "ratios",
+          title: "Speed / rate reasoning",
+          q: "Reason with a rate. About how far?",
+          prompt: "If you bike 12 miles in 1 hour, how far in 2.5 hours?",
+          strategies:
+            "12 per hour: 2 hours = 24, plus half an hour = 6 → 30 miles. Scale the rate up; use the half-hour as half of 12.",
+          answer: "30 miles. 12 × 2 = 24, plus 12 × 0.5 = 6.",
+        },
+      ];
+
+      /* ======================================================
+         DOT SVG RENDERERS
+         ====================================================== */
+      const DOT = "#0f766e";
+      const DOT_LIGHT = "#cfe5e2";
+      function svgWrap(w, h, inner) {
+        return (
+          '<svg viewBox="0 0 ' +
+          w +
+          " " +
+          h +
+          '" role="img" aria-label="dot image">' +
+          inner +
+          "</svg>"
+        );
+      }
+      function circle(cx, cy, r, fill) {
+        return (
+          '<circle cx="' +
+          cx +
+          '" cy="' +
+          cy +
+          '" r="' +
+          r +
+          '" fill="' +
+          fill +
+          '"/>'
+        );
+      }
+      function renderDots(routine) {
+        const d = routine.dotData || {};
+        const gap = 70,
+          pad = 45,
+          r = 22;
+        if (routine.dot === "grid") {
+          const w = pad * 2 + (d.cols - 1) * gap;
+          const h = pad * 2 + (d.rows - 1) * gap;
+          let s = "";
+          for (let row = 0; row < d.rows; row++)
+            for (let col = 0; col < d.cols; col++)
+              s += circle(pad + col * gap, pad + row * gap, r, DOT);
+          return svgWrap(w, h, s);
+        }
+        if (routine.dot === "almost") {
+          const n = d.size;
+          const w = pad * 2 + (n - 1) * gap;
+          const h = w;
+          let s = "";
+          let removed = 0;
+          // remove from top-right corner inward
+          const skip = new Set();
+          let placed = 0;
+          for (let i = 0; i < d.missing; i++) skip.add("0-" + (n - 1 - i));
+          for (let row = 0; row < n; row++)
+            for (let col = 0; col < n; col++) {
+              if (skip.has(row + "-" + col)) {
+                removed++;
+                continue;
+              }
+              s += circle(pad + col * gap, pad + row * gap, r, DOT);
+              placed++;
+            }
+          return svgWrap(w, h, s);
+        }
+        if (routine.dot === "tenframe") {
+          const cols = 5,
+            rows = 2;
+          const w = pad * 2 + (cols - 1) * gap;
+          const h = pad * 2 + (rows - 1) * gap;
+          let s = "";
+          // frame outline
+          s +=
+            '<rect x="' +
+            (pad - 35) +
+            '" y="' +
+            (pad - 35) +
+            '" width="' +
+            (w - (pad - 35) * 2) +
+            '" height="' +
+            (h - (pad - 35) * 2) +
+            '" rx="10" fill="none" stroke="#9fc3c0" stroke-width="3"/>';
+          s +=
+            '<line x1="' +
+            w / 2 +
+            '" y1="' +
+            (pad - 35) +
+            '" x2="' +
+            w / 2 +
+            '" y2="' +
+            (h - (pad - 35)) +
+            '" stroke="#cfe5e2" stroke-width="2"/>';
+          let count = 0;
+          for (let row = 0; row < rows; row++)
+            for (let col = 0; col < cols; col++) {
+              const fill = count < d.filled ? DOT : "none";
+              const stroke = count < d.filled ? "none" : DOT_LIGHT;
+              s +=
+                '<circle cx="' +
+                (pad + col * gap) +
+                '" cy="' +
+                (pad + row * gap) +
+                '" r="' +
+                r +
+                '" fill="' +
+                fill +
+                '" stroke="' +
+                stroke +
+                '" stroke-width="3"/>';
+              count++;
+            }
+          return svgWrap(w, h, s);
+        }
+        if (routine.dot === "ratio") {
+          const total = d.dark + d.light;
+          const cols = 5;
+          const rows = Math.ceil(total / cols);
+          const w = pad * 2 + (cols - 1) * gap;
+          const h = pad * 2 + (rows - 1) * gap;
+          let s = "";
+          let i = 0;
+          for (let row = 0; row < rows; row++)
+            for (let col = 0; col < cols; col++) {
+              if (i >= total) break;
+              const fill = i < d.dark ? DOT : DOT_LIGHT;
+              s += circle(pad + col * gap, pad + row * gap, r, fill);
+              i++;
+            }
+          return svgWrap(w, h, s);
+        }
+        return "";
+      }
+
+      /* ======================================================
+         STATE + RENDER
+         ====================================================== */
+      const $ = (id) => document.getElementById(id);
+      const FOCUS_LABEL = {
+        operations: "Operations",
+        fractions: "Fractions",
+        decimals: "Decimals",
+        ratios: "Ratios & Percent",
+        estimation: "Estimation",
+      };
+      const TYPE_LABEL = {
+        string: "Number string",
+        dots: "Dot image",
+        truefalse: "True / False",
+        estimation: "Which is closest?",
+        percent: "Ratio & percent",
+      };
+
+      let pool = ROUTINES.slice();
+      let idx = 0;
+      let revealedSteps = 0;
+
+      function applyFilters() {
+        const f = $("focusFilter").value;
+        const t = $("typeFilter").value;
+        pool = ROUTINES.filter(
+          (r) =>
+            (f === "all" || r.focus === f) && (t === "all" || r.type === t),
+        );
+        if (pool.length === 0) pool = ROUTINES.slice();
+        idx = 0;
+        render();
+      }
+
+      function render() {
+        const r = pool[idx];
+        revealedSteps = 0;
+
+        $("typeTag").textContent = TYPE_LABEL[r.type] || r.type;
+        $("focusTag").textContent = FOCUS_LABEL[r.focus] || r.focus;
+        $("counter").textContent = idx + 1 + " / " + pool.length;
+        $("title").textContent = r.title;
+        $("question").textContent = r.q;
+
+        // reset reveal boxes
+        $("strategyBox").classList.remove("show");
+        $("answerBox").classList.remove("show");
+        $("strategyBtn").classList.remove("toggled");
+        $("answerBtn").classList.remove("toggled");
+
+        // hide all content zones
+        const steps = $("steps");
+        const big = $("bigprompt");
+        const choices = $("choices");
+        const dotwrap = $("dotwrap");
+        steps.innerHTML = "";
+        big.classList.add("hidden");
+        choices.classList.add("hidden");
+        choices.innerHTML = "";
+        dotwrap.classList.add("hidden");
+        dotwrap.innerHTML = "";
+        $("revealStepBtn").classList.add("hidden");
+
+        // strategy + answer text
+        $("strategyBody").innerHTML = "<p>" + r.strategies + "</p>";
+        $("answerBody").innerHTML = '<p class="ans">' + r.answer + "</p>";
+
+        if (r.type === "string") {
+          $("revealStepBtn").classList.remove("hidden");
+          r.steps.forEach((st, i) => {
+            const div = document.createElement("div");
+            div.className = "step";
+            div.dataset.i = i;
+            div.innerHTML =
+              '<span class="idx">' + (i + 1) + "</span><span>" + st + "</span>";
+            steps.appendChild(div);
+          });
+          revealNextStep(); // show first step automatically
+        } else if (r.type === "truefalse") {
+          big.classList.remove("hidden");
+          big.textContent = r.claim;
+          choices.classList.remove("hidden");
+          ["True", "False"].forEach((c) => {
+            const span = document.createElement("span");
+            span.className = "choice";
+            span.textContent = c;
+            choices.appendChild(span);
+          });
+        } else if (r.type === "estimation") {
+          big.classList.remove("hidden");
+          big.textContent = r.prompt;
+          choices.classList.remove("hidden");
+          r.choices.forEach((c) => {
+            const span = document.createElement("span");
+            span.className = "choice";
+            span.textContent = c;
+            choices.appendChild(span);
+          });
+        } else if (r.type === "percent") {
+          big.classList.remove("hidden");
+          big.textContent = r.prompt;
+        } else if (r.type === "dots") {
+          dotwrap.classList.remove("hidden");
+          dotwrap.innerHTML = renderDots(r);
+        }
+      }
+
+      function revealNextStep() {
+        const steps = $("steps").querySelectorAll(".step");
+        if (revealedSteps < steps.length) {
+          steps[revealedSteps].classList.add("show");
+          revealedSteps++;
+        }
+        const btn = $("revealStepBtn");
+        if (revealedSteps >= steps.length) {
+          btn.textContent = "All steps shown";
+          btn.disabled = true;
+        } else {
+          btn.textContent =
+            "Reveal next step (" + revealedSteps + "/" + steps.length + ")";
+          btn.disabled = false;
+        }
+      }
+
+      function next() {
+        idx = (idx + 1) % pool.length;
+        render();
+      }
+      function prev() {
+        idx = (idx - 1 + pool.length) % pool.length;
+        render();
+      }
+      function random() {
+        if (pool.length <= 1) return render();
+        let n;
+        do {
+          n = Math.floor(Math.random() * pool.length);
+        } while (n === idx);
+        idx = n;
+        render();
+      }
+
+      function toggleStrategies() {
+        const box = $("strategyBox");
+        box.classList.toggle("show");
+        $("strategyBtn").classList.toggle(
+          "toggled",
+          box.classList.contains("show"),
+        );
+      }
+      function toggleAnswer() {
+        const box = $("answerBox");
+        box.classList.toggle("show");
+        $("answerBtn").classList.toggle(
+          "toggled",
+          box.classList.contains("show"),
+        );
+      }
+
+      /* ---------------- Timer ---------------- */
+      let timerSec = 60;
+      let remaining = 60;
+      let timerId = null;
+      function fmt(s) {
+        const m = Math.floor(s / 60);
+        const ss = s % 60;
+        return m + ":" + String(ss).padStart(2, "0");
+      }
+      function paintClock() {
+        const c = $("clock");
+        c.textContent = fmt(remaining);
+        c.classList.toggle(
+          "low",
+          remaining <= 10 && !$("timerPanel").classList.contains("running"),
+        );
+      }
+      function startStopTimer() {
+        const panel = $("timerPanel");
+        if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+          panel.classList.remove("running");
+          $("timerStart").textContent = "Start";
+          paintClock();
+          return;
+        }
+        if (remaining <= 0) remaining = timerSec;
+        panel.classList.add("running");
+        $("timerStart").textContent = "Pause";
+        timerId = setInterval(() => {
+          remaining--;
+          $("clock").textContent = fmt(remaining);
+          $("clock").classList.toggle("low", remaining <= 10);
+          if (remaining <= 0) {
+            clearInterval(timerId);
+            timerId = null;
+            panel.classList.remove("running");
+            $("timerStart").textContent = "Start";
+            $("clock").textContent = "0:00";
+            // gentle visual nudge: flash the panel
+            panel.animate(
+              [
+                { boxShadow: "0 0 0 0 rgba(194,65,12,0.6)" },
+                { boxShadow: "0 0 0 14px rgba(194,65,12,0)" },
+              ],
+              { duration: 700, iterations: 3 },
+            );
+          }
+        }, 1000);
+      }
+      function resetTimer() {
+        if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+        $("timerPanel").classList.remove("running");
+        $("timerStart").textContent = "Start";
+        remaining = timerSec;
+        paintClock();
+      }
+      function setPreset(sec, btn) {
+        timerSec = sec;
+        document
+          .querySelectorAll("#presets button")
+          .forEach((b) => b.classList.remove("sel"));
+        btn.classList.add("sel");
+        resetTimer();
+      }
+
+      /* ---------------- Wiring ---------------- */
+      $("nextBtn").addEventListener("click", next);
+      $("prevBtn").addEventListener("click", prev);
+      $("randomBtn").addEventListener("click", random);
+      $("revealStepBtn").addEventListener("click", revealNextStep);
+      $("strategyBtn").addEventListener("click", toggleStrategies);
+      $("answerBtn").addEventListener("click", toggleAnswer);
+      $("focusFilter").addEventListener("change", applyFilters);
+      $("typeFilter").addEventListener("change", applyFilters);
+      $("timerStart").addEventListener("click", startStopTimer);
+      $("timerReset").addEventListener("click", resetTimer);
+      document.querySelectorAll("#presets button").forEach((b) => {
+        b.addEventListener("click", () => setPreset(Number(b.dataset.sec), b));
+      });
+
+      document.addEventListener("keydown", (e) => {
+        const tag = (e.target.tagName || "").toLowerCase();
+        if (tag === "select" || tag === "input" || tag === "textarea") return;
+        const r = pool[idx];
+        switch (e.key) {
+          case " ":
+            e.preventDefault();
+            // Space reveals next string step if available, otherwise advances
+            if (
+              r.type === "string" &&
+              !$("revealStepBtn").disabled &&
+              !$("revealStepBtn").classList.contains("hidden")
+            ) {
+              revealNextStep();
+            } else {
+              next();
+            }
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            next();
+            break;
+          case "ArrowLeft":
+            e.preventDefault();
+            prev();
+            break;
+          case "r":
+          case "R":
+            random();
+            break;
+          case "s":
+          case "S":
+            toggleStrategies();
+            break;
+          case "a":
+          case "A":
+            toggleAnswer();
+            break;
+          case "t":
+          case "T":
+            startStopTimer();
+            break;
+        }
+      });
+
+      // init
+      paintClock();
+      render();
+    </script>
+  </body>
+</html>
