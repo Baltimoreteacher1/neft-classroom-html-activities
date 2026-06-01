@@ -1,16 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Catch-Up & Bridge: grade-level prerequisite lessons, fluency drills, and diagnostics for Grade 6 students who are behind — organized by strand and tied to each unit." />
+    <meta
+      name="description"
+      content="Catch-Up & Bridge: grade-level prerequisite lessons, fluency drills, and diagnostics for Grade 6 students who are behind — organized by strand and tied to each unit."
+    />
     <title>Catch-Up & Bridge | Neft Teacher</title>
     <link rel="stylesheet" href="/assets/shared.css" />
   </head>
   <body>
     <main class="page-shell">
       <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span><span>Catch-Up &amp; Bridge</span>
+        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span
+        ><span>Catch-Up &amp; Bridge</span>
       </nav>
 
       <section class="hero compact-hero">
@@ -18,100 +22,421 @@
         <h1>Fill the Gaps, Then Step Into Grade Level</h1>
         <p class="hero-copy">
           For students working below grade level. Start with a diagnostic, then
-          use the bridge lessons by strand to rebuild the foundations each Grade 6
-          unit depends on. For a lesson-specific warm-up, use
+          use the bridge lessons by strand to rebuild the foundations each Grade
+          6 unit depends on. For a lesson-specific warm-up, use
           <a href="/math/get-ready/">Get Ready</a>.
         </p>
       </section>
 
+      <section aria-label="Find your bridge lessons">
+        <div class="section-heading">
+          <p class="eyebrow">Quick Start · Skill &amp; Unit Finder</p>
+          <h2>Find Exactly What You Need</h2>
+        </div>
+        <div
+          class="folder-index-group"
+          id="catchupFinder"
+          style="
+            border: 2px solid #cdeae6;
+            border-radius: 16px;
+            padding: 20px 22px;
+            background: #f4fbfa;
+          "
+        >
+          <p style="margin-top: 0">
+            Pick what you are stuck on, or the unit you are starting, and we
+            will show the bridge lessons that rebuild those foundations.
+          </p>
+          <div
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: 18px;
+              align-items: flex-end;
+              margin-bottom: 8px;
+            "
+          >
+            <label
+              style="
+                display: flex;
+                flex-direction: column;
+                font-weight: 700;
+                gap: 6px;
+              "
+            >
+              What are you stuck on?
+              <select
+                id="finderStrand"
+                style="
+                  padding: 9px 12px;
+                  border-radius: 10px;
+                  border: 1.5px solid #9fccc6;
+                  font-size: 15px;
+                  min-width: 240px;
+                "
+              >
+                <option value="">— Choose a skill —</option>
+                <option value="r1">Whole-number operations</option>
+                <option value="r2">Fractions</option>
+                <option value="r3">Decimals</option>
+                <option value="r4">Factors &amp; multiples</option>
+                <option value="r5">Ratios / Pre-algebra</option>
+                <option value="r5-geo">Geometry basics</option>
+              </select>
+            </label>
+            <span style="font-weight: 800; color: #0e8a7d; padding-bottom: 10px"
+              >or</span
+            >
+            <label
+              style="
+                display: flex;
+                flex-direction: column;
+                font-weight: 700;
+                gap: 6px;
+              "
+            >
+              Which unit are you starting?
+              <select
+                id="finderUnit"
+                style="
+                  padding: 9px 12px;
+                  border-radius: 10px;
+                  border: 1.5px solid #9fccc6;
+                  font-size: 15px;
+                  min-width: 200px;
+                "
+              >
+                <option value="">— Choose a unit —</option>
+                <option value="1">Unit 1</option>
+                <option value="2">Unit 2</option>
+                <option value="3">Unit 3</option>
+                <option value="4">Unit 4</option>
+                <option value="5">Unit 5</option>
+                <option value="6">Unit 6</option>
+                <option value="7">Unit 7</option>
+                <option value="8">Unit 8</option>
+                <option value="9">Unit 9</option>
+                <option value="10">Unit 10</option>
+              </select>
+            </label>
+          </div>
+          <div
+            id="finderResult"
+            style="margin-top: 14px"
+            aria-live="polite"
+          ></div>
+        </div>
+      </section>
+
+      <script>
+        (function () {
+          const REMEDIATION = {
+            r1: {
+              name: "Whole Numbers & Operations",
+              lessons: [
+                "Place Value, Compare & Round",
+                "Add & Subtract Multi-Digit Numbers",
+                "Multiply Multi-Digit Numbers",
+                "Long Division",
+                "Order of Operations (PEMDAS)",
+              ],
+            },
+            r2: {
+              name: "Fraction Foundations",
+              lessons: [
+                "Understand Fractions",
+                "Equivalent Fractions & Simplifying",
+                "Compare & Order Fractions",
+                "Add & Subtract Fractions",
+                "Multiply Fractions & Mixed Numbers",
+              ],
+            },
+            r3: {
+              name: "Decimals & Money",
+              lessons: [
+                "Decimal Place Value, Compare & Round",
+                "Add & Subtract Decimals",
+                "Multiply Decimals",
+                "Divide Decimals",
+                "Fractions ↔ Decimals ↔ Percents",
+              ],
+            },
+            r4: {
+              name: "Factors, Multiples & Patterns",
+              lessons: [
+                "Factors & Divisibility",
+                "Prime & Composite · Prime Factorization",
+                "Greatest Common Factor (GCF)",
+                "Least Common Multiple (LCM)",
+                "Number Patterns & Sequences",
+              ],
+            },
+            r5: {
+              name: "Pre-Algebra & Geometry Readiness",
+              lessons: [
+                "Introduction to Ratios",
+                "Rates & Unit Rates",
+                "Perimeter & Area of Rectangles",
+                "Area of Triangles & Composite Shapes",
+                "Coordinate Plane & Intro to Integers",
+              ],
+            },
+          };
+          // Skill dropdown value -> remediation strand id
+          const SKILL_TO_R = {
+            r1: "r1",
+            r2: "r2",
+            r3: "r3",
+            r4: "r4",
+            r5: "r5",
+            "r5-geo": "r5",
+          };
+          // Reveal unit -> remediation strands that feed it
+          const UNIT_TO_R = {
+            1: ["r1", "r3", "r4"],
+            2: ["r2"],
+            3: ["r5"],
+            4: ["r3", "r5"],
+            5: ["r5"],
+            6: ["r1"],
+            7: ["r1", "r5"],
+            8: ["r1"],
+            9: ["r5"],
+            10: ["r5", "r1"],
+          };
+
+          const esc = (s) =>
+            String(s)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+
+          function strandBlock(rid) {
+            const r = REMEDIATION[rid];
+            if (!r) return "";
+            const links = r.lessons
+              .map(
+                (t, i) =>
+                  '<a href="/math/remediation/unit-' +
+                  rid +
+                  "/lesson-" +
+                  (i + 1) +
+                  '/">' +
+                  esc(t) +
+                  "</a>",
+              )
+              .join("\n");
+            return (
+              '<div class="folder-index-group" style="margin-top:12px">' +
+              "<h3>" +
+              esc(r.name) +
+              "</h3>" +
+              '<div class="folder-links">' +
+              links +
+              "</div></div>"
+            );
+          }
+
+          const result = document.getElementById("finderResult");
+          const strandSel = document.getElementById("finderStrand");
+          const unitSel = document.getElementById("finderUnit");
+
+          function render(rids, heading) {
+            if (!rids || !rids.length) {
+              result.innerHTML = "";
+              return;
+            }
+            const seen = [];
+            rids.forEach((r) => {
+              if (seen.indexOf(r) === -1) seen.push(r);
+            });
+            const blocks = seen.map(strandBlock).join("");
+            result.innerHTML =
+              '<p style="font-weight:800;color:#0e8a7d;margin:4px 0 0">' +
+              esc(heading) +
+              "</p>" +
+              '<div class="folder-index">' +
+              blocks +
+              "</div>" +
+              '<p style="margin-top:6px">Want a lesson-specific warm-up too? Use ' +
+              '<a href="/math/get-ready/" style="font-weight:800;color:#0e8a7d">Get Ready</a>.</p>';
+          }
+
+          strandSel.addEventListener("change", function () {
+            if (!strandSel.value) return;
+            unitSel.value = "";
+            const rid = SKILL_TO_R[strandSel.value];
+            const label = strandSel.options[strandSel.selectedIndex].text;
+            render([rid], "Bridge lessons for: " + label);
+          });
+
+          unitSel.addEventListener("change", function () {
+            if (!unitSel.value) return;
+            strandSel.value = "";
+            const rids = UNIT_TO_R[unitSel.value] || [];
+            render(
+              rids,
+              "Bridge lessons to get ready for Unit " + unitSel.value,
+            );
+          });
+        })();
+      </script>
+
       <section aria-label="Start here">
-        <div class="section-heading"><p class="eyebrow">Step 1 · Find the gaps</p></div>
+        <div class="section-heading">
+          <p class="eyebrow">Step 1 · Find the gaps</p>
+        </div>
         <div class="folder-index">
           <div class="folder-index-group">
             <h3>Diagnose &amp; place</h3>
             <div class="folder-links">
-            <a href="/summer-bridge/skills-checkup.html">Skills Check-Up (diagnostic)</a>
-            <a href="/spiral-review/">Daily Spiral Review</a>
-            <a href="/summer-bridge/grade7-preview.html">Grade 7 Preview</a>
+              <a href="/summer-bridge/skills-checkup.html"
+                >Skills Check-Up (diagnostic)</a
+              >
+              <a href="/spiral-review/">Daily Spiral Review</a>
+              <a href="/summer-bridge/grade7-preview.html">Grade 7 Preview</a>
             </div>
           </div>
         </div>
       </section>
 
       <section aria-label="Bridge lessons by strand">
-        <div class="section-heading"><p class="eyebrow">Step 2 · Bridge lessons by strand</p></div>
+        <div class="section-heading">
+          <p class="eyebrow">Step 2 · Bridge lessons by strand</p>
+        </div>
         <div class="folder-index">
           <div class="folder-index-group">
             <h3>Whole Numbers &amp; Operations</h3>
             <div class="folder-links">
-            <a href="/math/remediation/unit-r1/lesson-1/">Place Value, Compare &amp; Round</a>
-            <a href="/math/remediation/unit-r1/lesson-2/">Add &amp; Subtract Multi-Digit Numbers</a>
-            <a href="/math/remediation/unit-r1/lesson-3/">Multiply Multi-Digit Numbers</a>
-            <a href="/math/remediation/unit-r1/lesson-4/">Long Division</a>
-            <a href="/math/remediation/unit-r1/lesson-5/">Order of Operations (PEMDAS)</a>
+              <a href="/math/remediation/unit-r1/lesson-1/"
+                >Place Value, Compare &amp; Round</a
+              >
+              <a href="/math/remediation/unit-r1/lesson-2/"
+                >Add &amp; Subtract Multi-Digit Numbers</a
+              >
+              <a href="/math/remediation/unit-r1/lesson-3/"
+                >Multiply Multi-Digit Numbers</a
+              >
+              <a href="/math/remediation/unit-r1/lesson-4/">Long Division</a>
+              <a href="/math/remediation/unit-r1/lesson-5/"
+                >Order of Operations (PEMDAS)</a
+              >
             </div>
           </div>
           <div class="folder-index-group">
             <h3>Fraction Foundations</h3>
             <div class="folder-links">
-            <a href="/math/remediation/unit-r2/lesson-1/">Understand Fractions</a>
-            <a href="/math/remediation/unit-r2/lesson-2/">Equivalent Fractions &amp; Simplifying</a>
-            <a href="/math/remediation/unit-r2/lesson-3/">Compare &amp; Order Fractions</a>
-            <a href="/math/remediation/unit-r2/lesson-4/">Add &amp; Subtract Fractions</a>
-            <a href="/math/remediation/unit-r2/lesson-5/">Multiply Fractions &amp; Mixed Numbers</a>
+              <a href="/math/remediation/unit-r2/lesson-1/"
+                >Understand Fractions</a
+              >
+              <a href="/math/remediation/unit-r2/lesson-2/"
+                >Equivalent Fractions &amp; Simplifying</a
+              >
+              <a href="/math/remediation/unit-r2/lesson-3/"
+                >Compare &amp; Order Fractions</a
+              >
+              <a href="/math/remediation/unit-r2/lesson-4/"
+                >Add &amp; Subtract Fractions</a
+              >
+              <a href="/math/remediation/unit-r2/lesson-5/"
+                >Multiply Fractions &amp; Mixed Numbers</a
+              >
             </div>
           </div>
           <div class="folder-index-group">
             <h3>Decimals &amp; Money</h3>
             <div class="folder-links">
-            <a href="/math/remediation/unit-r3/lesson-1/">Decimal Place Value, Compare &amp; Round</a>
-            <a href="/math/remediation/unit-r3/lesson-2/">Add &amp; Subtract Decimals</a>
-            <a href="/math/remediation/unit-r3/lesson-3/">Multiply Decimals</a>
-            <a href="/math/remediation/unit-r3/lesson-4/">Divide Decimals</a>
-            <a href="/math/remediation/unit-r3/lesson-5/">Fractions ↔ Decimals ↔ Percents</a>
+              <a href="/math/remediation/unit-r3/lesson-1/"
+                >Decimal Place Value, Compare &amp; Round</a
+              >
+              <a href="/math/remediation/unit-r3/lesson-2/"
+                >Add &amp; Subtract Decimals</a
+              >
+              <a href="/math/remediation/unit-r3/lesson-3/"
+                >Multiply Decimals</a
+              >
+              <a href="/math/remediation/unit-r3/lesson-4/">Divide Decimals</a>
+              <a href="/math/remediation/unit-r3/lesson-5/"
+                >Fractions ↔ Decimals ↔ Percents</a
+              >
             </div>
           </div>
           <div class="folder-index-group">
             <h3>Factors, Multiples &amp; Patterns</h3>
             <div class="folder-links">
-            <a href="/math/remediation/unit-r4/lesson-1/">Factors &amp; Divisibility</a>
-            <a href="/math/remediation/unit-r4/lesson-2/">Prime &amp; Composite · Prime Factorization</a>
-            <a href="/math/remediation/unit-r4/lesson-3/">Greatest Common Factor (GCF)</a>
-            <a href="/math/remediation/unit-r4/lesson-4/">Least Common Multiple (LCM)</a>
-            <a href="/math/remediation/unit-r4/lesson-5/">Number Patterns &amp; Sequences</a>
+              <a href="/math/remediation/unit-r4/lesson-1/"
+                >Factors &amp; Divisibility</a
+              >
+              <a href="/math/remediation/unit-r4/lesson-2/"
+                >Prime &amp; Composite · Prime Factorization</a
+              >
+              <a href="/math/remediation/unit-r4/lesson-3/"
+                >Greatest Common Factor (GCF)</a
+              >
+              <a href="/math/remediation/unit-r4/lesson-4/"
+                >Least Common Multiple (LCM)</a
+              >
+              <a href="/math/remediation/unit-r4/lesson-5/"
+                >Number Patterns &amp; Sequences</a
+              >
             </div>
           </div>
           <div class="folder-index-group">
             <h3>Pre-Algebra &amp; Geometry Readiness</h3>
             <div class="folder-links">
-            <a href="/math/remediation/unit-r5/lesson-1/">Introduction to Ratios</a>
-            <a href="/math/remediation/unit-r5/lesson-2/">Rates &amp; Unit Rates</a>
-            <a href="/math/remediation/unit-r5/lesson-3/">Perimeter &amp; Area of Rectangles</a>
-            <a href="/math/remediation/unit-r5/lesson-4/">Area of Triangles &amp; Composite Shapes</a>
-            <a href="/math/remediation/unit-r5/lesson-5/">Coordinate Plane &amp; Intro to Integers</a>
+              <a href="/math/remediation/unit-r5/lesson-1/"
+                >Introduction to Ratios</a
+              >
+              <a href="/math/remediation/unit-r5/lesson-2/"
+                >Rates &amp; Unit Rates</a
+              >
+              <a href="/math/remediation/unit-r5/lesson-3/"
+                >Perimeter &amp; Area of Rectangles</a
+              >
+              <a href="/math/remediation/unit-r5/lesson-4/"
+                >Area of Triangles &amp; Composite Shapes</a
+              >
+              <a href="/math/remediation/unit-r5/lesson-5/"
+                >Coordinate Plane &amp; Intro to Integers</a
+              >
             </div>
           </div>
         </div>
       </section>
 
       <section aria-label="Practice and supports">
-        <div class="section-heading"><p class="eyebrow">Step 3 · Practice &amp; family supports</p></div>
+        <div class="section-heading">
+          <p class="eyebrow">Step 3 · Practice &amp; family supports</p>
+        </div>
         <div class="folder-index">
           <div class="folder-index-group">
             <h3>Workbooks, drills &amp; guides</h3>
             <div class="folder-links">
-            <a href="/bridge-to-grade-6/resources/student-workbook.html">Student Workbook</a>
-            <a href="/bridge-to-grade-6/resources/fluency-drills.html">Fluency Drills</a>
-            <a href="/bridge-to-grade-6/resources/assessments.html">Diagnostic Assessments</a>
-            <a href="/bridge-to-grade-6/resources/family-practice.html">Family Practice</a>
-            <a href="/bridge-to-grade-6/resources/teacher-guide.html">Teacher Guide</a>
+              <a href="/bridge-to-grade-6/resources/student-workbook.html"
+                >Student Workbook</a
+              >
+              <a href="/bridge-to-grade-6/resources/fluency-drills.html"
+                >Fluency Drills</a
+              >
+              <a href="/bridge-to-grade-6/resources/assessments.html"
+                >Diagnostic Assessments</a
+              >
+              <a href="/bridge-to-grade-6/resources/family-practice.html"
+                >Family Practice</a
+              >
+              <a href="/bridge-to-grade-6/resources/teacher-guide.html"
+                >Teacher Guide</a
+              >
             </div>
           </div>
         </div>
       </section>
 
       <footer class="site-footer">
-        <p>Neft Teacher · Grade 6 Math · Catch-Up &amp; Bridge · Pairs with <a href="/math/get-ready/">Get Ready</a> readiness pre-lessons.</p>
+        <p>
+          Neft Teacher · Grade 6 Math · Catch-Up &amp; Bridge · Pairs with
+          <a href="/math/get-ready/">Get Ready</a> readiness pre-lessons.
+        </p>
       </footer>
     </main>
   </body>

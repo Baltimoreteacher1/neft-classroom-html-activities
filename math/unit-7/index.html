@@ -7,85 +7,251 @@
     <link rel="stylesheet" href="/assets/shared.css" />
   </head>
   <body>
-<!-- ══ VOCAB INTRO SLIDESHOW ══ -->
-<style>
-#vocabSlideshowOverlay{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:'Nunito',Arial,Helvetica,sans-serif;transition:opacity .5s}
-#vocabSlideshowOverlay.vso-hidden{opacity:0;pointer-events:none}
-.vso-card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:680px;width:92%;padding:40px 36px 32px;text-align:center;animation:vsoIn .4s ease-out}
-@keyframes vsoIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.vso-progress{font-size:14px;font-weight:700;color:#8B5CF6;margin-bottom:8px;letter-spacing:.5px}
-.vso-word{font-size:clamp(42px,8vw,68px);font-weight:900;color:#1E293B;margin:10px 0 8px;line-height:1.1}
-.vso-def{font-size:clamp(17px,3vw,22px);color:#475569;font-weight:600;line-height:1.5;margin-bottom:18px;max-width:560px;margin-left:auto;margin-right:auto}
-.vso-svg-wrap{margin:0 auto 20px;max-width:300px}
-.vso-svg-wrap svg{width:100%;height:auto;border-radius:16px}
-.vso-nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-.vso-btn{padding:12px 28px;border:none;border-radius:50px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
-.vso-btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
-.vso-btn-prev{background:#94A3B8}.vso-btn-next{background:#6366F1}.vso-btn-start{background:#10B981;font-size:18px;padding:14px 36px}
-.vso-btn:disabled{opacity:.4;cursor:default;transform:none}
-.vso-dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
-.vso-dot{width:12px;height:12px;border-radius:50%;background:#E2E8F0;transition:all .3s}
-.vso-dot.active{background:#6366F1;transform:scale(1.25)}
-.vso-dot.seen{background:#A5B4FC}
-</style>
-<div id="vocabSlideshowOverlay">
-<div class="vso-card">
-  <div class="vso-progress" id="vsoProgress">Word 1 of 8</div>
-  <div class="vso-svg-wrap" id="vsoSvg"></div>
-  <div class="vso-word" id="vsoWord"></div>
-  <div class="vso-def" id="vsoDef"></div>
-  <div class="vso-nav">
-    <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">&#8592; Previous</button>
-    <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">Next &#8594;</button>
-    <button class="vso-btn vso-btn-start" id="vsoStart" style="display:none" onclick="vsoClose()">Start Activities &#8594;</button>
-  </div>
-  <div class="vso-dots" id="vsoDots"></div>
-</div>
-</div>
-<script>
-(function(){
-const VSO_ITEMS=[
-  {word: 'Integer', def: 'A whole number: positive, negative, or zero.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="3" marker-end="url(#arrNL)"/>   <defs><marker id="arrNL" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <circle cx="150" cy="150" r="8" fill="#059669"/>   <text x="150" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="90" cy="150" r="8" fill="#DC2626"/>   <text x="90" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-2</text>   <circle cx="60" cy="150" r="8" fill="#DC2626"/>   <text x="60" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-3</text>   <circle cx="210" cy="150" r="8" fill="#3B82F6"/>   <text x="210" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">2</text>   <circle cx="240" cy="150" r="8" fill="#3B82F6"/>   <text x="240" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">3</text>   <text x="150" y="100" text-anchor="middle" font-size="22" font-weight="800" fill="#1E293B" font-family="sans-serif">...-3, -2, -1, 0, 1, 2, 3...</text> </svg>'},
-  {word: 'Rational Number', def: 'A number that can be written as a fraction.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="40" y="70" width="220" height="160" rx="18" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="90" y="120" text-anchor="middle" font-size="30" font-weight="800" fill="#1E40AF" font-family="sans-serif">3/4</text>   <text x="200" y="120" text-anchor="middle" font-size="30" font-weight="800" fill="#DC2626" font-family="sans-serif">-2</text>   <text x="90" y="180" text-anchor="middle" font-size="30" font-weight="800" fill="#059669" font-family="sans-serif">0.5</text>   <text x="200" y="180" text-anchor="middle" font-size="30" font-weight="800" fill="#F59E0B" font-family="sans-serif">7</text>   <text x="150" y="260" text-anchor="middle" font-size="16" font-weight="700" fill="#6366F1" font-family="sans-serif">can be written as a/b</text> </svg>'},
-  {word: 'Absolute Value', def: 'The distance from zero on a number line.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="180" x2="270" y2="180" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="180" r="6" fill="#059669"/>   <text x="150" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="80" cy="180" r="10" fill="#DC2626"/>   <text x="80" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-5</text>   <path d="M80,165 L150,165" stroke="#6366F1" stroke-width="4"/>   <text x="115" y="155" text-anchor="middle" font-size="18" font-weight="800" fill="#6366F1" font-family="sans-serif">5 units</text>   <text x="150" y="90" text-anchor="middle" font-size="36" font-weight="900" fill="#6366F1" font-family="sans-serif">|-5| = 5</text> </svg>'},
-  {word: 'Opposite', def: 'A number the same distance from zero on the other side.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="160" x2="270" y2="160" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="160" r="6" fill="#059669"/>   <text x="150" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="90" cy="160" r="10" fill="#DC2626"/>   <text x="90" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-3</text>   <circle cx="210" cy="160" r="10" fill="#3B82F6"/>   <text x="210" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#3B82F6" font-family="sans-serif">+3</text>   <path d="M90,140 Q150,90 210,140" stroke="#F59E0B" stroke-width="3" fill="none" stroke-dasharray="6,4"/>   <text x="150" y="100" text-anchor="middle" font-size="18" font-weight="700" fill="#F59E0B" font-family="sans-serif">same distance</text> </svg>'},
-  {word: 'Coordinate Plane', def: 'A flat surface made by two number lines crossing at the origin.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="3" marker-end="url(#arrCP)"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#1E293B" stroke-width="3" marker-end="url(#arrCP)"/>   <defs><marker id="arrCP" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <text x="260" y="170" font-size="16" font-weight="800" fill="#1E293B" font-family="sans-serif">x</text>   <text x="160" y="42" font-size="16" font-weight="800" fill="#1E293B" font-family="sans-serif">y</text>   <circle cx="210" cy="90" r="8" fill="#DC2626"/>   <text x="225" y="88" font-size="14" font-weight="700" fill="#DC2626" font-family="sans-serif">(2,3)</text> </svg>'},
-  {word: 'Ordered Pair', def: 'Two numbers (x, y) giving a position on the coordinate plane.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <text x="150" y="100" text-anchor="middle" font-size="52" font-weight="900" fill="#1E293B" font-family="sans-serif">( 3 , 5 )</text>   <path d="M105,110 L105,150" stroke="#DC2626" stroke-width="3"/>   <text x="105" y="175" text-anchor="middle" font-size="18" font-weight="700" fill="#DC2626" font-family="sans-serif">x</text>   <path d="M195,110 L195,150" stroke="#3B82F6" stroke-width="3"/>   <text x="195" y="175" text-anchor="middle" font-size="18" font-weight="700" fill="#3B82F6" font-family="sans-serif">y</text>   <text x="150" y="220" text-anchor="middle" font-size="16" font-weight="700" fill="#6B7280" font-family="sans-serif">x comes first, y comes second</text> </svg>'},
-  {word: 'Origin', def: 'The point (0, 0) where both axes meet.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="2"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#1E293B" stroke-width="2"/>   <circle cx="150" cy="150" r="14" fill="#DC2626"/>   <text x="150" y="156" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" font-family="sans-serif">O</text>   <text x="150" y="200" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">(0, 0)</text> </svg>'},
-  {word: 'Quadrant', def: 'One of the four sections of the coordinate plane.', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="2"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#1E293B" stroke-width="2"/>   <text x="200" y="100" text-anchor="middle" font-size="20" font-weight="800" fill="#3B82F6" font-family="sans-serif">I</text>   <text x="100" y="100" text-anchor="middle" font-size="20" font-weight="800" fill="#10B981" font-family="sans-serif">II</text>   <text x="100" y="200" text-anchor="middle" font-size="20" font-weight="800" fill="#F59E0B" font-family="sans-serif">III</text>   <text x="200" y="200" text-anchor="middle" font-size="20" font-weight="800" fill="#DC2626" font-family="sans-serif">IV</text> </svg>'}
-];
-let vsoIdx=0,vsoSeen=new Set();
-function vsoRender(){
-  const it=VSO_ITEMS[vsoIdx];
-  document.getElementById('vsoProgress').textContent='Word '+(vsoIdx+1)+' of '+VSO_ITEMS.length;
-  document.getElementById('vsoWord').textContent=it.word;
-  document.getElementById('vsoDef').textContent=it.def;
-  document.getElementById('vsoSvg').innerHTML=it.svg;
-  vsoSeen.add(vsoIdx);
-  document.getElementById('vsoPrev').disabled=vsoIdx===0;
-  const isLast=vsoIdx===VSO_ITEMS.length-1;
-  document.getElementById('vsoNext').style.display=isLast?'none':'inline-block';
-  document.getElementById('vsoStart').style.display=(vsoSeen.size===VSO_ITEMS.length)?'inline-block':'none';
-  const dots=document.getElementById('vsoDots');
-  dots.innerHTML='';
-  VSO_ITEMS.forEach(function(_,i){
-    const d=document.createElement('span');
-    d.className='vso-dot'+(i===vsoIdx?' active':'')+(vsoSeen.has(i)?' seen':'');
-    d.onclick=function(){vsoIdx=i;vsoRender();};
-    dots.appendChild(d);
-  });
-}
-window.vsoGo=function(dir){vsoIdx=Math.max(0,Math.min(VSO_ITEMS.length-1,vsoIdx+dir));vsoRender();};
-window.vsoClose=function(){
-  const el=document.getElementById('vocabSlideshowOverlay');
-  el.classList.add('vso-hidden');
-  setTimeout(function(){el.remove();},600);
-};
-vsoRender();
-})();
-</script>
-<!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
-
+    <!-- ══ VOCAB INTRO SLIDESHOW ══ -->
+    <style>
+      #vocabSlideshowOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Nunito", Arial, Helvetica, sans-serif;
+        transition: opacity 0.5s;
+      }
+      #vocabSlideshowOverlay.vso-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .vso-card {
+        background: #fff;
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 680px;
+        width: 92%;
+        padding: 40px 36px 32px;
+        text-align: center;
+        animation: vsoIn 0.4s ease-out;
+      }
+      @keyframes vsoIn {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      .vso-progress {
+        font-size: 14px;
+        font-weight: 700;
+        color: #8b5cf6;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+      }
+      .vso-word {
+        font-size: clamp(42px, 8vw, 68px);
+        font-weight: 900;
+        color: #1e293b;
+        margin: 10px 0 8px;
+        line-height: 1.1;
+      }
+      .vso-def {
+        font-size: clamp(17px, 3vw, 22px);
+        color: #475569;
+        font-weight: 600;
+        line-height: 1.5;
+        margin-bottom: 18px;
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .vso-svg-wrap {
+        margin: 0 auto 20px;
+        max-width: 300px;
+      }
+      .vso-svg-wrap svg {
+        width: 100%;
+        height: auto;
+        border-radius: 16px;
+      }
+      .vso-nav {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .vso-btn {
+        padding: 12px 28px;
+        border: none;
+        border-radius: 50px;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #fff;
+      }
+      .vso-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+      }
+      .vso-btn-prev {
+        background: #94a3b8;
+      }
+      .vso-btn-next {
+        background: #6366f1;
+      }
+      .vso-btn-start {
+        background: #10b981;
+        font-size: 18px;
+        padding: 14px 36px;
+      }
+      .vso-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+        transform: none;
+      }
+      .vso-dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .vso-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        transition: all 0.3s;
+      }
+      .vso-dot.active {
+        background: #6366f1;
+        transform: scale(1.25);
+      }
+      .vso-dot.seen {
+        background: #a5b4fc;
+      }
+    </style>
+    <div id="vocabSlideshowOverlay">
+      <div class="vso-card">
+        <div class="vso-progress" id="vsoProgress">Word 1 of 8</div>
+        <div class="vso-svg-wrap" id="vsoSvg"></div>
+        <div class="vso-word" id="vsoWord"></div>
+        <div class="vso-def" id="vsoDef"></div>
+        <div class="vso-nav">
+          <button class="vso-btn vso-btn-prev" id="vsoPrev" onclick="vsoGo(-1)">
+            &#8592; Previous
+          </button>
+          <button class="vso-btn vso-btn-next" id="vsoNext" onclick="vsoGo(1)">
+            Next &#8594;
+          </button>
+          <button
+            class="vso-btn vso-btn-start"
+            id="vsoStart"
+            style="display: none"
+            onclick="vsoClose()"
+          >
+            Start Activities &#8594;
+          </button>
+        </div>
+        <div class="vso-dots" id="vsoDots"></div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const VSO_ITEMS = [
+          {
+            word: "Integer",
+            def: "A whole number: positive, negative, or zero.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="3" marker-end="url(#arrNL)"/>   <defs><marker id="arrNL" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <circle cx="150" cy="150" r="8" fill="#059669"/>   <text x="150" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="90" cy="150" r="8" fill="#DC2626"/>   <text x="90" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-2</text>   <circle cx="60" cy="150" r="8" fill="#DC2626"/>   <text x="60" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">-3</text>   <circle cx="210" cy="150" r="8" fill="#3B82F6"/>   <text x="210" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">2</text>   <circle cx="240" cy="150" r="8" fill="#3B82F6"/>   <text x="240" y="180" text-anchor="middle" font-size="18" font-weight="800" fill="#3B82F6" font-family="sans-serif">3</text>   <text x="150" y="100" text-anchor="middle" font-size="22" font-weight="800" fill="#1E293B" font-family="sans-serif">...-3, -2, -1, 0, 1, 2, 3...</text> </svg>',
+          },
+          {
+            word: "Rational Number",
+            def: "A number that can be written as a fraction.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <rect x="40" y="70" width="220" height="160" rx="18" fill="#EEF2FF" stroke="#6366F1" stroke-width="3"/>   <text x="90" y="120" text-anchor="middle" font-size="30" font-weight="800" fill="#1E40AF" font-family="sans-serif">3/4</text>   <text x="200" y="120" text-anchor="middle" font-size="30" font-weight="800" fill="#DC2626" font-family="sans-serif">-2</text>   <text x="90" y="180" text-anchor="middle" font-size="30" font-weight="800" fill="#059669" font-family="sans-serif">0.5</text>   <text x="200" y="180" text-anchor="middle" font-size="30" font-weight="800" fill="#F59E0B" font-family="sans-serif">7</text>   <text x="150" y="260" text-anchor="middle" font-size="16" font-weight="700" fill="#6366F1" font-family="sans-serif">can be written as a/b</text> </svg>',
+          },
+          {
+            word: "Absolute Value",
+            def: "The distance from zero on a number line.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="180" x2="270" y2="180" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="180" r="6" fill="#059669"/>   <text x="150" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="80" cy="180" r="10" fill="#DC2626"/>   <text x="80" y="210" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-5</text>   <path d="M80,165 L150,165" stroke="#6366F1" stroke-width="4"/>   <text x="115" y="155" text-anchor="middle" font-size="18" font-weight="800" fill="#6366F1" font-family="sans-serif">5 units</text>   <text x="150" y="90" text-anchor="middle" font-size="36" font-weight="900" fill="#6366F1" font-family="sans-serif">|-5| = 5</text> </svg>',
+          },
+          {
+            word: "Opposite",
+            def: "A number the same distance from zero on the other side.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="160" x2="270" y2="160" stroke="#1E293B" stroke-width="3"/>   <circle cx="150" cy="160" r="6" fill="#059669"/>   <text x="150" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#059669" font-family="sans-serif">0</text>   <circle cx="90" cy="160" r="10" fill="#DC2626"/>   <text x="90" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#DC2626" font-family="sans-serif">-3</text>   <circle cx="210" cy="160" r="10" fill="#3B82F6"/>   <text x="210" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#3B82F6" font-family="sans-serif">+3</text>   <path d="M90,140 Q150,90 210,140" stroke="#F59E0B" stroke-width="3" fill="none" stroke-dasharray="6,4"/>   <text x="150" y="100" text-anchor="middle" font-size="18" font-weight="700" fill="#F59E0B" font-family="sans-serif">same distance</text> </svg>',
+          },
+          {
+            word: "Coordinate Plane",
+            def: "A flat surface made by two number lines crossing at the origin.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="3" marker-end="url(#arrCP)"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#1E293B" stroke-width="3" marker-end="url(#arrCP)"/>   <defs><marker id="arrCP" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1E293B"/></marker></defs>   <text x="260" y="170" font-size="16" font-weight="800" fill="#1E293B" font-family="sans-serif">x</text>   <text x="160" y="42" font-size="16" font-weight="800" fill="#1E293B" font-family="sans-serif">y</text>   <circle cx="210" cy="90" r="8" fill="#DC2626"/>   <text x="225" y="88" font-size="14" font-weight="700" fill="#DC2626" font-family="sans-serif">(2,3)</text> </svg>',
+          },
+          {
+            word: "Ordered Pair",
+            def: "Two numbers (x, y) giving a position on the coordinate plane.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <text x="150" y="100" text-anchor="middle" font-size="52" font-weight="900" fill="#1E293B" font-family="sans-serif">( 3 , 5 )</text>   <path d="M105,110 L105,150" stroke="#DC2626" stroke-width="3"/>   <text x="105" y="175" text-anchor="middle" font-size="18" font-weight="700" fill="#DC2626" font-family="sans-serif">x</text>   <path d="M195,110 L195,150" stroke="#3B82F6" stroke-width="3"/>   <text x="195" y="175" text-anchor="middle" font-size="18" font-weight="700" fill="#3B82F6" font-family="sans-serif">y</text>   <text x="150" y="220" text-anchor="middle" font-size="16" font-weight="700" fill="#6B7280" font-family="sans-serif">x comes first, y comes second</text> </svg>',
+          },
+          {
+            word: "Origin",
+            def: "The point (0, 0) where both axes meet.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="2"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#1E293B" stroke-width="2"/>   <circle cx="150" cy="150" r="14" fill="#DC2626"/>   <text x="150" y="156" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" font-family="sans-serif">O</text>   <text x="150" y="200" text-anchor="middle" font-size="18" font-weight="800" fill="#DC2626" font-family="sans-serif">(0, 0)</text> </svg>',
+          },
+          {
+            word: "Quadrant",
+            def: "One of the four sections of the coordinate plane.",
+            svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">   <line x1="30" y1="150" x2="270" y2="150" stroke="#1E293B" stroke-width="2"/>   <line x1="150" y1="270" x2="150" y2="30" stroke="#1E293B" stroke-width="2"/>   <text x="200" y="100" text-anchor="middle" font-size="20" font-weight="800" fill="#3B82F6" font-family="sans-serif">I</text>   <text x="100" y="100" text-anchor="middle" font-size="20" font-weight="800" fill="#10B981" font-family="sans-serif">II</text>   <text x="100" y="200" text-anchor="middle" font-size="20" font-weight="800" fill="#F59E0B" font-family="sans-serif">III</text>   <text x="200" y="200" text-anchor="middle" font-size="20" font-weight="800" fill="#DC2626" font-family="sans-serif">IV</text> </svg>',
+          },
+        ];
+        let vsoIdx = 0,
+          vsoSeen = new Set();
+        function vsoRender() {
+          const it = VSO_ITEMS[vsoIdx];
+          document.getElementById("vsoProgress").textContent =
+            "Word " + (vsoIdx + 1) + " of " + VSO_ITEMS.length;
+          document.getElementById("vsoWord").textContent = it.word;
+          document.getElementById("vsoDef").textContent = it.def;
+          document.getElementById("vsoSvg").innerHTML = it.svg;
+          vsoSeen.add(vsoIdx);
+          document.getElementById("vsoPrev").disabled = vsoIdx === 0;
+          const isLast = vsoIdx === VSO_ITEMS.length - 1;
+          document.getElementById("vsoNext").style.display = isLast
+            ? "none"
+            : "inline-block";
+          document.getElementById("vsoStart").style.display =
+            vsoSeen.size === VSO_ITEMS.length ? "inline-block" : "none";
+          const dots = document.getElementById("vsoDots");
+          dots.innerHTML = "";
+          VSO_ITEMS.forEach(function (_, i) {
+            const d = document.createElement("span");
+            d.className =
+              "vso-dot" +
+              (i === vsoIdx ? " active" : "") +
+              (vsoSeen.has(i) ? " seen" : "");
+            d.onclick = function () {
+              vsoIdx = i;
+              vsoRender();
+            };
+            dots.appendChild(d);
+          });
+        }
+        window.vsoGo = function (dir) {
+          vsoIdx = Math.max(0, Math.min(VSO_ITEMS.length - 1, vsoIdx + dir));
+          vsoRender();
+        };
+        window.vsoClose = function () {
+          const el = document.getElementById("vocabSlideshowOverlay");
+          el.classList.add("vso-hidden");
+          setTimeout(function () {
+            el.remove();
+          }, 600);
+        };
+        vsoRender();
+      })();
+    </script>
+    <!-- ══ END VOCAB INTRO SLIDESHOW ══ -->
 
     <main class="page-shell">
       <nav class="breadcrumb">
@@ -93,11 +259,33 @@ vsoRender();
         ><span>Unit 7</span>
       </nav>
 
-      <div class="notice" style="border-color:#EAD0BF;background:var(--clay-tint,#F7EADF);margin:16px 0">
+      <div
+        class="notice"
+        style="
+          border-color: #ead0bf;
+          background: var(--clay-tint, #f7eadf);
+          margin: 16px 0;
+        "
+      >
         <strong>📚 Behind grade level?</strong> Start with
-        <a href="/math/catch-up/" style="font-weight:800;color:#0e8a7d">Catch-Up &amp; Bridge</a>
-        to rebuild the foundations this unit needs — most relevant: <a href="/math/remediation/unit-r1/" style="font-weight:700;color:#0e8a7d;text-decoration:none">Whole Numbers &amp; Operations</a> · <a href="/math/remediation/unit-r5/" style="font-weight:700;color:#0e8a7d;text-decoration:none">Pre-Algebra &amp; Geometry Readiness</a>.
-        For a quick per-lesson warm-up, use <a href="/math/get-ready/" style="font-weight:800;color:#0e8a7d">Get Ready</a>.
+        <a href="/math/catch-up/" style="font-weight: 800; color: #0e8a7d"
+          >Catch-Up &amp; Bridge</a
+        >
+        to rebuild the foundations this unit needs — most relevant:
+        <a
+          href="/math/remediation/unit-r1/"
+          style="font-weight: 700; color: #0e8a7d; text-decoration: none"
+          >Whole Numbers &amp; Operations</a
+        >
+        ·
+        <a
+          href="/math/remediation/unit-r5/"
+          style="font-weight: 700; color: #0e8a7d; text-decoration: none"
+          >Pre-Algebra &amp; Geometry Readiness</a
+        >. For a quick per-lesson warm-up, use
+        <a href="/math/get-ready/" style="font-weight: 800; color: #0e8a7d"
+          >Get Ready</a
+        >.
       </div>
 
       <section class="hero compact-hero">
@@ -110,6 +298,36 @@ vsoRender();
       </section>
 
       <div class="folder-index">
+        <div class="folder-index-group">
+          <h3>📚 Get Ready First — Readiness Pre-Lessons</h3>
+          <p>
+            Behind on the basics? Take a 10-minute readiness check before each
+            lesson — it finds gaps and gives prerequisite practice at your
+            level.
+          </p>
+          <div class="folder-links">
+            <a href="/lessons/7-1/readiness/">Get Ready: 7.1 Write Equations</a>
+            <a href="/lessons/7-2/readiness/"
+              >Get Ready: 7.2 Solve One-Step Addition and Subtraction
+              Equations</a
+            >
+            <a href="/lessons/7-3/readiness/"
+              >Get Ready: 7.3 Solve Multiplication and Division Equations</a
+            >
+            <a href="/lessons/7-4/readiness/"
+              >Get Ready: 7.4 Write Inequalities</a
+            >
+            <a href="/lessons/7-5/readiness/"
+              >Get Ready: 7.5 Graph Inequalities</a
+            >
+            <a href="/lessons/7-6/readiness/"
+              >Get Ready: 7.6 Solve and Graph Inequalities</a
+            >
+            <a href="/lessons/7-7/readiness/"
+              >Get Ready: 7.7 Equations and Inequalities Problem Solving</a
+            >
+          </div>
+        </div>
         <div class="folder-index-group">
           <h3>Lesson 7.1–7.2 — Understand Integers &amp; Rational Numbers</h3>
           <p>
@@ -178,13 +396,21 @@ vsoRender();
         <div class="section-heading">
           <p class="eyebrow">Culminating Projects</p>
           <h2 id="unit-7-projects-heading">Put It All Together</h2>
-          <p>Two creative, interactive end-of-unit projects that bring every Unit 7 integer and coordinate-plane skill into one real-world challenge. Pick a version, build your solution, and print your work.</p>
+          <p>
+            Two creative, interactive end-of-unit projects that bring every Unit
+            7 integer and coordinate-plane skill into one real-world challenge.
+            Pick a version, build your solution, and print your work.
+          </p>
         </div>
         <div class="activity-grid">
           <a class="activity-card" href="/math/unit-7/projects/">
             <span class="card-kicker">Projects · 2 Versions</span>
             <h3>Unit 7 Culminating Projects</h3>
-            <p>Version A (Theme Park Map Designer) and Version B (Submarine Mission Control). Self-guided, with live calculators, hints, a rubric, and a print-ready deliverable.</p>
+            <p>
+              Version A (Theme Park Map Designer) and Version B (Submarine
+              Mission Control). Self-guided, with live calculators, hints, a
+              rubric, and a print-ready deliverable.
+            </p>
             <span class="button-link">Open Culminating Projects</span>
           </a>
         </div>
@@ -196,6 +422,6 @@ vsoRender();
       </footer>
     </main>
     <script src="/assets/app.js" defer></script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
   </body>
 </html>
