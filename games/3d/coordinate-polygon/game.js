@@ -237,8 +237,13 @@ export default {
 
     const grid = createGrid(ctx, { n: N, cell: 1 });
 
-    const coordToVertex = (x, y) => ({ i: x + HALF, j: y + HALF });
-    const vertexToCoord = (i, j) => ({ x: i - HALF, y: j - HALF });
+    // +y must read "up and away" from the camera (standard coordinate-plane
+    // orientation). The grid's +Z runs toward the camera, so invert y→j: larger
+    // y maps to a smaller j (further into the screen). All consumers (vertices,
+    // edges, fill, labels, pointer picking) route through these two helpers, so
+    // the flip stays globally consistent.
+    const coordToVertex = (x, y) => ({ i: x + HALF, j: HALF - y });
+    const vertexToCoord = (i, j) => ({ x: i - HALF, y: HALF - j });
     const coordToWorld = (x, y) => {
       const { i, j } = coordToVertex(x, y);
       return grid.vertexWorld(i, j);
