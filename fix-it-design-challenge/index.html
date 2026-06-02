@@ -428,6 +428,10 @@
         padding: 20px;
         position: sticky;
         top: 150px;
+        /* Cap to the viewport so a tall left card can scroll internally
+           instead of having its bottom pinned below the fold. */
+        max-height: calc(100vh - 170px);
+        overflow-y: auto;
       }
       .scenario-label {
         font-size: 11px;
@@ -936,6 +940,8 @@
         padding: 20px;
         position: sticky;
         top: 150px;
+        max-height: calc(100vh - 170px);
+        overflow-y: auto;
       }
       .side-note p {
         color: var(--muted);
@@ -3867,7 +3873,11 @@ Students still read the original text, identify the central claim, select their 
           badge.className = "gp-badge empty";
           badge.dataset.group = groupId;
           badge.textContent = "Not started";
-          link.parentNode.insertBefore(badge, link);
+          // Place the badge inside the card's content column so it does not
+          // consume a grid cell and collapse the text column (50px 1fr layout).
+          const content = card.querySelector(":scope > div");
+          if (content) content.appendChild(badge);
+          else link.parentNode.insertBefore(badge, link);
         });
       }
 
