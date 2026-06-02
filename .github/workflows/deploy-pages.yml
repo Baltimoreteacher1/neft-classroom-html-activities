@@ -1,9 +1,10 @@
 name: Deploy to Cloudflare Pages
-# Builds dist on GitHub runners and deploys to Cloudflare Pages via wrangler.
-# Requires two repo secrets: CLOUDFLARE_API_TOKEN (Pages:Edit) and CLOUDFLARE_ACCOUNT_ID.
+# Manual/CI deploy: builds dist and deploys to Cloudflare Pages via wrangler.
+# Run on demand from the Actions tab ("Run workflow") or: gh workflow run deploy-pages.yml
+# Needs two repo secrets: CLOUDFLARE_API_TOKEN (Pages:Edit) and CLOUDFLARE_ACCOUNT_ID.
+# (Day to day, deploys are done locally with `wrangler pages deploy dist` using the
+#  maintainer's wrangler login, so this stays manual to avoid failing on every push.)
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
