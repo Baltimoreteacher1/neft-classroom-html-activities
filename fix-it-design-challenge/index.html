@@ -553,13 +553,53 @@
       .step-head h3 {
         margin: 0;
         color: var(--navy);
-        font-size: 19px;
+        font-size: 21px;
       }
       .hint {
         margin: 0 0 10px;
         color: var(--muted);
         font-weight: 700;
-        line-height: 1.35;
+        font-size: 16px;
+        line-height: 1.4;
+      }
+      /* Larger, readable model + group step text */
+      .steps textarea,
+      .model-workspace textarea {
+        font-size: 15.5px;
+        line-height: 1.5;
+      }
+      .scenario-card p,
+      .model-scenario p {
+        font-size: 15.5px;
+        line-height: 1.5;
+      }
+      /* Plain "what's happening" explanation under each step head */
+      .step-why {
+        margin: 0 0 10px;
+        padding: 10px 13px;
+        background: var(--sage);
+        border: 1px solid rgba(36, 124, 127, 0.16);
+        border-radius: 10px;
+        color: #243645;
+        font-size: 15.5px;
+        line-height: 1.5;
+      }
+      .step-why strong {
+        color: var(--navy);
+      }
+      /* Clickable green group number */
+      a.group-num {
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      a.group-num:hover,
+      a.group-num:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(23, 32, 42, 0.22);
+        outline: none;
       }
       textarea,
       select,
@@ -1639,8 +1679,10 @@
           <div>
             <h3>Walk through the model</h3>
             <p>
-              Below is a completed example using the exact same steps you will
-              do in your group. Read through it so you know what to expect.
+              Here is one example, already finished, that uses the exact same
+              six steps your group will do. Read each step and the short
+              <strong>“What's happening”</strong> note so you know what to do
+              when it is your turn.
             </p>
 
             <div class="workspace-grid model-workspace">
@@ -1901,7 +1943,13 @@ Students still read the original text, identify the central claim, select their 
         </div>
         <div class="group-menu">
           <article class="group-card">
-            <div class="group-num">1</div>
+            <a
+              class="group-num"
+              href="#group-1"
+              data-open-page="group-1"
+              aria-label="Open Group 1 page"
+              >1</a
+            >
             <div>
               <p class="eyebrow">Group 1</p>
               <h3>Math Reasoning</h3>
@@ -1913,7 +1961,13 @@ Students still read the original text, identify the central claim, select their 
           </article>
 
           <article class="group-card">
-            <div class="group-num">2</div>
+            <a
+              class="group-num"
+              href="#group-2"
+              data-open-page="group-2"
+              aria-label="Open Group 2 page"
+              >2</a
+            >
             <div>
               <p class="eyebrow">Group 2</p>
               <h3>ELA Evidence</h3>
@@ -1925,7 +1979,13 @@ Students still read the original text, identify the central claim, select their 
           </article>
 
           <article class="group-card">
-            <div class="group-num">3</div>
+            <a
+              class="group-num"
+              href="#group-3"
+              data-open-page="group-3"
+              aria-label="Open Group 3 page"
+              >3</a
+            >
             <div>
               <p class="eyebrow">Group 3</p>
               <h3>Science Model</h3>
@@ -1937,7 +1997,13 @@ Students still read the original text, identify the central claim, select their 
           </article>
 
           <article class="group-card">
-            <div class="group-num">4</div>
+            <a
+              class="group-num"
+              href="#group-4"
+              data-open-page="group-4"
+              aria-label="Open Group 4 page"
+              >4</a
+            >
             <div>
               <p class="eyebrow">Group 4</p>
               <h3>Social Studies Claim</h3>
@@ -1949,7 +2015,13 @@ Students still read the original text, identify the central claim, select their 
           </article>
 
           <article class="group-card">
-            <div class="group-num">5</div>
+            <a
+              class="group-num"
+              href="#group-5"
+              data-open-page="group-5"
+              aria-label="Open Group 5 page"
+              >5</a
+            >
             <div>
               <p class="eyebrow">Group 5</p>
               <h3>MLL Language Access</h3>
@@ -1961,7 +2033,13 @@ Students still read the original text, identify the central claim, select their 
           </article>
 
           <article class="group-card">
-            <div class="group-num">6</div>
+            <a
+              class="group-num"
+              href="#group-6"
+              data-open-page="group-6"
+              aria-label="Open Group 6 page"
+              >6</a
+            >
             <div>
               <p class="eyebrow">Group 6</p>
               <h3>Executive Function</h3>
@@ -4230,5 +4308,44 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       openPage(location.hash.replace("#", "") || "launch", false);
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script>
+      // Add a plain "What's happening" explanation under every step head
+      // (the model walkthrough and all six group pages share these step titles).
+      (function () {
+        const WHY = {
+          "Name the access barrier":
+            "We name the one thing making the task hard to reach — like dense text or tough vocabulary — without changing what the task asks students to do.",
+          "Protect the student thinking":
+            "We list the thinking students must still do themselves, so any support we add never does that work for them.",
+          "Draft the fix before Gemini":
+            "We write our own first version of the support before asking AI, so the idea starts with the teacher — not the tool.",
+          "Use Gemini as a coach":
+            "We ask Gemini to critique and improve our draft — strengths, risks, one revision — not to do the student task or hand over the answer.",
+          "Final after-Gemini version":
+            "We keep only the feedback that protects the learning target and student thinking, then finalize the support.",
+          "Prove rigor stayed intact":
+            "We check our work — rate it on OSAMR and point to evidence that students are still doing the real thinking.",
+        };
+        function addExplanations() {
+          document.querySelectorAll(".step-head").forEach((head) => {
+            const h = head.querySelector("h3");
+            if (!h) return;
+            const why = WHY[h.textContent.trim()];
+            if (!why) return;
+            const li = head.closest("li");
+            if (!li || li.querySelector(".step-why")) return;
+            const p = document.createElement("p");
+            p.className = "step-why";
+            p.innerHTML = "<strong>What's happening:</strong> " + why;
+            head.insertAdjacentElement("afterend", p);
+          });
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", addExplanations);
+        } else {
+          addExplanations();
+        }
+      })();
+    </script>
   </body>
 </html>
