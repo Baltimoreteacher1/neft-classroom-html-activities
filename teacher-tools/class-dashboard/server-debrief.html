@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Class Dashboard · Server Results (live)</title>
+    <style>
+      :root {
+        --bg: #0a1228;
+        --ink: #f4f7ff;
+        --muted: #aebbdd;
+        --line: #2a4378;
+        --accent: #3da5ff;
+        --ok: #39d98a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      h2 {
+        font-size: 1.05rem;
+        color: var(--accent);
+        margin-top: 24px;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: end;
+        margin: 14px 0;
+      }
+      label {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-bottom: 3px;
+      }
+      input {
+        background: #0e1c40;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 8px 10px;
+        min-height: 40px;
+      }
+      button {
+        min-height: 44px;
+        background: var(--accent);
+        color: #02112a;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 7px 9px;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        color: var(--muted);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+      }
+      pre.debrief {
+        background: #0e1c40;
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--ok);
+        border-radius: 10px;
+        padding: 14px;
+        white-space: pre-wrap;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      .err {
+        color: #ffb3b3;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>
+        Class Dashboard · Server Results
+        <span class="note">(live, via Worker)</span>
+      </h1>
+      <p class="note">
+        Reads the results backend (<code>GET /results</code> and
+        <code>GET /debrief</code>). Falls back to the offline localStorage view
+        in <a href="./index.html">the main dashboard</a> when there's no server.
+      </p>
+
+      <div class="row">
+        <div>
+          <label>Worker endpoint</label
+          ><input id="endpoint" value="http://localhost:8787" size="34" />
+        </div>
+        <div>
+          <label>teacher_id</label><input id="teacher" value="neft" size="8" />
+        </div>
+        <div>
+          <label>class_code</label
+          ><input id="class" value="P3-MATH" size="10" />
+        </div>
+        <div>
+          <label>standard (optional)</label
+          ><input id="standard" value="6.NS.1" size="8" />
+        </div>
+        <div>
+          <label>read key</label
+          ><input id="readkey" value="READKEY" size="12" />
+        </div>
+        <button id="load">Load</button>
+      </div>
+      <p id="status" class="note"></p>
+
+      <h2>LP Debrief (paste-ready)</h2>
+      <pre class="debrief" id="debrief">—</pre>
+
+      <h2>Raw results</h2>
+      <div id="table"></div>
+    </main>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      function qs() {
+        const p = new URLSearchParams({
+          teacher_id: $("teacher").value.trim(),
+          class_code: $("class").value.trim(),
+        });
+        if ($("standard").value.trim())
+          p.set("standard", $("standard").value.trim());
+        return p.toString();
+      }
+      async function load() {
+        const base = $("endpoint").value.trim().replace(/\/$/, "");
+        const headers = { "x-read-key": $("readkey").value.trim() };
+        $("status").textContent = "Loading…";
+        $("status").className = "note";
+        try {
+          // GET /debrief — the exact LP-format text block.
+          const dRes = await fetch(base + "/debrief?" + qs(), { headers });
+          $("debrief").textContent = dRes.ok
+            ? await dRes.text()
+            : "Error " + dRes.status + ": " + (await dRes.text());
+
+          // GET /results — raw rows.
+          const rRes = await fetch(base + "/results?" + qs(), { headers });
+          if (!rRes.ok)
+            throw new Error(
+              "results " + rRes.status + ": " + (await rRes.text()),
+            );
+          const data = await rRes.json();
+          renderTable(data.results || []);
+          $("status").textContent = data.count + " result(s) loaded.";
+        } catch (e) {
+          $("status").className = "err";
+          $("status").textContent =
+            "Failed: " +
+            e.message +
+            " — is the Worker running? (npx wrangler dev)";
+        }
+      }
+      function renderTable(rows) {
+        if (!rows.length) {
+          $("table").innerHTML = '<p class="note">No results.</p>';
+          return;
+        }
+        const cols = [
+          "attempt_timestamp",
+          "student_ref",
+          "activity_slug",
+          "standard",
+          "score",
+          "total",
+          "percent",
+          "misconception_tags",
+        ];
+        let h =
+          "<table><thead><tr>" +
+          cols.map((c) => "<th>" + c + "</th>").join("") +
+          "</tr></thead><tbody>";
+        for (const r of rows) {
+          h +=
+            "<tr>" +
+            cols
+              .map(
+                (c) =>
+                  "<td>" +
+                  (Array.isArray(r[c]) ? r[c].join(", ") : (r[c] ?? "")) +
+                  "</td>",
+              )
+              .join("") +
+            "</tr>";
+        }
+        $("table").innerHTML = h + "</tbody></table>";
+      }
+      $("load").addEventListener("click", load);
+    </script>
+  </body>
+</html>

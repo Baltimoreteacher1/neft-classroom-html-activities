@@ -1,0 +1,14 @@
+# Neft results backend — Worker config.
+# DEV/PREVIEW ONLY in this file. Joel creates production separately (see README).
+name = "neft-results-dev"
+main = "src/worker.js"
+compatibility_date = "2026-05-25"
+
+# Create the dev database first:
+#   cd results-worker && npx wrangler d1 create neft-results-dev
+# Paste the returned database_id below. NEVER put a production id here.
+[[d1_databases]]
+binding = "DB"
+database_name = "neft-results-dev"
+database_id = "REPLACE_WITH_DEV_DB_ID"
+migrations_dir = "migrations"
