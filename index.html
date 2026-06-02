@@ -4,764 +4,3818 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-    <title>Neft Teacher — Grade 6 Classroom &amp; Family Hub</title>
-    <meta
-      name="description"
-      content="Neft Teacher home — find lessons, games, practice, teacher tools, and family resources for Grade 6. Start with the Full Directory."
+    <title>Neft Hub — Classroom Activities</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
     />
-    <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      /* Minimal, token-based additions only — structure comes from shared.css */
-      .skip-link {
-        position: absolute;
-        left: -9999px;
+      :root {
+        --navy: #12355b;
+        --teal: #1fa6a2;
+        --amber: #f2c15b;
+        --cream: #f7f4ec;
+        --ink: #21313f;
+        --line: #d7e2ed;
+        --coral: #d9795d;
+        --green: #0fa958;
+        --sidebar-w: 260px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", system-ui, sans-serif;
+        background: var(--cream);
+        color: var(--ink);
+      }
+
+      /* ── Layout ── */
+      .hub {
+        display: flex;
+        min-height: 100vh;
+      }
+      .sidebar {
+        width: var(--sidebar-w);
+        min-width: var(--sidebar-w);
+        background: var(--navy);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
         top: 0;
-        z-index: 100;
-        padding: 10px 16px;
-        background: var(--teal);
+        left: 0;
+        bottom: 0;
+        overflow-y: auto;
+        z-index: 10;
+      }
+      .content {
+        margin-left: var(--sidebar-w);
+        flex: 1;
+        padding: 32px 40px;
+        max-width: 920px;
+      }
+
+      /* ── Sidebar branding ── */
+      .sb-brand {
+        padding: 24px 20px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .sb-brand h1 {
+        font-size: 1.5rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+      }
+      .sb-brand p {
+        font-size: 0.72rem;
+        opacity: 0.6;
+        margin-top: 2px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      /* ── Sidebar menu filter ── */
+      .sb-nav-search {
+        padding: 8px 16px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .sb-nav-search input {
+        width: 100%;
+        min-height: 40px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.07);
         color: #fff;
-        border-radius: var(--radius);
+        font-size: 0.85rem;
+        box-sizing: border-box;
+      }
+      .sb-nav-search input::placeholder {
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .sb-nav-search input:focus-visible {
+        outline: 2px solid var(--teal, #2dd4bf);
+        outline-offset: 1px;
+      }
+      .sb-item.nav-filter-hide {
+        display: none;
+      }
+      .sb-group.nav-filter-hide {
+        display: none;
+      }
+
+      /* ── Sidebar groups ── */
+      .sb-group {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .sb-group-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 10px 20px;
+        font-size: 0.72rem;
         font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: rgba(255, 255, 255, 0.55);
+        cursor: pointer;
+        user-select: none;
       }
-      .skip-link:focus {
-        left: 12px;
-        top: 12px;
+      .sb-group-label:hover {
+        color: rgba(255, 255, 255, 0.85);
       }
-      .directory-cta {
+      .sb-group-label:focus-visible {
+        outline: 2px solid var(--teal, #2dd4bf);
+        outline-offset: -2px;
+        border-radius: 6px;
+      }
+      .sb-group-icon {
+        font-size: 1rem;
+        line-height: 1;
+      }
+      .sb-group-label .chevron {
+        margin-left: auto;
+        transition: transform 0.2s;
+        font-size: 0.6rem;
+        opacity: 0.7;
+      }
+      .sb-group.collapsed .chevron {
+        transform: rotate(-90deg);
+      }
+      .sb-group.collapsed .sb-items {
+        display: none;
+      }
+      .sb-items {
+        padding: 0 8px 8px;
+      }
+
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.75);
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+      .sb-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+      }
+      .sb-item.active {
+        background: var(--teal);
+        color: white;
+      }
+      .sb-item .sb-emoji {
+        font-size: 1rem;
+        width: 22px;
+        text-align: center;
+      }
+      .sb-item .sb-count {
+        margin-left: auto;
+        font-size: 0.68rem;
+        font-weight: 800;
+        background: rgba(255, 255, 255, 0.12);
+        padding: 2px 7px;
+        border-radius: 100px;
+      }
+      .sb-item.active .sb-count {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .sb-footer {
+        margin-top: auto;
+        padding: 16px 20px;
+        font-size: 0.65rem;
+        opacity: 0.35;
+        text-align: center;
+      }
+
+      /* ── Content header ── */
+      .content-header {
+        margin-bottom: 24px;
+      }
+      .content-header h2 {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+      .content-header p {
+        font-size: 0.88rem;
+        color: #5f6f80;
+        margin-top: 4px;
+      }
+
+      /* ── Content panels ── */
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+
+      /* ── Card grid ── */
+      .unit-group {
+        margin-bottom: 24px;
+      }
+      .unit-label {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--teal);
+        margin-bottom: 8px;
+        padding-left: 4px;
+      }
+      .cards {
+        display: grid;
+        gap: 8px;
+      }
+      .card {
+        display: grid;
+        grid-template-columns: 44px 1fr auto;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--ink);
+        transition: all 0.15s;
+      }
+      .card:hover {
+        border-color: var(--teal);
+        box-shadow: 0 4px 12px rgba(31, 166, 162, 0.1);
+        transform: translateY(-1px);
+      }
+      .card .icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.78rem;
+        color: white;
+        flex-shrink: 0;
+      }
+      .card .title {
+        font-weight: 700;
+        font-size: 0.92rem;
+      }
+      .card .meta {
+        font-size: 0.75rem;
+        color: #5f6f80;
+        margin-top: 1px;
+      }
+      .card .arrow {
+        font-size: 1.1rem;
+        color: var(--teal);
+        font-weight: 700;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .card:hover .arrow {
+        opacity: 1;
+      }
+
+      /* Unit colors */
+      .u1 {
+        background: #12355b;
+      }
+      .u2 {
+        background: #1fa6a2;
+      }
+      .u3 {
+        background: #d9795d;
+      }
+      .u4 {
+        background: #f2c15b;
+        color: var(--ink) !important;
+      }
+      .u5 {
+        background: #0fa958;
+      }
+      .u6 {
+        background: #2f80d1;
+      }
+      .u7 {
+        background: #7c3aed;
+      }
+      .u8 {
+        background: #ea580c;
+      }
+      .u9 {
+        background: #e11d48;
+      }
+      .u10 {
+        background: #059669;
+      }
+
+      /* Chapter grid for Blood on the River */
+      .chapter-grid {
         display: flex;
         flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 12px;
+      }
+      .ch-btn {
+        display: inline-flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 22px clamp(20px, 4vw, 32px);
-        background: rgba(255, 255, 255, 0.88);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--gold);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-      }
-      .directory-cta h2 {
-        font-size: 1.4rem;
-      }
-      .directory-cta p {
-        margin: 4px 0 0;
-        color: var(--muted);
-      }
-      .audience-eyebrow {
-        color: var(--coral);
-      }
-      .home-section {
-        margin-top: 38px;
-      }
-      .button-link.alt {
-        background: var(--gold);
-        border-color: var(--coral);
-      }
-      .footer-link {
-        color: var(--teal-dark);
-        font-weight: 800;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: var(--navy);
+        color: white;
+        font-weight: 700;
+        font-size: 0.82rem;
         text-decoration: none;
+        transition: all 0.15s;
+      }
+      .ch-btn:hover {
+        background: var(--teal);
+        transform: scale(1.08);
+      }
+
+      /* ── Mobile ── */
+      .mobile-toggle {
+        display: none;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+          transition: transform 0.25s;
+        }
+        /* Comfortable touch targets on phones (>=44px). */
+        .sb-item {
+          min-height: 44px;
+        }
+        .sb-group-label {
+          min-height: 48px;
+        }
+        .sb-nav-search input {
+          min-height: 44px;
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .content {
+          margin-left: 0;
+          padding: 16px;
+        }
+        .mobile-toggle {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 9;
+          background: var(--navy);
+          color: white;
+          padding: 12px 16px;
+          font-weight: 800;
+          font-size: 1rem;
+          border: none;
+          cursor: pointer;
+          font-family: inherit;
+        }
+        .mobile-toggle .hamburger {
+          font-size: 1.3rem;
+        }
+        .content {
+          padding-top: 56px;
+        }
+        .overlay {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.4);
+          z-index: 9;
+        }
+        .sidebar.open ~ .overlay {
+          display: block;
+        }
+      }
+
+      /* ── Accessibility: visible keyboard focus ── */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 2px;
+      }
+      .sb-item:focus-visible,
+      .sb-group-label:focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: -2px;
+        color: white;
+      }
+
+      /* ── Respect reduced-motion preference ── */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+        .card:hover {
+          transform: none;
+        }
+        .ch-btn:hover {
+          transform: none;
+        }
       }
     </style>
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to main content</a>
-    <div class="page-shell">
-      <header class="hero compact-hero">
-        <p class="eyebrow">Neft Teacher · Grade 6</p>
-        <h1>
-          One home for every Grade&nbsp;6 lesson, game, and family resource.
-        </h1>
-        <p class="hero-copy">
-          A single hub for students, teachers, and families — Reveal Math
-          lessons, interactive games, practice and test prep, reading and
-          language support, planning tools, and dashboards. Use the sections
-          below, or jump straight into the Full Directory to find anything.
-        </p>
-        <div class="button-row">
-          <a class="button-link" href="/directory/"
-            >Open the Full Directory →</a
-          >
-          <a class="button-link alt" href="/math/">Grade 6 Math Hub →</a>
+    <button
+      class="mobile-toggle"
+      id="mobile-toggle"
+      aria-label="Toggle navigation menu"
+      aria-controls="sidebar"
+      aria-expanded="false"
+    >
+      <span class="hamburger" aria-hidden="true">&#9776;</span> Neft Hub
+    </button>
+    <div class="hub">
+      <nav class="sidebar" id="sidebar" aria-label="Activity sections">
+        <div class="sb-brand">
+          <h1>Neft Hub</h1>
+          <p>208 Classroom Activities</p>
         </div>
-      </header>
 
-      <main id="main">
-        <!-- Find-anything entry -->
-        <section class="directory-cta" aria-label="Find anything">
-          <div>
-            <h2>Looking for something specific?</h2>
+        <div class="sb-nav-search">
+          <input
+            type="search"
+            id="sbNavSearch"
+            placeholder="Filter menu…"
+            aria-label="Filter navigation menu"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="sb-group">
+          <div class="sb-group-label">
+            <span class="sb-group-icon" aria-hidden="true">📐</span> Math
+            Curriculum
+            <span class="chevron" aria-hidden="true">&#9660;</span>
+          </div>
+          <div class="sb-items">
+            <a class="sb-item active" data-panel="lessons"
+              ><span class="sb-emoji" aria-hidden="true">📐</span> Lessons
+              <span class="sb-count">64</span></a
+            >
+            <a class="sb-item" data-panel="games"
+              ><span class="sb-emoji" aria-hidden="true">🎮</span> Games
+              <span class="sb-count">33</span></a
+            >
+            <a class="sb-item" data-panel="pre-test"
+              ><span class="sb-emoji" aria-hidden="true">📝</span> Pre-Test
+              Reviews <span class="sb-count">10</span></a
+            >
+            <a class="sb-item" data-panel="post-test"
+              ><span class="sb-emoji" aria-hidden="true">🚀</span> Post-Test
+              Activities <span class="sb-count">10</span></a
+            >
+            <a class="sb-item" data-panel="supplemental"
+              ><span class="sb-emoji" aria-hidden="true">📖</span> Supplemental
+              Resources <span class="sb-count">11</span></a
+            >
+          </div>
+        </div>
+
+        <div class="sb-group collapsed">
+          <div class="sb-group-label">
+            <span class="sb-group-icon" aria-hidden="true">📖</span> Reading &
+            Language
+            <span class="chevron" aria-hidden="true">&#9660;</span>
+          </div>
+          <div class="sb-items">
+            <a class="sb-item" data-panel="esol"
+              ><span class="sb-emoji" aria-hidden="true">🌍</span> Reading &
+              Language <span class="sb-count">10</span></a
+            >
+            <a class="sb-item" data-panel="blood-river"
+              ><span class="sb-emoji" aria-hidden="true">📚</span> Blood on the
+              River <span class="sb-count">27</span></a
+            >
+          </div>
+        </div>
+
+        <div class="sb-group collapsed">
+          <div class="sb-group-label">
+            <span class="sb-group-icon" aria-hidden="true">🌐</span> WIDA ACCESS
+            Prep
+            <span class="chevron" aria-hidden="true">&#9660;</span>
+          </div>
+          <div class="sb-items">
+            <a class="sb-item" data-panel="wida-speaking"
+              ><span class="sb-emoji" aria-hidden="true">🗣️</span> Speaking
+              <span class="sb-count">3</span></a
+            >
+            <a class="sb-item" data-panel="wida-listening"
+              ><span class="sb-emoji" aria-hidden="true">🎧</span> Listening
+              <span class="sb-count">3</span></a
+            >
+            <a class="sb-item" data-panel="wida-reading"
+              ><span class="sb-emoji" aria-hidden="true">📖</span> Reading
+              <span class="sb-count">3</span></a
+            >
+            <a class="sb-item" data-panel="wida-writing"
+              ><span class="sb-emoji" aria-hidden="true">✍️</span> Writing
+              <span class="sb-count">3</span></a
+            >
+          </div>
+        </div>
+
+        <div class="sb-group collapsed">
+          <div class="sb-group-label">
+            <span class="sb-group-icon" aria-hidden="true">🛠️</span> Teacher
+            Tools
+            <span class="chevron" aria-hidden="true">&#9660;</span>
+          </div>
+          <div class="sb-items">
+            <a class="sb-item" data-panel="tools"
+              ><span class="sb-emoji" aria-hidden="true">📊</span> Teacher Tools
+              <span class="sb-count">7</span></a
+            >
+          </div>
+        </div>
+
+        <div class="sb-group collapsed">
+          <div class="sb-group-label">
+            <span class="sb-group-icon" aria-hidden="true">✨</span> Projects &
+            More
+            <span class="chevron" aria-hidden="true">&#9660;</span>
+          </div>
+          <div class="sb-items">
+            <a class="sb-item" data-panel="projects"
+              ><span class="sb-emoji" aria-hidden="true">🔧</span> Special
+              Projects <span class="sb-count">34</span></a
+            >
+          </div>
+        </div>
+
+        <div class="sb-footer">Neft Teacher &middot; Grade 6</div>
+      </nav>
+
+      <div class="overlay" id="overlay"></div>
+
+      <main class="content">
+        <div class="hub-search">
+          <input
+            type="search"
+            id="hubSearch"
+            placeholder="Search activities, tools, lessons…  (press /)"
+            aria-label="Search everything on the hub"
+            autocomplete="off"
+          />
+          <span
+            class="hub-search-count"
+            id="hubSearchCount"
+            aria-live="polite"
+          ></span>
+        </div>
+        <style>
+          .hub-search {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            padding: 12px 0 12px;
+            background: var(--bg, #f7f8fa);
+          }
+          .hub-search input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px 18px;
+            font-size: 1rem;
+            border: 2px solid var(--line, #d9dee5);
+            border-radius: 12px;
+            outline: none;
+            background: #fff;
+          }
+          .hub-search input:focus {
+            border-color: var(--accent, #0f766e);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.18);
+          }
+          .hub-search-count {
+            display: block;
+            font-size: 0.85rem;
+            color: #667085;
+            margin-top: 6px;
+            min-height: 1em;
+          }
+          .content.searching .panel {
+            display: block;
+          }
+          .content.searching .panel.search-empty {
+            display: none;
+          }
+          .card.search-hide {
+            display: none !important;
+          }
+          .unit-group.search-empty {
+            display: none;
+          }
+        </style>
+        <!-- ═══ LESSONS ═══ -->
+        <div class="panel active" id="panel-lessons">
+          <div class="content-header">
+            <h2>Reveal Math Lessons</h2>
             <p>
-              The Full Directory lists every lesson, game, tool, and resource on
-              the site in one searchable place.
-            </p>
-          </div>
-          <a class="button-link" href="/directory/">Browse everything →</a>
-        </section>
-
-        <!-- ════════ FOR STUDENTS ════════ -->
-        <section class="home-section" aria-labelledby="students-heading">
-          <div class="section-heading">
-            <p class="eyebrow audience-eyebrow">For Students</p>
-            <h2 id="students-heading">Learn, practice, and play</h2>
-            <p>
-              Daily lessons, your practice path, get-ready reviews, catch-up
-              tracks, and dozens of interactive math games.
-            </p>
-          </div>
-
-          <div class="activity-grid">
-            <a class="activity-card" href="/math/">
-              <span class="card-kicker">Start here</span>
-              <span class="card-title">Grade 6 Math</span>
-              <span class="card-copy"
-                >Open the math hub with every unit, lesson, game, and
-                review.</span
-              >
-              <span class="card-action">Open hub →</span>
-            </a>
-            <a class="activity-card" href="/practice-engine/">
-              <span class="card-kicker">My Path</span>
-              <span class="card-title">Practice Engine</span>
-              <span class="card-copy"
-                >Your self-paced MCAP practice path — work problems and track
-                progress.</span
-              >
-              <span class="card-action">Practice →</span>
-            </a>
-            <a class="activity-card" href="/math/finder/">
-              <span class="card-kicker">Find it</span>
-              <span class="card-title">Activities Finder</span>
-              <span class="card-copy"
-                >Search and filter every Grade 6 activity by type, topic, or
-                standard.</span
-              >
-              <span class="card-action">Search →</span>
-            </a>
-            <a class="activity-card" href="./games/3d/">
-              <span class="card-kicker">Games</span>
-              <span class="card-title">3D Games &amp; Expedition Hub</span>
-              <span class="card-copy"
-                >Premium 3D math worlds — ratios, fractions, integers, geometry,
-                and more.</span
-              >
-              <span class="card-action">Play →</span>
-            </a>
-          </div>
-
-          <div class="folder-index" style="margin-top: 22px">
-            <div class="folder-index-group">
-              <h3>Lessons by unit (Reveal Math)</h3>
-              <div class="folder-links">
-                <a href="./lessons/1-1/index.html">1.1 Prime Factorization</a>
-                <a href="./lessons/1-2/index.html">1.2 GCF</a>
-                <a href="./lessons/1-3/index.html">1.3 LCM</a>
-                <a href="./lessons/1-4/index.html">1.4 Add/Sub Decimals</a>
-                <a href="./lessons/1-5/index.html">1.5 Multiply Decimals</a>
-                <a href="./lessons/1-6/index.html">1.6 Divide Decimals</a>
-                <a href="./lessons/1-7/index.html">1.7 Divide Multi-Digit</a>
-                <a href="./lessons/2-1/index.html">2.1 Fractions as Division</a>
-                <a href="./lessons/2-2/index.html">2.2 Multiply Fractions</a>
-                <a href="./lessons/2-3/index.html">2.3 Divide Fractions</a>
-                <a href="./lessons/2-4/index.html">2.4 Divide Mixed Numbers</a>
-                <a href="./lessons/2-5/index.html"
-                  >2.5 Solve Fraction Problems</a
-                >
-                <a href="./lessons/3-1/index.html">3.1 Understand Ratios</a>
-                <a href="./lessons/3-2/index.html">3.2 Ratio Tables</a>
-                <a href="./lessons/3-3/index.html">3.3 Graph Ratios</a>
-                <a href="./lessons/3-4/index.html">3.4 Equivalent Ratios</a>
-                <a href="./lessons/3-5/index.html">3.5 Compare Ratios</a>
-                <a href="./lessons/3-6/index.html">3.6 Unit Rates</a>
-                <a href="./lessons/3-7/index.html">3.7 Convert Units</a>
-                <a href="./lessons/4-1/index.html">4.1 Understand Percents</a>
-                <a href="./lessons/4-2/index.html">4.2 FDP</a>
-                <a href="./lessons/4-3/index.html">4.3 Percent of a Number</a>
-                <a href="./lessons/4-4/index.html">4.4 Find the Whole</a>
-                <a href="./lessons/4-5/index.html">4.5 Financial Literacy</a>
-                <a href="./lessons/4-6/index.html">4.6 Simple Interest</a>
-                <a href="./lessons/4-7/index.html">4.7 Percent Problems</a>
-                <a href="./lessons/5-1/index.html">5.1 Area Parallelograms</a>
-                <a href="./lessons/5-2/index.html">5.2 Area Triangles</a>
-                <a href="./lessons/5-3/index.html">5.3 Area Trapezoids</a>
-                <a href="./lessons/5-4/index.html">5.4 Area Polygons</a>
-                <a href="./lessons/5-5/index.html">5.5 Composite Figures</a>
-                <a href="./lessons/6-1/index.html">6.1 Numerical Expressions</a>
-                <a href="./lessons/6-2/index.html">6.2 Evaluate Expressions</a>
-                <a href="./lessons/6-3/index.html">6.3 Properties</a>
-                <a href="./lessons/6-4/index.html"
-                  >6.4 Equivalent Expressions</a
-                >
-                <a href="./lessons/6-5/index.html">6.5 Algebraic Expressions</a>
-                <a href="./lessons/6-6/index.html">6.6 Parts of Expressions</a>
-                <a href="./lessons/6-7/index.html">6.7 Generate Equivalent</a>
-                <a href="./lessons/7-1/index.html"
-                  >7.1 Equations &amp; Solutions</a
-                >
-                <a href="./lessons/7-2/index.html">7.2 One-Step Equations</a>
-                <a href="./lessons/7-3/index.html">7.3 Write &amp; Solve</a>
-                <a href="./lessons/7-4/index.html">7.4 Solve Inequalities</a>
-                <a href="./lessons/7-5/index.html">7.5 Graph Inequalities</a>
-                <a href="./lessons/7-6/index.html">7.6 Dep/Indep Variables</a>
-                <a href="./lessons/7-7/index.html">7.7 Patterns</a>
-                <a href="./lessons/8-1/index.html">8.1 Statistical Questions</a>
-                <a href="./lessons/8-2/index.html">8.2 Mean/Median/Mode</a>
-                <a href="./lessons/8-3/index.html">8.3 Mean Abs Deviation</a>
-                <a href="./lessons/8-4/index.html">8.4 Display Data</a>
-                <a href="./lessons/8-5/index.html"
-                  >8.5 Describe Distributions</a
-                >
-                <a href="./lessons/8-6/index.html">8.6 Summarize Data</a>
-                <a href="./lessons/8-7/index.html">8.7 Choose Measures</a>
-                <a href="./lessons/9-1/index.html">9.1 Coordinate Plane</a>
-                <a href="./lessons/9-2/index.html">9.2 Ordered Pairs</a>
-                <a href="./lessons/9-3/index.html">9.3 Absolute Value</a>
-                <a href="./lessons/9-4/index.html">9.4 Order Integers</a>
-                <a href="./lessons/9-5/index.html">9.5 Distance</a>
-                <a href="./lessons/9-6/index.html">9.6 Polygons on Plane</a>
-                <a href="./lessons/9-7/index.html">9.7 Problem Solving</a>
-                <a href="./lessons/10-1/index.html">10.1 Volume of Prisms</a>
-                <a href="./lessons/10-2/index.html">10.2 Volume w/ Fractions</a>
-                <a href="./lessons/10-3/index.html">10.3 Surface Area Prisms</a>
-                <a href="./lessons/10-4/index.html"
-                  >10.4 Surface Area Pyramids</a
-                >
-                <a href="./lessons/10-5/index.html"
-                  >10.5 Nets &amp; Surface Area</a
-                >
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Get ready &amp; review</h3>
-              <div class="folder-links">
-                <a href="./pre-test/unit1-review.html"
-                  >Unit 1 Pre-Test Review</a
-                >
-                <a href="./pre-test/unit2-review.html"
-                  >Unit 2 Pre-Test Review</a
-                >
-                <a href="./pre-test/unit3-review.html"
-                  >Unit 3 Pre-Test Review</a
-                >
-                <a href="./pre-test/unit4-review.html"
-                  >Unit 4 Pre-Test Review</a
-                >
-                <a href="./pre-test/unit5-review.html"
-                  >Unit 5 Pre-Test Review</a
-                >
-                <a href="./pre-test/unit6-review.html"
-                  >Unit 6 Pre-Test Review</a
-                >
-                <a href="./pre-test/unit7-review.html"
-                  >Unit 7 Pre-Test Review</a
-                >
-                <a href="./pre-test/unit8-review.html"
-                  >Unit 8 Pre-Test Review</a
-                >
-                <a href="./pre-test/unit9-review.html"
-                  >Unit 9 Pre-Test Review</a
-                >
-                <a href="./pre-test/unit10-review.html"
-                  >Unit 10 Pre-Test Review</a
-                >
-                <a href="./post-test/unit1-space-mission-control.html"
-                  >U1 Space Mission Control</a
-                >
-                <a href="./post-test/unit2-master-chef-kitchen.html"
-                  >U2 Master Chef Kitchen</a
-                >
-                <a href="./post-test/unit3-global-travel-planner.html"
-                  >U3 Global Travel Planner</a
-                >
-                <a href="./post-test/unit4-shopping-mall-mogul.html"
-                  >U4 Shopping Mall Mogul</a
-                >
-                <a href="./post-test/unit5-theme-park-engineer.html"
-                  >U5 Theme Park Engineer</a
-                >
-                <a href="./post-test/unit6-music-festival-producer.html"
-                  >U6 Music Festival Producer</a
-                >
-                <a href="./post-test/unit7-detective-case-files.html"
-                  >U7 Detective Case Files</a
-                >
-                <a href="./post-test/unit8-sports-data-analyst.html"
-                  >U8 Sports Data Analyst</a
-                >
-                <a href="./post-test/unit9-treasure-map-navigator.html"
-                  >U9 Treasure Map Navigator</a
-                >
-                <a href="./post-test/unit10-aquarium-architect.html"
-                  >U10 Aquarium Architect</a
-                >
-                <a href="/spiral-review/">Spiral Review &amp; MCAP Prep</a>
-                <a href="/math/mcap-practice/">MCAP Practice Test</a>
-                <a href="/math/review-arcade/">Boss-Battle Review Arcade</a>
-                <a href="./mcap-review/">MCAP &amp; General Review</a>
-                <a href="./refugee/">Refugee Guided Review</a>
-                <a href="./surface-area-review/">Surface Area Review</a>
-                <a href="./unit-5-practice/">Unit 5 Practice</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Catch-up &amp; bridge</h3>
-              <div class="folder-links">
-                <a href="/math/remediation/">Bridge to Grade 6 (Remediation)</a>
-                <a href="./summer-bridge/">Summer Bridge (6 → 7)</a>
-                <a href="./geometry-prep/">Geometry Prep</a>
-                <a href="./esol-study-guide/">Study Guide</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Math games — Number System &amp; Fractions</h3>
-              <div class="folder-links">
-                <a href="./number-system/6-ns-a-1game/"
-                  >Fractions Division Game</a
-                >
-                <a href="./number-system/6-ns-b-2game/">Asteroid Miner</a>
-                <a href="./number-system/6-ns-b-3game/">Cooking Simulator</a>
-                <a href="./number-system/6-ns-b-4game/">GCF &amp; LCM Game</a>
-                <a href="./number-system/6-ns-c-3game/"
-                  >Decimal Operations Game</a
-                >
-                <a href="./number-system/6-ns-c-5game/">Temperature Explorer</a>
-                <a href="./number-system/6-ns-c-6game/"
-                  >Coordinate Graphing Game</a
-                >
-                <a href="./number-system/6-ns-c-8game/">City Builder</a>
-                <a href="/number-system/factor-tree-salvage/"
-                  >Space Factor Tree</a
-                >
-                <a href="/number-system/fraction-division-soccer/"
-                  >Soccer Fraction Division</a
-                >
-                <a href="./number-system/coordinate-navigator/"
-                  >Coordinate Navigator</a
-                >
-                <a href="./number-system/pixel-area-model/">Pixel Area Model</a>
-                <a href="./number-system/subzero-ledger/">Sub-Zero Ledger</a>
-                <a href="./fractions-soccer/">Fraction Soccer</a>
-                <a href="./unit-1/6-1game/">Dungeon Crawler RPG</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Math games — Ratios, Percents &amp; Geometry</h3>
-              <div class="folder-links">
-                <a href="./ratios-proportions/6-rp-1game/">6.RP.1 Game</a>
-                <a href="./ratios-proportions/6-rp-a-2game/"
-                  >Factory Production Line</a
-                >
-                <a href="./ratios-proportions/6-rp-a-3game/"
-                  >Shopping Mall Tycoon</a
-                >
-                <a href="./ratios-proportions/percent-shadow-caster/"
-                  >Percent Shadow-Caster</a
-                >
-                <a href="./ratios-proportions/ratio-fuel-mixer/"
-                  >Ratio Table Fuel Mixer</a
-                >
-                <a href="./ratios-proportions/recipe-factory-line/"
-                  >Recipe Factory</a
-                >
-                <a href="./ratios-proportions/unit-rate-duel/"
-                  >Unit Rate Duel</a
-                >
-                <a href="./ratiolab/">RatioLab</a>
-                <a href="./geometry-prep/coordinate-polygon-architect/"
-                  >Coordinate Polygon Architect</a
-                >
-                <a href="./geometry-prep/surface-area-packer/"
-                  >Surface Area Cyber-Packer</a
-                >
-                <a href="./geometry-prep/tangram-architect/"
-                  >Tangram Polygon Architect</a
-                >
-                <a href="./netfold-pro/">NetFold Pro</a>
-                <a href="./cartesian-odyssey/">Cartesian Odyssey</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Math games — Expressions &amp; Equations</h3>
-              <div class="folder-links">
-                <a href="./expressions-equations/6-ee-9gamereview/"
-                  >Tower Defense</a
-                >
-                <a href="./expressions-equations/6-ee-c-9game/"
-                  >Space Shooter</a
-                >
-                <a href="./expressions-equations/6-ee-c-9martiangame/"
-                  >Mars Exploration</a
-                >
-                <a href="./expressions-equations/6-ee-c-9variablevelocitygame/"
-                  >Variable Velocity</a
-                >
-                <a
-                  href="./expressions-equations/cloudflare-pages-game-for-6-ee-9/"
-                  >Puzzle Platformer</a
-                >
-                <a href="./expressions-equations/equivalent-expressions-forge/"
-                  >Equivalent Expressions Forge</a
-                >
-                <a href="./expressions-equations/martian-fuel-pod/"
-                  >Martian Fuel Pod</a
-                >
-                <a href="./expressions-equations/neon-inequality/"
-                  >Neon Inequality Gatekeeper</a
-                >
-                <a href="./expressions-equations/one-step-solver-arena/"
-                  >One-Step Solver Arena</a
-                >
-                <a href="./expressions-equations/variablecomparisongame/"
-                  >Expression Arena</a
-                >
-                <a href="/expressions-equations/distributive-alchemy/"
-                  >Alchemy Distributive Property</a
-                >
-                <a href="./word-to-equations/">Word-to-Equations</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Math games — Statistics &amp; Data</h3>
-              <div class="folder-links">
-                <a href="./statistics-data/6-sp-a-1game/"
-                  >Detective Investigation</a
-                >
-                <a href="./statistics-data/6-sp-a-1game-2/">News Reporter</a>
-                <a href="./statistics-data/6-sp-b-5-data-detective-game/"
-                  >Crime Scene Lab</a
-                >
-                <a href="./statistics-data/box-plot-detective/"
-                  >Box Plot Detective</a
-                >
-                <a href="./statistics-data/distribution-detective/"
-                  >Distribution Detective</a
-                >
-                <a href="./statistics-data/histogramhero/">Histogram Hero</a>
-                <a href="./statistics-data/mean-median-mode-game/"
-                  >Mean/Median/Mode Game</a
-                >
-                <a href="./statistics-data/meanmedianmodesoccerandbracelets/"
-                  >Stats Choice Quest</a
-                >
-                <a href="./statistics-data/stats-of-my-life/"
-                  >Stats of My Life</a
-                >
-                <a href="./correlation-playground/">Correlation Playground</a>
-                <a href="./sports-analytics/">Sports Analytics Quest</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Unit 4 &amp; Unit 5 activities</h3>
-              <div class="folder-links">
-                <a href="./unit-4/decimaloperationsreview/"
-                  >Decimal Operations Review</a
-                >
-                <a href="./unit-4/decimals-diner/">Decimals Diner</a>
-                <a href="./unit-4/longdivisionmcapreview/"
-                  >Long Division Studio</a
-                >
-                <a href="./unit-4/math6unit4interactivestudystudio/"
-                  >Unit 4 Study Studio</a
-                >
-                <a href="./unit-5/5-1-5-3practice/">Area Engine Studio</a>
-                <a href="./unit-5/5-3envtrapezoidactivity/"
-                  >Trapezoid Area (ENV)</a
-                >
-                <a href="./unit-5/5-3rvtrapezoid/">Trapezoid Area (RV)</a>
-                <a href="./unit-5/5-5gemini/">Volume of Prisms</a>
-                <a href="./unit-5/5-5squaretriangle/">Nets — Square Pyramids</a>
-                <a href="./unit-5/5-6session1/">Nets of 3D Figures</a>
-                <a href="./unit-5/5-8interactivehtml/"
-                  >Surface Area — Pyramids</a
-                >
-                <a href="./unit-5/grade6area5-1-2/">Area Quest</a>
-                <a href="./unit-5/grade6area5-1-2language/"
-                  >Area Quest — Level 1</a
-                >
-                <a href="./unit-5/interactiveareamission/"
-                  >Area Mission Builder</a
-                >
-                <a href="./unit-5/parallelogramandrhombusgame/"
-                  >Architecture Builder</a
-                >
-                <a href="./unit-5/rectangularprismstory/"
-                  >MathQuest Surface Area</a
-                >
-                <a href="./unit-5/rectangularprismstoryesl/"
-                  >MathQuest SA — Level 1</a
-                >
-                <a href="./unit-5/unit5practicehtml/">Unit 5 Review Arcade</a>
-                <a href="./unit-5/unit5testreview/">Unit 5 Prep Studio</a>
-                <a href="./unit-5/unit5worldarchitectureprojet/"
-                  >World Architect Expedition</a
-                >
-                <a href="./unit-5/volumeofrectangularprism/"
-                  >Volume of Prisms 3D</a
-                >
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>3D games by unit</h3>
-              <div class="folder-links">
-                <a href="./games/3d/unit-1/">U1 Smoothie Stand</a>
-                <a href="./games/3d/unit-2/">U2 Bakery</a>
-                <a href="./games/3d/unit-3/">U3 Ratio Rally</a>
-                <a href="./games/3d/unit-4/">U4 Factory Line</a>
-                <a href="./games/3d/unit-5/">U5 Architect</a>
-                <a href="./games/3d/unit-6/">U6 Expression Machine</a>
-                <a href="./games/3d/unit-7/">U7 Submarine</a>
-                <a href="./games/3d/unit-8/">U8 Data Lab</a>
-                <a href="./games/3d/unit-9/">U9 Coordinate Quest</a>
-                <a href="./games/3d/unit-10/">U10 Volume Vault</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Projects &amp; challenges</h3>
-              <div class="folder-links">
-                <a href="/math/capstone-startup-city/"
-                  >Start-Up City Capstone</a
-                >
-                <a href="/activities/architect/">Architect Activities</a>
-                <a href="/webquests/">Math WebQuests</a>
-                <a href="/hyperdocs/">Math HyperDocs</a>
-                <a href="/math-lab-missions/">Math Lab Missions</a>
-                <a href="/reveal-evidence-studio/"
-                  >Reveal Math Evidence Studio</a
-                >
-                <a href="/misconception-museum/">Misconception Museum</a>
-                <a href="./misconception-lab/">Misconception Lab</a>
-                <a href="./fix-it-design-challenge/">Fix-It Design Challenge</a>
-                <a href="./world-architect-math-project/"
-                  >World Architect Math Project</a
-                >
-                <a href="/math/statistics/">Statistics &amp; Data Unit</a>
-                <a href="/math/manipulatives/">Math Manipulatives Toolkit</a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ════════ FOR TEACHERS ════════ -->
-        <section class="home-section" aria-labelledby="teachers-heading">
-          <div class="section-heading">
-            <p class="eyebrow audience-eyebrow">For Teachers</p>
-            <h2 id="teachers-heading">Plan, teach, and track</h2>
-            <p>
-              The math curriculum hub, planning generators, dashboards,
-              trackers, and the Neft School operating system.
+              Grade 6 math curriculum hub with unit folders, reusable Reveal
+              tools, and 64 interactive lesson activities across 10 units
             </p>
           </div>
 
-          <div class="activity-grid">
-            <a class="activity-card" href="/curriculum/">
-              <span class="card-kicker">Plan</span>
-              <span class="card-title">Curriculum Hub</span>
-              <span class="card-copy"
-                >Every lesson, notes packet, novel, 3D game, and test —
-                organized by unit.</span
+          <div class="unit-group">
+            <div class="unit-label">Lesson Planning</div>
+            <div class="cards">
+              <a href="/teacher-tools/lesson-plan-generator/" class="card"
+                ><div class="icon u4">🧭</div>
+                <div>
+                  <div class="title">Lesson Plan Generator</div>
+                  <div class="meta">
+                    Type what you need <em>or</em> upload your slides
+                    (.pptx/.pdf/.docx) &rarr; a full, ready-to-teach lesson
+                    plan. Source-faithful; builds the complete blueprint,
+                    audits, and outputs a polished Calibri document.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
               >
-              <span class="card-action">Open →</span>
-            </a>
-            <a class="activity-card" href="./teacher-tools/">
-              <span class="card-kicker">Tools</span>
-              <span class="card-title">Teacher Professional Hub</span>
-              <span class="card-copy"
-                >Generators, dashboards, gradebook, and class-planning
-                tools.</span
-              >
-              <span class="card-action">Open →</span>
-            </a>
-            <a class="activity-card" href="/neft-school-hub/">
-              <span class="card-kicker">Operations</span>
-              <span class="card-title">Neft School Hub</span>
-              <span class="card-copy"
-                >Internal operating system for school workflows and
-                resources.</span
-              >
-              <span class="card-action">Open →</span>
-            </a>
-            <a class="activity-card" href="./teacher-data-dashboard/">
-              <span class="card-kicker">Data</span>
-              <span class="card-title">Data Studio &amp; Dashboards</span>
-              <span class="card-copy"
-                >Class results, forecasting, and professional analytics.</span
-              >
-              <span class="card-action">Open →</span>
-            </a>
-          </div>
-
-          <div class="folder-index" style="margin-top: 22px">
-            <div class="folder-index-group">
-              <h3>Planning &amp; generators</h3>
-              <div class="folder-links">
-                <a href="/teacher-tools/lesson-plan-generator/"
-                  >Lesson Plan Generator</a
-                >
-                <a href="./teacher-tools/do-now-generator/"
-                  >Do Now / Number-Talk Generator</a
-                >
-                <a href="./teacher-tools/playlist-builder/">Playlist Builder</a>
-                <a href="/lessons/notes-index.html"
-                  >Guided Notes &amp; Cheat Sheets</a
-                >
-                <a href="/vocab-hub/">Vocabulary Study Hub</a>
-                <a href="/math/vocab-deck/">Bilingual Vocab Deck</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Dashboards &amp; trackers</h3>
-              <div class="folder-links">
-                <a href="./teacher-tools/class-dashboard/"
-                  >Class Dashboard &amp; Gradebook</a
-                >
-                <a href="./teacher-tools/class-results.html">Class Results</a>
-                <a href="./teacher-tools/forecast-engine/">Forecast Engine</a>
-                <a href="./neft-data-studio/">Data Studio</a>
-                <a href="./teacher-data-dashboard/">Teacher Data Dashboard</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Supplemental resources by unit</h3>
-              <div class="folder-links">
-                <a href="/math/unit-1/supplemental/"
-                  >Unit 1 — Foundation Skills</a
-                >
-                <a href="/math/unit-2/supplemental/"
-                  >Unit 2 — Statistics &amp; Data</a
-                >
-                <a href="/math/unit-3/supplemental/"
-                  >Unit 3 — Ratios &amp; Rates</a
-                >
-                <a href="/math/unit-4/supplemental/"
-                  >Unit 4 — Decimals &amp; Percents</a
-                >
-                <a href="/math/unit-5/supplemental/">Unit 5 — Geometry</a>
-                <a href="/math/unit-6/supplemental/">Unit 6 — Expressions</a>
-                <a href="/math/unit-7/supplemental/"
-                  >Unit 7 — Integers &amp; Plane</a
-                >
-                <a href="/math/unit-8/supplemental/">Unit 8 — Equations</a>
-                <a href="/math/unit-9/supplemental/">Unit 9 — Relationships</a>
-                <a href="/math/unit-10/supplemental/">Unit 10 — End of Year</a>
-              </div>
-            </div>
-
-            <div class="folder-index-group">
-              <h3>Reading, language &amp; WIDA ACCESS</h3>
-              <div class="folder-links">
-                <a href="./esol/">Reading &amp; Language</a>
-                <a href="./esol-reading-writing/">Reading &amp; Writing</a>
-                <a href="./esol-reading-writing/esolreading/"
-                  >Reading Practice</a
-                >
-                <a href="./esol-reading-writing/math-writing/">Math Writing</a>
-                <a href="./esol-reading-writing/math-writing-help/"
-                  >Math Writing Help Studio</a
-                >
-                <a href="./esol-reading-writing/twr-math-writing-studio/"
-                  >TWR Math Writing Studio</a
-                >
-                <a href="./esol-reading-writing/flushbooksummary/"
-                  >Flush Book Summary</a
-                >
-                <a href="./esol-reading-writing/goodfriendhtml/">Good Friend</a>
-                <a href="./esol-reading-writing/refugeebookreview/"
-                  >Refugee Book Review</a
-                >
-                <a href="/esol-reading-writing/health-wellness-goals/"
-                  >Health &amp; Wellness Goals</a
-                >
-                <a href="./wida-access/">WIDA ACCESS 25–26</a>
-                <a href="./wida-access/speaking/">WIDA Speaking</a>
-                <a href="/wida-access/listening/">WIDA Listening</a>
-                <a href="./wida-access/reading/">WIDA Reading</a>
-                <a href="./wida-access/writing/">WIDA Writing</a>
-              </div>
             </div>
           </div>
-        </section>
 
-        <!-- ════════ FOR FAMILIES ════════ -->
-        <section class="home-section" aria-labelledby="families-heading">
-          <div class="section-heading">
-            <p class="eyebrow audience-eyebrow">For Families</p>
-            <h2 id="families-heading">Support at home</h2>
+          <div class="unit-group">
+            <div class="unit-label">Math Curriculum Hub</div>
+            <div class="cards">
+              <a href="/math/" class="card"
+                ><div class="icon u2">G6</div>
+                <div>
+                  <div class="title">Grade 6 Math Curriculum</div>
+                  <div class="meta">
+                    Open the math hub with unit folders, Reveal tools, games,
+                    and review activities.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/math/finder/" class="card"
+                ><div class="icon u3">🔎</div>
+                <div>
+                  <div class="title">Math Activities Finder</div>
+                  <div class="meta">
+                    Search and filter every Grade 6 math activity by type,
+                    topic, or standard &mdash; one place to find it all.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/lessons/notes-index.html" class="card"
+                ><div class="icon u1">📝</div>
+                <div>
+                  <div class="title">Guided Notes &amp; Cheat Sheets</div>
+                  <div class="meta">
+                    Printable visual note sheets for every lesson &mdash; Level
+                    1 vocabulary with images and write-on lines.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/graphic-novels/" class="card"
+                ><div class="icon u2">📖</div>
+                <div>
+                  <div class="title">Math Graphic Novels</div>
+                  <div class="meta">
+                    Interactive comic adventures that teach each unit &mdash;
+                    choose Graphic Novel #1 (Support) or #2 (Enrichment).
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/curriculum/" class="card"
+                ><div class="icon u1">🗂️</div>
+                <div>
+                  <div class="title">Curriculum Hub</div>
+                  <div class="meta">
+                    Every lesson, notes packet, graphic novel, 3D game, and test
+                    &mdash; organized by unit, all in one place.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/spiral-review/" class="card"
+                ><div class="icon u3">🔁</div>
+                <div>
+                  <div class="title">Spiral Review &amp; MCAP Prep</div>
+                  <div class="meta">
+                    Mixed cumulative practice across all units with spiral
+                    weighting for test prep. Read-aloud, English/Spanish.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/vocab-hub/" class="card"
+                ><div class="icon u1">📚</div>
+                <div>
+                  <div class="title">Vocabulary Study Hub</div>
+                  <div class="meta">
+                    Word wall, flashcards, matching &amp; quizzes for all Grade
+                    6 math vocabulary &mdash; English + Spanish with read-aloud.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/reveal-evidence-studio/" class="card"
+                ><div class="icon u6">CER</div>
+                <div>
+                  <div class="title">Reveal Math Evidence Studio</div>
+                  <div class="meta">
+                    Build model-based evidence and CER responses for any lesson
+                    cluster.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/math-lab-missions/" class="card"
+                ><div class="icon u3">LAB</div>
+                <div>
+                  <div class="title">Math Lab Missions</div>
+                  <div class="meta">
+                    Run short scenario missions with roles, evidence, and
+                    debrief prompts.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/misconception-museum/" class="card"
+                ><div class="icon u8">BUG</div>
+                <div>
+                  <div class="title">Misconception Museum</div>
+                  <div class="meta">
+                    Curate tempting mistakes, diagnose the math, and write
+                    repair moves.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./esol-reading-writing/math-writing-help/" class="card"
+                ><div class="icon u4">💡</div>
+                <div>
+                  <div class="title">Math Writing Help Studio</div>
+                  <div class="meta">
+                    Build math CER writing drafts with interactive visual SVGs,
+                    speech synthesis audio, and multilingual word walls.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/" class="card"
+                ><div class="icon u5">🎮</div>
+                <div>
+                  <div class="title">3D Games &amp; Expedition Hub</div>
+                  <div class="meta">
+                    Launch premium 3D virtual math environments, unit ratios,
+                    baking fractions, integer submarine escapes, and the grand
+                    World Architect geometry expedition.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/math/capstone-startup-city/" class="card"
+                ><div class="icon u6">🏙️</div>
+                <div>
+                  <div class="title">Start-Up City Capstone</div>
+                  <div class="meta">
+                    Year-end project &mdash; run a business using every Grade 6
+                    strand: ratios, percents, area, volume, expressions,
+                    equations, statistics, and integers.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/math/review-arcade/" class="card"
+                ><div class="icon u5">🕹️</div>
+                <div>
+                  <div class="title">Boss-Battle Review Arcade</div>
+                  <div class="meta">
+                    Arcade-style end-of-unit review &mdash; 80 questions across
+                    all 10 units, lives, streaks, and a mixed Boss Battle.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/math/mcap-practice/" class="card"
+                ><div class="icon u3">📝</div>
+                <div>
+                  <div class="title">MCAP Practice Test</div>
+                  <div class="meta">
+                    Self-grading MCAP-style practice with the real
+                    technology-enhanced item types and a per-standard score
+                    report.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/math/manipulatives/" class="card"
+                ><div class="icon u7">🧰</div>
+                <div>
+                  <div class="title">Math Manipulatives Toolkit</div>
+                  <div class="meta">
+                    Fraction bars, number line, algebra tiles, area decomposer,
+                    and coordinate plotter &mdash; project any tool full-screen.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/math/vocab-deck/" class="card"
+                ><div class="icon u1">🌎</div>
+                <div>
+                  <div class="title">Bilingual Vocab Deck</div>
+                  <div class="meta">
+                    English/Spanish flip cards with read-aloud audio for Grade 6
+                    math vocabulary, filterable by unit.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/math/statistics/" class="card"
+                ><div class="icon u4">📊</div>
+                <div>
+                  <div class="title">Statistics &amp; Data Unit</div>
+                  <div class="meta">
+                    6.SP lessons plus two culminating projects on center,
+                    variability, and data displays.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/math/remediation/" class="card"
+                ><div class="icon u8">🌉</div>
+                <div>
+                  <div class="title">Bridge to Grade 6 (Remediation)</div>
+                  <div class="meta">
+                    Grades 7&ndash;8 catch-up track &mdash; 5 units, 25
+                    self-checking lessons that fill prerequisite gaps.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/webquests/" class="card"
+                ><div class="icon u2">🧭</div>
+                <div>
+                  <div class="title">Math WebQuests</div>
+                  <div class="meta">
+                    Inquiry missions for all 10 units &mdash; students research,
+                    solve, and produce a real deliverable.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/hyperdocs/" class="card"
+                ><div class="icon u7">📑</div>
+                <div>
+                  <div class="title">Math HyperDocs</div>
+                  <div class="meta">
+                    Self-paced Engage &rarr; Explore &rarr; Explain &rarr; Apply
+                    &rarr; Reflect lesson docs for all 10 units.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/activities/architect/" class="card"
+                ><div class="icon u5">🏗️</div>
+                <div>
+                  <div class="title">Architect Activities</div>
+                  <div class="meta">
+                    Hands-on build-and-design challenges &mdash; one per unit,
+                    auto-graded with Save-as-PDF/DOC for all 10 units.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Unit 1 &mdash; Number Sense</div>
+            <div class="cards">
+              <a href="./lessons/1-1/index.html" class="card"
+                ><div class="icon u1">1.1</div>
+                <div>
+                  <div class="title">Prime Factorization</div>
+                  <div class="meta">6.NS.4</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/1-2/index.html" class="card"
+                ><div class="icon u1">1.2</div>
+                <div>
+                  <div class="title">Greatest Common Factor</div>
+                  <div class="meta">6.NS.4</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/1-3/index.html" class="card"
+                ><div class="icon u1">1.3</div>
+                <div>
+                  <div class="title">Least Common Multiple</div>
+                  <div class="meta">6.NS.4</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-b-4game/" class="card"
+                ><div class="icon u1">🎮</div>
+                <div>
+                  <div class="title">GCF &amp; LCM Game</div>
+                  <div class="meta">
+                    Find common factors & multiples in factor puzzles
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/number-system/factor-tree-salvage/" class="card"
+                ><div class="icon u1">🚀</div>
+                <div>
+                  <div class="title">Space Factor Tree</div>
+                  <div class="meta">
+                    Cargo-salvage prime factorization adventure
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/1-4/index.html" class="card"
+                ><div class="icon u1">1.4</div>
+                <div>
+                  <div class="title">Add &amp; Subtract Decimals</div>
+                  <div class="meta">6.NS.3</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/1-5/index.html" class="card"
+                ><div class="icon u1">1.5</div>
+                <div>
+                  <div class="title">Multiply Decimals</div>
+                  <div class="meta">6.NS.3</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/1-6/index.html" class="card"
+                ><div class="icon u1">1.6</div>
+                <div>
+                  <div class="title">Divide Decimals</div>
+                  <div class="meta">6.NS.3</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-c-3game/" class="card"
+                ><div class="icon u1">🎮</div>
+                <div>
+                  <div class="title">Decimal Operations Game</div>
+                  <div class="meta">
+                    Dynamic calculations game with decimal operations
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/1-7/index.html" class="card"
+                ><div class="icon u1">1.7</div>
+                <div>
+                  <div class="title">Divide Multi-Digit Numbers</div>
+                  <div class="meta">6.NS.2</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Unit 2 &mdash; Fractions</div>
+            <div class="cards">
+              <a href="./lessons/2-1/index.html" class="card"
+                ><div class="icon u2">2.1</div>
+                <div>
+                  <div class="title">Interpret Fractions as Division</div>
+                  <div class="meta">6.NS.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-a-1game/" class="card"
+                ><div class="icon u2">🎮</div>
+                <div>
+                  <div class="title">Fractions Division Game</div>
+                  <div class="meta">
+                    Fractions division shootout & interactive models
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/2-2/index.html" class="card"
+                ><div class="icon u2">2.2</div>
+                <div>
+                  <div class="title">Multiply Fractions</div>
+                  <div class="meta">6.NS.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/2-3/index.html" class="card"
+                ><div class="icon u2">2.3</div>
+                <div>
+                  <div class="title">Divide Fractions</div>
+                  <div class="meta">6.NS.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/2-4/index.html" class="card"
+                ><div class="icon u2">2.4</div>
+                <div>
+                  <div class="title">Divide Mixed Numbers</div>
+                  <div class="meta">6.NS.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./fractions-soccer/" class="card"
+                ><div class="icon u2">⚽</div>
+                <div>
+                  <div class="title">Fraction Soccer</div>
+                  <div class="meta">
+                    Soccer-themed fractions division & multiplication game
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/number-system/fraction-division-soccer/" class="card"
+                ><div class="icon u2">⚽</div>
+                <div>
+                  <div class="title">Soccer Fraction Division</div>
+                  <div class="meta">Fraction division on the soccer pitch</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/2-5/index.html" class="card"
+                ><div class="icon u2">2.5</div>
+                <div>
+                  <div class="title">Solve Fraction Problems</div>
+                  <div class="meta">6.NS.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">
+              Unit 3 &mdash; Ratios &amp; Proportional Relationships
+            </div>
+            <div class="cards">
+              <a href="./lessons/3-1/index.html" class="card"
+                ><div class="icon u3">3.1</div>
+                <div>
+                  <div class="title">Understand Ratios</div>
+                  <div class="meta">6.RP.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/6-rp-1game/" class="card"
+                ><div class="icon u3">🎮</div>
+                <div>
+                  <div class="title">6.RP.1 Game</div>
+                  <div class="meta">
+                    Explore ratio concepts with interactive puzzles
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/3-2/index.html" class="card"
+                ><div class="icon u3">3.2</div>
+                <div>
+                  <div class="title">Ratio Tables</div>
+                  <div class="meta">6.RP.3a</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/3-3/index.html" class="card"
+                ><div class="icon u3">3.3</div>
+                <div>
+                  <div class="title">Graph Ratios</div>
+                  <div class="meta">6.RP.3a</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/3-4/index.html" class="card"
+                ><div class="icon u3">3.4</div>
+                <div>
+                  <div class="title">Equivalent Ratios</div>
+                  <div class="meta">6.RP.3</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/recipe-factory-line/" class="card"
+                ><div class="icon u3">🏭</div>
+                <div>
+                  <div class="title">Recipe Factory (Equivalent Ratios)</div>
+                  <div class="meta">Scale ingredients & fill ratio crates</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/3-5/index.html" class="card"
+                ><div class="icon u3">3.5</div>
+                <div>
+                  <div class="title">Compare Ratios</div>
+                  <div class="meta">6.RP.3a</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/3-6/index.html" class="card"
+                ><div class="icon u3">3.6</div>
+                <div>
+                  <div class="title">Unit Rates</div>
+                  <div class="meta">6.RP.2</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/3-7/index.html" class="card"
+                ><div class="icon u3">3.7</div>
+                <div>
+                  <div class="title">Convert Measurement Units</div>
+                  <div class="meta">6.RP.3d</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Unit 4 &mdash; Percents</div>
+            <div class="cards">
+              <a href="./lessons/4-1/index.html" class="card"
+                ><div class="icon u4">4.1</div>
+                <div>
+                  <div class="title">Understand Percents</div>
+                  <div class="meta">6.RP.3c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/4-2/index.html" class="card"
+                ><div class="icon u4">4.2</div>
+                <div>
+                  <div class="title">Fractions, Decimals &amp; Percents</div>
+                  <div class="meta">6.RP.3c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/4-3/index.html" class="card"
+                ><div class="icon u4">4.3</div>
+                <div>
+                  <div class="title">Percent of a Number</div>
+                  <div class="meta">6.RP.3c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/4-4/index.html" class="card"
+                ><div class="icon u4">4.4</div>
+                <div>
+                  <div class="title">Find the Whole</div>
+                  <div class="meta">6.RP.3c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/4-5/index.html" class="card"
+                ><div class="icon u4">4.5</div>
+                <div>
+                  <div class="title">Financial Literacy</div>
+                  <div class="meta">6.RP.3c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/4-6/index.html" class="card"
+                ><div class="icon u4">4.6</div>
+                <div>
+                  <div class="title">Simple Interest</div>
+                  <div class="meta">6.RP.3c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/4-7/index.html" class="card"
+                ><div class="icon u4">4.7</div>
+                <div>
+                  <div class="title">Solve Percent Problems</div>
+                  <div class="meta">6.RP.3c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Unit 5 &mdash; Geometry: Area</div>
+            <div class="cards">
+              <a href="./lessons/5-1/index.html" class="card"
+                ><div class="icon u5">5.1</div>
+                <div>
+                  <div class="title">Area of Parallelograms</div>
+                  <div class="meta">6.G.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/5-2/index.html" class="card"
+                ><div class="icon u5">5.2</div>
+                <div>
+                  <div class="title">Area of Triangles</div>
+                  <div class="meta">6.G.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/5-3/index.html" class="card"
+                ><div class="icon u5">5.3</div>
+                <div>
+                  <div class="title">Area of Trapezoids</div>
+                  <div class="meta">6.G.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/5-4/index.html" class="card"
+                ><div class="icon u5">5.4</div>
+                <div>
+                  <div class="title">Area of Regular Polygons</div>
+                  <div class="meta">6.G.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/5-5/index.html" class="card"
+                ><div class="icon u5">5.5</div>
+                <div>
+                  <div class="title">Area of Composite Figures</div>
+                  <div class="meta">6.G.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Unit 6 &mdash; Expressions</div>
+            <div class="cards">
+              <a href="./lessons/6-1/index.html" class="card"
+                ><div class="icon u6">6.1</div>
+                <div>
+                  <div class="title">Write Numerical Expressions</div>
+                  <div class="meta">6.EE.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/6-2/index.html" class="card"
+                ><div class="icon u6">6.2</div>
+                <div>
+                  <div class="title">Evaluate Expressions</div>
+                  <div class="meta">6.EE.2c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/6-3/index.html" class="card"
+                ><div class="icon u6">6.3</div>
+                <div>
+                  <div class="title">Properties of Operations</div>
+                  <div class="meta">6.EE.3</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/6-4/index.html" class="card"
+                ><div class="icon u6">6.4</div>
+                <div>
+                  <div class="title">Equivalent Expressions</div>
+                  <div class="meta">6.EE.4</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/6-5/index.html" class="card"
+                ><div class="icon u6">6.5</div>
+                <div>
+                  <div class="title">Write Algebraic Expressions</div>
+                  <div class="meta">6.EE.2a</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="/expressions-equations/distributive-alchemy/"
+                class="card"
+                ><div class="icon u6">⚗️</div>
+                <div>
+                  <div class="title">Alchemy Distributive Property</div>
+                  <div class="meta">
+                    Brew potions with the distributive property
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/6-6/index.html" class="card"
+                ><div class="icon u6">6.6</div>
+                <div>
+                  <div class="title">Identify Parts of Expressions</div>
+                  <div class="meta">6.EE.2b</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/6-7/index.html" class="card"
+                ><div class="icon u6">6.7</div>
+                <div>
+                  <div class="title">Generate Equivalent Expressions</div>
+                  <div class="meta">6.EE.3</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Unit 7 &mdash; Equations</div>
+            <div class="cards">
+              <a href="./lessons/7-1/index.html" class="card"
+                ><div class="icon u7">7.1</div>
+                <div>
+                  <div class="title">Equations and Solutions</div>
+                  <div class="meta">6.EE.5</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/7-2/index.html" class="card"
+                ><div class="icon u7">7.2</div>
+                <div>
+                  <div class="title">Solve One-Step Equations</div>
+                  <div class="meta">6.EE.7</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/7-3/index.html" class="card"
+                ><div class="icon u7">7.3</div>
+                <div>
+                  <div class="title">Write &amp; Solve Equations</div>
+                  <div class="meta">6.EE.7</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/7-4/index.html" class="card"
+                ><div class="icon u7">7.4</div>
+                <div>
+                  <div class="title">Solve Inequalities</div>
+                  <div class="meta">6.EE.8</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/7-5/index.html" class="card"
+                ><div class="icon u7">7.5</div>
+                <div>
+                  <div class="title">Graph Inequalities</div>
+                  <div class="meta">6.EE.8</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/7-6/index.html" class="card"
+                ><div class="icon u7">7.6</div>
+                <div>
+                  <div class="title">Dependent &amp; Independent Variables</div>
+                  <div class="meta">6.EE.9</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/7-7/index.html" class="card"
+                ><div class="icon u7">7.7</div>
+                <div>
+                  <div class="title">Patterns &amp; Relationships</div>
+                  <div class="meta">6.EE.9</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/6-ee-c-9martiangame/"
+                class="card"
+                ><div class="icon u7">👽</div>
+                <div>
+                  <div class="title">Mars Exploration (Martian Game)</div>
+                  <div class="meta">
+                    Use variables & equations to explore Mars (6.EE.9)
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/6-ee-c-9variablevelocitygame/"
+                class="card"
+                ><div class="icon u7">🏎️</div>
+                <div>
+                  <div class="title">Variable Velocity</div>
+                  <div class="meta">
+                    Racing game pairing equations, tables & graphs (6.EE.9)
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Unit 8 &mdash; Statistics</div>
+            <div class="cards">
+              <a href="./lessons/8-1/index.html" class="card"
+                ><div class="icon u8">8.1</div>
+                <div>
+                  <div class="title">Statistical Questions</div>
+                  <div class="meta">6.SP.1</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/8-2/index.html" class="card"
+                ><div class="icon u8">8.2</div>
+                <div>
+                  <div class="title">Mean, Median, and Mode</div>
+                  <div class="meta">6.SP.3</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./statistics-data/stats-of-my-life/" class="card"
+                ><div class="icon u8">📊</div>
+                <div>
+                  <div class="title">Stats of My Life Project</div>
+                  <div class="meta">Interactive project for 6.SP.3</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./statistics-data/meanmedianmodesoccerandbracelets/"
+                class="card"
+                ><div class="icon u8">🎮</div>
+                <div>
+                  <div class="title">
+                    Stats Choice Quest (Soccer & Bracelets)
+                  </div>
+                  <div class="meta">
+                    Soccer shootout & bead craft game for 6.SP.3
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/8-3/index.html" class="card"
+                ><div class="icon u8">8.3</div>
+                <div>
+                  <div class="title">Mean Absolute Deviation</div>
+                  <div class="meta">6.SP.5c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/8-4/index.html" class="card"
+                ><div class="icon u8">8.4</div>
+                <div>
+                  <div class="title">Display Data</div>
+                  <div class="meta">6.SP.4</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./statistics-data/histogramhero/" class="card"
+                ><div class="icon u8">🦸</div>
+                <div>
+                  <div class="title">Histogram Hero</div>
+                  <div class="meta">Interactive graphic novel for 6.SP.4</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/8-5/index.html" class="card"
+                ><div class="icon u8">8.5</div>
+                <div>
+                  <div class="title">Describe Data Distributions</div>
+                  <div class="meta">6.SP.5</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/8-6/index.html" class="card"
+                ><div class="icon u8">8.6</div>
+                <div>
+                  <div class="title">Summarize Data</div>
+                  <div class="meta">6.SP.5d</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/8-7/index.html" class="card"
+                ><div class="icon u8">8.7</div>
+                <div>
+                  <div class="title">Choose Appropriate Measures</div>
+                  <div class="meta">6.SP.5d</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Unit 9 &mdash; Coordinate Plane</div>
+            <div class="cards">
+              <a href="./lessons/9-1/index.html" class="card"
+                ><div class="icon u9">9.1</div>
+                <div>
+                  <div class="title">Graph on the Coordinate Plane</div>
+                  <div class="meta">6.NS.6</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-c-6game/" class="card"
+                ><div class="icon u9">🎮</div>
+                <div>
+                  <div class="title">Coordinate Graphing Game</div>
+                  <div class="meta">
+                    Plot points & track quadrants on the coordinate plane
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/9-2/index.html" class="card"
+                ><div class="icon u9">9.2</div>
+                <div>
+                  <div class="title">Ordered Pairs</div>
+                  <div class="meta">6.NS.6b</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/9-3/index.html" class="card"
+                ><div class="icon u9">9.3</div>
+                <div>
+                  <div class="title">Absolute Value</div>
+                  <div class="meta">6.NS.7c</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/9-4/index.html" class="card"
+                ><div class="icon u9">9.4</div>
+                <div>
+                  <div class="title">Compare &amp; Order Integers</div>
+                  <div class="meta">6.NS.7</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/9-5/index.html" class="card"
+                ><div class="icon u9">9.5</div>
+                <div>
+                  <div class="title">Distance on the Coordinate Plane</div>
+                  <div class="meta">6.NS.8</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/9-6/index.html" class="card"
+                ><div class="icon u9">9.6</div>
+                <div>
+                  <div class="title">Polygons on the Coordinate Plane</div>
+                  <div class="meta">6.G.3</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/9-7/index.html" class="card"
+                ><div class="icon u9">9.7</div>
+                <div>
+                  <div class="title">Problem Solving with Coordinates</div>
+                  <div class="meta">6.NS.8</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">
+              Unit 10 &mdash; Volume &amp; Surface Area
+            </div>
+            <div class="cards">
+              <a href="./lessons/10-1/index.html" class="card"
+                ><div class="icon u10">10.1</div>
+                <div>
+                  <div class="title">Volume of Rectangular Prisms</div>
+                  <div class="meta">6.G.2</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/10-2/index.html" class="card"
+                ><div class="icon u10">10.2</div>
+                <div>
+                  <div class="title">Volume with Fractions</div>
+                  <div class="meta">6.G.2</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/10-3/index.html" class="card"
+                ><div class="icon u10">10.3</div>
+                <div>
+                  <div class="title">Surface Area of Prisms</div>
+                  <div class="meta">6.G.4</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/10-4/index.html" class="card"
+                ><div class="icon u10">10.4</div>
+                <div>
+                  <div class="title">Surface Area of Pyramids</div>
+                  <div class="meta">6.G.4</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./lessons/10-5/index.html" class="card"
+                ><div class="icon u10">10.5</div>
+                <div>
+                  <div class="title">Nets &amp; Surface Area</div>
+                  <div class="meta">6.G.4</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./unit-5/5-6session1/" class="card"
+                ><div class="icon u10">📦</div>
+                <div>
+                  <div class="title">Nets of 3D Figures</div>
+                  <div class="meta">Interactive 3D notebook & net folding</div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ GAMES ═══ -->
+        <div class="panel" id="panel-games">
+          <div class="content-header">
+            <h2>Math Games</h2>
             <p>
-              Tools and stories for families — the Noam School focus app,
-              at-home math practice, graphic novels, and reading.
+              33 interactive Phaser.js games &mdash; unit games with particles,
+              streaks, power-ups, star ratings &amp; personal bests
             </p>
           </div>
 
-          <div class="activity-grid">
-            <a class="activity-card" href="/noam-school-v10/">
-              <span class="card-kicker">At home</span>
-              <span class="card-title">Noam School — Focus &amp; Plan</span>
-              <span class="card-copy"
-                >Installable focus, routines, and planning app for daily
-                organization.</span
+          <div class="unit-group">
+            <div class="unit-label">Unit Games</div>
+            <div class="cards">
+              <a
+                href="./games/3d/"
+                class="card"
+                style="
+                  border: 2px solid #1fa6a2;
+                  background: #eefaf8;
+                  box-shadow: 0 4px 15px rgba(31, 166, 162, 0.1);
+                "
+                ><div class="icon" style="background: #12355b; color: #fff">
+                  🌍
+                </div>
+                <div>
+                  <div class="title" style="font-weight: 800; color: #12355b">
+                    3D Games &amp; Expedition Hub
+                  </div>
+                  <div class="meta" style="color: #1fa6a2">
+                    Explore all 10 virtual WebGL unit games alongside the grand
+                    World Architect Math Project geometry expedition.
+                  </div>
+                </div>
+                <span class="arrow" style="color: #12355b">&rarr;</span></a
               >
-              <span class="card-action">Open →</span>
-            </a>
-            <a class="activity-card" href="/practice-engine/">
-              <span class="card-kicker">Practice</span>
-              <span class="card-title">Math Practice at Home</span>
-              <span class="card-copy"
-                >Self-paced MCAP-style practice your child can do
-                independently.</span
+              <a href="./netfold-pro/" class="card"
+                ><div class="icon u10">📦</div>
+                <div>
+                  <div class="title">
+                    NetFold Pro — Surface Area Net Simulator
+                  </div>
+                  <div class="meta">
+                    Unit 10 &middot; Geometry &middot; Interactive 3D net
+                    folding and surface area calculations.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
               >
-              <span class="card-action">Practice →</span>
-            </a>
-            <a class="activity-card" href="/graphic-novels/">
-              <span class="card-kicker">Read</span>
-              <span class="card-title">Math Graphic Novels</span>
-              <span class="card-copy"
-                >Interactive comic adventures that teach each unit — Support or
-                Enrichment.</span
+              <a href="./ratiolab/" class="card"
+                ><div class="icon u3">🧪</div>
+                <div>
+                  <div class="title">
+                    RatioLab — Double Number Lines &amp; Rates
+                  </div>
+                  <div class="meta">
+                    Unit 3 &middot; Ratios &middot; Drag number lines, scale
+                    grids, and fill percentage beakers.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
               >
-              <span class="card-action">Read →</span>
-            </a>
-            <a class="activity-card" href="/personal/">
-              <span class="card-kicker">More</span>
-              <span class="card-title">Personal Projects</span>
-              <span class="card-copy"
-                >Additional projects and resources from Joel Neft.</span
+              <a href="./cartesian-odyssey/" class="card"
+                ><div class="icon u9">🚀</div>
+                <div>
+                  <div class="title">
+                    Cartesian Odyssey — Coordinate Star-Map
+                  </div>
+                  <div class="meta">
+                    Unit 9 &middot; Coordinate Plane &middot; Plot quadrants and
+                    measure axis crossings with absolute value.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
               >
-              <span class="card-action">Open →</span>
-            </a>
-          </div>
-
-          <div class="folder-index" style="margin-top: 22px">
-            <div class="folder-index-group">
-              <h3>More for families</h3>
-              <div class="folder-links">
-                <a href="/directory/">Full Directory</a>
-                <a href="/math/finder/">Activities Finder</a>
-                <a href="/vocab-hub/">Vocabulary Study Hub</a>
-                <a href="/math/vocab-deck/">Bilingual Vocab Deck</a>
-                <a href="https://neft-classroom-html-activities.pages.dev"
-                  >Neft Teacher Pipeline</a
-                >
-              </div>
+              <a href="./misconception-lab/" class="card"
+                ><div class="icon u8">🤖</div>
+                <div>
+                  <div class="title">Misconception Lab — Math Mythbusters</div>
+                  <div class="meta">
+                    Unit 8 &middot; Decimals &amp; Operations &middot; Debug
+                    fraction, decimal, and precedence claims made by Error-Bot.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./word-to-equations/" class="card"
+                ><div class="icon u6">⚖️</div>
+                <div>
+                  <div class="title">Word-to-Equations — Algebraic Balance</div>
+                  <div class="meta">
+                    Unit 6 &middot; Expressions &amp; Equations &middot;
+                    Translate story word problems into balanced equations using
+                    scale physics.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./sports-analytics/" class="card"
+                ><div class="icon u8">🏀</div>
+                <div>
+                  <div class="title">Statistical Quest — Sports Analytics</div>
+                  <div class="meta">
+                    Unit 8 &middot; Statistics &middot; Drag score dots to watch
+                    live Mean balance lines, Median markers, and Box Plots.
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-1/" class="card"
+                ><div class="icon u1">🎮</div>
+                <div>
+                  <div class="title">Smoothie Stand</div>
+                  <div class="meta">
+                    Unit 1 &middot; Ratios &middot; 6.RP.A.1&ndash;3
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-2/" class="card"
+                ><div class="icon u2">🎮</div>
+                <div>
+                  <div class="title">Bakery</div>
+                  <div class="meta">
+                    Unit 2 &middot; Fractions &amp; Division &middot; 6.NS.A.1,
+                    6.NS.B
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-3/" class="card"
+                ><div class="icon u3">🎮</div>
+                <div>
+                  <div class="title">Ratio Rally</div>
+                  <div class="meta">
+                    Unit 3 &middot; Rates &middot; 6.RP.A.2&ndash;3
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-4/" class="card"
+                ><div class="icon u4">🎮</div>
+                <div>
+                  <div class="title">Factory Line</div>
+                  <div class="meta">
+                    Unit 4 &middot; Number System Operations &middot;
+                    6.NS.B.2&ndash;4
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-5/" class="card"
+                ><div class="icon u5">🎮</div>
+                <div>
+                  <div class="title">Architect</div>
+                  <div class="meta">
+                    Unit 5 &middot; Area &amp; Geometry &middot; 6.G.A.1
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-6/" class="card"
+                ><div class="icon u6">🎮</div>
+                <div>
+                  <div class="title">Expression Machine</div>
+                  <div class="meta">
+                    Unit 6 &middot; Expressions &middot; 6.EE.A.1&ndash;4
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-7/" class="card"
+                ><div class="icon u7">🎮</div>
+                <div>
+                  <div class="title">Submarine</div>
+                  <div class="meta">
+                    Unit 7 &middot; Number Line &amp; Integers &middot;
+                    6.NS.C.5&ndash;7
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-8/" class="card"
+                ><div class="icon u8">🎮</div>
+                <div>
+                  <div class="title">Data Lab</div>
+                  <div class="meta">
+                    Unit 8 &middot; Statistics &middot; 6.SP.A &amp; B
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-9/" class="card"
+                ><div class="icon u9">🎮</div>
+                <div>
+                  <div class="title">Coordinate Quest</div>
+                  <div class="meta">
+                    Unit 9 &middot; Coordinate Plane &middot; 6.NS.C.6/8,
+                    6.G.A.3
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./games/3d/unit-10/" class="card"
+                ><div class="icon u10">🎮</div>
+                <div>
+                  <div class="title">Volume Vault</div>
+                  <div class="meta">
+                    Unit 10 &middot; Volume of Prisms &middot; 6.G.A.2
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
             </div>
           </div>
-        </section>
+
+          <div class="unit-group">
+            <div class="unit-label">Ratios &amp; Proportions</div>
+            <div class="cards">
+              <a href="./ratios-proportions/recipe-factory-line/" class="card"
+                ><div class="icon u3">🏭</div>
+                <div>
+                  <div class="title">Recipe Factory — Scale the Ratio</div>
+                  <div class="meta">
+                    6.RP.A.3 &middot; Equivalent ratios &amp; scaling &middot;
+                    Fill crates on the belt
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/6-rp-1game/" class="card"
+                ><div class="icon u3">🍳</div>
+                <div>
+                  <div class="title">Kitchen Chef</div>
+                  <div class="meta">
+                    6.RP.A.1 &middot; Ratio concepts &middot; Restaurant game
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/6-rp-a-2game/" class="card"
+                ><div class="icon u3">🏭</div>
+                <div>
+                  <div class="title">Factory Production Line</div>
+                  <div class="meta">
+                    6.RP.A.2 &middot; Unit rates &middot; Factory sim
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/6-rp-a-3game/" class="card"
+                ><div class="icon u3">🛍️</div>
+                <div>
+                  <div class="title">Shopping Mall Tycoon</div>
+                  <div class="meta">
+                    6.RP.A.3 &middot; Rate reasoning &middot; Shopping sim
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/ratio-fuel-mixer/" class="card"
+                ><div class="icon u3">⛽</div>
+                <div>
+                  <div class="title">Ratio Table Fuel Mixer</div>
+                  <div class="meta">
+                    6.RP.A.3 &middot; Equivalent ratios, tables &amp; coordinate
+                    plots &middot; Mix fuel
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/percent-shadow-caster/" class="card"
+                ><div class="icon u3">☀️</div>
+                <div>
+                  <div class="title">Percent Shadow-Caster</div>
+                  <div class="meta">
+                    6.RP.A.3c &middot; Percents on double-number lines &amp;
+                    grids &middot; Cast shadows
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/unit-rate-duel/" class="card"
+                ><div class="icon u3">🛒</div>
+                <div>
+                  <div class="title">Supermarket Unit Rate Duel</div>
+                  <div class="meta">
+                    6.RP.A.2 &middot; Unit rates &middot; Comparative shopping
+                    simulator
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Number System</div>
+            <div class="cards">
+              <a href="./number-system/6-ns-a-1game/" class="card"
+                ><div class="icon u6">🤿</div>
+                <div>
+                  <div class="title">Underwater Adventure</div>
+                  <div class="meta">
+                    6.NS.A.1 &middot; Divide fractions &middot; Deep sea dive
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-b-2game/" class="card"
+                ><div class="icon u6">🚀</div>
+                <div>
+                  <div class="title">Asteroid Miner</div>
+                  <div class="meta">
+                    6.NS.B.2 &middot; Multi-digit division &middot; Space mining
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-b-3game/" class="card"
+                ><div class="icon u6">👨‍🍳</div>
+                <div>
+                  <div class="title">Cooking Simulator</div>
+                  <div class="meta">
+                    6.NS.B.3 &middot; Decimal operations &middot; Recipe game
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-b-4game/" class="card"
+                ><div class="icon u6">💎</div>
+                <div>
+                  <div class="title">Treasure Hunter</div>
+                  <div class="meta">
+                    6.NS.B.4 &middot; GCF &amp; LCM &middot; Dungeon crawler
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-c-3game/" class="card"
+                ><div class="icon u7">🏃</div>
+                <div>
+                  <div class="title">Number Line Jumper</div>
+                  <div class="meta">
+                    6.NS.C.3 &middot; Absolute value &middot; Platformer
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-c-5game/" class="card"
+                ><div class="icon u7">🌡️</div>
+                <div>
+                  <div class="title">Temperature Explorer</div>
+                  <div class="meta">
+                    6.NS.C.5 &middot; Positive/negative &middot; Hot &amp; cold
+                    zones
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-c-6game/" class="card"
+                ><div class="icon u7">🗺️</div>
+                <div>
+                  <div class="title">Coordinate Treasure Hunt</div>
+                  <div class="meta">
+                    6.NS.C.6 &middot; Coordinate plane &middot; Ship navigation
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/6-ns-c-8game/" class="card"
+                ><div class="icon u7">🏙️</div>
+                <div>
+                  <div class="title">City Builder</div>
+                  <div class="meta">
+                    6.NS.C.8 &middot; Graphing quadrants &middot; Build a city
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/subzero-ledger/" class="card"
+                ><div class="icon u7">🧊</div>
+                <div>
+                  <div class="title">
+                    Sub-Zero Ledger &amp; Altitude Compass
+                  </div>
+                  <div class="meta">
+                    6.NS.C.5–7 &middot; Negative integers &amp; absolute value
+                    &middot; Polar lab
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./unit-4/decimals-diner/" class="card"
+                ><div class="icon u6">🍔</div>
+                <div>
+                  <div class="title">Decimals Diner</div>
+                  <div class="meta">
+                    6.NS.B.3 &middot; Decimal operations &middot; Cashier
+                    simulator
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/pixel-area-model/" class="card"
+                ><div class="icon u6">🟦</div>
+                <div>
+                  <div class="title">Pixel Area Model</div>
+                  <div class="meta">
+                    6.NS &middot; Fraction &amp; decimal multiplication &middot;
+                    Area-model canvas
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/coordinate-navigator/" class="card"
+                ><div class="icon u7">🧭</div>
+                <div>
+                  <div class="title">Coordinate Navigator</div>
+                  <div class="meta">
+                    6.NS.C.6 &middot; 4-quadrant coordinate plane &middot;
+                    Pirate quest
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Expressions &amp; Equations</div>
+            <div class="cards">
+              <a href="./expressions-equations/6-ee-c-9game/" class="card"
+                ><div class="icon u8">🚀</div>
+                <div>
+                  <div class="title">Space Shooter</div>
+                  <div class="meta">
+                    6.EE.C.9 &middot; Variables &middot; Asteroid blaster
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/6-ee-c-9variablevelocitygame/"
+                class="card"
+                ><div class="icon u8">🏎️</div>
+                <div>
+                  <div class="title">Variable Velocity</div>
+                  <div class="meta">
+                    6.EE.C.9 &middot; Variables &middot; Racing game
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/6-ee-c-9martiangame/"
+                class="card"
+                ><div class="icon u8">👽</div>
+                <div>
+                  <div class="title">Mars Exploration</div>
+                  <div class="meta">
+                    6.EE.C.9 &middot; Variables &middot; Explore Mars
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./expressions-equations/6-ee-9gamereview/" class="card"
+                ><div class="icon u8">🏰</div>
+                <div>
+                  <div class="title">Tower Defense</div>
+                  <div class="meta">
+                    6.EE.C.9 &middot; Review &middot; Defend the castle
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/cloudflare-pages-game-for-6-ee-9/"
+                class="card"
+                ><div class="icon u8">🧩</div>
+                <div>
+                  <div class="title">Puzzle Platformer</div>
+                  <div class="meta">
+                    6.EE.C.9 &middot; Equations &middot; Jump &amp; solve
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/variablecomparisongame/"
+                class="card"
+                ><div class="icon u8">⚔️</div>
+                <div>
+                  <div class="title">Expression Arena</div>
+                  <div class="meta">
+                    6.EE &middot; Compare expressions &middot; Battle arena
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./expressions-equations/neon-inequality/" class="card"
+                ><div class="icon u8">🛡️</div>
+                <div>
+                  <div class="title">Neon Inequality Gatekeeper</div>
+                  <div class="meta">
+                    6.EE.B.8 &middot; Inequalities on number lines &middot;
+                    Firewall challenges
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./expressions-equations/martian-fuel-pod/" class="card"
+                ><div class="icon u8">👽</div>
+                <div>
+                  <div class="title">Martian Fuel Pod</div>
+                  <div class="meta">
+                    6.EE.B.5–7 &middot; Solve equations &middot; Algebraic
+                    balance scale
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/equivalent-expressions-forge/"
+                class="card"
+                ><div class="icon u8">⚒️</div>
+                <div>
+                  <div class="title">Equivalent Expressions Forge</div>
+                  <div class="meta">
+                    6.EE.A.4 &middot; Equivalent expressions &middot;
+                    Algebra-tile forge
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/one-step-solver-arena/"
+                class="card"
+                ><div class="icon u8">⚖️</div>
+                <div>
+                  <div class="title">One-Step Solver Arena</div>
+                  <div class="meta">
+                    6.EE.B.5–8 &middot; One-step equations &amp; inequalities
+                    &middot; Balance scale
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Statistics &amp; Data</div>
+            <div class="cards">
+              <a href="./statistics-data/6-sp-a-1game/" class="card"
+                ><div class="icon u2">🔍</div>
+                <div>
+                  <div class="title">Detective Investigation</div>
+                  <div class="meta">
+                    6.SP.A.1 &middot; Statistical questions &middot; Solve cases
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./statistics-data/6-sp-a-1game-2/" class="card"
+                ><div class="icon u2">📰</div>
+                <div>
+                  <div class="title">News Reporter</div>
+                  <div class="meta">
+                    6.SP.A.1 &middot; Statistical questions &middot; Run a
+                    newsroom
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./statistics-data/6-sp-b-5-data-detective-game/"
+                class="card"
+                ><div class="icon u2">🧪</div>
+                <div>
+                  <div class="title">Crime Scene Lab</div>
+                  <div class="meta">
+                    6.SP.B.5 &middot; Data analysis &middot; Forensic
+                    investigation
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./statistics-data/mean-median-mode-game/" class="card"
+                ><div class="icon u2">⚽</div>
+                <div>
+                  <div class="title">Sports Analytics</div>
+                  <div class="meta">
+                    6.SP &middot; Mean, median, mode &middot; Team manager
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./statistics-data/box-plot-detective/" class="card"
+                ><div class="icon u2">🔍</div>
+                <div>
+                  <div class="title">Box Plot Detective</div>
+                  <div class="meta">
+                    6.SP.B.4 &middot; Five-number summary &amp; box-and-whisker
+                    plots &middot; Solve neon cases
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./statistics-data/distribution-detective/" class="card"
+                ><div class="icon u2">🔎</div>
+                <div>
+                  <div class="title">Distribution Detective</div>
+                  <div class="meta">
+                    6.SP.A.2–3 &middot; Center, spread &amp; MAD &middot; Crack
+                    the case
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+
+          <div class="unit-group">
+            <div class="unit-label">Geometry</div>
+            <div class="cards">
+              <a
+                href="./geometry-prep/coordinate-polygon-architect/"
+                class="card"
+                ><div class="icon u5">📐</div>
+                <div>
+                  <div class="title">Coordinate Polygon Architect</div>
+                  <div class="meta">
+                    6.G.A.3 &middot; Polygons on the coordinate plane &middot;
+                    Side lengths &amp; area
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./unit-5/parallelogramandrhombusgame/" class="card"
+                ><div class="icon u5">📐</div>
+                <div>
+                  <div class="title">Architecture Builder</div>
+                  <div class="meta">
+                    6.G &middot; Parallelograms &amp; rhombuses &middot; Design
+                    structures
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./unit-1/6-1game/" class="card"
+                ><div class="icon u1">⚔️</div>
+                <div>
+                  <div class="title">Dungeon Crawler RPG</div>
+                  <div class="meta">
+                    Unit 1 &middot; Math adventure &middot; Explore &amp; solve
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./geometry-prep/surface-area-packer/" class="card"
+                ><div class="icon u5">📦</div>
+                <div>
+                  <div class="title">Surface Area Cyber-Packer</div>
+                  <div class="meta">
+                    6.G.A.4 &middot; Nets &amp; surface area of 3D solids
+                    &middot; Unfold and pack
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./geometry-prep/tangram-architect/" class="card"
+                ><div class="icon u5">📐</div>
+                <div>
+                  <div class="title">Tangram Polygon Architect</div>
+                  <div class="meta">
+                    6.G.A.1 &middot; Decompose composite polygons into area
+                    &middot; Drafting studio
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ PRE-TEST REVIEWS ═══ -->
+        <div class="panel" id="panel-pre-test">
+          <div class="content-header">
+            <h2>Pre-Test Reviews</h2>
+            <p>10 comprehensive unit reviews for test preparation</p>
+          </div>
+          <div class="cards">
+            <a href="./pre-test/unit1-review.html" class="card"
+              ><div class="icon u1">📝</div>
+              <div>
+                <div class="title">Unit 1 Review</div>
+                <div class="meta">
+                  Number Sense &middot; GCF, LCM, Decimal Operations
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./pre-test/unit2-review.html" class="card"
+              ><div class="icon u2">📝</div>
+              <div>
+                <div class="title">Unit 2 Review</div>
+                <div class="meta">
+                  Fractions &middot; Multiply &amp; Divide Fractions
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./pre-test/unit3-review.html" class="card"
+              ><div class="icon u3">📝</div>
+              <div>
+                <div class="title">Unit 3 Review</div>
+                <div class="meta">
+                  Ratios &middot; Tables, Graphs, Unit Rates
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./pre-test/unit4-review.html" class="card"
+              ><div class="icon u4">📝</div>
+              <div>
+                <div class="title">Unit 4 Review</div>
+                <div class="meta">
+                  Percents &middot; Conversions, Percent Problems
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./pre-test/unit5-review.html" class="card"
+              ><div class="icon u5">📝</div>
+              <div>
+                <div class="title">Unit 5 Review</div>
+                <div class="meta">
+                  Area &middot; Parallelograms, Triangles, Composite
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./pre-test/unit6-review.html" class="card"
+              ><div class="icon u6">📝</div>
+              <div>
+                <div class="title">Unit 6 Review</div>
+                <div class="meta">
+                  Expressions &middot; Write, Evaluate, Simplify
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./pre-test/unit7-review.html" class="card"
+              ><div class="icon u7">📝</div>
+              <div>
+                <div class="title">Unit 7 Review</div>
+                <div class="meta">
+                  Equations &middot; Solve, Write, Inequalities
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./pre-test/unit8-review.html" class="card"
+              ><div class="icon u8">📝</div>
+              <div>
+                <div class="title">Unit 8 Review</div>
+                <div class="meta">
+                  Statistics &middot; Mean, Median, MAD, Displays
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./pre-test/unit9-review.html" class="card"
+              ><div class="icon u9">📝</div>
+              <div>
+                <div class="title">Unit 9 Review</div>
+                <div class="meta">
+                  Coordinate Plane &middot; Graphing, Distance, Polygons
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./pre-test/unit10-review.html" class="card"
+              ><div class="icon u10">📝</div>
+              <div>
+                <div class="title">Unit 10 Review</div>
+                <div class="meta">
+                  Volume &amp; Surface Area &middot; Prisms, Pyramids, Nets
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+        </div>
+
+        <!-- ═══ POST-TEST ACTIVITIES ═══ -->
+        <div class="panel" id="panel-post-test">
+          <div class="content-header">
+            <h2>Post-Test Activities</h2>
+            <p>
+              10 creative application activities &mdash; immersive themed
+              scenarios after unit tests
+            </p>
+          </div>
+          <div class="cards">
+            <a href="./post-test/unit1-space-mission-control.html" class="card"
+              ><div class="icon u1">🚀</div>
+              <div>
+                <div class="title">Space Mission Control</div>
+                <div class="meta">
+                  Unit 1 &middot; Apply number sense in a NASA-style mission
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./post-test/unit2-master-chef-kitchen.html" class="card"
+              ><div class="icon u2">👨‍🍳</div>
+              <div>
+                <div class="title">Master Chef Kitchen</div>
+                <div class="meta">
+                  Unit 2 &middot; Use fractions to create recipes
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./post-test/unit3-global-travel-planner.html" class="card"
+              ><div class="icon u3">✈️</div>
+              <div>
+                <div class="title">Global Travel Planner</div>
+                <div class="meta">
+                  Unit 3 &middot; Plan trips using ratios &amp; rates
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./post-test/unit4-shopping-mall-mogul.html" class="card"
+              ><div class="icon u4">🛍️</div>
+              <div>
+                <div class="title">Shopping Mall Mogul</div>
+                <div class="meta">
+                  Unit 4 &middot; Run a store using percents &amp; discounts
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./post-test/unit5-theme-park-engineer.html" class="card"
+              ><div class="icon u5">🎢</div>
+              <div>
+                <div class="title">Theme Park Engineer</div>
+                <div class="meta">
+                  Unit 5 &middot; Design rides using area calculations
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a
+              href="./post-test/unit6-music-festival-producer.html"
+              class="card"
+              ><div class="icon u6">🎵</div>
+              <div>
+                <div class="title">Music Festival Producer</div>
+                <div class="meta">
+                  Unit 6 &middot; Organize events using expressions
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./post-test/unit7-detective-case-files.html" class="card"
+              ><div class="icon u7">🔍</div>
+              <div>
+                <div class="title">Detective Case Files</div>
+                <div class="meta">
+                  Unit 7 &middot; Solve mysteries with equations
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./post-test/unit8-sports-data-analyst.html" class="card"
+              ><div class="icon u8">🏀</div>
+              <div>
+                <div class="title">Sports Data Analyst</div>
+                <div class="meta">
+                  Unit 8 &middot; Analyze game stats using statistics
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./post-test/unit9-treasure-map-navigator.html" class="card"
+              ><div class="icon u9">🗺️</div>
+              <div>
+                <div class="title">Treasure Map Navigator</div>
+                <div class="meta">
+                  Unit 9 &middot; Navigate using coordinates &amp; distance
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./post-test/unit10-aquarium-architect.html" class="card"
+              ><div class="icon u10">🐠</div>
+              <div>
+                <div class="title">Aquarium Architect</div>
+                <div class="meta">
+                  Unit 10 &middot; Design tanks using volume &amp; surface area
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+        </div>
+
+        <!-- ═══ SUPPLEMENTAL RESOURCES ═══ -->
+        <div class="panel" id="panel-supplemental">
+          <div class="content-header">
+            <h2>Supplemental Resources</h2>
+            <p>
+              Level 1 support &amp; Level 2 enrichment materials for every unit
+              &mdash; visual vocab, sentence frames, challenge problems, and
+              investigations
+            </p>
+          </div>
+          <div class="cards">
+            <a href="./esol-study-guide/" class="card"
+              ><div class="icon u2">🌍</div>
+              <div>
+                <div class="title">
+                  Interactive Study Guide Player · Level 1
+                </div>
+                <div class="meta">
+                  Grade 6 Reveal Math standards &middot; Bilingual read-alouds,
+                  visual SVGs, and self-check quizzes
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-1/supplemental/" class="card"
+              ><div class="icon u1">📖</div>
+              <div>
+                <div class="title">Unit 1 &mdash; Foundation Math Skills</div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; Number sense
+                  &amp; operations
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-2/supplemental/" class="card"
+              ><div class="icon u2">📖</div>
+              <div>
+                <div class="title">Unit 2 &mdash; Statistics &amp; Data</div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; 6.SP.A.1,
+                  6.SP.B.5
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-3/supplemental/" class="card"
+              ><div class="icon u3">📖</div>
+              <div>
+                <div class="title">Unit 3 &mdash; Ratios &amp; Rates</div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; 6.RP.A.1,
+                  A.2, A.3
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-4/supplemental/" class="card"
+              ><div class="icon u4">📖</div>
+              <div>
+                <div class="title">Unit 4 &mdash; Decimals &amp; Percents</div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; 6.NS.B.2,
+                  B.3, 6.RP.A.3c
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-5/supplemental/" class="card"
+              ><div class="icon u5">📖</div>
+              <div>
+                <div class="title">
+                  Unit 5 &mdash; Geometry &amp; Measurement
+                </div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; 6.G.A.1,
+                  A.2, A.4
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-6/supplemental/" class="card"
+              ><div class="icon u6">📖</div>
+              <div>
+                <div class="title">
+                  Unit 6 &mdash; Number System &amp; Expressions
+                </div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; 6.NS.A.1,
+                  B.4, 6.EE.A.1-4
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-7/supplemental/" class="card"
+              ><div class="icon u7">📖</div>
+              <div>
+                <div class="title">
+                  Unit 7 &mdash; Integers &amp; Coordinate Plane
+                </div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; 6.NS.C.5,
+                  C.6, C.7, C.8
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-8/supplemental/" class="card"
+              ><div class="icon u8">📖</div>
+              <div>
+                <div class="title">
+                  Unit 8 &mdash; Equations &amp; Inequalities
+                </div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; 6.EE.B.5-8
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-9/supplemental/" class="card"
+              ><div class="icon u9">📖</div>
+              <div>
+                <div class="title">
+                  Unit 9 &mdash; Relationships Between Variables
+                </div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; 6.EE.C.9
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/math/unit-10/supplemental/" class="card"
+              ><div class="icon u10">📖</div>
+              <div>
+                <div class="title">
+                  Unit 10 &mdash; End of Year Review &amp; MCAP Prep
+                </div>
+                <div class="meta">
+                  Level 1 support &amp; Level 2 enrichment &middot; All
+                  standards review
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+        </div>
+
+        <!-- ═══ ESOL & READING ═══ -->
+        <div class="panel" id="panel-esol">
+          <div class="content-header">
+            <h2>Reading &amp; Language</h2>
+            <p>Language supports, reading activities, and writing practice</p>
+          </div>
+          <div class="cards">
+            <a href="./esol-study-guide/" class="card"
+              ><div class="icon u2">🌍</div>
+              <div>
+                <div class="title">
+                  Interactive Study Guide Player · Level 1
+                </div>
+                <div class="meta">
+                  Grade 6 Reveal Math &middot; Bilingual read-alouds, visual
+                  SVGs, and self-check quizzes
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/esol-reading-writing/health-wellness-goals/" class="card"
+              ><div class="icon" style="background: #059669">🌈</div>
+              <div>
+                <div class="title">Goal Adventure: Health &amp; Wellness</div>
+                <div class="meta">
+                  Grade 3 choose-your-own-adventure &mdash; set goals, healthy
+                  choices, feelings, kind decisions. Bilingual + read-aloud.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./refugee/" class="card"
+              ><div class="icon" style="background: #059669">📖</div>
+              <div>
+                <div class="title">Refugee Guided Review</div>
+                <div class="meta">
+                  Visual page-section review for pages 1-252
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol/" class="card"
+              ><div class="icon" style="background: #059669">🌍</div>
+              <div>
+                <div class="title">Reading &amp; Language</div>
+                <div class="meta">
+                  Language supports and newcomer activities
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/" class="card"
+              ><div class="icon" style="background: #059669">✏️</div>
+              <div>
+                <div class="title">Reading &amp; Writing</div>
+                <div class="meta">
+                  Reading, writing, and math-writing activities
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/esolreading/" class="card"
+              ><div class="icon" style="background: #059669">📚</div>
+              <div>
+                <div class="title">Reading Practice</div>
+                <div class="meta">Guided reading for English learners</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/refugeebookreview/" class="card"
+              ><div class="icon" style="background: #059669">📕</div>
+              <div>
+                <div class="title">Refugee Book Review</div>
+                <div class="meta">Interactive book review</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/flushbooksummary/" class="card"
+              ><div class="icon" style="background: #059669">📗</div>
+              <div>
+                <div class="title">Flush Book Summary</div>
+                <div class="meta">Interactive book summary</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/goodfriendhtml/" class="card"
+              ><div class="icon" style="background: #059669">🤝</div>
+              <div>
+                <div class="title">Good Friend</div>
+                <div class="meta">Character and friendship activity</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/math-writing/" class="card"
+              ><div class="icon" style="background: #059669">📝</div>
+              <div>
+                <div class="title">Math Writing</div>
+                <div class="meta">Math writing prompts</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/math-writing-help/" class="card"
+              ><div class="icon" style="background: #059669">💡</div>
+              <div>
+                <div class="title">Math Writing Help Studio</div>
+                <div class="meta">
+                  Create rigorous math CER drafts using dynamic visual models,
+                  speaker read-aloud, and Level 1 language supports.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a
+              href="./esol-reading-writing/twr-math-writing-studio/"
+              class="card"
+              ><div class="icon u2">✍️</div>
+              <div>
+                <div class="title">TWR Math Writing Studio</div>
+                <div class="meta">
+                  The Writing Revolution &middot; Conjunctions &amp; sentence
+                  expansion in math &middot; Graphic organizer
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+        </div>
+
+        <!-- ═══ WIDA SPEAKING ═══ -->
+        <div class="panel" id="panel-wida-speaking">
+          <div class="content-header">
+            <h2>WIDA Speaking Prep</h2>
+            <p>
+              Develop oral English proficiency through interactive prompts,
+              response frameworks, and picture descriptions
+            </p>
+          </div>
+          <div class="cards">
+            <a href="./wida-access/speaking/" class="card"
+              ><div class="icon" style="background: #0f766e">🗣️</div>
+              <div>
+                <div class="title">WIDA Speaking Practice Lab</div>
+                <div class="meta">
+                  Interactive speaking prep, prompt-response structures, and
+                  WIDA speaking rubrics.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./wida-access/speaking/" class="card"
+              ><div class="icon" style="background: #0f766e">🖼️</div>
+              <div>
+                <div class="title">Speaking Tier A/B Prep</div>
+                <div class="meta">
+                  Storytelling, detail picture description, and vocabulary
+                  building.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/math-writing-help/" class="card"
+              ><div class="icon" style="background: #0f766e">📐</div>
+              <div>
+                <div class="title">Reveal Math Oral Explanations</div>
+                <div class="meta">
+                  Guided speaking practice requiring verbal description of tape
+                  models and mechanical scales.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+        </div>
+
+        <!-- ═══ WIDA LISTENING ═══ -->
+        <div class="panel" id="panel-wida-listening">
+          <div class="content-header">
+            <h2>WIDA Listening Prep</h2>
+            <p>
+              Build academic listening capacity through audio stories,
+              comprehension checks, and direction trainers
+            </p>
+          </div>
+          <div class="cards">
+            <a href="/wida-access/listening/" class="card"
+              ><div class="icon" style="background: #0d9488">🎧</div>
+              <div>
+                <div class="title">Listening Practice Studio</div>
+                <div class="meta">
+                  6 interactive activity types &mdash; Listen &amp; Choose,
+                  Follow Directions, Sequence, Main Idea, Vocabulary, Listen
+                  &amp; Label &mdash; with Level 1 and Level 2 audio.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="/wida-access/listening/" class="card"
+              ><div class="icon" style="background: #0d9488">🧭</div>
+              <div>
+                <div class="title">Oral Directions Trainer</div>
+                <div class="meta">
+                  Listen to multi-step classroom directions and carry them out
+                  (Follow Directions activities, both levels).
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/math-writing-help/" class="card"
+              ><div class="icon" style="background: #0d9488">📝</div>
+              <div>
+                <div class="title">Math Speech Comprehension</div>
+                <div class="meta">
+                  Dictation checks and vocabulary audits using audio synthesis
+                  readers.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+        </div>
+
+        <!-- ═══ WIDA READING ═══ -->
+        <div class="panel" id="panel-wida-reading">
+          <div class="content-header">
+            <h2>WIDA Reading Prep</h2>
+            <p>
+              Enhance academic vocabulary and reading skills using WIDA
+              tier-based passages and multilingual dictionaries
+            </p>
+          </div>
+          <div class="cards">
+            <a href="./wida-access/reading/" class="card"
+              ><div class="icon" style="background: #ea580c">📖</div>
+              <div>
+                <div class="title">ACCESS Reading Comprehension</div>
+                <div class="meta">
+                  Literary and informational WIDA passages with text checks.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/math-writing-help/" class="card"
+              ><div class="icon" style="background: #ea580c">🔍</div>
+              <div>
+                <div class="title">Reveal Math Text Solver</div>
+                <div class="meta">
+                  Reading complex math stories, highlighting keywords, and
+                  extracting quantitative evidence.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./esol-reading-writing/math-writing-help/" class="card"
+              ><div class="icon" style="background: #ea580c">🌍</div>
+              <div>
+                <div class="title">Multilingual Word Wall Explorer</div>
+                <div class="meta">
+                  Interactive math glossary translated to Spanish, Arabic, and
+                  Vietnamese.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+        </div>
+
+        <!-- ═══ WIDA WRITING ═══ -->
+        <div class="panel" id="panel-wida-writing">
+          <div class="content-header">
+            <h2>WIDA Writing Prep</h2>
+            <p>
+              Construct high-scoring WIDA writing responses using scaffolded
+              paragraph editors and scoring rubrics
+            </p>
+          </div>
+          <div class="cards">
+            <a href="./wida-access/writing/" class="card"
+              ><div class="icon" style="background: #d97706">✍️</div>
+              <div>
+                <div class="title">WIDA Writing Prep Studio</div>
+                <div class="meta">
+                  Comprehensive 20-task interactive writing workbook. Scaffolded
+                  paragraphs, vocabulary match checks, and typing animations.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./wida-access/writing/" class="card"
+              ><div class="icon" style="background: #d97706">📝</div>
+              <div>
+                <div class="title">WIDA ACCESS Essay Creator</div>
+                <div class="meta">
+                  Build informational and analytical WIDA essays utilizing
+                  direct sentence starters and cohesive connectors.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./wida-access/writing/" class="card"
+              ><div class="icon" style="background: #d97706">🏆</div>
+              <div>
+                <div class="title">WIDA Writing Rubric Scorer</div>
+                <div class="meta">
+                  Interactive student self-evaluation and customized coaching
+                  feedback generators to expand linguistic control.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+        </div>
+
+        <!-- ═══ BLOOD ON THE RIVER ═══ -->
+        <div class="panel" id="panel-blood-river">
+          <div class="content-header">
+            <h2>Blood on the River</h2>
+            <p>
+              27 interactive chapter activities &mdash; vocabulary, scenes,
+              quotes, and comprehension checks
+            </p>
+          </div>
+          <div class="cards" style="margin-bottom: 16px">
+            <a href="./blood-on-the-river/" class="card"
+              ><div class="icon" style="background: #7c3aed">📚</div>
+              <div>
+                <div class="title">Full Collection</div>
+                <div class="meta">
+                  All 27 chapters with vocabulary, scenes, quotes, and
+                  comprehension
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+          <div class="chapter-grid">
+            <a class="ch-btn" href="./blood-on-the-river/chapter-1/">1</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-2/">2</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-3/">3</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-4/">4</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-5/">5</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-6/">6</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-7/">7</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-8/">8</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-9/">9</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-10/">10</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-11/">11</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-12/">12</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-13/">13</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-14/">14</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-15/">15</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-16/">16</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-17/">17</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-18/">18</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-19/">19</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-20/">20</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-21/">21</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-22/">22</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-23/">23</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-24/">24</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-25/">25</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-26/">26</a
+            ><a class="ch-btn" href="./blood-on-the-river/chapter-27/">27</a>
+          </div>
+        </div>
+
+        <!-- ═══ SPECIAL PROJECTS ═══ -->
+        <div class="panel" id="panel-projects">
+          <div class="content-header">
+            <h2>Special Projects &amp; Activities</h2>
+            <p>
+              Standalone projects, creative activities, review tools, and
+              practice resources
+            </p>
+          </div>
+
+          <!-- ── Featured Projects ── -->
+          <h3
+            style="
+              font-size: 0.95rem;
+              font-weight: 800;
+              color: var(--navy);
+              margin: 0 0 12px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid var(--amber);
+            "
+          >
+            🌍 Featured Projects
+          </h3>
+          <div class="cards">
+            <a href="./unit-5/unit5worldarchitectureprojet/" class="card"
+              ><div class="icon" style="background: #2563eb">🌍</div>
+              <div>
+                <div class="title">World Architect Expedition</div>
+                <div class="meta">
+                  Full interactive math expedition — geometry &amp; measurement
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./world-architect-math-project/" class="card"
+              ><div class="icon" style="background: #7c3aed">🏗️</div>
+              <div>
+                <div class="title">World Architect Math Project</div>
+                <div class="meta">Architecture-themed math project</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./fix-it-design-challenge/" class="card"
+              ><div class="icon" style="background: #ea580c">🔧</div>
+              <div>
+                <div class="title">Fix-It Design Challenge</div>
+                <div class="meta">Engineering design challenge</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./misconception-museum/" class="card"
+              ><div class="icon" style="background: #dc2626">🏛️</div>
+              <div>
+                <div class="title">Misconception Museum</div>
+                <div class="meta">
+                  Identify &amp; correct common math errors
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./reveal-evidence-studio/" class="card"
+              ><div class="icon" style="background: #0891b2">🔍</div>
+              <div>
+                <div class="title">Reveal Evidence Studio</div>
+                <div class="meta">Evidence-based math reasoning</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+
+          <!-- ── Geometry & Measurement (Unit 5) ── -->
+          <h3
+            style="
+              font-size: 0.95rem;
+              font-weight: 800;
+              color: var(--navy);
+              margin: 28px 0 12px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid var(--teal);
+            "
+          >
+            📐 Geometry &amp; Measurement Activities
+          </h3>
+          <div class="cards">
+            <a href="./unit-5/5-1-5-3practice/" class="card"
+              ><div class="icon" style="background: #0d9488">📐</div>
+              <div>
+                <div class="title">Area Engine — Geometry Studio</div>
+                <div class="meta">Lessons 5.1–5.3 area practice</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/grade6area5-1-2/" class="card"
+              ><div class="icon" style="background: #0d9488">🎯</div>
+              <div>
+                <div class="title">Area Quest</div>
+                <div class="meta">Interactive area exploration</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/grade6area5-1-2language/" class="card"
+              ><div class="icon" style="background: #2563eb">🌐</div>
+              <div>
+                <div class="title">Area Quest — Level 1 Edition</div>
+                <div class="meta">Area exploration with language support</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/interactiveareamission/" class="card"
+              ><div class="icon" style="background: #7c3aed">🏗️</div>
+              <div>
+                <div class="title">Area Mission Builder</div>
+                <div class="meta">Interactive area construction</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/5-3envtrapezoidactivity/" class="card"
+              ><div class="icon" style="background: #ea580c">🔶</div>
+              <div>
+                <div class="title">Trapezoid Area (ENV)</div>
+                <div class="meta">Trapezoid area interactive</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/5-3rvtrapezoid/" class="card"
+              ><div class="icon" style="background: #ea580c">🔷</div>
+              <div>
+                <div class="title">Trapezoid Area (RV)</div>
+                <div class="meta">Trapezoid area interactive</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/5-5gemini/" class="card"
+              ><div class="icon" style="background: #0891b2">📦</div>
+              <div>
+                <div class="title">Volume of Rectangular Prisms</div>
+                <div class="meta">Volume module with visuals</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/volumeofrectangularprism/" class="card"
+              ><div class="icon" style="background: #0891b2">🧊</div>
+              <div>
+                <div class="title">Volume of Rectangular Prisms 3D</div>
+                <div class="meta">Interactive 3D volume practice</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/5-5squaretriangle/" class="card"
+              ><div class="icon" style="background: #7c3aed">🔺</div>
+              <div>
+                <div class="title">Nets — Square Pyramids</div>
+                <div class="meta">Session 1: nets for square pyramids</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/5-6session1/" class="card"
+              ><div class="icon" style="background: #7c3aed">📋</div>
+              <div>
+                <div class="title">Nets of 3D Figures</div>
+                <div class="meta">Interactive notebook — 3D figure nets</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/5-8interactivehtml/" class="card"
+              ><div class="icon" style="background: #dc2626">🔺</div>
+              <div>
+                <div class="title">Surface Area — Square Pyramids</div>
+                <div class="meta">Interactive pyramid surface area</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/rectangularprismstory/" class="card"
+              ><div class="icon" style="background: #0d9488">📖</div>
+              <div>
+                <div class="title">MathQuest Surface Area Adventure</div>
+                <div class="meta">Story-based surface area exploration</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/rectangularprismstoryesl/" class="card"
+              ><div class="icon" style="background: #2563eb">📖</div>
+              <div>
+                <div class="title">MathQuest Surface Area — Level 1</div>
+                <div class="meta">Surface area with language support</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./geometry-prep/" class="card"
+              ><div class="icon" style="background: #0d9488">📝</div>
+              <div>
+                <div class="title">Geometry Prep</div>
+                <div class="meta">Geometry readiness review</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./surface-area-review/" class="card"
+              ><div class="icon" style="background: #dc2626">📐</div>
+              <div>
+                <div class="title">Surface Area Review</div>
+                <div class="meta">Surface area practice &amp; review</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5-practice/" class="card"
+              ><div class="icon" style="background: #0891b2">🎮</div>
+              <div>
+                <div class="title">Unit 5 Practice</div>
+                <div class="meta">Geometry practice activities</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/unit5practicehtml/" class="card"
+              ><div class="icon" style="background: #ea580c">🕹️</div>
+              <div>
+                <div class="title">Unit 5 Geometry Review Arcade</div>
+                <div class="meta">Arcade-style geometry review</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-5/unit5testreview/" class="card"
+              ><div class="icon" style="background: #7c3aed">📊</div>
+              <div>
+                <div class="title">Unit 5 Geometry Prep Studio</div>
+                <div class="meta">Test prep &amp; review studio</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+
+          <!-- ── Unit 4 Activities ── -->
+          <h3
+            style="
+              font-size: 0.95rem;
+              font-weight: 800;
+              color: var(--navy);
+              margin: 28px 0 12px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid var(--coral);
+            "
+          >
+            🔢 Decimals &amp; Operations Activities
+          </h3>
+          <div class="cards">
+            <a href="./unit-4/decimaloperationsreview/" class="card"
+              ><div class="icon" style="background: #dc2626">🔢</div>
+              <div>
+                <div class="title">Decimal Operations Review</div>
+                <div class="meta">Interactive decimal practice</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-4/longdivisionmcapreview/" class="card"
+              ><div class="icon" style="background: #ea580c">➗</div>
+              <div>
+                <div class="title">Long Division Studio</div>
+                <div class="meta">Long division practice &amp; review</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./unit-4/math6unit4interactivestudystudio/" class="card"
+              ><div class="icon" style="background: #7c3aed">📚</div>
+              <div>
+                <div class="title">Unit 4 Interactive Study Studio</div>
+                <div class="meta">Comprehensive Unit 4 review</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+
+          <!-- ── Test Prep & Review ── -->
+          <h3
+            style="
+              font-size: 0.95rem;
+              font-weight: 800;
+              color: var(--navy);
+              margin: 28px 0 12px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid var(--green);
+            "
+          >
+            📝 Test Prep &amp; Review
+          </h3>
+          <div class="cards">
+            <a href="./mcap-review/" class="card"
+              ><div class="icon" style="background: #0fa958">📋</div>
+              <div>
+                <div class="title">MCAP &amp; General Review</div>
+                <div class="meta">
+                  MCAP test prep · 5 domain sets + 6 full-length auto-graded
+                  practice tests
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./summer-bridge/" class="card"
+              ><div class="icon" style="background: #f59e0b">☀️</div>
+              <div>
+                <div class="title">Summer Bridge — Grade 6 → 7</div>
+                <div class="meta">
+                  Skills checkup + a friendly Grade 7 preview
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./correlation-playground/" class="card"
+              ><div class="icon" style="background: #0891b2">📊</div>
+              <div>
+                <div class="title">Correlation Playground</div>
+                <div class="meta">Scatter plots and correlation</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./statistics-data/stats-of-my-life/" class="card"
+              ><div class="icon" style="background: #1fa6a2">📊</div>
+              <div>
+                <div class="title">Stats of My Life</div>
+                <div class="meta">
+                  6th Grade Math Project — statistics and data analysis
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a
+              href="./statistics-data/meanmedianmodesoccerandbracelets/"
+              class="card"
+              ><div class="icon" style="background: #1fa6a2">🎮</div>
+              <div>
+                <div class="title">Stats Choice Quest (Soccer & Bracelets)</div>
+                <div class="meta">Soccer shootout & bead craft game</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./statistics-data/histogramhero/" class="card"
+              ><div class="icon" style="background: #1fa6a2">🦸</div>
+              <div>
+                <div class="title">Histogram Hero</div>
+                <div class="meta">
+                  Interactive graphic novel statistics lesson
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+
+          <!-- ── Other Projects ── -->
+          <h3
+            style="
+              font-size: 0.95rem;
+              font-weight: 800;
+              color: var(--navy);
+              margin: 28px 0 12px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+            "
+          >
+            🎓 Other Projects &amp; Activities
+          </h3>
+          <div class="cards">
+            <a href="./wida-access/" class="card"
+              ><div class="icon" style="background: #2563eb">📋</div>
+              <div>
+                <div class="title">WIDA ACCESS 25-26</div>
+                <div class="meta">WIDA test prep and review</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./practice-engine/" class="card"
+              ><div class="icon" style="background: #ea580c">🎯</div>
+              <div>
+                <div class="title">Student Practice Engine</div>
+                <div class="meta">Adaptive practice platform</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+          </div>
+        </div>
+
+        <!-- ═══ TEACHER TOOLS ═══ -->
+        <div class="panel" id="panel-tools">
+          <div class="content-header">
+            <h2>Teacher Tools &amp; Dashboards</h2>
+            <p>Professional hub, data dashboards, and teacher utilities</p>
+          </div>
+          <div class="cards">
+            <a href="./teacher-tools/" class="card"
+              ><div class="icon" style="background: #e11d48">🏠</div>
+              <div>
+                <div class="title">Professional Hub</div>
+                <div class="meta">Planning, data, deployment</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./teacher-tools/forecast-engine/" class="card"
+              ><div class="icon" style="background: #e11d48">📈</div>
+              <div>
+                <div class="title">Forecast Engine</div>
+                <div class="meta">Evidence review, readiness forecasting</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./teacher-tools/class-dashboard/" class="card"
+              ><div class="icon" style="background: #e11d48">📊</div>
+              <div>
+                <div class="title">Class Dashboard &amp; Gradebook</div>
+                <div class="meta">
+                  At-a-glance lesson results by student &amp; standard; reteach
+                  flags; CSV export
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./teacher-tools/class-results.html" class="card"
+              ><div class="icon" style="background: #0d9488">🗂️</div>
+              <div>
+                <div class="title">Class Results</div>
+                <div class="meta">
+                  Every pre-test &amp; post-test students finish on this device
+                  in one sortable table; export a single combined CSV for your
+                  gradebook or data dashboard
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./teacher-tools/do-now-generator/" class="card"
+              ><div class="icon" style="background: #e11d48">⏱️</div>
+              <div>
+                <div class="title">Do Now / Warm-up Generator</div>
+                <div class="meta">
+                  Pick a lesson or type a request &rarr; Google Apps Script that
+                  builds the Form
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./teacher-tools/playlist-builder/" class="card"
+              ><div class="icon" style="background: #e11d48">🧭</div>
+              <div>
+                <div class="title">Playlist Builder</div>
+                <div class="meta">
+                  Bundle activities into one shareable, no-login student
+                  playlist link
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./teacher-tools/lesson-plan-generator/" class="card"
+              ><div class="icon" style="background: #e11d48">📝</div>
+              <div>
+                <div class="title">Lesson Plan Generator</div>
+                <div class="meta">
+                  Standards &amp; supports &rarr; printable 10-section plan
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./neft-data-studio/" class="card"
+              ><div class="icon" style="background: #e11d48">📊</div>
+              <div>
+                <div class="title">Data Studio</div>
+                <div class="meta">
+                  CSV upload, dashboards, charts, student groups, Level 1 /
+                  Level 2 views
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a href="./teacher-data-dashboard/" class="card"
+              ><div class="icon" style="background: #e11d48">📉</div>
+              <div>
+                <div class="title">Teacher Data Dashboard</div>
+                <div class="meta">Data visualization and tracking</div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a
+              href="https://neft-classroom-html-activities.pages.dev"
+              target="_blank"
+              rel="noopener"
+              class="card"
+              ><div class="icon" style="background: #e11d48">🚀</div>
+              <div>
+                <div class="title">Neft Teacher Pipeline</div>
+                <div class="meta">Lesson plan and notebook generation</div>
+              </div>
+              <span class="arrow">↗</span></a
+            >
+          </div>
+        </div>
       </main>
-
-      <footer class="site-footer">
-        <span>Neft Teacher · Grade 6 Classroom &amp; Family Hub</span>
-        <a class="footer-link" href="/directory/">Full Directory →</a>
-      </footer>
     </div>
+
+    <script>
+      // Sidebar navigation
+      document.querySelectorAll(".sb-item").forEach((item) => {
+        // Make these div-like <a> (no href) keyboard-operable buttons.
+        if (!item.hasAttribute("role")) item.setAttribute("role", "button");
+        if (!item.hasAttribute("tabindex")) item.setAttribute("tabindex", "0");
+        if (item.classList.contains("active"))
+          item.setAttribute("aria-current", "page");
+
+        function activate() {
+          document.querySelectorAll(".sb-item").forEach((i) => {
+            i.classList.remove("active");
+            i.removeAttribute("aria-current");
+          });
+          document
+            .querySelectorAll(".panel")
+            .forEach((p) => p.classList.remove("active"));
+          item.classList.add("active");
+          item.setAttribute("aria-current", "page");
+          // Keep the active item's group expanded so the highlight is visible.
+          const grp = item.closest(".sb-group");
+          if (grp && grp.classList.contains("collapsed")) {
+            grp.classList.remove("collapsed");
+            const lbl = grp.querySelector(".sb-group-label");
+            if (lbl) lbl.setAttribute("aria-expanded", "true");
+          }
+          document
+            .getElementById("panel-" + item.dataset.panel)
+            .classList.add("active");
+          // Close mobile sidebar
+          const sb = document.getElementById("sidebar");
+          sb.classList.remove("open");
+          document.getElementById("overlay").style.display = "none";
+          const mt = document.getElementById("mobile-toggle");
+          if (mt) mt.setAttribute("aria-expanded", "false");
+          window.scrollTo(0, 0);
+        }
+
+        item.addEventListener("click", activate);
+        item.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            activate();
+          }
+        });
+      });
+
+      // Group collapse/expand
+      document.querySelectorAll(".sb-group-label").forEach((label) => {
+        const group = label.parentElement;
+        if (!label.hasAttribute("role")) label.setAttribute("role", "button");
+        if (!label.hasAttribute("tabindex"))
+          label.setAttribute("tabindex", "0");
+        label.setAttribute(
+          "aria-expanded",
+          group.classList.contains("collapsed") ? "false" : "true",
+        );
+
+        function toggle() {
+          group.classList.toggle("collapsed");
+          label.setAttribute(
+            "aria-expanded",
+            group.classList.contains("collapsed") ? "false" : "true",
+          );
+        }
+
+        label.addEventListener("click", toggle);
+        label.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
+          }
+        });
+      });
+
+      // Sidebar menu filter — filters sb-items by label; auto-expands groups
+      // with matches and remembers each group's collapsed state to restore it.
+      (function () {
+        const nav = document.getElementById("sbNavSearch");
+        if (!nav) return;
+        const groups = document.querySelectorAll(".sb-group");
+        nav.addEventListener("input", () => {
+          const q = nav.value.trim().toLowerCase();
+          groups.forEach((grp) => {
+            const label = grp.querySelector(".sb-group-label");
+            const labelHit =
+              !!q && label && label.textContent.toLowerCase().includes(q);
+            let any = false;
+            grp.querySelectorAll(".sb-item").forEach((it) => {
+              // If the group label matches, keep all its items visible.
+              const hit =
+                !q || labelHit || it.textContent.toLowerCase().includes(q);
+              it.classList.toggle("nav-filter-hide", !hit);
+              if (hit) any = true;
+            });
+            const groupHit = any || labelHit;
+            grp.classList.toggle("nav-filter-hide", !!q && !groupHit);
+            if (q) {
+              // While filtering: stash original state once, then expand matches.
+              if (grp.dataset.savedCollapsed === undefined)
+                grp.dataset.savedCollapsed = grp.classList.contains("collapsed")
+                  ? "1"
+                  : "0";
+              grp.classList.remove("collapsed");
+              if (label) label.setAttribute("aria-expanded", "true");
+            } else {
+              // Cleared: restore original collapsed state.
+              if (grp.dataset.savedCollapsed !== undefined) {
+                const wasCollapsed = grp.dataset.savedCollapsed === "1";
+                grp.classList.toggle("collapsed", wasCollapsed);
+                if (label)
+                  label.setAttribute(
+                    "aria-expanded",
+                    wasCollapsed ? "false" : "true",
+                  );
+                delete grp.dataset.savedCollapsed;
+              }
+            }
+          });
+        });
+        nav.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            nav.value = "";
+            nav.dispatchEvent(new Event("input"));
+          }
+        });
+      })();
+
+      // Give chapter buttons a descriptive accessible name.
+      document.querySelectorAll(".chapter-grid .ch-btn").forEach((btn) => {
+        const n = btn.textContent.trim();
+        if (n && !btn.hasAttribute("aria-label"))
+          btn.setAttribute("aria-label", "Chapter " + n);
+      });
+
+      // Mobile hamburger
+      document.getElementById("mobile-toggle").addEventListener("click", () => {
+        const sb = document.getElementById("sidebar");
+        const ov = document.getElementById("overlay");
+        const mt = document.getElementById("mobile-toggle");
+        sb.classList.toggle("open");
+        const open = sb.classList.contains("open");
+        ov.style.display = open ? "block" : "none";
+        if (mt) mt.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+      document.getElementById("overlay").addEventListener("click", () => {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("overlay").style.display = "none";
+        const mt = document.getElementById("mobile-toggle");
+        if (mt) mt.setAttribute("aria-expanded", "false");
+      });
+
+      // Hub search — filter cards across ALL panels
+      (function () {
+        const search = document.getElementById("hubSearch");
+        const content = document.querySelector("main.content");
+        const countEl = document.getElementById("hubSearchCount");
+        if (!search || !content) return;
+
+        function runSearch(raw) {
+          const q = raw.trim().toLowerCase();
+          if (!q) {
+            content.classList.remove("searching");
+            content
+              .querySelectorAll(".search-hide, .search-empty")
+              .forEach((el) =>
+                el.classList.remove("search-hide", "search-empty"),
+              );
+            countEl.textContent = "";
+            return;
+          }
+          content.classList.add("searching");
+          let total = 0;
+          content.querySelectorAll(".panel").forEach((panel) => {
+            let matches = 0;
+            panel.querySelectorAll(".card").forEach((card) => {
+              const hit = card.textContent.toLowerCase().includes(q);
+              card.classList.toggle("search-hide", !hit);
+              if (hit) matches++;
+            });
+            panel.querySelectorAll(".unit-group").forEach((g) => {
+              g.classList.toggle(
+                "search-empty",
+                !g.querySelector(".card:not(.search-hide)"),
+              );
+            });
+            panel.classList.toggle("search-empty", matches === 0);
+            total += matches;
+          });
+          countEl.textContent =
+            total === 0
+              ? "No matches — try another word."
+              : total + (total === 1 ? " result" : " results");
+        }
+
+        search.addEventListener("input", (e) => runSearch(e.target.value));
+        search.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            search.value = "";
+            runSearch("");
+            search.blur();
+          }
+        });
+        // "/" focuses the search box
+        document.addEventListener("keydown", (e) => {
+          const tag = (document.activeElement.tagName || "").toLowerCase();
+          if (
+            e.key === "/" &&
+            document.activeElement !== search &&
+            tag !== "input" &&
+            tag !== "textarea"
+          ) {
+            e.preventDefault();
+            search.focus();
+          }
+        });
+      })();
+    </script>
+    <script>
+      /* Pre-Test cards: surface Level 1 (Support) / Level 2 (Enrichment) variants
+         under each base review card. Derives URLs from the card href so it stays
+         in sync with the pre-test/ folder; idempotent. */
+      (function () {
+        document
+          .querySelectorAll(
+            '#panel-pre-test a.card[href*="/pre-test/"][href$="-review.html"]',
+          )
+          .forEach((card) => {
+            if (card.dataset.levelLinks) return;
+            card.dataset.levelLinks = "1";
+            const base = card.getAttribute("href").replace(/\.html$/, "");
+            const row = document.createElement("div");
+            row.style.cssText =
+              "display:flex;gap:8px;justify-content:flex-end;margin:-4px 0 4px;padding:0 4px;font-size:.78rem";
+            row.innerHTML =
+              '<a href="' +
+              base +
+              '-level-0.html" style="color:#9a3412;background:#fff7ed;text-decoration:none;padding:2px 8px;border:1px solid #fdba74;border-radius:99px">Level 0 · Most Support</a>' +
+              '<a href="' +
+              base +
+              '-level-1.html" style="color:var(--primary,#4338ca);text-decoration:none;padding:2px 8px;border:1px solid var(--line,#e2e8f0);border-radius:99px">Level 1 · Support</a>' +
+              '<a href="' +
+              base +
+              '-level-2.html" style="color:var(--accent,#d97706);text-decoration:none;padding:2px 8px;border:1px solid var(--line,#e2e8f0);border-radius:99px">Level 2 · Enrichment</a>';
+            card.insertAdjacentElement("afterend", row);
+          });
+      })();
+    </script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
   </body>
 </html>
