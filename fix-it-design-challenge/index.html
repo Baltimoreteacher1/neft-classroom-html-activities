@@ -1391,6 +1391,55 @@
           border: 1px solid #ccc;
         }
       }
+
+      /* Pre-post readiness self-check */
+      .ready-check-group {
+        border: 1px dashed var(--teal);
+        border-radius: 14px;
+        background: rgba(79, 182, 179, 0.07);
+        padding: 14px 16px;
+        margin: 4px 0 14px;
+      }
+      .ready-check-group .rc-title {
+        margin: 0 0 10px;
+        font-weight: 900;
+        color: var(--navy);
+        font-size: 14px;
+      }
+      .ready-check-group .rc-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+      }
+      .ready-check-group label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .ready-check-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        min-height: 0;
+        accent-color: var(--teal);
+        cursor: pointer;
+      }
+      .ready-check-group .rc-status {
+        display: block;
+        margin-top: 10px;
+        font-weight: 900;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .ready-check-group.passed {
+        border-style: solid;
+        background: rgba(224, 169, 60, 0.1);
+      }
+      .ready-check-group.passed .rc-status {
+        color: #9a6f12;
+      }
     </style>
   </head>
   <body>
@@ -1594,113 +1643,203 @@
               do in your group. Read through it so you know what to expect.
             </p>
 
-            <div class="model-scenario">
-              <div class="scenario-label">Model scenario</div>
-              <p>
-                <strong>Grade 7 ELA</strong> — A teacher asked AI to help
-                students analyze a challenging article. The AI request sounded
-                helpful but did the thinking for students.
-              </p>
-              <div class="ai-input-card">
-                <h4>Problematic AI request</h4>
-                <p class="quote">
-                  "Summarize this article for 7th graders and tell students the
-                  author’s central claim and two pieces of evidence they should
-                  use in their response."
+            <div class="workspace-grid model-workspace">
+              <aside class="scenario-card">
+                <div class="scenario-label">Model scenario · Grade 7 ELA</div>
+                <h3>What went wrong?</h3>
+                <p>
+                  Students read a challenging article and identify the author’s
+                  central claim with two pieces of evidence. The AI support made
+                  the article easier, but it also did the close-reading work.
                 </p>
-              </div>
-            </div>
 
-            <div class="model-steps">
-              <div class="model-step">
-                <div class="model-step-head">
-                  <span>1</span>
-                  <h4>Name the access barrier</h4>
+                <div class="ai-input-card">
+                  <h4>Problem AI Input</h4>
+                  <p class="quote">
+                    “Summarize this article for 7th graders and tell students
+                    the author’s central claim and two pieces of evidence they
+                    should use in their response.”
+                  </p>
                 </div>
-                <div class="model-answer">
-                  Dense academic text makes it hard for students to locate the
-                  claim and evidence on their own.
-                </div>
-              </div>
-
-              <div class="model-step">
-                <div class="model-step-head">
-                  <span>2</span>
-                  <h4>Protect the student thinking</h4>
-                </div>
-                <div class="model-answer">
-                  Students must read the article closely, identify the central
-                  claim themselves, select their own evidence, and explain how
-                  the evidence supports the claim.
-                </div>
-              </div>
-
-              <div class="model-step">
-                <div class="model-step-head">
-                  <span>3</span>
-                  <h4>Draft the fix before Gemini</h4>
-                </div>
-                <div class="model-answer">
-                  Create an access scaffold for students reading a challenging
-                  article. Do not summarize the article, name the central claim,
-                  or choose evidence for students. Instead, create chunk
-                  headings, 5 student-friendly vocabulary supports, one focus
-                  question per chunk, and a blank evidence organizer that
-                  requires students to return to the original article and choose
-                  their own evidence.
-                </div>
-              </div>
-
-              <div class="model-step gemini-step">
-                <div class="model-step-head">
-                  <span>4</span>
-                  <h4>Use Gemini as a coach</h4>
-                </div>
-                <p class="model-hint">
-                  The coach prompt was copied into Gemini. Here is the useful
-                  feedback:
-                </p>
-                <div class="model-answer">
-                  Gemini suggested adding a sentence-starter bank for the
-                  written response so students who struggle with academic
-                  writing can still engage with the evidence — without the
-                  sentence starters giving away which evidence to choose.
-                </div>
-              </div>
-
-              <div class="model-step">
-                <div class="model-step-head">
-                  <span>5</span>
-                  <h4>Final after-Gemini version</h4>
-                </div>
-                <div class="model-answer">
-                  Create an access scaffold for students reading a challenging
-                  article. Do not summarize the article, name the central claim,
-                  or choose evidence for students. Instead, create:<br />1.
-                  chunk headings,<br />2. 5 student-friendly vocabulary
-                  supports,<br />3. one focus question per chunk,<br />4. a
-                  blank evidence organizer that requires students to return to
-                  the original article and choose their own evidence, and<br />5.
-                  a sentence-starter bank for the written response that does not
-                  reference specific evidence from the text.
-                </div>
-              </div>
-
-              <div class="model-step">
-                <div class="model-step-head">
-                  <span>6</span>
-                  <h4>Prove rigor stayed intact</h4>
-                </div>
-                <div class="model-prove">
-                  <div><strong>OSAMR level:</strong> Augmentation</div>
+                <div class="mini-stack">
                   <div>
-                    <strong>Rigor evidence:</strong> Students still read the
-                    original text, identify the central claim, select their own
-                    evidence, and explain the connection. AI only removed
-                    vocabulary and organization barriers.
+                    <strong>Protect:</strong> Students must read the article,
+                    identify the claim, select evidence, and explain the
+                    connection.
                   </div>
                 </div>
-              </div>
+
+                <div class="osamr-strip" aria-label="OSAMR quick reference">
+                  <div><strong>S</strong><span>Same task, tech swap</span></div>
+                  <div>
+                    <strong>A</strong><span>Same task, useful improvement</span>
+                  </div>
+                  <div>
+                    <strong>M</strong
+                    ><span>Task redesigned for stronger access</span>
+                  </div>
+                  <div>
+                    <strong>R</strong
+                    ><span>New learning move not otherwise possible</span>
+                  </div>
+                  <div class="warn">
+                    <strong>O</strong><span>AI takes over the thinking</span>
+                  </div>
+                </div>
+              </aside>
+
+              <main class="work-card">
+                <ol class="steps">
+                  <li class="done">
+                    <div class="step-head">
+                      <span>1</span>
+                      <h3>Name the access barrier</h3>
+                    </div>
+                    <p class="hint">
+                      What issue are you fixing without lowering the task?
+                    </p>
+                    <textarea readonly>
+Dense academic text makes it hard for students to locate the claim and evidence on their own.</textarea
+                    >
+                  </li>
+
+                  <li class="done">
+                    <div class="step-head">
+                      <span>2</span>
+                      <h3>Protect the student thinking</h3>
+                    </div>
+                    <p class="hint">
+                      What must students still do on their own?
+                    </p>
+                    <textarea readonly>
+Students must read the article closely, identify the central claim themselves, select their own evidence, and explain how the evidence supports the claim.</textarea
+                    >
+                  </li>
+
+                  <li class="done">
+                    <div class="step-head">
+                      <span>3</span>
+                      <h3>Draft the fix before Gemini</h3>
+                    </div>
+                    <p class="hint">
+                      Write the scaffold you would try first. Do not use AI to
+                      complete the student task.
+                    </p>
+                    <textarea class="tall" readonly>
+Create an access scaffold for students reading a challenging article. Do not summarize the article, name the central claim, or choose evidence for students. Instead, create chunk headings, 5 student-friendly vocabulary supports, one focus question per chunk, and a blank evidence organizer that requires students to return to the original article and choose their own evidence.</textarea
+                    >
+                  </li>
+
+                  <li class="gemini-step done">
+                    <div class="step-head">
+                      <span>4</span>
+                      <h3>Use Gemini as a coach</h3>
+                    </div>
+                    <p class="hint">
+                      Copy the coach prompt, open Gemini, paste it, then revise
+                      your scaffold based on useful feedback.
+                    </p>
+                    <div class="action-row">
+                      <button
+                        class="btn primary"
+                        type="button"
+                        data-copy-el="#model-prompt"
+                      >
+                        Copy Gemini coach prompt
+                      </button>
+                      <a
+                        class="btn gemini"
+                        href="https://gemini.google.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >Open Gemini ↗</a
+                      >
+                    </div>
+                    <details>
+                      <summary>Preview the Gemini coach prompt</summary>
+                      <textarea
+                        class="prompt-preview"
+                        id="model-prompt"
+                        readonly
+                      >
+You are coaching teachers during an AI for Accessible Instruction design challenge.
+
+Do NOT solve the student task. Do NOT write the final answer for students.
+
+Scenario:
+Students read a challenging article and identify the author's central claim with two pieces of evidence.
+
+Original AI input that caused the problem:
+"Summarize this article for 7th graders and tell students the author's central claim and two pieces of evidence they should use in their response."
+
+Access barrier we are trying to fix:
+Dense academic text makes it hard for students to locate the claim and evidence on their own.
+
+Student thinking that must stay with students:
+Students must read the article, identify the claim, select evidence, and explain the connection.
+
+Our first redesigned scaffold:
+Chunk headings, 5 vocabulary supports, one focus question per chunk, and a blank evidence organizer.
+
+Please give:
+1. One strength of the redesign.
+2. One risk where the scaffold might still do too much thinking for students.
+3. One specific revision that improves access while preserving rigor.
+4. A suggested OSAMR rating: Substitution, Augmentation, Modification, Redefinition, or Overreliance.
+
+Keep your feedback concise.</textarea
+                      >
+                    </details>
+                    <textarea readonly>
+Gemini suggested adding a sentence-starter bank for the written response so students who struggle with academic writing can still engage with the evidence — without the sentence starters giving away which evidence to choose.</textarea
+                    >
+                  </li>
+
+                  <li class="done">
+                    <div class="step-head">
+                      <span>5</span>
+                      <h3>Final after-Gemini version</h3>
+                    </div>
+                    <p class="hint">
+                      Revise the scaffold only if the learning target and
+                      student thinking stay intact.
+                    </p>
+                    <textarea class="tall" readonly>
+Create an access scaffold for students reading a challenging article. Do not summarize the article, name the central claim, or choose evidence for students. Instead, create:
+1. chunk headings,
+2. 5 student-friendly vocabulary supports,
+3. one focus question per chunk,
+4. a blank evidence organizer that requires students to return to the original article and choose their own evidence, and
+5. a sentence-starter bank for the written response that does not reference specific evidence from the text.</textarea
+                    >
+                  </li>
+
+                  <li class="done">
+                    <div class="step-head">
+                      <span>6</span>
+                      <h3>Prove rigor stayed intact</h3>
+                    </div>
+                    <div class="prove-row">
+                      <label
+                        >OSAMR level
+                        <select aria-label="Model OSAMR level (example)">
+                          <option>Substitution</option>
+                          <option selected>Augmentation</option>
+                          <option>Modification</option>
+                          <option>Redefinition</option>
+                          <option>Overreliance — still needs revision</option>
+                        </select>
+                      </label>
+                      <label
+                        >Rigor evidence
+                        <textarea readonly>
+Students still read the original text, identify the central claim, select their own evidence, and explain the connection. AI only removed vocabulary and organization barriers.</textarea
+                        >
+                      </label>
+                    </div>
+                  </li>
+                </ol>
+              </main>
             </div>
 
             <div class="callout" style="margin-top: 18px">
@@ -3654,6 +3793,78 @@
         });
       }
 
+      /* Pre-post readiness self-check (the three core-test confirmations). */
+      const READY_CHECKS = ["barrier", "thinking", "target"];
+      const CHECK_LABELS = {
+        barrier: "Barrier removed",
+        thinking: "Thinking preserved",
+        target: "Target unchanged",
+      };
+
+      function checkKey(groupId, name) {
+        return `g${groupId}_check_${name}`;
+      }
+
+      function buildReadyChecks() {
+        GROUPS.forEach((group) => {
+          const page = document.getElementById(`group-${group.id}`);
+          if (!page) return;
+          const postCard = $(".post-card", page);
+          if (!postCard || $(".ready-check-group", postCard)) return;
+          const actionRow = $(".action-row", postCard);
+          const block = document.createElement("div");
+          block.className = "ready-check-group";
+          block.dataset.group = group.id;
+          block.innerHTML = `
+            <p class="rc-title">Before you post — confirm your fix passes the core test:</p>
+            <div class="rc-options">
+              ${READY_CHECKS.map(
+                (name) => `
+                <label>
+                  <input type="checkbox" class="ready-check" data-group="${group.id}" data-check="${name}" />
+                  ${CHECK_LABELS[name]}
+                </label>`,
+              ).join("")}
+            </div>
+            <span class="rc-status"></span>`;
+          postCard.insertBefore(block, actionRow);
+        });
+      }
+
+      function refreshReadyChecks(groupId) {
+        const block = $(`.ready-check-group[data-group="${groupId}"]`);
+        if (!block) return;
+        const checked = READY_CHECKS.filter(
+          (name) => state[checkKey(groupId, name)],
+        );
+        const passed = checked.length === READY_CHECKS.length;
+        block.classList.toggle("passed", passed);
+        const status = $(".rc-status", block);
+        if (status) {
+          status.textContent = passed
+            ? "✓ Passes the core test — ready to share."
+            : `${checked.length} of ${READY_CHECKS.length} confirmed.`;
+        }
+      }
+
+      function hydrateReadyChecks() {
+        $$(".ready-check").forEach((box) => {
+          const groupId = box.dataset.group;
+          const name = box.dataset.check;
+          box.checked = Boolean(state[checkKey(groupId, name)]);
+          box.addEventListener("change", () => {
+            if (box.checked) {
+              state[checkKey(groupId, name)] = true;
+            } else {
+              delete state[checkKey(groupId, name)];
+            }
+            save();
+            refreshReadyChecks(groupId);
+          });
+        });
+        GROUPS.forEach((group) => refreshReadyChecks(group.id));
+      }
+
       function resetGroup(groupId) {
         const group = groupById(groupId);
         if (!group) return;
@@ -3672,12 +3883,17 @@
         ].forEach((field) => {
           delete state[key(groupId, field)];
         });
+        READY_CHECKS.forEach((name) => delete state[checkKey(groupId, name)]);
         save();
         $$(`[data-group="${groupId}"][data-field]`).forEach((input) => {
           input.value = "";
         });
+        $$(`.ready-check[data-group="${groupId}"]`).forEach((box) => {
+          box.checked = false;
+        });
         updateGroup(groupId);
         refreshProgress(groupId);
+        refreshReadyChecks(groupId);
         renderGallery();
         showToast(`Group ${groupId} page reset`);
       }
@@ -3938,6 +4154,15 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
           return;
         }
 
+        const copyElButton = event.target.closest("[data-copy-el]");
+        if (copyElButton) {
+          const source = $(copyElButton.dataset.copyEl);
+          const copied = source ? await copyText(source.value) : false;
+          showToast(copied ? "Coach prompt copied" : "Prompt ready to copy");
+          if (copied) flashCopied(copyElButton);
+          return;
+        }
+
         const promptButton = event.target.closest("[data-copy-prompt]");
         if (promptButton) {
           const groupId = promptButton.dataset.copyPrompt;
@@ -3997,6 +4222,8 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       hydrateInputs();
       buildProgressHeaders();
       buildMenuBadges();
+      buildReadyChecks();
+      hydrateReadyChecks();
       GROUPS.forEach((group) => refreshProgress(group.id));
       renderGallery();
       initTabKeyboardNav();
