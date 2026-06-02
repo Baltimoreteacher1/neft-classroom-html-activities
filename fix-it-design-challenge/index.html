@@ -153,7 +153,7 @@
       .tab-btn small {
         display: block;
         color: var(--muted);
-        font-size: 11px;
+        font-size: 12px;
         margin-top: 1px;
         white-space: nowrap;
       }
@@ -229,7 +229,7 @@
         color: var(--teal);
       }
       .hero .kicker {
-        color: rgba(255, 255, 255, 0.74);
+        color: rgba(255, 255, 255, 0.95);
       }
       h2 {
         font-size: clamp(30px, 4vw, 48px);
@@ -410,7 +410,7 @@
         font-weight: 900;
       }
       .eyebrow {
-        font-size: 11px;
+        font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.12em;
         font-weight: 900;
@@ -434,7 +434,7 @@
         overflow-y: auto;
       }
       .scenario-label {
-        font-size: 11px;
+        font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.12em;
         font-weight: 900;
@@ -1103,7 +1103,7 @@
         font-size: 22px;
       }
       .prompt-label {
-        font-size: 11px;
+        font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.12em;
         font-weight: 900;
@@ -1486,6 +1486,14 @@
       .ready-check-group.passed .rc-status {
         color: #9a6f12;
       }
+
+      /* A11y: screen-reader-only text utility */
+      .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+      /* A11y: respect reduced-motion (epilepsy / vestibular safety) */
+      @media (prefers-reduced-motion: reduce){
+        html{scroll-behavior:auto}
+        *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+      }
     </style>
   </head>
   <body>
@@ -1736,7 +1744,7 @@
                 </div>
               </aside>
 
-              <main class="work-card">
+              <div class="work-card">
                 <ol class="steps">
                   <li class="done">
                     <div class="step-head">
@@ -1887,7 +1895,7 @@ Students still read the original text, identify the central claim, select their 
                     </div>
                   </li>
                 </ol>
-              </main>
+              </div>
             </div>
 
             <div class="callout" style="margin-top: 18px">
@@ -2133,7 +2141,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
           </aside>
 
-          <main class="work-card">
+          <div class="work-card">
             <ol class="steps">
               <li>
                 <div class="step-head">
@@ -2271,7 +2279,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
               </li>
             </ol>
-          </main>
+          </div>
         </div>
 
         <section class="post-card">
@@ -2377,7 +2385,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
           </aside>
 
-          <main class="work-card">
+          <div class="work-card">
             <ol class="steps">
               <li>
                 <div class="step-head">
@@ -2515,7 +2523,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
               </li>
             </ol>
-          </main>
+          </div>
         </div>
 
         <section class="post-card">
@@ -2622,7 +2630,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
           </aside>
 
-          <main class="work-card">
+          <div class="work-card">
             <ol class="steps">
               <li>
                 <div class="step-head">
@@ -2760,7 +2768,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
               </li>
             </ol>
-          </main>
+          </div>
         </div>
 
         <section class="post-card">
@@ -2867,7 +2875,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
           </aside>
 
-          <main class="work-card">
+          <div class="work-card">
             <ol class="steps">
               <li>
                 <div class="step-head">
@@ -3005,7 +3013,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
               </li>
             </ol>
-          </main>
+          </div>
         </div>
 
         <section class="post-card">
@@ -3111,7 +3119,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
           </aside>
 
-          <main class="work-card">
+          <div class="work-card">
             <ol class="steps">
               <li>
                 <div class="step-head">
@@ -3249,7 +3257,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
               </li>
             </ol>
-          </main>
+          </div>
         </div>
 
         <section class="post-card">
@@ -3355,7 +3363,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
           </aside>
 
-          <main class="work-card">
+          <div class="work-card">
             <ol class="steps">
               <li>
                 <div class="step-head">
@@ -3493,7 +3501,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
               </li>
             </ol>
-          </main>
+          </div>
         </div>
 
         <section class="post-card">
@@ -4356,6 +4364,16 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
           addExplanations();
         }
       })();
+    </script>
+    <script>
+      // A11y: announce that external links open in a new tab.
+      document.querySelectorAll('a[target="_blank"]').forEach(function(a){
+        if(!a.querySelector('.sr-only')){
+          var n=document.createElement('span');
+          n.className='sr-only';n.textContent=' (opens in new tab)';
+          a.appendChild(n);
+        }
+      });
     </script>
   </body>
 </html>
