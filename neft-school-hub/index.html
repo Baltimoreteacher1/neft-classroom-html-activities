@@ -3908,10 +3908,14 @@
          Off by default → the local-storage demo is untouched. Enable with the
          Admin → Backend Mode toggle, or ?api=1 in the URL. ?api=0 disables. */
       const NSH_API_BASE = "https://neft-school-hub-api.neftjd.workers.dev";
+      // Flip to true ONLY once Google sign-in is configured on the Worker.
+      // Until then the live API requires a session it can't issue, so we keep
+      // the Hub in clean local-demo mode regardless of the saved toggle.
+      const API_READY = false;
       const _apiParam = new URLSearchParams(location.search).get("api");
       if (_apiParam === "1") lsSet("nsh:useapi", "1");
       if (_apiParam === "0") localStorage.removeItem("nsh:useapi");
-      let USE_API = lsGet("nsh:useapi", null) === "1";
+      let USE_API = API_READY && lsGet("nsh:useapi", null) === "1";
 
       async function apiReq(method, path, body) {
         const headers = { Accept: "application/json" };
