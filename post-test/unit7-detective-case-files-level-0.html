@@ -1552,6 +1552,8 @@
 .l0-readaloud{border:1px solid #fdba74;background:#fff;color:#9a3412;border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;font-size:14px}
 .l0-readaloud:hover{background:#ffedd5}
 body.l0-reading *{cursor:help}
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
 <script>
 (function(){var b=document.getElementById("readAloudBtn");if(!b)return;var on=false;
@@ -5160,5 +5162,6 @@ document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(
       }
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-  </body>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+</body>
 </html>
