@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
       Unit 9 — City Grid Engineer | Integers &amp; the Coordinate Plane
-      (6.NS.5–8)
+      (6.NS.C.5–8)
     </title>
 
     <!-- Shared theme -->
@@ -770,7 +770,7 @@
       <header class="hero">
         <span class="tag"
           >Unit 9 · Math Architect · Integers &amp; the Coordinate Plane
-          (6.NS.5–8)</span
+          (6.NS.C.5–8)</span
         >
         <h1>Design Challenge: City Grid Engineer</h1>
         <p class="lede">
@@ -782,7 +782,7 @@
           matching district — then sign off your master plan.
         </p>
         <div class="badges">
-          <span class="badge">Standard 6.NS.5–8</span>
+          <span class="badge">Standard 6.NS.C.5–8</span>
           <span class="badge">Four Quadrants</span>
           <span class="badge">Absolute Value</span>
           <span class="badge">Distance on the Plane</span>
@@ -798,13 +798,13 @@
           <div><b>5 · Sign off</b>Summarize the master plan.</div>
         </div>
         <div class="progress" role="status" aria-label="Activity progress">
-          Plan checks approved: <span id="pcount">0</span> / 8
+          Plan checks approved: <span id="pcount">0</span> / 11
           <div
             class="bar"
             role="progressbar"
             aria-valuenow="0"
             aria-valuemin="0"
-            aria-valuemax="8"
+            aria-valuemax="11"
             aria-label="Plan checks approved"
             id="progBar"
           >
@@ -1628,9 +1628,7 @@
 
       <!-- ══ RUBRIC ══ -->
       <section class="card" aria-label="Scoring rubric">
-        <h2>
-          Performance Rubric — Coordinate Plane Design Challenge (6.NS.5–8)
-        </h2>
+        <h2>Performance Rubric — City Grid Engineer (6.NS.C.5–8)</h2>
         <div class="rubric-wrap">
           <table class="rubric">
             <thead>
@@ -1643,7 +1641,7 @@
             <tbody>
               <tr>
                 <td><strong>4 — Exceeds</strong></td>
-                <td>8 / 8</td>
+                <td>10–11 / 11</td>
                 <td>
                   Names coordinates in all four quadrants, orders signed
                   elevations and applies absolute value correctly, computes
@@ -1654,16 +1652,16 @@
               </tr>
               <tr>
                 <td><strong>3 — Meets</strong></td>
-                <td>6–7 / 8</td>
+                <td>8–9 / 11</td>
                 <td>
-                  Correctly handles most plan checks with at most one sign or
-                  arithmetic slip. Completes the route and at least one
+                  Correctly handles most plan checks with at most two sign or
+                  arithmetic slips. Completes the route and at least one
                   reflection accurately.
                 </td>
               </tr>
               <tr>
                 <td><strong>2 — Approaching</strong></td>
-                <td>4–5 / 8</td>
+                <td>5–7 / 11</td>
                 <td>
                   Plots and names simple points but mixes up quadrant signs, or
                   confuses "less than" with absolute value, or changes both
@@ -1672,7 +1670,7 @@
               </tr>
               <tr>
                 <td><strong>1 — Beginning</strong></td>
-                <td>0–3 / 8</td>
+                <td>0–4 / 11</td>
                 <td>
                   Few correct coordinates. Misreads signs or the grid. Needs
                   reteaching on plotting, integers, and absolute value.
@@ -1744,23 +1742,20 @@
           var g = document.getElementById("nlTicks");
           if (!g) return;
           var parts = "";
-          // line spans 40..680 px = -8..+8 → 40px per unit; 0 at 360
+          // line spans 40..680 px = -8..+8 → 40px per unit; 0 at x=400
+          // hardcoded SVG labels (-6, -2, +1, +5) already annotate the points;
+          // here we only draw scale ticks (major every 2 units, minor every 1).
           for (var v = -8; v <= 8; v++) {
-            var x = 360 + v * 40;
+            var x = 400 + v * 40;
+            var major = v % 2 === 0;
             parts +=
               '<line x1="' +
               x +
-              '" y1="64" x2="' +
+              '" y1="' +
+              (major ? 61 : 65) +
+              '" x2="' +
               x +
-              '" y2="76" class="nl-tick"/>';
-            if (v % 2 === 0) {
-              parts +=
-                '<text x="' +
-                x +
-                '" y="122" text-anchor="middle" class="nl-num">' +
-                v +
-                "</text>";
-            }
+              '" y2="79" class="nl-tick"/>';
           }
           g.innerHTML = parts;
         })();

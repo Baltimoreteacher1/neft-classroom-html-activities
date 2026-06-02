@@ -563,6 +563,76 @@
         color: var(--u6-sun-deep);
       }
 
+      /* ── Learning target (shared gold-standard style) ── */
+      .learning-target {
+        background: var(--nt-surface);
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
+      }
+      .learning-target h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .learning-target li {
+        margin-bottom: 4px;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
+        color: var(--nt-muted);
+      }
+      .lt-meta span {
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+      }
+
+      /* ── Rubric (shared gold-standard style) ── */
+      .rubric-wrap {
+        margin-top: 6px;
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        min-width: 480px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+
+      /* ── Español support line ── */
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
       /* ── Teacher / answer key (hidden in print) ── */
       details.teacher-only {
         background: var(--nt-surface);
@@ -614,6 +684,9 @@
         .u6-section {
           break-inside: avoid;
         }
+        .learning-target {
+          break-inside: avoid;
+        }
       }
     </style>
   </head>
@@ -635,53 +708,9 @@
     ></div>
 
     <main class="nt-shell">
-      <!-- ============ HERO ============ -->
-      <header class="u6-hero">
-        <div class="u6-hero__eyebrow">Neft Teacher · Math Architect</div>
-        <h1>Solar Array Engineer</h1>
-        <p>
-          Your school just hired you as a solar engineer. Your job: design the
-          rooftop solar array that powers the building. You will size square
-          panel blocks with
-          <strong>powers and exponents</strong>,
-          <strong>write and evaluate expressions</strong> for energy and cost,
-          and use the <strong>distributive property</strong> to plan the wiring
-          crews — exactly the way real renewable-energy engineers do.
-        </p>
-        <div class="u6-hero__pills">
-          <span class="u6-hero__pill"
-            >Unit 6 · Expressions &amp; Exponents</span
-          >
-          <span class="u6-hero__pill">6.EE.1 · 6.EE.2 · 6.EE.3</span>
-          <span class="u6-hero__pill">STEM Design Challenge</span>
-        </div>
-        <div class="u6-cycle" aria-label="Engineering design cycle">
-          <div><b>1 · Read</b>Read powers off the blueprint.</div>
-          <div><b>2 · Size</b>Choose the array size s in the studio.</div>
-          <div><b>3 · Write</b>Turn rules into expressions &amp; evaluate.</div>
-          <div><b>4 · Wire</b>Plan crews with the distributive property.</div>
-          <div><b>5 · Submit</b>Hand in a buildable spec sheet.</div>
-        </div>
-        <div class="u6-progress" role="status" aria-live="polite">
-          Engineering checks passed: <span id="u6-pcount">0</span> / 5
-          <div
-            class="u6-bar"
-            role="progressbar"
-            aria-valuenow="0"
-            aria-valuemin="0"
-            aria-valuemax="5"
-            aria-label="Checks passed"
-            id="u6-progbar"
-          >
-            <span id="u6-pbar"></span>
-          </div>
-        </div>
-      </header>
-
-      <!-- ============ LEARNING TARGET ============ -->
-      <section class="u6-section" aria-label="Learning target">
-        <div class="u6-section__eyebrow">Learning Target</div>
-        <h2>What you will be able to do</h2>
+      <!-- ══ LEARNING TARGETS ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
         <ul>
           <li>
             I can write and evaluate powers with whole-number exponents (like
@@ -689,22 +718,27 @@
           </li>
           <li>
             I can write an algebraic expression from a real engineering rule and
-            evaluate it.
+            evaluate it for a given value.
           </li>
           <li>
             I can use the distributive property to write equivalent expressions.
           </li>
           <li>
-            I can use properties of operations to regroup a sum the smart way.
+            I can use properties of operations (commutative and associative) to
+            regroup a sum the smart way.
           </li>
         </ul>
-        <p style="font-weight: 600; margin-top: 6px">
-          Standards: 6.EE.A.1 · 6.EE.A.2 · 6.EE.A.3 &nbsp;|&nbsp; ~35 min
-          &nbsp;|&nbsp; Grade 6
-        </p>
+        <div class="lt-meta">
+          <span>Standard: CCSS 6.EE.A.1–3</span>
+          <span>Time: ~35 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
+        </div>
       </section>
 
-      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
       <details class="teacher-only" aria-label="Teacher notes">
         <summary>Teacher Notes (not printed)</summary>
         <div class="details-body">
@@ -772,7 +806,50 @@
         </div>
       </details>
 
-      <!-- ============ MISSION BRIEF ============ -->
+      <!-- ══ HERO ══ -->
+      <header class="u6-hero">
+        <div class="u6-hero__eyebrow">Neft Teacher · Math Architect</div>
+        <h1>Solar Array Engineer</h1>
+        <p>
+          Your school just hired you as a solar engineer. Your job: design the
+          rooftop solar array that powers the building. You will size square
+          panel blocks with
+          <strong>powers and exponents</strong>,
+          <strong>write and evaluate expressions</strong> for energy and cost,
+          and use the <strong>distributive property</strong> to plan the wiring
+          crews — exactly the way real renewable-energy engineers do.
+        </p>
+        <div class="u6-hero__pills">
+          <span class="u6-hero__pill"
+            >Unit 6 · Expressions &amp; Exponents</span
+          >
+          <span class="u6-hero__pill">6.EE.1 · 6.EE.2 · 6.EE.3</span>
+          <span class="u6-hero__pill">STEM Design Challenge</span>
+        </div>
+        <div class="u6-cycle" aria-label="Engineering design cycle">
+          <div><b>1 · Read</b>Read powers off the blueprint.</div>
+          <div><b>2 · Size</b>Choose the array size s in the studio.</div>
+          <div><b>3 · Write</b>Turn rules into expressions &amp; evaluate.</div>
+          <div><b>4 · Wire</b>Plan crews with the distributive property.</div>
+          <div><b>5 · Submit</b>Hand in a buildable spec sheet.</div>
+        </div>
+        <div class="u6-progress" role="status" aria-live="polite">
+          Engineering checks passed: <span id="u6-pcount">0</span> / 5
+          <div
+            class="u6-bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="5"
+            aria-label="Checks passed"
+            id="u6-progbar"
+          >
+            <span id="u6-pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ MISSION BRIEF ══ -->
       <section class="u6-section">
         <div class="u6-section__eyebrow">Mission Brief</div>
         <h2>The job on the roof</h2>
@@ -949,14 +1026,18 @@
         </div>
 
         <div class="u6-callout u6-callout--level1">
-          <span class="u6-level u6-level--1">Level 1 · Support</span><br />
-          A power is repeated multiplication, not "times the little number."
-          <span class="u6-eq">4<sup>2</sup></span> means
-          <span class="u6-eq">4 × 4</span>, so 16.
-          <span class="u6-eq">2<sup>3</sup></span> means
-          <span class="u6-eq">2 × 2 × 2</span>, so 8. <br /><em>En español:</em>
-          una potencia es multiplicación repetida.
-          <span class="u6-eq">2<sup>3</sup> = 2 × 2 × 2 = 8</span>.
+          <span class="u6-level u6-level--1">Level 1 · Support</span>
+          <p>
+            A power is repeated multiplication, not "times the little number."
+            <span class="u6-eq">4<sup>2</sup></span> means
+            <span class="u6-eq">4 × 4</span>, so 16.
+            <span class="u6-eq">2<sup>3</sup></span> means
+            <span class="u6-eq">2 × 2 × 2</span>, so 8.
+          </p>
+          <span class="es"
+            >Español: una potencia es multiplicación repetida.
+            <span class="u6-eq">2<sup>3</sup> = 2 × 2 × 2 = 8</span>.</span
+          >
         </div>
         <div class="u6-callout u6-callout--level2">
           <span class="u6-level u6-level--2">Level 2 · Enrichment</span><br />
@@ -1206,14 +1287,17 @@
         </details>
 
         <div class="u6-callout u6-callout--level1">
-          <span class="u6-level u6-level--1">Level 1 · Support</span><br />
-          Work one step at a time. At s = 5: first
-          <span class="u6-eq">5 × 5 = 25</span>. Then add or multiply. Write
-          each tiny step so you don't skip the exponent. <br /><em
-            >En español:</em
+          <span class="u6-level u6-level--1">Level 1 · Support</span>
+          <p>
+            Work one step at a time. At s = 5: first
+            <span class="u6-eq">5 × 5 = 25</span>. Then add or multiply. Write
+            each tiny step so you don't skip the exponent.
+          </p>
+          <span class="es"
+            >Español: Primero el exponente:
+            <span class="u6-eq">5 × 5 = 25</span>, luego suma o
+            multiplica.</span
           >
-          Primero el exponente: <span class="u6-eq">5 × 5 = 25</span>, luego
-          suma o multiplica.
         </div>
         <div class="u6-callout u6-callout--level2">
           <span class="u6-level u6-level--2">Level 2 · Enrichment</span><br />
@@ -1446,14 +1530,17 @@
         </details>
 
         <div class="u6-callout u6-callout--level1">
-          <span class="u6-level u6-level--1">Level 1 · Support</span><br />
-          Draw two arrows from the 6 to each term inside the parentheses.
-          Multiply along each arrow.
-          <span class="u6-eq">6(s + 4) → 6s + 24</span>. <br /><em
-            >En español:</em
+          <span class="u6-level u6-level--1">Level 1 · Support</span>
+          <p>
+            Draw two arrows from the 6 to each term inside the parentheses.
+            Multiply along each arrow.
+            <span class="u6-eq">6(s + 4) → 6s + 24</span>.
+          </p>
+          <span class="es"
+            >Español: Reparte el 6 a cada término:
+            <span class="u6-eq">6 × s</span> y
+            <span class="u6-eq">6 × 4</span>.</span
           >
-          Reparte el 6 a cada término: <span class="u6-eq">6 × s</span> y
-          <span class="u6-eq">6 × 4</span>.
         </div>
         <div class="u6-callout u6-callout--level2">
           <span class="u6-level u6-level--2">Level 2 · Enrichment</span><br />
@@ -1522,11 +1609,15 @@
         </div>
         <button class="u6-btn" id="u6-check5">Check</button>
         <div class="u6-callout u6-callout--level1">
-          <span class="u6-level u6-level--1">Level 1 · Support</span><br />
-          Look for pairs that make a 10 or a 20. Here, 17 + 3 = 20, then 20 + 25
-          = 45.
-          <br /><em>En español:</em> Busca pares que sumen 10 o 20 primero. 17 +
-          3 = 20.
+          <span class="u6-level u6-level--1">Level 1 · Support</span>
+          <p>
+            Look for pairs that make a 10 or a 20. Here, 17 + 3 = 20, then 20 +
+            25 = 45.
+          </p>
+          <span class="es"
+            >Español: Busca pares que sumen 10 o 20 primero. 17 + 3 = 20, luego
+            + 25 = 45.</span
+          >
         </div>
         <div class="u6-callout u6-callout--level2">
           <span class="u6-level u6-level--2">Level 2 · Enrichment</span><br />
@@ -1585,7 +1676,7 @@
         </table>
 
         <p style="font-weight: 600; margin-top: 16px">
-          Self-check rubric — tick each one before you turn it in:
+          Student self-check — tick each one before you turn it in:
         </p>
         <ul class="u6-rubric">
           <li>
@@ -1594,12 +1685,12 @@
           </li>
           <li>
             I <strong>wrote an expression</strong> from words and
-            <strong>evaluated</strong> it for my side length.
+            <strong>evaluated</strong> it for my chosen side length.
           </li>
           <li>
             I used the <strong>distributive property</strong> to show
-            <span class="u6-eq">4(s² + 9) = 4s² + 36</span> and proved both give
-            the same value.
+            <span class="u6-eq">4(s² + 9) = 4s² + 36</span> and proved both
+            forms give the same value.
           </li>
           <li>
             I used a <strong>property of operations</strong> (commutative /
@@ -1617,24 +1708,82 @@
         </div>
       </section>
 
-      <!-- ============ SUBMIT / GRADING ============ -->
-      <section class="u6-section" aria-label="Submit for grading">
-        <div class="u6-section__eyebrow">Turn it in</div>
-        <h2>Submit your engineering work</h2>
-        <p>
-          Put your name in, then click <strong>Check &amp; Submit</strong>. Your
-          work on the powers, the write-and-evaluate table, the distributive
-          wiring plan, and the properties regroup will be scored, and you can
-          save a PDF or DOC to hand in.
+      <!-- ══ ENGINEER'S SIGN-OFF ══ -->
+      <section class="u6-section" aria-label="Engineer sign-off">
+        <h2>Engineer's Sign-off</h2>
+        <p style="color: var(--nt-muted); margin-top: 0">
+          When your powers are evaluated, your expressions are correct, and you
+          have applied the distributive property, submit your design report.
+          Enter your name in the field below, then press
+          <strong>Check &amp; Submit</strong> to save your score as a PDF or
+          DOC.
         </p>
         <button
           class="u6-btn"
           id="u6-submit"
-          style="font-size: 1.05rem; padding: 12px 22px"
+          style="font-size: 1.05rem; padding: 12px 22px; margin: 6px 0 18px"
         >
           Check &amp; Submit
         </button>
         <div id="ntkit" style="margin-top: 18px"></div>
+      </section>
+
+      <!-- ══ PERFORMANCE RUBRIC ══ -->
+      <section class="u6-section" aria-label="Scoring rubric">
+        <h2>Performance Rubric — Solar Array Engineer (6.EE.A.1–3)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>11 / 11</td>
+                <td>
+                  Evaluates all powers correctly (exponent = repeated
+                  multiplication), writes and evaluates all four expressions
+                  accurately at s = 5, applies the distributive property in both
+                  directions, and uses properties of operations to regroup. Spec
+                  sheet is complete and internally consistent.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>9–10 / 11</td>
+                <td>
+                  Evaluates most powers and expressions correctly with at most
+                  two slips. Applies the distributive property and reaches a
+                  correct regroup. Minor arithmetic error only.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>6–8 / 11</td>
+                <td>
+                  Can evaluate simple powers but confuses exponent with
+                  multiplication by the exponent (e.g., 4² = 8) in some cases.
+                  Partial success on expressions and/or distributive property.
+                  Needs more practice with order of operations.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–5 / 11</td>
+                <td>
+                  Consistently misreads powers or cannot write an expression
+                  from words. Little or no correct use of the distributive
+                  property. Needs reteaching on exponents and algebraic
+                  expressions.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <div class="u6-foot">
