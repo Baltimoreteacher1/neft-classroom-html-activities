@@ -100,7 +100,10 @@ def main():
     if a.home:
         story = re.sub(r'home:\s*"[^"]*"', 'home: "%s"' % a.home, story, count=1)
 
+    import html as _html
+
     title = (re.search(r'title:\s*"([^"]+)"', story) or [None, "Graphic Novel"])[1]
+    title = _html.unescape(re.sub(r"<[^>]+>", "", title))
     ver = (re.search(r"version:\s*(\d+)", story) or [None, "1"])[1]
     banner = ""
     if a.demo:
@@ -115,7 +118,7 @@ def main():
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #{ver} · {re.sub(r"<[^>]+>", "", title)}</title>
+    <title>Graphic Novel #{ver} · {title}</title>
     <style>
 {css}
     </style>

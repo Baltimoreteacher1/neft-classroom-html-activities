@@ -5,1763 +5,2472 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Graphic Novel #1 · Court Vision: The Data Analyst</title>
     <style>
-      :root {
-        --bg: #0a1228;
-        --ink: #f4f7ff;
-        --muted: #aebbdd;
-        --accent: #ff8a3d;
-        --accent2: #3da5ff;
-        --panel: #13234d;
-        --line: #2a4378;
-        --ok: #39d98a;
-        --bad: #ff6b6b;
-        --bubble: #fffdf7;
-        --bubble-ink: #16213d;
-        --font:
-          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      html,
-      body {
-        background: var(--bg);
-        color: var(--ink);
-        font-family: var(--font);
-        line-height: 1.5;
-      }
-      body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      img {
-        max-width: 100%;
-        display: block;
-      }
-      a {
-        color: var(--accent2);
-      }
+/* ===========================================================================
+   Neft Teacher · Graphic-Novel Engine  ·  gn-engine.css
+   Panel-based, dialogue-driven comic renderer. Shared by all 20 novels.
+   Per-novel look is tuned only through CSS custom properties in STORY.meta.theme.
+   Accessibility: WCAG-AA bubbles, resizable text (rem/clamp), 48px targets,
+   keyboard focus rings, functional at 320px.
+   =========================================================================== */
+:root {
+  --bg: #0a1228;
+  --ink: #f4f7ff;
+  --muted: #aebbdd;
+  --accent: #ff8a3d;
+  --accent2: #3da5ff;
+  --panel: #13234d;
+  --line: #2a4378;
+  --ok: #39d98a;
+  --bad: #ff6b6b;
+  --bubble: #fffdf7;
+  --bubble-ink: #16213d;
+  --font: "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --reply: #13234d;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+a {
+  color: var(--accent2);
+}
 
-      /* ---- Top bar ---- */
-      .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 30;
-        background: rgba(10, 18, 40, 0.96);
-        border-bottom: 1px solid var(--line);
-        backdrop-filter: blur(6px);
-      }
-      .topbar-inner {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 10px 14px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .home {
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        color: var(--muted);
-        font-size: 0.85rem;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 0 12px;
-      }
-      .home:hover {
-        color: var(--ink);
-      }
-      .title {
-        font-size: 1rem;
-        font-weight: 700;
-      }
-      .title .v {
-        color: var(--accent);
-      }
-      .progress-wrap {
-        flex: 1;
-        min-width: 160px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .progress {
-        flex: 1;
-        height: 10px;
-        background: #0b1530;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        overflow: hidden;
-      }
-      .progress > i {
-        display: block;
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--accent2), var(--accent));
-        transition: width 0.4s ease;
-      }
-      .progress-label {
-        font-size: 0.75rem;
-        color: var(--muted);
-        white-space: nowrap;
-      }
+/* ---- Top bar ---- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(10, 18, 40, 0.96);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+.topbar-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.home {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 12px;
+}
+.home:hover {
+  color: var(--ink);
+}
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+.title .v {
+  color: var(--accent);
+}
+.progress-wrap {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress {
+  flex: 1;
+  height: 10px;
+  background: #0b1530;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  transition: width 0.4s ease;
+}
+.progress-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
 
-      /* ---- Tabs ---- */
-      .tabs {
-        display: flex;
-        gap: 6px;
-        overflow-x: auto;
-        padding: 8px 14px;
-        max-width: 1000px;
-        margin: 0 auto;
-        width: 100%;
-        scrollbar-width: thin;
-      }
-      .tab {
-        flex: 0 0 auto;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: #0e1c40;
-        border: 1px solid var(--line);
-        color: var(--muted);
-        border-radius: 12px;
-        padding: 8px 14px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        cursor: pointer;
-        white-space: nowrap;
-      }
-      .tab[aria-selected="true"] {
-        background: linear-gradient(135deg, var(--accent), #ff6a3d);
-        color: #1a0d02;
-        border-color: transparent;
-      }
-      .tab:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .tab.locked {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .tab .lk {
-        font-size: 0.8rem;
-      }
+/* text-size control */
+.txtsize {
+  min-height: 44px;
+  min-width: 44px;
+  border: 1px solid var(--line);
+  background: #0e1c40;
+  color: var(--muted);
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0 10px;
+}
+.txtsize:hover {
+  color: var(--ink);
+}
+.txtsize:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+body[data-text="lg"] {
+  font-size: 1.12rem;
+}
+body[data-text="xl"] {
+  font-size: 1.26rem;
+}
 
-      /* ---- Stage ---- */
-      main {
-        flex: 1;
-        width: 100%;
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 14px;
-      }
-      .scene {
-        display: none;
-      }
-      .scene.active {
-        display: block;
-        animation: fade 0.35s ease;
-      }
-      @keyframes fade {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
+/* ---- Tabs ---- */
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 14px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  scrollbar-width: thin;
+}
+.tab {
+  flex: 0 0 auto;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+.tab[aria-selected="true"] {
+  background: linear-gradient(135deg, var(--accent), #ff6a3d);
+  color: #1a0d02;
+  border-color: transparent;
+}
+.tab:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.tab.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.tab .lk {
+  font-size: 0.8rem;
+}
 
-      .art {
-        position: relative;
-        border-radius: 18px;
-        overflow: hidden;
-        border: 1px solid var(--line);
-        background: #0b1530;
-        aspect-ratio: 16/9;
-      }
-      .art img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      /* Graceful fallback when panel art is unavailable */
-      .art img.art-missing {
-        display: none;
-      }
-      .art.art-fallback::after {
-        content: attr(data-fallback);
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 16px;
-        color: var(--muted);
-        font-size: 0.9rem;
-        font-style: italic;
-        background: repeating-linear-gradient(
-          135deg,
-          #0b1530,
-          #0b1530 12px,
-          #0e1c40 12px,
-          #0e1c40 24px
-        );
-      }
-      .scene-head {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 10px;
-      }
-      .scene-head h2 {
-        font-size: clamp(1.2rem, 3.5vw, 1.7rem);
-      }
-      .scene-head .act {
-        font-size: 0.75rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--accent);
-      }
+/* ---- Stage ---- */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 14px;
+}
+.scene {
+  display: none;
+}
+.scene.active {
+  display: block;
+  animation: fade 0.35s ease;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  .scene.active {
+    animation: none !important;
+    transition: none !important;
+  }
+}
 
-      /* ---- Data table ---- */
-      .dataset {
-        margin-top: 12px;
-        background: #0b1530;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 12px;
-        overflow-x: auto;
-      }
-      .dataset table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.95rem;
-        min-width: 280px;
-      }
-      .dataset caption {
-        text-align: left;
-        font-weight: 700;
-        color: var(--accent2);
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-      }
-      .dataset th,
-      .dataset td {
-        border: 1px solid var(--line);
-        padding: 7px 9px;
-        text-align: center;
-      }
-      .dataset th {
-        background: #13234d;
-        color: var(--ink);
-      }
+.scene-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.scene-head h2 {
+  font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+}
+.scene-head .act {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
 
-      /* ---- Dialogue ---- */
-      .dialogue {
-        margin-top: 14px;
-        min-height: 96px;
-      }
-      .bubble {
-        background: var(--bubble);
-        color: var(--bubble-ink);
-        border-radius: 16px;
-        padding: 14px 16px;
-        position: relative;
-        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
-        animation: fade 0.25s ease;
-      }
-      .bubble .who {
-        font-weight: 800;
-        color: #c2461d;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 4px;
-      }
-      .bubble .en {
-        font-size: 1.05rem;
-      }
-      .bubble .es {
-        font-size: 0.92rem;
-        color: #566677;
-        margin-top: 6px;
-        font-style: italic;
-      }
-      .bubble.caption {
-        background: #0e1c40;
-        color: var(--ink);
-        border: 1px solid var(--line);
-      }
-      .bubble.caption .es {
-        color: var(--muted);
-      }
-      .dlg-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 10px;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .dots {
-        display: flex;
-        gap: 5px;
-      }
-      .dots i {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #2a4378;
-      }
-      .dots i.on {
-        background: var(--accent);
-      }
-      .next {
-        min-height: 44px;
-        background: linear-gradient(135deg, var(--accent2), #5d7bff);
-        color: #02112a;
-        border: none;
-        border-radius: 12px;
-        padding: 10px 18px;
-        font-weight: 800;
-        font-size: 1rem;
-        cursor: pointer;
-      }
-      .next:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .next[disabled] {
-        opacity: 0.4;
-        cursor: default;
-      }
+/* ===========================================================================
+   PANEL  — a framed scene (background image) with characters speaking over it
+   =========================================================================== */
+.panel {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  background: #0b1530;
+  aspect-ratio: 16 / 9;
+}
+.panel > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* contrast scrim so overlaid bubbles always meet AA over any art */
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 12, 28, 0.1) 0%,
+    rgba(6, 12, 28, 0.05) 45%,
+    rgba(6, 12, 28, 0.62) 100%
+  );
+}
+/* speech layer holds the current beat's bubble(s) over the panel */
+.speech {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px;
+}
+.speech > * {
+  pointer-events: auto;
+}
 
-      /* ---- Challenge / choice ---- */
-      .challenge {
-        margin-top: 16px;
-        background: #0e1c40;
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 16px;
-      }
-      .challenge h3 {
-        font-size: 1.05rem;
-        margin-bottom: 4px;
-        color: var(--accent);
-      }
-      .challenge .prompt {
-        font-size: 1.05rem;
-        margin-bottom: 6px;
-      }
-      .challenge .prompt .es {
-        display: block;
-        font-size: 0.9rem;
-        color: var(--muted);
-        font-style: italic;
-        margin-top: 4px;
-      }
-      .hint {
-        font-size: 0.9rem;
-        color: #ffd9b3;
-        background: #3a2410;
-        border: 1px solid #7a4d1f;
-        border-radius: 10px;
-        padding: 8px 12px;
-        margin: 8px 0;
-      }
-      .hint b {
-        color: var(--accent);
-      }
-      .choices {
-        display: grid;
-        gap: 10px;
-        margin-top: 10px;
-      }
-      .choice {
-        min-height: 48px;
-        text-align: left;
-        background: #13234d;
-        border: 2px solid var(--line);
-        color: var(--ink);
-        border-radius: 12px;
-        padding: 12px 14px;
-        font-size: 1rem;
-        cursor: pointer;
-        font-family: var(--font);
-      }
-      .choice:hover {
-        border-color: var(--accent2);
-      }
-      .choice:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .choice.correct {
-        border-color: var(--ok);
-        background: #10351f;
-      }
-      .choice.wrong {
-        border-color: var(--bad);
-        background: #3a1414;
-      }
-      .choice .calc {
-        font-family: "Courier New", monospace;
-        font-size: 0.9rem;
-        display: block;
-        margin-top: 4px;
-        color: #bfe;
-      }
-      .feedback {
-        margin-top: 12px;
-        border-radius: 12px;
-        padding: 12px 14px;
-        font-size: 1rem;
-        display: none;
-      }
-      .feedback.show {
-        display: block;
-        animation: fade 0.25s ease;
-      }
-      .feedback.good {
-        background: #10351f;
-        border: 1px solid var(--ok);
-        color: #c8ffe0;
-      }
-      .feedback.bad {
-        background: #3a1414;
-        border: 1px solid var(--bad);
-        color: #ffd5d5;
-      }
-      .feedback .es {
-        display: block;
-        font-style: italic;
-        color: #9fd;
-        opacity: 0.85;
-        margin-top: 4px;
-        font-size: 0.9rem;
-      }
+/* ---- Speech bubble (with tail + speaker tag + optional avatar) ---- */
+.bubble {
+  background: var(--bubble);
+  color: var(--bubble-ink);
+  border-radius: 16px;
+  padding: 12px 14px 12px;
+  position: relative;
+  max-width: min(560px, 86%);
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.75);
+  animation: pop 0.22s ease;
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.bubble.left {
+  align-self: flex-start;
+}
+.bubble.right {
+  align-self: flex-end;
+}
+.bubble.center {
+  align-self: center;
+}
+/* tail */
+.bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  width: 0;
+  height: 0;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 12px solid var(--bubble);
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.35));
+}
+.bubble.left::before {
+  left: 26px;
+}
+.bubble.right::before {
+  right: 26px;
+}
+.bubble.center::before {
+  left: 50%;
+  transform: translateX(-50%);
+}
+/* speaker tag (doubles as avatar holder) */
+.bubble .who {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+  color: var(--spk, #c2461d);
+}
+.bubble .who .av {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  overflow: hidden;
+  background: var(--spk, #c2461d);
+  border: 2px solid #fff3;
+}
+.bubble .who .av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bubble .who .me {
+  font-size: 0.62rem;
+  color: #8a6a55;
+  letter-spacing: 0.08em;
+}
+.bubble .en {
+  font-size: 1.05rem;
+}
+.bubble .es {
+  font-size: 0.92rem;
+  color: #566677;
+  margin-top: 6px;
+  font-style: italic;
+}
+/* narrator / caption styling */
+.bubble.caption {
+  background: #0e1c40;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  max-width: min(620px, 92%);
+}
+.bubble.caption::before {
+  border-top-color: #0e1c40;
+}
+.bubble.caption .es {
+  color: var(--muted);
+}
+.bubble.caption .who {
+  color: var(--accent2);
+}
+/* the companion's misconception line gets a subtle "uh-oh" mark */
+.bubble.misc {
+  box-shadow:
+    0 0 0 2px #ffd16688,
+    0 10px 26px -10px rgba(0, 0, 0, 0.75);
+}
 
-      .frame {
-        margin-top: 12px;
-        font-size: 0.92rem;
-        color: var(--muted);
-        background: #0b1530;
-        border: 1px dashed var(--line);
-        border-radius: 10px;
-        padding: 10px 12px;
-      }
-      .frame b {
-        color: var(--accent2);
-      }
+/* ---- Inline vocab tag (tap for definition popover) ---- */
+.vocab-tag {
+  font: inherit;
+  color: #0b4a82;
+  font-weight: 800;
+  cursor: pointer;
+  background: #bfe3ff;
+  border: none;
+  border-bottom: 2px dotted #0b4a82;
+  border-radius: 5px;
+  padding: 0 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.vocab-tag:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
 
-      .scene-foot {
-        margin-top: 18px;
-        display: flex;
-        justify-content: flex-end;
-      }
-      .advance {
-        min-height: 48px;
-        background: linear-gradient(135deg, var(--accent), #ff6a3d);
-        color: #1a0d02;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 22px;
-        font-weight: 800;
-        font-size: 1.05rem;
-        cursor: pointer;
-        display: none;
-      }
-      .advance.show {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        animation: fade 0.3s ease;
-      }
-      .advance:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
+/* ---- Popover (vocab + callout) ---- */
+.gn-pop {
+  position: fixed;
+  z-index: 60;
+  max-width: 280px;
+  background: #fffef9;
+  color: #16213d;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+}
+.gn-pop h4 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+  color: #c2461d;
+}
+.gn-pop .es {
+  font-style: italic;
+  color: #566677;
+  font-size: 0.88rem;
+  margin-top: 6px;
+}
+.gn-pop .x {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  border: none;
+  background: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #99a;
+  min-width: 32px;
+  min-height: 32px;
+}
+.gn-pop-back {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: transparent;
+}
 
-      /* ---- Cover ---- */
-      .cover-card {
-        text-align: center;
-      }
-      .cover-card .art {
-        aspect-ratio: 16/9;
-        margin-bottom: 16px;
-      }
-      .cover-card h2 {
-        font-size: clamp(1.6rem, 5vw, 2.4rem);
-      }
-      .cover-card p {
-        color: var(--muted);
-        max-width: 620px;
-        margin: 10px auto;
-      }
-      .start {
-        min-height: 52px;
-        margin-top: 8px;
-        background: linear-gradient(135deg, var(--accent), #ff6a3d);
-        color: #1a0d02;
-        border: none;
-        border-radius: 14px;
-        padding: 14px 28px;
-        font-weight: 800;
-        font-size: 1.15rem;
-        cursor: pointer;
-      }
-      .start:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .level-pill {
-        display: inline-block;
-        margin-bottom: 10px;
-        font-size: 0.8rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #02112a;
-        background: var(--accent2);
-        border-radius: 999px;
-        padding: 5px 14px;
-        font-weight: 700;
-      }
+/* ---- Callout dot pinned to a spot on the panel ---- */
+.callout {
+  position: absolute;
+  z-index: 4;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #1a0d02;
+  border: 2px solid #fff;
+  font-weight: 900;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 0 rgba(255, 138, 61, 0.6);
+  animation: ping 1.8s infinite;
+}
+@keyframes ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 138, 61, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(255, 138, 61, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 138, 61, 0);
+  }
+}
+.callout:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
 
-      /* ---- Glossary ---- */
-      .gloss {
-        display: grid;
-        gap: 12px;
-      }
-      .term {
-        background: #0e1c40;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 14px 16px;
-        display: flex;
-        gap: 14px;
-        align-items: flex-start;
-      }
-      .term .ico {
-        font-size: 1.6rem;
-        flex: 0 0 auto;
-      }
-      .term h3 {
-        font-size: 1.1rem;
-      }
-      .term .es-term {
-        color: var(--accent2);
-        font-size: 0.9rem;
-        font-style: italic;
-      }
-      .term p {
-        color: var(--muted);
-        margin-top: 4px;
-      }
+/* ---- Beat controls (dots + Next) ---- */
+.dlg-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dots {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2a4378;
+}
+.dots i.on {
+  background: var(--accent);
+}
+.next {
+  min-height: 48px;
+  background: linear-gradient(135deg, var(--accent2), #5d7bff);
+  color: #02112a;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.next:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.next[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
 
-      /* ---- Mission complete ---- */
-      .complete {
-        text-align: center;
-        display: none;
-      }
-      .complete.show {
-        display: block;
-      }
-      .complete .art {
-        margin-bottom: 16px;
-      }
-      .complete h2 {
-        font-size: clamp(1.6rem, 5vw, 2.4rem);
-        color: var(--accent);
-      }
-      .badge-done {
-        display: inline-block;
-        font-size: 3rem;
-        margin: 8px;
-      }
-      .restart {
-        min-height: 48px;
-        margin-top: 14px;
-        background: #0e1c40;
-        border: 1px solid var(--line);
-        color: var(--ink);
-        border-radius: 12px;
-        padding: 12px 20px;
-        font-weight: 700;
-        cursor: pointer;
-      }
-      .locked-note {
-        display: none;
-        text-align: center;
-        color: var(--muted);
-        padding: 30px 10px;
-      }
-      .locked-note.show {
-        display: block;
-      }
+/* ===========================================================================
+   CHALLENGE  — math voiced by a character; choices = protagonist's replies
+   =========================================================================== */
+.challenge {
+  margin-top: 16px;
+}
+.challenge .ask-tray {
+  margin-bottom: 10px;
+} /* the question bubble lives in a tray under panel on small screens */
+.chal-tools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 4px 0 10px;
+}
+.toolbtn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  color: #ffd9b3;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.toolbtn[aria-expanded="true"] {
+  background: #3a2410;
+  border-color: #7a4d1f;
+  color: #ffd9b3;
+}
+.toolbtn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.foldout {
+  font-size: 0.95rem;
+  color: #ffe9d3;
+  background: #3a2410;
+  border: 1px solid #7a4d1f;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 0 0 12px;
+  display: none;
+}
+.foldout.show {
+  display: block;
+  animation: fade 0.2s ease;
+}
+.foldout.coach {
+  color: #cfe3ff;
+  background: #0e2140;
+  border-color: #244a86;
+}
+.foldout b {
+  color: var(--accent);
+}
+.foldout.coach b {
+  color: var(--accent2);
+}
 
-      @media (max-width: 480px) {
-        .topbar-inner {
-          gap: 8px;
-        }
-        .title {
-          font-size: 0.9rem;
-          flex: 1 1 100%;
-        }
-      }
+.reply-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.choices {
+  display: grid;
+  gap: 10px;
+}
+/* each choice is the protagonist's possible reply, drawn as a mini bubble */
+.choice {
+  position: relative;
+  min-height: 48px;
+  text-align: left;
+  background: var(--reply);
+  border: 2px solid var(--line);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 12px 14px 12px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.choice::before {
+  content: "\201C";
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  color: var(--accent2);
+  font-size: 1.1rem;
+  font-weight: 800;
+  opacity: 0.6;
+}
+.choice:hover {
+  border-color: var(--accent2);
+}
+.choice:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.choice.correct {
+  border-color: var(--ok);
+  background: #10351f;
+}
+.choice.wrong {
+  border-color: var(--bad);
+  background: #3a1414;
+}
+.choice .tree {
+  font-family: "Courier New", monospace;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  display: block;
+  margin-top: 4px;
+  color: #bfe;
+}
+.choice .es {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+.feedback {
+  margin-top: 12px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  display: none;
+}
+.feedback.show {
+  display: block;
+  animation: fade 0.25s ease;
+}
+.feedback.good {
+  background: #10351f;
+  border: 1px solid var(--ok);
+  color: #c8ffe0;
+}
+.feedback.bad {
+  background: #3a1414;
+  border: 1px solid var(--bad);
+  color: #ffd5d5;
+}
+.feedback .es {
+  display: block;
+  font-style: italic;
+  color: #9fd;
+  opacity: 0.85;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.scene-foot {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+.advance {
+  min-height: 48px;
+  background: linear-gradient(135deg, var(--accent), #ff6a3d);
+  color: #1a0d02;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: none;
+  font-family: var(--font);
+}
+.advance.show {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: fade 0.3s ease;
+}
+.advance:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ---- Cover ---- */
+.cover-card {
+  text-align: center;
+}
+.cover-card .panel {
+  aspect-ratio: 16 / 9;
+  margin-bottom: 16px;
+}
+.cover-card h2 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+}
+.cover-card p {
+  color: var(--muted);
+  max-width: 620px;
+  margin: 10px auto;
+}
+.start {
+  min-height: 52px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, var(--accent), #ff6a3d);
+  color: #1a0d02;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.start:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.level-pill {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #02112a;
+  background: var(--accent2);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-weight: 700;
+}
+.cast-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 14px 0 4px;
+}
+.cast-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px 6px 6px;
+  font-size: 0.85rem;
+}
+.cast-chip .av {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  overflow: hidden;
+}
+.cast-chip .av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cast-chip b {
+  color: var(--ink);
+}
+.cast-chip span {
+  color: var(--muted);
+}
+
+/* ---- Glossary ---- */
+.gloss {
+  display: grid;
+  gap: 12px;
+}
+.term {
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.term .ico {
+  font-size: 1.6rem;
+  flex: 0 0 auto;
+}
+.term h3 {
+  font-size: 1.1rem;
+}
+.term .es-term {
+  color: var(--accent2);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.term p {
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ---- Mission complete ---- */
+.complete {
+  text-align: center;
+  display: none;
+}
+.complete.show {
+  display: block;
+}
+.complete .panel {
+  margin-bottom: 16px;
+}
+.complete h2 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  color: var(--accent);
+}
+.badge-done {
+  display: inline-block;
+  font-size: 3rem;
+  margin: 8px;
+}
+.restart {
+  min-height: 48px;
+  margin-top: 14px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.locked-note {
+  display: none;
+  text-align: center;
+  color: var(--muted);
+  padding: 30px 10px;
+}
+.locked-note.show {
+  display: block;
+}
+.bonus {
+  margin-top: 24px;
+  text-align: left;
+  background: #1c1606;
+  border: 2px solid #ffd166;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+}
+.bonus-tag {
+  background: #ffd166;
+  color: #1a1200;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.bonus h3 {
+  color: #ffd166;
+  font-size: 1.1rem;
+  margin: 8px 0 6px;
+  font-weight: 700;
+}
+.bonus .prompt {
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+.bonus .prompt .es {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* ---- Small screens (down to 320px) ---- */
+@media (max-width: 560px) {
+  .panel {
+    aspect-ratio: 4 / 3;
+  }
+  .bubble {
+    max-width: 94%;
+  }
+  .bubble .en {
+    font-size: 1rem;
+  }
+}
+@media (max-width: 380px) {
+  main {
+    padding: 10px;
+  }
+  .topbar-inner {
+    gap: 8px;
+  }
+  .title {
+    font-size: 0.9rem;
+    flex: 1 1 100%;
+  }
+  .panel {
+    aspect-ratio: 1 / 1;
+  }
+  .speech {
+    padding: 8px;
+  }
+  .bubble {
+    padding: 10px 12px;
+  }
+}
+
     </style>
   </head>
   <body>
-    <div class="topbar">
-      <div class="topbar-inner">
-        <a class="home" href="../index.html">&#8592; Home</a>
-        <span class="title"
-          ><span class="v">#1</span> Court Vision: The Data Analyst</span
-        >
-        <div class="progress-wrap">
-          <div
-            class="progress"
-            role="progressbar"
-            aria-label="Mission progress"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="0"
-          >
-            <i id="bar"></i>
-          </div>
-          <span class="progress-label" id="plabel">0%</span>
-        </div>
-      </div>
-      <div class="tabs" role="tablist" aria-label="Chapters">
-        <button
-          class="tab"
-          role="tab"
-          aria-selected="true"
-          data-scene="cover"
-          id="tab-cover"
-        >
-          Cover
-        </button>
-        <button
-          class="tab"
-          role="tab"
-          aria-selected="false"
-          data-scene="act1"
-          id="tab-act1"
-        >
-          Act 1: The Big Question
-        </button>
-        <button
-          class="tab locked"
-          role="tab"
-          aria-selected="false"
-          data-scene="act2"
-          id="tab-act2"
-        >
-          <span class="lk">&#128274;</span> Act 2: Center of the Game
-        </button>
-        <button
-          class="tab locked"
-          role="tab"
-          aria-selected="false"
-          data-scene="final"
-          id="tab-final"
-        >
-          <span class="lk">&#128274;</span> Final Call
-        </button>
-        <button
-          class="tab"
-          role="tab"
-          aria-selected="false"
-          data-scene="gloss"
-          id="tab-gloss"
-        >
-          Glossary
-        </button>
-      </div>
-    </div>
-
-    <main>
-      <!-- ============ COVER ============ -->
-      <section
-        class="scene active cover-card"
-        id="scene-cover"
-        role="tabpanel"
-        aria-labelledby="tab-cover"
-      >
-        <div class="art">
-          <img
-            src="../_art/unit8/cover.png"
-            alt="A young sports data analyst stands in an arena data room surrounded by glowing holographic basketball stats"
-          />
-        </div>
-        <span class="level-pill">Graphic Novel #1 &middot; Support</span>
-        <h2>Court Vision: The Data Analyst</h2>
-        <p>
-          You are Maya, the new <b>data analyst</b> for the team! The coach
-          needs your help. Read the <b>data</b>, find the
-          <b>mean, median, and mode</b>, and make the right call to win the
-          game!
-        </p>
-        <p style="font-size: 0.92rem">
-          <i
-            >Eres Maya, la analista de datos del equipo. Lee los datos y haz la
-            jugada correcta para ganar el partido.</i
-          >
-        </p>
-        <button class="start" id="start-btn">Start the Game &#127936;</button>
-      </section>
-
-      <!-- ============ ACT 1 ============ -->
-      <section
-        class="scene"
-        id="scene-act1"
-        role="tabpanel"
-        aria-labelledby="tab-act1"
-      >
-        <div class="scene-head">
-          <span class="act"
-            >Act 1 &middot; Statistical Questions &amp; Data</span
-          >
-          <h2>The Big Question</h2>
-        </div>
-        <div class="art">
-          <img
-            id="art-act1"
-            src="../_art/unit8/data-room.png"
-            alt="Maya sits at a glowing analyst desk studying holographic player statistics"
-          />
-        </div>
-
-        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
-        <div class="dlg-row">
-          <div class="dots" id="dots-act1"></div>
-          <button class="next" id="next-act1">Next &#9654;</button>
-        </div>
-
-        <!-- Challenge 1: statistical question -->
-        <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128202; Decision #1 &mdash; Pick a Statistical Question</h3>
-          <p class="prompt">
-            A <b>statistical question</b> has <b>many different answers</b> you
-            collect as data. Which question is statistical?
-            <span class="es"
-              >Una pregunta estad&iacute;stica tiene muchas respuestas
-              diferentes. &iquest;Cu&aacute;l lo es?</span
-            >
-          </p>
-          <div class="hint">
-            &#128161; <b>Hint:</b> If everyone would give the
-            <b>same one answer</b>, it is NOT statistical. If answers
-            <b>vary</b> (change from game to game), it IS statistical.
-          </div>
-          <div class="choices" id="choices1a">
-            <button class="choice" data-correct="false">
-              How many points did Jordan score last night?
-              <span class="calc">(only one answer)</span>
-            </button>
-            <button class="choice" data-correct="true">
-              How many points does Jordan score each game this season?
-              <span class="calc">(many answers &rarr; data!)</span>
-            </button>
-            <button class="choice" data-correct="false">
-              How tall is the team's tallest player?
-              <span class="calc">(only one answer)</span>
-            </button>
-          </div>
-          <div class="feedback" id="fb1a"></div>
-        </div>
-
-        <!-- Challenge 2: read the data set -->
-        <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128202; Decision #2 &mdash; Read the Data</h3>
-          <p class="prompt">
-            Here is Jordan's points data for 5 games. Read the table. How many
-            points did Jordan score in <b>Game 3</b>?
-            <span class="es"
-              >Lee la tabla. &iquest;Cu&aacute;ntos puntos anot&oacute; en el
-              Juego 3?</span
-            >
-          </p>
-          <div class="dataset">
-            <table>
-              <caption>
-                Jordan &mdash; Points per Game
-              </caption>
-              <tr>
-                <th>Game</th>
-                <th>1</th>
-                <th>2</th>
-                <th>3</th>
-                <th>4</th>
-                <th>5</th>
-              </tr>
-              <tr>
-                <th>Points</th>
-                <td>8</td>
-                <td>12</td>
-                <td>10</td>
-                <td>6</td>
-                <td>14</td>
-              </tr>
-            </table>
-          </div>
-          <div class="hint">
-            &#128161; <b>Hint:</b> Find the column labeled <b>Game 3</b>, then
-            look at the <b>Points</b> row right below it.
-          </div>
-          <div class="choices" id="choices1b">
-            <button class="choice" data-correct="false">8 points</button>
-            <button class="choice" data-correct="true">10 points</button>
-            <button class="choice" data-correct="false">14 points</button>
-          </div>
-          <div class="feedback" id="fb1b"></div>
-        </div>
-
-        <div class="frame" id="frame1" style="display: none">
-          <b>Sentence frame:</b> &ldquo;A statistical question is statistical
-          because the answers ____ (vary / stay the same). In Game 3, Jordan
-          scored ____ points.&rdquo;
-        </div>
-
-        <div class="scene-foot">
-          <button class="advance" id="adv-act1">
-            Bring the data to Coach &#127936;
-          </button>
-        </div>
-      </section>
-
-      <!-- ============ ACT 2 ============ -->
-      <section
-        class="scene"
-        id="scene-act2"
-        role="tabpanel"
-        aria-labelledby="tab-act2"
-      >
-        <div class="locked-note" id="lock-act2">
-          &#128274; Finish Act 1 first to unlock Act 2.
-        </div>
-        <div id="body-act2">
-          <div class="scene-head">
-            <span class="act">Act 2 &middot; Mean, Median &amp; Mode</span>
-            <h2>Center of the Game</h2>
-          </div>
-          <div class="art">
-            <img
-              id="art-act2"
-              src="../_art/unit8/mean-median.png"
-              alt="Maya points at a holographic display showing numbers balancing to find a center"
-            />
-          </div>
-
-          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
-          <div class="dlg-row">
-            <div class="dots" id="dots-act2"></div>
-            <button class="next" id="next-act2">Next &#9654;</button>
-          </div>
-
-          <!-- Challenge: mean -->
-          <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#127919; Stat Lock #1 &mdash; The Mean (Average)</h3>
-            <p class="prompt">
-              Jordan's points were <b>8, 12, 10, 6, 14</b>. The <b>mean</b> is
-              the average: add them all, then divide by how many games. What is
-              the mean?
-              <span class="es"
-                >La media: suma todos los puntos y divide entre el n&uacute;mero
-                de juegos.</span
-              >
-            </p>
-            <div class="hint">
-              &#128161; <b>Hint:</b> 8 + 12 + 10 + 6 + 14 = <b>50</b>. There are
-              <b>5</b> games. Now do 50 &divide; 5.
-            </div>
-            <div class="choices" id="choices2a">
-              <button class="choice" data-correct="false">
-                50 <span class="calc">(that is the total, not the mean)</span>
-              </button>
-              <button class="choice" data-correct="true">
-                10 <span class="calc">(50 &divide; 5 = 10)</span>
-              </button>
-              <button class="choice" data-correct="false">
-                5 <span class="calc">(that is the number of games)</span>
-              </button>
-            </div>
-            <div class="feedback" id="fb2a"></div>
-          </div>
-
-          <!-- Challenge: median + mode -->
-          <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#127919; Stat Lock #2 &mdash; The Median (Middle)</h3>
-            <p class="prompt">
-              Put the points in order from least to greatest:
-              <b>6, 8, 10, 12, 14</b>. The <b>median</b> is the
-              <b>middle</b> number. What is the median?
-              <span class="es"
-                >La mediana es el n&uacute;mero del medio cuando est&aacute;n en
-                orden.</span
-              >
-            </p>
-            <div class="hint">
-              &#128161; <b>Hint:</b> With 5 numbers in order, the middle one is
-              the <b>3rd</b> number: 6, 8, <b>10</b>, 12, 14.
-            </div>
-            <div class="choices" id="choices2b">
-              <button class="choice" data-correct="false">
-                6 <span class="calc">(that is the smallest)</span>
-              </button>
-              <button class="choice" data-correct="false">
-                14 <span class="calc">(that is the largest)</span>
-              </button>
-              <button class="choice" data-correct="true">
-                10 <span class="calc">(the middle number)</span>
-              </button>
-            </div>
-            <div class="feedback" id="fb2b"></div>
-          </div>
-
-          <!-- Challenge: mode -->
-          <div class="challenge" id="chal2c" style="display: none">
-            <h3>&#127919; Stat Lock #3 &mdash; The Mode (Most Often)</h3>
-            <p class="prompt">
-              In a new game series, Maya wrote the assists:
-              <b>7, 7, 9, 4, 7</b>. The <b>mode</b> is the number that appears
-              <b>most often</b>. What is the mode?
-              <span class="es"
-                >La moda es el n&uacute;mero que aparece m&aacute;s veces.</span
-              >
-            </p>
-            <div class="hint">
-              &#128161; <b>Hint:</b> Count each number. 7 appears <b>three</b>
-              times. Every other number appears once.
-            </div>
-            <div class="choices" id="choices2c">
-              <button class="choice" data-correct="false">
-                4 <span class="calc">(appears only once)</span>
-              </button>
-              <button class="choice" data-correct="true">
-                7 <span class="calc">(appears 3 times &mdash; the most)</span>
-              </button>
-              <button class="choice" data-correct="false">
-                9 <span class="calc">(appears only once)</span>
-              </button>
-            </div>
-            <div class="feedback" id="fb2c"></div>
-          </div>
-
-          <div class="frame" id="frame2" style="display: none">
-            <b>Sentence frame:</b> &ldquo;The mean is ____. The median (middle)
-            is ____. The mode (most often) is ____.&rdquo;
-          </div>
-
-          <div class="scene-foot">
-            <button class="advance" id="adv-act2">
-              Report the stats &#9889;
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ FINAL ============ -->
-      <section
-        class="scene"
-        id="scene-final"
-        role="tabpanel"
-        aria-labelledby="tab-final"
-      >
-        <div class="locked-note" id="lock-final">
-          &#128274; Finish Act 2 first to unlock the Final Call.
-        </div>
-        <div id="body-final">
-          <div class="scene-head">
-            <span class="act">Final Call &middot; Boss</span>
-            <h2>The Game-Winning Decision</h2>
-          </div>
-          <div class="art">
-            <img
-              id="art-final"
-              src="../_art/unit8/final-analysis.png"
-              alt="Maya stands before a giant wall of holographic data making a big decision"
-            />
-          </div>
-
-          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
-          <div class="dlg-row">
-            <div class="dots" id="dots-final"></div>
-            <button class="next" id="next-final">Next &#9654;</button>
-          </div>
-
-          <div class="challenge" id="chalF" style="display: none">
-            <h3>&#127942; Coach's Call &mdash; Who Should Take the Shot?</h3>
-            <p class="prompt">
-              Coach asks for the <b>most reliable</b> scorer. Maya's last 5
-              shots scored: <b>5, 5, 5, 7, 3</b>. Find the <b>mean</b> AND the
-              <b>mode</b>, then pick the line that is fully correct.
-              <span class="es"
-                >Encuentra la media Y la moda. Elige la l&iacute;nea
-                correcta.</span
-              >
-            </p>
-            <div class="hint">
-              &#128161; <b>Hint:</b> Sum = 5+5+5+7+3 = <b>25</b>, and 25
-              &divide; 5 = mean. The number that repeats most is the mode.
-            </div>
-            <div class="choices" id="choicesF">
-              <button class="choice" data-correct="false">
-                Mean = 25, Mode = 5
-                <span class="calc">(25 is the total, not the mean)</span>
-              </button>
-              <button class="choice" data-correct="true">
-                Mean = 5, Mode = 5
-                <span class="calc">(25 &divide; 5 = 5; 5 repeats most)</span>
-              </button>
-              <button class="choice" data-correct="false">
-                Mean = 5, Mode = 7
-                <span class="calc">(7 appears only once)</span>
-              </button>
-            </div>
-            <div class="feedback" id="fbF"></div>
-          </div>
-
-          <div class="frame" id="frameF" style="display: none">
-            <b>Sentence frame:</b> &ldquo;The mean is ____. The mode is ____. So
-            Maya is a reliable scorer because her scores stay near ____.&rdquo;
-          </div>
-
-          <div class="scene-foot">
-            <button class="advance" id="adv-final">
-              Make the call &#127775;
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ MISSION COMPLETE ============ -->
-      <section
-        class="scene complete"
-        id="scene-complete"
-        role="tabpanel"
-        aria-label="Mission complete"
-      >
-        <div class="art">
-          <img
-            src="../_art/unit8/celebrate.png"
-            alt="Maya celebrates on the court with the winning team holding her tablet high"
-          />
-        </div>
-        <span class="badge-done">&#127881;&#127936;&#11088;</span>
-        <h2>Game Won!</h2>
-        <p>
-          You did it, Analyst! You found the <b>statistical question</b>, read
-          the <b>data</b>, and used the <b>mean, median, and mode</b> to make
-          the game-winning call. The team is celebrating &mdash; thanks to you!
-        </p>
-        <p style="color: var(--muted); font-size: 0.92rem">
-          <i
-            >&iexcl;Lo lograste! Usaste la media, la mediana y la moda para
-            ganar. &iexcl;Excelente trabajo!</i
-          >
-        </p>
-        
-        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
-          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
-          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
-          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
-            Data statistics: Jordan's game scores are <strong>3, 5, 7, 8, 12</strong>. Find the <strong>median</strong> of this data set.<span class="es">Los puntajes de Jordan son 3, 5, 7, 8, 12. Encuentra la mediana.</span>
-          </p>
-          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
-            
-            <button class="choice" data-correct="false">A) 8 &nbsp;(confused median with mode or upper values)</button>
-            <button class="choice" data-correct="true">B) 7 &nbsp;(the middle value of the ordered set) &nbsp;✅</button>
-            <button class="choice" data-correct="false">C) 9 &nbsp;(calculated the range or standard spread)</button>
-      
-          </div>
-          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
-        </div>
-        <button class="restart" id="restart-btn">Play again &#8635;</button>
-    
-      </section>
-
-      <!-- ============ GLOSSARY ============ -->
-      <section
-        class="scene"
-        id="scene-gloss"
-        role="tabpanel"
-        aria-labelledby="tab-gloss"
-      >
-        <div class="scene-head">
-          <span class="act">Reference</span>
-          <h2>Glossary &middot; Word Bank</h2>
-        </div>
-        <div class="gloss" id="gloss-list"></div>
-      </section>
-    </main>
 
     <script>
-      (function () {
-        "use strict";
+/* STORY · Unit 8 · Graphic Novel #1 (Support) · Court Vision: The Data Analyst
+   Full novel on the comic engine. Two acts (The Big Question, Center of the
+   Game) + Final Call, Glossary, Mission Complete + Master-Rank challenge.
+   All math, data sets, answers, distractors, Spanish, sentence frames, and
+   glossary are carried verbatim from graphic-novels/unit8/graphic-novel-1.html
+   (6.SP.1). New: panels, speech, STATS-voices-the-misconception (mean vs.
+   median / ignores spread), vocab/hint/coach pop-ups. */
+window.GN_STORY = {
+  meta: {
+    unit: 8,
+    version: 1,
+    level: "Support",
+    title: "Court Vision: The Data Analyst",
+    standard: "6.SP.1",
+    assessment: "Graphic Novel U8 #1: Court Vision: The Data Analyst",
+    artBase: "../_art/unit8/",
+    home: "../index.html",
+  },
 
-        /* ---------- Graceful art fallback (panel image unavailable) ---------- */
-        Array.prototype.slice
-          .call(document.querySelectorAll(".art img"))
-          .forEach(function (im) {
-            im.addEventListener("error", function () {
-              im.classList.add("art-missing");
-              var box = im.closest(".art");
-              if (box) {
-                box.classList.add("art-fallback");
-                box.setAttribute(
-                  "data-fallback",
-                  im.getAttribute("alt") || "Illustration",
-                );
-              }
-            });
-          });
+  cast: {
+    analyst: {
+      name: "The Analyst",
+      role: "protagonist",
+      color: "#ff8a3d",
+      tagIcon: "📊",
+      avatar: null,
+      blurb: "You",
+    },
+    stats: {
+      name: "STATS",
+      role: "companion",
+      color: "#3da5ff",
+      tagIcon: "🤖",
+      avatar: null,
+      blurb: "Courtside stats bot · reaches for the mean every time",
+    },
+    coach: { name: "Coach", role: "narrator", color: "#3da5ff" },
+  },
 
-        /* ---------- Dialogue data (English + Spanish support) ---------- */
-        var DLG = {
-          act1: [
+  cover: {
+    art: "cover.png",
+    alt: "A young sports data analyst stands in an arena data room surrounded by glowing holographic basketball stats",
+    blurbEn:
+      "You are the team's new <b>data analyst</b>! The coach needs your help. Read the <b>data</b>, find the <b>mean, median, and mode</b>, and make the right call to win the game! STATS, the courtside bot, will help… but it reaches for the mean every time, even when the median tells the truth.",
+    blurbEs:
+      "Eres la analista de datos del equipo. Lee los datos y haz la jugada correcta para ganar el partido.",
+    startLabel: "Start the Game 🏀",
+  },
+
+  acts: [
+    /* ============================ ACT 1 ============================ */
+    {
+      id: "act1",
+      tab: "Act 1: The Big Question",
+      kicker: "Act 1 · Statistical Questions & Data",
+      title: "The Big Question",
+      advanceLabel: "Bring the data to Coach 🏀",
+      steps: [
+        {
+          type: "beats",
+          art: "data-room.png",
+          alt: "Maya sits at a glowing analyst desk studying holographic player statistics",
+          lastLabel: "Pick the question ▶",
+          beats: [
             {
-              who: "Coach",
+              who: "coach",
+              caption: true,
               en: "Analyst! Big game tonight. I need you to study our data and help me make smart calls.",
-              es: "&iexcl;Analista! Gran partido hoy. Necesito que estudies los datos y me ayudes a decidir.",
-              cap: true,
+              es: "¡Analista! Gran partido hoy. Necesito que estudies los datos y me ayudes a decidir.",
             },
             {
-              who: "Maya",
+              who: "analyst",
               en: "On it, Coach! First I need a STATISTICAL question — one with many answers I can collect as data.",
-              es: "&iexcl;Voy! Primero necesito una pregunta estad&iacute;stica: una con muchas respuestas que pueda recolectar.",
+              es: "¡Voy! Primero necesito una pregunta estadística: una con muchas respuestas que pueda recolectar.",
+              vocab: [
+                {
+                  term: "STATISTICAL question",
+                  en: "A question that has many different answers you collect as data. Example: How many points does Jordan score each game?",
+                  es: "Una pregunta que tiene muchas respuestas diferentes que recolectas como datos. Ejemplo: ¿Cuántos puntos anota Jordan cada juego?",
+                },
+              ],
             },
             {
-              who: "Coach",
-              en: "Good thinking. Pick the question that will give us real data to work with.",
-              es: "Buena idea. Elige la pregunta que nos dar&aacute; datos reales.",
-              cap: true,
+              who: "stats",
+              misconception: true,
+              en: "Easy — just ask how many points Jordan scored last night. One number, one answer. Done!",
+              es: "Fácil: solo pregunta cuántos puntos anotó Jordan anoche. Un número, una respuesta. ¡Listo!",
             },
           ],
-          act1b: [
+        },
+        {
+          type: "challenge",
+          id: "1a",
+          ask: {
+            who: "coach",
+            en: "Good thinking. A <b>statistical question</b> has <b>many different answers</b> you collect as data. Which question is statistical?",
+            es: "Buena idea. Una pregunta estadística tiene muchas respuestas diferentes. ¿Cuál lo es?",
+          },
+          hint: {
+            en: "If everyone would give the same one answer, it is NOT statistical. If answers vary (change from game to game), it IS statistical.",
+            es: "Si todos darían la misma respuesta, NO es estadística. Si las respuestas varían (cambian de juego a juego), SÍ lo es.",
+          },
+          frame: {
+            en: "“A statistical question is statistical because the answers ____ (vary / stay the same).”",
+            es: "“Una pregunta estadística lo es porque las respuestas ____ (varían / quedan iguales).”",
+          },
+          choices: [
             {
-              who: "Maya",
-              en: "Statistical question, locked in! Now let me READ Jordan's points data table carefully.",
-              es: "&iexcl;Pregunta estad&iacute;stica lista! Ahora voy a leer la tabla de puntos de Jordan con cuidado.",
+              en: 'How many points did Jordan score last night? <span class="calc">(only one answer)</span>',
+              es: "¿Cuántos puntos anotó Jordan anoche? (solo una respuesta)",
+              correct: false,
+            },
+            {
+              en: 'How many points does Jordan score each game this season? <span class="calc">(many answers → data!)</span>',
+              es: "¿Cuántos puntos anota Jordan cada juego esta temporada? (muchas respuestas → ¡datos!)",
+              correct: true,
+            },
+            {
+              en: 'How tall is the team\'s tallest player? <span class="calc">(only one answer)</span>',
+              es: "¿Qué altura tiene el jugador más alto del equipo? (solo una respuesta)",
+              correct: false,
             },
           ],
-          act2: [
+          goodEn:
+            "✅ Yes! “How many points each game” gives many answers — that is a statistical question.",
+          goodEs: "¡Sí! Esa pregunta tiene muchas respuestas: es estadística.",
+          badEn:
+            "❌ That question has only ONE answer. A statistical question must have answers that vary. Try again.",
+          badEs:
+            "Esa pregunta tiene solo UNA respuesta. Una pregunta estadística varía. Intenta otra vez.",
+          solveBeat: {
+            who: "analyst",
+            en: "Statistical question, locked in! Now let me READ Jordan's points data table carefully.",
+            es: "¡Pregunta estadística lista! Ahora voy a leer la tabla de puntos de Jordan con cuidado.",
+          },
+        },
+        {
+          type: "challenge",
+          id: "1b",
+          art: "data-room.png",
+          alt: "A holographic table of Jordan's points per game glows on the analyst desk",
+          ask: {
+            who: "analyst",
+            en: "Here is Jordan's points data for 5 games — <b>8, 12, 10, 6, 14</b>. Read the table. How many points did Jordan score in <b>Game 3</b>?",
+            es: "Lee la tabla. ¿Cuántos puntos anotó en el Juego 3?",
+            vocab: [
+              {
+                term: "data",
+                en: "The facts or numbers you collect to answer a question. Example: 8, 12, 10, 6, 14 points.",
+                es: "Los hechos o números que recolectas para responder una pregunta. Ejemplo: 8, 12, 10, 6, 14 puntos.",
+              },
+            ],
+          },
+          hint: {
+            en: "Find the column labeled Game 3, then look at the Points row right below it: Game 1=8, Game 2=12, Game 3=10, Game 4=6, Game 5=14.",
+            es: "Busca la columna del Juego 3 y la fila de Puntos justo debajo: Juego 1=8, Juego 2=12, Juego 3=10, Juego 4=6, Juego 5=14.",
+          },
+          frame: {
+            en: "“In Game 3, Jordan scored ____ points.”",
+            es: "“En el Juego 3, Jordan anotó ____ puntos.”",
+          },
+          choices: [
+            { en: "8 points", es: "8 puntos", correct: false },
+            { en: "10 points", es: "10 puntos", correct: true },
+            { en: "14 points", es: "14 puntos", correct: false },
+          ],
+          goodEn:
+            "✅ Correct! Game 3 shows 10 points. You read the data table perfectly!",
+          goodEs:
+            "¡Correcto! El Juego 3 muestra 10 puntos. ¡Leíste bien la tabla!",
+          badEn:
+            "❌ Look again — find the Game 3 column, then the Points row. Use the hint.",
+          badEs:
+            "Mira otra vez: busca la columna del Juego 3 y la fila de Puntos. Usa la pista.",
+          solveBeat: {
+            who: "analyst",
+            en: "Data read and ready. Time to bring these numbers to Coach!",
+            es: "Datos leídos y listos. ¡Hora de llevar estos números al Coach!",
+          },
+        },
+      ],
+    },
+
+    /* ============================ ACT 2 ============================ */
+    {
+      id: "act2",
+      tab: "Act 2: Center of the Game",
+      kicker: "Act 2 · Mean, Median & Mode",
+      title: "Center of the Game",
+      advanceLabel: "Report the stats ⚡",
+      steps: [
+        {
+          type: "beats",
+          art: "mean-median.png",
+          alt: "Maya points at a holographic display showing numbers balancing to find a center",
+          lastLabel: "Find the mean ▶",
+          beats: [
             {
-              who: "Coach",
+              who: "coach",
+              caption: true,
               en: "Great data! Now find the CENTER of Jordan's scores. Start with the mean — the average.",
-              es: "&iexcl;Buenos datos! Ahora encuentra el centro. Empieza con la media: el promedio.",
-              cap: true,
+              es: "¡Buenos datos! Ahora encuentra el centro. Empieza con la media: el promedio.",
             },
             {
-              who: "Maya",
+              who: "analyst",
               en: "Mean, median, and mode all describe the center. I'll compute each one step by step.",
-              es: "La media, la mediana y la moda describen el centro. Calcular&eacute; cada una paso a paso.",
+              es: "La media, la mediana y la moda describen el centro. Calcularé cada una paso a paso.",
+              vocab: [
+                {
+                  term: "mean",
+                  en: "Add all the values, then divide by how many there are. Mean of 8,12,10,6,14 is 50 ÷ 5 = 10.",
+                  es: "Suma todos los valores y divide entre cuántos hay. La media de 8,12,10,6,14 es 50 ÷ 5 = 10.",
+                },
+              ],
+            },
+            {
+              who: "stats",
+              misconception: true,
+              en: "Why bother with median or mode? The mean is the only center anyone needs. Just average it!",
+              es: "¿Para qué la mediana o la moda? La media es el único centro que se necesita. ¡Solo promédialo!",
             },
           ],
-          act2b: [
+        },
+        {
+          type: "challenge",
+          id: "2a",
+          ask: {
+            who: "coach",
+            en: "Jordan's points were <b>8, 12, 10, 6, 14</b>. The <b>mean</b> is the average: add them all, then divide by how many games. What is the mean?",
+            es: "La media: suma todos los puntos y divide entre el número de juegos.",
+          },
+          hint: {
+            en: "8 + 12 + 10 + 6 + 14 = 50. There are 5 games. Now do 50 ÷ 5.",
+            es: "8 + 12 + 10 + 6 + 14 = 50. Hay 5 juegos. Ahora haz 50 ÷ 5.",
+          },
+          frame: {
+            en: "“The mean is ____.”",
+            es: "“La media es ____.”",
+          },
+          choices: [
             {
-              who: "Maya",
-              en: "Mean done! Next is the MEDIAN — I put the numbers in order and find the middle one.",
-              es: "&iexcl;Media lista! Ahora la mediana: pongo los n&uacute;meros en orden y busco el del medio.",
+              en: '50 <span class="calc">(that is the total, not the mean)</span>',
+              es: "50 (ese es el total, no la media)",
+              correct: false,
+            },
+            {
+              en: '10 <span class="calc">(50 ÷ 5 = 10)</span>',
+              es: "10 (50 ÷ 5 = 10)",
+              correct: true,
+            },
+            {
+              en: '5 <span class="calc">(that is the number of games)</span>',
+              es: "5 (ese es el número de juegos)",
+              correct: false,
             },
           ],
-          act2c: [
+          goodEn: "✅ The mean is 10! 8+12+10+6+14 = 50, and 50 ÷ 5 = 10.",
+          goodEs: "¡La media es 10! 50 ÷ 5 = 10.",
+          badEn:
+            "❌ Not quite. Add to get 50, then divide by 5 games. Check the hint.",
+          badEs: "Casi. Suma 50 y divide entre 5 juegos. Usa la pista.",
+          solveBeat: {
+            who: "analyst",
+            en: "Mean done! Next is the MEDIAN — I put the numbers in order and find the middle one.",
+            es: "¡Media lista! Ahora la mediana: pongo los números en orden y busco el del medio.",
+          },
+        },
+        {
+          type: "challenge",
+          id: "2b",
+          ask: {
+            who: "analyst",
+            en: "Put the points in order from least to greatest: <b>6, 8, 10, 12, 14</b>. The <b>median</b> is the <b>middle</b> number. What is the median?",
+            es: "La mediana es el número del medio cuando están en orden.",
+            vocab: [
+              {
+                term: "median",
+                en: "The middle value when the numbers are in order from least to greatest. Median of 6,8,10,12,14 is 10.",
+                es: "El valor del medio cuando los números están en orden de menor a mayor. La mediana de 6,8,10,12,14 es 10.",
+              },
+            ],
+          },
+          hint: {
+            en: "With 5 numbers in order, the middle one is the 3rd number: 6, 8, 10, 12, 14.",
+            es: "Con 5 números en orden, el del medio es el 3.º: 6, 8, 10, 12, 14.",
+          },
+          frame: {
+            en: "“The median (middle) is ____.”",
+            es: "“La mediana (del medio) es ____.”",
+          },
+          choices: [
             {
-              who: "Maya",
-              en: "Median found! Last is the MODE — the number that shows up the most often.",
-              es: "&iexcl;Mediana lista! Por &uacute;ltimo, la moda: el n&uacute;mero que aparece m&aacute;s veces.",
+              en: '6 <span class="calc">(that is the smallest)</span>',
+              es: "6 (ese es el más pequeño)",
+              correct: false,
+            },
+            {
+              en: '14 <span class="calc">(that is the largest)</span>',
+              es: "14 (ese es el más grande)",
+              correct: false,
+            },
+            {
+              en: '10 <span class="calc">(the middle number)</span>',
+              es: "10 (el número del medio)",
+              correct: true,
             },
           ],
-          final: [
+          goodEn: "✅ The median is 10 — the middle of 6, 8, 10, 12, 14.",
+          goodEs:
+            "¡La mediana es 10! Es el número del medio: 6, 8, 10, 12, 14.",
+          badEn:
+            "❌ The median is the MIDDLE number when in order. The middle of 5 numbers is the 3rd. Try again.",
+          badEs:
+            "La mediana es el número del MEDIO. En 5 números es el 3.º. Intenta otra vez.",
+          solveBeat: {
+            who: "analyst",
+            en: "Median found! Last is the MODE — the number that shows up the most often.",
+            es: "¡Mediana lista! Por último, la moda: el número que aparece más veces.",
+          },
+        },
+        {
+          type: "challenge",
+          id: "2c",
+          ask: {
+            who: "analyst",
+            en: "In a new game series, I wrote the assists: <b>7, 7, 9, 4, 7</b>. The <b>mode</b> is the number that appears <b>most often</b>. What is the mode?",
+            es: "La moda es el número que aparece más veces.",
+            vocab: [
+              {
+                term: "mode",
+                en: "The value that appears the most often. Mode of 7,7,9,4,7 is 7.",
+                es: "El valor que aparece con más frecuencia. La moda de 7,7,9,4,7 es 7.",
+              },
+            ],
+          },
+          hint: {
+            en: "Count each number. 7 appears three times. Every other number appears once.",
+            es: "Cuenta cada número. El 7 aparece tres veces. Los demás aparecen una vez.",
+          },
+          frame: {
+            en: "“The mode (most often) is ____.”",
+            es: "“La moda (la que más aparece) es ____.”",
+          },
+          choices: [
             {
-              who: "Coach",
+              en: '4 <span class="calc">(appears only once)</span>',
+              es: "4 (aparece solo una vez)",
+              correct: false,
+            },
+            {
+              en: '7 <span class="calc">(appears 3 times — the most)</span>',
+              es: "7 (aparece 3 veces — la mayoría)",
+              correct: true,
+            },
+            {
+              en: '9 <span class="calc">(appears only once)</span>',
+              es: "9 (aparece solo una vez)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ The mode is 7 — it appears 3 times, more than any other number. Stats complete!",
+          goodEs: "¡La moda es 7! Aparece 3 veces, más que las demás.",
+          badEn:
+            "❌ The mode appears MOST often. Count how many times each number shows up. Try again.",
+          badEs:
+            "La moda aparece MÁS veces. Cuenta cada número. Intenta otra vez.",
+          solveBeat: {
+            who: "analyst",
+            en: "Mean, median, and mode all reported. Now for the game-winning call!",
+            es: "Media, mediana y moda reportadas. ¡Ahora la jugada que gana el partido!",
+          },
+        },
+      ],
+    },
+
+    /* ============================ FINAL ============================ */
+    {
+      id: "final",
+      tab: "Final Call",
+      kicker: "Final Call · Boss",
+      title: "The Game-Winning Decision",
+      advanceLabel: "Make the call 🌟",
+      steps: [
+        {
+          type: "beats",
+          art: "final-analysis.png",
+          alt: "Maya stands before a giant wall of holographic data making a big decision",
+          lastLabel: "Make the call ▶",
+          beats: [
+            {
+              who: "coach",
+              caption: true,
               en: "It's the final play. I need our most RELIABLE scorer. Use the stats to decide!",
-              es: "Es la jugada final. Necesito al anotador m&aacute;s confiable. &iexcl;Usa las estad&iacute;sticas!",
-              cap: true,
+              es: "Es la jugada final. Necesito al anotador más confiable. ¡Usa las estadísticas!",
             },
             {
-              who: "Maya",
+              who: "analyst",
               en: "I'll use the mean AND the mode together. If both point to the same number, that player is steady.",
-              es: "Usar&eacute; la media Y la moda juntas. Si ambas apuntan al mismo n&uacute;mero, ese jugador es estable.",
+              es: "Usaré la media Y la moda juntas. Si ambas apuntan al mismo número, ese jugador es estable.",
+            },
+            {
+              who: "stats",
+              misconception: true,
+              en: "Maya's last 5 shots: 5, 5, 5, 7, 3. The mean is 25 — that's a huge number, pick her!",
+              es: "Los últimos 5 tiros de Maya: 5, 5, 5, 7, 3. La media es 25, ¡un número enorme, elígela!",
             },
           ],
-        };
-
-        var GLOSS = [
-          {
-            ico: "&#10067;",
-            en: "Statistical question",
-            es: "pregunta estad&iacute;stica",
-            def: "A question that has many different answers you collect as data. Example: How many points does Jordan score each game?",
+        },
+        {
+          type: "challenge",
+          id: "F",
+          ask: {
+            who: "analyst",
+            en: "Careful, STATS — 25 is the total, not the mean. Coach asks for the <b>most reliable</b> scorer. Maya's last 5 shots scored: <b>5, 5, 5, 7, 3</b>. Find the <b>mean</b> AND the <b>mode</b>, then pick the line that is fully correct.",
+            es: "Encuentra la media Y la moda. Elige la línea correcta.",
           },
-          {
-            ico: "&#128202;",
-            en: "Data",
-            es: "datos",
-            def: "The facts or numbers you collect to answer a question. Example: 8, 12, 10, 6, 14 points.",
+          hint: {
+            en: "Sum = 5+5+5+7+3 = 25, and 25 ÷ 5 = mean. The number that repeats most is the mode.",
+            es: "Suma = 5+5+5+7+3 = 25, y 25 ÷ 5 = media. El número que más se repite es la moda.",
           },
-          {
-            ico: "&#128290;",
-            en: "Data set",
-            es: "conjunto de datos",
-            def: "A whole group of data values collected together, often shown in a table or list.",
+          frame: {
+            en: "“The mean is ____. The mode is ____. So Maya is a reliable scorer because her scores stay near ____.”",
+            es: "“La media es ____. La moda es ____. Maya es confiable porque sus tiros se mantienen cerca de ____.”",
           },
-          {
-            ico: "&#9878;&#65039;",
-            en: "Mean (average)",
-            es: "media (promedio)",
-            def: "Add all the values, then divide by how many there are. Mean of 8,12,10,6,14 is 50 ÷ 5 = 10.",
+          choices: [
+            {
+              en: 'Mean = 25, Mode = 5 <span class="calc">(25 is the total, not the mean)</span>',
+              es: "Media = 25, Moda = 5 (25 es el total, no la media)",
+              correct: false,
+            },
+            {
+              en: 'Mean = 5, Mode = 5 <span class="calc">(25 ÷ 5 = 5; 5 repeats most)</span>',
+              es: "Media = 5, Moda = 5 (25 ÷ 5 = 5; el 5 se repite más)",
+              correct: true,
+            },
+            {
+              en: 'Mean = 5, Mode = 7 <span class="calc">(7 appears only once)</span>',
+              es: "Media = 5, Moda = 7 (el 7 aparece solo una vez)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ PERFECT CALL! Mean = 25 ÷ 5 = 5, and 5 is the mode (it repeats most). Maya is the reliable scorer!",
+          goodEs:
+            "¡JUGADA PERFECTA! Media = 5 y moda = 5. ¡Maya es la anotadora confiable!",
+          badEn:
+            "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25). The mode is the value that repeats most (5).",
+          badEs: "Una parte está mal. Media = 25 ÷ 5 = 5. La moda es 5.",
+          solveBeat: {
+            who: "analyst",
+            en: "That's the call, Coach! The data says Maya — give her the ball!",
+            es: "¡Esa es la jugada, Coach! Los datos dicen Maya: ¡denle el balón!",
           },
-          {
-            ico: "&#9995;",
-            en: "Median",
-            es: "mediana",
-            def: "The middle value when the numbers are in order from least to greatest. Median of 6,8,10,12,14 is 10.",
-          },
-          {
-            ico: "&#128293;",
-            en: "Mode",
-            es: "moda",
-            def: "The value that appears the most often. Mode of 7,7,9,4,7 is 7.",
-          },
-          {
-            ico: "&#128207;",
-            en: "Order (least to greatest)",
-            es: "ordenar de menor a mayor",
-            def: "Lining up numbers from smallest to biggest. This helps you find the median.",
-          },
-          {
-            ico: "&#10133;",
-            en: "Sum (total)",
-            es: "suma (total)",
-            def: "The answer when you add numbers together. The sum of 8+12+10+6+14 is 50.",
-          },
-          {
-            ico: "&#10134;",
-            en: "Divide",
-            es: "dividir",
-            def: "To split a total into equal groups. To find the mean you divide the sum by the count.",
-          },
-        ];
+        },
+      ],
+    },
+  ],
 
-        /* ---------- State ---------- */
-        var state = { act1: false, act2: false, final: false };
-        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
+  glossary: [
+    {
+      ico: "❓",
+      en: "Statistical question",
+      es: "pregunta estadística",
+      def: "A question that has many different answers you collect as data. Example: How many points does Jordan score each game?",
+    },
+    {
+      ico: "📊",
+      en: "Data",
+      es: "datos",
+      def: "The facts or numbers you collect to answer a question. Example: 8, 12, 10, 6, 14 points.",
+    },
+    {
+      ico: "🔢",
+      en: "Data set",
+      es: "conjunto de datos",
+      def: "A whole group of data values collected together, often shown in a table or list.",
+    },
+    {
+      ico: "⚖️",
+      en: "Mean (average)",
+      es: "media (promedio)",
+      def: "Add all the values, then divide by how many there are. Mean of 8,12,10,6,14 is 50 ÷ 5 = 10.",
+    },
+    {
+      ico: "✋",
+      en: "Median",
+      es: "mediana",
+      def: "The middle value when the numbers are in order from least to greatest. Median of 6,8,10,12,14 is 10.",
+    },
+    {
+      ico: "🔥",
+      en: "Mode",
+      es: "moda",
+      def: "The value that appears the most often. Mode of 7,7,9,4,7 is 7.",
+    },
+    {
+      ico: "📏",
+      en: "Order (least to greatest)",
+      es: "ordenar de menor a mayor",
+      def: "Lining up numbers from smallest to biggest. This helps you find the median.",
+    },
+    {
+      ico: "➕",
+      en: "Sum (total)",
+      es: "suma (total)",
+      def: "The answer when you add numbers together. The sum of 8+12+10+6+14 is 50.",
+    },
+    {
+      ico: "➖",
+      en: "Divide",
+      es: "dividir",
+      def: "To split a total into equal groups. To find the mean you divide the sum by the count.",
+    },
+  ],
 
-        function $(id) {
-          return document.getElementById(id);
-        }
-        function qa(sel, root) {
-          return Array.prototype.slice.call(
-            (root || document).querySelectorAll(sel),
-          );
-        }
+  complete: {
+    art: "celebrate.png",
+    alt: "Maya celebrates on the court with the winning team holding her tablet high",
+    badge: "🎉🏀⭐",
+    titleEn: "Game Won!",
+    en: "You did it, Analyst! You found the <b>statistical question</b>, read the <b>data</b>, and used the <b>mean, median, and mode</b> to make the game-winning call. The team is celebrating — thanks to you!",
+    es: "¡Lo lograste! Usaste la media, la mediana y la moda para ganar. ¡Excelente trabajo!",
+    master: {
+      headingEn: "Prove your rank to certify your Master Certificate!",
+      promptEn:
+        "Data statistics: Jordan's game scores are <strong>3, 5, 7, 8, 12</strong>. Find the <strong>median</strong> of this data set.",
+      promptEs:
+        "Los puntajes de Jordan son 3, 5, 7, 8, 12. Encuentra la mediana.",
+      choices: [
+        {
+          en: "A) 8 &nbsp;(confused median with mode or upper values)",
+          correct: false,
+        },
+        {
+          en: "B) 7 &nbsp;(the middle value of the ordered set) &nbsp;✅",
+          correct: true,
+        },
+        {
+          en: "C) 9 &nbsp;(calculated the range or standard spread)",
+          correct: false,
+        },
+      ],
+      goodEn:
+        "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟",
+      badEn:
+        "❌ That is incorrect. Review your calculations and try another option!",
+      certifyTitle: "🏆 Master Certified: Mission Complete!",
+    },
+  },
+};
 
-        /* ---------- Progress ---------- */
-        function updateProgress() {
-          var done =
-            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
-          var pct = Math.round((done / 3) * 100);
-          $("bar").style.width = pct + "%";
-          $("plabel").textContent = pct + "%";
-          document
-            .querySelector(".progress")
-            .setAttribute("aria-valuenow", pct);
-        }
-
-        /* ---------- Tab locking ---------- */
-        function refreshLocks() {
-          setLock("tab-act2", !state.act1);
-          setLock("tab-final", !state.act2);
-          $("lock-act2").classList.toggle("show", !state.act1);
-          $("body-act2").style.display = state.act1 ? "" : "none";
-          $("lock-final").classList.toggle("show", !state.act2);
-          $("body-final").style.display = state.act2 ? "" : "none";
-        }
-        function setLock(tabId, locked) {
-          var t = $(tabId);
-          t.classList.toggle("locked", locked);
-          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
-          t.innerHTML =
-            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
-        }
-
-        /* ---------- Scene switching ---------- */
-        function showScene(name) {
-          SCENES.forEach(function (s) {
-            var sc = $("scene-" + s);
-            if (sc) sc.classList.toggle("active", s === name);
-            var tab = $("tab-" + s);
-            if (tab)
-              tab.setAttribute("aria-selected", s === name ? "true" : "false");
-          });
-          $("scene-complete").classList.remove("active", "show");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        function showComplete() {
-          SCENES.forEach(function (s) {
-            var sc = $("scene-" + s);
-            if (sc) sc.classList.remove("active");
-          });
-          qa(".tab").forEach(function (t) {
-            t.setAttribute("aria-selected", "false");
-          });
-          var c = $("scene-complete");
-          c.classList.add("active", "show");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-
-        qa(".tab").forEach(function (tab) {
-          tab.addEventListener("click", function () {
-            if (tab.classList.contains("locked")) return;
-            showScene(tab.dataset.scene);
-          });
-          tab.addEventListener("keydown", function (e) {
-            var tabsArr = qa(".tab");
-            var i = tabsArr.indexOf(tab);
-            if (e.key === "ArrowRight") {
-              e.preventDefault();
-              (tabsArr[i + 1] || tabsArr[0]).focus();
-            }
-            if (e.key === "ArrowLeft") {
-              e.preventDefault();
-              (tabsArr[i - 1] || tabsArr[tabsArr.length - 1]).focus();
-            }
-          });
-        });
-
-        /* ---------- Dialogue engine ---------- */
-        function runDialogue(opts) {
-          var idx = 0;
-          var dlgBox = $(opts.dlgId),
-            nextBtn = $(opts.nextId),
-            dots = $(opts.dotsId);
-          dots.innerHTML = "";
-          opts.dlg.forEach(function () {
-            var i = document.createElement("i");
-            dots.appendChild(i);
-          });
-          function render() {
-            var line = opts.dlg[idx];
-            dlgBox.innerHTML =
-              '<div class="bubble' +
-              (line.cap ? " caption" : "") +
-              '">' +
-              '<div class="who">' +
-              line.who +
-              "</div>" +
-              '<div class="en">' +
-              line.en +
-              "</div>" +
-              '<div class="es">' +
-              line.es +
-              "</div></div>";
-            qa("i", dots).forEach(function (d, k) {
-              d.classList.toggle("on", k <= idx);
-            });
-            nextBtn.textContent =
-              idx === opts.dlg.length - 1
-                ? opts.lastLabel || "Continue ▶"
-                : "Next ▶";
-          }
-          nextBtn.onclick = function () {
-            if (idx < opts.dlg.length - 1) {
-              idx++;
-              render();
-            } else {
-              if (opts.onDone) opts.onDone();
-            }
-          };
-          render();
-        }
-
-        /* ---------- Choice handler ---------- */
-        function wireChoices(opts) {
-          var solved = false;
-          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
-            btn.addEventListener("click", function () {
-              if (solved) return;
-              var correct = btn.dataset.correct === "true";
-              var fb = $(opts.feedbackId);
-              if (correct) {
-                solved = true;
-                btn.classList.add("correct");
-                fb.className = "feedback show good";
-                fb.innerHTML =
-                  opts.goodEn + '<span class="es">' + opts.goodEs + "</span>";
-                qa(".choice", $(opts.choicesId)).forEach(function (b) {
-                  b.disabled = true;
-                });
-                if (opts.onSolve) opts.onSolve();
-              } else {
-                btn.classList.add("wrong");
-                btn.disabled = true;
-                fb.className = "feedback show bad";
-                fb.innerHTML =
-                  opts.badEn + '<span class="es">' + opts.badEs + "</span>";
-              }
-            });
-          });
-        }
-
-        /* ---------- Build glossary ---------- */
-        (function () {
-          var list = $("gloss-list");
-          GLOSS.forEach(function (g) {
-            var d = document.createElement("div");
-            d.className = "term";
-            d.innerHTML =
-              '<div class="ico">' +
-              g.ico +
-              "</div><div><h3>" +
-              g.en +
-              ' <span class="es-term">(' +
-              g.es +
-              ")</span></h3><p>" +
-              g.def +
-              "</p></div>";
-            list.appendChild(d);
-          });
-        })();
-
-        /* ---------- ACT 1 flow ---------- */
-        function initAct1() {
-          runDialogue({
-            dlgId: "dlg-act1",
-            nextId: "next-act1",
-            dotsId: "dots-act1",
-            dlg: DLG.act1,
-            lastLabel: "Pick the question ▶",
-            onDone: function () {
-              $("next-act1").style.display = "none";
-              $("chal1a").style.display = "block";
-              $("chal1a").scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            },
-          });
-          wireChoices({
-            choicesId: "choices1a",
-            feedbackId: "fb1a",
-            goodEn:
-              "&#9989; Yes! “How many points each game” gives many answers — that is a statistical question.",
-            goodEs:
-              "&iexcl;S&iacute;! Esa pregunta tiene muchas respuestas: es estad&iacute;stica.",
-            badEn:
-              "&#10060; That question has only ONE answer. A statistical question must have answers that vary. Try again.",
-            badEs:
-              "Esa pregunta tiene solo UNA respuesta. Una pregunta estad&iacute;stica var&iacute;a. Intenta otra vez.",
-            onSolve: function () {
-              var box = $("dlg-act1");
-              setTimeout(function () {
-                box.innerHTML =
-                  '<div class="bubble"><div class="who">' +
-                  DLG.act1b[0].who +
-                  '</div><div class="en">' +
-                  DLG.act1b[0].en +
-                  '</div><div class="es">' +
-                  DLG.act1b[0].es +
-                  "</div></div>";
-                $("chal1b").style.display = "block";
-                $("frame1").style.display = "block";
-                $("chal1b").scrollIntoView({
-                  behavior: "smooth",
-                  block: "center",
-                });
-              }, 500);
-            },
-          });
-          wireChoices({
-            choicesId: "choices1b",
-            feedbackId: "fb1b",
-            goodEn:
-              "&#9989; Correct! Game 3 shows 10 points. You read the data table perfectly!",
-            goodEs:
-              "&iexcl;Correcto! El Juego 3 muestra 10 puntos. &iexcl;Leíste bien la tabla!",
-            badEn:
-              "&#10060; Look again — find the Game 3 column, then the Points row. Use the hint.",
-            badEs:
-              "Mira otra vez: busca la columna del Juego 3 y la fila de Puntos. Usa la pista.",
-            onSolve: function () {
-              $("adv-act1").classList.add("show");
-            },
-          });
-          $("adv-act1").addEventListener("click", function () {
-            state.act1 = true;
-            updateProgress();
-            refreshLocks();
-            showScene("act2");
-          });
-        }
-
-        /* ---------- ACT 2 flow ---------- */
-        function initAct2() {
-          runDialogue({
-            dlgId: "dlg-act2",
-            nextId: "next-act2",
-            dotsId: "dots-act2",
-            dlg: DLG.act2,
-            lastLabel: "Find the mean ▶",
-            onDone: function () {
-              $("next-act2").style.display = "none";
-              $("chal2a").style.display = "block";
-              $("chal2a").scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            },
-          });
-          wireChoices({
-            choicesId: "choices2a",
-            feedbackId: "fb2a",
-            goodEn:
-              "&#9989; The mean is 10! 8+12+10+6+14 = 50, and 50 &divide; 5 = 10.",
-            goodEs: "&iexcl;La media es 10! 50 &divide; 5 = 10.",
-            badEn:
-              "&#10060; Not quite. Add to get 50, then divide by 5 games. Check the hint.",
-            badEs: "Casi. Suma 50 y divide entre 5 juegos. Usa la pista.",
-            onSolve: function () {
-              setTimeout(function () {
-                $("dlg-act2").innerHTML =
-                  '<div class="bubble"><div class="who">' +
-                  DLG.act2b[0].who +
-                  '</div><div class="en">' +
-                  DLG.act2b[0].en +
-                  '</div><div class="es">' +
-                  DLG.act2b[0].es +
-                  "</div></div>";
-                $("chal2b").style.display = "block";
-                $("chal2b").scrollIntoView({
-                  behavior: "smooth",
-                  block: "center",
-                });
-              }, 500);
-            },
-          });
-          wireChoices({
-            choicesId: "choices2b",
-            feedbackId: "fb2b",
-            goodEn:
-              "&#9989; The median is 10 — the middle of 6, 8, 10, 12, 14.",
-            goodEs:
-              "&iexcl;La mediana es 10! Es el n&uacute;mero del medio: 6, 8, 10, 12, 14.",
-            badEn:
-              "&#10060; The median is the MIDDLE number when in order. The middle of 5 numbers is the 3rd. Try again.",
-            badEs:
-              "La mediana es el n&uacute;mero del MEDIO. En 5 n&uacute;meros es el 3.&ordm;. Intenta otra vez.",
-            onSolve: function () {
-              setTimeout(function () {
-                $("dlg-act2").innerHTML =
-                  '<div class="bubble"><div class="who">' +
-                  DLG.act2c[0].who +
-                  '</div><div class="en">' +
-                  DLG.act2c[0].en +
-                  '</div><div class="es">' +
-                  DLG.act2c[0].es +
-                  "</div></div>";
-                $("chal2c").style.display = "block";
-                $("frame2").style.display = "block";
-                $("chal2c").scrollIntoView({
-                  behavior: "smooth",
-                  block: "center",
-                });
-              }, 500);
-            },
-          });
-          wireChoices({
-            choicesId: "choices2c",
-            feedbackId: "fb2c",
-            goodEn:
-              "&#9989; The mode is 7 — it appears 3 times, more than any other number. Stats complete!",
-            goodEs:
-              "&iexcl;La moda es 7! Aparece 3 veces, m&aacute;s que las dem&aacute;s.",
-            badEn:
-              "&#10060; The mode appears MOST often. Count how many times each number shows up. Try again.",
-            badEs:
-              "La moda aparece M&Aacute;S veces. Cuenta cada n&uacute;mero. Intenta otra vez.",
-            onSolve: function () {
-              $("adv-act2").classList.add("show");
-            },
-          });
-          $("adv-act2").addEventListener("click", function () {
-            state.act2 = true;
-            updateProgress();
-            refreshLocks();
-            showScene("final");
-          });
-        }
-
-        /* ---------- FINAL flow ---------- */
-        function initFinal() {
-          runDialogue({
-            dlgId: "dlg-final",
-            nextId: "next-final",
-            dotsId: "dots-final",
-            dlg: DLG.final,
-            lastLabel: "Make the call ▶",
-            onDone: function () {
-              $("next-final").style.display = "none";
-              $("chalF").style.display = "block";
-              $("frameF").style.display = "block";
-              $("chalF").scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            },
-          });
-          wireChoices({
-            choicesId: "choicesF",
-            feedbackId: "fbF",
-            goodEn:
-              "&#9989; PERFECT CALL! Mean = 25 &divide; 5 = 5, and 5 is the mode (it repeats most). Maya is the reliable scorer!",
-            goodEs:
-              "&iexcl;JUGADA PERFECTA! Media = 5 y moda = 5. &iexcl;Maya es la anotadora confiable!",
-            badEn:
-              "&#10060; One part is off. Mean = total 25 &divide; 5 = 5 (not 25). The mode is the value that repeats most (5).",
-            badEs:
-              "Una parte est&aacute; mal. Media = 25 &divide; 5 = 5. La moda es 5.",
-            onSolve: function () {
-              $("adv-final").classList.add("show");
-            },
-          });
-          $("adv-final").addEventListener("click", function () {
-            state.final = true;
-            updateProgress();
-            showComplete();
-          });
-        }
-
-        /* ---------- Wire start / restart ---------- */
-        $("start-btn").addEventListener("click", function () {
-          showScene("act1");
-        });
-        $("restart-btn").addEventListener("click", function () {
-          location.reload();
-        });
-
-        /* ---------- Init ---------- */
-        initAct1();
-        initAct2();
-        initFinal();
-        
-        // Programmatic Master Challenge Wiring
-        (function() {
-          var solved = false;
-          var btnList = document.querySelectorAll("#choicesComplete .choice");
-          var fb = document.getElementById("fbComplete");
-          
-          btnList.forEach(function(btn) {
-            btn.addEventListener("click", function() {
-              if (solved) return;
-              var correct = btn.getAttribute("data-correct") === "true";
-              if (correct) {
-                solved = true;
-                btn.classList.add("correct");
-                fb.className = "feedback show good";
-                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
-                btnList.forEach(function(b) { b.disabled = true; });
-                
-                var h2 = document.querySelector("#scene-complete h2");
-                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
-              } else {
-                btn.classList.add("wrong");
-                btn.disabled = true;
-                fb.className = "feedback show bad";
-                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
-              }
-            });
-          });
-        })();
-
-        refreshLocks();
-        updateProgress();
-      })();
     </script>
-    
-      <script src="/teacher-tools/nt-results.js"></script>
-<script>
-/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+    <script>
+/* ===========================================================================
+   Neft Teacher · Graphic-Novel Engine  ·  gn-engine.js
+   Renders a STORY object (window.GN_STORY) into a panel-based, dialogue-driven
+   comic. One engine, 20 novels. No build step needed at runtime; fully offline.
+
+   STORY shape is documented in story.schema.md. Key contracts preserved for the
+   existing Neft results pipeline (do NOT rename):
+     • each math choice group is a .choices container holding .choice buttons
+     • a solved choice's correct button gets class "correct"
+     • the master-rank group has id="choicesComplete" (excluded from scoring)
+     • the finish scene is #scene-complete and gets classes show/active when done
+   The nt-results.js tracker at the bottom of each file reads exactly those.
+   =========================================================================== */
 (function () {
   "use strict";
-  var FIRED = false; // dedupe guard: record once per completion
-  var complete = document.getElementById("scene-complete");
-  if (!complete || typeof NTResults === "undefined") return;
-
-  function studentName() {
-    try {
-      var k = "nt_gn_student";
-      var n = localStorage.getItem(k);
-      if (n && n.trim()) return n.trim();
-      n = window.prompt("Type your name so your teacher can see you finished:", "");
-      n = (n || "").trim();
-      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
-      return n || "Student";
-    } catch (e) { return "Student"; }
+  var S = window.GN_STORY;
+  if (!S) {
+    console.error("GN: window.GN_STORY missing");
+    return;
   }
 
-  function score() {
-    // Core math choice-points = all .choices groups except the bonus one.
-    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
-      .filter(function (g) { return g.id !== "choicesComplete"; });
-    var total = groups.length || 0;
-    var correct = groups.filter(function (g) {
-      return g.querySelector(".choice.correct");
-    }).length;
-    return { correct: correct, total: total };
+  /* ---------- tiny helpers ---------- */
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function $(id) {
+    return document.getElementById(id);
+  }
+  function art(file) {
+    return (S.meta.artBase || "") + file;
+  }
+  function txt(v) {
+    return v == null ? "" : v;
   }
 
-  function savedNote() {
-    if (document.getElementById("nt-saved-note")) return;
-    var p = document.createElement("p");
-    p.id = "nt-saved-note";
-    p.setAttribute("role", "status");
-    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
-    p.textContent = "✓ Results saved for your teacher.";
-    complete.insertBefore(p, complete.querySelector(".restart") || null);
-  }
-
-  function record() {
-    if (FIRED) return;
-    FIRED = true;
-    var s = score();
-    try {
-      NTResults.finish({
-        student: studentName(),
-        assessment: "Graphic Novel U8 #1: Court Vision: The Data Analyst",
-        standard: "6.SP.1",
-        level: "1",
-        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
-        correct: s.correct,
-        total: s.total,
-        download: false, // log only; teacher pulls the class set
+  /* ---------- theme + document chrome ---------- */
+  function applyTheme() {
+    document.documentElement.lang = "en";
+    document.title =
+      "Graphic Novel #" + S.meta.version + " · " + stripTags(S.meta.title);
+    if (S.meta.theme) {
+      var r = document.documentElement;
+      Object.keys(S.meta.theme).forEach(function (k) {
+        r.style.setProperty(k, S.meta.theme[k]);
       });
-    } catch (e) { /* non-fatal */ }
-    savedNote();
+    }
+  }
+  function stripTags(s) {
+    return String(s).replace(/<[^>]+>/g, "");
   }
 
-  // Fire when the completion scene becomes visible (show/active class added).
-  function visible() {
-    return complete.classList.contains("show") || complete.classList.contains("active");
+  /* ---------- speaker rendering (optional avatar slot) ---------- */
+  function speaker(id) {
+    return (
+      (S.cast && S.cast[id]) || { name: id, color: "#c2461d", avatar: null }
+    );
   }
-  if (visible()) record();
-  var mo = new MutationObserver(function () { if (visible()) record(); });
-  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+  function whoTag(spkId, isMe) {
+    var c = speaker(spkId);
+    var inner;
+    if (c.avatar) {
+      inner =
+        '<span class="av"><img src="' + art(c.avatar) + '" alt="" /></span>';
+    } else {
+      var initial = (c.tagIcon || c.name.charAt(0)).toString();
+      inner = '<span class="av" aria-hidden="true">' + initial + "</span>";
+    }
+    return (
+      '<span class="who" style="--spk:' +
+      (c.color || "#c2461d") +
+      '">' +
+      inner +
+      "<span>" +
+      c.name +
+      "</span>" +
+      (isMe || c.role === "protagonist"
+        ? '<span class="me">· YOU</span>'
+        : "") +
+      "</span>"
+    );
+  }
+
+  /* ---------- vocab markup: wrap term occurrences with a tappable tag ----------
+     A beat/challenge may carry vocab:[{term,en,es}]. We wrap the FIRST literal
+     occurrence of term in the English text. Definitions open in a popover. */
+  var VOCAB_STORE = [];
+  function injectVocab(htmlEn, vocab) {
+    if (!vocab || !vocab.length) return htmlEn;
+    vocab.forEach(function (v) {
+      var i = VOCAB_STORE.push(v) - 1;
+      var re = new RegExp("(" + escapeRe(v.term) + ")", "i");
+      htmlEn = htmlEn.replace(
+        re,
+        '<button type="button" class="vocab-tag" data-vocab="' +
+          i +
+          '" aria-label="Definition of ' +
+          stripTags(v.term) +
+          '">$1</button>',
+      );
+    });
+    return htmlEn;
+  }
+  function escapeRe(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  /* ---------- popover (vocab + callout) ---------- */
+  function openPop(anchor, title, en, es) {
+    closePop();
+    var back = el("div", "gn-pop-back");
+    back.id = "gn-pop-back";
+    back.addEventListener("click", closePop);
+    var p = el("div", "gn-pop");
+    p.id = "gn-pop";
+    p.setAttribute("role", "dialog");
+    p.setAttribute("aria-label", stripTags(title || "Definition"));
+    p.innerHTML =
+      '<button class="x" aria-label="Close">&times;</button>' +
+      (title ? "<h4>" + title + "</h4>" : "") +
+      '<div class="en">' +
+      en +
+      "</div>" +
+      (es ? '<div class="es">' + es + "</div>" : "");
+    document.body.appendChild(back);
+    document.body.appendChild(p);
+    p.querySelector(".x").addEventListener("click", closePop);
+    // position near anchor, clamped to viewport
+    var r = anchor.getBoundingClientRect();
+    var pw = Math.min(280, window.innerWidth - 20);
+    p.style.width = pw + "px";
+    var left = Math.min(Math.max(10, r.left), window.innerWidth - pw - 10);
+    var top = r.bottom + 8;
+    if (top + p.offsetHeight > window.innerHeight - 10) {
+      top = Math.max(10, r.top - p.offsetHeight - 8);
+    }
+    p.style.left = left + "px";
+    p.style.top = top + "px";
+    p.querySelector(".x").focus();
+  }
+  function closePop() {
+    var a = $("gn-pop"),
+      b = $("gn-pop-back");
+    if (a) a.remove();
+    if (b) b.remove();
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closePop();
+  });
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest && e.target.closest(".vocab-tag");
+    if (t) {
+      var v = VOCAB_STORE[+t.dataset.vocab];
+      if (v) openPop(t, v.term, v.en, v.es);
+    }
+  });
+
+  /* ---------- bubble builder ---------- */
+  function bubble(beat) {
+    var c = speaker(beat.who);
+    var isCap = c.role === "narrator" || beat.caption;
+    var pos = beat.pos || (c.role === "protagonist" ? "right" : "left");
+    var b = el(
+      "div",
+      "bubble " +
+        pos +
+        (isCap ? " caption" : "") +
+        (beat.misconception ? " misc" : ""),
+    );
+    var en = injectVocab(txt(beat.en), beat.vocab);
+    b.innerHTML =
+      whoTag(beat.who) +
+      '<div class="en">' +
+      en +
+      "</div>" +
+      (beat.es ? '<div class="es">' + beat.es + "</div>" : "");
+    return b;
+  }
+
+  /* =========================================================================
+     BUILD DOM
+     ========================================================================= */
+  var SCENE_IDS = []; // cover, act ids..., gloss
+
+  function build() {
+    applyTheme();
+    document.body.appendChild(buildTopbar());
+    var main = el("main");
+    main.appendChild(buildCover());
+    S.acts.forEach(function (act, i) {
+      main.appendChild(buildAct(act, i));
+    });
+    main.appendChild(buildComplete());
+    main.appendChild(buildGloss());
+    document.body.appendChild(main);
+    wireTabs();
+    buildGlossList();
+    refreshLocks();
+    updateProgress();
+    showScene("cover");
+  }
+
+  function buildTopbar() {
+    var bar = el("div", "topbar");
+    var inner = el("div", "topbar-inner");
+    inner.innerHTML =
+      '<a class="home" href="' +
+      (S.meta.home || "../index.html") +
+      '">&#8592; Home</a>' +
+      '<span class="title"><span class="v">#' +
+      S.meta.version +
+      "</span> " +
+      S.meta.title +
+      "</span>" +
+      '<div class="progress-wrap"><div class="progress" role="progressbar" ' +
+      'aria-label="Mission progress" aria-valuemin="0" aria-valuemax="100" ' +
+      'aria-valuenow="0"><i id="bar"></i></div>' +
+      '<span class="progress-label" id="plabel">0%</span></div>' +
+      '<button class="txtsize" id="txtsize" aria-label="Change text size" ' +
+      'title="Text size">A+</button>';
+    bar.appendChild(inner);
+
+    var tabs = el("div", "tabs");
+    tabs.setAttribute("role", "tablist");
+    tabs.setAttribute("aria-label", "Chapters");
+    tabs.appendChild(tabBtn("cover", "Cover", false));
+    S.acts.forEach(function (a, i) {
+      tabs.appendChild(tabBtn(a.id, a.tab, i > 0));
+    });
+    tabs.appendChild(tabBtn("gloss", "Glossary", false));
+    bar.appendChild(tabs);
+    return bar;
+  }
+  function tabBtn(scene, label, locked) {
+    var b = el("button", "tab" + (locked ? " locked" : ""));
+    b.id = "tab-" + scene;
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", scene === "cover" ? "true" : "false");
+    b.dataset.scene = scene;
+    b.dataset.label = label;
+    b.innerHTML = (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+    return b;
+  }
+
+  function buildCover() {
+    var s = el("section", "scene active cover-card");
+    s.id = "scene-cover";
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-labelledby", "tab-cover");
+    SCENE_IDS.push("cover");
+    var cv = S.cover;
+    var castChips = "";
+    Object.keys(S.cast || {}).forEach(function (k) {
+      var c = S.cast[k];
+      if (c.role === "narrator") return;
+      var av = c.avatar
+        ? '<span class="av" style="background:' +
+          c.color +
+          '"><img src="' +
+          art(c.avatar) +
+          '" alt=""></span>'
+        : '<span class="av" style="background:' +
+          c.color +
+          '">' +
+          (c.tagIcon || c.name.charAt(0)) +
+          "</span>";
+      castChips +=
+        '<span class="cast-chip">' +
+        av +
+        "<b>" +
+        c.name +
+        "</b> <span>" +
+        (c.blurb || c.role) +
+        "</span></span>";
+    });
+    s.innerHTML =
+      '<div class="panel"><img src="' +
+      art(cv.art) +
+      '" alt="' +
+      txt(cv.alt) +
+      '"></div>' +
+      '<span class="level-pill">Graphic Novel #' +
+      S.meta.version +
+      " &middot; " +
+      S.meta.level +
+      "</span>" +
+      "<h2>" +
+      S.meta.title +
+      "</h2>" +
+      "<p>" +
+      cv.blurbEn +
+      "</p>" +
+      (cv.blurbEs
+        ? '<p style="font-size:0.92rem"><i>' + cv.blurbEs + "</i></p>"
+        : "") +
+      '<div class="cast-row">' +
+      castChips +
+      "</div>" +
+      '<button class="start" id="start-btn">' +
+      (cv.startLabel || "Start &#128640;") +
+      "</button>";
+    s.querySelector("#start-btn").addEventListener("click", function () {
+      showScene(S.acts[0].id);
+    });
+    return s;
+  }
+
+  function buildAct(act, idx) {
+    var s = el("section", "scene");
+    s.id = "scene-" + act.id;
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-labelledby", "tab-" + act.id);
+    SCENE_IDS.push(act.id);
+
+    var lock = el("div", "locked-note");
+    lock.id = "lock-" + act.id;
+    lock.innerHTML =
+      "&#128274; Finish the previous chapter to unlock " +
+      stripTags(act.title) +
+      ".";
+    s.appendChild(lock);
+
+    var body = el("div");
+    body.id = "body-" + act.id;
+    body.innerHTML =
+      '<div class="scene-head"><span class="act">' +
+      act.kicker +
+      "</span><h2>" +
+      act.title +
+      "</h2></div>" +
+      '<div class="panel" id="panel-' +
+      act.id +
+      '">' +
+      '<img id="art-' +
+      act.id +
+      '" src="" alt="">' +
+      '<div class="speech" id="speech-' +
+      act.id +
+      '" aria-live="polite"></div></div>' +
+      '<div class="dlg-row"><div class="dots" id="dots-' +
+      act.id +
+      '"></div>' +
+      '<button class="next" id="next-' +
+      act.id +
+      '">Next &#9654;</button></div>' +
+      '<div id="chal-' +
+      act.id +
+      '"></div>' +
+      '<div class="scene-foot"><button class="advance" id="adv-' +
+      act.id +
+      '">' +
+      (act.advanceLabel || "Continue &#9654;") +
+      "</button></div>";
+    s.appendChild(body);
+    return s;
+  }
+
+  function buildComplete() {
+    var s = el("section", "scene complete");
+    s.id = "scene-complete";
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-label", "Mission complete");
+    var cp = S.complete;
+    var html =
+      '<div class="panel"><img src="' +
+      art(cp.art) +
+      '" alt="' +
+      txt(cp.alt) +
+      '"></div>' +
+      '<span class="badge-done">' +
+      (cp.badge || "&#127881;") +
+      "</span>" +
+      "<h2>" +
+      (cp.titleEn || "Mission Complete!") +
+      "</h2>" +
+      "<p>" +
+      cp.en +
+      "</p>" +
+      '<p style="color:var(--muted);font-size:0.92rem"><i>' +
+      cp.es +
+      "</i></p>";
+    if (cp.master) {
+      var m = cp.master,
+        ch = "";
+      m.choices.forEach(function (c) {
+        ch +=
+          '<button class="choice" data-correct="' +
+          !!c.correct +
+          '">' +
+          c.en +
+          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+          "</button>";
+      });
+      html +=
+        '<div class="challenge bonus" id="chalComplete">' +
+        '<span class="bonus-tag">&#127942; MASTER RANK CHALLENGE</span>' +
+        "<h3>" +
+        (m.headingEn || "Prove your rank!") +
+        "</h3>" +
+        '<p class="prompt">' +
+        m.promptEn +
+        '<span class="es">' +
+        m.promptEs +
+        "</span></p>" +
+        '<div class="choices" id="choicesComplete">' +
+        ch +
+        "</div>" +
+        '<div class="feedback" id="fbComplete"></div></div>';
+    }
+    html +=
+      '<button class="restart" id="restart-btn">Play again &#8635;</button>';
+    s.innerHTML = html;
+    return s;
+  }
+
+  function buildGloss() {
+    var s = el("section", "scene");
+    s.id = "scene-gloss";
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-labelledby", "tab-gloss");
+    SCENE_IDS.push("gloss");
+    s.innerHTML =
+      '<div class="scene-head"><span class="act">Reference</span>' +
+      "<h2>Glossary &middot; Word Bank</h2></div>" +
+      '<div class="gloss" id="gloss-list"></div>';
+    return s;
+  }
+  function buildGlossList() {
+    var list = $("gloss-list");
+    (S.glossary || []).forEach(function (g) {
+      var d = el("div", "term");
+      d.innerHTML =
+        '<div class="ico">' +
+        g.ico +
+        "</div><div><h3>" +
+        g.en +
+        ' <span class="es-term">(' +
+        g.es +
+        ")</span></h3><p>" +
+        g.def +
+        "</p></div>";
+      list.appendChild(d);
+    });
+  }
+
+  /* =========================================================================
+     STATE + NAVIGATION
+     ========================================================================= */
+  var state = {};
+  S.acts.forEach(function (a) {
+    state[a.id] = false;
+  });
+
+  function updateProgress() {
+    var done = 0;
+    S.acts.forEach(function (a) {
+      if (state[a.id]) done++;
+    });
+    var pct = Math.round((done / S.acts.length) * 100);
+    $("bar").style.width = pct + "%";
+    $("plabel").textContent = pct + "%";
+    document.querySelector(".progress").setAttribute("aria-valuenow", pct);
+  }
+
+  function refreshLocks() {
+    S.acts.forEach(function (a, i) {
+      if (i === 0) return;
+      var prevDone = state[S.acts[i - 1].id];
+      setLock("tab-" + a.id, !prevDone, a.tab);
+      $("lock-" + a.id).classList.toggle("show", !prevDone);
+      $("body-" + a.id).style.display = prevDone ? "" : "none";
+    });
+  }
+  function setLock(tabId, locked, label) {
+    var t = $(tabId);
+    if (!t) return;
+    t.classList.toggle("locked", locked);
+    t.innerHTML = (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+  }
+
+  function showScene(name) {
+    SCENE_IDS.forEach(function (s) {
+      var sc = $("scene-" + s);
+      if (sc) sc.classList.toggle("active", s === name);
+      var tab = $("tab-" + s);
+      if (tab) tab.setAttribute("aria-selected", s === name ? "true" : "false");
+    });
+    var cmp = $("scene-complete");
+    cmp.classList.remove("active", "show");
+    // (re)start the act's flow when entered
+    var act = findAct(name);
+    if (act && state.__started !== name) {
+      state.__started = name;
+      runAct(act);
+    }
+    closePop();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  function findAct(id) {
+    for (var i = 0; i < S.acts.length; i++)
+      if (S.acts[i].id === id) return S.acts[i];
+    return null;
+  }
+  function showComplete() {
+    SCENE_IDS.forEach(function (s) {
+      var sc = $("scene-" + s);
+      if (sc) sc.classList.remove("active");
+    });
+    document.querySelectorAll(".tab").forEach(function (t) {
+      t.setAttribute("aria-selected", "false");
+    });
+    var c = $("scene-complete");
+    c.classList.add("active", "show");
+    wireMaster();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function wireTabs() {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        if (tab.classList.contains("locked")) return;
+        showScene(tab.dataset.scene);
+      });
+      tab.addEventListener("keydown", function (e) {
+        var i = tabs.indexOf(tab);
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          (tabs[i + 1] || tabs[0]).focus();
+        }
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          (tabs[i - 1] || tabs[tabs.length - 1]).focus();
+        }
+      });
+    });
+    $("txtsize").addEventListener("click", cycleTextSize);
+    $("restart-btn") &&
+      $("restart-btn").addEventListener("click", function () {
+        location.reload();
+      });
+  }
+  function cycleTextSize() {
+    var order = ["", "lg", "xl"],
+      cur = document.body.dataset.text || "";
+    var nxt = order[(order.indexOf(cur) + 1) % order.length];
+    if (nxt) document.body.dataset.text = nxt;
+    else delete document.body.dataset.text;
+    $("txtsize").textContent = nxt === "lg" ? "A++" : nxt === "xl" ? "A" : "A+";
+  }
+
+  /* =========================================================================
+     ACT RUNNER — plays an act's ordered steps:
+       { type:"beats", art, alt, beats:[...] }   → panel + sequential bubbles
+       { type:"challenge", ... }                 → voiced math, reply choices
+     ========================================================================= */
+  function runAct(act) {
+    var stepIdx = 0;
+    var imgEl = $("art-" + act.id);
+    var speechEl = $("speech-" + act.id);
+    var dotsEl = $("dots-" + act.id);
+    var nextBtn = $("next-" + act.id);
+    var chalHost = $("chal-" + act.id);
+    var advBtn = $("adv-" + act.id);
+    chalHost.innerHTML = "";
+
+    function clearCallouts() {
+      Array.prototype.slice
+        .call($("panel-" + act.id).querySelectorAll(".callout"))
+        .forEach(function (c) {
+          c.remove();
+        });
+    }
+    function setArt(file, alt) {
+      if (file) {
+        imgEl.src = art(file);
+        imgEl.alt = txt(alt);
+      }
+    }
+
+    function playStep() {
+      var step = act.steps[stepIdx];
+      if (!step) {
+        advBtn.classList.add("show");
+        return;
+      }
+      if (step.type === "beats") playBeats(step);
+      else if (step.optional) playOptional(step);
+      else playChallenge(step);
+    }
+
+    /* ---- beats ---- */
+    function playBeats(step) {
+      setArt(step.art, step.alt);
+      clearCallouts();
+      nextBtn.style.display = "";
+      var bi = 0;
+      dotsEl.innerHTML = "";
+      step.beats.forEach(function () {
+        dotsEl.appendChild(el("i"));
+      });
+      function renderBeat() {
+        var beat = step.beats[bi];
+        speechEl.innerHTML = "";
+        speechEl.appendChild(bubble(beat));
+        if (beat.callout) addCallout(beat.callout);
+        Array.prototype.slice.call(dotsEl.children).forEach(function (d, k) {
+          d.classList.toggle("on", k <= bi);
+        });
+        var last = bi === step.beats.length - 1;
+        nextBtn.innerHTML = last
+          ? step.lastLabel || "Continue &#9654;"
+          : "Next &#9654;";
+      }
+      nextBtn.onclick = function () {
+        if (bi < step.beats.length - 1) {
+          bi++;
+          renderBeat();
+        } else {
+          stepIdx++;
+          playStep();
+        }
+      };
+      renderBeat();
+    }
+    function addCallout(co) {
+      var c = el("button", "callout", co.icon || "!");
+      c.style.left = (co.x || 50) + "%";
+      c.style.top = (co.y || 50) + "%";
+      c.setAttribute("aria-label", "Callout: " + stripTags(co.en));
+      c.addEventListener("click", function () {
+        openPop(c, co.title || "", co.en, co.es);
+      });
+      $("panel-" + act.id).appendChild(c);
+    }
+
+    /* ---- challenge: gating (must solve to advance) ---- */
+    function playChallenge(step) {
+      renderCard(step, false);
+      wireChoices(step, act, function () {
+        if (step.solveArt) setArt(step.solveArt, step.solveAlt);
+        if (step.solveBeat) {
+          speechEl.innerHTML = "";
+          speechEl.appendChild(bubble(step.solveBeat));
+        }
+        stepIdx++;
+        // small beat so the success feedback is read before the next panel
+        setTimeout(playStep, 400);
+      });
+    }
+
+    /* ---- challenge: optional bonus (does NOT gate; still scored) ----
+       Renders this and any consecutive optional steps, then reveals advance. */
+    function playOptional(step) {
+      renderCard(step, true);
+      wireChoices(step, act, function () {
+        if (step.solveBeat) {
+          speechEl.innerHTML = "";
+          speechEl.appendChild(bubble(step.solveBeat));
+        }
+      });
+      stepIdx++;
+      var nxt = act.steps[stepIdx];
+      if (nxt && nxt.optional) playOptional(nxt);
+      else advBtn.classList.add("show");
+    }
+
+    /* ---- shared challenge-card renderer ---- */
+    function renderCard(step, optional) {
+      if (step.art) setArt(step.art, step.alt);
+      clearCallouts();
+      nextBtn.style.display = "none";
+      dotsEl.innerHTML = "";
+      // the question is VOICED by a character, over the panel
+      if (step.ask) {
+        speechEl.innerHTML = "";
+        speechEl.appendChild(
+          bubble({
+            who: step.ask.who,
+            en: step.ask.en,
+            es: step.ask.es,
+            vocab: step.ask.vocab,
+            misconception: step.ask.misconception,
+            pos: step.ask.pos,
+          }),
+        );
+        if (step.ask.callout) addCallout(step.ask.callout);
+      }
+      var wrap = el("div", "challenge" + (optional ? " bonus" : ""));
+      wrap.id = "chal-" + act.id + "-" + step.id;
+      if (optional) {
+        wrap.innerHTML =
+          '<span class="bonus-tag">' +
+          (step.bonusTag || "&#11088; Bonus Challenge") +
+          "</span>" +
+          '<p class="prompt" style="font-size:0.82rem;color:var(--muted);' +
+          'margin:6px 0">Optional — try it or press the button to move on.</p>';
+      }
+      var tools = '<div class="chal-tools">';
+      if (step.hint) {
+        tools +=
+          '<button type="button" class="toolbtn" data-fold="hint-' +
+          step.id +
+          '" aria-expanded="false">&#128161; Need a hint?</button>';
+      }
+      if (step.frame) {
+        tools +=
+          '<button type="button" class="toolbtn" data-fold="coach-' +
+          step.id +
+          '" aria-expanded="false">&#9997;&#65039; Writing coach</button>';
+      }
+      tools += "</div>";
+      var folds = "";
+      if (step.hint) {
+        folds +=
+          '<div class="foldout" id="hint-' +
+          step.id +
+          '"><b>Hint:</b> ' +
+          step.hint.en +
+          (step.hint.es
+            ? '<div class="es" style="margin-top:6px;' +
+              'font-style:italic;color:#cdb89a">' +
+              step.hint.es +
+              "</div>"
+            : "") +
+          "</div>";
+      }
+      if (step.frame) {
+        folds +=
+          '<div class="foldout coach" id="coach-' +
+          step.id +
+          '"><b>Sentence frame:</b> ' +
+          step.frame.en +
+          (step.frame.es
+            ? '<div class="es" style="margin-top:6px;font-style:' +
+              'italic;color:#9fc0ef">' +
+              step.frame.es +
+              "</div>"
+            : "") +
+          "</div>";
+      }
+      var choices =
+        '<div class="reply-label">Choose your reply</div>' +
+        '<div class="choices" id="choices-' +
+        act.id +
+        "-" +
+        step.id +
+        '">';
+      step.choices.forEach(function (c) {
+        choices +=
+          '<button class="choice" data-correct="' +
+          !!c.correct +
+          '">' +
+          c.en +
+          (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
+          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+          "</button>";
+      });
+      choices += "</div>";
+      wrap.innerHTML +=
+        tools +
+        folds +
+        choices +
+        '<div class="feedback" id="fb-' +
+        act.id +
+        "-" +
+        step.id +
+        '"></div>';
+      chalHost.appendChild(wrap);
+      wrap.scrollIntoView({ behavior: "smooth", block: "center" });
+      wireFolds(wrap);
+    }
+
+    playStep();
+
+    /* advance button → unlock next chapter / finish */
+    advBtn.onclick = function () {
+      state[act.id] = true;
+      updateProgress();
+      refreshLocks();
+      var i = S.acts.indexOf(act);
+      if (i < S.acts.length - 1) showScene(S.acts[i + 1].id);
+      else showComplete();
+    };
+  }
+
+  function wireFolds(root) {
+    Array.prototype.slice
+      .call(root.querySelectorAll(".toolbtn"))
+      .forEach(function (b) {
+        b.addEventListener("click", function () {
+          var f = $(b.dataset.fold);
+          var open = f.classList.toggle("show");
+          b.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+      });
+  }
+
+  function wireChoices(step, act, onSolve) {
+    var groupId = "choices-" + act.id + "-" + step.id;
+    var fbId = "fb-" + act.id + "-" + step.id;
+    var solved = false;
+    Array.prototype.slice
+      .call($(groupId).querySelectorAll(".choice"))
+      .forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (solved) return;
+          var correct = btn.dataset.correct === "true";
+          var fb = $(fbId);
+          if (correct) {
+            solved = true;
+            btn.classList.add("correct");
+            fb.className = "feedback show good";
+            fb.innerHTML =
+              step.goodEn +
+              (step.goodEs
+                ? '<span class="es">' + step.goodEs + "</span>"
+                : "");
+            Array.prototype.slice
+              .call($(groupId).querySelectorAll(".choice"))
+              .forEach(function (b) {
+                b.disabled = true;
+              });
+            if (onSolve) onSolve();
+          } else {
+            btn.classList.add("wrong");
+            btn.disabled = true;
+            fb.className = "feedback show bad";
+            fb.innerHTML =
+              step.badEn +
+              (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
+          }
+        });
+      });
+  }
+
+  /* ---- master-rank challenge on the complete scene ---- */
+  function wireMaster() {
+    var group = $("choicesComplete");
+    if (!group || group.dataset.wired) return;
+    group.dataset.wired = "1";
+    var fb = $("fbComplete");
+    var solved = false;
+    var m = S.complete.master || {};
+    Array.prototype.slice
+      .call(group.querySelectorAll(".choice"))
+      .forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (solved) return;
+          var correct = btn.dataset.correct === "true";
+          if (correct) {
+            solved = true;
+            btn.classList.add("correct");
+            fb.className = "feedback show good";
+            fb.style.display = "block";
+            fb.innerHTML =
+              m.goodEn ||
+              "&#127942; <b>Master Rank Certified!</b> Perfect work! &#127775;";
+            Array.prototype.slice
+              .call(group.querySelectorAll(".choice"))
+              .forEach(function (b) {
+                b.disabled = true;
+              });
+            var h2 = document.querySelector("#scene-complete h2");
+            if (h2 && m.certifyTitle) h2.innerHTML = m.certifyTitle;
+          } else {
+            btn.classList.add("wrong");
+            btn.disabled = true;
+            fb.className = "feedback show bad";
+            fb.style.display = "block";
+            fb.innerHTML =
+              m.badEn || "&#10060; Not quite. Review and try another option!";
+          }
+        });
+      });
+  }
+
+  /* ---------- go ---------- */
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", build);
+  } else {
+    build();
+  }
 })();
-</script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+
+    </script>
+
+  <script src="/teacher-tools/nt-results.js"></script>
+  <script>
+  /* Graphic-novel completion tracking -> NTResults (Neft Teacher). Unchanged. */
+  (function () {
+    "use strict";
+    var FIRED = false;
+    var complete = document.getElementById("scene-complete");
+    if (!complete || typeof NTResults === "undefined") return;
+    function studentName() {
+      try {
+        var k = "nt_gn_student";
+        var n = localStorage.getItem(k);
+        if (n && n.trim()) return n.trim();
+        n = window.prompt("Type your name so your teacher can see you finished:", "");
+        n = (n || "").trim();
+        if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+        return n || "Student";
+      } catch (e) { return "Student"; }
+    }
+    function score() {
+      var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+        .filter(function (g) { return g.id !== "choicesComplete"; });
+      var total = groups.length || 0;
+      var correct = groups.filter(function (g) {
+        return g.querySelector(".choice.correct");
+      }).length;
+      return { correct: correct, total: total };
+    }
+    function savedNote() {
+      if (document.getElementById("nt-saved-note")) return;
+      var p = document.createElement("p");
+      p.id = "nt-saved-note";
+      p.setAttribute("role", "status");
+      p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+      p.textContent = "✓ Results saved for your teacher.";
+      complete.insertBefore(p, complete.querySelector(".restart") || null);
+    }
+    function record() {
+      if (FIRED) return; FIRED = true;
+      var s = score();
+      try {
+        NTResults.finish({
+          student: studentName(),
+          assessment: window.GN_STORY.meta.assessment,
+          standard: window.GN_STORY.meta.standard,
+          level: String(window.GN_STORY.meta.version),
+          sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+          correct: s.correct, total: s.total, download: false,
+        });
+      } catch (e) {}
+      savedNote();
+    }
+    function visible() {
+      return complete.classList.contains("show") || complete.classList.contains("active");
+    }
+    if (visible()) record();
+    var mo = new MutationObserver(function () { if (visible()) record(); });
+    mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+  })();
+  </script>
+  <script src="/assets/nt-page-enhance.js" defer></script>
+
   </body>
 </html>

@@ -3,1628 +3,2448 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      Graphic Novel #2 &middot; Festival Producer: Power Up the Show
-    </title>
+    <title>Graphic Novel #2 · Festival Producer: Power Up the Show 🎤</title>
     <style>
-      :root {
-        --bg: #0d0620;
-        --ink: #f6eeff;
-        --muted: #c4aee0;
-        --accent: #ff4fd8;
-        --accent2: #2fd0ff;
-        --panel: #1a0c38;
-        --line: #43275f;
-        --ok: #39d98a;
-        --bad: #ff6b6b;
-        --gold: #ffd166;
-        --bubble: #1a0c38;
-        --bubble-ink: #f6eeff;
-        --font:
-          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      html,
-      body {
-        background: radial-gradient(
-          900px 600px at 80% -10%,
-          #2a1052,
-          var(--bg) 65%
-        );
-        color: var(--ink);
-        font-family: var(--font);
-        line-height: 1.55;
-      }
-      body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      img {
-        max-width: 100%;
-        display: block;
-      }
-      a {
-        color: var(--accent2);
-      }
+/* ===========================================================================
+   Neft Teacher · Graphic-Novel Engine  ·  gn-engine.css
+   Panel-based, dialogue-driven comic renderer. Shared by all 20 novels.
+   Per-novel look is tuned only through CSS custom properties in STORY.meta.theme.
+   Accessibility: WCAG-AA bubbles, resizable text (rem/clamp), 48px targets,
+   keyboard focus rings, functional at 320px.
+   =========================================================================== */
+:root {
+  --bg: #0a1228;
+  --ink: #f4f7ff;
+  --muted: #aebbdd;
+  --accent: #ff8a3d;
+  --accent2: #3da5ff;
+  --panel: #13234d;
+  --line: #2a4378;
+  --ok: #39d98a;
+  --bad: #ff6b6b;
+  --bubble: #fffdf7;
+  --bubble-ink: #16213d;
+  --font: "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --reply: #13234d;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+a {
+  color: var(--accent2);
+}
 
-      .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 30;
-        background: rgba(13, 6, 32, 0.96);
-        border-bottom: 1px solid var(--line);
-        backdrop-filter: blur(6px);
-      }
-      .topbar-inner {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 10px 14px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .home {
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        color: var(--muted);
-        font-size: 0.85rem;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 0 12px;
-      }
-      .home:hover {
-        color: var(--ink);
-      }
-      .title {
-        font-size: 1rem;
-        font-weight: 700;
-      }
-      .title .v {
-        color: var(--accent2);
-      }
-      .progress-wrap {
-        flex: 1;
-        min-width: 160px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .progress {
-        flex: 1;
-        height: 10px;
-        background: #0a0418;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        overflow: hidden;
-      }
-      .progress > i {
-        display: block;
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--accent2), var(--accent));
-        transition: width 0.4s ease;
-      }
-      .progress-label {
-        font-size: 0.75rem;
-        color: var(--muted);
-        white-space: nowrap;
-      }
+/* ---- Top bar ---- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(10, 18, 40, 0.96);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+.topbar-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.home {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 12px;
+}
+.home:hover {
+  color: var(--ink);
+}
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+.title .v {
+  color: var(--accent);
+}
+.progress-wrap {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress {
+  flex: 1;
+  height: 10px;
+  background: #0b1530;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  transition: width 0.4s ease;
+}
+.progress-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
 
-      .tabs {
-        display: flex;
-        gap: 6px;
-        overflow-x: auto;
-        padding: 8px 14px;
-        max-width: 1000px;
-        margin: 0 auto;
-        width: 100%;
-      }
-      .tab {
-        flex: 0 0 auto;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: #160a30;
-        border: 1px solid var(--line);
-        color: var(--muted);
-        border-radius: 12px;
-        padding: 8px 14px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        cursor: pointer;
-        white-space: nowrap;
-      }
-      .tab[aria-selected="true"] {
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
-        border-color: transparent;
-      }
-      .tab:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .tab.locked {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .tab .lk {
-        font-size: 0.8rem;
-      }
+/* text-size control */
+.txtsize {
+  min-height: 44px;
+  min-width: 44px;
+  border: 1px solid var(--line);
+  background: #0e1c40;
+  color: var(--muted);
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0 10px;
+}
+.txtsize:hover {
+  color: var(--ink);
+}
+.txtsize:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+body[data-text="lg"] {
+  font-size: 1.12rem;
+}
+body[data-text="xl"] {
+  font-size: 1.26rem;
+}
 
-      main {
-        flex: 1;
-        width: 100%;
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 14px;
-      }
-      .scene {
-        display: none;
-      }
-      .scene.active {
-        display: block;
-        animation: fade 0.35s ease;
-      }
-      @keyframes fade {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
+/* ---- Tabs ---- */
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 14px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  scrollbar-width: thin;
+}
+.tab {
+  flex: 0 0 auto;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+.tab[aria-selected="true"] {
+  background: linear-gradient(135deg, var(--accent), #ff6a3d);
+  color: #1a0d02;
+  border-color: transparent;
+}
+.tab:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.tab.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.tab .lk {
+  font-size: 0.8rem;
+}
 
-      .art {
-        position: relative;
-        border-radius: 18px;
-        overflow: hidden;
-        border: 1px solid var(--line);
-        background: #0a0418;
-        aspect-ratio: 16/9;
-      }
-      .art img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      .scene-head {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 10px;
-      }
-      .scene-head h2 {
-        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
-      }
-      .scene-head .act {
-        font-size: 0.75rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--accent2);
-      }
+/* ---- Stage ---- */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 14px;
+}
+.scene {
+  display: none;
+}
+.scene.active {
+  display: block;
+  animation: fade 0.35s ease;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  .scene.active {
+    animation: none !important;
+    transition: none !important;
+  }
+}
 
-      .dialogue {
-        margin-top: 14px;
-        min-height: 96px;
-      }
-      .bubble {
-        background: var(--bubble);
-        color: var(--bubble-ink);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 14px 16px;
-        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
-        animation: fade 0.25s ease;
-      }
-      .bubble .who {
-        font-weight: 800;
-        color: var(--accent);
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 4px;
-      }
-      .bubble .en {
-        font-size: 1.06rem;
-      }
-      .bubble.caption {
-        background: #0a0418;
-        border-style: dashed;
-      }
-      .dlg-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 10px;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .dots {
-        display: flex;
-        gap: 5px;
-      }
-      .dots i {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #43275f;
-      }
-      .dots i.on {
-        background: var(--accent2);
-      }
-      .next {
-        min-height: 44px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 10px 18px;
-        font-weight: 800;
-        font-size: 1rem;
-        cursor: pointer;
-      }
-      .next:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
+.scene-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.scene-head h2 {
+  font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+}
+.scene-head .act {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
 
-      .challenge {
-        margin-top: 16px;
-        background: #160a30;
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 16px;
-      }
-      .challenge h3 {
-        font-size: 1.05rem;
-        margin-bottom: 4px;
-        color: var(--accent2);
-      }
-      .challenge .prompt {
-        font-size: 1.05rem;
-        margin-bottom: 6px;
-      }
-      .challenge.bonus {
-        border-color: var(--gold);
-        background: #241b06;
-        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
-      }
-      .challenge.bonus h3 {
-        color: var(--gold);
-      }
-      .bonus-tag {
-        display: inline-block;
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #1a1200;
-        background: var(--gold);
-        border-radius: 6px;
-        padding: 3px 8px;
-        font-weight: 800;
-        margin-bottom: 6px;
-      }
-      .skip-note {
-        font-size: 0.82rem;
-        color: #ffe6a8;
-        margin: 6px 0 2px;
-        font-style: italic;
-      }
-      .choices {
-        display: grid;
-        gap: 10px;
-        margin-top: 10px;
-      }
-      .choice {
-        min-height: 48px;
-        text-align: left;
-        background: #1a0c38;
-        border: 2px solid var(--line);
-        color: var(--ink);
-        border-radius: 12px;
-        padding: 12px 14px;
-        font-size: 1rem;
-        cursor: pointer;
-        font-family: var(--font);
-      }
-      .choice:hover {
-        border-color: var(--accent2);
-      }
-      .choice:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .choice.correct {
-        border-color: var(--ok);
-        background: #10351f;
-      }
-      .choice.wrong {
-        border-color: var(--bad);
-        background: #3a1414;
-      }
-      .choice .work {
-        font-family: "Courier New", monospace;
-        font-size: 0.95rem;
-        line-height: 1.35;
-        display: block;
-        margin-top: 4px;
-        color: #c8a0ff;
-      }
-      .feedback {
-        margin-top: 12px;
-        border-radius: 12px;
-        padding: 12px 14px;
-        font-size: 1rem;
-        display: none;
-      }
-      .feedback.show {
-        display: block;
-        animation: fade 0.25s ease;
-      }
-      .feedback.good {
-        background: #10351f;
-        border: 1px solid var(--ok);
-        color: #c8ffe0;
-      }
-      .feedback.bad {
-        background: #3a1414;
-        border: 1px solid var(--bad);
-        color: #ffd5d5;
-      }
+/* ===========================================================================
+   PANEL  — a framed scene (background image) with characters speaking over it
+   =========================================================================== */
+.panel {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  background: #0b1530;
+  aspect-ratio: 16 / 9;
+}
+.panel > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* contrast scrim so overlaid bubbles always meet AA over any art */
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 12, 28, 0.1) 0%,
+    rgba(6, 12, 28, 0.05) 45%,
+    rgba(6, 12, 28, 0.62) 100%
+  );
+}
+/* speech layer holds the current beat's bubble(s) over the panel */
+.speech {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px;
+}
+.speech > * {
+  pointer-events: auto;
+}
 
-      .scene-foot {
-        margin-top: 18px;
-        display: flex;
-        justify-content: flex-end;
-      }
-      .advance {
-        min-height: 48px;
-        background: linear-gradient(135deg, var(--accent), #ff6a3d);
-        color: #220018;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 22px;
-        font-weight: 800;
-        font-size: 1.05rem;
-        cursor: pointer;
-        display: none;
-      }
-      .advance.show {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        animation: fade 0.3s ease;
-      }
-      .advance:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
+/* ---- Speech bubble (with tail + speaker tag + optional avatar) ---- */
+.bubble {
+  background: var(--bubble);
+  color: var(--bubble-ink);
+  border-radius: 16px;
+  padding: 12px 14px 12px;
+  position: relative;
+  max-width: min(560px, 86%);
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.75);
+  animation: pop 0.22s ease;
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.bubble.left {
+  align-self: flex-start;
+}
+.bubble.right {
+  align-self: flex-end;
+}
+.bubble.center {
+  align-self: center;
+}
+/* tail */
+.bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  width: 0;
+  height: 0;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 12px solid var(--bubble);
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.35));
+}
+.bubble.left::before {
+  left: 26px;
+}
+.bubble.right::before {
+  right: 26px;
+}
+.bubble.center::before {
+  left: 50%;
+  transform: translateX(-50%);
+}
+/* speaker tag (doubles as avatar holder) */
+.bubble .who {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+  color: var(--spk, #c2461d);
+}
+.bubble .who .av {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  overflow: hidden;
+  background: var(--spk, #c2461d);
+  border: 2px solid #fff3;
+}
+.bubble .who .av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bubble .who .me {
+  font-size: 0.62rem;
+  color: #8a6a55;
+  letter-spacing: 0.08em;
+}
+.bubble .en {
+  font-size: 1.05rem;
+}
+.bubble .es {
+  font-size: 0.92rem;
+  color: #566677;
+  margin-top: 6px;
+  font-style: italic;
+}
+/* narrator / caption styling */
+.bubble.caption {
+  background: #0e1c40;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  max-width: min(620px, 92%);
+}
+.bubble.caption::before {
+  border-top-color: #0e1c40;
+}
+.bubble.caption .es {
+  color: var(--muted);
+}
+.bubble.caption .who {
+  color: var(--accent2);
+}
+/* the companion's misconception line gets a subtle "uh-oh" mark */
+.bubble.misc {
+  box-shadow:
+    0 0 0 2px #ffd16688,
+    0 10px 26px -10px rgba(0, 0, 0, 0.75);
+}
 
-      .cover-card {
-        text-align: center;
-      }
-      .cover-card .art {
-        margin-bottom: 16px;
-      }
-      .cover-card h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
-      }
-      .cover-card p {
-        color: var(--muted);
-        max-width: 660px;
-        margin: 10px auto;
-      }
-      .start {
-        min-height: 52px;
-        margin-top: 8px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
-        border: none;
-        border-radius: 14px;
-        padding: 14px 28px;
-        font-weight: 800;
-        font-size: 1.15rem;
-        cursor: pointer;
-      }
-      .start:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .level-pill {
-        display: inline-block;
-        margin-bottom: 10px;
-        font-size: 0.8rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        border-radius: 999px;
-        padding: 5px 14px;
-        font-weight: 700;
-      }
+/* ---- Inline vocab tag (tap for definition popover) ---- */
+.vocab-tag {
+  font: inherit;
+  color: #0b4a82;
+  font-weight: 800;
+  cursor: pointer;
+  background: #bfe3ff;
+  border: none;
+  border-bottom: 2px dotted #0b4a82;
+  border-radius: 5px;
+  padding: 0 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.vocab-tag:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
 
-      .gloss {
-        display: grid;
-        gap: 12px;
-      }
-      .term {
-        background: #160a30;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 14px 16px;
-        display: flex;
-        gap: 14px;
-        align-items: flex-start;
-      }
-      .term .ico {
-        font-size: 1.6rem;
-        flex: 0 0 auto;
-      }
-      .term h3 {
-        font-size: 1.1rem;
-      }
-      .term p {
-        color: var(--muted);
-        margin-top: 4px;
-      }
+/* ---- Popover (vocab + callout) ---- */
+.gn-pop {
+  position: fixed;
+  z-index: 60;
+  max-width: 280px;
+  background: #fffef9;
+  color: #16213d;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+}
+.gn-pop h4 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+  color: #c2461d;
+}
+.gn-pop .es {
+  font-style: italic;
+  color: #566677;
+  font-size: 0.88rem;
+  margin-top: 6px;
+}
+.gn-pop .x {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  border: none;
+  background: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #99a;
+  min-width: 32px;
+  min-height: 32px;
+}
+.gn-pop-back {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: transparent;
+}
 
-      .complete {
-        text-align: center;
-        display: none;
-      }
-      .complete.show {
-        display: block;
-      }
-      .complete .art {
-        margin-bottom: 16px;
-      }
-      .complete h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
-        color: var(--accent2);
-      }
-      .badge-done {
-        display: inline-block;
-        font-size: 3rem;
-        margin: 8px;
-      }
-      .restart {
-        min-height: 48px;
-        margin-top: 14px;
-        background: #160a30;
-        border: 1px solid var(--line);
-        color: var(--ink);
-        border-radius: 12px;
-        padding: 12px 20px;
-        font-weight: 700;
-        cursor: pointer;
-      }
-      .locked-note {
-        display: none;
-        text-align: center;
-        color: var(--muted);
-        padding: 30px 10px;
-      }
-      .locked-note.show {
-        display: block;
-      }
+/* ---- Callout dot pinned to a spot on the panel ---- */
+.callout {
+  position: absolute;
+  z-index: 4;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #1a0d02;
+  border: 2px solid #fff;
+  font-weight: 900;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 0 rgba(255, 138, 61, 0.6);
+  animation: ping 1.8s infinite;
+}
+@keyframes ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 138, 61, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(255, 138, 61, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 138, 61, 0);
+  }
+}
+.callout:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
 
-      @media (max-width: 480px) {
-        .title {
-          font-size: 0.9rem;
-          flex: 1 1 100%;
-        }
-      }
+/* ---- Beat controls (dots + Next) ---- */
+.dlg-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dots {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2a4378;
+}
+.dots i.on {
+  background: var(--accent);
+}
+.next {
+  min-height: 48px;
+  background: linear-gradient(135deg, var(--accent2), #5d7bff);
+  color: #02112a;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.next:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.next[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ===========================================================================
+   CHALLENGE  — math voiced by a character; choices = protagonist's replies
+   =========================================================================== */
+.challenge {
+  margin-top: 16px;
+}
+.challenge .ask-tray {
+  margin-bottom: 10px;
+} /* the question bubble lives in a tray under panel on small screens */
+.chal-tools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 4px 0 10px;
+}
+.toolbtn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  color: #ffd9b3;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.toolbtn[aria-expanded="true"] {
+  background: #3a2410;
+  border-color: #7a4d1f;
+  color: #ffd9b3;
+}
+.toolbtn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.foldout {
+  font-size: 0.95rem;
+  color: #ffe9d3;
+  background: #3a2410;
+  border: 1px solid #7a4d1f;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 0 0 12px;
+  display: none;
+}
+.foldout.show {
+  display: block;
+  animation: fade 0.2s ease;
+}
+.foldout.coach {
+  color: #cfe3ff;
+  background: #0e2140;
+  border-color: #244a86;
+}
+.foldout b {
+  color: var(--accent);
+}
+.foldout.coach b {
+  color: var(--accent2);
+}
+
+.reply-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.choices {
+  display: grid;
+  gap: 10px;
+}
+/* each choice is the protagonist's possible reply, drawn as a mini bubble */
+.choice {
+  position: relative;
+  min-height: 48px;
+  text-align: left;
+  background: var(--reply);
+  border: 2px solid var(--line);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 12px 14px 12px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.choice::before {
+  content: "\201C";
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  color: var(--accent2);
+  font-size: 1.1rem;
+  font-weight: 800;
+  opacity: 0.6;
+}
+.choice:hover {
+  border-color: var(--accent2);
+}
+.choice:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.choice.correct {
+  border-color: var(--ok);
+  background: #10351f;
+}
+.choice.wrong {
+  border-color: var(--bad);
+  background: #3a1414;
+}
+.choice .tree {
+  font-family: "Courier New", monospace;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  display: block;
+  margin-top: 4px;
+  color: #bfe;
+}
+.choice .es {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+.feedback {
+  margin-top: 12px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  display: none;
+}
+.feedback.show {
+  display: block;
+  animation: fade 0.25s ease;
+}
+.feedback.good {
+  background: #10351f;
+  border: 1px solid var(--ok);
+  color: #c8ffe0;
+}
+.feedback.bad {
+  background: #3a1414;
+  border: 1px solid var(--bad);
+  color: #ffd5d5;
+}
+.feedback .es {
+  display: block;
+  font-style: italic;
+  color: #9fd;
+  opacity: 0.85;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.scene-foot {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+.advance {
+  min-height: 48px;
+  background: linear-gradient(135deg, var(--accent), #ff6a3d);
+  color: #1a0d02;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: none;
+  font-family: var(--font);
+}
+.advance.show {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: fade 0.3s ease;
+}
+.advance:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ---- Cover ---- */
+.cover-card {
+  text-align: center;
+}
+.cover-card .panel {
+  aspect-ratio: 16 / 9;
+  margin-bottom: 16px;
+}
+.cover-card h2 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+}
+.cover-card p {
+  color: var(--muted);
+  max-width: 620px;
+  margin: 10px auto;
+}
+.start {
+  min-height: 52px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, var(--accent), #ff6a3d);
+  color: #1a0d02;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.start:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.level-pill {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #02112a;
+  background: var(--accent2);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-weight: 700;
+}
+.cast-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 14px 0 4px;
+}
+.cast-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px 6px 6px;
+  font-size: 0.85rem;
+}
+.cast-chip .av {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  overflow: hidden;
+}
+.cast-chip .av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cast-chip b {
+  color: var(--ink);
+}
+.cast-chip span {
+  color: var(--muted);
+}
+
+/* ---- Glossary ---- */
+.gloss {
+  display: grid;
+  gap: 12px;
+}
+.term {
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.term .ico {
+  font-size: 1.6rem;
+  flex: 0 0 auto;
+}
+.term h3 {
+  font-size: 1.1rem;
+}
+.term .es-term {
+  color: var(--accent2);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.term p {
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ---- Mission complete ---- */
+.complete {
+  text-align: center;
+  display: none;
+}
+.complete.show {
+  display: block;
+}
+.complete .panel {
+  margin-bottom: 16px;
+}
+.complete h2 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  color: var(--accent);
+}
+.badge-done {
+  display: inline-block;
+  font-size: 3rem;
+  margin: 8px;
+}
+.restart {
+  min-height: 48px;
+  margin-top: 14px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.locked-note {
+  display: none;
+  text-align: center;
+  color: var(--muted);
+  padding: 30px 10px;
+}
+.locked-note.show {
+  display: block;
+}
+.bonus {
+  margin-top: 24px;
+  text-align: left;
+  background: #1c1606;
+  border: 2px solid #ffd166;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+}
+.bonus-tag {
+  background: #ffd166;
+  color: #1a1200;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.bonus h3 {
+  color: #ffd166;
+  font-size: 1.1rem;
+  margin: 8px 0 6px;
+  font-weight: 700;
+}
+.bonus .prompt {
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+.bonus .prompt .es {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* ---- Small screens (down to 320px) ---- */
+@media (max-width: 560px) {
+  .panel {
+    aspect-ratio: 4 / 3;
+  }
+  .bubble {
+    max-width: 94%;
+  }
+  .bubble .en {
+    font-size: 1rem;
+  }
+}
+@media (max-width: 380px) {
+  main {
+    padding: 10px;
+  }
+  .topbar-inner {
+    gap: 8px;
+  }
+  .title {
+    font-size: 0.9rem;
+    flex: 1 1 100%;
+  }
+  .panel {
+    aspect-ratio: 1 / 1;
+  }
+  .speech {
+    padding: 8px;
+  }
+  .bubble {
+    padding: 10px 12px;
+  }
+}
+
     </style>
   </head>
   <body>
-    <div class="topbar">
-      <div class="topbar-inner">
-        <a class="home" href="../index.html">&#8592; Home</a>
-        <span class="title"
-          ><span class="v">#2</span> Festival Producer: Power Up the Show</span
-        >
-        <div class="progress-wrap">
-          <div
-            class="progress"
-            role="progressbar"
-            aria-label="Mission progress"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="0"
-          >
-            <i id="bar"></i>
-          </div>
-          <span class="progress-label" id="plabel">0%</span>
-        </div>
-      </div>
-      <div class="tabs" role="tablist" aria-label="Chapters">
-        <button
-          class="tab"
-          role="tab"
-          aria-selected="true"
-          data-scene="cover"
-          id="tab-cover"
-        >
-          Cover
-        </button>
-        <button
-          class="tab"
-          role="tab"
-          aria-selected="false"
-          data-scene="act1"
-          id="tab-act1"
-        >
-          Act 1: Speaker Power
-        </button>
-        <button
-          class="tab locked"
-          role="tab"
-          aria-selected="false"
-          data-scene="act2"
-          id="tab-act2"
-        >
-          <span class="lk">&#128274;</span> Act 2: Stage &amp; Lights
-        </button>
-        <button
-          class="tab locked"
-          role="tab"
-          aria-selected="false"
-          data-scene="final"
-          id="tab-final"
-        >
-          <span class="lk">&#128274;</span> Final Show
-        </button>
-        <button
-          class="tab"
-          role="tab"
-          aria-selected="false"
-          data-scene="gloss"
-          id="tab-gloss"
-        >
-          Glossary
-        </button>
-      </div>
-    </div>
-
-    <main>
-      <!-- COVER -->
-      <section
-        class="scene active cover-card"
-        id="scene-cover"
-        role="tabpanel"
-        aria-labelledby="tab-cover"
-      >
-        <div class="art">
-          <img
-            src="../_art/unit6/cover.png"
-            alt="Mika, a young festival producer, stands center stage at a glowing music festival with speakers and lights behind her"
-          />
-        </div>
-        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Festival Producer: Power Up the Show &#127908;</h2>
-        <p>
-          Headliner night at the Neon Pulse Festival, and you are
-          <b>Mika</b> &mdash; the youngest lead producer ever to run the main
-          grid. Every stage, speaker stack, and lighting truss is locked behind
-          a control cipher. Only sharp command of <b>powers and exponents</b>,
-          the <b>order of operations</b>, and
-          <b>writing algebraic expressions</b> will bring the show online before
-          doors open.
-        </p>
-        <button class="start" id="start-btn">Begin Production &#127881;</button>
-      </section>
-
-      <!-- ACT 1 -->
-      <section
-        class="scene"
-        id="scene-act1"
-        role="tabpanel"
-        aria-labelledby="tab-act1"
-      >
-        <div class="scene-head">
-          <span class="act">Act 1 &middot; Powers &amp; Exponents</span>
-          <h2>Speaker Power</h2>
-        </div>
-        <div class="art">
-          <img
-            id="art-act1"
-            src="../_art/unit6/speaker-power.png"
-            alt="Mika studies a towering speaker stack pulsing with energy beside a holographic power gauge"
-          />
-        </div>
-
-        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
-        <div class="dlg-row">
-          <div class="dots" id="dots-act1"></div>
-          <button class="next" id="next-act1">Next &#9654;</button>
-        </div>
-
-        <!-- Core Lock 1a -->
-        <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#128266; Amplifier Cipher &mdash; Evaluate the Power</h3>
-          <p class="prompt">
-            The amplifier array is rated at <b>4<sup>3</sup></b> watts per
-            cluster. Which value equals the power 4<sup>3</sup>?
-          </p>
-          <div class="choices" id="choices1a">
-            <button class="choice" data-correct="false">
-              12 <span class="work">(that is 4 &times; 3, not 4&sup3;)</span>
-            </button>
-            <button class="choice" data-correct="true">
-              64 <span class="work">(4 &times; 4 &times; 4 = 64)</span>
-            </button>
-            <button class="choice" data-correct="false">
-              16
-              <span class="work"
-                >(that is 4&sup2;, the exponent is too small)</span
-              >
-            </button>
-          </div>
-          <div class="feedback" id="fb1a"></div>
-        </div>
-
-        <!-- Core Lock 1b: exponent inside an expression -->
-        <div class="challenge" id="chal1b" style="display: none">
-          <h3>&#128161; Truss Cipher &mdash; Power Inside an Expression</h3>
-          <p class="prompt">
-            The lighting truss draws <b>2<sup>4</sup> &times; 3</b> amps.
-            Evaluate it: handle the <b>exponent first</b>, then multiply.
-          </p>
-          <div class="choices" id="choices1b">
-            <button class="choice" data-correct="false">
-              24 <span class="work">(used 2 &times; 4 = 8, then &times;3)</span>
-            </button>
-            <button class="choice" data-correct="true">
-              48
-              <span class="work">(2&#8308; = 16, then 16 &times; 3 = 48)</span>
-            </button>
-            <button class="choice" data-correct="false">
-              96
-              <span class="work"
-                >((2 &times; 3)&#8308; &mdash; wrong, only 2 is raised)</span
-              >
-            </button>
-          </div>
-          <div class="feedback" id="fb1b"></div>
-        </div>
-
-        <!-- OPTIONAL Producer's Challenge -->
-        <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag"
-            >&#11088; Producer&rsquo;s Challenge (Optional)</span
-          >
-          <h3>The Encore Generator</h3>
-          <p class="prompt">
-            The backup generator number is <b>2<sup>3</sup> + 3<sup>2</sup></b
-            >. Evaluate this sum of two powers to charge the encore battery.
-          </p>
-          <p class="skip-note">
-            &#9733; Optional bonus &mdash; you can skip it anytime; the speakers
-            are already powered.
-          </p>
-          <div class="choices" id="choicesB1">
-            <button class="choice" data-correct="false">
-              25
-              <span class="work"
-                >((2 + 3)&sup2; &mdash; you cannot combine the bases)</span
-              >
-            </button>
-            <button class="choice" data-correct="true">
-              17 <span class="work">(8 + 9 = 17)</span>
-            </button>
-            <button class="choice" data-correct="false">
-              13
-              <span class="work"
-                >(used 2&times;3 + 3&times;2 &mdash; not powers)</span
-              >
-            </button>
-          </div>
-          <div class="feedback" id="fbB1"></div>
-        </div>
-
-        <div class="scene-foot">
-          <button class="advance" id="adv-act1">
-            Power the speaker grid &#128266;
-          </button>
-        </div>
-      </section>
-
-      <!-- ACT 2 -->
-      <section
-        class="scene"
-        id="scene-act2"
-        role="tabpanel"
-        aria-labelledby="tab-act2"
-      >
-        <div class="locked-note" id="lock-act2">
-          &#128274; Complete Act 1 to unlock Act 2.
-        </div>
-        <div id="body-act2">
-          <div class="scene-head">
-            <span class="act"
-              >Act 2 &middot; Evaluate &amp; Write Expressions</span
-            >
-            <h2>Stage &amp; Lights</h2>
-          </div>
-          <div class="art">
-            <img
-              id="art-act2"
-              src="../_art/unit6/expression-build.png"
-              alt="Mika arranges glowing holographic blocks into an expression at a mixing console"
-            />
-          </div>
-
-          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
-          <div class="dlg-row">
-            <div class="dots" id="dots-act2"></div>
-            <button class="next" id="next-act2">Next &#9654;</button>
-          </div>
-
-          <!-- Core Lock 2a: multi-step order of operations with grouping + exponent -->
-          <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#127917; Stage Budget &mdash; Multi-Step Evaluation</h3>
-            <p class="prompt">
-              The main-stage build cost is
-              <b>4 + 3 &times; (6 &minus; 2)<sup>2</sup></b
-              >. Evaluate it with the order of operations: <b>grouping</b>, then
-              <b>exponent</b>, then <b>multiply</b>, then <b>add</b>.
-            </p>
-            <div class="choices" id="choices2a">
-              <button class="choice" data-correct="false">
-                112
-                <span class="work"
-                  >(added 4 + 3 before squaring &mdash; wrong order)</span
-                >
-              </button>
-              <button class="choice" data-correct="true">
-                52
-                <span class="work"
-                  >((6&minus;2)=4, 4&sup2;=16, 3&times;16=48, 4+48=52)</span
-                >
-              </button>
-              <button class="choice" data-correct="false">
-                100
-                <span class="work"
-                  >(squared 6&minus;2 wrong, or multiplied too early)</span
-                >
-              </button>
-            </div>
-            <div class="feedback" id="fb2a"></div>
-          </div>
-
-          <!-- Core Lock 2b: write expression from a complex scenario -->
-          <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#128221; Lighting Order &mdash; Write the Expression</h3>
-            <p class="prompt">
-              You rent <b>5 spotlights</b> at <b>d</b> dollars each, then add a
-              flat <b>$50</b> rigging fee. Because there are
-              <b>two identical stages</b>, the whole package is <b>doubled</b>.
-              Which expression gives the total cost?
-            </p>
-            <div class="choices" id="choices2b">
-              <button class="choice" data-correct="false">
-                2 &times; 5d + 50
-                <span class="work"
-                  >(only the lights got doubled, not the fee)</span
-                >
-              </button>
-              <button class="choice" data-correct="true">
-                2(5d + 50)
-                <span class="work">(double the full per-stage cost)</span>
-              </button>
-              <button class="choice" data-correct="false">
-                10d + 50
-                <span class="work"
-                  >(doubled the lights but forgot to double the fee)</span
-                >
-              </button>
-            </div>
-            <div class="feedback" id="fb2b"></div>
-          </div>
-
-          <!-- OPTIONAL Producer's Challenge -->
-          <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag"
-              >&#11088; Producer&rsquo;s Challenge (Optional)</span
-            >
-            <h3>The Crew Manifest</h3>
-            <p class="prompt">
-              <b>n</b> headline acts each bring <b>3</b> crew members, and there
-              are always <b>2</b> solo performers with no crew. Write the
-              expression for the total number of people on the manifest.
-            </p>
-            <p class="skip-note">
-              &#9733; Optional bonus &mdash; skip anytime; the stage and lights
-              are already paid for.
-            </p>
-            <div class="choices" id="choicesB2">
-              <button class="choice" data-correct="false">
-                3 + 2n
-                <span class="work"
-                  >(the 3 crew go with each act, so it is 3n)</span
-                >
-              </button>
-              <button class="choice" data-correct="true">
-                3n + 2
-                <span class="work">(3 crew per act, plus the 2 solos)</span>
-              </button>
-              <button class="choice" data-correct="false">
-                5n
-                <span class="work"
-                  >(you cannot combine 3n and a constant 2)</span
-                >
-              </button>
-            </div>
-            <div class="feedback" id="fbB2"></div>
-          </div>
-
-          <div class="scene-foot">
-            <button class="advance" id="adv-act2">
-              Light the stages &#10024;
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- FINAL -->
-      <section
-        class="scene"
-        id="scene-final"
-        role="tabpanel"
-        aria-labelledby="tab-final"
-      >
-        <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Show.
-        </div>
-        <div id="body-final">
-          <div class="scene-head">
-            <span class="act">Final Show &middot; Boss</span>
-            <h2>The Headliner</h2>
-          </div>
-          <div class="art">
-            <img
-              id="art-final"
-              src="../_art/unit6/final-show.png"
-              alt="Mika at the master control booth ready to start the headliner show"
-            />
-          </div>
-
-          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
-          <div class="dlg-row">
-            <div class="dots" id="dots-final"></div>
-            <button class="next" id="next-final">Next &#9654;</button>
-          </div>
-
-          <!-- Core combined lock -->
-          <div class="challenge" id="chalF" style="display: none">
-            <h3>
-              &#127908; Master Override &mdash; Power + Order of Operations
-            </h3>
-            <p class="prompt">
-              The master grid demands the value of
-              <b>3<sup>3</sup> + 2 &times; (8 &minus; 3)</b>. Evaluate fully:
-              grouping, then the power, then multiply, then add.
-            </p>
-            <div class="choices" id="choicesF">
-              <button class="choice" data-correct="false">
-                47
-                <span class="work"
-                  >(used 3&times;3=9 instead of 3&sup3;, or wrong order)</span
-                >
-              </button>
-              <button class="choice" data-correct="true">
-                37
-                <span class="work"
-                  >(3&sup3;=27, (8&minus;3)=5, 2&times;5=10, 27+10=37)</span
-                >
-              </button>
-              <button class="choice" data-correct="false">
-                145
-                <span class="work"
-                  >(added before multiplying &mdash; not allowed)</span
-                >
-              </button>
-            </div>
-            <div class="feedback" id="fbF"></div>
-          </div>
-
-          <!-- OPTIONAL final Producer's Challenge -->
-          <div class="challenge bonus" id="bonusF" style="display: none">
-            <span class="bonus-tag"
-              >&#11088; Producer&rsquo;s Final Challenge (Optional)</span
-            >
-            <h3>The VIP Revenue Cipher</h3>
-            <p class="prompt">
-              VIP revenue is modeled as
-              <b>4<sup>3</sup> &times; 5 &minus; 100</b>: each VIP package earns
-              4<sup>3</sup> dollars, there are 5 VIPs, and a flat $100 platform
-              fee is subtracted. Write the value of the expression.
-            </p>
-            <p class="skip-note">
-              &#9733; Optional bonus &mdash; the headliner is already cleared to
-              go; skip anytime.
-            </p>
-            <div class="choices" id="choicesBF">
-              <button class="choice" data-correct="true">
-                220
-                <span class="work"
-                  >(4&sup3;=64, 64&times;5=320, 320&minus;100=220)</span
-                >
-              </button>
-              <button class="choice" data-correct="false">
-                280
-                <span class="work"
-                  >(subtracted 100 before multiplying by 5)</span
-                >
-              </button>
-              <button class="choice" data-correct="false">
-                60
-                <span class="work"
-                  >(used 4&times;3=12, 12&times;5=60, forgot the fee)</span
-                >
-              </button>
-            </div>
-            <div class="feedback" id="fbBF"></div>
-          </div>
-
-          <div class="scene-foot">
-            <button class="advance" id="adv-final">
-              Launch the headliner &#127775;
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- COMPLETE -->
-      <section
-        class="scene complete"
-        id="scene-complete"
-        role="tabpanel"
-        aria-label="Mission complete"
-      >
-        <div class="art">
-          <img
-            src="../_art/unit6/celebration.png"
-            alt="Mika celebrates with arms raised as the festival crowd cheers under fireworks and lights"
-          />
-        </div>
-        <span class="badge-done">&#127881;&#127908;&#11088;</span>
-        <h2>Headliner Live &mdash; Show Complete!</h2>
-        <p>
-          The Neon Pulse Festival is fully online. You evaluated
-          <b>powers and exponents</b> to charge the grid, applied the
-          <b>order of operations</b> to multi-step budgets, and
-          <b>wrote algebraic expressions</b> to model crews, costs, and revenue.
-          The crowd is roaring. Command logged a commendation, Producer Mika.
-        </p>
-        
-        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
-          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
-          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
-          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
-            Festival amplifier: Evaluate the multi-variable algebraic expression <strong>2x² - 3y</strong> when <strong>x = 3 and y = 2</strong>.
-          </p>
-          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
-            
-            <button class="choice" data-correct="false">A) 6 &nbsp;(calculated $2 \times 3 \times 2 - 6$)</button>
-            <button class="choice" data-correct="true">B) 12 &nbsp;($2(3^2) - 3(2) = 18 - 6 = 12$) &nbsp;✅</button>
-            <button class="choice" data-correct="false">C) 30 &nbsp;(calculated $(2 \times 3)^2 - 6$)</button>
-      
-          </div>
-          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
-        </div>
-        <button class="restart" id="restart-btn">Run again &#8635;</button>
-    
-      </section>
-
-      <!-- GLOSSARY -->
-      <section
-        class="scene"
-        id="scene-gloss"
-        role="tabpanel"
-        aria-labelledby="tab-gloss"
-      >
-        <div class="scene-head">
-          <span class="act">Reference</span>
-          <h2>Glossary &middot; Production Codex</h2>
-        </div>
-        <div class="gloss" id="gloss-list"></div>
-      </section>
-    </main>
 
     <script>
-      (function () {
-        "use strict";
+/* STORY · Unit 6 · Graphic Novel #2 (Enrichment) · Festival Producer: Power Up the Show
+   Full novel on the comic engine. Enrichment tier: harder numbers, optional
+   "Producer's Challenge" bonus rounds (non-gating, still scored), English-only
+   (source has no Spanish), 10-term codex. All math/answers/distractors/glossary
+   carried verbatim from graphic-novels/unit6/graphic-novel-2.html (6.EE.2c).
+   New: panels, speech, ECHO-voices-the-misconception, vocab pop-ups. */
+window.GN_STORY = {
+  meta: {
+    unit: 6,
+    version: 2,
+    level: "Enrichment",
+    title: "Festival Producer: Power Up the Show 🎤",
+    standard: "6.EE.2c",
+    assessment: "Graphic Novel U6 #2: Festival Producer: Power Up the Show",
+    artBase: "../_art/unit6/",
+    home: "../index.html",
+  },
 
-        var DLG = {
-          act1: [
+  cast: {
+    producer: {
+      name: "The Producer",
+      role: "protagonist",
+      color: "#ff8a3d",
+      tagIcon: "🎤",
+      avatar: null,
+      blurb: "You",
+    },
+    echo: {
+      name: "ECHO",
+      role: "companion",
+      color: "#3da5ff",
+      tagIcon: "🎚️",
+      avatar: null,
+      blurb: "Soundboard AI · reads left-to-right, skips the power",
+    },
+    log: { name: "Festival Log", role: "narrator", color: "#3da5ff" },
+  },
+
+  cover: {
+    art: "cover.png",
+    alt: "Mika, a young festival producer, stands center stage at a glowing music festival with speakers and lights behind her",
+    blurbEn:
+      "Headliner night at the Neon Pulse Festival, and you are <b>Mika</b> — the youngest lead producer ever to run the main grid. Every stage, speaker stack, and lighting truss is locked behind a control cipher. Only sharp command of <b>powers and exponents</b>, the <b>order of operations</b>, and <b>writing algebraic expressions</b> will bring the show online before doors open. ECHO will help… but it keeps reading the math left-to-right.",
+    blurbEs: "",
+    startLabel: "Begin Production 🎉",
+  },
+
+  acts: [
+    /* ============================ ACT 1 ============================ */
+    {
+      id: "act1",
+      tab: "Act 1: Speaker Power",
+      kicker: "Act 1 · Powers & Exponents",
+      title: "Speaker Power",
+      advanceLabel: "Power the speaker grid 🔊",
+      steps: [
+        {
+          type: "beats",
+          art: "speaker-power.png",
+          alt: "Mika studies a towering speaker stack pulsing with energy beside a holographic power gauge",
+          lastLabel: "Check ECHO ▶",
+          beats: [
             {
-              who: "Stage Director",
+              who: "log",
+              caption: true,
               en: "Doors open in an hour, Mika, and the speaker grid is dead. Every amplifier is locked behind a power cipher.",
-              cap: true,
             },
             {
-              who: "Mika",
-              en: "Then I evaluate the powers exactly &mdash; exponents are repeated multiplication, not multiply-the-base-by-the-exponent. Patch me into the array.",
+              who: "producer",
+              en: "Then I evaluate the powers exactly — exponents are repeated multiplication, not multiply-the-base-by-the-exponent. Patch me into the array.",
+              vocab: [
+                {
+                  term: "exponents",
+                  en: "The count of how many times the base is used as a factor. In 2⁴, the exponent 4 means 2×2×2×2.",
+                },
+              ],
             },
-          ],
-          act1b: [
             {
-              who: "Mika",
-              en: "Amplifiers live. The lighting truss cipher hides a power inside an expression &mdash; exponent first, then multiply. On it.",
-            },
-          ],
-          bonus1: [
-            {
-              who: "Stage Director",
-              en: "Optional: there's an encore battery you could charge with a sum of two powers. Totally up to you &mdash; the show is already powered.",
-              cap: true,
+              who: "echo",
+              misconception: true,
+              en: "I've got the amplifier: 4³ is just 4 × 3 = 12. Sending 12 to the array!",
             },
           ],
-          act2: [
+        },
+        {
+          type: "challenge",
+          id: "1a",
+          ask: {
+            who: "producer",
+            en: "Hold ECHO back — that skips the power. The amplifier array is rated at <b>4<sup>3</sup></b> watts per cluster. Which value equals the power 4<sup>3</sup>?",
+          },
+          choices: [
             {
-              who: "Production Manager",
+              en: "12",
+              tree: "(that is 4 × 3, not 4³)",
+              correct: false,
+            },
+            {
+              en: "64",
+              tree: "(4 × 4 × 4 = 64)",
+              correct: true,
+            },
+            {
+              en: "16",
+              tree: "(that is 4², the exponent is too small)",
+              correct: false,
+            },
+          ],
+          goodEn: "✅ Correct. 4³ = 4×4×4 = 64. Amplifier array decrypted.",
+          badEn:
+            "❌ An exponent is repeated multiplication. 4³ = 4×4×4 = 64, not 4×3 and not 4².",
+          solveBeat: {
+            who: "producer",
+            en: "Amplifiers live. The lighting truss cipher hides a power inside an expression — exponent first, then multiply. On it.",
+          },
+        },
+        {
+          type: "challenge",
+          id: "1b",
+          ask: {
+            who: "producer",
+            en: "The lighting truss draws <b>2<sup>4</sup> × 3</b> amps. Evaluate it: handle the <b>exponent first</b>, then multiply.",
+          },
+          choices: [
+            {
+              en: "24",
+              tree: "(used 2 × 4 = 8, then ×3)",
+              correct: false,
+            },
+            {
+              en: "48",
+              tree: "(2⁴ = 16, then 16 × 3 = 48)",
+              correct: true,
+            },
+            {
+              en: "96",
+              tree: "((2 × 3)⁴ — wrong, only 2 is raised)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Sharp. 2⁴ = 16 first, then 16×3 = 48. Only the 2 is raised, not the whole product. SPEAKER GRID ONLINE!",
+          badEn:
+            "❌ Evaluate the exponent before multiplying: 2⁴ = 16, then ×3. Only the base 2 is raised to the 4th.",
+          solveArt: "stage-lit.png",
+          solveAlt:
+            "The stage blazes to life with lights and lasers as Mika powers the grid",
+          solveBeat: {
+            who: "producer",
+            en: "Speaker grid online. There's an encore battery I could charge with a sum of two powers — optional, but I'm curious.",
+          },
+        },
+        {
+          type: "challenge",
+          id: "B1",
+          optional: true,
+          bonusTag: "⭐ Producer's Challenge",
+          ask: {
+            who: "log",
+            en: "Optional: there's an encore battery you could charge with a sum of two powers. Totally up to you — the show is already powered. The backup generator number is <b>2<sup>3</sup> + 3<sup>2</sup></b>. Evaluate this sum of two powers to charge the encore battery.",
+          },
+          choices: [
+            {
+              en: "25",
+              tree: "((2 + 3)² — you cannot combine the bases)",
+              correct: false,
+            },
+            {
+              en: "17",
+              tree: "(8 + 9 = 17)",
+              correct: true,
+            },
+            {
+              en: "13",
+              tree: "(used 2×3 + 3×2 — not powers)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "⭐ Nice. 2³ + 3² = 8 + 9 = 17. Encore battery charged — bonus cleared.",
+          badEn:
+            "❌ Evaluate each power separately, then add: 2³ = 8 and 3² = 9, so 8 + 9 = 17.",
+          solveBeat: {
+            who: "producer",
+            en: "Encore battery charged. On to the stage budget.",
+          },
+        },
+      ],
+    },
+
+    /* ============================ ACT 2 ============================ */
+    {
+      id: "act2",
+      tab: "Act 2: Stage & Lights",
+      kicker: "Act 2 · Evaluate & Write Expressions",
+      title: "Stage & Lights",
+      advanceLabel: "Light the stages ✨",
+      steps: [
+        {
+          type: "beats",
+          art: "expression-build.png",
+          alt: "Mika arranges glowing holographic blocks into an expression at a mixing console",
+          lastLabel: "Check ECHO ▶",
+          beats: [
+            {
+              who: "log",
+              caption: true,
               en: "Grid is hot. Now the money: the stage build is a multi-step expression and one wrong step blows the budget.",
-              cap: true,
             },
             {
-              who: "Mika",
+              who: "producer",
               en: "Grouping first, then the exponent, then multiply, then add. I keep the order or the numbers lie to me.",
-            },
-          ],
-          act2b: [
-            {
-              who: "Mika",
-              en: "Build cost locked in. Now I translate the lighting order into an algebraic expression &mdash; per-light cost, a flat fee, doubled for two stages.",
-            },
-          ],
-          bonus2: [
-            {
-              who: "Production Manager",
-              en: "Optional manifest puzzle if you want it: model the whole crew count with one expression. Skip it freely &mdash; the stages are paid.",
-              cap: true,
-            },
-          ],
-          final: [
-            {
-              who: "Stage Director",
-              en: "Headliner in sixty seconds. The master override fuses a power with the full order of operations &mdash; one clean evaluation.",
-              cap: true,
+              vocab: [
+                {
+                  term: "order",
+                  en: "Order of operations: evaluate grouping symbols, then exponents, then multiply/divide left to right, then add/subtract left to right.",
+                },
+              ],
             },
             {
-              who: "Mika",
-              en: "Power, grouping, multiply, add &mdash; in order, no slips. Standing by to launch the show.",
+              who: "echo",
+              misconception: true,
+              en: "I'll just go left to right: 4 + 3 = 7, then 7 × (6−2)² … that's 112. Logging 112!",
             },
           ],
-        };
-
-        var GLOSS = [
-          {
-            ico: "&#10094;&#10095;",
-            en: "Power",
-            def: "An expression of the form base^exponent representing repeated multiplication. 4&sup3; = 4&times;4&times;4 = 64.",
+        },
+        {
+          type: "challenge",
+          id: "2a",
+          ask: {
+            who: "producer",
+            en: "Slow down, ECHO — that adds before squaring. The main-stage build cost is <b>4 + 3 × (6 − 2)<sup>2</sup></b>. Evaluate it with the order of operations: <b>grouping</b>, then <b>exponent</b>, then <b>multiply</b>, then <b>add</b>.",
           },
-          {
-            ico: "&#128290;",
-            en: "Base",
-            def: "The factor being repeatedly multiplied in a power. In 2&#8308;, the base is 2.",
+          choices: [
+            {
+              en: "112",
+              tree: "(added 4 + 3 before squaring — wrong order)",
+              correct: false,
+            },
+            {
+              en: "52",
+              tree: "((6−2)=4, 4²=16, 3×16=48, 4+48=52)",
+              correct: true,
+            },
+            {
+              en: "100",
+              tree: "(squared 6−2 wrong, or multiplied too early)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Exactly. (6−2)=4, 4²=16, 3×16=48, then 4+48 = 52. Budget locked.",
+          badEn:
+            "❌ Follow the order: do the parentheses, then square, then multiply, then add. (6−2)² = 16, 3×16 = 48, 4+48 = 52.",
+          solveBeat: {
+            who: "producer",
+            en: "Build cost locked in. Now I translate the lighting order into an algebraic expression — per-light cost, a flat fee, doubled for two stages.",
           },
-          {
-            ico: "&#11014;&#65039;",
-            en: "Exponent",
-            def: "The count of how many times the base is used as a factor. In 2&#8308;, the exponent 4 means 2&times;2&times;2&times;2.",
+        },
+        {
+          type: "challenge",
+          id: "2b",
+          ask: {
+            who: "producer",
+            en: "You rent <b>5 spotlights</b> at <b>d</b> dollars each, then add a flat <b>$50</b> rigging fee. Because there are <b>two identical stages</b>, the whole package is <b>doubled</b>. Which <b>algebraic expression</b> gives the total cost?",
+            vocab: [
+              {
+                term: "algebraic expression",
+                en: "A combination of numbers, variables, and operations with no equals sign, such as 2(5d + 50).",
+              },
+            ],
           },
-          {
-            ico: "&#129518;",
-            en: "Order of operations",
-            def: "Evaluate in order: grouping symbols, then exponents, then multiply/divide left to right, then add/subtract left to right.",
+          choices: [
+            {
+              en: "2 × 5d + 50",
+              tree: "(only the lights got doubled, not the fee)",
+              correct: false,
+            },
+            {
+              en: "2(5d + 50)",
+              tree: "(double the full per-stage cost)",
+              correct: true,
+            },
+            {
+              en: "10d + 50",
+              tree: "(doubled the lights but forgot to double the fee)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Right. One stage costs 5d + 50, and two identical stages double the whole package: 2(5d + 50). LIGHTING ORDER PLACED!",
+          badEn:
+            "❌ Both the lights and the fee belong to one stage, and BOTH double. Group the per-stage cost first: 2(5d + 50).",
+          solveBeat: {
+            who: "producer",
+            en: "Lighting order placed. There's an optional crew manifest puzzle if I want it.",
           },
-          {
-            ico: "&#128221;",
-            en: "Algebraic expression",
-            def: "A combination of numbers, variables, and operations with no equals sign, such as 2(5d + 50).",
+        },
+        {
+          type: "challenge",
+          id: "B2",
+          optional: true,
+          bonusTag: "⭐ Producer's Challenge",
+          ask: {
+            who: "log",
+            en: "Optional manifest puzzle if you want it: model the whole crew count with one expression. Skip it freely — the stages are paid. <b>n</b> headline acts each bring <b>3</b> crew members, and there are always <b>2</b> solo performers with no crew. Write the expression for the total number of people on the manifest.",
           },
-          {
-            ico: "&#127991;&#65039;",
-            en: "Variable",
-            def: "A symbol that represents an unknown or changing quantity, such as n or d.",
+          choices: [
+            {
+              en: "3 + 2n",
+              tree: "(the 3 crew go with each act, so it is 3n)",
+              correct: false,
+            },
+            {
+              en: "3n + 2",
+              tree: "(3 crew per act, plus the 2 solos)",
+              correct: true,
+            },
+            {
+              en: "5n",
+              tree: "(you cannot combine 3n and a constant 2)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "⭐ Yes. 3 crew for each of n acts is 3n, plus the 2 solo performers: 3n + 2. Manifest complete — bonus cleared.",
+          badEn:
+            "❌ The 3 crew attach to EACH act, so that part is 3n. The 2 solos are a separate constant: 3n + 2.",
+          solveBeat: {
+            who: "producer",
+            en: "Manifest complete. The Headliner is next.",
           },
-          {
-            ico: "&#10005;",
-            en: "Coefficient",
-            def: "The numerical factor multiplied by a variable. In 3n, the coefficient is 3.",
+        },
+      ],
+    },
+
+    /* ============================ FINAL ============================ */
+    {
+      id: "final",
+      tab: "Final Show",
+      kicker: "Final Show · Boss",
+      title: "The Headliner",
+      advanceLabel: "Launch the headliner 🌟",
+      steps: [
+        {
+          type: "beats",
+          art: "final-show.png",
+          alt: "Mika at the master control booth ready to start the headliner show",
+          lastLabel: "Check ECHO ▶",
+          beats: [
+            {
+              who: "log",
+              caption: true,
+              en: "Headliner in sixty seconds. The master override fuses a power with the full order of operations — one clean evaluation.",
+            },
+            {
+              who: "producer",
+              en: "Power, grouping, multiply, add — in order, no slips. Standing by to launch the show.",
+            },
+            {
+              who: "echo",
+              misconception: true,
+              en: "I'll start the override: 3³ is just 3 × 3 = 9, so 9 + 2 × (8−3) … I make it 47. Entering 47!",
+            },
+          ],
+        },
+        {
+          type: "challenge",
+          id: "F",
+          ask: {
+            who: "producer",
+            en: "Careful, ECHO — 3³ is not 3×3. The master grid demands the value of <b>3<sup>3</sup> + 2 × (8 − 3)</b>. Evaluate fully: grouping, then the power, then multiply, then add.",
           },
-          {
-            ico: "&#10133;",
-            en: "Term",
-            def: "A single number, variable, or product separated by + or &minus;. In 3n + 2 the terms are 3n and 2.",
+          choices: [
+            {
+              en: "47",
+              tree: "(used 3×3=9 instead of 3³, or wrong order)",
+              correct: false,
+            },
+            {
+              en: "37",
+              tree: "(3³=27, (8−3)=5, 2×5=10, 27+10=37)",
+              correct: true,
+            },
+            {
+              en: "145",
+              tree: "(added before multiplying — not allowed)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Override accepted. 3³=27, (8−3)=5, 2×5=10, then 27+10 = 37. Master grid is yours.",
+          badEn:
+            "❌ One step slipped. 3³ = 27 (not 9), then (8−3)=5, 2×5=10, and finally 27+10 = 37.",
+          solveBeat: {
+            who: "producer",
+            en: "Override accepted. There's one last optional cipher — the VIP revenue model.",
           },
-          {
-            ico: "&#40;&#41;",
-            en: "Grouping symbols",
-            def: "Parentheses or brackets that tell you to evaluate what is inside first, e.g. (6 &minus; 2)&sup2;.",
+        },
+        {
+          type: "challenge",
+          id: "BF",
+          optional: true,
+          bonusTag: "⭐ Producer's Final Challenge",
+          ask: {
+            who: "log",
+            en: "Optional: the headliner is already cleared to go; skip anytime. VIP revenue is modeled as <b>4<sup>3</sup> × 5 − 100</b>: each VIP package earns 4<sup>3</sup> dollars, there are 5 VIPs, and a flat $100 platform fee is subtracted. Write the value of the expression.",
           },
-          {
-            ico: "&#9633;",
-            en: "Distributive property",
-            def: "a(b + c) = ab + ac. So 2(5d + 50) = 10d + 100, doubling every part inside.",
+          choices: [
+            {
+              en: "220",
+              tree: "(4³=64, 64×5=320, 320−100=220)",
+              correct: true,
+            },
+            {
+              en: "280",
+              tree: "(subtracted 100 before multiplying by 5)",
+              correct: false,
+            },
+            {
+              en: "60",
+              tree: "(used 4×3=12, 12×5=60, forgot the fee)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "⭐ Clean cipher. 4³=64, 64×5=320, 320−100 = 220. VIP revenue verified — bonus cleared!",
+          badEn:
+            "❌ Multiply before subtracting: 4³=64, 64×5=320, then subtract the fee: 320−100 = 220.",
+          solveBeat: {
+            who: "producer",
+            en: "VIP revenue verified. Launch the headliner!",
           },
-        ];
+        },
+      ],
+    },
+  ],
 
-        var state = { act1: false, act2: false, final: false };
-        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
-        function $(id) {
-          return document.getElementById(id);
-        }
-        function qa(sel, root) {
-          return Array.prototype.slice.call(
-            (root || document).querySelectorAll(sel),
-          );
-        }
+  glossary: [
+    {
+      ico: "❮❯",
+      en: "Power",
+      def: "An expression of the form base^exponent representing repeated multiplication. 4³ = 4×4×4 = 64.",
+    },
+    {
+      ico: "🔢",
+      en: "Base",
+      def: "The factor being repeatedly multiplied in a power. In 2⁴, the base is 2.",
+    },
+    {
+      ico: "⬆️",
+      en: "Exponent",
+      def: "The count of how many times the base is used as a factor. In 2⁴, the exponent 4 means 2×2×2×2.",
+    },
+    {
+      ico: "🧮",
+      en: "Order of operations",
+      def: "Evaluate in order: grouping symbols, then exponents, then multiply/divide left to right, then add/subtract left to right.",
+    },
+    {
+      ico: "📝",
+      en: "Algebraic expression",
+      def: "A combination of numbers, variables, and operations with no equals sign, such as 2(5d + 50).",
+    },
+    {
+      ico: "🏷️",
+      en: "Variable",
+      def: "A symbol that represents an unknown or changing quantity, such as n or d.",
+    },
+    {
+      ico: "✕",
+      en: "Coefficient",
+      def: "The numerical factor multiplied by a variable. In 3n, the coefficient is 3.",
+    },
+    {
+      ico: "➕",
+      en: "Term",
+      def: "A single number, variable, or product separated by + or −. In 3n + 2 the terms are 3n and 2.",
+    },
+    {
+      ico: "()",
+      en: "Grouping symbols",
+      def: "Parentheses or brackets that tell you to evaluate what is inside first, e.g. (6 − 2)².",
+    },
+    {
+      ico: "▢",
+      en: "Distributive property",
+      def: "a(b + c) = ab + ac. So 2(5d + 50) = 10d + 100, doubling every part inside.",
+    },
+  ],
 
-        function updateProgress() {
-          var done =
-            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
-          var pct = Math.round((done / 3) * 100);
-          $("bar").style.width = pct + "%";
-          $("plabel").textContent = pct + "%";
-          document
-            .querySelector(".progress")
-            .setAttribute("aria-valuenow", pct);
-        }
-        function setLock(tabId, locked) {
-          var t = $(tabId);
-          t.classList.toggle("locked", locked);
-          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
-          t.innerHTML =
-            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
-        }
-        function refreshLocks() {
-          setLock("tab-act2", !state.act1);
-          setLock("tab-final", !state.act2);
-          $("lock-act2").classList.toggle("show", !state.act1);
-          $("body-act2").style.display = state.act1 ? "" : "none";
-          $("lock-final").classList.toggle("show", !state.act2);
-          $("body-final").style.display = state.act2 ? "" : "none";
-        }
-        function showScene(name) {
-          SCENES.forEach(function (s) {
-            var sc = $("scene-" + s);
-            if (sc) sc.classList.toggle("active", s === name);
-            var tab = $("tab-" + s);
-            if (tab)
-              tab.setAttribute("aria-selected", s === name ? "true" : "false");
-          });
-          $("scene-complete").classList.remove("active", "show");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        function showComplete() {
-          SCENES.forEach(function (s) {
-            var sc = $("scene-" + s);
-            if (sc) sc.classList.remove("active");
-          });
-          qa(".tab").forEach(function (t) {
-            t.setAttribute("aria-selected", "false");
-          });
-          $("scene-complete").classList.add("active", "show");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        qa(".tab").forEach(function (tab) {
-          tab.addEventListener("click", function () {
-            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
-          });
-          tab.addEventListener("keydown", function (e) {
-            var arr = qa(".tab");
-            var i = arr.indexOf(tab);
-            if (e.key === "ArrowRight") {
-              e.preventDefault();
-              (arr[i + 1] || arr[0]).focus();
-            }
-            if (e.key === "ArrowLeft") {
-              e.preventDefault();
-              (arr[i - 1] || arr[arr.length - 1]).focus();
-            }
-          });
-        });
+  complete: {
+    art: "celebration.png",
+    alt: "Mika celebrates with arms raised as the festival crowd cheers under fireworks and lights",
+    badge: "🎉🎤⭐",
+    titleEn: "Headliner Live — Show Complete!",
+    en: "The Neon Pulse Festival is fully online. You evaluated <b>powers and exponents</b> to charge the grid, applied the <b>order of operations</b> to multi-step budgets, and <b>wrote algebraic expressions</b> to model crews, costs, and revenue. The crowd is roaring. Command logged a commendation, Producer Mika.",
+    es: "",
+    master: {
+      headingEn: "Prove your rank to certify your Master Certificate!",
+      promptEn:
+        "Festival amplifier: Evaluate the multi-variable algebraic expression <strong>2x² - 3y</strong> when <strong>x = 3 and y = 2</strong>.",
+      promptEs: "",
+      choices: [
+        {
+          en: "A) 6 &nbsp;(calculated 2 × 3 × 2 − 6)",
+          correct: false,
+        },
+        {
+          en: "B) 12 &nbsp;(2(3²) − 3(2) = 18 − 6 = 12) &nbsp;✅",
+          correct: true,
+        },
+        {
+          en: "C) 30 &nbsp;(calculated (2 × 3)² − 6)",
+          correct: false,
+        },
+      ],
+      goodEn:
+        "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟",
+      badEn:
+        "❌ That is incorrect. Review your calculations and try another option!",
+      certifyTitle: "🏆 Master Certified: Mission Complete!",
+    },
+  },
+};
 
-        function runDialogue(opts) {
-          var idx = 0,
-            dlgBox = $(opts.dlgId),
-            nextBtn = $(opts.nextId),
-            dots = $(opts.dotsId);
-          dots.innerHTML = "";
-          opts.dlg.forEach(function () {
-            dots.appendChild(document.createElement("i"));
-          });
-          function render() {
-            var line = opts.dlg[idx];
-            dlgBox.innerHTML =
-              '<div class="bubble' +
-              (line.cap ? " caption" : "") +
-              '"><div class="who">' +
-              line.who +
-              '</div><div class="en">' +
-              line.en +
-              "</div></div>";
-            qa("i", dots).forEach(function (d, k) {
-              d.classList.toggle("on", k <= idx);
-            });
-            nextBtn.textContent =
-              idx === opts.dlg.length - 1
-                ? opts.lastLabel || "Continue ▶"
-                : "Next ▶";
-          }
-          nextBtn.onclick = function () {
-            if (idx < opts.dlg.length - 1) {
-              idx++;
-              render();
-            } else if (opts.onDone) opts.onDone();
-          };
-          render();
-        }
-
-        function wireChoices(opts) {
-          var solved = false;
-          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
-            btn.addEventListener("click", function () {
-              if (solved) return;
-              var fb = $(opts.feedbackId);
-              if (btn.dataset.correct === "true") {
-                solved = true;
-                btn.classList.add("correct");
-                fb.className = "feedback show good";
-                fb.innerHTML = opts.goodEn;
-                qa(".choice", $(opts.choicesId)).forEach(function (b) {
-                  b.disabled = true;
-                });
-                if (opts.onSolve) opts.onSolve();
-              } else {
-                btn.classList.add("wrong");
-                btn.disabled = true;
-                fb.className = "feedback show bad";
-                fb.innerHTML = opts.badEn;
-              }
-            });
-          });
-        }
-
-        (function () {
-          var list = $("gloss-list");
-          GLOSS.forEach(function (g) {
-            var d = document.createElement("div");
-            d.className = "term";
-            d.innerHTML =
-              '<div class="ico">' +
-              g.ico +
-              "</div><div><h3>" +
-              g.en +
-              "</h3><p>" +
-              g.def +
-              "</p></div>";
-            list.appendChild(d);
-          });
-        })();
-
-        function showBubble(boxId, line) {
-          $(boxId).innerHTML =
-            '<div class="bubble' +
-            (line.cap ? " caption" : "") +
-            '"><div class="who">' +
-            line.who +
-            '</div><div class="en">' +
-            line.en +
-            "</div></div>";
-        }
-
-        function initAct1() {
-          runDialogue({
-            dlgId: "dlg-act1",
-            nextId: "next-act1",
-            dotsId: "dots-act1",
-            dlg: DLG.act1,
-            lastLabel: "Decrypt ▶",
-            onDone: function () {
-              $("next-act1").style.display = "none";
-              $("chal1a").style.display = "block";
-              $("chal1a").scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            },
-          });
-          wireChoices({
-            choicesId: "choices1a",
-            feedbackId: "fb1a",
-            goodEn:
-              "&#9989; Correct. 4&sup3; = 4&times;4&times;4 = 64. Amplifier array decrypted.",
-            badEn:
-              "&#10060; An exponent is repeated multiplication. 4&sup3; = 4&times;4&times;4 = 64, not 4&times;3 and not 4&sup2;.",
-            onSolve: function () {
-              setTimeout(function () {
-                showBubble("dlg-act1", DLG.act1b[0]);
-                $("chal1b").style.display = "block";
-              }, 450);
-            },
-          });
-          wireChoices({
-            choicesId: "choices1b",
-            feedbackId: "fb1b",
-            goodEn:
-              "&#9989; Sharp. 2&#8308; = 16 first, then 16&times;3 = 48. Only the 2 is raised, not the whole product. SPEAKER GRID ONLINE!",
-            badEn:
-              "&#10060; Evaluate the exponent before multiplying: 2&#8308; = 16, then &times;3. Only the base 2 is raised to the 4th.",
-            onSolve: function () {
-              $("art-act1").src = "../_art/unit6/stage-lit.png";
-              $("art-act1").alt =
-                "The stage blazes to life with lights and lasers as Mika powers the grid";
-              // CORE locks done -> reveal advance (bonus is optional and does NOT gate)
-              $("adv-act1").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act1", DLG.bonus1[0]);
-                $("bonus1").style.display = "block";
-              }, 450);
-            },
-          });
-          wireChoices({
-            choicesId: "choicesB1",
-            feedbackId: "fbB1",
-            goodEn:
-              "&#11088; Nice. 2&sup3; + 3&sup2; = 8 + 9 = 17. Encore battery charged &mdash; bonus cleared.",
-            badEn:
-              "&#10060; Evaluate each power separately, then add: 2&sup3; = 8 and 3&sup2; = 9, so 8 + 9 = 17.",
-            onSolve: function () {
-              /* optional: no gating, advance already shown */
-            },
-          });
-          $("adv-act1").addEventListener("click", function () {
-            state.act1 = true;
-            updateProgress();
-            refreshLocks();
-            showScene("act2");
-          });
-        }
-
-        function initAct2() {
-          runDialogue({
-            dlgId: "dlg-act2",
-            nextId: "next-act2",
-            dotsId: "dots-act2",
-            dlg: DLG.act2,
-            lastLabel: "Evaluate ▶",
-            onDone: function () {
-              $("next-act2").style.display = "none";
-              $("chal2a").style.display = "block";
-              $("chal2a").scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            },
-          });
-          wireChoices({
-            choicesId: "choices2a",
-            feedbackId: "fb2a",
-            goodEn:
-              "&#9989; Exactly. (6&minus;2)=4, 4&sup2;=16, 3&times;16=48, then 4+48 = 52. Budget locked.",
-            badEn:
-              "&#10060; Follow the order: do the parentheses, then square, then multiply, then add. (6&minus;2)&sup2; = 16, 3&times;16 = 48, 4+48 = 52.",
-            onSolve: function () {
-              setTimeout(function () {
-                showBubble("dlg-act2", DLG.act2b[0]);
-                $("chal2b").style.display = "block";
-              }, 450);
-            },
-          });
-          wireChoices({
-            choicesId: "choices2b",
-            feedbackId: "fb2b",
-            goodEn:
-              "&#9989; Right. One stage costs 5d + 50, and two identical stages double the whole package: 2(5d + 50). LIGHTING ORDER PLACED!",
-            badEn:
-              "&#10060; Both the lights and the fee belong to one stage, and BOTH double. Group the per-stage cost first: 2(5d + 50).",
-            onSolve: function () {
-              // CORE locks done -> reveal advance; bonus stays optional
-              $("adv-act2").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act2", DLG.bonus2[0]);
-                $("bonus2").style.display = "block";
-              }, 450);
-            },
-          });
-          wireChoices({
-            choicesId: "choicesB2",
-            feedbackId: "fbB2",
-            goodEn:
-              "&#11088; Yes. 3 crew for each of n acts is 3n, plus the 2 solo performers: 3n + 2. Manifest complete &mdash; bonus cleared.",
-            badEn:
-              "&#10060; The 3 crew attach to EACH act, so that part is 3n. The 2 solos are a separate constant: 3n + 2.",
-            onSolve: function () {
-              /* optional: no gating */
-            },
-          });
-          $("adv-act2").addEventListener("click", function () {
-            state.act2 = true;
-            updateProgress();
-            refreshLocks();
-            showScene("final");
-          });
-        }
-
-        function initFinal() {
-          runDialogue({
-            dlgId: "dlg-final",
-            nextId: "next-final",
-            dotsId: "dots-final",
-            dlg: DLG.final,
-            lastLabel: "Enter override ▶",
-            onDone: function () {
-              $("next-final").style.display = "none";
-              $("chalF").style.display = "block";
-              $("chalF").scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            },
-          });
-          wireChoices({
-            choicesId: "choicesF",
-            feedbackId: "fbF",
-            goodEn:
-              "&#9989; Override accepted. 3&sup3;=27, (8&minus;3)=5, 2&times;5=10, then 27+10 = 37. Master grid is yours.",
-            badEn:
-              "&#10060; One step slipped. 3&sup3; = 27 (not 9), then (8&minus;3)=5, 2&times;5=10, and finally 27+10 = 37.",
-            onSolve: function () {
-              // CORE lock done -> reveal advance; final bonus is optional
-              $("adv-final").classList.add("show");
-              setTimeout(function () {
-                $("bonusF").style.display = "block";
-              }, 350);
-            },
-          });
-          wireChoices({
-            choicesId: "choicesBF",
-            feedbackId: "fbBF",
-            goodEn:
-              "&#11088; Clean cipher. 4&sup3;=64, 64&times;5=320, 320&minus;100 = 220. VIP revenue verified &mdash; bonus cleared!",
-            badEn:
-              "&#10060; Multiply before subtracting: 4&sup3;=64, 64&times;5=320, then subtract the fee: 320&minus;100 = 220.",
-            onSolve: function () {
-              /* optional: no gating */
-            },
-          });
-          $("adv-final").addEventListener("click", function () {
-            state.final = true;
-            updateProgress();
-            showComplete();
-          });
-        }
-
-        $("start-btn").addEventListener("click", function () {
-          showScene("act1");
-        });
-        $("restart-btn").addEventListener("click", function () {
-          location.reload();
-        });
-
-        initAct1();
-        initAct2();
-        initFinal();
-        
-        // Programmatic Master Challenge Wiring
-        (function() {
-          var solved = false;
-          var btnList = document.querySelectorAll("#choicesComplete .choice");
-          var fb = document.getElementById("fbComplete");
-          
-          btnList.forEach(function(btn) {
-            btn.addEventListener("click", function() {
-              if (solved) return;
-              var correct = btn.getAttribute("data-correct") === "true";
-              if (correct) {
-                solved = true;
-                btn.classList.add("correct");
-                fb.className = "feedback show good";
-                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
-                btnList.forEach(function(b) { b.disabled = true; });
-                
-                var h2 = document.querySelector("#scene-complete h2");
-                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
-              } else {
-                btn.classList.add("wrong");
-                btn.disabled = true;
-                fb.className = "feedback show bad";
-                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
-              }
-            });
-          });
-        })();
-
-        refreshLocks();
-        updateProgress();
-      })();
     </script>
-    
-      <script src="/teacher-tools/nt-results.js"></script>
-<script>
-/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+    <script>
+/* ===========================================================================
+   Neft Teacher · Graphic-Novel Engine  ·  gn-engine.js
+   Renders a STORY object (window.GN_STORY) into a panel-based, dialogue-driven
+   comic. One engine, 20 novels. No build step needed at runtime; fully offline.
+
+   STORY shape is documented in story.schema.md. Key contracts preserved for the
+   existing Neft results pipeline (do NOT rename):
+     • each math choice group is a .choices container holding .choice buttons
+     • a solved choice's correct button gets class "correct"
+     • the master-rank group has id="choicesComplete" (excluded from scoring)
+     • the finish scene is #scene-complete and gets classes show/active when done
+   The nt-results.js tracker at the bottom of each file reads exactly those.
+   =========================================================================== */
 (function () {
   "use strict";
-  var FIRED = false; // dedupe guard: record once per completion
-  var complete = document.getElementById("scene-complete");
-  if (!complete || typeof NTResults === "undefined") return;
-
-  function studentName() {
-    try {
-      var k = "nt_gn_student";
-      var n = localStorage.getItem(k);
-      if (n && n.trim()) return n.trim();
-      n = window.prompt("Type your name so your teacher can see you finished:", "");
-      n = (n || "").trim();
-      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
-      return n || "Student";
-    } catch (e) { return "Student"; }
+  var S = window.GN_STORY;
+  if (!S) {
+    console.error("GN: window.GN_STORY missing");
+    return;
   }
 
-  function score() {
-    // Core math choice-points = all .choices groups except the bonus one.
-    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
-      .filter(function (g) { return g.id !== "choicesComplete"; });
-    var total = groups.length || 0;
-    var correct = groups.filter(function (g) {
-      return g.querySelector(".choice.correct");
-    }).length;
-    return { correct: correct, total: total };
+  /* ---------- tiny helpers ---------- */
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function $(id) {
+    return document.getElementById(id);
+  }
+  function art(file) {
+    return (S.meta.artBase || "") + file;
+  }
+  function txt(v) {
+    return v == null ? "" : v;
   }
 
-  function savedNote() {
-    if (document.getElementById("nt-saved-note")) return;
-    var p = document.createElement("p");
-    p.id = "nt-saved-note";
-    p.setAttribute("role", "status");
-    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
-    p.textContent = "✓ Results saved for your teacher.";
-    complete.insertBefore(p, complete.querySelector(".restart") || null);
-  }
-
-  function record() {
-    if (FIRED) return;
-    FIRED = true;
-    var s = score();
-    try {
-      NTResults.finish({
-        student: studentName(),
-        assessment: "Graphic Novel U6 #2: Festival Producer: Power Up the Show",
-        standard: "6.EE.2c",
-        level: "2",
-        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
-        correct: s.correct,
-        total: s.total,
-        download: false, // log only; teacher pulls the class set
+  /* ---------- theme + document chrome ---------- */
+  function applyTheme() {
+    document.documentElement.lang = "en";
+    document.title =
+      "Graphic Novel #" + S.meta.version + " · " + stripTags(S.meta.title);
+    if (S.meta.theme) {
+      var r = document.documentElement;
+      Object.keys(S.meta.theme).forEach(function (k) {
+        r.style.setProperty(k, S.meta.theme[k]);
       });
-    } catch (e) { /* non-fatal */ }
-    savedNote();
+    }
+  }
+  function stripTags(s) {
+    return String(s).replace(/<[^>]+>/g, "");
   }
 
-  // Fire when the completion scene becomes visible (show/active class added).
-  function visible() {
-    return complete.classList.contains("show") || complete.classList.contains("active");
+  /* ---------- speaker rendering (optional avatar slot) ---------- */
+  function speaker(id) {
+    return (
+      (S.cast && S.cast[id]) || { name: id, color: "#c2461d", avatar: null }
+    );
   }
-  if (visible()) record();
-  var mo = new MutationObserver(function () { if (visible()) record(); });
-  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+  function whoTag(spkId, isMe) {
+    var c = speaker(spkId);
+    var inner;
+    if (c.avatar) {
+      inner =
+        '<span class="av"><img src="' + art(c.avatar) + '" alt="" /></span>';
+    } else {
+      var initial = (c.tagIcon || c.name.charAt(0)).toString();
+      inner = '<span class="av" aria-hidden="true">' + initial + "</span>";
+    }
+    return (
+      '<span class="who" style="--spk:' +
+      (c.color || "#c2461d") +
+      '">' +
+      inner +
+      "<span>" +
+      c.name +
+      "</span>" +
+      (isMe || c.role === "protagonist"
+        ? '<span class="me">· YOU</span>'
+        : "") +
+      "</span>"
+    );
+  }
+
+  /* ---------- vocab markup: wrap term occurrences with a tappable tag ----------
+     A beat/challenge may carry vocab:[{term,en,es}]. We wrap the FIRST literal
+     occurrence of term in the English text. Definitions open in a popover. */
+  var VOCAB_STORE = [];
+  function injectVocab(htmlEn, vocab) {
+    if (!vocab || !vocab.length) return htmlEn;
+    vocab.forEach(function (v) {
+      var i = VOCAB_STORE.push(v) - 1;
+      var re = new RegExp("(" + escapeRe(v.term) + ")", "i");
+      htmlEn = htmlEn.replace(
+        re,
+        '<button type="button" class="vocab-tag" data-vocab="' +
+          i +
+          '" aria-label="Definition of ' +
+          stripTags(v.term) +
+          '">$1</button>',
+      );
+    });
+    return htmlEn;
+  }
+  function escapeRe(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  /* ---------- popover (vocab + callout) ---------- */
+  function openPop(anchor, title, en, es) {
+    closePop();
+    var back = el("div", "gn-pop-back");
+    back.id = "gn-pop-back";
+    back.addEventListener("click", closePop);
+    var p = el("div", "gn-pop");
+    p.id = "gn-pop";
+    p.setAttribute("role", "dialog");
+    p.setAttribute("aria-label", stripTags(title || "Definition"));
+    p.innerHTML =
+      '<button class="x" aria-label="Close">&times;</button>' +
+      (title ? "<h4>" + title + "</h4>" : "") +
+      '<div class="en">' +
+      en +
+      "</div>" +
+      (es ? '<div class="es">' + es + "</div>" : "");
+    document.body.appendChild(back);
+    document.body.appendChild(p);
+    p.querySelector(".x").addEventListener("click", closePop);
+    // position near anchor, clamped to viewport
+    var r = anchor.getBoundingClientRect();
+    var pw = Math.min(280, window.innerWidth - 20);
+    p.style.width = pw + "px";
+    var left = Math.min(Math.max(10, r.left), window.innerWidth - pw - 10);
+    var top = r.bottom + 8;
+    if (top + p.offsetHeight > window.innerHeight - 10) {
+      top = Math.max(10, r.top - p.offsetHeight - 8);
+    }
+    p.style.left = left + "px";
+    p.style.top = top + "px";
+    p.querySelector(".x").focus();
+  }
+  function closePop() {
+    var a = $("gn-pop"),
+      b = $("gn-pop-back");
+    if (a) a.remove();
+    if (b) b.remove();
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closePop();
+  });
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest && e.target.closest(".vocab-tag");
+    if (t) {
+      var v = VOCAB_STORE[+t.dataset.vocab];
+      if (v) openPop(t, v.term, v.en, v.es);
+    }
+  });
+
+  /* ---------- bubble builder ---------- */
+  function bubble(beat) {
+    var c = speaker(beat.who);
+    var isCap = c.role === "narrator" || beat.caption;
+    var pos = beat.pos || (c.role === "protagonist" ? "right" : "left");
+    var b = el(
+      "div",
+      "bubble " +
+        pos +
+        (isCap ? " caption" : "") +
+        (beat.misconception ? " misc" : ""),
+    );
+    var en = injectVocab(txt(beat.en), beat.vocab);
+    b.innerHTML =
+      whoTag(beat.who) +
+      '<div class="en">' +
+      en +
+      "</div>" +
+      (beat.es ? '<div class="es">' + beat.es + "</div>" : "");
+    return b;
+  }
+
+  /* =========================================================================
+     BUILD DOM
+     ========================================================================= */
+  var SCENE_IDS = []; // cover, act ids..., gloss
+
+  function build() {
+    applyTheme();
+    document.body.appendChild(buildTopbar());
+    var main = el("main");
+    main.appendChild(buildCover());
+    S.acts.forEach(function (act, i) {
+      main.appendChild(buildAct(act, i));
+    });
+    main.appendChild(buildComplete());
+    main.appendChild(buildGloss());
+    document.body.appendChild(main);
+    wireTabs();
+    buildGlossList();
+    refreshLocks();
+    updateProgress();
+    showScene("cover");
+  }
+
+  function buildTopbar() {
+    var bar = el("div", "topbar");
+    var inner = el("div", "topbar-inner");
+    inner.innerHTML =
+      '<a class="home" href="' +
+      (S.meta.home || "../index.html") +
+      '">&#8592; Home</a>' +
+      '<span class="title"><span class="v">#' +
+      S.meta.version +
+      "</span> " +
+      S.meta.title +
+      "</span>" +
+      '<div class="progress-wrap"><div class="progress" role="progressbar" ' +
+      'aria-label="Mission progress" aria-valuemin="0" aria-valuemax="100" ' +
+      'aria-valuenow="0"><i id="bar"></i></div>' +
+      '<span class="progress-label" id="plabel">0%</span></div>' +
+      '<button class="txtsize" id="txtsize" aria-label="Change text size" ' +
+      'title="Text size">A+</button>';
+    bar.appendChild(inner);
+
+    var tabs = el("div", "tabs");
+    tabs.setAttribute("role", "tablist");
+    tabs.setAttribute("aria-label", "Chapters");
+    tabs.appendChild(tabBtn("cover", "Cover", false));
+    S.acts.forEach(function (a, i) {
+      tabs.appendChild(tabBtn(a.id, a.tab, i > 0));
+    });
+    tabs.appendChild(tabBtn("gloss", "Glossary", false));
+    bar.appendChild(tabs);
+    return bar;
+  }
+  function tabBtn(scene, label, locked) {
+    var b = el("button", "tab" + (locked ? " locked" : ""));
+    b.id = "tab-" + scene;
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", scene === "cover" ? "true" : "false");
+    b.dataset.scene = scene;
+    b.dataset.label = label;
+    b.innerHTML = (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+    return b;
+  }
+
+  function buildCover() {
+    var s = el("section", "scene active cover-card");
+    s.id = "scene-cover";
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-labelledby", "tab-cover");
+    SCENE_IDS.push("cover");
+    var cv = S.cover;
+    var castChips = "";
+    Object.keys(S.cast || {}).forEach(function (k) {
+      var c = S.cast[k];
+      if (c.role === "narrator") return;
+      var av = c.avatar
+        ? '<span class="av" style="background:' +
+          c.color +
+          '"><img src="' +
+          art(c.avatar) +
+          '" alt=""></span>'
+        : '<span class="av" style="background:' +
+          c.color +
+          '">' +
+          (c.tagIcon || c.name.charAt(0)) +
+          "</span>";
+      castChips +=
+        '<span class="cast-chip">' +
+        av +
+        "<b>" +
+        c.name +
+        "</b> <span>" +
+        (c.blurb || c.role) +
+        "</span></span>";
+    });
+    s.innerHTML =
+      '<div class="panel"><img src="' +
+      art(cv.art) +
+      '" alt="' +
+      txt(cv.alt) +
+      '"></div>' +
+      '<span class="level-pill">Graphic Novel #' +
+      S.meta.version +
+      " &middot; " +
+      S.meta.level +
+      "</span>" +
+      "<h2>" +
+      S.meta.title +
+      "</h2>" +
+      "<p>" +
+      cv.blurbEn +
+      "</p>" +
+      (cv.blurbEs
+        ? '<p style="font-size:0.92rem"><i>' + cv.blurbEs + "</i></p>"
+        : "") +
+      '<div class="cast-row">' +
+      castChips +
+      "</div>" +
+      '<button class="start" id="start-btn">' +
+      (cv.startLabel || "Start &#128640;") +
+      "</button>";
+    s.querySelector("#start-btn").addEventListener("click", function () {
+      showScene(S.acts[0].id);
+    });
+    return s;
+  }
+
+  function buildAct(act, idx) {
+    var s = el("section", "scene");
+    s.id = "scene-" + act.id;
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-labelledby", "tab-" + act.id);
+    SCENE_IDS.push(act.id);
+
+    var lock = el("div", "locked-note");
+    lock.id = "lock-" + act.id;
+    lock.innerHTML =
+      "&#128274; Finish the previous chapter to unlock " +
+      stripTags(act.title) +
+      ".";
+    s.appendChild(lock);
+
+    var body = el("div");
+    body.id = "body-" + act.id;
+    body.innerHTML =
+      '<div class="scene-head"><span class="act">' +
+      act.kicker +
+      "</span><h2>" +
+      act.title +
+      "</h2></div>" +
+      '<div class="panel" id="panel-' +
+      act.id +
+      '">' +
+      '<img id="art-' +
+      act.id +
+      '" src="" alt="">' +
+      '<div class="speech" id="speech-' +
+      act.id +
+      '" aria-live="polite"></div></div>' +
+      '<div class="dlg-row"><div class="dots" id="dots-' +
+      act.id +
+      '"></div>' +
+      '<button class="next" id="next-' +
+      act.id +
+      '">Next &#9654;</button></div>' +
+      '<div id="chal-' +
+      act.id +
+      '"></div>' +
+      '<div class="scene-foot"><button class="advance" id="adv-' +
+      act.id +
+      '">' +
+      (act.advanceLabel || "Continue &#9654;") +
+      "</button></div>";
+    s.appendChild(body);
+    return s;
+  }
+
+  function buildComplete() {
+    var s = el("section", "scene complete");
+    s.id = "scene-complete";
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-label", "Mission complete");
+    var cp = S.complete;
+    var html =
+      '<div class="panel"><img src="' +
+      art(cp.art) +
+      '" alt="' +
+      txt(cp.alt) +
+      '"></div>' +
+      '<span class="badge-done">' +
+      (cp.badge || "&#127881;") +
+      "</span>" +
+      "<h2>" +
+      (cp.titleEn || "Mission Complete!") +
+      "</h2>" +
+      "<p>" +
+      cp.en +
+      "</p>" +
+      '<p style="color:var(--muted);font-size:0.92rem"><i>' +
+      cp.es +
+      "</i></p>";
+    if (cp.master) {
+      var m = cp.master,
+        ch = "";
+      m.choices.forEach(function (c) {
+        ch +=
+          '<button class="choice" data-correct="' +
+          !!c.correct +
+          '">' +
+          c.en +
+          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+          "</button>";
+      });
+      html +=
+        '<div class="challenge bonus" id="chalComplete">' +
+        '<span class="bonus-tag">&#127942; MASTER RANK CHALLENGE</span>' +
+        "<h3>" +
+        (m.headingEn || "Prove your rank!") +
+        "</h3>" +
+        '<p class="prompt">' +
+        m.promptEn +
+        '<span class="es">' +
+        m.promptEs +
+        "</span></p>" +
+        '<div class="choices" id="choicesComplete">' +
+        ch +
+        "</div>" +
+        '<div class="feedback" id="fbComplete"></div></div>';
+    }
+    html +=
+      '<button class="restart" id="restart-btn">Play again &#8635;</button>';
+    s.innerHTML = html;
+    return s;
+  }
+
+  function buildGloss() {
+    var s = el("section", "scene");
+    s.id = "scene-gloss";
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-labelledby", "tab-gloss");
+    SCENE_IDS.push("gloss");
+    s.innerHTML =
+      '<div class="scene-head"><span class="act">Reference</span>' +
+      "<h2>Glossary &middot; Word Bank</h2></div>" +
+      '<div class="gloss" id="gloss-list"></div>';
+    return s;
+  }
+  function buildGlossList() {
+    var list = $("gloss-list");
+    (S.glossary || []).forEach(function (g) {
+      var d = el("div", "term");
+      d.innerHTML =
+        '<div class="ico">' +
+        g.ico +
+        "</div><div><h3>" +
+        g.en +
+        ' <span class="es-term">(' +
+        g.es +
+        ")</span></h3><p>" +
+        g.def +
+        "</p></div>";
+      list.appendChild(d);
+    });
+  }
+
+  /* =========================================================================
+     STATE + NAVIGATION
+     ========================================================================= */
+  var state = {};
+  S.acts.forEach(function (a) {
+    state[a.id] = false;
+  });
+
+  function updateProgress() {
+    var done = 0;
+    S.acts.forEach(function (a) {
+      if (state[a.id]) done++;
+    });
+    var pct = Math.round((done / S.acts.length) * 100);
+    $("bar").style.width = pct + "%";
+    $("plabel").textContent = pct + "%";
+    document.querySelector(".progress").setAttribute("aria-valuenow", pct);
+  }
+
+  function refreshLocks() {
+    S.acts.forEach(function (a, i) {
+      if (i === 0) return;
+      var prevDone = state[S.acts[i - 1].id];
+      setLock("tab-" + a.id, !prevDone, a.tab);
+      $("lock-" + a.id).classList.toggle("show", !prevDone);
+      $("body-" + a.id).style.display = prevDone ? "" : "none";
+    });
+  }
+  function setLock(tabId, locked, label) {
+    var t = $(tabId);
+    if (!t) return;
+    t.classList.toggle("locked", locked);
+    t.innerHTML = (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+  }
+
+  function showScene(name) {
+    SCENE_IDS.forEach(function (s) {
+      var sc = $("scene-" + s);
+      if (sc) sc.classList.toggle("active", s === name);
+      var tab = $("tab-" + s);
+      if (tab) tab.setAttribute("aria-selected", s === name ? "true" : "false");
+    });
+    var cmp = $("scene-complete");
+    cmp.classList.remove("active", "show");
+    // (re)start the act's flow when entered
+    var act = findAct(name);
+    if (act && state.__started !== name) {
+      state.__started = name;
+      runAct(act);
+    }
+    closePop();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  function findAct(id) {
+    for (var i = 0; i < S.acts.length; i++)
+      if (S.acts[i].id === id) return S.acts[i];
+    return null;
+  }
+  function showComplete() {
+    SCENE_IDS.forEach(function (s) {
+      var sc = $("scene-" + s);
+      if (sc) sc.classList.remove("active");
+    });
+    document.querySelectorAll(".tab").forEach(function (t) {
+      t.setAttribute("aria-selected", "false");
+    });
+    var c = $("scene-complete");
+    c.classList.add("active", "show");
+    wireMaster();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function wireTabs() {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        if (tab.classList.contains("locked")) return;
+        showScene(tab.dataset.scene);
+      });
+      tab.addEventListener("keydown", function (e) {
+        var i = tabs.indexOf(tab);
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          (tabs[i + 1] || tabs[0]).focus();
+        }
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          (tabs[i - 1] || tabs[tabs.length - 1]).focus();
+        }
+      });
+    });
+    $("txtsize").addEventListener("click", cycleTextSize);
+    $("restart-btn") &&
+      $("restart-btn").addEventListener("click", function () {
+        location.reload();
+      });
+  }
+  function cycleTextSize() {
+    var order = ["", "lg", "xl"],
+      cur = document.body.dataset.text || "";
+    var nxt = order[(order.indexOf(cur) + 1) % order.length];
+    if (nxt) document.body.dataset.text = nxt;
+    else delete document.body.dataset.text;
+    $("txtsize").textContent = nxt === "lg" ? "A++" : nxt === "xl" ? "A" : "A+";
+  }
+
+  /* =========================================================================
+     ACT RUNNER — plays an act's ordered steps:
+       { type:"beats", art, alt, beats:[...] }   → panel + sequential bubbles
+       { type:"challenge", ... }                 → voiced math, reply choices
+     ========================================================================= */
+  function runAct(act) {
+    var stepIdx = 0;
+    var imgEl = $("art-" + act.id);
+    var speechEl = $("speech-" + act.id);
+    var dotsEl = $("dots-" + act.id);
+    var nextBtn = $("next-" + act.id);
+    var chalHost = $("chal-" + act.id);
+    var advBtn = $("adv-" + act.id);
+    chalHost.innerHTML = "";
+
+    function clearCallouts() {
+      Array.prototype.slice
+        .call($("panel-" + act.id).querySelectorAll(".callout"))
+        .forEach(function (c) {
+          c.remove();
+        });
+    }
+    function setArt(file, alt) {
+      if (file) {
+        imgEl.src = art(file);
+        imgEl.alt = txt(alt);
+      }
+    }
+
+    function playStep() {
+      var step = act.steps[stepIdx];
+      if (!step) {
+        advBtn.classList.add("show");
+        return;
+      }
+      if (step.type === "beats") playBeats(step);
+      else if (step.optional) playOptional(step);
+      else playChallenge(step);
+    }
+
+    /* ---- beats ---- */
+    function playBeats(step) {
+      setArt(step.art, step.alt);
+      clearCallouts();
+      nextBtn.style.display = "";
+      var bi = 0;
+      dotsEl.innerHTML = "";
+      step.beats.forEach(function () {
+        dotsEl.appendChild(el("i"));
+      });
+      function renderBeat() {
+        var beat = step.beats[bi];
+        speechEl.innerHTML = "";
+        speechEl.appendChild(bubble(beat));
+        if (beat.callout) addCallout(beat.callout);
+        Array.prototype.slice.call(dotsEl.children).forEach(function (d, k) {
+          d.classList.toggle("on", k <= bi);
+        });
+        var last = bi === step.beats.length - 1;
+        nextBtn.innerHTML = last
+          ? step.lastLabel || "Continue &#9654;"
+          : "Next &#9654;";
+      }
+      nextBtn.onclick = function () {
+        if (bi < step.beats.length - 1) {
+          bi++;
+          renderBeat();
+        } else {
+          stepIdx++;
+          playStep();
+        }
+      };
+      renderBeat();
+    }
+    function addCallout(co) {
+      var c = el("button", "callout", co.icon || "!");
+      c.style.left = (co.x || 50) + "%";
+      c.style.top = (co.y || 50) + "%";
+      c.setAttribute("aria-label", "Callout: " + stripTags(co.en));
+      c.addEventListener("click", function () {
+        openPop(c, co.title || "", co.en, co.es);
+      });
+      $("panel-" + act.id).appendChild(c);
+    }
+
+    /* ---- challenge: gating (must solve to advance) ---- */
+    function playChallenge(step) {
+      renderCard(step, false);
+      wireChoices(step, act, function () {
+        if (step.solveArt) setArt(step.solveArt, step.solveAlt);
+        if (step.solveBeat) {
+          speechEl.innerHTML = "";
+          speechEl.appendChild(bubble(step.solveBeat));
+        }
+        stepIdx++;
+        // small beat so the success feedback is read before the next panel
+        setTimeout(playStep, 400);
+      });
+    }
+
+    /* ---- challenge: optional bonus (does NOT gate; still scored) ----
+       Renders this and any consecutive optional steps, then reveals advance. */
+    function playOptional(step) {
+      renderCard(step, true);
+      wireChoices(step, act, function () {
+        if (step.solveBeat) {
+          speechEl.innerHTML = "";
+          speechEl.appendChild(bubble(step.solveBeat));
+        }
+      });
+      stepIdx++;
+      var nxt = act.steps[stepIdx];
+      if (nxt && nxt.optional) playOptional(nxt);
+      else advBtn.classList.add("show");
+    }
+
+    /* ---- shared challenge-card renderer ---- */
+    function renderCard(step, optional) {
+      if (step.art) setArt(step.art, step.alt);
+      clearCallouts();
+      nextBtn.style.display = "none";
+      dotsEl.innerHTML = "";
+      // the question is VOICED by a character, over the panel
+      if (step.ask) {
+        speechEl.innerHTML = "";
+        speechEl.appendChild(
+          bubble({
+            who: step.ask.who,
+            en: step.ask.en,
+            es: step.ask.es,
+            vocab: step.ask.vocab,
+            misconception: step.ask.misconception,
+            pos: step.ask.pos,
+          }),
+        );
+        if (step.ask.callout) addCallout(step.ask.callout);
+      }
+      var wrap = el("div", "challenge" + (optional ? " bonus" : ""));
+      wrap.id = "chal-" + act.id + "-" + step.id;
+      if (optional) {
+        wrap.innerHTML =
+          '<span class="bonus-tag">' +
+          (step.bonusTag || "&#11088; Bonus Challenge") +
+          "</span>" +
+          '<p class="prompt" style="font-size:0.82rem;color:var(--muted);' +
+          'margin:6px 0">Optional — try it or press the button to move on.</p>';
+      }
+      var tools = '<div class="chal-tools">';
+      if (step.hint) {
+        tools +=
+          '<button type="button" class="toolbtn" data-fold="hint-' +
+          step.id +
+          '" aria-expanded="false">&#128161; Need a hint?</button>';
+      }
+      if (step.frame) {
+        tools +=
+          '<button type="button" class="toolbtn" data-fold="coach-' +
+          step.id +
+          '" aria-expanded="false">&#9997;&#65039; Writing coach</button>';
+      }
+      tools += "</div>";
+      var folds = "";
+      if (step.hint) {
+        folds +=
+          '<div class="foldout" id="hint-' +
+          step.id +
+          '"><b>Hint:</b> ' +
+          step.hint.en +
+          (step.hint.es
+            ? '<div class="es" style="margin-top:6px;' +
+              'font-style:italic;color:#cdb89a">' +
+              step.hint.es +
+              "</div>"
+            : "") +
+          "</div>";
+      }
+      if (step.frame) {
+        folds +=
+          '<div class="foldout coach" id="coach-' +
+          step.id +
+          '"><b>Sentence frame:</b> ' +
+          step.frame.en +
+          (step.frame.es
+            ? '<div class="es" style="margin-top:6px;font-style:' +
+              'italic;color:#9fc0ef">' +
+              step.frame.es +
+              "</div>"
+            : "") +
+          "</div>";
+      }
+      var choices =
+        '<div class="reply-label">Choose your reply</div>' +
+        '<div class="choices" id="choices-' +
+        act.id +
+        "-" +
+        step.id +
+        '">';
+      step.choices.forEach(function (c) {
+        choices +=
+          '<button class="choice" data-correct="' +
+          !!c.correct +
+          '">' +
+          c.en +
+          (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
+          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+          "</button>";
+      });
+      choices += "</div>";
+      wrap.innerHTML +=
+        tools +
+        folds +
+        choices +
+        '<div class="feedback" id="fb-' +
+        act.id +
+        "-" +
+        step.id +
+        '"></div>';
+      chalHost.appendChild(wrap);
+      wrap.scrollIntoView({ behavior: "smooth", block: "center" });
+      wireFolds(wrap);
+    }
+
+    playStep();
+
+    /* advance button → unlock next chapter / finish */
+    advBtn.onclick = function () {
+      state[act.id] = true;
+      updateProgress();
+      refreshLocks();
+      var i = S.acts.indexOf(act);
+      if (i < S.acts.length - 1) showScene(S.acts[i + 1].id);
+      else showComplete();
+    };
+  }
+
+  function wireFolds(root) {
+    Array.prototype.slice
+      .call(root.querySelectorAll(".toolbtn"))
+      .forEach(function (b) {
+        b.addEventListener("click", function () {
+          var f = $(b.dataset.fold);
+          var open = f.classList.toggle("show");
+          b.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+      });
+  }
+
+  function wireChoices(step, act, onSolve) {
+    var groupId = "choices-" + act.id + "-" + step.id;
+    var fbId = "fb-" + act.id + "-" + step.id;
+    var solved = false;
+    Array.prototype.slice
+      .call($(groupId).querySelectorAll(".choice"))
+      .forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (solved) return;
+          var correct = btn.dataset.correct === "true";
+          var fb = $(fbId);
+          if (correct) {
+            solved = true;
+            btn.classList.add("correct");
+            fb.className = "feedback show good";
+            fb.innerHTML =
+              step.goodEn +
+              (step.goodEs
+                ? '<span class="es">' + step.goodEs + "</span>"
+                : "");
+            Array.prototype.slice
+              .call($(groupId).querySelectorAll(".choice"))
+              .forEach(function (b) {
+                b.disabled = true;
+              });
+            if (onSolve) onSolve();
+          } else {
+            btn.classList.add("wrong");
+            btn.disabled = true;
+            fb.className = "feedback show bad";
+            fb.innerHTML =
+              step.badEn +
+              (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
+          }
+        });
+      });
+  }
+
+  /* ---- master-rank challenge on the complete scene ---- */
+  function wireMaster() {
+    var group = $("choicesComplete");
+    if (!group || group.dataset.wired) return;
+    group.dataset.wired = "1";
+    var fb = $("fbComplete");
+    var solved = false;
+    var m = S.complete.master || {};
+    Array.prototype.slice
+      .call(group.querySelectorAll(".choice"))
+      .forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (solved) return;
+          var correct = btn.dataset.correct === "true";
+          if (correct) {
+            solved = true;
+            btn.classList.add("correct");
+            fb.className = "feedback show good";
+            fb.style.display = "block";
+            fb.innerHTML =
+              m.goodEn ||
+              "&#127942; <b>Master Rank Certified!</b> Perfect work! &#127775;";
+            Array.prototype.slice
+              .call(group.querySelectorAll(".choice"))
+              .forEach(function (b) {
+                b.disabled = true;
+              });
+            var h2 = document.querySelector("#scene-complete h2");
+            if (h2 && m.certifyTitle) h2.innerHTML = m.certifyTitle;
+          } else {
+            btn.classList.add("wrong");
+            btn.disabled = true;
+            fb.className = "feedback show bad";
+            fb.style.display = "block";
+            fb.innerHTML =
+              m.badEn || "&#10060; Not quite. Review and try another option!";
+          }
+        });
+      });
+  }
+
+  /* ---------- go ---------- */
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", build);
+  } else {
+    build();
+  }
 })();
-</script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+
+    </script>
+
+  <script src="/teacher-tools/nt-results.js"></script>
+  <script>
+  /* Graphic-novel completion tracking -> NTResults (Neft Teacher). Unchanged. */
+  (function () {
+    "use strict";
+    var FIRED = false;
+    var complete = document.getElementById("scene-complete");
+    if (!complete || typeof NTResults === "undefined") return;
+    function studentName() {
+      try {
+        var k = "nt_gn_student";
+        var n = localStorage.getItem(k);
+        if (n && n.trim()) return n.trim();
+        n = window.prompt("Type your name so your teacher can see you finished:", "");
+        n = (n || "").trim();
+        if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+        return n || "Student";
+      } catch (e) { return "Student"; }
+    }
+    function score() {
+      var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+        .filter(function (g) { return g.id !== "choicesComplete"; });
+      var total = groups.length || 0;
+      var correct = groups.filter(function (g) {
+        return g.querySelector(".choice.correct");
+      }).length;
+      return { correct: correct, total: total };
+    }
+    function savedNote() {
+      if (document.getElementById("nt-saved-note")) return;
+      var p = document.createElement("p");
+      p.id = "nt-saved-note";
+      p.setAttribute("role", "status");
+      p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+      p.textContent = "✓ Results saved for your teacher.";
+      complete.insertBefore(p, complete.querySelector(".restart") || null);
+    }
+    function record() {
+      if (FIRED) return; FIRED = true;
+      var s = score();
+      try {
+        NTResults.finish({
+          student: studentName(),
+          assessment: window.GN_STORY.meta.assessment,
+          standard: window.GN_STORY.meta.standard,
+          level: String(window.GN_STORY.meta.version),
+          sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+          correct: s.correct, total: s.total, download: false,
+        });
+      } catch (e) {}
+      savedNote();
+    }
+    function visible() {
+      return complete.classList.contains("show") || complete.classList.contains("active");
+    }
+    if (visible()) record();
+    var mo = new MutationObserver(function () { if (visible()) record(); });
+    mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+  })();
+  </script>
+  <script src="/assets/nt-page-enhance.js" defer></script>
+
   </body>
 </html>
