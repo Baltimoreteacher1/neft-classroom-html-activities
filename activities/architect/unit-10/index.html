@@ -572,6 +572,51 @@
         color: var(--nt-text);
       }
 
+      /* ── Cube-packing interactive ── */
+      .cuber {
+        display: grid;
+        gap: 14px;
+      }
+      @media (min-width: 620px) {
+        .cuber {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 8px 0;
+        flex-wrap: wrap;
+      }
+      .stepper label {
+        font-weight: 700;
+        min-width: 9em;
+      }
+      .stepbtn {
+        font: inherit;
+        font-weight: 800;
+        font-size: 20px;
+        line-height: 1;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        cursor: pointer;
+      }
+      .stepbtn:hover {
+        border-color: var(--nt-accent);
+      }
+      .stepval {
+        font:
+          800 22px ui-monospace,
+          monospace;
+        min-width: 2.2em;
+        text-align: center;
+      }
+
       /* ── Net builder (interactive panel toggles) ── */
       .net-panel {
         cursor: pointer;
@@ -988,20 +1033,25 @@
       <section class="card" aria-labelledby="t1h">
         <h2 id="t1h">
           Task 1 · The Main Reef Tank
-          <span class="tag-shape">Rectangular prism</span>
+          <span class="tag-shape">Rectangular prism · V = l × w × h</span>
         </h2>
         <p>
           The centerpiece is a glass <strong>rectangular prism</strong> tank.
           Read its dimensions off the scale blueprint, then size the water it
-          holds. A low <strong>coral ledge</strong> runs along the back with a
-          fractional height — size that too.
+          holds. Use the <strong>cube packer</strong> below to see how unit
+          cubes fill the tank before you calculate. A low
+          <strong>coral ledge</strong> runs along the back with a fractional
+          height — size that too.
         </p>
-        <div class="grid2">
-          <div class="bp">
+
+        <!-- interactive cube packer -->
+        <div class="cuber">
+          <div class="bp" aria-hidden="false">
             <svg
-              viewBox="0 0 360 250"
+              id="cuberSvg"
+              viewBox="0 0 220 200"
               role="img"
-              aria-label="Scale blueprint of a rectangular prism tank, length 18 feet, width 8 feet, water height 6 feet, drawn as a 3D box. One grid square equals one foot."
+              aria-label="Cube packer showing a prism filled with unit-cube layers. Adjust the three sliders to see how volume grows."
             >
               <defs>
                 <pattern
@@ -1018,6 +1068,167 @@
                   />
                 </pattern>
               </defs>
+              <rect x="6" y="6" width="208" height="188" fill="url(#g18)" />
+              <!-- outline prism (fixed 5×4×3 visual) -->
+              <polygon
+                points="28,60 148,60 196,28 76,28"
+                class="bp-water"
+                opacity="0.3"
+              />
+              <polygon
+                points="28,60 148,60 148,160 28,160"
+                class="bp-water"
+                opacity="0.3"
+              />
+              <polygon
+                points="148,60 196,28 196,128 148,160"
+                class="bp-water"
+                opacity="0.3"
+              />
+              <!-- filled layers (JS updates height) -->
+              <polygon
+                id="cp-top"
+                points="28,60 148,60 196,28 76,28"
+                fill="rgba(56,200,222,.55)"
+                stroke="#38c8de"
+                stroke-width="1.5"
+              />
+              <polygon
+                id="cp-front"
+                points="28,60 148,60 148,160 28,160"
+                fill="rgba(56,200,222,.45)"
+                stroke="#38c8de"
+                stroke-width="1.5"
+              />
+              <polygon
+                id="cp-side"
+                points="148,60 196,28 196,128 148,160"
+                fill="rgba(56,200,222,.35)"
+                stroke="#38c8de"
+                stroke-width="1.5"
+              />
+              <!-- grid lines overlay for cube grid feel -->
+              <line
+                x1="28"
+                y1="160"
+                x2="196"
+                y2="128"
+                stroke="rgba(56,200,222,.3)"
+                stroke-width="1"
+              />
+              <text
+                id="cpLabel"
+                x="110"
+                y="185"
+                text-anchor="middle"
+                class="bp-dimtext"
+                font-size="13"
+              >
+                V = ?
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Cube packer — live preview</span
+              ><span id="cpCap">0 cubes</span>
+            </div>
+          </div>
+          <div>
+            <div class="stepper">
+              <label for="cpL">Length (ft)</label>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="L"
+                data-dir="-1"
+                aria-label="Decrease length"
+              >
+                −
+              </button>
+              <span class="stepval" id="cpL" aria-live="polite">1</span>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="L"
+                data-dir="1"
+                aria-label="Increase length"
+              >
+                +
+              </button>
+            </div>
+            <div class="stepper">
+              <label for="cpW">Width (ft)</label>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="W"
+                data-dir="-1"
+                aria-label="Decrease width"
+              >
+                −
+              </button>
+              <span class="stepval" id="cpW" aria-live="polite">1</span>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="W"
+                data-dir="1"
+                aria-label="Increase width"
+              >
+                +
+              </button>
+            </div>
+            <div class="stepper">
+              <label for="cpH">Height (ft)</label>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="H"
+                data-dir="-1"
+                aria-label="Decrease height"
+              >
+                −
+              </button>
+              <span class="stepval" id="cpH" aria-live="polite">1</span>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="H"
+                data-dir="1"
+                aria-label="Increase height"
+              >
+                +
+              </button>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Layer (L × W)</span><br />
+                <span class="v" id="cpLayer">1</span>
+              </div>
+              <div>
+                <span class="k">Layers stacked</span><br />
+                <span class="v" id="cpLayers">1</span>
+              </div>
+              <div>
+                <span class="k">Volume</span><br />
+                <span class="v" id="cpVol">1 ft³</span>
+              </div>
+            </div>
+            <p class="muted" style="margin-top: 8px; font-size: 15px">
+              Build up to 18 × 8 × 6 one layer at a time. The volume equals the
+              <strong>base layer</strong> (l × w) multiplied by the
+              <strong>number of layers</strong> (h).
+            </p>
+          </div>
+        </div>
+
+        <!-- blueprint + questions -->
+        <div class="grid2" style="margin-top: 18px">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 250"
+              role="img"
+              aria-label="Scale blueprint of the rectangular prism main tank, length 18 feet, width 8 feet, height 6 feet, drawn as a 3D box. One grid square equals one foot."
+            >
               <rect x="20" y="20" width="324" height="210" fill="url(#g18)" />
               <!-- 3D rectangular prism -->
               <polygon points="60,90 250,90 312,52 122,52" class="bp-water" />
@@ -1081,8 +1292,9 @@
             </div>
             <div class="q" data-q="ledge-vol">
               <p class="lbl">
-                Q1.2 — The coral ledge is a small prism: 8 ft long, 3 ft deep,
-                and only <strong>1½ ft</strong> high. Find its volume.
+                Q1.2 — The coral ledge is a smaller prism: 8 ft long, 3 ft wide,
+                and only <strong>1½ ft</strong> high. Find its volume. (Hint: 1½
+                = 1.5)
               </p>
               <div class="row">
                 <input
@@ -1091,7 +1303,7 @@
                   id="q-ledge-vol"
                   data-ans="36"
                   data-tol="0.25"
-                  data-why="V = 8 × 3 × 1½ = 8 × 3 × 1.5 = 24 × 1.5 = 36 ft³"
+                  data-why="V = l × w × h = 8 × 3 × 1.5 = 24 × 1.5 = 36 ft³"
                   aria-label="Coral ledge volume in cubic feet"
                 />
                 <span class="unit">ft³</span>
@@ -1122,8 +1334,8 @@
               <p>
                 Saltwater weighs about <strong>62.4 lb per cubic foot</strong>.
                 If the main tank is filled, about how many pounds of water sit
-                on the floor? (864 × 62.4). Why does an engineer care about that
-                number?
+                on the floor? (864 × 62.4). Why does an engineer need to know
+                that number before building?
               </p>
             </div>
           </div>
@@ -1230,15 +1442,6 @@
               </div>
               <p class="fb" id="fb-tri-vol"></p>
             </div>
-            <div class="lvl lvl2">
-              <span class="pill">Level 2 · Enrichment</span>
-              <p>
-                A triangular prism holds <em>half</em> the water of the
-                rectangular box that surrounds it (6 × 4 × 10 = 240 ft³). Does
-                your answer match 240 ÷ 2? Explain why the triangle prism is
-                exactly half.
-              </p>
-            </div>
             <div class="lvl lvl1">
               <span class="pill">Level 1 · Support</span>
               <p>
@@ -1250,6 +1453,15 @@
                 >Español: Dos pasos. (1) Área del triángulo: ½ × base × altura.
                 (2) Multiplica esa área por el largo del prisma.</span
               >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                A triangular prism holds <em>half</em> the water of the
+                rectangular box that surrounds it (6 × 4 × 10 = 240 ft³). Does
+                your answer match 240 ÷ 2? Explain why the triangle prism is
+                exactly half.
+              </p>
             </div>
           </div>
         </div>
@@ -1998,6 +2210,153 @@
               }
             });
         });
+
+        /* Task 1: cube-packing interactive */
+        var cpState = { L: 1, W: 1, H: 1 };
+        var cpMax = { L: 18, W: 8, H: 6 };
+        var cpLbl = document.getElementById("cpL");
+        var cpWbl = document.getElementById("cpW");
+        var cpHbl = document.getElementById("cpH");
+        var cpLayerEl = document.getElementById("cpLayer");
+        var cpLayersEl = document.getElementById("cpLayers");
+        var cpVolEl = document.getElementById("cpVol");
+        var cpCap = document.getElementById("cpCap");
+        var cpLabel = document.getElementById("cpLabel");
+
+        function renderCuber() {
+          var L = cpState.L,
+            W = cpState.W,
+            H = cpState.H;
+          var layer = L * W;
+          var vol = layer * H;
+          if (cpLbl) cpLbl.textContent = L;
+          if (cpWbl) cpWbl.textContent = W;
+          if (cpHbl) cpHbl.textContent = H;
+          if (cpLayerEl) cpLayerEl.textContent = layer + " cubes";
+          if (cpLayersEl)
+            cpLayersEl.textContent = H + (H === 1 ? " layer" : " layers");
+          if (cpVolEl) cpVolEl.textContent = vol + " ft³";
+          if (cpCap)
+            cpCap.textContent =
+              L + " × " + W + " × " + H + " = " + vol + " cubes";
+          if (cpLabel)
+            cpLabel.textContent =
+              "V = " + L + " × " + W + " × " + H + " = " + vol + " ft³";
+
+          /* Animate the 3D box fill proportionally */
+          var pctH = H / cpMax.H; /* 0–1 fill fraction */
+          var pctW = W / cpMax.W;
+          var pctL = L / cpMax.L;
+          /* Top face scale (perspective-fixed corners) */
+          var svg = document.getElementById("cuberSvg");
+          if (!svg) return;
+          /* Full-size corners of the outline prism */
+          var TL = { x: 28, y: 60 },
+            TR = { x: 148, y: 60 },
+            TBR = { x: 196, y: 28 },
+            TBL = { x: 76, y: 28 };
+          var BL = { x: 28, y: 160 },
+            BR = { x: 148, y: 160 },
+            BBR = { x: 196, y: 128 };
+          /* Mix from bottom to full based on height fraction */
+          function lerp(a, b, t) {
+            return a + (b - a) * t;
+          }
+          var ftl = { x: lerp(BL.x, TL.x, pctH), y: lerp(BL.y, TL.y, pctH) };
+          var ftr = { x: lerp(BR.x, TR.x, pctH), y: lerp(BR.y, TR.y, pctH) };
+          var ftbr = {
+            x: lerp(BBR.x, TBR.x, pctH),
+            y: lerp(BBR.y, TBR.y, pctH),
+          };
+          var ftbl = {
+            x: lerp(BR.x, TBL.x, pctH),
+            y: lerp(BR.y, TBL.y, pctH),
+          };
+          var top = document.getElementById("cp-top");
+          var front = document.getElementById("cp-front");
+          var side = document.getElementById("cp-side");
+          if (top)
+            top.setAttribute(
+              "points",
+              ftl.x +
+                "," +
+                ftl.y +
+                " " +
+                ftr.x +
+                "," +
+                ftr.y +
+                " " +
+                ftbr.x +
+                "," +
+                ftbr.y +
+                " " +
+                ftbl.x +
+                "," +
+                ftbl.y,
+            );
+          if (front)
+            front.setAttribute(
+              "points",
+              ftl.x +
+                "," +
+                ftl.y +
+                " " +
+                ftr.x +
+                "," +
+                ftr.y +
+                " " +
+                BR.x +
+                "," +
+                BR.y +
+                " " +
+                BL.x +
+                "," +
+                BL.y,
+            );
+          if (side)
+            side.setAttribute(
+              "points",
+              ftr.x +
+                "," +
+                ftr.y +
+                " " +
+                ftbr.x +
+                "," +
+                ftbr.y +
+                " " +
+                BBR.x +
+                "," +
+                BBR.y +
+                " " +
+                BR.x +
+                "," +
+                BR.y,
+            );
+        }
+
+        document.querySelectorAll(".stepbtn[data-cp]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var key = b.getAttribute("data-cp");
+            var dir = parseInt(b.getAttribute("data-dir"), 10);
+            cpState[key] = Math.max(
+              1,
+              Math.min(cpMax[key], cpState[key] + dir),
+            );
+            renderCuber();
+            live(
+              "Prism is now " +
+                cpState.L +
+                " × " +
+                cpState.W +
+                " × " +
+                cpState.H +
+                ", volume " +
+                cpState.L * cpState.W * cpState.H +
+                " cubic feet.",
+            );
+          });
+        });
+        renderCuber();
 
         /* Task 3: interactive net — click panels to count area + faces */
         var counted = {};
