@@ -48,6 +48,7 @@ import {
 } from "docx";
 import { Resvg } from "@resvg/resvg-js";
 import { deriveTWR } from "../engine/core/twr.js";
+import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 import { resolveVocabImage } from "../engine/core/vocab-images.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -471,12 +472,97 @@ function vocabBlock(vocab = []) {
 }
 
 // ── WORKED EXAMPLE / "I Do" (from launch + explore) ──────────────────────────
-function workedExampleBlock(cfg) {
+// Render a multiple-choice option list for a worked problem.
+function choiceLines(choices, size = 20) {
+  if (!Array.isArray(choices)) return [];
+  return choices.map((c, j) =>
+    para(new TextRun({ text: `${choiceLetter(j)})  ${c}`, size }), {
+      indent: { left: 420 },
+      spacing: { after: 30 },
+    }),
+  );
+}
+
+// I-Do solved example: the problem, then each real explanation sentence as a
+// numbered step, then the answer. Mirrors the HTML/PDF worked frame exactly.
+function iDoSolvedBlock(iDo) {
+  if (!iDo) return [];
+  const out = [
+    subHeading("Solved Example", "I Do — watch each step", TEAL),
+    para(
+      [
+        new TextRun({ text: "Problem:  ", bold: true, color: NAVY, size: 21 }),
+        new TextRun({ text: iDo.problem, size: 21 }),
+      ],
+      { spacing: { after: 40 }, keepNext: true },
+    ),
+    ...choiceLines(iDo.choices),
+  ];
+  iDo.steps.forEach((s, i) => {
+    out.push(
+      para(
+        [
+          new TextRun({ text: `Step ${i + 1}:  `, bold: true, color: TEAL, size: 21 }),
+          new TextRun({ text: s, size: 21 }),
+        ],
+        { spacing: { before: 50, after: 20 } },
+      ),
+    );
+  });
+  if (iDo.answer) {
+    out.push(
+      para(
+        [
+          new TextRun({ text: "Answer:  ", bold: true, color: NAVY, size: 21 }),
+          new TextRun({ text: iDo.answer, bold: true, size: 21 }),
+        ],
+        { spacing: { before: 60, after: 40 } },
+      ),
+    );
+  }
+  return out;
+}
+
+// We-Do problem with blank numbered steps for the class to solve together.
+function weDoBlankBlock(weDo, stepCount) {
+  if (!weDo) return [];
+  const out = [
+    para(
+      [
+        new TextRun({ text: "Problem:  ", bold: true, color: NAVY, size: 21 }),
+        new TextRun({ text: weDo.problem, size: 21 }),
+      ],
+      { spacing: { before: 40, after: 40 }, keepNext: true },
+    ),
+    ...choiceLines(weDo.choices),
+  ];
+  const n = Math.min(Math.max(stepCount || 2, 2), 3);
+  for (let i = 0; i < n; i++) {
+    out.push(
+      para(
+        new TextRun({ text: `Step ${i + 1}:`, bold: true, color: PURPLE, size: 21 }),
+        { spacing: { before: 50, after: 0 }, keepNext: true },
+      ),
+    );
+    out.push(...writeline(1));
+  }
+  out.push(
+    para(new TextRun({ text: "Answer:", bold: true, color: NAVY, size: 21 }), {
+      spacing: { before: 60, after: 0 },
+      keepNext: true,
+    }),
+  );
+  out.push(...writeline(1));
+  return out;
+}
+
+function workedExampleBlock(cfg, worked) {
   const launch = cfg.launch || {};
   const explore = cfg.explore || {};
   const hasLaunch = launch.narrative || launch.badge;
   const hasExplore = explore.instructions;
-  if (!hasLaunch && !hasExplore) return [];
+  const hasWorked = Boolean(worked && worked.iDo);
+  if (!hasLaunch && !hasExplore && !hasWorked) return [];
 
   const out = [sectionHeading("Worked Example", { pageBreak: true })];
   out.push(
@@ -520,8 +606,11 @@ function workedExampleBlock(cfg) {
     );
   }
 
-  // Explore task framed as the modeled step.
-  if (hasExplore) {
+  // The actual solved example — one problem worked all the way through in
+  // simple numbered steps so students see the notes in action.
+  if (hasWorked) {
+    out.push(...iDoSolvedBlock(worked.iDo));
+  } else if (hasExplore) {
     out.push(subHeading("Try the Model", "step through it together"));
     out.push(para(new TextRun({ text: explore.instructions, size: 21 })));
     out.push(spacer(40));
@@ -532,13 +621,22 @@ function workedExampleBlock(cfg) {
 }
 
 // ── GUIDED PRACTICE / "We Do" (connect scenario + Turn & Talk) ───────────────
-function guidedPracticeBlock(cfg) {
+function guidedPracticeBlock(cfg, worked) {
   const connect = cfg.connect || {};
   const tt = Array.isArray(cfg.turnAndTalk) ? cfg.turnAndTalk : [];
-  if (!connect.scenario && !tt.length) return [];
+  const hasWeDo = Boolean(worked && worked.weDo);
+  if (!connect.scenario && !tt.length && !hasWeDo) return [];
 
   const out = [sectionHeading("Guided Practice", { pageBreak: true })];
   out.push(subHeading("Solve Together", "We Do — work with your class", PURPLE));
+
+  // We-Do worked problem: same step scaffold as the solved example, blank for
+  // the class to fill in. Answer lives in the Answer Key.
+  if (hasWeDo) {
+    const stepCount = worked.iDo ? worked.iDo.steps.length : 2;
+    out.push(...weDoBlankBlock(worked.weDo, stepCount));
+    out.push(spacer(80));
+  }
 
   // Connect = a real-world application problem to solve as a class.
   if (connect.scenario) {
@@ -640,8 +738,10 @@ function gatherPractice(practice = {}) {
 }
 
 // ── INDEPENDENT PRACTICE / "You Do" (numbered problems + work space) ─────────
-function independentPracticeBlock(cfg) {
-  const items = gatherPractice(cfg.practice).filter((it) => it.stem);
+function independentPracticeBlock(cfg, excludeStems = new Set()) {
+  const items = gatherPractice(cfg.practice).filter(
+    (it) => it.stem && !excludeStems.has(it.stem),
+  );
   // Up to 4 problems for a clean, one-section packet.
   const picks = items.slice(0, 4);
   if (!picks.length) return [];
@@ -778,7 +878,7 @@ function reflectBlock(cfg) {
 }
 
 // ── ANSWER KEY & TEACHER GUIDE (separate page) ───────────────────────────────
-function answerKeyBlock(cfg) {
+function answerKeyBlock(cfg, worked, excludeStems = new Set()) {
   const practice = cfg.practice || {};
   const reflect = cfg.reflect || {};
   const out = [sectionHeading("Answer Key & Teacher Guide", { pageBreak: true })];
@@ -786,7 +886,31 @@ function answerKeyBlock(cfg) {
     muted("Teacher reference — remove or fold back before distributing to students."),
   );
 
-  const items = gatherPractice(practice).filter((it) => it.stem);
+  // Guided-notes worked frame answers (I Do is shown in the packet; We Do is
+  // blank for the class). List them first so teachers can check the model.
+  if (worked && (worked.iDo || worked.weDo)) {
+    out.push(subHeading("Worked Notes (I Do / We Do)"));
+    if (worked.iDo && worked.iDo.answer) {
+      out.push(
+        para([
+          new TextRun({ text: "I Do:  ", bold: true, size: 21 }),
+          new TextRun({ text: worked.iDo.answer, size: 21 }),
+        ]),
+      );
+    }
+    if (worked.weDo && worked.weDo.answer) {
+      out.push(
+        para([
+          new TextRun({ text: "We Do:  ", bold: true, size: 21 }),
+          new TextRun({ text: worked.weDo.answer, size: 21 }),
+        ]),
+      );
+    }
+  }
+
+  const items = gatherPractice(practice).filter(
+    (it) => it.stem && !excludeStems.has(it.stem),
+  );
   const picks = items.slice(0, 4);
   if (picks.length) {
     out.push(subHeading("Independent Practice"));
@@ -860,16 +984,25 @@ function answerKeyBlock(cfg) {
 
 // ── DOCUMENT ASSEMBLY ─────────────────────────────────────────────────────────
 function buildDoc(id, cfg) {
+  const worked = deriveWorkedSteps(cfg);
+  // I-Do and We-Do problems are worked in the notes frame; exclude them from
+  // the independent "On Your Own" set so answers are not duplicated or leaked.
+  // You-Do remains in the pool and leads the independent practice.
+  const excludeStems = new Set(
+    [worked.iDo && worked.iDo.problem, worked.weDo && worked.weDo.problem].filter(
+      Boolean,
+    ),
+  );
   const body = [
     ...coverBlock(id, cfg),
     ...objectivesBlock(cfg),
     ...vocabBlock(cfg.vocabulary),
-    ...workedExampleBlock(cfg),
-    ...guidedPracticeBlock(cfg),
-    ...independentPracticeBlock(cfg),
+    ...workedExampleBlock(cfg, worked),
+    ...guidedPracticeBlock(cfg, worked),
+    ...independentPracticeBlock(cfg, excludeStems),
     ...writingBlock(cfg),
     ...reflectBlock(cfg),
-    ...answerKeyBlock(cfg),
+    ...answerKeyBlock(cfg, worked, excludeStems),
   ];
 
   const headerLabel = [

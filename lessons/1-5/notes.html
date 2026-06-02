@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -332,20 +350,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>What is the starting fuel amount?</li><li>Which operation adds fuel and which removes fuel?</li><li>Why is it important to line up the decimal points?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is 14.6 + 3.85?</p>
+      <ol class="try-choices" type="A"><li>18.45</li><li>18.35</li><li>17.45</li><li>18.55</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Line up decimals: 14.60 + 3.85.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Hundredths: 0 + 5 = 5.</li><li class="wk-step"><span class="wk-steplabel">Step 3</span> Tenths: 6 + 8 = 14, write 4 carry 1.</li><li class="wk-step"><span class="wk-steplabel">Step 4</span> Ones: 4 + 3 + 1 = 8.</li><li class="wk-step"><span class="wk-steplabel">Step 5</span> Tens: 1.</li><li class="wk-step"><span class="wk-steplabel">Step 6</span> Answer: 18.45.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 18.45</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is 20.3 − 7.48?</p>
+      <ol class="try-choices" type="A"><li>12.82</li><li>13.82</li><li>12.92</li><li>12.18</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 3</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is 9.05 + 4.7?</p>
+      <ol class="try-choices" type="A"><li>13.75</li><li>13.12</li><li>14.75</li><li>13.57</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -445,27 +472,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">What is 14.6 + 3.85?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Line up decimals: 14.60 + 3.85. Hundredths: 0 + 5 = 5. Tenths: 6 + 8 = 14, write 4 carry 1. Ones: 4 + 3 + 1 = 8. Tens: 1. Answer: 18.45.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 18.45</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">What is 20.3 − 7.48?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Rewrite as 20.30 − 7.48. Annex a zero so both have two decimal places. Work carefully with borrowing: 20.30 − 7.48 = 12.82.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 12.82</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">What is 9.05 + 4.7?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Line up decimals: 9.05 + 4.70. Hundredths: 5 + 0 = 5. Tenths: 0 + 7 = 7. Ones: 9 + 4 = 13. Answer: 13.75.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 13.75</p>
-</div>
-</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my steps using the words decimal, place value, tenths, hundredths, and annex zeros.</p>
@@ -541,13 +547,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. What is 50 − 23.47?</p>
-  <ol class="try-choices" type="A"><li>26.53</li><li>27.53</li><li>26.63</li><li>27.47</li></ol>
+  <p class="tryit-num">1. Maya buys items for $8.75 and $3.40. She pays with $20. How much change does she get?</p>
+  <ol class="try-choices" type="A"><li>$7.85</li><li>$7.15</li><li>$11.85</li><li>$8.15</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A student buys items costing $4.59, $12.75, and $3.80. What is the total cost?</p>
-  <ol class="try-choices" type="A"><li>$21.14</li><li>$20.14</li><li>$21.04</li><li>$21.24</li></ol>
+  <p class="tryit-num">2. What is 9.07 + 0.93?</p>
+  <ol class="try-choices" type="A"><li>10</li><li>9.10</li><li>10.1</li><li>9.97</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -567,7 +573,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 26.53 <span class="ak-why">— Rewrite 50 as 50.00. Then 50.00 − 23.47 = 26.53. You must borrow across multiple places.</span></li><li><strong>Try It 2:</strong> A. $21.14 <span class="ak-why">— 4.59 + 12.75 + 3.80 = 21.14. Line up decimal points and add column by column.</span></li><li><strong>Exit Ticket:</strong> A. 17.75 <span class="ak-why">— Rewrite as 32.60 − 14.85. Hundredths: 0 − 5 → borrow → 10 − 5 = 5. Tenths: 5 − 8 → borrow → 15 − 8 = 7. Ones: 1 − 4 → borrow → 11 − 4 = 7. Tens: 2 − 1 = 1. Answer: 17.75.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 12.82 <span class="ak-why">— Rewrite as 20.30 − 7.48. Annex a zero so both have two decimal places. Work carefully with borrowing: 20.30 − 7.48 = 12.82.</span></li><li><strong>You Try (notes):</strong> A. 13.75 <span class="ak-why">— Line up decimals: 9.05 + 4.70. Hundredths: 5 + 0 = 5. Tenths: 0 + 7 = 7. Ones: 9 + 4 = 13. Answer: 13.75.</span></li><li><strong>Try It 1:</strong> A. $7.85 <span class="ak-why">— 8.75 + 3.40 = 12.15; 20.00 − 12.15 = 7.85.</span></li><li><strong>Try It 2:</strong> A. 10 <span class="ak-why">— 9.07 + 0.93 = 10.00.</span></li><li><strong>Exit Ticket:</strong> A. 17.75 <span class="ak-why">— Rewrite as 32.60 − 14.85. Hundredths: 0 − 5 → borrow → 10 − 5 = 5. Tenths: 5 − 8 → borrow → 15 − 8 = 7. Ones: 1 − 4 → borrow → 11 − 4 = 7. Tens: 2 − 1 = 1. Answer: 17.75.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Decimal is a number with a dot that shows a part between whole numbers.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 1-5 · Standard 6.NS.3</footer>

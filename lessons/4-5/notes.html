@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -332,20 +350,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>What happens to the price when there is a discount?</li><li>What happens to the price when tax is added?</li><li>Does it matter whether you apply the discount or tax first?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A prize costs 120 tickets and is 25% off. What is the sale price?</p>
+      <ol class="try-choices" type="A"><li>90 tickets</li><li>95 tickets</li><li>100 tickets</li><li>30 tickets</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> 25% of 120 = 0.25 × 120 = 30.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Sale price: 120 − 30 = 90 tickets.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 90 tickets</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A meal costs $20. You leave a 15% tip. How much is the tip?</p>
+      <ol class="try-choices" type="A"><li>$3.00</li><li>$1.50</li><li>$5.00</li><li>$0.15</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A shirt costs $40 and the sales tax is 5%. What is the total cost including tax?</p>
+      <ol class="try-choices" type="A"><li>$42.00</li><li>$45.00</li><li>$40.05</li><li>$38.00</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -420,27 +447,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tt-extend-q">Suppose the membership were a tip situation instead: $50 plus a 20% tip. Compare that total to the $37.10 discount-then-tax total and explain why one is so much higher.</p>
     <ul class="tt-extend-stems"><li>A 20% tip makes the total $___ because ___.</li><li>It is higher than $37.10 because ___.</li></ul>
   </div>
-</div>
-</section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">A prize costs 120 tickets and is 25% off. What is the sale price?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 25% of 120 = 0.25 × 120 = 30. Sale price: 120 − 30 = 90 tickets.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 90 tickets</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">A meal costs $20. You leave a 15% tip. How much is the tip?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 15% of $20 = 0.15 × 20 = $3.00.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. $3.00</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">A shirt costs $40 and the sales tax is 5%. What is the total cost including tax?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Tax: 0.05 × $40 = $2.00. Total: $40 + $2 = $42.00.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. $42.00</p>
 </div>
 </section>
   <section class="section twr">
@@ -518,13 +524,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A store marks up a $30 item by 40%, then a customer gets 10% off. What is the final price?</p>
-  <ol class="try-choices" type="A"><li>$37.80</li><li>$39.00</li><li>$42.00</li><li>$36.00</li></ol>
+  <p class="tryit-num">1. A test has 25 questions. A student gets 88% correct. How many are correct?</p>
+  <ol class="try-choices" type="A"><li>22</li><li>20</li><li>23</li><li>21</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A restaurant bill is $35. You want to leave a 20% tip. What is the total amount you pay?</p>
-  <ol class="try-choices" type="A"><li>$42.00</li><li>$40.00</li><li>$38.50</li><li>$55.00</li></ol>
+  <p class="tryit-num">2. A shirt is $30 after a 25% discount off the original price. What was the original price?</p>
+  <ol class="try-choices" type="A"><li>$40</li><li>$37.50</li><li>$45</li><li>$36</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -544,7 +550,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. $37.80 <span class="ak-why">— Markup: $30 × 1.40 = $42. Discount: $42 × 0.10 = $4.20. Final: $42 − $4.20 = $37.80.</span></li><li><strong>Try It 2:</strong> A. $42.00 <span class="ak-why">— Tip: 0.20 × $35 = $7.00. Total: $35 + $7 = $42.00.</span></li><li><strong>Exit Ticket:</strong> A. $54.60 <span class="ak-why">— Discount: 0.35 × $80 = $28. Sale price: $80 − $28 = $52. Tax: 0.05 × $52 = $2.60. Final: $52 + $2.60 = $54.60.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. $3.00 <span class="ak-why">— 15% of $20 = 0.15 × 20 = $3.00.</span></li><li><strong>You Try (notes):</strong> A. $42.00 <span class="ak-why">— Tax: 0.05 × $40 = $2.00. Total: $40 + $2 = $42.00.</span></li><li><strong>Try It 1:</strong> A. 22 <span class="ak-why">— 0.88 × 25 = 22 questions.</span></li><li><strong>Try It 2:</strong> A. $40 <span class="ak-why">— $30 is 75% of the original; 30 ÷ 0.75 = $40.</span></li><li><strong>Exit Ticket:</strong> A. $54.60 <span class="ak-why">— Discount: 0.35 × $80 = $28. Sale price: $80 − $28 = $52. Tax: 0.05 × $52 = $2.60. Final: $52 + $2.60 = $54.60.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Percent is a way to compare a number to 100, shown with the % sign.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 4-5 · Standard 6.RP.3c</footer>

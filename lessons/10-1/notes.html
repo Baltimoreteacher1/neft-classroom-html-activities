@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -340,20 +358,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>What three measurements do you need to find the volume of a box?</li><li>What does volume tell us about a container?</li><li>How is volume different from the area of one face?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
+      <ol class="try-choices" type="A"><li>84 in³</li><li>14 in³</li><li>84 in²</li><li>42 in³</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 84 in³</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
+      <ol class="try-choices" type="A"><li>3 cm</li><li>6 cm</li><li>4 cm</li><li>12 cm</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which unit is used for volume?</p>
+      <ol class="try-choices" type="A"><li>Cubic inches (in³)</li><li>Square inches (in²)</li><li>Inches (in)</li><li>Degrees (°)</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -453,27 +480,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
-    <p class="ex-solution"><strong>Solution:</strong> V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 84 in³</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
-    <p class="ex-solution"><strong>Solution:</strong> V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 3 cm</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">Which unit is used for volume?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. Cubic inches (in³)</p>
-</div>
-</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my work using the words volume, rectangular prism, cubic units, and edge.</p>
@@ -549,13 +555,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. Which unit is used for volume?</p>
-  <ol class="try-choices" type="A"><li>Cubic inches (in³)</li><li>Square inches (in²)</li><li>Inches (in)</li><li>Degrees (°)</li></ol>
+  <p class="tryit-num">1. A cube has edges of 4 units. What is its volume?</p>
+  <ol class="try-choices" type="A"><li>64 cubic units</li><li>16 cubic units</li><li>12 cubic units</li><li>48 cubic units</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</p>
-  <ol class="try-choices" type="A"><li>Bin B by 12 in³</li><li>Bin A by 12 in³</li><li>Bin B by 24 in³</li><li>They hold the same</li></ol>
+  <p class="tryit-num">2. A box has volume 36 cubic units. Its base is 6 by 2. What is its height?</p>
+  <ol class="try-choices" type="A"><li>3 units</li><li>12 units</li><li>6 units</li><li>2 units</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -575,7 +581,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. Cubic inches (in³) <span class="ak-why">— Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.</span></li><li><strong>Try It 2:</strong> A. Bin B by 12 in³ <span class="ak-why">— Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.</span></li><li><strong>Exit Ticket:</strong> A. 220 in³ <span class="ak-why">— V = 11 × 5 × 4 = 220 cubic inches. Remember: volume uses cubic units (in³).</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 3 cm <span class="ak-why">— V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.</span></li><li><strong>You Try (notes):</strong> A. Cubic inches (in³) <span class="ak-why">— Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.</span></li><li><strong>Try It 1:</strong> A. 64 cubic units <span class="ak-why">— V = 4 × 4 × 4 = 64 cubic units.</span></li><li><strong>Try It 2:</strong> A. 3 units <span class="ak-why">— Base area = 12; height = 36 ÷ 12 = 3 units.</span></li><li><strong>Exit Ticket:</strong> A. 220 in³ <span class="ak-why">— V = 11 × 5 × 4 = 220 cubic inches. Remember: volume uses cubic units (in³).</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Volume is how much space is inside a solid shape.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 10-1 · Standard 6.G.2</footer>

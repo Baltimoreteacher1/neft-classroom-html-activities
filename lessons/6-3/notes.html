@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -289,7 +307,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/coefficient.svg" alt="Illustration of Constant: A number on its own that does not change." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/constant.svg" alt="Illustration of Constant: A number on its own that does not change." onerror="this.style.display='none'" />
     <p class="vocab-caption">In 3n + 7, the 7 never changes no matter what n is — like a flat fee that stays the same</p>
   </div>
   <h3 class="vocab-term">Constant</h3>
@@ -297,7 +315,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/coefficient.svg" alt="Illustration of Like terms: Terms with the same letter, like 2x and 5x." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/like-terms.svg" alt="Illustration of Like terms: Terms with the same letter, like 2x and 5x." onerror="this.style.display='none'" />
     <p class="vocab-caption">4x + 2x = 6x (like terms, same variable); but 4x + 2y cannot be combined (different variables)</p>
   </div>
   <h3 class="vocab-term">Like terms</h3>
@@ -332,20 +350,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>What value changes depending on how many people come?</li><li>What stays the same no matter the number of tickets?</li><li>How would you calculate the total if 10 tickets are sold?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which expression represents 'the product of 6 and a number n'?</p>
+      <ol class="try-choices" type="A"><li>6n</li><li>6 + n</li><li>n − 6</li><li>n ÷ 6</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> 'Product' means multiplication, so the product of 6 and n is 6n.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 6n</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which expression represents '9 less than a number y'?</p>
+      <ol class="try-choices" type="A"><li>y − 9</li><li>9 − y</li><li>y + 9</li><li>9y</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which expression represents 'the sum of a number m and 15'?</p>
+      <ol class="try-choices" type="A"><li>m + 15</li><li>m − 15</li><li>15m</li><li>m ÷ 15</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -420,27 +447,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tt-extend-q">Another studio charges no setup fee but $11 per hour: 11h. For how many hours is the first studio (25 + 8h) the better deal? Justify your reasoning.</p>
     <ul class="tt-extend-stems"><li>The first studio is cheaper when ___ because the higher hourly rate ___.</li><li>Setting 25 + 8h equal to 11h, they cost the same at h = ___, so ___.</li></ul>
   </div>
-</div>
-</section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">Which expression represents 'the product of 6 and a number n'?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 'Product' means multiplication, so the product of 6 and n is 6n.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 6n</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">Which expression represents '9 less than a number y'?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 'Less than' means subtract from the number, so it's y − 9.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. y − 9</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">Which expression represents 'the sum of a number m and 15'?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 'Sum' means addition, so the sum of m and 15 is m + 15.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. m + 15</p>
 </div>
 </section>
   <section class="section twr">
@@ -518,13 +524,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. Which expression represents 'the sum of a number m and 15'?</p>
-  <ol class="try-choices" type="A"><li>m + 15</li><li>m − 15</li><li>15m</li><li>m ÷ 15</li></ol>
+  <p class="tryit-num">1. Write 'a number y divided by 4' as an expression.</p>
+  <ol class="try-choices" type="A"><li>y/4</li><li>4y</li><li>y − 4</li><li>4 − y</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. Which key word tells you to multiply?</p>
-  <ol class="try-choices" type="A"><li>Product</li><li>Sum</li><li>Difference</li><li>Quotient</li></ol>
+  <p class="tryit-num">2. Which expression means '3 less than twice a number m'?</p>
+  <ol class="try-choices" type="A"><li>2m − 3</li><li>3 − 2m</li><li>2(m − 3)</li><li>3m − 2</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -544,7 +550,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. m + 15 <span class="ak-why">— 'Sum' means addition, so the sum of m and 15 is m + 15.</span></li><li><strong>Try It 2:</strong> A. Product <span class="ak-why">— 'Product' means multiplication. 'Sum' means addition, 'difference' means subtraction, and 'quotient' means division.</span></li><li><strong>Exit Ticket:</strong> A. 2n + 3 <span class="ak-why">— 'Twice a number n' is 2n. '3 more than' means + 3. So the expression is 2n + 3.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. y − 9 <span class="ak-why">— 'Less than' means subtract from the number, so it's y − 9.</span></li><li><strong>You Try (notes):</strong> A. m + 15 <span class="ak-why">— 'Sum' means addition, so the sum of m and 15 is m + 15.</span></li><li><strong>Try It 1:</strong> A. y/4 <span class="ak-why">— 'Divided by 4' means y/4.</span></li><li><strong>Try It 2:</strong> A. 2m − 3 <span class="ak-why">— Twice a number is 2m; '3 less' subtracts 3: 2m − 3.</span></li><li><strong>Exit Ticket:</strong> A. 2n + 3 <span class="ak-why">— 'Twice a number n' is 2n. '3 more than' means + 3. So the expression is 2n + 3.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Algebraic Expression is a math phrase that has at least one letter.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 6-3 · Standard 6.EE.2a</footer>

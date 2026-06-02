@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -273,7 +291,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Composite number: A number bigger than 1 that you can divide by more than just 1 and itself." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/composite-number.svg" alt="Illustration of Composite number: A number bigger than 1 that you can divide by more than just 1 and itself." onerror="this.style.display='none'" />
     <p class="vocab-caption">12 = 1 × 12, 2 × 6, 3 × 4 — six factors, so 12 is composite</p>
   </div>
   <h3 class="vocab-term">Composite number</h3>
@@ -281,7 +299,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/prime-factorization.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together." onerror="this.style.display='none'" />
     <p class="vocab-caption">36 = 2 × 2 × 3 × 3 = 2² × 3²</p>
   </div>
   <h3 class="vocab-term">Prime factorization</h3>
@@ -289,7 +307,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Factor tree: A picture that splits a number into its prime numbers, step by step." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/prime-factorization.svg" alt="Illustration of Factor tree: A picture that splits a number into its prime numbers, step by step." onerror="this.style.display='none'" />
     <p class="vocab-caption">24 → 4 × 6 → (2 × 2) × (2 × 3) → 2 × 2 × 2 × 3</p>
   </div>
   <h3 class="vocab-term">Factor tree</h3>
@@ -332,20 +350,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>What number are we breaking down into factors?</li><li>What's the difference between a factor and a prime factor?</li><li>How many different ways can we start breaking 60 apart?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which of the following is a prime number?</p>
+      <ol class="try-choices" type="A"><li>17</li><li>15</li><li>21</li><li>9</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> 17 has exactly two factors: 1 and 17.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> 15 = 3 × 5, 21 = 3 × 7, and 9 = 3 × 3, so they are all composite.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 17</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the prime factorization of 30?</p>
+      <ol class="try-choices" type="A"><li>2 × 3 × 5</li><li>5 × 6</li><li>2 × 15</li><li>3 × 10</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the prime factorization of 18?</p>
+      <ol class="try-choices" type="A"><li>2 × 3 × 3</li><li>2 × 9</li><li>3 × 6</li><li>6 × 3</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -445,27 +472,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">Which of the following is a prime number?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 17 has exactly two factors: 1 and 17. 15 = 3 × 5, 21 = 3 × 7, and 9 = 3 × 3, so they are all composite.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 17</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">What is the prime factorization of 30?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 30 = 2 × 15 = 2 × 3 × 5. All three factors (2, 3, 5) are prime, so 2 × 3 × 5 is the prime factorization.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 2 × 3 × 5</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">What is the prime factorization of 18?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 18 = 2 × 9 = 2 × 3 × 3. Both 2 and 3 are prime, so 2 × 3 × 3 is the prime factorization.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 2 × 3 × 3</p>
-</div>
-</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain how I broke a number down using the words prime number, composite number, factor, and exponent.</p>
@@ -541,13 +547,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. Which of these numbers is composite?</p>
-  <ol class="try-choices" type="A"><li>27</li><li>23</li><li>29</li><li>31</li></ol>
+  <p class="tryit-num">1. A number's prime factorization is 2² × 3 × 5. What is the number?</p>
+  <ol class="try-choices" type="A"><li>60</li><li>30</li><li>45</li><li>120</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. Two students found different factor trees for 60. Student A started with 2 × 30. Student B started with 6 × 10. Which statement is true?</p>
-  <ol class="try-choices" type="A"><li>Both get the same prime factorization: 2 × 2 × 3 × 5</li><li>Only Student A gets the correct prime factorization</li><li>Only Student B gets the correct prime factorization</li><li>They will get different prime factorizations</li></ol>
+  <p class="tryit-num">2. Which list shows ONLY prime numbers?</p>
+  <ol class="try-choices" type="A"><li>2, 3, 11, 17</li><li>2, 4, 6, 9</li><li>3, 5, 9, 15</li><li>2, 7, 12, 13</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -567,7 +573,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 27 <span class="ak-why">— 27 = 3 × 9 = 3 × 3 × 3, so it has more than two factors. 23, 29, and 31 are all prime.</span></li><li><strong>Try It 2:</strong> A. Both get the same prime factorization: 2 × 2 × 3 × 5 <span class="ak-why">— The Fundamental Theorem of Arithmetic says every composite number has exactly one prime factorization. No matter how you start the factor tree, you always end with 2 × 2 × 3 × 5.</span></li><li><strong>Exit Ticket:</strong> A. 2 × 2 × 2 × 5 <span class="ak-why">— 40 = 2 × 20 = 2 × 2 × 10 = 2 × 2 × 2 × 5. All factors (2, 2, 2, 5) are prime.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 2 × 3 × 5 <span class="ak-why">— 30 = 2 × 15 = 2 × 3 × 5. All three factors (2, 3, 5) are prime, so 2 × 3 × 5 is the prime factorization.</span></li><li><strong>You Try (notes):</strong> A. 2 × 3 × 3 <span class="ak-why">— 18 = 2 × 9 = 2 × 3 × 3. Both 2 and 3 are prime, so 2 × 3 × 3 is the prime factorization.</span></li><li><strong>Try It 1:</strong> A. 60 <span class="ak-why">— 2² × 3 × 5 = 4 × 3 × 5 = 60.</span></li><li><strong>Try It 2:</strong> A. 2, 3, 11, 17 <span class="ak-why">— 2, 3, 11, and 17 each have exactly two factors. The other lists contain composite numbers like 4, 9, or 12.</span></li><li><strong>Exit Ticket:</strong> A. 2 × 2 × 2 × 5 <span class="ak-why">— 40 = 2 × 20 = 2 × 2 × 10 = 2 × 2 × 2 × 5. All factors (2, 2, 2, 5) are prime.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Prime factorization is writing a number as prime numbers multiplied together.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 1-1 · Standard 6.NS.4</footer>

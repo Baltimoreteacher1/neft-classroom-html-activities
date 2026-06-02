@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -340,20 +358,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>What does 'no earlier than 2:00 PM' mean about the time?</li><li>Should 2:00 PM itself be included?</li><li>Which direction on the number line would you shade?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which graph represents x &lt; 5?</p>
+      <ol class="try-choices" type="A"><li>Open circle at 5, shaded left</li><li>Closed circle at 5, shaded left</li><li>Open circle at 5, shaded right</li><li>Closed circle at 5, shaded right</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> x &lt; 5 means 5 is NOT included (open circle) and values less than 5 are shaded (left).</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. Open circle at 5, shaded left</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which graph represents x ≥ 3?</p>
+      <ol class="try-choices" type="A"><li>Closed circle at 3, shaded right</li><li>Open circle at 3, shaded right</li><li>Closed circle at 3, shaded left</li><li>Open circle at 3, shaded left</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which graph represents x &gt; 8?</p>
+      <ol class="try-choices" type="A"><li>Open circle at 8, shaded right</li><li>Closed circle at 8, shaded right</li><li>Open circle at 8, shaded left</li><li>Closed circle at 8, shaded left</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -428,27 +455,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tt-extend-q">Critique: 'An open circle and a closed circle graph the same solution set.' Use x &gt; 5 and x ≥ 5 to show why this is wrong.</p>
     <ul class="tt-extend-stems"><li>This is wrong because x ≥ 5 includes ___ but x &gt; 5 ___.</li><li>The two solution sets differ by ___.</li></ul>
   </div>
-</div>
-</section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">Which graph represents x &lt; 5?</p>
-    <p class="ex-solution"><strong>Solution:</strong> x &lt; 5 means 5 is NOT included (open circle) and values less than 5 are shaded (left).</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. Open circle at 5, shaded left</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">Which graph represents x ≥ 3?</p>
-    <p class="ex-solution"><strong>Solution:</strong> x ≥ 3 means 3 IS included (closed circle) and values greater than or equal to 3 are shaded (right).</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. Closed circle at 3, shaded right</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">Which graph represents x &gt; 8?</p>
-    <p class="ex-solution"><strong>Solution:</strong> x &gt; 8 means 8 is NOT included (open circle) and values greater than 8 are shaded to the right.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. Open circle at 8, shaded right</p>
 </div>
 </section>
   <section class="section twr">
@@ -526,13 +532,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. Which graph represents x ≤ 10?</p>
-  <ol class="try-choices" type="A"><li>Closed circle at 10, shaded left</li><li>Open circle at 10, shaded left</li><li>Closed circle at 10, shaded right</li><li>Open circle at 10, shaded right</li></ol>
+  <p class="tryit-num">1. A graph shows a closed circle at -2 shaded to the right. Which inequality is it?</p>
+  <ol class="try-choices" type="A"><li>x ≥ -2</li><li>x &gt; -2</li><li>x ≤ -2</li><li>x &lt; -2</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A number line shows a closed circle at 8 and is shaded to the left. Which inequality does this represent?</p>
-  <ol class="try-choices" type="A"><li>x ≤ 8</li><li>x &lt; 8</li><li>x ≥ 8</li><li>x &gt; 8</li></ol>
+  <p class="tryit-num">2. Which value is a solution to x &lt; 4?</p>
+  <ol class="try-choices" type="A"><li>3</li><li>4</li><li>5</li><li>6</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -552,7 +558,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. Closed circle at 10, shaded left <span class="ak-why">— x ≤ 10 means 10 IS included (closed circle) and values less than or equal to 10 are shaded (left).</span></li><li><strong>Try It 2:</strong> A. x ≤ 8 <span class="ak-why">— Closed circle means the value is included (≤ or ≥). Shaded left means less than or equal to: x ≤ 8.</span></li><li><strong>Exit Ticket:</strong> A. Closed circle at 9, shaded right <span class="ak-why">— x ≥ 9 means 9 is included (closed circle) and values are 9 or greater (shaded right).</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. Closed circle at 3, shaded right <span class="ak-why">— x ≥ 3 means 3 IS included (closed circle) and values greater than or equal to 3 are shaded (right).</span></li><li><strong>You Try (notes):</strong> A. Open circle at 8, shaded right <span class="ak-why">— x &gt; 8 means 8 is NOT included (open circle) and values greater than 8 are shaded to the right.</span></li><li><strong>Try It 1:</strong> A. x ≥ -2 <span class="ak-why">— Closed circle means 'or equal to'; shaded right means greater: x ≥ -2.</span></li><li><strong>Try It 2:</strong> A. 3 <span class="ak-why">— Only 3 is less than 4.</span></li><li><strong>Exit Ticket:</strong> A. Closed circle at 9, shaded right <span class="ak-why">— x ≥ 9 means 9 is included (closed circle) and values are 9 or greater (shaded right).</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Boundary point is the number on the number line where the solution set starts.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 7-5 · Standard 6.EE.8</footer>

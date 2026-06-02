@@ -6,6 +6,7 @@ import {
   vocabImageAlt,
 } from "../engine/core/vocab-images.js";
 import { deriveTWR } from "../engine/core/twr.js";
+import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -93,7 +94,95 @@ ${cards}
 // color-coded numbered steps (Notice → Key idea → Words I'll use) and a guided
 // "Watch → We try → You try" mini-frame with blank work lines. Everything is
 // grounded in existing config fields; no math facts are invented.
-function notesSection(cfg = {}) {
+function choiceOl(choices) {
+  if (!Array.isArray(choices) || !choices.length) return "";
+  return `<ol class="try-choices" type="A">${choices
+    .map((c) => `<li>${esc(c)}</li>`)
+    .join("")}</ol>`;
+}
+
+// Render the gradual-release worked frame (I Do → We Do → You Do) using real
+// practice problems. The I-Do is fully solved in numbered steps; We-Do/You-Do
+// give the same scaffold with blank work space. Answers live in the Answer Key.
+function workedFrame(worked) {
+  if (!worked || !worked.iDo) {
+    // No usable practice items — fall back to a generic guided frame.
+    return `<div class="notes-gradual">
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 Watch</span>
+      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
+      ${blankLines(1)}
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We try</span>
+      <p class="notes-gr-cue">Solve the next one together as a class.</p>
+      ${blankLines(2)}
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You try</span>
+      <p class="notes-gr-cue">Now try one on your own.</p>
+      ${blankLines(2)}
+    </div>
+  </div>`;
+  }
+
+  const { iDo, weDo, youDo } = worked;
+
+  const iSteps = iDo.steps
+    .map(
+      (s, i) =>
+        `<li class="wk-step"><span class="wk-steplabel">Step ${i + 1}</span> ${esc(s)}</li>`,
+    )
+    .join("");
+  const iDoHtml = `<div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(iDo.problem)}</p>
+      ${choiceOl(iDo.choices)}
+      <ol class="wk-steps">${iSteps}</ol>
+      ${iDo.answer ? `<p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> ${esc(iDo.answer)}</p>` : ""}
+    </div>`;
+
+  // We-Do: same problem-then-steps scaffold, but blank for the class to fill.
+  let weDoHtml = "";
+  if (weDo) {
+    const stepCount = Math.min(Math.max(iDo.steps.length, 2), 3);
+    const blankSteps = Array.from(
+      { length: stepCount },
+      (_, i) =>
+        `<li class="wk-step wk-step-blank"><span class="wk-steplabel">Step ${i + 1}</span><span class="writeline"></span></li>`,
+    ).join("");
+    weDoHtml = `<div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
+      ${choiceOl(weDo.choices)}
+      <ol class="wk-steps wk-steps-blank">${blankSteps}</ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+    </div>`;
+  }
+
+  // You-Do: one more problem to try independently.
+  let youDoHtml = "";
+  if (youDo) {
+    youDoHtml = `<div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(youDo.problem)}</p>
+      ${choiceOl(youDo.choices)}
+      <div class="work-space"><span class="ws-label">Show your work:</span>${blankLines(3)}</div>
+    </div>`;
+  }
+
+  return `<div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
+    ${iDoHtml}
+    ${weDoHtml}
+    ${youDoHtml}
+  </div>`;
+}
+
+function notesSection(cfg = {}, worked = null) {
   const launch = cfg.launch || {};
   const explore = cfg.explore || {};
 
@@ -183,24 +272,8 @@ function notesSection(cfg = {}) {
   </div>`
     : "";
 
-  // Guided "Watch → We try → You try" mini-frame with blank work lines.
-  const gradualHtml = `<div class="notes-gradual">
-    <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      ${blankLines(1)}
-    </div>
-    <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      ${blankLines(2)}
-    </div>
-    <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      ${blankLines(2)}
-    </div>
-  </div>`;
+  // Guided "I Do → We Do → You Do" mini-frame with real worked problems.
+  const gradualHtml = workedFrame(worked);
 
   return `<section class="section notes">
   <h2>Key Ideas &amp; Notes</h2>
@@ -339,62 +412,13 @@ function turnAndTalkSection(cfg) {
 </section>`;
 }
 
-// Build worked-example HTML for an MC / open-response / error-analysis item.
-function workedExample(item, n) {
-  let body = "";
-  const problem = item.stem || item.instructions || item.title || "";
-
-  if (item.type === "error-analysis") {
-    const steps = (item.workedExample || [])
-      .map(
-        (s) =>
-          `<li><span class="step-label">${esc(s.label)}:</span> ${esc(s.work)}</li>`
-      )
-      .join("");
-    body = `<p class="ex-problem">${esc(item.title || "Error Analysis")}</p>
-    <ol class="ex-steps">${steps}</ol>
-    <p class="ex-solution"><strong>Correct reasoning:</strong> ${esc(item.correctWork)}</p>`;
-  } else if (item.type === "fill-table") {
-    body = `<p class="ex-problem">${esc(problem)}</p>
-    <p class="ex-solution">${esc((item.editableCells || []).map((c) => c.answer).filter(Boolean).join("; "))}</p>`;
-  } else {
-    let answerLine = "";
-    if (Array.isArray(item.choices) && typeof item.correctIndex === "number") {
-      answerLine = `<p class="ex-answer"><strong>Answer:</strong> ${choiceLetter(item.correctIndex)}. ${esc(item.choices[item.correctIndex])}</p>`;
-    } else if (item.sampleAnswer) {
-      answerLine = `<p class="ex-answer"><strong>Sample answer:</strong> ${esc(item.sampleAnswer)}</p>`;
-    }
-    body = `<p class="ex-problem">${esc(problem)}</p>
-    <p class="ex-solution"><strong>Solution:</strong> ${esc(item.explanation || item.sampleAnswer || "")}</p>
-    ${answerLine}`;
-  }
-
-  return `<div class="example">
-  <h3 class="example-head">Example ${n}</h3>
-  ${body}
-</div>`;
-}
-
 function gatherPractice(practice = {}) {
-  return []
-    .concat(practice.approaching || [], practice.onLevel || [], practice.extending || []);
-}
-
-function examplesSection(practice = {}) {
-  const items = gatherPractice(practice);
-  // Prefer items that have an explanation or worked content for examples.
-  const candidates = items.filter(
-    (it) =>
-      (it.stem && it.explanation) ||
-      it.type === "error-analysis" ||
-      (it.type === "open-response" && it.sampleAnswer)
+  return [].concat(
+    practice.approaching || [],
+    practice.onLevel || [],
+    practice.extending || [],
+    practice.optional || [],
   );
-  const chosen = candidates.slice(0, 3);
-  if (!chosen.length) return "";
-  return `<section class="section examples">
-  <h2>Guided Examples</h2>
-  ${chosen.map((it, i) => workedExample(it, i + 1)).join("\n")}
-</section>`;
 }
 
 function tryItProblem(it, i) {
@@ -411,9 +435,11 @@ function tryItProblem(it, i) {
 </div>`;
 }
 
-function tryItSection(practice = {}) {
-  const items = gatherPractice(practice).filter((it) => it.stem);
-  // Pick a couple that were not necessarily used above; take from middle/end.
+function tryItSection(practice = {}, usedStems = new Set()) {
+  const items = gatherPractice(practice).filter(
+    (it) => it.stem && !usedStems.has(it.stem),
+  );
+  // Pick a couple that were not used in the guided notes frame.
   const picks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
   if (!picks.length) return "";
   const probs = picks.map((it, i) => tryItProblem(it, i)).join("\n");
@@ -488,11 +514,30 @@ function reflectSection(reflect = {}) {
 </section>`;
 }
 
-function answerKeySection(practice = {}, reflect = {}, config = null) {
+function answerKeySection(
+  practice = {},
+  reflect = {},
+  config = null,
+  worked = null,
+  usedStems = new Set(),
+) {
   const rows = [];
   let n = 1;
-  // Try It picks mirrored from tryItSection logic.
-  const items = gatherPractice(practice).filter((it) => it.stem);
+  // Guided-notes "We Do / You Do" answers come first so teachers can check the
+  // worked frame before the independent practice.
+  if (worked && Array.isArray(worked.keyRows)) {
+    worked.keyRows.forEach((r) => {
+      rows.push(
+        `<li><strong>${esc(r.label)}:</strong> ${esc(r.answer)}${
+          r.why ? ` <span class="ak-why">— ${esc(r.why)}</span>` : ""
+        }</li>`,
+      );
+    });
+  }
+  // Try It picks mirrored from tryItSection logic (same exclusion).
+  const items = gatherPractice(practice).filter(
+    (it) => it.stem && !usedStems.has(it.stem),
+  );
   const tryPicks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
   tryPicks.forEach((it) => {
     let ans = "";
@@ -700,6 +745,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -832,6 +891,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -877,6 +940,8 @@ function missionBanner(cfg) {
 }
 
 function buildPacket(id, cfg, isFlagship) {
+  const worked = deriveWorkedSteps(cfg);
+  const usedStems = new Set(worked.usedStems || []);
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
   const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
@@ -918,13 +983,12 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   </header>
   ${missionBanner(cfg)}
   ${vocabSection(cfg.vocabulary)}
-  ${notesSection(cfg)}
+  ${notesSection(cfg, worked)}
   ${turnAndTalkSection(cfg)}
-  ${examplesSection(cfg.practice)}
   ${twrSection(cfg)}
-  ${tryItSection(cfg.practice)}
+  ${tryItSection(cfg.practice, usedStems)}
   ${reflectSection(cfg.reflect)}
-  ${answerKeySection(cfg.practice, cfg.reflect, cfg)}
+  ${answerKeySection(cfg.practice, cfg.reflect, cfg, worked, usedStems)}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
 </main>
 </body>
