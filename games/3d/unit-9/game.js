@@ -134,8 +134,13 @@ export default {
     const grid = createGrid(ctx, { n: N, cell: 1 });
 
     // Coordinate <-> vertex-index conversions.
-    const coordToVertex = (x, y) => ({ i: x + HALF, j: y + HALF });
-    const vertexToCoord = (i, j) => ({ x: i - HALF, y: j - HALF });
+    // +y must read "up and away" from the camera (standard coordinate-plane
+    // orientation). The grid's +Z runs toward the camera, so invert y→j: larger
+    // y maps to a smaller j (further into the screen). All consumers (beacon,
+    // targets, reflections, distance, axis labels, pointer picking) route
+    // through these two helpers, so the flip stays globally consistent.
+    const coordToVertex = (x, y) => ({ i: x + HALF, j: HALF - y });
+    const vertexToCoord = (i, j) => ({ x: i - HALF, y: HALF - j });
     const coordToWorld = (x, y) => {
       const { i, j } = coordToVertex(x, y);
       return grid.vertexWorld(i, j);
@@ -203,15 +208,23 @@ export default {
       for (let c = cfg.minCoord; c <= cfg.maxCoord; c++) {
         if (c === 0) continue;
         // X-axis numbers: nudged just below the x-axis so they don't sit on it.
-        const lx = makeLabel(String(c), { scale: 0.9, fontSize: 80 });
+        const lx = makeLabel(String(c), {
+          scale: 1.1,
+          fontSize: 96,
+          color: "#eaf4ff",
+        });
         const wx = coordToWorld(c, 0);
-        lx.position.set(wx.x, 0.55, wx.z + 0.5);
+        lx.position.set(wx.x, 0.6, wx.z + 0.5);
         grid.group.add(lx);
         labels.push(lx);
         // Y-axis numbers: nudged just left of the y-axis to avoid overlap.
-        const ly = makeLabel(String(c), { scale: 0.9, fontSize: 80 });
+        const ly = makeLabel(String(c), {
+          scale: 1.1,
+          fontSize: 96,
+          color: "#eaf4ff",
+        });
         const wy = coordToWorld(0, c);
-        ly.position.set(wy.x - 0.5, 0.55, wy.z);
+        ly.position.set(wy.x - 0.5, 0.6, wy.z);
         grid.group.add(ly);
         labels.push(ly);
       }
