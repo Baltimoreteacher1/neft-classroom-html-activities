@@ -70,6 +70,14 @@ function showIdentityScreen(root, config) {
       <div class="identity-emoji">${themeEmoji}</div>
       <h1 class="identity-title">${escHtml(config.title)}</h1>
       <p class="identity-sub">${escHtml(config.standard)} · Unit ${config.unit}</p>
+      ${
+        config.readiness
+          ? `<a class="identity-readiness" href="/lessons/${encodeURIComponent(config.lessonId)}/readiness/" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
+              <span style="font-size:1.5rem;" aria-hidden="true">📚</span>
+              <span><strong>New to this topic?</strong> Take the quick 10-minute Get Ready check first — it finds what you're missing. <span style="white-space:nowrap; font-weight:700; color:var(--blue,#1a6fb5);">Start &rarr;</span></span>
+            </a>`
+          : ""
+      }
       <div class="identity-form">
         <label for="id-name">Your Name</label>
         <input id="id-name" type="text" placeholder="First name Last initial" autocomplete="off" />
