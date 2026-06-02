@@ -423,6 +423,7 @@ function htmlPacket(skill) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(skill.title)} · MCAP ${esc(skill.code)} · Neft Teacher</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/shared.css">
 <style>
   :root{ --domain:#${skill.domainColor}; --navy:#12355B; --teal:#1FA6A2; --amber:#B97A12; --purple:#6B4FA0; --ink:#1A2733; --muted:#5F6F80; }
@@ -556,6 +557,7 @@ function hubIndex() {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MCAP Grade 6 Review Packets · Neft Teacher</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/shared.css">
 <style>
   *{box-sizing:border-box}
