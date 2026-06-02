@@ -1145,9 +1145,256 @@
           grid-template-columns: 1fr;
         }
       }
+
+      /* ===== Enhancement layer: clarity, progress & usability for virtual PD ===== */
+
+      /* Skip link for keyboard / screen-reader users */
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 60;
+        background: var(--navy);
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 0 0 12px 0;
+        font-weight: 900;
+      }
+      .skip-link:focus {
+        left: 0;
+      }
+
+      /* Auto-save status pill in the header */
+      .save-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 900;
+        color: var(--teal);
+        white-space: nowrap;
+      }
+      .save-pill .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--teal2);
+        flex: 0 0 auto;
+      }
+      .save-pill.saving {
+        color: var(--gold);
+      }
+      .save-pill.saving .dot {
+        background: var(--gold);
+        animation: pulse 0.9s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.35;
+        }
+      }
+
+      /* Per-group progress header */
+      .group-progress {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--soft);
+        padding: 14px 18px;
+        margin-bottom: 16px;
+      }
+      .group-progress .gp-label {
+        font-weight: 900;
+        color: var(--navy);
+        font-size: 14px;
+        flex: 0 0 auto;
+      }
+      .group-progress .gp-track {
+        flex: 1 1 180px;
+        height: 12px;
+        border-radius: 999px;
+        background: var(--sage);
+        overflow: hidden;
+        min-width: 140px;
+      }
+      .group-progress .gp-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--teal), var(--teal2));
+        transition: width 0.35s ease;
+      }
+      .group-progress .gp-count {
+        font-weight: 900;
+        color: var(--teal);
+        font-size: 13px;
+        flex: 0 0 auto;
+      }
+      .group-progress.complete .gp-fill {
+        background: linear-gradient(90deg, var(--gold), #f1ca6b);
+      }
+      .group-progress.complete .gp-count {
+        color: var(--gold);
+      }
+      .group-progress .gp-reset {
+        margin-left: auto;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-weight: 900;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .group-progress .gp-reset:hover {
+        color: var(--terracotta);
+        border-color: var(--terracotta);
+      }
+
+      /* Step completion state */
+      .steps li {
+        position: relative;
+        transition: background 0.2s ease;
+      }
+      .steps li.done {
+        background: linear-gradient(
+          90deg,
+          rgba(79, 182, 179, 0.08),
+          transparent 60%
+        );
+      }
+      .steps li.done .step-head span {
+        background: var(--teal);
+        font-size: 0;
+      }
+      .steps li.done .step-head span::after {
+        content: "✓";
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      /* Completion badge on group menu cards */
+      .gp-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        border-radius: 999px;
+        padding: 4px 11px;
+        font-size: 12px;
+        font-weight: 900;
+        background: var(--sage);
+        color: var(--teal);
+      }
+      .gp-badge.complete {
+        background: rgba(224, 169, 60, 0.18);
+        color: #9a6f12;
+      }
+      .gp-badge.empty {
+        background: #f1f1ee;
+        color: var(--muted);
+      }
+
+      /* Gallery item readiness badge */
+      .gallery-item {
+        position: relative;
+      }
+      .ready-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 4px 11px;
+        font-size: 12px;
+        font-weight: 900;
+        margin-bottom: 8px;
+        background: #f1f1ee;
+        color: var(--muted);
+      }
+      .ready-badge.ready {
+        background: rgba(224, 169, 60, 0.18);
+        color: #9a6f12;
+      }
+      .ready-badge.progress {
+        background: rgba(79, 182, 179, 0.16);
+        color: var(--teal);
+      }
+
+      /* Copy button success flash */
+      .btn.copied {
+        background: var(--teal) !important;
+        color: #fff !important;
+      }
+
+      /* Stronger, consistent keyboard focus */
+      a:focus-visible,
+      button:focus-visible,
+      textarea:focus-visible,
+      select:focus-visible,
+      input:focus-visible,
+      .tab-btn:focus-visible {
+        outline: 3px solid var(--teal2);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 640px) {
+        .group-progress .gp-reset {
+          margin-left: 0;
+        }
+      }
+
+      /* Print: clean facilitator/participant handout */
+      @media print {
+        .top,
+        .skip-link,
+        .toast,
+        .tabs,
+        .action-row,
+        .top-actions,
+        .gp-reset,
+        .padlet-callout,
+        .btn {
+          display: none !important;
+        }
+        body {
+          background: #fff;
+          padding: 0;
+        }
+        html.js .page {
+          display: block !important;
+        }
+        .page {
+          animation: none;
+          page-break-after: always;
+        }
+        .scenario-card,
+        .work-card,
+        .post-card,
+        .card,
+        .group-progress {
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+        textarea,
+        select,
+        input {
+          border: 1px solid #ccc;
+        }
+      }
     </style>
   </head>
   <body>
+    <a class="skip-link" href="#launch">Skip to content</a>
     <header class="top">
       <div class="top-inner">
         <div class="brand">
@@ -1159,6 +1406,15 @@
             </div>
           </div>
           <div class="rule" aria-label="Design principles">
+            <span
+              class="save-pill"
+              id="savePill"
+              role="status"
+              aria-live="polite"
+              title="Your work saves automatically in this browser"
+              ><span class="dot"></span
+              ><span class="save-text">Saved</span></span
+            >
             <span class="chip">Barrier removed</span>
             <span class="chip">Thinking preserved</span>
             <span class="chip">Target unchanged</span>
@@ -3261,8 +3517,23 @@
       const $$ = (selector, root = document) =>
         Array.from(root.querySelectorAll(selector));
 
+      let savePillTimer = null;
+      function flagSaved() {
+        const pill = $("#savePill");
+        if (!pill) return;
+        const text = $(".save-text", pill);
+        pill.classList.add("saving");
+        if (text) text.textContent = "Saving…";
+        window.clearTimeout(savePillTimer);
+        savePillTimer = window.setTimeout(() => {
+          pill.classList.remove("saving");
+          if (text) text.textContent = "Saved";
+        }, 550);
+      }
+
       function save() {
         localStorage.setItem(STORE, JSON.stringify(state));
+        flagSaved();
       }
 
       function key(groupId, field) {
@@ -3277,7 +3548,138 @@
         state[key(groupId, field)] = value;
         save();
         updateGroup(groupId);
+        refreshProgress(groupId);
         renderGallery();
+      }
+
+      /* Which fields count as "complete" for each numbered step. */
+      const STEP_FIELDS = [
+        ["barrier"],
+        ["thinking"],
+        ["before"],
+        ["feedback"],
+        ["after"],
+        ["osamr", "evidence"],
+      ];
+      const TOTAL_STEPS = STEP_FIELDS.length;
+
+      function stepDone(groupId, index) {
+        return STEP_FIELDS[index].every((field) =>
+          getValue(groupId, field).trim(),
+        );
+      }
+
+      function completedSteps(groupId) {
+        let count = 0;
+        for (let i = 0; i < TOTAL_STEPS; i += 1) {
+          if (stepDone(groupId, i)) count += 1;
+        }
+        return count;
+      }
+
+      /* Build the progress + reset header inside each group page. */
+      function buildProgressHeaders() {
+        GROUPS.forEach((group) => {
+          const page = document.getElementById(`group-${group.id}`);
+          if (!page || $(".group-progress", page)) return;
+          const grid = $(".workspace-grid", page);
+          if (!grid) return;
+          const header = document.createElement("div");
+          header.className = "group-progress";
+          header.dataset.group = group.id;
+          header.innerHTML = `
+            <span class="gp-label">Your progress</span>
+            <span class="gp-track" role="progressbar" aria-valuemin="0" aria-valuemax="${TOTAL_STEPS}" aria-valuenow="0" aria-label="Steps complete">
+              <span class="gp-fill"></span>
+            </span>
+            <span class="gp-count">0 of ${TOTAL_STEPS} steps</span>
+            <button type="button" class="gp-reset" data-reset-group="${group.id}">Reset this page</button>`;
+          grid.parentNode.insertBefore(header, grid);
+        });
+      }
+
+      function refreshProgress(groupId) {
+        const group = groupById(groupId);
+        if (!group) return;
+        const done = completedSteps(groupId);
+
+        // Header bar
+        const header = $(`.group-progress[data-group="${groupId}"]`);
+        if (header) {
+          const pct = Math.round((done / TOTAL_STEPS) * 100);
+          $(".gp-fill", header).style.width = `${pct}%`;
+          const count = $(".gp-count", header);
+          count.textContent =
+            done === TOTAL_STEPS
+              ? `Complete — ${TOTAL_STEPS} of ${TOTAL_STEPS} steps`
+              : `${done} of ${TOTAL_STEPS} steps`;
+          header.classList.toggle("complete", done === TOTAL_STEPS);
+          const track = $(".gp-track", header);
+          if (track) track.setAttribute("aria-valuenow", String(done));
+        }
+
+        // Per-step checkmarks
+        const page = document.getElementById(`group-${groupId}`);
+        if (page) {
+          $$(".steps > li", page).forEach((li, index) => {
+            li.classList.toggle("done", stepDone(groupId, index));
+          });
+        }
+
+        // Group-menu badge
+        const badge = $(`.gp-badge[data-group="${groupId}"]`);
+        if (badge) {
+          badge.classList.toggle("complete", done === TOTAL_STEPS);
+          badge.classList.toggle("empty", done === 0);
+          badge.textContent =
+            done === 0
+              ? "Not started"
+              : done === TOTAL_STEPS
+                ? "All 6 steps done"
+                : `${done} of ${TOTAL_STEPS} steps`;
+        }
+      }
+
+      /* Add a live progress badge to each group-menu card. */
+      function buildMenuBadges() {
+        $$(".group-menu .group-card").forEach((card) => {
+          const link = $("[data-open-page^='group-']", card);
+          if (!link || $(".gp-badge", card)) return;
+          const groupId = link.dataset.openPage.replace("group-", "");
+          const badge = document.createElement("span");
+          badge.className = "gp-badge empty";
+          badge.dataset.group = groupId;
+          badge.textContent = "Not started";
+          link.parentNode.insertBefore(badge, link);
+        });
+      }
+
+      function resetGroup(groupId) {
+        const group = groupById(groupId);
+        if (!group) return;
+        const ok = window.confirm(
+          `Clear all of your answers on the Group ${groupId} page? This cannot be undone.`,
+        );
+        if (!ok) return;
+        [
+          "barrier",
+          "thinking",
+          "before",
+          "feedback",
+          "after",
+          "osamr",
+          "evidence",
+        ].forEach((field) => {
+          delete state[key(groupId, field)];
+        });
+        save();
+        $$(`[data-group="${groupId}"][data-field]`).forEach((input) => {
+          input.value = "";
+        });
+        updateGroup(groupId);
+        refreshProgress(groupId);
+        renderGallery();
+        showToast(`Group ${groupId} page reset`);
       }
 
       function showToast(message = "Copied") {
@@ -3460,9 +3862,20 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         const list = $("#galleryList");
         if (!list) return;
 
-        list.innerHTML = GROUPS.map(
-          (group) => `
+        list.innerHTML = GROUPS.map((group) => {
+          const done = completedSteps(group.id);
+          let badgeClass = "";
+          let badgeText = "Not started";
+          if (done === TOTAL_STEPS) {
+            badgeClass = "ready";
+            badgeText = "✓ Ready to post";
+          } else if (done > 0) {
+            badgeClass = "progress";
+            badgeText = `In progress — ${done} of ${TOTAL_STEPS}`;
+          }
+          return `
         <article class="gallery-item">
+          <span class="ready-badge ${badgeClass}">${badgeText}</span>
           <h3>Group ${group.id} — ${group.short}</h3>
           <pre>${escapeHtml(postFor(group.id))}</pre>
           <div class="action-row">
@@ -3470,8 +3883,8 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
             <button class="btn primary" type="button" data-copy-post="${group.id}">Copy post</button>
           </div>
         </article>
-      `,
-        ).join("");
+      `;
+        }).join("");
       }
 
       function escapeHtml(value) {
@@ -3498,7 +3911,24 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         URL.revokeObjectURL(url);
       }
 
+      function flashCopied(button) {
+        if (!button || !button.classList.contains("btn")) return;
+        const original = button.textContent;
+        button.classList.add("copied");
+        button.textContent = "Copied ✓";
+        window.setTimeout(() => {
+          button.classList.remove("copied");
+          button.textContent = original;
+        }, 1400);
+      }
+
       document.addEventListener("click", async (event) => {
+        const resetButton = event.target.closest("[data-reset-group]");
+        if (resetButton) {
+          resetGroup(resetButton.dataset.resetGroup);
+          return;
+        }
+
         const pageLink = event.target.closest(
           "[data-open-page], .tab-btn[data-page]",
         );
@@ -3515,6 +3945,7 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
           showToast(
             copied ? "Gemini coach prompt copied" : "Prompt ready to copy",
           );
+          if (copied) flashCopied(promptButton);
           return;
         }
 
@@ -3523,9 +3954,37 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
           const groupId = postButton.dataset.copyPost;
           const copied = await copyText(postFor(groupId));
           showToast(copied ? "Padlet post copied" : "Post ready to copy");
+          if (copied) flashCopied(postButton);
           return;
         }
       });
+
+      /* Arrow-key navigation across the header tablist (roving focus). */
+      function initTabKeyboardNav() {
+        const tabs = $$(".tabs .tab-btn");
+        if (!tabs.length) return;
+        const tablist = $(".tabs");
+        tablist.addEventListener("keydown", (event) => {
+          const current = document.activeElement;
+          const index = tabs.indexOf(current);
+          if (index === -1) return;
+          let next = null;
+          if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+            next = tabs[(index + 1) % tabs.length];
+          } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+            next = tabs[(index - 1 + tabs.length) % tabs.length];
+          } else if (event.key === "Home") {
+            next = tabs[0];
+          } else if (event.key === "End") {
+            next = tabs[tabs.length - 1];
+          }
+          if (next) {
+            event.preventDefault();
+            next.focus();
+            openPage(next.dataset.page);
+          }
+        });
+      }
 
       window.addEventListener("hashchange", () => {
         openPage(location.hash.replace("#", ""), false);
@@ -3536,9 +3995,13 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         downloadButton.addEventListener("click", downloadResponses);
 
       hydrateInputs();
+      buildProgressHeaders();
+      buildMenuBadges();
+      GROUPS.forEach((group) => refreshProgress(group.id));
       renderGallery();
+      initTabKeyboardNav();
       openPage(location.hash.replace("#", "") || "launch", false);
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
   </body>
 </html>
