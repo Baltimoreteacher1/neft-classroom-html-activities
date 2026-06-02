@@ -15,9 +15,19 @@
 - **Verified by serving locally + screenshotting both hub pages:** grids render clean, no empty/broken cards, winners present, retired paths 404 locally (301 on Cloudflare).
 - **Phase 1 correction:** `statistics-data/6-sp-a-1game-2` = distinct **"News Reporter"** game, NOT a duplicate. Kept.
 
-## 🛑 BLOCKED — unit fold cannot proceed until a curriculum-integrity decision is made
+## ✅ DECISION (2026-06-02): physical folder fold WILL NOT be done
 
-**The repo has TWO conflicting unit-numbering systems, and the `math/unit-N` hubs are internally inconsistent.** Folding activities "by unit" now would freeze the contradiction into the live site.
+Asked to "decide what is best," the call is: **do not execute the physical "one-folder-per-unit" move.** Rationale:
+
+- The original goal — every activity discoverable from its unit + pre-lessons visible with lessons — is **already achieved and live** via in-place integration (unit-hub link sections + lesson-gate Get-Ready banner), with **zero URL breakage**.
+- The physical fold only buys folder-path tidiness (paths students never see) at the cost of the task's stated #1 risk: breaking live student/Canvas URLs across ~90 folders.
+- The unit numbering is internally contradictory / in-flux (the `feature/curriculum-integrity-auditor` work), and the canonical choice depends on which numbering Joel's Canvas links use — info only Joel has. Guessing it would misfile content site-wide.
+
+**If Joel later wants the physical fold anyway**, the map below still applies — but first confirm the canonical numbering and fix the unit-7/8/9 hub→lesson wiring. Until then, this is intentionally not done, not "pending."
+
+## Reference: the unit-numbering contradiction (kept for future work)
+
+**The repo has TWO conflicting unit-numbering systems, and the `math/unit-N` hubs are internally inconsistent.** Folding activities "by unit" would freeze the contradiction into the live site.
 
 ### Verified classroom `math/unit-N` map (from hub titles) vs. Reveal `lessons/N-x`
 
