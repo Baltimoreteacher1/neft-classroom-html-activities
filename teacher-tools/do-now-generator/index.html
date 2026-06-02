@@ -508,11 +508,94 @@ Build some questions first (step 1).</pre
                 <!-- APPS SCRIPT -->
                 <div class="export-panel" data-exp="gs">
                   <p class="muted">
-                    Paste this into <code>script.google.com</code> → New
-                    project, then Run <code>buildDoNowForm</code>. Google's
-                    <code>FormApp</code> creates the Form in your Drive and logs
-                    its URL. This site never sees your Google account.
+                    Generate a self-contained Apps Script, then run it in
+                    <strong>your own</strong> Google account — this site never
+                    sees your login. Pick what you want it to build:
                   </p>
+
+                  <div
+                    class="gs-target"
+                    role="radiogroup"
+                    aria-label="What to generate"
+                  >
+                    <button
+                      class="gs-target-btn"
+                      data-gstarget="form"
+                      role="radio"
+                      aria-checked="true"
+                      type="button"
+                    >
+                      <strong>Google Form (quiz)</strong>
+                      <span class="muted"
+                        >Real graded form. Correct answers become the answer
+                        key, 1 pt each, with feedback.</span
+                      >
+                    </button>
+                    <button
+                      class="gs-target-btn"
+                      data-gstarget="doc"
+                      role="radio"
+                      aria-checked="false"
+                      type="button"
+                    >
+                      <strong>Google Doc</strong>
+                      <span class="muted"
+                        >Printable worksheet — Student or Answer Key
+                        version.</span
+                      >
+                    </button>
+                    <button
+                      class="gs-target-btn"
+                      data-gstarget="slides"
+                      role="radio"
+                      aria-checked="false"
+                      type="button"
+                    >
+                      <strong>Google Slides</strong>
+                      <span class="muted"
+                        >One projectable slide per question, plus answer
+                        slides.</span
+                      >
+                    </button>
+                  </div>
+
+                  <label
+                    class="inline gs-docmode"
+                    id="gsDocModeWrap"
+                    for="gsDocMode"
+                    hidden
+                    style="
+                      margin: 6px 0 0;
+                      display: inline-flex;
+                      gap: 8px;
+                      align-items: center;
+                    "
+                  >
+                    Doc version
+                    <select id="gsDocMode" style="width: auto">
+                      <option value="student">Student (no answers)</option>
+                      <option value="key">Answer Key (answers marked)</option>
+                    </select>
+                  </label>
+
+                  <ol class="steps" style="margin: 14px 0 4px">
+                    <li>
+                      Open
+                      <code>script.google.com</code> →
+                      <strong>New project</strong>.
+                    </li>
+                    <li>
+                      Delete the sample code, then paste the script below.
+                    </li>
+                    <li>
+                      Click <strong>Run</strong> → authorize (first time only).
+                    </li>
+                    <li>
+                      Your Form / Doc / Slides appears in your
+                      <strong>Google Drive</strong> (the URL is also logged).
+                    </li>
+                  </ol>
+
                   <div class="button-row">
                     <button class="btn primary" id="copyCode" type="button">
                       Copy code

@@ -617,6 +617,62 @@ pre.code {
   display: block;
 }
 
+/* Apps Script target selector (Form / Doc / Slides) */
+.gs-target {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 4px 0 6px;
+}
+.gs-target-btn {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--text);
+  font-weight: 600;
+}
+.gs-target-btn strong {
+  font-size: 0.98rem;
+}
+.gs-target-btn .muted {
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.gs-target-btn:hover {
+  border-color: var(--teal);
+}
+.gs-target-btn[aria-checked="true"] {
+  border-color: var(--teal);
+  background: var(--info-bg);
+  box-shadow: var(--focus);
+}
+.gs-docmode {
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.gs-docmode select {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 6px 9px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+@media (max-width: 700px) {
+  .gs-target {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Student / answer-key sheet */
 .sheet {
   background: var(--paper-2);
@@ -703,7 +759,9 @@ ol.sheet-choices {
   justify-content: center;
   text-align: center;
   background: var(--paper-2);
-  transition: border-color 0.16s ease, background 0.16s ease;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease;
 }
 .slide-drop.drag {
   border-color: var(--teal);
