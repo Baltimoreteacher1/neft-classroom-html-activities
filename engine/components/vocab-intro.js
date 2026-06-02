@@ -1,9 +1,9 @@
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
 import { exploreLabel, openExplorer } from "./vocab-explore.js";
 
-function vocabImageEl(term, definition) {
+function vocabImageEl(term, definition, override) {
   const fig = document.createElement("img");
-  fig.src = resolveVocabImage(term);
+  fig.src = resolveVocabImage(term, override);
   fig.alt = vocabImageAlt(term, definition);
   fig.loading = "lazy";
   fig.style.cssText = `
@@ -56,7 +56,7 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     studyView.style.cssText =
       "display:flex; flex-direction:column; gap:var(--sp-3);";
 
-    studyView.append(vocabImageEl(t.term, t.definition));
+    studyView.append(vocabImageEl(t.term, t.definition, t.image));
     studyView.append(termEl);
 
     const defEl = document.createElement("div");

@@ -21,6 +21,33 @@
     document.documentElement.classList.remove("nt-dark");
   } catch (e) {}
 
+  // ---- embed mode --------------------------------------------------------
+  // When a page is opened with ?embed=1 (the lesson shell loads Readiness and
+  // Guided Notes inline this way), suppress the page's own standalone chrome
+  // — top bars, hero headers, breadcrumbs, in-page nav, and this script's own
+  // save bar — so the content sits flush inside the lesson frame. The page
+  // still works fully when opened on its own (no ?embed=1).
+  var IS_EMBED = false;
+  try {
+    IS_EMBED = /(?:^|[?&])embed=1(?:&|$)/.test(location.search);
+  } catch (e) {}
+  if (IS_EMBED) {
+    try {
+      document.documentElement.classList.add("nt-embed");
+      var ecss = document.createElement("style");
+      ecss.textContent = [
+        ".nt-embed .topbar,",
+        ".nt-embed .phero,",
+        ".nt-embed .breadcrumb,",
+        ".nt-embed .nav-links,",
+        ".nt-embed .nt-pe-bar{display:none !important;}",
+        ".nt-embed body{padding-top:0 !important;margin-top:0 !important;}",
+        ".nt-embed .wrap,.nt-embed .container,.nt-embed main{padding-top:16px !important;}",
+      ].join("");
+      (document.head || document.documentElement).appendChild(ecss);
+    } catch (e) {}
+  }
+
   // ---- favicon (most legacy pages ship without one) ----------------------
   try {
     if (!document.querySelector('link[rel~="icon"]')) {

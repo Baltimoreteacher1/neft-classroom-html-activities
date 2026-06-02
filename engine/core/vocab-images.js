@@ -316,7 +316,11 @@ const EXTRA_DEDICATED = new Set([
   "bar-model",
 ]);
 
-export function resolveVocabImage(term) {
+export function resolveVocabImage(term, override) {
+  // A vocab entry may pin an explicit image (e.g. when the generic term image
+  // would show the wrong example for this lesson). Honor it before any slug
+  // resolution. Accepts a path string as the 2nd arg.
+  if (override && typeof override === "string") return override;
   const slug = slugify(term);
   if (!slug) return `${BASE}/${CATEGORY.number}.svg`;
 

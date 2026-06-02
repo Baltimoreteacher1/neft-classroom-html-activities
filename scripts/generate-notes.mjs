@@ -68,7 +68,7 @@ function vocabSection(vocab = []) {
   if (!vocab.length) return "";
   const cards = vocab
     .map((v) => {
-      const imgSrc = resolveVocabImage(v.term);
+      const imgSrc = resolveVocabImage(v.term, v.image);
       const imgAlt = vocabImageAlt(v.term, v.definition);
       return `<div class="vocab-card">
   <div class="vocab-figure">
@@ -955,6 +955,8 @@ function buildPacket(id, cfg, isFlagship) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${esc(cfg.title)} — Notes Packet</title>
 ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
 </head>
 <body>
 <div class="topbar no-print">
