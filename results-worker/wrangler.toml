@@ -1,14 +1,14 @@
 # Neft results backend — Worker config.
-# DEV/PREVIEW ONLY in this file. Joel creates production separately (see README).
-name = "neft-results-dev"
+# The D1 below is the PRODUCTION database (neft-results), already created,
+# migrated, and seeded with the 'neft' teacher + 'P3-MATH' class. The only
+# remaining deploy step is uploading this Worker:  npx wrangler deploy
+# (requires an authenticated wrangler — could not run headless in-session).
+name = "neft-results"
 main = "src/worker.js"
 compatibility_date = "2026-05-25"
 
-# Create the dev database first:
-#   cd results-worker && npx wrangler d1 create neft-results-dev
-# Paste the returned database_id below. NEVER put a production id here.
 [[d1_databases]]
 binding = "DB"
-database_name = "neft-results-dev"
-database_id = "REPLACE_WITH_DEV_DB_ID"
+database_name = "neft-results"
+database_id = "a78b09a5-900f-482f-906b-65b69417a63f"
 migrations_dir = "migrations"
