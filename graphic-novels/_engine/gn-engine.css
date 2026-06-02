@@ -1,0 +1,956 @@
+/* ===========================================================================
+   Neft Teacher · Graphic-Novel Engine  ·  gn-engine.css
+   Panel-based, dialogue-driven comic renderer. Shared by all 20 novels.
+   Per-novel look is tuned only through CSS custom properties in STORY.meta.theme.
+   Accessibility: WCAG-AA bubbles, resizable text (rem/clamp), 48px targets,
+   keyboard focus rings, functional at 320px.
+   =========================================================================== */
+:root {
+  --bg: #0a1228;
+  --ink: #f4f7ff;
+  --muted: #aebbdd;
+  --accent: #ff8a3d;
+  --accent2: #3da5ff;
+  --panel: #13234d;
+  --line: #2a4378;
+  --ok: #39d98a;
+  --bad: #ff6b6b;
+  --bubble: #fffdf7;
+  --bubble-ink: #16213d;
+  --font: "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --reply: #13234d;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+a {
+  color: var(--accent2);
+}
+
+/* ---- Top bar ---- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(10, 18, 40, 0.96);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+.topbar-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.home {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 12px;
+}
+.home:hover {
+  color: var(--ink);
+}
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+.title .v {
+  color: var(--accent);
+}
+.progress-wrap {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress {
+  flex: 1;
+  height: 10px;
+  background: #0b1530;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  transition: width 0.4s ease;
+}
+.progress-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* text-size control */
+.txtsize {
+  min-height: 44px;
+  min-width: 44px;
+  border: 1px solid var(--line);
+  background: #0e1c40;
+  color: var(--muted);
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0 10px;
+}
+.txtsize:hover {
+  color: var(--ink);
+}
+.txtsize:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+body[data-text="lg"] {
+  font-size: 1.12rem;
+}
+body[data-text="xl"] {
+  font-size: 1.26rem;
+}
+
+/* ---- Tabs ---- */
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 14px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  scrollbar-width: thin;
+}
+.tab {
+  flex: 0 0 auto;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+.tab[aria-selected="true"] {
+  background: linear-gradient(135deg, var(--accent), #ff6a3d);
+  color: #1a0d02;
+  border-color: transparent;
+}
+.tab:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.tab.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.tab .lk {
+  font-size: 0.8rem;
+}
+
+/* ---- Stage ---- */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 14px;
+}
+.scene {
+  display: none;
+}
+.scene.active {
+  display: block;
+  animation: fade 0.35s ease;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  .scene.active {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.scene-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.scene-head h2 {
+  font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+}
+.scene-head .act {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ===========================================================================
+   PANEL  — a framed scene (background image) with characters speaking over it
+   =========================================================================== */
+.panel {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  background: #0b1530;
+  aspect-ratio: 16 / 9;
+}
+.panel > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* contrast scrim so overlaid bubbles always meet AA over any art */
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 12, 28, 0.1) 0%,
+    rgba(6, 12, 28, 0.05) 45%,
+    rgba(6, 12, 28, 0.62) 100%
+  );
+}
+/* speech layer holds the current beat's bubble(s) over the panel */
+.speech {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px;
+}
+.speech > * {
+  pointer-events: auto;
+}
+
+/* ---- Speech bubble (with tail + speaker tag + optional avatar) ---- */
+.bubble {
+  background: var(--bubble);
+  color: var(--bubble-ink);
+  border-radius: 16px;
+  padding: 12px 14px 12px;
+  position: relative;
+  max-width: min(560px, 86%);
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.75);
+  animation: pop 0.22s ease;
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.bubble.left {
+  align-self: flex-start;
+}
+.bubble.right {
+  align-self: flex-end;
+}
+.bubble.center {
+  align-self: center;
+}
+/* tail */
+.bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  width: 0;
+  height: 0;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 12px solid var(--bubble);
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.35));
+}
+.bubble.left::before {
+  left: 26px;
+}
+.bubble.right::before {
+  right: 26px;
+}
+.bubble.center::before {
+  left: 50%;
+  transform: translateX(-50%);
+}
+/* speaker tag (doubles as avatar holder) */
+.bubble .who {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+  color: var(--spk, #c2461d);
+}
+.bubble .who .av {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  overflow: hidden;
+  background: var(--spk, #c2461d);
+  border: 2px solid #fff3;
+}
+.bubble .who .av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bubble .who .me {
+  font-size: 0.62rem;
+  color: #8a6a55;
+  letter-spacing: 0.08em;
+}
+.bubble .en {
+  font-size: 1.05rem;
+}
+.bubble .es {
+  font-size: 0.92rem;
+  color: #566677;
+  margin-top: 6px;
+  font-style: italic;
+}
+/* narrator / caption styling */
+.bubble.caption {
+  background: #0e1c40;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  max-width: min(620px, 92%);
+}
+.bubble.caption::before {
+  border-top-color: #0e1c40;
+}
+.bubble.caption .es {
+  color: var(--muted);
+}
+.bubble.caption .who {
+  color: var(--accent2);
+}
+/* the companion's misconception line gets a subtle "uh-oh" mark */
+.bubble.misc {
+  box-shadow:
+    0 0 0 2px #ffd16688,
+    0 10px 26px -10px rgba(0, 0, 0, 0.75);
+}
+
+/* ---- Inline vocab tag (tap for definition popover) ---- */
+.vocab-tag {
+  font: inherit;
+  color: #0b4a82;
+  font-weight: 800;
+  cursor: pointer;
+  background: #bfe3ff;
+  border: none;
+  border-bottom: 2px dotted #0b4a82;
+  border-radius: 5px;
+  padding: 0 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.vocab-tag:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---- Popover (vocab + callout) ---- */
+.gn-pop {
+  position: fixed;
+  z-index: 60;
+  max-width: 280px;
+  background: #fffef9;
+  color: #16213d;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+}
+.gn-pop h4 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+  color: #c2461d;
+}
+.gn-pop .es {
+  font-style: italic;
+  color: #566677;
+  font-size: 0.88rem;
+  margin-top: 6px;
+}
+.gn-pop .x {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  border: none;
+  background: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #99a;
+  min-width: 32px;
+  min-height: 32px;
+}
+.gn-pop-back {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: transparent;
+}
+
+/* ---- Callout dot pinned to a spot on the panel ---- */
+.callout {
+  position: absolute;
+  z-index: 4;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #1a0d02;
+  border: 2px solid #fff;
+  font-weight: 900;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 0 rgba(255, 138, 61, 0.6);
+  animation: ping 1.8s infinite;
+}
+@keyframes ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 138, 61, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(255, 138, 61, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 138, 61, 0);
+  }
+}
+.callout:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ---- Beat controls (dots + Next) ---- */
+.dlg-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dots {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2a4378;
+}
+.dots i.on {
+  background: var(--accent);
+}
+.next {
+  min-height: 48px;
+  background: linear-gradient(135deg, var(--accent2), #5d7bff);
+  color: #02112a;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.next:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.next[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ===========================================================================
+   CHALLENGE  — math voiced by a character; choices = protagonist's replies
+   =========================================================================== */
+.challenge {
+  margin-top: 16px;
+}
+.challenge .ask-tray {
+  margin-bottom: 10px;
+} /* the question bubble lives in a tray under panel on small screens */
+.chal-tools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 4px 0 10px;
+}
+.toolbtn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  color: #ffd9b3;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.toolbtn[aria-expanded="true"] {
+  background: #3a2410;
+  border-color: #7a4d1f;
+  color: #ffd9b3;
+}
+.toolbtn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.foldout {
+  font-size: 0.95rem;
+  color: #ffe9d3;
+  background: #3a2410;
+  border: 1px solid #7a4d1f;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 0 0 12px;
+  display: none;
+}
+.foldout.show {
+  display: block;
+  animation: fade 0.2s ease;
+}
+.foldout.coach {
+  color: #cfe3ff;
+  background: #0e2140;
+  border-color: #244a86;
+}
+.foldout b {
+  color: var(--accent);
+}
+.foldout.coach b {
+  color: var(--accent2);
+}
+
+.reply-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.choices {
+  display: grid;
+  gap: 10px;
+}
+/* each choice is the protagonist's possible reply, drawn as a mini bubble */
+.choice {
+  position: relative;
+  min-height: 48px;
+  text-align: left;
+  background: var(--reply);
+  border: 2px solid var(--line);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 12px 14px 12px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.choice::before {
+  content: "\201C";
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  color: var(--accent2);
+  font-size: 1.1rem;
+  font-weight: 800;
+  opacity: 0.6;
+}
+.choice:hover {
+  border-color: var(--accent2);
+}
+.choice:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.choice.correct {
+  border-color: var(--ok);
+  background: #10351f;
+}
+.choice.wrong {
+  border-color: var(--bad);
+  background: #3a1414;
+}
+.choice .tree {
+  font-family: "Courier New", monospace;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  display: block;
+  margin-top: 4px;
+  color: #bfe;
+}
+.choice .es {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+.feedback {
+  margin-top: 12px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  display: none;
+}
+.feedback.show {
+  display: block;
+  animation: fade 0.25s ease;
+}
+.feedback.good {
+  background: #10351f;
+  border: 1px solid var(--ok);
+  color: #c8ffe0;
+}
+.feedback.bad {
+  background: #3a1414;
+  border: 1px solid var(--bad);
+  color: #ffd5d5;
+}
+.feedback .es {
+  display: block;
+  font-style: italic;
+  color: #9fd;
+  opacity: 0.85;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.scene-foot {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+.advance {
+  min-height: 48px;
+  background: linear-gradient(135deg, var(--accent), #ff6a3d);
+  color: #1a0d02;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: none;
+  font-family: var(--font);
+}
+.advance.show {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: fade 0.3s ease;
+}
+.advance:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ---- Cover ---- */
+.cover-card {
+  text-align: center;
+}
+.cover-card .panel {
+  aspect-ratio: 16 / 9;
+  margin-bottom: 16px;
+}
+.cover-card h2 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+}
+.cover-card p {
+  color: var(--muted);
+  max-width: 620px;
+  margin: 10px auto;
+}
+.start {
+  min-height: 52px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, var(--accent), #ff6a3d);
+  color: #1a0d02;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.start:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.level-pill {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #02112a;
+  background: var(--accent2);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-weight: 700;
+}
+.cast-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 14px 0 4px;
+}
+.cast-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px 6px 6px;
+  font-size: 0.85rem;
+}
+.cast-chip .av {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  overflow: hidden;
+}
+.cast-chip .av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cast-chip b {
+  color: var(--ink);
+}
+.cast-chip span {
+  color: var(--muted);
+}
+
+/* ---- Glossary ---- */
+.gloss {
+  display: grid;
+  gap: 12px;
+}
+.term {
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.term .ico {
+  font-size: 1.6rem;
+  flex: 0 0 auto;
+}
+.term h3 {
+  font-size: 1.1rem;
+}
+.term .es-term {
+  color: var(--accent2);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.term p {
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ---- Mission complete ---- */
+.complete {
+  text-align: center;
+  display: none;
+}
+.complete.show {
+  display: block;
+}
+.complete .panel {
+  margin-bottom: 16px;
+}
+.complete h2 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  color: var(--accent);
+}
+.badge-done {
+  display: inline-block;
+  font-size: 3rem;
+  margin: 8px;
+}
+.restart {
+  min-height: 48px;
+  margin-top: 14px;
+  background: #0e1c40;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.locked-note {
+  display: none;
+  text-align: center;
+  color: var(--muted);
+  padding: 30px 10px;
+}
+.locked-note.show {
+  display: block;
+}
+.bonus {
+  margin-top: 24px;
+  text-align: left;
+  background: #1c1606;
+  border: 2px solid #ffd166;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
+}
+.bonus-tag {
+  background: #ffd166;
+  color: #1a1200;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.bonus h3 {
+  color: #ffd166;
+  font-size: 1.1rem;
+  margin: 8px 0 6px;
+  font-weight: 700;
+}
+.bonus .prompt {
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+.bonus .prompt .es {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* ---- Small screens (down to 320px) ---- */
+@media (max-width: 560px) {
+  .panel {
+    aspect-ratio: 4 / 3;
+  }
+  .bubble {
+    max-width: 94%;
+  }
+  .bubble .en {
+    font-size: 1rem;
+  }
+}
+@media (max-width: 380px) {
+  main {
+    padding: 10px;
+  }
+  .topbar-inner {
+    gap: 8px;
+  }
+  .title {
+    font-size: 0.9rem;
+    flex: 1 1 100%;
+  }
+  .panel {
+    aspect-ratio: 1 / 1;
+  }
+  .speech {
+    padding: 8px;
+  }
+  .bubble {
+    padding: 10px 12px;
+  }
+}
