@@ -39,7 +39,7 @@ function copyStandaloneHtml() {
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
   // folders and loose markdown docs (QA reports, READMEs) should never ship.
   const SKIP_COPY_RE =
-    /(^|[\\/])\.(claude|git|wrangler)([\\/]|$)|(^|[\\/])node_modules([\\/]|$)|\.md$/i;
+    /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$/i;
   const copyFilter = (src) => !SKIP_COPY_RE.test(src);
 
   return {
