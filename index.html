@@ -461,6 +461,23 @@
         <div class="sb-brand">
           <h1>Neft Hub</h1>
           <p>208 Classroom Activities</p>
+          <a
+            href="/end-of-year/"
+            class="sb-featured-link"
+            style="
+              display: block;
+              margin-top: 10px;
+              padding: 9px 12px;
+              border-radius: 10px;
+              background: #f2c15b;
+              color: #12355b;
+              font-weight: 700;
+              text-decoration: none;
+              text-align: center;
+              font-size: 0.9rem;
+            "
+            >🏁 End-of-Year Command Center</a
+          >
         </div>
 
         <div class="sb-nav-search">
@@ -636,7 +653,98 @@
           .unit-group.search-empty {
             display: none;
           }
+          /* Teach Today quick-launch band (hidden while searching). */
+          .teach-today {
+            margin: 4px 0 18px;
+          }
+          .teach-today h2 {
+            margin: 0 0 10px;
+            font-size: 1.05rem;
+            color: var(--navy, #12355b);
+          }
+          .teach-today .tt-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+          }
+          .teach-today .tt-card {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 14px;
+            border-radius: 14px;
+            text-decoration: none;
+            background: #fff;
+            border: 1px solid var(--line, #d9dee5);
+            transition:
+              transform 0.12s ease,
+              box-shadow 0.12s ease,
+              border-color 0.12s ease;
+          }
+          .teach-today .tt-card:hover {
+            transform: translateY(-2px);
+            border-color: #1fa6a2;
+            box-shadow: 0 6px 18px rgba(18, 53, 91, 0.12);
+          }
+          .teach-today .tt-emoji {
+            font-size: 1.4rem;
+          }
+          .teach-today .tt-title {
+            font-weight: 700;
+            color: var(--navy, #12355b);
+            font-size: 0.95rem;
+          }
+          .teach-today .tt-sub {
+            font-size: 0.8rem;
+            color: #667085;
+          }
+          .content.searching .teach-today {
+            display: none;
+          }
+          @media (max-width: 980px) {
+            .teach-today .tt-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+          @media (max-width: 560px) {
+            .teach-today .tt-grid {
+              grid-template-columns: 1fr;
+            }
+          }
         </style>
+
+        <!-- ═══ TEACH TODAY (quick launch) ═══ -->
+        <section class="teach-today" aria-label="Teach today quick launch">
+          <h2>🏁 Teach Today — End-of-Year Quick Launch</h2>
+          <div class="tt-grid">
+            <a class="tt-card" href="/end-of-year/">
+              <span class="tt-emoji" aria-hidden="true">🎯</span>
+              <span class="tt-title">End-of-Year Command Center</span>
+              <span class="tt-sub">Review · MCAP · Bridge · projects</span>
+            </a>
+            <a class="tt-card" href="/mcap-review/">
+              <span class="tt-emoji" aria-hidden="true">📝</span>
+              <span class="tt-title">MCAP Review</span>
+              <span class="tt-sub">Domains + full practice tests</span>
+            </a>
+            <a class="tt-card" href="/spiral-review/">
+              <span class="tt-emoji" aria-hidden="true">🔁</span>
+              <span class="tt-title">Spiral Review</span>
+              <span class="tt-sub">Short mixed daily sets</span>
+            </a>
+            <a class="tt-card" href="/games/3d/">
+              <span class="tt-emoji" aria-hidden="true">🎮</span>
+              <span class="tt-title">3D Math Games</span>
+              <span class="tt-sub">Review each unit (2D fallback)</span>
+            </a>
+            <a class="tt-card" href="/summer-bridge/">
+              <span class="tt-emoji" aria-hidden="true">☀️</span>
+              <span class="tt-title">Summer Bridge</span>
+              <span class="tt-sub">Grade 6 → 7 paths</span>
+            </a>
+          </div>
+        </section>
+
         <!-- ═══ LESSONS ═══ -->
         <div class="panel active" id="panel-lessons">
           <div class="content-header">
