@@ -300,10 +300,17 @@
       table.smap th {
         background: var(--soft2);
       }
-      .printbtn {
+      .action-dock {
         position: fixed;
         right: 18px;
         bottom: 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        z-index: 50;
+      }
+      .printbtn,
+      .dlbtn {
         background: var(--accent);
         color: #fff;
         border: none;
@@ -311,9 +318,15 @@
         padding: 12px 20px;
         font-weight: 800;
         font-size: 15px;
+        font-family: inherit;
+        text-decoration: none;
         box-shadow: 0 6px 18px rgba(20, 40, 90, 0.3);
         cursor: pointer;
-        z-index: 50;
+      }
+      .dlbtn {
+        background: #fff;
+        color: var(--accent);
+        border: 2px solid var(--accent);
       }
       .foot {
         text-align: center;
@@ -354,7 +367,9 @@
           box-shadow: none;
           max-width: none;
         }
-        .printbtn {
+        .action-dock,
+        .printbtn,
+        .no-print {
           display: none;
         }
         a {
@@ -3063,6 +3078,12 @@
       </div>
     </main>
 
-    <button class="printbtn" onclick="window.print()">Print this packet</button>
+    <div class="action-dock no-print">
+      <a class="dlbtn" href="practice-packet.pdf" download>Download PDF</a>
+      <a class="dlbtn" href="practice-packet.docx" download>Download Word</a>
+      <button class="printbtn" onclick="window.print()">
+        Print this packet
+      </button>
+    </div>
   </body>
 </html>
