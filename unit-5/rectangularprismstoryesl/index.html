@@ -895,7 +895,7 @@
       .vso-dot.seen {
         background: #a5b4fc;
       }
-    
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
     <div id="vocabSlideshowOverlay">
@@ -3475,5 +3475,63 @@
       }
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-  </body>
+
+<!-- Interactive vocabulary + math help (bilingual, ESOL). Self-contained; added without altering the lesson app. -->
+<style>
+  .gnhelp-fab{position:fixed;right:14px;bottom:14px;z-index:99998;min-height:48px;display:inline-flex;align-items:center;gap:8px;
+    background:#0b4a82;color:#fff;border:0;border-radius:999px;padding:12px 18px;font:700 15px/1 system-ui,sans-serif;cursor:pointer;
+    box-shadow:0 8px 22px -8px rgba(0,0,0,.55);}
+  .gnhelp-fab:focus-visible{outline:4px solid #38bdf8;outline-offset:2px;}
+  .gnhelp-dialog{width:min(560px,calc(100% - 28px));border:0;padding:0;background:transparent;}
+  .gnhelp-dialog::backdrop{background:rgba(15,23,42,.6);}
+  .gnhelp-card{padding:20px;border-radius:14px;background:#fffdf8;color:#16213d;box-shadow:0 18px 44px -14px rgba(0,0,0,.6);max-height:80vh;overflow:auto;}
+  .gnhelp-card h2{margin:0 0 4px;font-size:1.4rem;color:#0b4a82;}
+  .gnhelp-card p.sub{margin:0 0 14px;color:#56657a;font-size:.9rem;}
+  .gnhelp-term{border:1px solid #d9e2f0;border-left:5px solid #0b4a82;border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+  .gnhelp-term b{font-size:1.05rem;color:#0b4a82;}
+  .gnhelp-term .es{display:block;margin-top:4px;color:#56657a;font-style:italic;}
+  .gnhelp-close{min-height:44px;margin-top:6px;background:#0b4a82;color:#fff;border:0;border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;}
+  @media (prefers-reduced-motion: reduce){.gnhelp-fab{transition:none;}}
+</style>
+<button class="gnhelp-fab" id="gnhelpFab" type="button" aria-haspopup="dialog">&#128214; Word Help &middot; Ayuda</button>
+<dialog class="gnhelp-dialog" id="gnhelpDialog" aria-labelledby="gnhelpTitle">
+  <div class="gnhelp-card">
+    <h2 id="gnhelpTitle">Surface Area Word Help</h2>
+    <p class="sub">Tap a word. English + Espa&ntilde;ol. / Toca una palabra.</p>
+    <div id="gnhelpList"></div>
+    <button class="gnhelp-close" id="gnhelpClose" type="button">Close &middot; Cerrar</button>
+  </div>
+</dialog>
+<script>
+(function(){
+  var VOCAB=[
+    {en:"surface area",def:"The total area of ALL the faces of a 3-D shape, added together.",es:"El área total de TODAS las caras de una figura 3-D, sumadas."},
+    {en:"net",def:"A flat pattern that folds up into a 3-D shape. Great for seeing every face.",es:"Un patrón plano que se dobla para formar una figura 3-D."},
+    {en:"face",def:"One flat surface of a 3-D shape. A rectangular prism has 6 faces.",es:"Una cara plana de una figura 3-D. Un prisma rectangular tiene 6 caras."},
+    {en:"rectangular prism",def:"A box shape with 6 rectangular faces (length, width, height).",es:"Una figura de caja con 6 caras rectangulares (largo, ancho, alto)."},
+    {en:"area",def:"The space inside a flat shape. For a rectangle: length × width.",es:"El espacio dentro de una figura plana. Rectángulo: largo × ancho."},
+    {en:"square unit",def:"The unit for area, like square centimeters (cm²).",es:"La unidad del área, como centímetros cuadrados (cm²)."},
+    {en:"dimensions",def:"The measurements of a shape: length, width, and height.",es:"Las medidas de una figura: largo, ancho y alto."},
+    {en:"edge",def:"The line where two faces of a 3-D shape meet.",es:"La línea donde se encuentran dos caras de una figura 3-D."}
+  ];
+  var d=document.getElementById("gnhelpDialog"),list=document.getElementById("gnhelpList"),
+      title=document.getElementById("gnhelpTitle"),fab=document.getElementById("gnhelpFab"),
+      close=document.getElementById("gnhelpClose");
+  list.innerHTML=VOCAB.map(function(v){return '<div class="gnhelp-term"><b>'+v.en+'</b><div>'+v.def+'</div><span class="es">'+v.es+'</span></div>';}).join("");
+  function openVocab(){title.textContent="Surface Area Word Help";list.style.display="";close.focus();show();}
+  function show(){ if(typeof d.showModal==="function"){d.showModal();} else {d.setAttribute("open","");} }
+  fab.addEventListener("click",openVocab);
+  close.addEventListener("click",function(){d.close();});
+  d.addEventListener("click",function(e){ if(e.target===d) d.close(); });
+  // delegated single-term popups (parity with the histogram/prism info-button pattern)
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("[data-info-title]");
+    if(!b)return;
+    title.textContent=b.dataset.infoTitle;
+    list.innerHTML='<div class="gnhelp-term"><div>'+b.dataset.infoBody+'</div></div>';
+    show();
+  });
+})();
+</script>
+</body>
 </html>
