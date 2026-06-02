@@ -1,52 +1,24 @@
 name: Deploy to Cloudflare Pages
-
-# Reliable deploy path: builds the site (vite -> dist) on GitHub's runners and
-# pushes it to Cloudflare Pages with wrangler. Use this when the Pages git
-# integration isn't auto-deploying (the situation we hit: pushes to main were
-# not propagating to the live site).
-#
-# ONE-TIME SETUP — add two repo secrets (Settings -> Secrets and variables ->
-# Actions -> New repository secret):
-#   CLOUDFLARE_API_TOKEN   - a token with "Cloudflare Pages: Edit" permission
-#                            (My Profile -> API Tokens -> Create -> Pages:Edit)
-#   CLOUDFLARE_ACCOUNT_ID  - your account id (Cloudflare dashboard URL / Workers&Pages page)
-# Then this runs on every push to main, or on demand via the Actions tab
-# ("Run workflow"), or: gh workflow run deploy-pages.yml
-
+# Builds dist on GitHub runners and deploys to Cloudflare Pages via wrangler.
+# Requires two repo secrets: CLOUDFLARE_API_TOKEN (Pages:Edit) and CLOUDFLARE_ACCOUNT_ID.
 on:
   push:
     branches: [main]
-  workflow_dispatch: {}
-
+  workflow_dispatch:
 permissions:
   contents: read
-
-concurrency:
-  group: pages-deploy
-  cancel-in-progress: true
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Build site
-        run: npm run build
-
-      - name: Verify build output exists
-        run: test -d dist && echo "dist files: $(find dist -type f | wc -l)"
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - run: npm ci
+      - run: npm run build
+      - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
