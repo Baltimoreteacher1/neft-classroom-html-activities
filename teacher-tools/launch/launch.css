@@ -1,0 +1,321 @@
+/* Teacher Launch Mode — extends the teacher-tools design system. */
+
+.launch-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 16px;
+  align-items: end;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.launch-field {
+  display: grid;
+  gap: 7px;
+}
+
+.launch-field label {
+  color: var(--tools-muted);
+  font-size: 0.82rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.launch-field select,
+.launch-field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--tools-line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--tools-ink);
+  font: inherit;
+  font-weight: 700;
+}
+
+.launch-field select:disabled {
+  background: #f1f5f4;
+  color: var(--tools-muted);
+  cursor: not-allowed;
+}
+
+/* Unit chips */
+.unit-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.unit-chips button {
+  padding: 9px 14px;
+  border: 1px solid var(--tools-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--tools-teal-dark);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 850;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    color 140ms ease,
+    border-color 140ms ease;
+}
+
+.unit-chips button[aria-pressed="true"] {
+  background: var(--tools-teal);
+  color: #fff;
+  border-color: var(--tools-teal);
+}
+
+/* Lesson picker grid */
+.lesson-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.lesson-pick {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--tools-line);
+  border-radius: 14px;
+  color: var(--tools-ink);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.lesson-pick:hover,
+.lesson-pick:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--tools-teal);
+  box-shadow: var(--tools-shadow);
+}
+
+.lesson-pick[aria-pressed="true"] {
+  border-color: var(--tools-teal);
+  border-block-start: 6px solid var(--tools-teal);
+  box-shadow: var(--tools-shadow);
+}
+
+.lesson-pick .lp-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.lesson-pick .lp-id {
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+  color: var(--tools-teal-dark);
+  background: var(--tools-sage);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+
+.lesson-pick .lp-emoji {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.lesson-pick .lp-title {
+  font-weight: 850;
+  color: var(--tools-ink);
+}
+
+.lesson-pick .lp-standard {
+  font-size: 0.8rem;
+  color: var(--tools-muted);
+  font-weight: 700;
+}
+
+.lp-flagship {
+  background: #fef3c7;
+  color: #7c4a03;
+  border: 1px solid rgba(183, 121, 31, 0.24);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 850;
+  padding: 2px 8px;
+}
+
+/* Selected lesson detail panel */
+.launch-detail {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  background: linear-gradient(
+    145deg,
+    rgba(238, 244, 243, 0.95),
+    rgba(255, 250, 240, 0.95)
+  );
+  border: 1px solid var(--tools-line);
+  border-radius: var(--tools-radius);
+  box-shadow: var(--tools-shadow);
+}
+
+.launch-detail-head {
+  display: grid;
+  gap: 8px;
+}
+
+.launch-detail-head .ld-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+}
+
+.launch-detail-head h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  color: var(--tools-ink);
+}
+
+.launch-detail-head .ld-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.ld-objective {
+  margin: 0;
+  color: var(--tools-ink);
+  font-weight: 600;
+  max-width: 70ch;
+}
+
+.ld-objective.ld-lang {
+  color: var(--tools-muted);
+  font-weight: 500;
+}
+
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.resource-btn {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--tools-line);
+  border-radius: 14px;
+  color: var(--tools-ink);
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.resource-btn:hover,
+.resource-btn:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--tools-teal);
+  box-shadow: var(--tools-shadow);
+}
+
+.resource-btn .rb-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.resource-btn .rb-label {
+  font-weight: 900;
+  color: var(--tools-ink);
+}
+
+.resource-btn .rb-sub {
+  font-size: 0.82rem;
+  color: var(--tools-muted);
+  font-weight: 600;
+}
+
+.resource-btn.rb-primary {
+  border-block-start: 6px solid var(--tools-teal);
+}
+
+.resource-btn.rb-print {
+  background: var(--tools-teal);
+  border-color: var(--tools-teal);
+}
+
+.resource-btn.rb-print .rb-label,
+.resource-btn.rb-print .rb-sub,
+.resource-btn.rb-print .rb-icon {
+  color: #fff;
+}
+
+.launch-empty {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px dashed var(--tools-line);
+  border-radius: var(--tools-radius);
+  text-align: center;
+  color: var(--tools-muted);
+}
+
+.launch-empty h2 {
+  margin: 0 0 6px;
+  color: var(--tools-ink);
+}
+
+.launch-error {
+  padding: 22px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--tools-radius);
+  color: #7f1d1d;
+}
+
+.launch-error h2 {
+  margin: 0 0 6px;
+}
+
+.launch-error code {
+  background: rgba(127, 29, 29, 0.08);
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+
+.launch-count {
+  margin: 0 0 14px;
+  color: var(--tools-muted);
+  font-weight: 750;
+}
+
+@media (max-width: 1080px) {
+  .launch-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .lesson-pick-grid,
+  .resource-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .launch-detail,
+  .launch-controls {
+    border-radius: 14px;
+  }
+}
