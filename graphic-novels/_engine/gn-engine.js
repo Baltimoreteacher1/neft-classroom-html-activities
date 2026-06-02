@@ -292,9 +292,9 @@
       "<p>" +
       cv.blurbEn +
       "</p>" +
-      '<p style="font-size:0.92rem"><i>' +
-      cv.blurbEs +
-      "</i></p>" +
+      (cv.blurbEs
+        ? '<p style="font-size:0.92rem"><i>' + cv.blurbEs + "</i></p>"
+        : "") +
       '<div class="cast-row">' +
       castChips +
       "</div>" +
@@ -587,6 +587,7 @@
         return;
       }
       if (step.type === "beats") playBeats(step);
+      else if (step.optional) playOptional(step);
       else playChallenge(step);
     }
 
@@ -635,8 +636,39 @@
       $("panel-" + act.id).appendChild(c);
     }
 
-    /* ---- challenge ---- */
+    /* ---- challenge: gating (must solve to advance) ---- */
     function playChallenge(step) {
+      renderCard(step, false);
+      wireChoices(step, act, function () {
+        if (step.solveArt) setArt(step.solveArt, step.solveAlt);
+        if (step.solveBeat) {
+          speechEl.innerHTML = "";
+          speechEl.appendChild(bubble(step.solveBeat));
+        }
+        stepIdx++;
+        // small beat so the success feedback is read before the next panel
+        setTimeout(playStep, 400);
+      });
+    }
+
+    /* ---- challenge: optional bonus (does NOT gate; still scored) ----
+       Renders this and any consecutive optional steps, then reveals advance. */
+    function playOptional(step) {
+      renderCard(step, true);
+      wireChoices(step, act, function () {
+        if (step.solveBeat) {
+          speechEl.innerHTML = "";
+          speechEl.appendChild(bubble(step.solveBeat));
+        }
+      });
+      stepIdx++;
+      var nxt = act.steps[stepIdx];
+      if (nxt && nxt.optional) playOptional(nxt);
+      else advBtn.classList.add("show");
+    }
+
+    /* ---- shared challenge-card renderer ---- */
+    function renderCard(step, optional) {
       if (step.art) setArt(step.art, step.alt);
       clearCallouts();
       nextBtn.style.display = "none";
@@ -656,8 +688,16 @@
         );
         if (step.ask.callout) addCallout(step.ask.callout);
       }
-      var wrap = el("div", "challenge");
+      var wrap = el("div", "challenge" + (optional ? " bonus" : ""));
       wrap.id = "chal-" + act.id + "-" + step.id;
+      if (optional) {
+        wrap.innerHTML =
+          '<span class="bonus-tag">' +
+          (step.bonusTag || "&#11088; Bonus Challenge") +
+          "</span>" +
+          '<p class="prompt" style="font-size:0.82rem;color:var(--muted);' +
+          'margin:6px 0">Optional — try it or press the button to move on.</p>';
+      }
       var tools = '<div class="chal-tools">';
       if (step.hint) {
         tools +=
@@ -719,7 +759,7 @@
           "</button>";
       });
       choices += "</div>";
-      wrap.innerHTML =
+      wrap.innerHTML +=
         tools +
         folds +
         choices +
@@ -731,16 +771,6 @@
       chalHost.appendChild(wrap);
       wrap.scrollIntoView({ behavior: "smooth", block: "center" });
       wireFolds(wrap);
-      wireChoices(step, act, function () {
-        if (step.solveArt) setArt(step.solveArt, step.solveAlt);
-        if (step.solveBeat) {
-          speechEl.innerHTML = "";
-          speechEl.appendChild(bubble(step.solveBeat));
-        }
-        stepIdx++;
-        // small beat so the success feedback is read before the next panel
-        setTimeout(playStep, 400);
-      });
     }
 
     playStep();
