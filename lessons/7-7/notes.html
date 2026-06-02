@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -340,20 +358,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>Which clue leads to an equation and which leads to an inequality?</li><li>What operation does 'divided equally among 4' suggest?</li><li>What does 'less than $50' tell you about the inequality symbol?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A museum has some paintings. After adding 12, they have 45. Which equation models this?</p>
+      <ol class="try-choices" type="A"><li>p + 12 = 45</li><li>p − 12 = 45</li><li>12p = 45</li><li>p / 12 = 45</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> 'Adding 12' to the original number gives 45: p + 12 = 45.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Solve: p = 33.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. p + 12 = 45</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A detective needs more than 8 hours to finish the investigation. She has already worked 3 hours. Which inequality represents the additional hours h she needs?</p>
+      <ol class="try-choices" type="A"><li>3 + h &gt; 8</li><li>3 + h = 8</li><li>h &gt; 3</li><li>8 + h &gt; 3</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which model is correct for: 'A number divided by 6 equals 7'?</p>
+      <ol class="try-choices" type="A"><li>n / 6 = 7</li><li>6n = 7</li><li>n − 6 = 7</li><li>n + 6 = 7</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -428,27 +455,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tt-extend-q">Critique: 'Any word problem can be solved with an equation, so inequalities are never needed.' Use an example to argue why inequalities are sometimes the only correct model.</p>
     <ul class="tt-extend-stems"><li>Inequalities are needed when ___.</li><li>An example that cannot use a single equation is ___ because ___.</li></ul>
   </div>
-</div>
-</section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">A museum has some paintings. After adding 12, they have 45. Which equation models this?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 'Adding 12' to the original number gives 45: p + 12 = 45. Solve: p = 33.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. p + 12 = 45</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">A detective needs more than 8 hours to finish the investigation. She has already worked 3 hours. Which inequality represents the additional hours h she needs?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 3 hours plus additional hours h must be more than 8: 3 + h &gt; 8. Solve: h &gt; 5.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 3 + h &gt; 8</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">Which model is correct for: 'A number divided by 6 equals 7'?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Divided by 6 is n / 6. Equals 7 means = 7. So n / 6 = 7.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. n / 6 = 7</p>
 </div>
 </section>
   <section class="section twr">
@@ -526,13 +532,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A bus can carry at most 48 passengers. There are already 31 on board. Which inequality shows how many more can board?</p>
-  <ol class="try-choices" type="A"><li>31 + p ≤ 48</li><li>31 + p &gt; 48</li><li>31 + p = 48</li><li>p − 31 ≤ 48</li></ol>
+  <p class="tryit-num">1. You have $50 and spend $8 per ticket. Which inequality shows how many tickets t you can buy?</p>
+  <ol class="try-choices" type="A"><li>8t ≤ 50</li><li>8t ≥ 50</li><li>t + 8 ≤ 50</li><li>8t = 50</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A student solved 4n = 52 and got n = 13. Is the answer reasonable if n represents the number of notebooks in a box?</p>
-  <ol class="try-choices" type="A"><li>Yes — 13 notebooks per box is reasonable</li><li>No — 13 is too many notebooks</li><li>No — the answer should be 48</li><li>Yes — but only if n is a fraction</li></ol>
+  <p class="tryit-num">2. Solve: x − 12 = 20.</p>
+  <ol class="try-choices" type="A"><li>x = 32</li><li>x = 8</li><li>x = 240</li><li>x = -8</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -552,7 +558,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 31 + p ≤ 48 <span class="ak-why">— 'At most 48' means the total must be ≤ 48. So 31 + p ≤ 48. Solve: p ≤ 17.</span></li><li><strong>Try It 2:</strong> A. Yes — 13 notebooks per box is reasonable <span class="ak-why">— 4 × 13 = 52 ✓. 13 notebooks per box is a reasonable whole number answer.</span></li><li><strong>Exit Ticket:</strong> A. d − 7 &lt; 5 <span class="ak-why">— Starting with d donuts and giving away 7 leaves fewer than 5: d − 7 &lt; 5. Solve: d &lt; 12. ✓</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 3 + h &gt; 8 <span class="ak-why">— 3 hours plus additional hours h must be more than 8: 3 + h &gt; 8. Solve: h &gt; 5.</span></li><li><strong>You Try (notes):</strong> A. n / 6 = 7 <span class="ak-why">— Divided by 6 is n / 6. Equals 7 means = 7. So n / 6 = 7.</span></li><li><strong>Try It 1:</strong> A. 8t ≤ 50 <span class="ak-why">— Total spent must be 50 or less: 8t ≤ 50 (so t ≤ 6 whole tickets).</span></li><li><strong>Try It 2:</strong> A. x = 32 <span class="ak-why">— Add 12 to both sides: x = 32.</span></li><li><strong>Exit Ticket:</strong> A. d − 7 &lt; 5 <span class="ak-why">— Starting with d donuts and giving away 7 leaves fewer than 5: d − 7 &lt; 5. Solve: d &lt; 12. ✓</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Equation is a math sentence with an equal sign showing both sides are the same.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 7-7 · Standard 6.EE.7</footer>

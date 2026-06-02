@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -340,20 +358,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>How can you compare deals when the quantities are different?</li><li>What operation helps you find the cost for just one item?</li><li>Does the biggest package always give the best unit rate?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p>
+      <ol class="try-choices" type="A"><li>6 for $4.50 — $0.75 each</li><li>10 for $8.00 — $0.80 each</li><li>They cost the same per ball</li><li>Not enough information</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> $4.50 ÷ 6 = $0.75 each.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> $8.00 ÷ 10 = $0.80 each.</li><li class="wk-step"><span class="wk-steplabel">Step 3</span> $0.75 &lt; $0.80, so 6 for $4.50 is the better buy.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 6 for $4.50 — $0.75 each</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?</p>
+      <ol class="try-choices" type="A"><li>3 ounces per minute</li><li>5 ounces per minute</li><li>15 ounces per minute</li><li>0.33 ounces per minute</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 3</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A printer prints 42 pages in 6 minutes. How many pages does it print in 15 minutes at the same rate?</p>
+      <ol class="try-choices" type="A"><li>105 pages</li><li>90 pages</li><li>70 pages</li><li>120 pages</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -428,27 +455,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tt-extend-q">Here the higher unit rate is better, but for the token deals the LOWER unit rate was better. Explain why 'better' depends on what the rate measures.</p>
     <ul class="tt-extend-stems"><li>A higher rate is better when ___, but a lower rate is better when ___.</li><li>It depends on whether the rate measures ___ or ___.</li></ul>
   </div>
-</div>
-</section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p>
-    <p class="ex-solution"><strong>Solution:</strong> $4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 &lt; $0.80, so 6 for $4.50 is the better buy.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 6 for $4.50 — $0.75 each</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 15 ÷ 5 = 3 ounces per minute.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 3 ounces per minute</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">A printer prints 42 pages in 6 minutes. How many pages does it print in 15 minutes at the same rate?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Unit rate: 42 ÷ 6 = 7 pages per minute. In 15 minutes: 7 × 15 = 105 pages.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 105 pages</p>
 </div>
 </section>
   <section class="section twr">
@@ -526,13 +532,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A machine dispenses 24 tokens in 3 minutes. At this rate, how many tokens does it dispense in 10 minutes?</p>
-  <ol class="try-choices" type="A"><li>80 tokens</li><li>60 tokens</li><li>72 tokens</li><li>240 tokens</li></ol>
+  <p class="tryit-num">1. At 55 miles per hour, how far do you travel in 4 hours?</p>
+  <ol class="try-choices" type="A"><li>220 miles</li><li>59 miles</li><li>14 miles</li><li>200 miles</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A factory produces 360 widgets in 8 hours. At the same rate, how many widgets are produced in a 12-hour shift?</p>
-  <ol class="try-choices" type="A"><li>540 widgets</li><li>480 widgets</li><li>360 widgets</li><li>720 widgets</li></ol>
+  <p class="tryit-num">2. A worker earns $54 for 6 hours. At the same rate, how much for 9 hours?</p>
+  <ol class="try-choices" type="A"><li>$81</li><li>$72</li><li>$90</li><li>$60</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -552,7 +558,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 80 tokens <span class="ak-why">— Unit rate: 24 ÷ 3 = 8 tokens per minute. In 10 minutes: 8 × 10 = 80 tokens.</span></li><li><strong>Try It 2:</strong> A. 540 widgets <span class="ak-why">— Unit rate: 360 ÷ 8 = 45 widgets per hour. In 12 hours: 45 × 12 = 540 widgets.</span></li><li><strong>Exit Ticket:</strong> A. 32.5 miles per gallon <span class="ak-why">— 195 ÷ 6 = 32.5 miles per gallon.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 3 ounces per minute <span class="ak-why">— 15 ÷ 5 = 3 ounces per minute.</span></li><li><strong>You Try (notes):</strong> A. 105 pages <span class="ak-why">— Unit rate: 42 ÷ 6 = 7 pages per minute. In 15 minutes: 7 × 15 = 105 pages.</span></li><li><strong>Try It 1:</strong> A. 220 miles <span class="ak-why">— 55 × 4 = 220 miles.</span></li><li><strong>Try It 2:</strong> A. $81 <span class="ak-why">— $54 ÷ 6 = $9 per hour; 9 × $9 = $81.</span></li><li><strong>Exit Ticket:</strong> A. 32.5 miles per gallon <span class="ak-why">— 195 ÷ 6 = 32.5 miles per gallon.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Unit Rate is a rate for just 1 of something, like cost for 1 item.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 4-7 · Standard 6.RP.3b</footer>

@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -273,7 +291,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Frequency: How many times a value shows up." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/frequency.svg" alt="Illustration of Frequency: How many times a value shows up." onerror="this.style.display='none'" />
     <p class="vocab-caption">If 5 players scored 10-19 points, the frequency for that interval is 5</p>
   </div>
   <h3 class="vocab-term">Frequency</h3>
@@ -289,7 +307,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Distribution: How the data is spread out." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/distribution.svg" alt="Illustration of Distribution: How the data is spread out." onerror="this.style.display='none'" />
     <p class="vocab-caption">Most data in the middle with fewer at the ends = bell-shaped; most on one side with a tail = skewed</p>
   </div>
   <h3 class="vocab-term">Distribution</h3>
@@ -297,7 +315,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
     <p class="vocab-caption">A histogram that is tallest in the middle and shorter on both sides is symmetric</p>
   </div>
   <h3 class="vocab-term">Data distribution</h3>
@@ -340,20 +358,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>Where do most of the scoring averages seem to cluster?</li><li>Are there many players at the very low or very high end?</li><li>How could you group these numbers to see a pattern?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A histogram shows these frequencies: 0–4: 3 players, 5–9: 8 players, 10–14: 12 players, 15–19: 5 players. How many players are represented in total?</p>
+      <ol class="try-choices" type="A"><li>28</li><li>12</li><li>20</li><li>15</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Add all frequencies: 3 + 8 + 12 + 5 = 28 players.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 28</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> In a histogram, what does the height of each bar represent?</p>
+      <ol class="try-choices" type="A"><li>The frequency (count) of data in that interval</li><li>The average of the data in that interval</li><li>The range of the interval</li><li>The median of the data</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> How is a histogram different from a regular bar graph?</p>
+      <ol class="try-choices" type="A"><li>Histogram bars touch (no gaps) because the intervals are continuous ranges</li><li>Histograms use colors and bar graphs don't</li><li>Bar graphs show numbers and histograms show words</li><li>There is no difference</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -453,27 +480,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">A histogram shows these frequencies: 0–4: 3 players, 5–9: 8 players, 10–14: 12 players, 15–19: 5 players. How many players are represented in total?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Add all frequencies: 3 + 8 + 12 + 5 = 28 players.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 28</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">In a histogram, what does the height of each bar represent?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Each bar's height shows the frequency — how many data values fall within that interval.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. The frequency (count) of data in that interval</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">How is a histogram different from a regular bar graph?</p>
-    <p class="ex-solution"><strong>Solution:</strong> In a histogram, bars touch because each interval connects to the next (0–9, 10–19, etc.) — the data is continuous.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. Histogram bars touch (no gaps) because the intervals are continuous ranges</p>
-</div>
-</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my histogram using the words histogram, frequency, interval, and distribution.</p>
@@ -549,13 +555,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A histogram has intervals: 0–4, 5–9, 10–14, 15–19. What is the width of each interval?</p>
-  <ol class="try-choices" type="A"><li>5</li><li>4</li><li>10</li><li>19</li></ol>
+  <p class="tryit-num">1. Histogram bins are 0–9, 10–19, 20–29 with heights 4, 9, 2. How many data values total?</p>
+  <ol class="try-choices" type="A"><li>15</li><li>9</li><li>6</li><li>45</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A histogram of test scores shows: 50–59: 2, 60–69: 5, 70–79: 10, 80–89: 8, 90–99: 3. Which interval has the most students?</p>
-  <ol class="try-choices" type="A"><li>70–79 with 10 students</li><li>80–89 with 8 students</li><li>60–69 with 5 students</li><li>90–99 with 3 students</li></ol>
+  <p class="tryit-num">2. Why should histogram intervals be equal in width?</p>
+  <ol class="try-choices" type="A"><li>So the bars fairly compare how many values fall in each range</li><li>To make the graph colorful</li><li>Because data must be negative</li><li>So there are no numbers</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -575,7 +581,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 5 <span class="ak-why">— Each interval covers 5 values (0,1,2,3,4 then 5,6,7,8,9 etc.), so the width is 5.</span></li><li><strong>Try It 2:</strong> A. 70–79 with 10 students <span class="ak-why">— The 70–79 interval has the highest frequency of 10 students.</span></li><li><strong>Exit Ticket:</strong> A. 68–71 inches <span class="ak-why">— The 68–71 inch interval has the highest frequency of 9 players.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. The frequency (count) of data in that interval <span class="ak-why">— Each bar's height shows the frequency — how many data values fall within that interval.</span></li><li><strong>You Try (notes):</strong> A. Histogram bars touch (no gaps) because the intervals are continuous ranges <span class="ak-why">— In a histogram, bars touch because each interval connects to the next (0–9, 10–19, etc.) — the data is continuous.</span></li><li><strong>Try It 1:</strong> A. 15 <span class="ak-why">— 4 + 9 + 2 = 15 data values.</span></li><li><strong>Try It 2:</strong> A. So the bars fairly compare how many values fall in each range <span class="ak-why">— Equal widths make frequency comparisons fair across bins.</span></li><li><strong>Exit Ticket:</strong> A. 68–71 inches <span class="ak-why">— The 68–71 inch interval has the highest frequency of 9 players.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Histogram is a bar graph that groups data into equal ranges. The bars touch.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-6 · Standard 6.SP.4</footer>

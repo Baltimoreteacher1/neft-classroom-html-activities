@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -332,20 +350,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>What two quantities with different units are being compared?</li><li>How could you find the cost of just 1 pound of chicken?</li><li>How could you find the number of cupcakes frosted in 1 minute?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p>
+      <ol class="try-choices" type="A"><li>8 cookies per batch</li><li>3 cookies per batch</li><li>24 cookies per batch</li><li>6 cookies per batch</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Unit rate: 24 cookies ÷ 3 batches = 8 cookies per batch.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 8 cookies per batch</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Apples cost $5 for 4 pounds. What is the cost per pound?</p>
+      <ol class="try-choices" type="A"><li>$1.25</li><li>$0.80</li><li>$1.50</li><li>$4.00</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A cyclist rides 36 miles in 3 hours. At the same rate, how far will she ride in 5 hours?</p>
+      <ol class="try-choices" type="A"><li>60 miles</li><li>48 miles</li><li>72 miles</li><li>45 miles</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -420,27 +447,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tt-extend-q">Pick two real rates that could be compared, and explain how unit rates would let you decide which is the better choice.</p>
     <ul class="tt-extend-stems"><li>I could compare ___ and ___ by finding ___.</li><li>The better choice would be the one with ___ because ___.</li></ul>
   </div>
-</div>
-</section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">A bakery makes 24 cookies in 3 batches. What is the unit rate of cookies per batch?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Unit rate: 24 cookies ÷ 3 batches = 8 cookies per batch.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 8 cookies per batch</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">Apples cost $5 for 4 pounds. What is the cost per pound?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Unit rate: $5 ÷ 4 pounds = $1.25 per pound.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. $1.25</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">A cyclist rides 36 miles in 3 hours. At the same rate, how far will she ride in 5 hours?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Unit rate: 36 ÷ 3 = 12 miles per hour. In 5 hours: 12 × 5 = 60 miles.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 60 miles</p>
 </div>
 </section>
   <section class="section twr">
@@ -518,19 +524,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A car travels 150 miles in 3 hours. A bus travels 200 miles in 5 hours. Which vehicle is faster?</p>
-  <ol class="try-choices" type="A"><li>The car</li><li>The bus</li><li>Same speed</li><li>Cannot determine</li></ol>
+  <p class="tryit-num">1. A runner covers 12 km in 4 hours. How long to cover 21 km at the same speed?</p>
+  <ol class="try-choices" type="A"><li>7 hours</li><li>6 hours</li><li>8 hours</li><li>5 hours</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A factory makes 240 widgets in 8 hours. Another factory makes 200 widgets in 5 hours. Which factory is faster? If both factories work together for 10 hours, how many total widgets would they produce?</p>
-  
+  <p class="tryit-num">2. 5 notebooks cost $7.50. What is the cost of 12 notebooks?</p>
+  <ol class="try-choices" type="A"><li>$18.00</li><li>$15.00</li><li>$20.00</li><li>$16.50</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
     <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
-    <p class="tryit-num">Find Mia's Mistake — find the error, then write the correct reasoning.</p>
+    <p class="tryit-num">A factory makes 240 widgets in 8 hours. Another factory makes 200 widgets in 5 hours. Which factory is faster? If both factories work together for 10 hours, how many total widgets would they produce?</p>
     
     
     <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
@@ -544,7 +550,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. The car <span class="ak-why">— Car: 150÷3 = 50 mph. Bus: 200÷5 = 40 mph. The car travels faster at 50 mph vs. 40 mph.</span></li><li><strong>Try It 2:</strong> Factory A: 240 ÷ 8 = 30 widgets/hour. Factory B: 200 ÷ 5 = 40 widgets/hour. Factory B is faster. Together: (30 + 40) × 10 = 70 × 10 = 700 widgets in 10 hours.</li><li><strong>Exit Ticket:</strong> A. 72 <span class="ak-why">— Unit rate: 30 ÷ 5 = 6 pages per minute. In 12 minutes: 6 × 12 = 72 pages.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. $1.25 <span class="ak-why">— Unit rate: $5 ÷ 4 pounds = $1.25 per pound.</span></li><li><strong>You Try (notes):</strong> A. 60 miles <span class="ak-why">— Unit rate: 36 ÷ 3 = 12 miles per hour. In 5 hours: 12 × 5 = 60 miles.</span></li><li><strong>Try It 1:</strong> A. 7 hours <span class="ak-why">— Speed is 3 km/h; 21 ÷ 3 = 7 hours.</span></li><li><strong>Try It 2:</strong> A. $18.00 <span class="ak-why">— Each notebook is $1.50; 12 × $1.50 = $18.00.</span></li><li><strong>Exit Ticket:</strong> A. 72 <span class="ak-why">— Unit rate: 30 ÷ 5 = 6 pages per minute. In 12 minutes: 6 × 12 = 72 pages.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Rate is a ratio comparing two amounts with different units, like miles per hour.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 3-7 · Standard 6.RP.3</footer>

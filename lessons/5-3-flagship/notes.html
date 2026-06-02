@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -269,7 +287,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <div class="vocab-grid">
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/area.svg" alt="Illustration of Base: A side of the triangle you use to find the area." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/base.svg" alt="Illustration of Base: A side of the triangle you use to find the area." onerror="this.style.display='none'" />
     <p class="vocab-caption">If the bottom of a triangle is 10 cm, then b = 10 cm in the formula A = ½ × b × h</p>
   </div>
   <h3 class="vocab-term">Base</h3>
@@ -277,7 +295,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/dimensions.svg" alt="Illustration of Height: The straight-up distance from the base to the top corner." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/height.svg" alt="Illustration of Height: The straight-up distance from the base to the top corner." onerror="this.style.display='none'" />
     <p class="vocab-caption">A dashed vertical line from the top point straight down to the base at a 90° angle</p>
   </div>
   <h3 class="vocab-term">Height</h3>
@@ -344,20 +362,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>What shape are the garden beds?</li><li>What measurements do we need to find the area?</li><li>How is the area of a triangle related to the area of a rectangle?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the area of a triangle with base 10 cm and height 6 cm?</p>
+      <ol class="try-choices" type="A"><li>30 sq cm</li><li>60 sq cm</li><li>16 sq cm</li><li>30 cm</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> A = ½ × b × h = ½ × 10 × 6 = 30 square centimeters.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 30 sq cm</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A triangle has an area of 24 sq ft and a base of 8 ft. What is the height?</p>
+      <ol class="try-choices" type="A"><li>6 ft</li><li>3 ft</li><li>16 ft</li><li>12 ft</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the area of a triangle with base 14 ft and height 6 ft?</p>
+      <ol class="try-choices" type="A"><li>42 sq ft</li><li>84 sq ft</li><li>20 sq ft</li><li>42 ft</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -432,27 +459,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tt-extend-q">Why can't the budget order exactly 2.8 cans? Explain what rounding up means in this real situation and how it changes the leftover paint.</p>
     <ul class="tt-extend-stems"><li>She must round up to ___ cans because ___.</li><li>The leftover paint covers about ___ sq ft, since ___.</li></ul>
   </div>
-</div>
-</section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">What is the area of a triangle with base 10 cm and height 6 cm?</p>
-    <p class="ex-solution"><strong>Solution:</strong> A = ½ × b × h = ½ × 10 × 6 = 30 square centimeters.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 30 sq cm</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">A triangle has an area of 24 sq ft and a base of 8 ft. What is the height?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 24 = ½ × 8 × h → 24 = 4h → h = 6 ft.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 6 ft</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">What is the area of a triangle with base 14 ft and height 6 ft?</p>
-    <p class="ex-solution"><strong>Solution:</strong> A = ½ × 14 × 6 = ½ × 84 = 42 sq ft.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 42 sq ft</p>
 </div>
 </section>
   <section class="section twr">
@@ -530,13 +536,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A triangular sail has an area of 30 sq m and a height of 12 m. What is its base?</p>
-  <ol class="try-choices" type="A"><li>5 m</li><li>2.5 m</li><li>18 m</li><li>360 m</li></ol>
+  <p class="tryit-num">1. A triangle has an area of 36 sq cm and a height of 9 cm. What is its base?</p>
+  <ol class="try-choices" type="A"><li>8 cm</li><li>4 cm</li><li>27 cm</li><li>324 cm</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A composite logo is made of a rectangle (8 cm by 6 cm) with a triangle on top. The triangle has a base of 8 cm and a height of 5 cm. What is the total area of the logo?</p>
-  <ol class="try-choices" type="A"><li>68 sq cm</li><li>48 sq cm</li><li>88 sq cm</li><li>58 sq cm</li></ol>
+  <p class="tryit-num">2. Two triangles have the same area. One has a base of 12 ft and a height of 6 ft. The other has a base of 9 ft. What is the height of the second triangle?</p>
+  <ol class="try-choices" type="A"><li>8 ft</li><li>6 ft</li><li>4 ft</li><li>18 ft</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -556,7 +562,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 5 m <span class="ak-why">— 30 = ½ × b × 12 → 30 = 6b → b = 5 m.</span></li><li><strong>Try It 2:</strong> A. 68 sq cm <span class="ak-why">— Rectangle: 8 × 6 = 48 sq cm. Triangle: ½ × 8 × 5 = 20 sq cm. Total: 48 + 20 = 68 sq cm.</span></li><li><strong>Exit Ticket:</strong> A. 44 sq in <span class="ak-why">— A = 1/2 × 11 × 8 = 1/2 × 88 = 44 square inches.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 6 ft <span class="ak-why">— 24 = ½ × 8 × h → 24 = 4h → h = 6 ft.</span></li><li><strong>You Try (notes):</strong> A. 42 sq ft <span class="ak-why">— A = ½ × 14 × 6 = ½ × 84 = 42 sq ft.</span></li><li><strong>Try It 1:</strong> A. 8 cm <span class="ak-why">— 36 = ½ × b × 9 → 36 = 4.5b → b = 8 cm.</span></li><li><strong>Try It 2:</strong> A. 8 ft <span class="ak-why">— First area = ½ × 12 × 6 = 36 sq ft. Then 36 = ½ × 9 × h → 36 = 4.5h → h = 8 ft.</span></li><li><strong>Exit Ticket:</strong> A. 44 sq in <span class="ak-why">— A = 1/2 × 11 × 8 = 1/2 × 88 = 44 square inches.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Area is how much space is inside a flat shape.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 5-3-flagship · Standard 6.G.1</footer>

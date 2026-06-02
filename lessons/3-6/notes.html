@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -332,20 +350,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>How many times bigger is 120 compared to 8?</li><li>What operation would help you scale both ingredients?</li><li>What stays the same about the recipe even when the amounts change?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A recipe uses 4 cups of broth for every 10 servings. How many cups of broth are needed for 30 servings?</p>
+      <ol class="try-choices" type="A"><li>12</li><li>8</li><li>14</li><li>40</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Scale factor: 30 ÷ 10 = 3.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Multiply broth by 3: 4 × 3 = 12 cups.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 12</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Are the ratios 6:9 and 2:3 equivalent?</p>
+      <ol class="try-choices" type="A"><li>Yes, both simplify to 2:3</li><li>No, 6 ≠ 2</li><li>Yes, because 6 + 9 = 15</li><li>No, because 9 - 6 ≠ 3 - 2</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> If 3 pounds of apples cost $6, how much do 7 pounds cost?</p>
+      <ol class="try-choices" type="A"><li>$14</li><li>$13</li><li>$10</li><li>$21</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -420,27 +447,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <p class="tt-extend-q">Describe a situation where ignoring the ratio would cause a real problem, and explain how proportional reasoning fixes it.</p>
     <ul class="tt-extend-stems"><li>Ignoring the ratio would cause a problem when ___.</li><li>Proportional reasoning fixes it by ___.</li></ul>
   </div>
-</div>
-</section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">A recipe uses 4 cups of broth for every 10 servings. How many cups of broth are needed for 30 servings?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Scale factor: 30 ÷ 10 = 3. Multiply broth by 3: 4 × 3 = 12 cups.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 12</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">Are the ratios 6:9 and 2:3 equivalent?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Divide 6:9 by 3 to get 2:3. Since both ratios simplify to 2:3, they are equivalent.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. Yes, both simplify to 2:3</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">If 3 pounds of apples cost $6, how much do 7 pounds cost?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Unit rate: $6 ÷ 3 = $2 per pound. For 7 pounds: $2 × 7 = $14.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. $14</p>
 </div>
 </section>
   <section class="section twr">
@@ -518,19 +524,19 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A chef uses the proportion 3/7 = x/28 to scale a recipe. What is x?</p>
-  <ol class="try-choices" type="A"><li>12</li><li>14</li><li>9</li><li>21</li></ol>
+  <p class="tryit-num">1. A map scale is 1 inch = 25 miles. Two cities are 4.5 inches apart. How far apart in real life?</p>
+  <ol class="try-choices" type="A"><li>112.5 miles</li><li>100 miles</li><li>125 miles</li><li>29.5 miles</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A recipe serves 6 people and uses 4 cups of rice. You need to serve 15 people. Show two different methods to find how much rice you need: (1) using a scale factor and (2) using a unit rate.</p>
-  
+  <p class="tryit-num">2. A printer prints 24 pages in 3 minutes. How many pages in 7 minutes?</p>
+  <ol class="try-choices" type="A"><li>56</li><li>48</li><li>63</li><li>21</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
     <h3>Stretch Your Thinking <span class="level-tag level-2">Level 2 enrichment</span></h3>
     <p class="muted">Challenge task — explain your reasoning in full sentences.</p>
-    <p class="tryit-num">Find Priya's Mistake — find the error, then write the correct reasoning.</p>
+    <p class="tryit-num">A recipe serves 6 people and uses 4 cups of rice. You need to serve 15 people. Show two different methods to find how much rice you need: (1) using a scale factor and (2) using a unit rate.</p>
     
     
     <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
@@ -544,7 +550,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 12 <span class="ak-why">— Scale factor: 28 ÷ 7 = 4. Multiply: 3 × 4 = 12. So x = 12.</span></li><li><strong>Try It 2:</strong> Method 1 (scale factor): 15 ÷ 6 = 2.5. Multiply rice by 2.5: 4 × 2.5 = 10 cups. Method 2 (unit rate): 4 ÷ 6 = 2/3 cup per person. For 15 people: 2/3 × 15 = 10 cups. Both methods give 10 cups of rice.</li><li><strong>Exit Ticket:</strong> A. 18 <span class="ak-why">— Scale factor: 45 ÷ 15 = 3. Multiply flour by 3: 6 × 3 = 18 cups of flour.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. Yes, both simplify to 2:3 <span class="ak-why">— Divide 6:9 by 3 to get 2:3. Since both ratios simplify to 2:3, they are equivalent.</span></li><li><strong>You Try (notes):</strong> A. $14 <span class="ak-why">— Unit rate: $6 ÷ 3 = $2 per pound. For 7 pounds: $2 × 7 = $14.</span></li><li><strong>Try It 1:</strong> A. 112.5 miles <span class="ak-why">— 4.5 × 25 = 112.5 miles.</span></li><li><strong>Try It 2:</strong> A. 56 <span class="ak-why">— 24 ÷ 3 = 8 pages per minute; 8 × 7 = 56 pages.</span></li><li><strong>Exit Ticket:</strong> A. 18 <span class="ak-why">— Scale factor: 45 ÷ 15 = 3. Multiply flour by 3: 6 × 3 = 18 cups of flour.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Scale is to multiply or divide both parts of a ratio by the same number.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 3-6 · Standard 6.RP.3</footer>

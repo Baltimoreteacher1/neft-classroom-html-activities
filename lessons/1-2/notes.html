@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -273,7 +291,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Greatest Common Factor: The biggest number that divides two or more numbers evenly." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/greatest-common-factor.svg" alt="Illustration of Greatest Common Factor: The biggest number that divides two or more numbers evenly." onerror="this.style.display='none'" />
     <p class="vocab-caption">Factors of 12: {1, 2, 3, 4, 6, 12}. Factors of 18: {1, 2, 3, 6, 9, 18}. Shared: 1, 2, 3, 6. GCF = 6</p>
   </div>
   <h3 class="vocab-term">Greatest Common Factor</h3>
@@ -281,7 +299,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Common factor: A number that divides two or more numbers evenly." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/greatest-common-factor.svg" alt="Illustration of Common factor: A number that divides two or more numbers evenly." onerror="this.style.display='none'" />
     <p class="vocab-caption">8 and 12 both divide evenly by 1, 2, and 4 — those are their common factors</p>
   </div>
   <h3 class="vocab-term">Common factor</h3>
@@ -297,7 +315,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together. It helps you find the GCF." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/prime-factorization.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together. It helps you find the GCF." onerror="this.style.display='none'" />
     <p class="vocab-caption">12 = 2 × 2 × 3 and 18 = 2 × 3 × 3. Shared primes: 2 × 3 = 6 = GCF</p>
   </div>
   <h3 class="vocab-term">Prime factorization</h3>
@@ -332,20 +350,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>What two quantities need to be divided equally?</li><li>What numbers could divide into both 24 and 36?</li><li>What's the biggest number of equal groups we can make?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the GCF of 8 and 12?</p>
+      <ol class="try-choices" type="A"><li>4</li><li>2</li><li>8</li><li>24</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Factors of 8: 1, 2, 4, 8.</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Factors of 12: 1, 2, 3, 4, 6, 12.</li><li class="wk-step"><span class="wk-steplabel">Step 3</span> The largest common factor is 4.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 4</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Which pair of numbers has a GCF of 5?</p>
+      <ol class="try-choices" type="A"><li>15 and 25</li><li>10 and 12</li><li>6 and 15</li><li>8 and 20</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 3</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the GCF of 14 and 21?</p>
+      <ol class="try-choices" type="A"><li>7</li><li>14</li><li>3</li><li>1</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -445,27 +472,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">What is the GCF of 8 and 12?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Factors of 8: 1, 2, 4, 8. Factors of 12: 1, 2, 3, 4, 6, 12. The largest common factor is 4.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 4</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">Which pair of numbers has a GCF of 5?</p>
-    <p class="ex-solution"><strong>Solution:</strong> 15 = 3 × 5, 25 = 5 × 5. Both share the factor 5, and 5 is the largest shared factor.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 15 and 25</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">What is the GCF of 14 and 21?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Factors of 14: 1, 2, 7, 14. Factors of 21: 1, 3, 7, 21. The largest common factor is 7.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 7</p>
-</div>
-</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain how I found the GCF using the words factor, common factor, divisible, and greatest common factor.</p>
@@ -541,13 +547,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. What is the GCF of 9 and 15?</p>
-  <ol class="try-choices" type="A"><li>3</li><li>1</li><li>9</li><li>45</li></ol>
+  <p class="tryit-num">1. A baker has 16 muffins and 24 cookies. She makes identical gift boxes using all the treats. What is the greatest number of boxes?</p>
+  <ol class="try-choices" type="A"><li>8</li><li>4</li><li>6</li><li>12</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A teacher has 36 pencils and 48 erasers. She wants to make identical supply bags with no items left over. What is the greatest number of bags she can make?</p>
-  <ol class="try-choices" type="A"><li>12 bags</li><li>6 bags</li><li>4 bags</li><li>36 bags</li></ol>
+  <p class="tryit-num">2. Which pair of numbers has a GCF of 1?</p>
+  <ol class="try-choices" type="A"><li>8 and 15</li><li>8 and 12</li><li>9 and 15</li><li>10 and 25</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -567,7 +573,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 3 <span class="ak-why">— Factors of 9: 1, 3, 9. Factors of 15: 1, 3, 5, 15. The largest common factor is 3.</span></li><li><strong>Try It 2:</strong> A. 12 bags <span class="ak-why">— GCF(36, 48) = 12. She can make 12 bags, each with 3 pencils and 4 erasers.</span></li><li><strong>Exit Ticket:</strong> A. 9 <span class="ak-why">— Factors of 18: 1, 2, 3, 6, 9, 18. Factors of 27: 1, 3, 9, 27. Common: 1, 3, 9. GCF = 9.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 15 and 25 <span class="ak-why">— 15 = 3 × 5, 25 = 5 × 5. Both share the factor 5, and 5 is the largest shared factor.</span></li><li><strong>You Try (notes):</strong> A. 7 <span class="ak-why">— Factors of 14: 1, 2, 7, 14. Factors of 21: 1, 3, 7, 21. The largest common factor is 7.</span></li><li><strong>Try It 1:</strong> A. 8 <span class="ak-why">— GCF of 16 and 24 is 8, so she can make 8 equal boxes.</span></li><li><strong>Try It 2:</strong> A. 8 and 15 <span class="ak-why">— 8 = 2³ and 15 = 3 × 5 share no common prime factors, so the GCF is 1.</span></li><li><strong>Exit Ticket:</strong> A. 9 <span class="ak-why">— Factors of 18: 1, 2, 3, 6, 9, 18. Factors of 27: 1, 3, 9, 27. Common: 1, 3, 9. GCF = 9.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Factor is a number that divides another number with nothing left over.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 1-2 · Standard 6.NS.4</footer>

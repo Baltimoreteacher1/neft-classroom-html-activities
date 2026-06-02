@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -281,7 +299,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Cluster: A group of numbers that are close together." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/cluster.svg" alt="Illustration of Cluster: A group of numbers that are close together." onerror="this.style.display='none'" />
     <p class="vocab-caption">Scores 18, 19, 20, 21, 22 form a cluster around 20 — they are tightly grouped</p>
   </div>
   <h3 class="vocab-term">Cluster</h3>
@@ -297,7 +315,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/histogram.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." onerror="this.style.display='none'" />
     <p class="vocab-caption">Looking at a dot plot or histogram, you can see if data is symmetric, skewed, clustered, or has gaps</p>
   </div>
   <h3 class="vocab-term">Data distribution</h3>
@@ -340,20 +358,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>Do the three data sets look the same when graphed?</li><li>Which graph has data bunched in the middle? Which has a long tail?</li><li>Are there any gaps or clusters you can spot?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A histogram of basketball players' ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?</p>
+      <ol class="try-choices" type="A"><li>Skewed right</li><li>Symmetric</li><li>Skewed left</li><li>Uniform</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Most data is on the left (younger ages) with a tail stretching right (older ages).</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> This is skewed right.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. Skewed right</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A data set is symmetric. What is likely true about the mean and median?</p>
+      <ol class="try-choices" type="A"><li>They are approximately equal</li><li>The mean is much higher than the median</li><li>The median is much higher than the mean</li><li>They are always exactly the same</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> Match each description with the correct distribution shape.</p>
+      
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -453,27 +480,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">A histogram of basketball players' ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Most data is on the left (younger ages) with a tail stretching right (older ages). This is skewed right.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. Skewed right</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">A data set is symmetric. What is likely true about the mean and median?</p>
-    <p class="ex-solution"><strong>Solution:</strong> In a symmetric distribution, the mean and median are approximately equal because the data is balanced on both sides.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. They are approximately equal</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">Which word describes the direction of the TAIL, not the peak?</p>
-    <p class="ex-solution"><strong>Solution:</strong> The skew direction is named after the TAIL. If the tail stretches to the right, it is skewed right, even though the peak is on the left.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. Skew — the direction of the long tail tells you the skew direction</p>
-</div>
-</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my description using the words symmetric, skewed, cluster, and gap.</p>
@@ -549,13 +555,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A dot plot of goals scored per game shows: 0(5 dots), 1(7 dots), 2(4 dots), 3(2 dots), 4(1 dot). What is the shape?</p>
-  <ol class="try-choices" type="A"><li>Skewed right — most values at the low end with a tail to the right</li><li>Symmetric — equal on both sides</li><li>Skewed left — most values at the high end</li><li>Uniform — all bars the same height</li></ol>
+  <p class="tryit-num">1. In a right-skewed distribution, how does the mean compare to the median?</p>
+  <ol class="try-choices" type="A"><li>The mean is usually greater than the median</li><li>They are always equal</li><li>The mean is always 0</li><li>The median is always larger by 10</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. Match the data shape with the best measure of center.</p>
-  
+  <p class="tryit-num">2. A distribution with two clear peaks is described as...</p>
+  <ol class="try-choices" type="A"><li>Bimodal</li><li>Symmetric only</li><li>Uniform</li><li>Skewed left</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -575,7 +581,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. Skewed right — most values at the low end with a tail to the right <span class="ak-why">— The data peaks at 0–1 goals and tails off toward 4. Most data is on the left with fewer values stretching right — this is skewed right.</span></li><li><strong>Try It 2:</strong> </li><li><strong>Exit Ticket:</strong> A. Skewed right; use median <span class="ak-why">— The data clusters on the left (40–60) with a tail to the right (90–100). This is skewed right. The median is best because the mean would be pulled toward the high values.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. They are approximately equal <span class="ak-why">— In a symmetric distribution, the mean and median are approximately equal because the data is balanced on both sides.</span></li><li><strong>Try It 1:</strong> A. The mean is usually greater than the median <span class="ak-why">— The long right tail pulls the mean above the median.</span></li><li><strong>Try It 2:</strong> A. Bimodal <span class="ak-why">— Two peaks means the distribution is bimodal.</span></li><li><strong>Exit Ticket:</strong> A. Skewed right; use median <span class="ak-why">— The data clusters on the left (40–60) with a tail to the right (90–100). This is skewed right. The median is best because the mean would be pulled toward the high values.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Data distribution is how the data looks: where it sits and how spread out it is.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 8-7 · Standard 6.SP.2</footer>

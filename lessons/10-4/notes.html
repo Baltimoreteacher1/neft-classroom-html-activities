@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -340,20 +358,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>How many faces does a rectangular prism have? A triangular prism?</li><li>What shapes make up the faces of a triangular prism?</li><li>How is finding surface area different from finding volume?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p>
+      <ol class="try-choices" type="A"><li>94 cm²</li><li>60 cm²</li><li>94 cm³</li><li>47 cm²</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 94 cm²</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> How many faces does a triangular prism have?</p>
+      <ol class="try-choices" type="A"><li>5</li><li>4</li><li>6</li><li>3</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p>
+      <ol class="try-choices" type="A"><li>134 cm²</li><li>110 cm²</li><li>122 cm²</li><li>134 cm³</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -453,27 +480,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p>
-    <p class="ex-solution"><strong>Solution:</strong> SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 94 cm²</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">How many faces does a triangular prism have?</p>
-    <p class="ex-solution"><strong>Solution:</strong> A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 5</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p>
-    <p class="ex-solution"><strong>Solution:</strong> SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 134 cm²</p>
-</div>
-</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain my work using the words surface area, rectangular prism, triangular prism, and face.</p>
@@ -549,13 +555,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p>
-  <ol class="try-choices" type="A"><li>134 cm²</li><li>110 cm²</li><li>122 cm²</li><li>134 cm³</li></ol>
+  <p class="tryit-num">1. To wrap a gift box 4 by 4 by 4 cm, how much paper covers the surface (no overlap)?</p>
+  <ol class="try-choices" type="A"><li>96 cm²</li><li>64 cm²</li><li>16 cm²</li><li>48 cm²</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. A triangular prism has triangular bases with base 6 in and height 4 in. The prism is 10 in long and the two slant sides of the triangle are each 5 in. What is the surface area?</p>
-  <ol class="try-choices" type="A"><li>184 in²</li><li>160 in²</li><li>124 in²</li><li>184 in³</li></ol>
+  <p class="tryit-num">2. A prism is 10 by 2 by 3. What is its surface area?</p>
+  <ol class="try-choices" type="A"><li>112 sq units</li><li>60 sq units</li><li>56 sq units</li><li>100 sq units</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -575,7 +581,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 134 cm² <span class="ak-why">— SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².</span></li><li><strong>Try It 2:</strong> A. 184 in² <span class="ak-why">— Triangular bases: 2 × (½ × 6 × 4) = 24 in². Three rectangular faces: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². SA = 24 + 160 = 184 in².</span></li><li><strong>Exit Ticket:</strong> A. 180 ft² <span class="ak-why">— SA = 2(8×6) + 2(8×3) + 2(6×3) = 96 + 48 + 36 = 180 ft². Surface area uses square units (ft²).</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 5 <span class="ak-why">— A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces.</span></li><li><strong>You Try (notes):</strong> A. 134 cm² <span class="ak-why">— SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².</span></li><li><strong>Try It 1:</strong> A. 96 cm² <span class="ak-why">— Each face is 16; 6 × 16 = 96 cm².</span></li><li><strong>Try It 2:</strong> A. 112 sq units <span class="ak-why">— 2(20 + 30 + 6) = 2 × 56 = 112 sq units.</span></li><li><strong>Exit Ticket:</strong> A. 180 ft² <span class="ak-why">— SA = 2(8×6) + 2(8×3) + 2(6×3) = 96 + 48 + 36 = 180 ft². Surface area uses square units (ft²).</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Surface area is the total area of all the flat sides of a solid.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 10-4 · Standard 6.G.4</footer>

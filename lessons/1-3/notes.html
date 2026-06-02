@@ -68,6 +68,20 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
   background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
 .notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
 /* Turn & Talk — optional hint + optional starters label */
 .tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
   padding:6px 10px;}
@@ -200,6 +214,10 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
   .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
   .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
   .tt-hint-toggle{background:#fff;border:1px solid #000;}
   .tt-hint-toggle>summary{color:#000;}
   .tt-hint-toggle[open]>summary{margin-bottom:2px;}
@@ -273,7 +291,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/multiple.svg" alt="Illustration of Least common multiple: The smallest number that two or more numbers both go into." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/least-common-multiple.svg" alt="Illustration of Least common multiple: The smallest number that two or more numbers both go into." onerror="this.style.display='none'" />
     <p class="vocab-caption">Multiples of 4: 4, 8, 12, 16, 20, 24. Multiples of 6: 6, 12, 18, 24. First match: 12 → LCM = 12</p>
   </div>
   <h3 class="vocab-term">Least common multiple</h3>
@@ -281,7 +299,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/multiple.svg" alt="Illustration of Common multiple: A number that two or more numbers both go into." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/least-common-multiple.svg" alt="Illustration of Common multiple: A number that two or more numbers both go into." onerror="this.style.display='none'" />
     <p class="vocab-caption">12, 24, and 36 are all common multiples of both 3 and 4</p>
   </div>
   <h3 class="vocab-term">Common multiple</h3>
@@ -297,7 +315,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </div>
 <div class="vocab-card">
   <div class="vocab-figure">
-    <img src="/assets/vocab-images/factor.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together. It helps you find the LCM." onerror="this.style.display='none'" />
+    <img src="/assets/vocab-images/prime-factorization.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together. It helps you find the LCM." onerror="this.style.display='none'" />
     <p class="vocab-caption">4 = 2 × 2, 6 = 2 × 3. LCM uses the highest power of each prime: 2² × 3 = 12</p>
   </div>
   <h3 class="vocab-term">Prime factorization</h3>
@@ -332,20 +350,29 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
     <ul class="prompt-list"><li>How often does each astronaut check their system?</li><li>What times will each astronaut be doing checks?</li><li>When will both schedules line up at the same time?</li></ul>
   </div>
   <div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
     <div class="notes-gr-step notes-gr-watch">
-      <span class="notes-gr-tag">👀 Watch</span>
-      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
-      <div class="writeline"></div>
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the LCM of 3 and 5?</p>
+      <ol class="try-choices" type="A"><li>15</li><li>3</li><li>5</li><li>30</li></ol>
+      <ol class="wk-steps"><li class="wk-step"><span class="wk-steplabel">Step 1</span> Multiples of 3: 3, 6, 9, 12, 15, ...</li><li class="wk-step"><span class="wk-steplabel">Step 2</span> Multiples of 5: 5, 10, 15, ...</li><li class="wk-step"><span class="wk-steplabel">Step 3</span> The smallest common multiple is 15.</li></ol>
+      <p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> A. 15</p>
     </div>
     <div class="notes-gr-step notes-gr-we">
-      <span class="notes-gr-tag">🤝 We try</span>
-      <p class="notes-gr-cue">Solve the next one together as a class.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the LCM of 6 and 8?</p>
+      <ol class="try-choices" type="A"><li>24</li><li>48</li><li>14</li><li>6</li></ol>
+      <ol class="wk-steps wk-steps-blank"><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 1</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 2</span><span class="writeline"></span></li><li class="wk-step wk-step-blank"><span class="wk-steplabel">Step 3</span><span class="writeline"></span></li></ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
     </div>
     <div class="notes-gr-step notes-gr-you">
-      <span class="notes-gr-tag">✏️ You try</span>
-      <p class="notes-gr-cue">Now try one on your own.</p>
-      <div class="writeline"></div><div class="writeline"></div>
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> What is the LCM of 4 and 10?</p>
+      <ol class="try-choices" type="A"><li>20</li><li>40</li><li>10</li><li>2</li></ol>
+      <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
     </div>
   </div>
 </section>
@@ -445,27 +472,6 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   </div>
 </div>
 </section>
-  <section class="section examples">
-  <h2>Guided Examples</h2>
-  <div class="example">
-  <h3 class="example-head">Example 1</h3>
-  <p class="ex-problem">What is the LCM of 3 and 5?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Multiples of 3: 3, 6, 9, 12, 15, ... Multiples of 5: 5, 10, 15, ... The smallest common multiple is 15.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 15</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 2</h3>
-  <p class="ex-problem">What is the LCM of 6 and 8?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Multiples of 6: 6, 12, 18, 24, ... Multiples of 8: 8, 16, 24, ... The smallest common multiple is 24.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 24</p>
-</div>
-<div class="example">
-  <h3 class="example-head">Example 3</h3>
-  <p class="ex-problem">What is the LCM of 4 and 10?</p>
-    <p class="ex-solution"><strong>Solution:</strong> Multiples of 4: 4, 8, 12, 16, 20, ... Multiples of 10: 10, 20, ... The smallest common multiple is 20.</p>
-    <p class="ex-answer"><strong>Answer:</strong> A. 20</p>
-</div>
-</section>
   <section class="section twr">
   <h2>Write About the Math <span class="twr-method">The Writing Revolution</span></h2>
   <p class="level-note">I can explain how I found the LCM using the words multiple, common multiple, skip counting, and least common multiple.</p>
@@ -541,13 +547,13 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   <h2>Try It</h2>
   <p class="muted">Solve on your own. Check the answer key when you are done.</p>
   <div class="tryit">
-  <p class="tryit-num">1. What is the LCM of 2 and 7?</p>
-  <ol class="try-choices" type="A"><li>14</li><li>7</li><li>2</li><li>9</li></ol>
+  <p class="tryit-num">1. One bus leaves every 12 minutes and another every 15 minutes. They leave together at 9:00. When do they next leave together?</p>
+  <ol class="try-choices" type="A"><li>After 60 minutes</li><li>After 30 minutes</li><li>After 45 minutes</li><li>After 27 minutes</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
 <div class="tryit">
-  <p class="tryit-num">2. Two buses leave the station at 8:00 AM. Bus A returns every 15 minutes and Bus B returns every 20 minutes. When is the next time both buses are at the station together?</p>
-  <ol class="try-choices" type="A"><li>9:00 AM (60 minutes later)</li><li>8:30 AM (30 minutes later)</li><li>8:40 AM (40 minutes later)</li><li>9:20 AM (80 minutes later)</li></ol>
+  <p class="tryit-num">2. What is the LCM of 9 and 12?</p>
+  <ol class="try-choices" type="A"><li>36</li><li>72</li><li>18</li><li>108</li></ol>
   <div class="work-space"><span class="ws-label">Show your work:</span><div class="writeline"></div><div class="writeline"></div><div class="writeline"></div></div>
 </div>
   <div class="enrich-block">
@@ -567,7 +573,7 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 </section>
   <section class="answer-key">
   <h2>Answer Key &amp; Teacher Guide</h2>
-  <ol class="ak-list"><li><strong>Try It 1:</strong> A. 14 <span class="ak-why">— Since 2 and 7 share no common factors (they are relatively prime), LCM = 2 × 7 = 14.</span></li><li><strong>Try It 2:</strong> A. 9:00 AM (60 minutes later) <span class="ak-why">— LCM(15, 20) = 60 minutes. Both buses return together 60 minutes after 8:00 AM, at 9:00 AM.</span></li><li><strong>Exit Ticket:</strong> A. 36 <span class="ak-why">— Multiples of 9: 9, 18, 27, 36, ... Multiples of 12: 12, 24, 36, ... The smallest common multiple is 36.</span></li></ol>
+  <ol class="ak-list"><li><strong>We Try (notes):</strong> A. 24 <span class="ak-why">— Multiples of 6: 6, 12, 18, 24, ... Multiples of 8: 8, 16, 24, ... The smallest common multiple is 24.</span></li><li><strong>You Try (notes):</strong> A. 20 <span class="ak-why">— Multiples of 4: 4, 8, 12, 16, 20, ... Multiples of 10: 10, 20, ... The smallest common multiple is 20.</span></li><li><strong>Try It 1:</strong> A. After 60 minutes <span class="ak-why">— LCM of 12 and 15 is 60, so they leave together again 60 minutes later.</span></li><li><strong>Try It 2:</strong> A. 36 <span class="ak-why">— 9 = 3², 12 = 2² × 3. LCM = 2² × 3² = 36.</span></li><li><strong>Exit Ticket:</strong> A. 36 <span class="ak-why">— Multiples of 9: 9, 18, 27, 36, ... Multiples of 12: 12, 24, 36, ... The smallest common multiple is 36.</span></li></ol>
   <h3 class="ak-twr-head">Writing (TWR) — what to look for</h3><ul class="ak-list"><li><strong>Kernel sentence:</strong> A complete sentence needs a subject and a verb. Example: Multiple is what you get when you multiply a number by 1, 2, 3, and so on.</li><li><strong>Expansion:</strong> <em>because</em> gives a reason, <em>but</em> shows a contrast or exception, <em>so</em> shows a result. Answers vary; each must keep the kernel idea and add the correct kind of detail.</li><li><strong>Sentence types:</strong> Statement ends with a period, question with "?", exclamation with "!", and a command starts with an action verb (a "bossy" verb).</li></ul>
 </section>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 1-3 · Standard 6.NS.4</footer>
