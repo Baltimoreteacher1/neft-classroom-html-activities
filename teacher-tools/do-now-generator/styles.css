@@ -576,3 +576,209 @@ pre.code {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===================== v2: assessment + present + slides ================= */
+.q-std {
+  font-size: 0.68rem;
+  margin-left: 6px;
+}
+
+/* View tabs (student / answer key / export) */
+.view-tabs,
+.export-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 14px;
+}
+.view-tab,
+.export-tab {
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 9px 14px;
+  font-weight: 850;
+}
+.view-tab[aria-selected="true"],
+.export-tab[aria-selected="true"] {
+  background: var(--paper-2);
+  border-color: var(--line);
+  color: var(--text);
+}
+.view-panel,
+.export-panel {
+  display: none;
+}
+.view-panel.active,
+.export-panel.active {
+  display: block;
+}
+
+/* Student / answer-key sheet */
+.sheet {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-top: 8px;
+}
+.sheet-head h2 {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+.sheet-meta {
+  display: flex;
+  gap: 28px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 4px 0 16px;
+  flex-wrap: wrap;
+}
+.sheet-q {
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--line);
+}
+.sheet-prompt {
+  margin: 0 0 8px;
+}
+ol.sheet-choices {
+  list-style: none;
+  margin: 6px 0 0;
+  padding-left: 14px;
+  display: grid;
+  gap: 4px;
+}
+.sheet-choice .ch-let {
+  font-weight: 800;
+  margin-right: 4px;
+}
+.sheet-choice.is-correct {
+  color: var(--green);
+  font-weight: 800;
+}
+.sheet-choice .ck {
+  color: var(--green);
+  font-weight: 900;
+}
+.sheet-line {
+  border-bottom: 1px solid var(--line);
+  height: 22px;
+  margin: 8px 0;
+}
+.sheet-reveal {
+  color: var(--green);
+  font-weight: 800;
+  margin: 6px 0 0;
+}
+.proj-actions {
+  margin-top: 8px;
+}
+.key-q {
+  margin-bottom: 14px;
+}
+.key-ans {
+  color: var(--green);
+  margin: 4px 0 0;
+}
+.key-exp {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 4px 0 0;
+}
+
+/* Slide upload + slideshow */
+.slide-drop {
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+  padding: 26px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  background: var(--paper-2);
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+.slide-drop.drag {
+  border-color: var(--teal);
+  background: var(--info-bg);
+}
+.slide-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.slide-toolbar .spacer {
+  flex: 1;
+}
+.timer-label {
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.1rem;
+  min-width: 52px;
+  text-align: center;
+}
+.timer-label.done {
+  color: var(--red);
+}
+.slide-stage-wrap {
+  background: #0b1726;
+  border-radius: 14px;
+  padding: 12px;
+}
+.slide-stage {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+.slide-stage:fullscreen,
+.slide-stage-wrap:fullscreen {
+  background: #0b1726;
+}
+.slide-img {
+  max-width: 100%;
+  max-height: 78vh;
+  border-radius: 8px;
+}
+.slide-embed {
+  width: 100%;
+  height: 78vh;
+  border: 0;
+}
+.slide-text-stage {
+  color: #eef4fb;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  line-height: 1.4;
+  padding: 24px;
+  max-width: 900px;
+  text-align: left;
+}
+.slide-placeholder {
+  color: #9fb1c7;
+}
+.slide-textbox h4 {
+  margin: 0 0 10px;
+}
+.slide-text-row {
+  border-bottom: 1px dashed var(--line);
+  padding: 8px 0;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+@media print {
+  .no-print,
+  .proj-actions {
+    display: none !important;
+  }
+}

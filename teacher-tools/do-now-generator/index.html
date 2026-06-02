@@ -6,7 +6,7 @@
     <title>Neft Teacher Do Now / Warm-up Generator</title>
     <meta
       name="description"
-      content="Build a daily Do Now / warm-up as a Google Form. Pick a lesson or type what you want, edit the questions, and copy ready-to-paste Google Apps Script."
+      content="Build ready-to-use Do Nows, warm-ups, and quizzes from real Grade 6 items with answer keys. Project, print, upload slides, or export for Google Forms."
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -26,11 +26,14 @@
           </button>
           <button data-tab="build" type="button">1. Build Questions</button>
           <button data-tab="edit" type="button">2. Review &amp; Edit</button>
-          <button data-tab="output" type="button">3. Get Form Code</button>
+          <button data-tab="present" type="button">
+            3. Present &amp; Export
+          </button>
+          <button data-tab="slides" type="button">Upload Slides</button>
           <button data-tab="about" type="button">How Outputs Work</button>
         </nav>
         <div class="sidebar-foot">
-          v1.0 · 74-lesson manifest ·
+          v2.0 · 666-item bank + 74-lesson manifest ·
           <a href="../">Back to Teacher Tools</a>
         </div>
       </aside>
@@ -64,11 +67,12 @@
               <span class="badge info">Recommended workflow</span>
               <h2 id="startH">Make today's Do Now in minutes.</h2>
               <p>
-                Build a daily warm-up two ways: pick one of your 74 Reveal Math
-                lessons to auto-seed review questions, or just type what you
-                want. Edit the question list, then copy ready-to-paste Google
-                Apps Script that builds the Google Form for you. No account, no
-                server, works offline.
+                Build a complete Do Now, warm-up, or quiz from a 666-item
+                Grade&nbsp;6 bank where every question carries its verified
+                answer key. Filter by unit, standard, tier, and length; or pick
+                a lesson, type a request, or upload your own slides. Then
+                project it, print it, or export it for Google Forms. No account,
+                no server, works offline.
               </p>
               <div class="button-row">
                 <button class="btn primary" data-go="build" type="button">
@@ -84,25 +88,26 @@
               <article class="card">
                 <h3>1. Build Questions</h3>
                 <p class="muted">
-                  Choose <strong>Pick a lesson</strong> to seed 3-5 review
-                  questions, or <strong>Type a request</strong> to describe
-                  topic, standard, count, and types.
+                  Use the <strong>Assessment Builder</strong> to pull real items
+                  with answer keys (Do-Now, Warm-up, Quiz, or Spiral mix), or
+                  <strong>pick a lesson</strong> /
+                  <strong>type a request</strong>.
                 </p>
               </article>
               <article class="card">
                 <h3>2. Review &amp; Edit</h3>
                 <p class="muted">
                   Add, remove, and edit questions. Set each type
-                  (multiple-choice, short answer, paragraph) and mark correct
-                  answers for quiz mode.
+                  (multiple-choice, short answer, paragraph) and confirm correct
+                  answers.
                 </p>
               </article>
               <article class="card">
-                <h3>3. Get Form Code</h3>
+                <h3>3. Present &amp; Export</h3>
                 <p class="muted">
-                  Copy the generated Apps Script, paste it into
-                  script.google.com, press Run, and your Google Form appears in
-                  your Drive.
+                  Project the clean student view (reveal answers on demand),
+                  print, or export a Google Forms&nbsp;/ quiz import
+                  (list&nbsp;+ CSV) or Apps Script.
                 </p>
               </article>
             </div>
@@ -115,34 +120,114 @@
               <div class="mode-tabs" role="tablist" aria-label="Input mode">
                 <button
                   class="mode-tab"
-                  id="tabLesson"
+                  data-mode="bank"
                   role="tab"
                   aria-selected="true"
+                  aria-controls="modeBank"
+                  type="button"
+                >
+                  <strong>A · Assessment Builder</strong><br />
+                  <span class="muted"
+                    >Real items + answer keys, by unit / standard / tier.</span
+                  >
+                </button>
+                <button
+                  class="mode-tab"
+                  data-mode="lesson"
+                  role="tab"
+                  aria-selected="false"
                   aria-controls="modeLesson"
                   type="button"
                 >
-                  <strong>A · Pick a lesson</strong><br />
+                  <strong>B · Pick a lesson</strong><br />
                   <span class="muted"
                     >Auto-seed review questions from a lesson.</span
                   >
                 </button>
                 <button
                   class="mode-tab"
-                  id="tabType"
+                  data-mode="type"
                   role="tab"
                   aria-selected="false"
                   aria-controls="modeType"
                   type="button"
                 >
-                  <strong>B · Type a request</strong><br />
+                  <strong>C · Type a request</strong><br />
                   <span class="muted"
                     >Describe topic, standard, count, types.</span
                   >
                 </button>
               </div>
 
+              <!-- MODE: ASSESSMENT BUILDER (real items + answers) -->
+              <div id="modeBank" role="tabpanel">
+                <p class="muted" id="bankStatus">Loading question bank…</p>
+                <div class="grid g3">
+                  <label class="field" for="bankPreset">
+                    Assessment type
+                    <select id="bankPreset">
+                      <option value="do-now">Do-Now (3 Qs)</option>
+                      <option value="warmup">Warm-up (5 Qs)</option>
+                      <option value="quiz">Quiz (10 Qs, graded)</option>
+                      <option value="spiral">
+                        Spiral mix (6 Qs, all units)
+                      </option>
+                    </select>
+                  </label>
+                  <label class="field" for="bankCount">
+                    Length (questions)
+                    <input
+                      id="bankCount"
+                      type="number"
+                      min="1"
+                      max="25"
+                      value="3"
+                    />
+                  </label>
+                  <label class="field" for="bankTier">
+                    Tier
+                    <select id="bankTier">
+                      <option value="">Any tier</option>
+                      <option value="approaching">Level 1 · support</option>
+                      <option value="onLevel">On level</option>
+                      <option value="optional">Level 2 · enrichment</option>
+                      <option value="vocab">Vocabulary</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="grid g2">
+                  <label class="field" for="bankUnit">
+                    Unit
+                    <select id="bankUnit">
+                      <option value="">All units</option>
+                    </select>
+                  </label>
+                  <label class="field" for="bankStandard">
+                    Standard
+                    <select id="bankStandard">
+                      <option value="">All standards</option>
+                    </select>
+                  </label>
+                </div>
+                <p class="hint" id="bankAvail" aria-live="polite"></p>
+                <div class="button-row">
+                  <button
+                    class="btn primary"
+                    id="buildAssessment"
+                    type="button"
+                  >
+                    Build assessment
+                  </button>
+                </div>
+                <p class="muted" style="margin-top: 12px">
+                  Every item comes from the Grade&nbsp;6 spiral-review bank with
+                  a verified correct answer. Items without a usable answer are
+                  skipped automatically (counts are reported).
+                </p>
+              </div>
+
               <!-- MODE A -->
-              <div id="modeLesson" role="tabpanel" aria-labelledby="tabLesson">
+              <div id="modeLesson" role="tabpanel" hidden>
                 <label class="field" for="lessonSelect">
                   Lesson
                   <select id="lessonSelect">
@@ -169,12 +254,7 @@
               </div>
 
               <!-- MODE B -->
-              <div
-                id="modeType"
-                role="tabpanel"
-                aria-labelledby="tabType"
-                hidden
-              >
+              <div id="modeType" role="tabpanel" hidden>
                 <label class="field" for="reqText">
                   Describe what you want
                   <textarea
@@ -278,74 +358,263 @@
                 </p>
               </div>
               <div class="button-row">
-                <button class="btn primary" data-go="output" type="button">
-                  Get Google Form code →
+                <button class="btn primary" data-go="present" type="button">
+                  Present &amp; export →
                 </button>
               </div>
             </div>
           </section>
 
-          <!-- ============ OUTPUT ============ -->
-          <section id="output" class="screen" aria-labelledby="outH">
+          <!-- ============ PRESENT & EXPORT ============ -->
+          <section id="present" class="screen" aria-labelledby="presH">
             <div class="card">
-              <h3 id="outH">Google Apps Script (primary output)</h3>
-              <p class="muted">
-                This script builds your Google Form automatically. Copy it, then
-                follow the steps below.
-              </p>
-              <div class="button-row">
-                <button class="btn primary" id="copyCode" type="button">
-                  Copy code
-                </button>
-                <button class="btn" id="downloadCode" type="button">
-                  Download .gs
-                </button>
-                <a
-                  class="btn"
-                  id="openScript"
-                  href="https://script.google.com/home/projects/create"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >Open script.google.com</a
+              <h3 id="presH">Present &amp; export your set</h3>
+              <div class="view-tabs" role="tablist" aria-label="View">
+                <button
+                  class="view-tab"
+                  data-view="student"
+                  role="tab"
+                  aria-selected="true"
+                  type="button"
                 >
+                  Student view
+                </button>
+                <button
+                  class="view-tab"
+                  data-view="key"
+                  role="tab"
+                  aria-selected="false"
+                  type="button"
+                >
+                  Answer key
+                </button>
+                <button
+                  class="view-tab"
+                  data-view="export"
+                  role="tab"
+                  aria-selected="false"
+                  type="button"
+                >
+                  Export
+                </button>
               </div>
-              <div class="code-wrap" style="margin-top: 12px">
-                <label class="sr-only" for="codeOut"
-                  >Generated Google Apps Script</label
+
+              <!-- STUDENT VIEW -->
+              <div class="view-panel active" data-viewpanel="student">
+                <div class="button-row">
+                  <button
+                    class="btn"
+                    id="revealAllBtn"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    Reveal all answers
+                  </button>
+                  <button class="btn" id="printStudent" type="button">
+                    Print student copy
+                  </button>
+                </div>
+                <p class="hint">
+                  Clean, projectable, and printable. Answers stay hidden until
+                  you reveal them (per item, or all at once) — ideal for
+                  projecting a Do Now.
+                </p>
+                <div id="studentView" class="sheet">
+                  <p class="q-empty">Build some questions first (step 1).</p>
+                </div>
+              </div>
+
+              <!-- ANSWER KEY -->
+              <div class="view-panel" data-viewpanel="key">
+                <div class="button-row">
+                  <button class="btn" id="printKey" type="button">
+                    Print answer key
+                  </button>
+                </div>
+                <p class="hint">
+                  Teacher copy with the correct choice marked and an explanation
+                  when the bank provides one.
+                </p>
+                <div id="answerKey" class="sheet">
+                  <p class="q-empty">Build some questions first (step 1).</p>
+                </div>
+              </div>
+
+              <!-- EXPORT -->
+              <div class="view-panel" data-viewpanel="export">
+                <div
+                  class="export-tabs"
+                  role="tablist"
+                  aria-label="Export type"
                 >
-                <pre class="code" id="codeOut" tabindex="0">
+                  <button
+                    class="export-tab"
+                    data-exp="forms"
+                    role="tab"
+                    aria-selected="true"
+                    type="button"
+                  >
+                    Google Forms / quiz import
+                  </button>
+                  <button
+                    class="export-tab"
+                    data-exp="gs"
+                    role="tab"
+                    aria-selected="false"
+                    type="button"
+                  >
+                    Apps Script (.gs)
+                  </button>
+                </div>
+
+                <!-- FORMS IMPORT (list + CSV) -->
+                <div class="export-panel active" data-exp="forms">
+                  <p class="muted">
+                    A clean, importable format for building a Google Form /
+                    quiz. Copy the formatted list (question + options + marked
+                    correct answer) or download a CSV (question, optionA…D,
+                    correctAnswer).
+                  </p>
+                  <div class="button-row">
+                    <button
+                      class="btn primary"
+                      id="copyFormsList"
+                      type="button"
+                    >
+                      Copy question list
+                    </button>
+                    <button class="btn" id="downloadFormsList" type="button">
+                      Download list (.txt)
+                    </button>
+                    <button class="btn" id="downloadCsv" type="button">
+                      Download CSV
+                    </button>
+                  </div>
+                  <div class="code-wrap" style="margin-top: 12px">
+                    <label class="sr-only" for="formsListOut"
+                      >Google Forms import list</label
+                    >
+                    <pre class="code" id="formsListOut" tabindex="0">
 Build some questions first (step 1).</pre
-                >
+                    >
+                  </div>
+                  <p class="muted" style="margin-top: 10px">
+                    Live Forms-API auto-creation (one click, no paste) is a
+                    future add — it needs Google OAuth and a signed-in backend,
+                    out of scope for this static, login-free tool.
+                  </p>
+                </div>
+
+                <!-- APPS SCRIPT -->
+                <div class="export-panel" data-exp="gs">
+                  <p class="muted">
+                    Paste this into <code>script.google.com</code> → New
+                    project, then Run <code>buildDoNowForm</code>. Google's
+                    <code>FormApp</code> creates the Form in your Drive and logs
+                    its URL. This site never sees your Google account.
+                  </p>
+                  <div class="button-row">
+                    <button class="btn primary" id="copyCode" type="button">
+                      Copy code
+                    </button>
+                    <button class="btn" id="downloadCode" type="button">
+                      Download .gs
+                    </button>
+                    <a
+                      class="btn"
+                      id="openScript"
+                      href="https://script.google.com/home/projects/create"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >Open script.google.com</a
+                    >
+                  </div>
+                  <div class="code-wrap" style="margin-top: 12px">
+                    <label class="sr-only" for="codeOut"
+                      >Generated Google Apps Script</label
+                    >
+                    <pre class="code" id="codeOut" tabindex="0">
+Build some questions first (step 1).</pre
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ UPLOAD SLIDES ============ -->
+          <section id="slides" class="screen" aria-labelledby="slidesH">
+            <div class="card">
+              <h3 id="slidesH">Upload slides → projectable Do Now</h3>
+              <p class="muted">
+                Drop in images (PNG/JPG), a PDF, or a PowerPoint (PPTX). Each
+                becomes a slide you can project one at a time with a
+                think-timer. Everything stays in your browser — nothing is
+                uploaded to a server. (PDF and PPTX parsing load small libraries
+                from a CDN; if you are offline they degrade gracefully.)
+              </p>
+              <div
+                id="slideDrop"
+                class="slide-drop"
+                role="button"
+                tabindex="0"
+                aria-label="Upload slides"
+              >
+                <strong>Drag &amp; drop files here</strong>
+                <span class="muted">or</span>
+                <label class="btn primary" for="slideFile">
+                  Choose files
+                  <input
+                    id="slideFile"
+                    type="file"
+                    accept="image/*,application/pdf,.pptx,.png,.jpg,.jpeg"
+                    multiple
+                    hidden
+                  />
+                </label>
+                <span class="muted" id="slideStatus"></span>
               </div>
             </div>
 
             <div class="card">
-              <h3>Paste &amp; run — step by step</h3>
-              <ol class="steps">
-                <li>
-                  Click <strong>Copy code</strong> above (or Download .gs).
-                </li>
-                <li>
-                  Open <code>script.google.com</code> →
-                  <strong>New project</strong>.
-                </li>
-                <li>
-                  Delete the starter <code>function myFunction() {}</code> and
-                  <strong>paste</strong> the copied code.
-                </li>
-                <li>
-                  Press <strong>Run</strong> (▶). Choose
-                  <code>buildDoNowForm</code> if prompted.
-                </li>
-                <li>
-                  Click <strong>Review permissions</strong> → choose your Google
-                  account → <strong>Allow</strong> (first run only).
-                </li>
-                <li>
-                  Open <strong>Execution log</strong> (View → Logs). The new
-                  Google Form's edit URL is printed there.
-                </li>
-              </ol>
+              <div class="slide-toolbar">
+                <button class="btn" id="slidePrev" type="button">← Prev</button>
+                <span id="slideCounter" class="badge neutral"></span>
+                <button class="btn" id="slideNext" type="button">Next →</button>
+                <span class="spacer"></span>
+                <label class="inline" for="timerSecs"
+                  >Timer (sec)
+                  <input
+                    id="timerSecs"
+                    type="number"
+                    min="5"
+                    max="900"
+                    value="60"
+                    style="width: 72px"
+                  />
+                </label>
+                <button class="btn" id="startTimer" type="button">Start</button>
+                <button class="btn" id="stopTimer" type="button">Stop</button>
+                <span id="timerLabel" class="timer-label">0:00</span>
+                <button class="btn" id="fullscreenBtn" type="button">
+                  Fullscreen
+                </button>
+                <button class="btn danger" id="clearSlides" type="button">
+                  Clear
+                </button>
+              </div>
+              <div id="slideStageWrap" class="slide-stage-wrap">
+                <div id="slideStage" class="slide-stage">
+                  <p class="muted slide-placeholder">
+                    Upload images, a PDF, or a PPTX to start a projectable
+                    slideshow.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div id="slideText" class="slide-textbox"></div>
             </div>
           </section>
 
@@ -366,14 +635,14 @@ Build some questions first (step 1).</pre
                   </p>
                 </article>
                 <article class="card" style="margin: 0">
-                  <h3>True one-click creation — not implemented</h3>
+                  <h3>Google Forms / quiz import (list + CSV)</h3>
                   <p class="muted">
-                    Creating a Google Form directly from this page (one click,
-                    no paste) would require Google OAuth and the Forms API
-                    running on a backend server, plus you signing in. That is
-                    intentionally not built here to keep the tool login-free,
-                    static, and student-data-free. The Apps Script route gives
-                    the same result with one paste and one Run.
+                    A formatted question list (with the correct answer marked)
+                    and a CSV (question, optionA…D, correctAnswer) you can paste
+                    or import when building a Form or quiz. Live Forms-API
+                    auto-creation needs Google OAuth and a signed-in backend, so
+                    it is intentionally left as a future add to keep this tool
+                    static, login-free, and student-data-free.
                   </p>
                 </article>
               </div>
@@ -389,6 +658,6 @@ Build some questions first (step 1).</pre
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="./app.js"></script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
   </body>
 </html>
