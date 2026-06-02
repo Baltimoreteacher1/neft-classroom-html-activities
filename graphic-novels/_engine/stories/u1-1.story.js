@@ -1,8 +1,9 @@
 /* STORY · Unit 1 · Graphic Novel #1 (Support) · Prime Station: The Factor Code
-   Phase-1 example build: Cover + Act 1 (both locks) + Glossary + Complete.
+   Phase-2 reference build: full novel — Act 1 (Locked Bay), Act 2 (Twin Engines),
+   Final (Master Door), Glossary, Mission Complete + Master-Rank challenge.
    All math, answers, distractors, Spanish, sentence frames, and glossary are
-   carried verbatim from graphic-novels/unit1/graphic-novel-1.html — only the
-   delivery (panels, speech, AXIS misconception, pop-ups) is new. */
+   carried verbatim from graphic-novels/unit1/graphic-novel-1.html (6.NS.4).
+   New: panels, speech, AXIS-voices-the-misconception, vocab/hint/coach pop-ups. */
 window.GN_STORY = {
   meta: {
     unit: 1,
@@ -41,11 +42,12 @@ window.GN_STORY = {
     blurbEn:
       "You are a space cadet. The station is broken and the doors are locked — only <b>factor codes</b> can open them. AXIS, the station AI, wants to help… but AXIS keeps guessing wrong. Catch its mistakes and save the station!",
     blurbEs:
-      "Eres un cadete espacial. Solo los <b>códigos de factores</b> abren las puertas. AXIS, la IA, quiere ayudar… pero se equivoca. ¡Atrapa sus errores!",
+      "Eres un cadete espacial. Solo los <b>códigos de factores</b> abren las puertas. AXIS, la IA, quiere ayudar… pero se equivoca. ¡Atrapa sus errores y salva la estación!",
     startLabel: "Start Mission 🚀",
   },
 
   acts: [
+    /* ============================ ACT 1 ============================ */
     {
       id: "act1",
       tab: "Act 1: The Locked Bay",
@@ -93,7 +95,6 @@ window.GN_STORY = {
             },
           ],
         },
-
         {
           type: "challenge",
           id: "1a",
@@ -121,11 +122,7 @@ window.GN_STORY = {
               es: "Tienes razón, AXIS: 9 es primo.",
               correct: false,
             },
-            {
-              en: "15 is prime.",
-              es: "15 es primo.",
-              correct: false,
-            },
+            { en: "15 is prime.", es: "15 es primo.", correct: false },
           ],
           goodEn:
             "✅ Correct! 7 is prime — only 1 and 7 divide it. Lock one is open.",
@@ -142,11 +139,10 @@ window.GN_STORY = {
             es: "¡El primer cerrojo se abrió! Ahora necesito la factorización en primos de 36.",
           },
         },
-
         {
           type: "beats",
-          art: "airlock-open.png",
-          alt: "The open airlock glows as the cadet studies a holographic 36",
+          art: "factor-tree.png",
+          alt: "A holographic factor tree for 36 glows above the open airlock",
           lastLabel: "Fix the code ▶",
           beats: [
             {
@@ -164,7 +160,6 @@ window.GN_STORY = {
             },
           ],
         },
-
         {
           type: "challenge",
           id: "1b",
@@ -207,10 +202,246 @@ window.GN_STORY = {
           badEn:
             "❌ That tree still has a number that is NOT prime. Keep breaking it down until every end is prime.",
           badEs: "Ese árbol aún tiene un número no primo. Sigue dividiendo.",
+          solveArt: "airlock-open.png",
+          solveAlt:
+            "The airlock stands fully open, golden light pouring through",
           solveBeat: {
             who: "cadet",
-            en: "Code accepted! The bay is open. Thanks for the help, AXIS — even the wrong guesses!",
-            es: "¡Código aceptado! La bahía está abierta. Gracias, AXIS.",
+            en: "Code accepted — the bay is open! Thanks for the help, AXIS, even the wrong guesses.",
+            es: "¡Código aceptado, la bahía está abierta! Gracias, AXIS.",
+          },
+        },
+      ],
+    },
+
+    /* ============================ ACT 2 ============================ */
+    {
+      id: "act2",
+      tab: "Act 2: The Twin Engines",
+      kicker: "Act 2 · Lesson 1-2",
+      title: "The Twin Engines",
+      advanceLabel: "Sync the engines ⚡",
+      steps: [
+        {
+          type: "beats",
+          art: "twin-engines.png",
+          alt: "The cadet stands between two glowing starship engines",
+          lastLabel: "Stop AXIS ▶",
+          beats: [
+            {
+              who: "log",
+              caption: true,
+              en: "Good work, Cadet. Now the two engines must SYNC, or we lose power.",
+              es: "Buen trabajo. Ahora los dos motores deben SINCRONIZARSE o perderemos energía.",
+            },
+            {
+              who: "cadet",
+              en: "Engine A is 12, Engine B is 18. I need a number that divides BOTH — a common factor.",
+              es: "El motor A es 12 y el B es 18. Necesito un número que divida a AMBOS: un factor común.",
+              vocab: [
+                {
+                  term: "common factor",
+                  en: "A factor that two numbers share. 6 is a common factor of 12 and 18.",
+                  es: "Un factor que comparten dos números. 6 es factor común de 12 y 18.",
+                },
+              ],
+            },
+            {
+              who: "axis",
+              misconception: true,
+              en: "9 divides 18, so 9 syncs them! Locking in 9.",
+              es: "9 divide a 18, ¡así que sincronizo con 9!",
+            },
+          ],
+        },
+        {
+          type: "challenge",
+          id: "2a",
+          ask: {
+            who: "axis",
+            en: "Tell me fast — which number divides <b>both</b> 12 and 18?",
+            es: "Dime rápido: ¿cuál número divide a 12 Y a 18?",
+          },
+          hint: {
+            en: "Factors of 12: 1, 2, 3, 4, 6, 12. Factors of 18: 1, 2, 3, 6, 9, 18. Look for one in BOTH lists.",
+            es: "Factores de 12: 1, 2, 3, 4, 6, 12. Factores de 18: 1, 2, 3, 6, 9, 18. Busca uno en AMBAS listas.",
+          },
+          frame: {
+            en: "“A common factor of 12 and 18 is ____ because it divides both.”",
+            es: "“Un factor común de 12 y 18 es ____ porque divide a ambos.”",
+          },
+          choices: [
+            {
+              en: "Not 9 — 9 doesn't divide 12. <b>6</b> divides both.",
+              es: "9 no: no divide a 12. El 6 divide a ambos.",
+              correct: true,
+            },
+            {
+              en: "You're right, 9 divides both.",
+              es: "Tienes razón, 9 divide a ambos.",
+              correct: false,
+            },
+            {
+              en: "4 divides both.",
+              es: "4 divide a ambos.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Yes! 6 divides 12 (12÷6=2) and 18 (18÷6=3). It is a common factor.",
+          goodEs: "¡Sí! 6 divide a 12 y a 18. Es un factor común.",
+          badEn:
+            "❌ That number only divides ONE of them. A common factor must divide BOTH. Check the hint.",
+          badEs: "Ese número solo divide a uno. Debe dividir a ambos.",
+          solveBeat: {
+            who: "cadet",
+            en: "The engines hum together! Now I have to share the fuel fairly using the GCF.",
+            es: "¡Los motores zumban juntos! Ahora debo repartir el combustible con el MFC.",
+          },
+        },
+        {
+          type: "beats",
+          art: "common-factor.png",
+          alt: "Two fuel crates labeled 24 and 36 glow between the engines",
+          lastLabel: "Find the GCF ▶",
+          beats: [
+            {
+              who: "axis",
+              misconception: true,
+              en: "6 divides 24 and 36 — so the GCF is 6! Done!",
+              es: "6 divide a 24 y a 36, ¡así que el MFC es 6!",
+              vocab: [
+                {
+                  term: "GCF",
+                  en: "Greatest Common Factor — the biggest factor two numbers share. The GCF of 24 and 36 is 12.",
+                  es: "Máximo Factor Común — el factor más grande que comparten dos números. El MFC de 24 y 36 es 12.",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "challenge",
+          id: "2b",
+          ask: {
+            who: "cadet",
+            en: "But is 6 the <b>greatest</b>? Share the fuel fairly — find the <b>GCF of 24 and 36</b>.",
+            es: "Pero, ¿es 6 el mayor? Encuentra el MFC (Máximo Factor Común) de 24 y 36.",
+          },
+          hint: {
+            en: "Common factors of 24 and 36 are 1, 2, 3, 4, 6, 12. The GREATEST one is the GCF.",
+            es: "Los factores comunes de 24 y 36 son 1, 2, 3, 4, 6, 12. El MAYOR es el MFC.",
+          },
+          frame: {
+            en: "“The GCF of 24 and 36 is ____ because it is the biggest number that divides both.”",
+            es: "“El MFC de 24 y 36 es ____ porque es el número más grande que divide a ambos.”",
+          },
+          choices: [
+            {
+              en: "6 works, but <b>12</b> is the GREATEST common factor.",
+              es: "6 sirve, pero 12 es el mayor factor común.",
+              correct: true,
+            },
+            {
+              en: "You're right, the GCF is 6.",
+              es: "Tienes razón, el MFC es 6.",
+              correct: false,
+            },
+            { en: "The GCF is 4.", es: "El MFC es 4.", correct: false },
+          ],
+          goodEn:
+            "✅ The GCF of 24 and 36 is 12 — the biggest factor they share. Fuel shared fairly. ENGINES SYNCED!",
+          goodEs: "El MFC de 24 y 36 es 12. ¡Motores sincronizados!",
+          badEn:
+            "❌ That IS a common factor, but not the GREATEST one. Look for a bigger shared factor.",
+          badEs: "Es común, pero no el mayor. Busca uno más grande.",
+          solveBeat: {
+            who: "cadet",
+            en: "Both engines locked in sync. The Master Door is next — let's finish this.",
+            es: "Motores sincronizados. Sigue la Puerta Maestra; terminemos esto.",
+          },
+        },
+      ],
+    },
+
+    /* ============================ FINAL ============================ */
+    {
+      id: "final",
+      tab: "Final Code",
+      kicker: "Final Code · Boss",
+      title: "The Master Door",
+      advanceLabel: "Unlock the Master Door 🌟",
+      steps: [
+        {
+          type: "beats",
+          art: "boss-door.png",
+          alt: "A giant glowing boss door with rings of orange light",
+          lastLabel: "Enter the code ▶",
+          beats: [
+            {
+              who: "log",
+              caption: true,
+              en: "The Master Door is ahead. It needs a code that uses BOTH skills at once.",
+              es: "La Puerta Maestra necesita un código que use AMBAS destrezas.",
+            },
+            {
+              who: "cadet",
+              en: "Prime factorization AND the GCF. I'm ready. Let's open it!",
+              es: "Factorización en primos Y el MFC. Estoy lista. ¡Vamos a abrirla!",
+            },
+            {
+              who: "axis",
+              misconception: true,
+              en: "I'll start: the GCF of 30 and 45 is 5 — easy!",
+              es: "Yo empiezo: el MFC de 30 y 45 es 5, ¡fácil!",
+            },
+          ],
+        },
+        {
+          type: "challenge",
+          id: "F",
+          ask: {
+            who: "cadet",
+            en: "Careful, AXIS. Pick the line that is <b>fully correct</b> — the prime factorization of 30 AND the GCF of 30 and 45.",
+            es: "Cuidado, AXIS. Elige la línea correcta: factorización de 30 y el MFC de 30 y 45.",
+          },
+          hint: {
+            en: "30 = 2 × 3 × 5. Factors of 30: 1,2,3,5,6,10,15,30. Factors of 45: 1,3,5,9,15,45. The biggest shared one is the GCF.",
+            es: "30 = 2 × 3 × 5. Factores de 30: 1,2,3,5,6,10,15,30. Factores de 45: 1,3,5,9,15,45. El mayor compartido es el MFC.",
+          },
+          frame: {
+            en: "“30 = ____ × ____ × ____.  The GCF of 30 and 45 is ____.”",
+            es: "“30 = ____ × ____ × ____.  El MFC de 30 y 45 es ____.”",
+          },
+          choices: [
+            {
+              en: "30 = 2 × 3 × 5,&nbsp; GCF(30,45) = 15",
+              es: "Factorización y MFC correctos.",
+              correct: true,
+            },
+            {
+              en: "30 = 2 × 15,&nbsp; GCF(30,45) = 5",
+              es: "15 no es primo y el MFC no es 5.",
+              correct: false,
+            },
+            {
+              en: "30 = 2 × 3 × 5,&nbsp; GCF(30,45) = 5",
+              es: "La factorización está bien, pero el MFC no es 5.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ CODE ACCEPTED! 30 = 2×3×5 and GCF(30,45) = 15. Both skills, perfect. THE MASTER DOOR OPENS!",
+          goodEs:
+            "¡CÓDIGO ACEPTADO! 30 = 2×3×5 y MFC(30,45)=15. ¡La puerta se abre!",
+          badEn:
+            "❌ One part is wrong. Check that 30 is broken into ONLY primes, and that the GCF is the BIGGEST shared factor (15, not 5).",
+          badEs:
+            "Una parte está mal. Revisa los primos de 30 y el MFC más grande (15).",
+          solveBeat: {
+            who: "cadet",
+            en: "The Master Door swings open! The station is ours again.",
+            es: "¡La Puerta Maestra se abre! La estación es nuestra otra vez.",
           },
         },
       ],
@@ -243,10 +474,34 @@ window.GN_STORY = {
       def: "A diagram that breaks a number into branches until every end is a prime number.",
     },
     {
-      ico: "❌",
+      ico: "❮❯",
+      en: "Exponent",
+      es: "exponente",
+      def: "A small number that shows repeated multiplying. Example: 2×2 = 2².",
+    },
+    {
+      ico: "✖️",
       en: "Factor",
       es: "factor",
       def: "A number that divides another number with no remainder. 3 is a factor of 12.",
+    },
+    {
+      ico: "🤝",
+      en: "Common factor",
+      es: "factor común",
+      def: "A factor that two numbers share. 6 is a common factor of 12 and 18.",
+    },
+    {
+      ico: "🏆",
+      en: "GCF (Greatest Common Factor)",
+      es: "Máximo Factor Común (MFC)",
+      def: "The biggest factor that two numbers share. The GCF of 24 and 36 is 12.",
+    },
+    {
+      ico: "✅",
+      en: "Divisible",
+      es: "divisible",
+      def: "One number divides another evenly, with no remainder. 18 is divisible by 6.",
     },
   ],
 
@@ -254,9 +509,9 @@ window.GN_STORY = {
     art: "mission-complete.png",
     alt: "The cadet stands proudly on the restored station bridge with a galaxy behind",
     badge: "🎉🚀⭐",
-    titleEn: "Bay Restored!",
-    en: "You caught AXIS's mistakes and opened the locked bay with <b>prime factorization</b>. (Full novel continues with the Twin Engines and the Master Door.)",
-    es: "¡Atrapaste los errores de AXIS y abriste la bahía con la factorización en primos!",
+    titleEn: "Mission Complete!",
+    en: "You restored Prime Station! You used <b>prime factorization</b> to open the airlocks and the <b>GCF</b> to sync the engines. The crew is safe. Great work, Cadet!",
+    es: "¡Misión cumplida! Usaste la factorización en primos y el MFC. ¡Excelente trabajo!",
     master: {
       headingEn: "Prove your rank to certify your Master Certificate!",
       promptEn:
@@ -278,7 +533,7 @@ window.GN_STORY = {
         "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟",
       badEn:
         "❌ That is incorrect. Review your calculations and try another option!",
-      certifyTitle: "🏆 Master Certified: Bay Restored!",
+      certifyTitle: "🏆 Master Certified: Mission Complete!",
     },
   },
 };
