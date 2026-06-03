@@ -1,0 +1,23 @@
+# edupulse-gradebook — Worker + D1 config.
+#
+# Secrets are NOT stored here. Set them with Wrangler:
+#   wrangler secret put INGEST_KEY     (write-only ingest key)
+#   wrangler secret put ADMIN_KEY      (read/export key)
+#
+# After `wrangler d1 create edupulse-gradebook`, paste the printed
+# database_id into the [[d1_databases]] block below.
+
+name = "edupulse-gradebook-api"
+main = "src/worker.js"
+compatibility_date = "2026-05-25"
+
+[vars]
+# Comma-separated allowlist of Origins for CORS, or "*" for any.
+# e.g. "https://edupulse-gradebook.pages.dev,https://your-game.example"
+ALLOWED_ORIGINS = "*"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "edupulse-gradebook"
+database_id = "REPLACE_WITH_DATABASE_ID"   # from `wrangler d1 create edupulse-gradebook`
+migrations_dir = "migrations"

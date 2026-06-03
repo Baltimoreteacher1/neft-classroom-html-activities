@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EduPulse Gradebook</title>
+<meta name="description" content="EduPulse — score ingestion dashboard for standards mastery, student progress, and misconception tracking." />
+<style>
+  /* ---- Palette ---- */
+  :root {
+    --navy:  #17324D;
+    --teal:  #1FA6A2;
+    --amber: #F2C15B;
+    --bg:    #F7F4EC;
+    --ink:   #24323F;
+    --card:  #FFFFFF;
+    --line:  #D9D2C2;
+    --good:  #1FA6A2;
+    --warn:  #C9603F;
+    --muted: #5B6B78;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(23,50,77,.12), 0 4px 14px rgba(23,50,77,.06);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: Calibri, "Segoe UI", Candara, "Trebuchet MS", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--navy); }
+  h1, h2, h3 { color: var(--navy); margin: 0 0 .4em; line-height: 1.2; }
+  header.app {
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  header.app h1 { color: #fff; font-size: 1.35rem; margin: 0; }
+  header.app .pulse {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--teal); box-shadow: 0 0 0 0 rgba(31,166,162,.7);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(31,166,162,.6); }
+    70%  { box-shadow: 0 0 0 10px rgba(31,166,162,0); }
+    100% { box-shadow: 0 0 0 0 rgba(31,166,162,0); }
+  }
+  header.app .spacer { flex: 1; }
+  header.app .status { font-size: .85rem; color: var(--amber); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 18px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px;
+    margin: 0 0 18px;
+  }
+
+  /* ---- Auth / config bar ---- */
+  .config-grid {
+    display: grid; gap: 12px;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+  }
+  label { display: block; font-size: .8rem; font-weight: 700; color: var(--muted); margin-bottom: 4px; letter-spacing: .02em; }
+  input[type="text"], input[type="password"], select {
+    width: 100%; padding: 9px 11px;
+    border: 1px solid var(--line); border-radius: 8px;
+    font: inherit; color: var(--ink); background: #fff;
+  }
+  input:focus, select:focus, button:focus-visible {
+    outline: 3px solid rgba(31,166,162,.45); outline-offset: 1px; border-color: var(--teal);
+  }
+  button {
+    font: inherit; font-weight: 700; cursor: pointer;
+    background: var(--teal); color: #06302F; border: 1px solid #178b87;
+    padding: 9px 16px; border-radius: 8px;
+  }
+  button:hover { background: #1b948f; }
+  button.secondary { background: #fff; color: var(--navy); border-color: var(--line); }
+  button.secondary:hover { background: #f0ece1; }
+  button.ghost { background: transparent; border-color: transparent; color: #fff; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .pill { font-size: .75rem; padding: 2px 9px; border-radius: 999px; background: #eef6f5; color: #0d5b58; border: 1px solid #cde7e5; }
+
+  /* ---- Tabs ---- */
+  nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0 16px; }
+  nav.tabs button {
+    background: transparent; border: 1px solid transparent; color: var(--navy);
+    padding: 8px 14px; border-radius: 8px 8px 0 0; font-weight: 700;
+  }
+  nav.tabs button[aria-selected="true"] {
+    background: var(--card); border-color: var(--line); border-bottom-color: var(--card);
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ---- Mastery bars ---- */
+  .mastery-row { display: grid; grid-template-columns: 130px 1fr 64px; gap: 12px; align-items: center; margin: 10px 0; }
+  .mastery-row .std { font-weight: 700; color: var(--navy); }
+  .bar-track { background: #eee7d7; border-radius: 6px; height: 22px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; border-radius: 6px 0 0 6px; background: linear-gradient(90deg, var(--teal), #2bc2bd); transition: width .4s ease; }
+  .bar-fill.low  { background: linear-gradient(90deg, #C9603F, #e0805f); }
+  .bar-fill.mid  { background: linear-gradient(90deg, var(--amber), #f4d089); }
+  .mastery-row .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .mastery-meta { font-size: .78rem; color: var(--muted); }
+
+  /* ---- Table ---- */
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--navy); cursor: pointer; user-select: none; white-space: nowrap; }
+  th[aria-sort="ascending"]::after  { content: " ▲"; color: var(--teal); }
+  th[aria-sort="descending"]::after { content: " ▼"; color: var(--teal); }
+  tbody tr:hover { background: #faf7ef; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .78rem; font-weight: 700; }
+  .badge.good { background: #e3f4f3; color: #0d5b58; }
+  .badge.warn { background: #f7e2da; color: #8a3a22; }
+  .badge.mid  { background: #fbf0d6; color: #7a5a16; }
+
+  /* ---- Misconception heatmap ---- */
+  .heatmap { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .heat-cell {
+    border-radius: 8px; padding: 12px; color: #06302F; border: 1px solid rgba(0,0,0,.06);
+    display: flex; flex-direction: column; gap: 4px; min-height: 64px;
+  }
+  .heat-cell .tag { font-weight: 700; font-size: .9rem; }
+  .heat-cell .count { font-size: 1.5rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  /* ---- Momentum brief ---- */
+  textarea.brief {
+    width: 100%; min-height: 190px; font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+    font-size: .9rem; padding: 14px; border: 1px solid var(--line); border-radius: 8px;
+    background: #fbfaf6; color: var(--ink); resize: vertical;
+  }
+
+  /* ---- States ---- */
+  .state { text-align: center; padding: 36px 16px; color: var(--muted); }
+  .spinner {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 3px solid #d8efee; border-top-color: var(--teal);
+    animation: spin .8s linear infinite; margin: 0 auto 10px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-banner { background: #f7e2da; color: #8a3a22; border: 1px solid #e3b6a6; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; }
+  .hidden { display: none !important; }
+  .filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin-bottom: 12px; }
+  .filters > div { min-width: 150px; flex: 1; }
+  footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 20px; }
+
+  @media (max-width: 768px) {
+    .config-grid { grid-template-columns: 1fr; }
+    .mastery-row { grid-template-columns: 92px 1fr 52px; }
+  }
+  @media (max-width: 420px) {
+    header.app h1 { font-size: 1.1rem; }
+    main { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<header class="app">
+  <span class="pulse" aria-hidden="true"></span>
+  <h1>EduPulse&nbsp;Gradebook</h1>
+  <span class="spacer"></span>
+  <span class="status" id="connStatus" role="status">not connected</span>
+  <button class="ghost" id="signOut" hidden>Sign out</button>
+</header>
+
+<main>
+  <!-- Connection / auth -->
+  <section class="card" id="authCard">
+    <h2>Connect</h2>
+    <p class="mastery-meta">The admin key is read/export only and is stored in this browser tab's <code>sessionStorage</code> — never in code, never shipped to the game.</p>
+    <div class="config-grid">
+      <div>
+        <label for="apiBase">API base URL</label>
+        <input type="text" id="apiBase" placeholder="https://edupulse-gradebook-api.&lt;you&gt;.workers.dev" autocomplete="off" />
+      </div>
+      <div>
+        <label for="adminKey">Admin key (x-admin-key)</label>
+        <input type="password" id="adminKey" placeholder="ak_…" autocomplete="off" />
+      </div>
+      <div>
+        <button id="connectBtn">Connect</button>
+      </div>
+    </div>
+    <div id="authError" class="error-banner hidden" role="alert"></div>
+  </section>
+
+  <div id="dashboard" class="hidden">
+    <div class="row" style="margin-bottom:12px;">
+      <span class="pill" id="totalPill">0 events</span>
+      <span class="pill" id="studentPill">0 students</span>
+      <span class="pill" id="avgPill">avg —</span>
+      <span class="spacer" style="flex:1"></span>
+      <button class="secondary" id="refreshBtn">Refresh</button>
+      <button id="exportBtn">Export CSV</button>
+    </div>
+
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" aria-selected="true"  data-view="mastery">Standards mastery</button>
+      <button role="tab" aria-selected="false" data-view="students">Students</button>
+      <button role="tab" aria-selected="false" data-view="misconceptions">Misconceptions</button>
+      <button role="tab" aria-selected="false" data-view="brief">Momentum Brief</button>
+    </nav>
+
+    <!-- Standards mastery -->
+    <section class="view active card" id="view-mastery" role="tabpanel">
+      <h2>Mastery by standard</h2>
+      <p class="mastery-meta">Bar = average percent. Mastery rate = share of events scoring 80%+.</p>
+      <div id="masteryBody"></div>
+    </section>
+
+    <!-- Students -->
+    <section class="view card" id="view-students" role="tabpanel">
+      <h2>Students</h2>
+      <div class="filters">
+        <div>
+          <label for="fPeriod">Class period</label>
+          <select id="fPeriod"><option value="">All periods</option></select>
+        </div>
+        <div>
+          <label for="fStandard">Standard</label>
+          <select id="fStandard"><option value="">All standards</option></select>
+        </div>
+        <div style="flex:0">
+          <label>&nbsp;</label>
+          <button class="secondary" id="clearFilters">Clear</button>
+        </div>
+      </div>
+      <div id="studentsBody"></div>
+    </section>
+
+    <!-- Misconceptions -->
+    <section class="view card" id="view-misconceptions" role="tabpanel">
+      <h2>Misconception heatmap</h2>
+      <p class="mastery-meta">Cell intensity scales with how often each misconception tag appears across all events.</p>
+      <div id="heatBody"></div>
+    </section>
+
+    <!-- Momentum Brief -->
+    <section class="view card" id="view-brief" role="tabpanel">
+      <h2>Momentum Brief</h2>
+      <div class="filters">
+        <div style="flex:0; min-width:120px;">
+          <label for="unitNum">Unit #</label>
+          <input type="text" id="unitNum" value="1" />
+        </div>
+        <div style="flex:0">
+          <label>&nbsp;</label>
+          <button id="genBrief">Generate</button>
+        </div>
+        <div style="flex:0">
+          <label>&nbsp;</label>
+          <button class="secondary" id="copyBrief">Copy</button>
+        </div>
+      </div>
+      <label for="briefOut">Paste-ready block for your LP trigger</label>
+      <textarea class="brief" id="briefOut" readonly aria-live="polite"></textarea>
+    </section>
+  </div>
+
+  <div id="globalState"></div>
+</main>
+
+<footer>EduPulse Gradebook · standards mastery, student progress &amp; misconception signal · no external dependencies</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var S = window.sessionStorage;
+  var els = {
+    apiBase: document.getElementById("apiBase"),
+    adminKey: document.getElementById("adminKey"),
+    connectBtn: document.getElementById("connectBtn"),
+    authCard: document.getElementById("authCard"),
+    authError: document.getElementById("authError"),
+    dashboard: document.getElementById("dashboard"),
+    connStatus: document.getElementById("connStatus"),
+    signOut: document.getElementById("signOut"),
+    refreshBtn: document.getElementById("refreshBtn"),
+    exportBtn: document.getElementById("exportBtn"),
+    totalPill: document.getElementById("totalPill"),
+    studentPill: document.getElementById("studentPill"),
+    avgPill: document.getElementById("avgPill"),
+    masteryBody: document.getElementById("masteryBody"),
+    studentsBody: document.getElementById("studentsBody"),
+    heatBody: document.getElementById("heatBody"),
+    fPeriod: document.getElementById("fPeriod"),
+    fStandard: document.getElementById("fStandard"),
+    clearFilters: document.getElementById("clearFilters"),
+    briefOut: document.getElementById("briefOut"),
+    unitNum: document.getElementById("unitNum"),
+    genBrief: document.getElementById("genBrief"),
+    copyBrief: document.getElementById("copyBrief"),
+  };
+
+  var state = {
+    apiBase: "",
+    adminKey: "",
+    summary: null,
+    rows: [],
+    sort: { key: "avgPercent", dir: "asc" },
+    filters: { period: "", standard: "" },
+  };
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function setConn(text, ok) {
+    els.connStatus.textContent = text;
+    els.connStatus.style.color = ok ? "#7CE0DC" : "var(--amber)";
+  }
+
+  function authHeaders() { return { "x-admin-key": state.adminKey }; }
+
+  async function api(path) {
+    var res = await fetch(state.apiBase + path, { headers: authHeaders() });
+    if (res.status === 401) { var e = new Error("Unauthorized — check the admin key."); e.code = 401; throw e; }
+    if (!res.ok) throw new Error("Request failed (" + res.status + ")");
+    return res.json();
+  }
+
+  /* ---------- Connect ---------- */
+  async function connect() {
+    var base = els.apiBase.value.trim().replace(/\/+$/, "");
+    var key = els.adminKey.value.trim();
+    els.authError.classList.add("hidden");
+    if (!base || !key) { showAuthError("Enter the API base URL and admin key."); return; }
+    els.connectBtn.disabled = true; els.connectBtn.textContent = "Connecting…";
+    try {
+      state.apiBase = base; state.adminKey = key;
+      // health check (no auth) then an authed summary call to validate the key
+      var h = await fetch(base + "/api/health").then(function (r) { return r.json(); });
+      if (!h || !h.ok) throw new Error("API health check failed.");
+      await api("/api/summary");
+      S.setItem("edupulse_apiBase", base);
+      S.setItem("edupulse_adminKey", key);
+      els.authCard.classList.add("hidden");
+      els.dashboard.classList.remove("hidden");
+      els.signOut.hidden = false;
+      setConn("connected", true);
+      await loadAll();
+    } catch (err) {
+      showAuthError(err.code === 401 ? "Unauthorized — that admin key was rejected." : (err.message || "Could not connect."));
+      setConn("not connected", false);
+    } finally {
+      els.connectBtn.disabled = false; els.connectBtn.textContent = "Connect";
+    }
+  }
+  function showAuthError(msg) { els.authError.textContent = msg; els.authError.classList.remove("hidden"); }
+
+  function signOut() {
+    S.removeItem("edupulse_adminKey");
+    state.adminKey = ""; state.summary = null; state.rows = [];
+    els.dashboard.classList.add("hidden");
+    els.authCard.classList.remove("hidden");
+    els.signOut.hidden = true;
+    els.adminKey.value = "";
+    setConn("not connected", false);
+  }
+
+  /* ---------- Load ---------- */
+  function loading(el) { el.innerHTML = '<div class="state"><div class="spinner"></div>Loading…</div>'; }
+  function empty(el, msg) { el.innerHTML = '<div class="state">' + esc(msg || "No data yet.") + '</div>'; }
+  function errored(el, msg) { el.innerHTML = '<div class="error-banner">' + esc(msg) + '</div>'; }
+
+  async function loadAll() {
+    loading(els.masteryBody); loading(els.studentsBody); loading(els.heatBody);
+    try {
+      var summary = await api("/api/summary");
+      var data = await api("/api/scores?limit=5000");
+      state.summary = summary;
+      state.rows = (data && data.rows) || [];
+      renderPills();
+      buildFilterOptions();
+      renderMastery();
+      renderStudents();
+      renderHeat();
+    } catch (err) {
+      if (err.code === 401) { signOut(); showAuthError("Session key rejected — reconnect."); return; }
+      errored(els.masteryBody, err.message);
+      errored(els.studentsBody, err.message);
+      errored(els.heatBody, err.message);
+    }
+  }
+
+  function renderPills() {
+    var o = state.summary.overall || {};
+    var students = (state.summary.perStudent || []).length;
+    els.totalPill.textContent = (o.count || 0) + " events";
+    els.studentPill.textContent = students + " students";
+    els.avgPill.textContent = "avg " + (o.avgPercent != null ? o.avgPercent + "%" : "—");
+  }
+
+  /* ---------- Mastery ---------- */
+  function barClass(pct) { return pct >= 80 ? "" : (pct >= 60 ? "mid" : "low"); }
+  function renderMastery() {
+    var rows = (state.summary.perStandard || []).slice().sort(function (a, b) { return (a.avgPercent || 0) - (b.avgPercent || 0); });
+    if (!rows.length) { empty(els.masteryBody, "No standards recorded yet."); return; }
+    var html = rows.map(function (r) {
+      var pct = r.avgPercent || 0;
+      return '<div class="mastery-row">' +
+        '<div><div class="std">' + esc(r.standard) + '</div>' +
+        '<div class="mastery-meta">' + r.count + ' events · ' + (r.masteryRate != null ? r.masteryRate : 0) + '% mastery</div></div>' +
+        '<div class="bar-track"><div class="bar-fill ' + barClass(pct) + '" style="width:' + Math.max(2, Math.min(100, pct)) + '%"></div></div>' +
+        '<div class="num">' + pct + '%</div>' +
+      '</div>';
+    }).join("");
+    els.masteryBody.innerHTML = html;
+  }
+
+  /* ---------- Students ---------- */
+  function buildFilterOptions() {
+    var periods = {}, standards = {};
+    state.rows.forEach(function (r) {
+      if (r.class_period) periods[r.class_period] = true;
+      if (r.standard) standards[r.standard] = true;
+    });
+    fillSelect(els.fPeriod, Object.keys(periods).sort(), "All periods");
+    fillSelect(els.fStandard, Object.keys(standards).sort(), "All standards");
+  }
+  function fillSelect(sel, values, allLabel) {
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">' + allLabel + '</option>' +
+      values.map(function (v) { return '<option value="' + esc(v) + '">' + esc(v) + '</option>'; }).join("");
+    sel.value = cur;
+  }
+
+  function studentAggregates() {
+    // Aggregate from raw rows so period/standard filters apply correctly.
+    var f = state.filters;
+    var map = {};
+    state.rows.forEach(function (r) {
+      if (f.period && r.class_period !== f.period) return;
+      if (f.standard && r.standard !== f.standard) return;
+      var id = r.student_id || "—";
+      var s = map[id] || (map[id] = { studentId: id, studentName: r.student_name || "", classPeriod: r.class_period || "", count: 0, sum: 0, last: "" });
+      s.count++;
+      if (typeof r.percent === "number") s.sum += r.percent;
+      if (r.ts && r.ts > s.last) s.last = r.ts;
+      if (r.student_name) s.studentName = r.student_name;
+      if (r.class_period) s.classPeriod = r.class_period;
+    });
+    return Object.keys(map).map(function (k) {
+      var s = map[k];
+      s.avgPercent = s.count ? Math.round((s.sum / s.count) * 10) / 10 : 0;
+      return s;
+    });
+  }
+
+  function renderStudents() {
+    var rows = studentAggregates();
+    if (!rows.length) { empty(els.studentsBody, "No students match these filters."); return; }
+    var sk = state.sort.key, dir = state.sort.dir === "asc" ? 1 : -1;
+    rows.sort(function (a, b) {
+      var av = a[sk], bv = b[sk];
+      if (typeof av === "string" || typeof bv === "string") { av = String(av || ""); bv = String(bv || ""); return av < bv ? -dir : av > bv ? dir : 0; }
+      return ((av || 0) - (bv || 0)) * dir;
+    });
+    var cols = [
+      { k: "studentName", label: "Student" },
+      { k: "studentId", label: "ID" },
+      { k: "classPeriod", label: "Period" },
+      { k: "count", label: "Events", num: true },
+      { k: "avgPercent", label: "Avg %", num: true },
+      { k: "last", label: "Last activity" },
+    ];
+    var thead = "<tr>" + cols.map(function (c) {
+      var sortAttr = state.sort.key === c.k ? (state.sort.dir === "asc" ? "ascending" : "descending") : "none";
+      return '<th data-key="' + c.k + '" aria-sort="' + sortAttr + '">' + c.label + "</th>";
+    }).join("") + "</tr>";
+    var tbody = rows.map(function (s) {
+      var badge = s.avgPercent >= 80 ? "good" : s.avgPercent >= 60 ? "mid" : "warn";
+      return "<tr>" +
+        "<td>" + esc(s.studentName || "—") + "</td>" +
+        "<td>" + esc(s.studentId) + "</td>" +
+        "<td>" + esc(s.classPeriod || "—") + "</td>" +
+        '<td class="num">' + s.count + "</td>" +
+        '<td class="num"><span class="badge ' + badge + '">' + s.avgPercent + "%</span></td>" +
+        "<td>" + esc(s.last ? s.last.replace("T", " ").slice(0, 16) : "—") + "</td>" +
+      "</tr>";
+    }).join("");
+    els.studentsBody.innerHTML = '<table><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
+    els.studentsBody.querySelectorAll("th").forEach(function (th) {
+      th.addEventListener("click", function () {
+        var k = th.getAttribute("data-key");
+        if (state.sort.key === k) state.sort.dir = state.sort.dir === "asc" ? "desc" : "asc";
+        else { state.sort.key = k; state.sort.dir = "asc"; }
+        renderStudents();
+      });
+    });
+  }
+
+  /* ---------- Misconception heatmap ---------- */
+  function renderHeat() {
+    var items = (state.summary.misconceptions || []);
+    if (!items.length) { empty(els.heatBody, "No misconceptions logged yet."); return; }
+    var max = items[0].count || 1;
+    var html = items.map(function (m) {
+      var t = m.count / max;                  // 0..1
+      var bg = mix([247,244,236], [31,166,162], t); // warm bg -> teal
+      var fg = t > 0.55 ? "#06302F" : "#24323F";
+      return '<div class="heat-cell" style="background:' + bg + ';color:' + fg + '">' +
+        '<span class="tag">' + esc(m.tag) + '</span>' +
+        '<span class="count">' + m.count + '</span>' +
+      '</div>';
+    }).join("");
+    els.heatBody.innerHTML = '<div class="heatmap">' + html + '</div>';
+  }
+  function mix(a, b, t) {
+    var r = Math.round(a[0] + (b[0] - a[0]) * t);
+    var g = Math.round(a[1] + (b[1] - a[1]) * t);
+    var bl = Math.round(a[2] + (b[2] - a[2]) * t);
+    return "rgb(" + r + "," + g + "," + bl + ")";
+  }
+
+  /* ---------- Momentum Brief ---------- */
+  function generateBrief() {
+    if (!state.summary) { els.briefOut.value = "Connect and load data first."; return; }
+    var unit = (els.unitNum.value || "1").trim();
+    var o = state.summary.overall || {};
+    var avg = o.avgPercent != null ? o.avgPercent : 0;
+
+    var top = (state.summary.misconceptions || [])[0];
+    var topMis = top ? (top.tag + " (" + top.count + " occurrences)") : "none recorded";
+
+    var struggling = (state.summary.perStudent || []).filter(function (s) { return (s.avgPercent || 0) < 70; });
+    var codes = struggling.slice(0, 8).map(function (s) { return s.studentId; }).join(", ");
+    var strugLine = struggling.length
+      ? struggling.length + " (" + codes + (struggling.length > 8 ? ", …" : "") + ")"
+      : "0";
+
+    // Auto-generated observation.
+    var note;
+    var weak = (state.summary.perStandard || []).slice().sort(function (a, b) { return (a.avgPercent || 0) - (b.avgPercent || 0); })[0];
+    if (avg >= 85) note = "Strong unit — class is at or near mastery; ready to accelerate.";
+    else if (avg >= 70) note = "On track overall; tighten small groups around " + (weak ? weak.standard : "the lowest standard") + ".";
+    else note = "Reteach indicated — " + (weak ? weak.standard + " is the weakest standard (" + (weak.avgPercent || 0) + "%)" : "core standards are below target") + (top ? "; lead with the '" + top.tag + "' misconception." : ".");
+
+    var block =
+      "Unit " + unit + " Debrief:\n" +
+      "- Class average: " + avg + "%\n" +
+      "- Top misconception: " + topMis + "\n" +
+      "- Struggling students: " + strugLine + "\n" +
+      "- Notes: " + note;
+    els.briefOut.value = block;
+  }
+
+  async function copyBrief() {
+    try { await navigator.clipboard.writeText(els.briefOut.value); els.copyBrief.textContent = "Copied!"; }
+    catch (e) { els.briefOut.select(); document.execCommand && document.execCommand("copy"); els.copyBrief.textContent = "Copied!"; }
+    setTimeout(function () { els.copyBrief.textContent = "Copy"; }, 1500);
+  }
+
+  /* ---------- CSV export (server-side) ---------- */
+  async function exportCsv() {
+    els.exportBtn.disabled = true; var old = els.exportBtn.textContent; els.exportBtn.textContent = "Exporting…";
+    try {
+      var res = await fetch(state.apiBase + "/api/export.csv", { headers: authHeaders() });
+      if (!res.ok) throw new Error("Export failed (" + res.status + ")");
+      var blob = await res.blob();
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "edupulse-scores.csv";
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) { alert(err.message); }
+    finally { els.exportBtn.disabled = false; els.exportBtn.textContent = old; }
+  }
+
+  /* ---------- Tabs ---------- */
+  document.querySelectorAll('nav.tabs button').forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll('nav.tabs button').forEach(function (b) { b.setAttribute("aria-selected", b === btn ? "true" : "false"); });
+      document.querySelectorAll(".view").forEach(function (v) { v.classList.remove("active"); });
+      document.getElementById("view-" + btn.getAttribute("data-view")).classList.add("active");
+    });
+  });
+
+  /* ---------- Wire up ---------- */
+  els.connectBtn.addEventListener("click", connect);
+  els.adminKey.addEventListener("keydown", function (e) { if (e.key === "Enter") connect(); });
+  els.signOut.addEventListener("click", signOut);
+  els.refreshBtn.addEventListener("click", loadAll);
+  els.exportBtn.addEventListener("click", exportCsv);
+  els.genBrief.addEventListener("click", generateBrief);
+  els.copyBrief.addEventListener("click", copyBrief);
+  els.fPeriod.addEventListener("change", function () { state.filters.period = els.fPeriod.value; renderStudents(); });
+  els.fStandard.addEventListener("change", function () { state.filters.standard = els.fStandard.value; renderStudents(); });
+  els.clearFilters.addEventListener("click", function () {
+    state.filters = { period: "", standard: "" };
+    els.fPeriod.value = ""; els.fStandard.value = ""; renderStudents();
+  });
+
+  // Restore session
+  var savedBase = S.getItem("edupulse_apiBase");
+  var savedKey = S.getItem("edupulse_adminKey");
+  if (savedBase) els.apiBase.value = savedBase;
+  if (savedBase && savedKey) { els.adminKey.value = savedKey; connect(); }
+})();
+</script>
+</body>
+</html>

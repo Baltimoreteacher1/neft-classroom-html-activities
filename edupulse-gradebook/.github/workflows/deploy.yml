@@ -1,0 +1,55 @@
+name: Deploy edupulse-gradebook
+
+# Auto-deploy the Worker (+ D1 migrations) and the Pages dashboard on push to main.
+#
+# Required GitHub repo secrets (see README "Deploy pipeline"):
+#   CLOUDFLARE_API_TOKEN   — token with Workers Scripts:Edit, D1:Edit, Pages:Edit
+#   CLOUDFLARE_ACCOUNT_ID  — your Cloudflare account id
+#
+# NOTE: this workflow assumes the project is at the repo root. If edupulse-gradebook
+# lives in a subdirectory, set `working-directory` / `workingDirectory` accordingly
+# (examples commented inline below).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # --- Apply D1 migrations (idempotent) ---
+      - name: Apply D1 migrations
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 migrations apply edupulse-gradebook --remote
+          # workingDirectory: edupulse-gradebook
+
+      # --- Deploy the Worker API ---
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          # workingDirectory: edupulse-gradebook
+
+      # --- Deploy the Pages dashboard ---
+      - name: Deploy Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy public --project-name edupulse-gradebook --branch main
+          # workingDirectory: edupulse-gradebook
