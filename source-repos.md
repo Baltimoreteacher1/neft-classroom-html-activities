@@ -48,8 +48,8 @@ This file maps classroom activity source repository names into the organized sta
 | `Mean-Median-ModeGalleryWalk` | `/statistics-data/mean-median-modegallerywalk/` |
 | `meanmedianmodesoccerandbracelets` | `/statistics-data/meanmedianmodesoccerandbracelets/` |
 | `MeanMedianModeIntrohtml` | `/statistics-data/mean-median-mode-intro/` |
-| `Histogramhero` | `/statistics-data/histogramhero/` |
-| `2.2HistogramGraphicNovel` | `/statistics-data/2-2histogramgraphicnovel/` |
+| `Histogramhero` | `/statistics-data/histogram-hero/` |
+| `2.2HistogramGraphicNovel` | `/statistics-data/histogram-graphic-novel/` |
 | `6.SP.A.1Game-` | `/statistics-data/6-sp-a-1game/` |
 | `6.SP.A.1Data-Lab-6.SP.A.1-Flagship` | `/statistics-data/6-sp-a-1data-lab-6-sp-a-1-flagship/` |
 | `6.sp.a.1Review2` | `/statistics-data/6-sp-a-1review2/` |
