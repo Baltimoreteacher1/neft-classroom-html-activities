@@ -856,6 +856,15 @@ function renderExplorePhase(el, state, ctx, config) {
     cfg.instructions || "Investigate the concept with an interactive tool.",
   );
 
+  // Opt-in data diagram (e.g. a histogram) shown up front so students can SEE
+  // and read the visual while they work the interaction below it.
+  if (cfg.histogram) {
+    const figCard = document.createElement("div");
+    figCard.className = "card";
+    figCard.innerHTML = histogramSVG(cfg.histogram);
+    el.append(figCard);
+  }
+
   // Surface a Turn & Talk discussion moment after the Explore interaction.
   // It is non-graded: confirming it advances the phase. A "Skip / Continue"
   // affordance is built into the button flow so it never blocks progress.
@@ -878,13 +887,6 @@ function renderExplorePhase(el, state, ctx, config) {
       const disc = document.createElement("div");
       disc.className = "card card-teal mt-6";
       disc.innerHTML = `<h4 style="color:var(--teal); margin-bottom:var(--sp-3);">💬 Discuss</h4>`;
-      // Reveal the histogram only AFTER the frequency table is built, so the
-      // diagram supports the discussion without giving away the table answers.
-      if (cfg.histogram) {
-        const fig = document.createElement("div");
-        fig.innerHTML = histogramSVG(cfg.histogram);
-        disc.append(fig);
-      }
       renderOpenResponse(disc, {
         prompt: cfg.discourse.prompt,
         sentenceFrame: cfg.discourse.sentenceFrame,
