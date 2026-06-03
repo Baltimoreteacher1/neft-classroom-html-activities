@@ -612,6 +612,37 @@ main {
   padding: 14px;
   box-shadow: var(--sh);
 }
+.chal-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.chal-question-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+.chal-speaker {
+  color: var(--red);
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  margin-right: 4px;
+}
+@media (min-width: 768px) {
+  .chal-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .chal-left {
+    border-right: 2px dashed rgba(15, 23, 42, 0.15);
+    padding-right: 24px;
+  }
+}
 .chal-tools {
   display: flex;
   gap: 8px;
@@ -1234,10 +1265,7 @@ main {
 }
 
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+  </head>
   <body>
 
     <script>
@@ -2678,19 +2706,20 @@ window.GN_STORY = {
       });
       html +=
         '<div class="challenge bonus" id="chalComplete">' +
-        '<span class="bonus-tag">&#127942; MASTER RANK CHALLENGE</span>' +
-        "<h3>" +
-        (m.headingEn || "Prove your rank!") +
-        "</h3>" +
-        '<p class="prompt">' +
-        m.promptEn +
-        '<span class="es">' +
-        m.promptEs +
-        "</span></p>" +
-        '<div class="choices" id="choicesComplete">' +
-        ch +
-        "</div>" +
-        '<div class="feedback" id="fbComplete"></div></div>';
+          '<div class="chal-grid">' +
+            '<div class="chal-left">' +
+              '<span class="bonus-tag">&#127942; MASTER RANK CHALLENGE</span>' +
+              '<h3 style="margin-top:8px;">' + (m.headingEn || "Prove your rank!") + '</h3>' +
+              '<p class="prompt" style="margin-top:8px;">' + m.promptEn +
+                (m.promptEs ? '<span class="es" style="display:block;margin-top:4px;font-style:italic;color:var(--muted);">' + m.promptEs + '</span>' : '') +
+              '</p>' +
+            '</div>' +
+            '<div class="chal-right">' +
+              '<div class="choices" id="choicesComplete">' + ch + '</div>' +
+              '<div class="feedback" id="fbComplete"></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
     }
     html +=
       '<div id="nt-notebook" class="notebook"></div>' +
@@ -3006,14 +3035,30 @@ window.GN_STORY = {
       }
       var wrap = el("div", "challenge" + (optional ? " bonus" : ""));
       wrap.id = "chal-" + act.id + "-" + step.id;
+      
+      var bonusHeader = "";
       if (optional) {
-        wrap.innerHTML =
+        bonusHeader =
           '<span class="bonus-tag">' +
           (step.bonusTag || "&#11088; Bonus Challenge") +
           "</span>" +
           '<p class="prompt" style="font-size:0.82rem;color:var(--muted);' +
-          'margin:6px 0">Optional — try it or press the button to move on.</p>';
+          'margin:6px 0 12px">Optional — try it or press the button to move on.</p>';
       }
+      
+      var qText = "";
+      if (step.ask) {
+        var whoName = "";
+        if (step.ask.who && S.cast && S.cast[step.ask.who]) {
+          whoName = S.cast[step.ask.who].name;
+        }
+        qText = '<div class="chal-question-text">' +
+          (whoName ? '<span class="chal-speaker">' + whoName + ':</span> ' : '') +
+          injectVocab(txt(step.ask.en), step.ask.vocab) +
+          (step.ask.es ? '<div class="es" style="margin-top:6px;font-style:italic;color:var(--muted)">' + step.ask.es + '</div>' : '') +
+          '</div>';
+      }
+
       var tools = '<div class="chal-tools">';
       if (step.hint) {
         tools +=
@@ -3102,15 +3147,19 @@ window.GN_STORY = {
         });
       }
       choices += "</div>";
-      wrap.innerHTML +=
-        tools +
-        folds +
-        choices +
-        '<div class="feedback" id="fb-' +
-        act.id +
-        "-" +
-        step.id +
-        '"></div>';
+      
+      wrap.innerHTML = bonusHeader +
+        '<div class="chal-grid">' +
+          '<div class="chal-left">' +
+            qText +
+            tools +
+            folds +
+          '</div>' +
+          '<div class="chal-right">' +
+            choices +
+            '<div class="feedback" id="fb-' + act.id + '-' + step.id + '"></div>' +
+          '</div>' +
+        '</div>';
       chalHost.appendChild(wrap);
       wrap.scrollIntoView({ behavior: "smooth", block: "center" });
       wireFolds(wrap);
@@ -3302,8 +3351,5 @@ window.GN_STORY = {
   </script>
   <script src="/assets/nt-page-enhance.js" defer></script>
 
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+  </body>
 </html>

@@ -671,19 +671,20 @@
       });
       html +=
         '<div class="challenge bonus" id="chalComplete">' +
-        '<span class="bonus-tag">&#127942; MASTER RANK CHALLENGE</span>' +
-        "<h3>" +
-        (m.headingEn || "Prove your rank!") +
-        "</h3>" +
-        '<p class="prompt">' +
-        m.promptEn +
-        '<span class="es">' +
-        m.promptEs +
-        "</span></p>" +
-        '<div class="choices" id="choicesComplete">' +
-        ch +
-        "</div>" +
-        '<div class="feedback" id="fbComplete"></div></div>';
+          '<div class="chal-grid">' +
+            '<div class="chal-left">' +
+              '<span class="bonus-tag">&#127942; MASTER RANK CHALLENGE</span>' +
+              '<h3 style="margin-top:8px;">' + (m.headingEn || "Prove your rank!") + '</h3>' +
+              '<p class="prompt" style="margin-top:8px;">' + m.promptEn +
+                (m.promptEs ? '<span class="es" style="display:block;margin-top:4px;font-style:italic;color:var(--muted);">' + m.promptEs + '</span>' : '') +
+              '</p>' +
+            '</div>' +
+            '<div class="chal-right">' +
+              '<div class="choices" id="choicesComplete">' + ch + '</div>' +
+              '<div class="feedback" id="fbComplete"></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
     }
     html +=
       '<div id="nt-notebook" class="notebook"></div>' +
@@ -999,14 +1000,30 @@
       }
       var wrap = el("div", "challenge" + (optional ? " bonus" : ""));
       wrap.id = "chal-" + act.id + "-" + step.id;
+      
+      var bonusHeader = "";
       if (optional) {
-        wrap.innerHTML =
+        bonusHeader =
           '<span class="bonus-tag">' +
           (step.bonusTag || "&#11088; Bonus Challenge") +
           "</span>" +
           '<p class="prompt" style="font-size:0.82rem;color:var(--muted);' +
-          'margin:6px 0">Optional — try it or press the button to move on.</p>';
+          'margin:6px 0 12px">Optional — try it or press the button to move on.</p>';
       }
+      
+      var qText = "";
+      if (step.ask) {
+        var whoName = "";
+        if (step.ask.who && S.cast && S.cast[step.ask.who]) {
+          whoName = S.cast[step.ask.who].name;
+        }
+        qText = '<div class="chal-question-text">' +
+          (whoName ? '<span class="chal-speaker">' + whoName + ':</span> ' : '') +
+          injectVocab(txt(step.ask.en), step.ask.vocab) +
+          (step.ask.es ? '<div class="es" style="margin-top:6px;font-style:italic;color:var(--muted)">' + step.ask.es + '</div>' : '') +
+          '</div>';
+      }
+
       var tools = '<div class="chal-tools">';
       if (step.hint) {
         tools +=
@@ -1095,15 +1112,19 @@
         });
       }
       choices += "</div>";
-      wrap.innerHTML +=
-        tools +
-        folds +
-        choices +
-        '<div class="feedback" id="fb-' +
-        act.id +
-        "-" +
-        step.id +
-        '"></div>';
+      
+      wrap.innerHTML = bonusHeader +
+        '<div class="chal-grid">' +
+          '<div class="chal-left">' +
+            qText +
+            tools +
+            folds +
+          '</div>' +
+          '<div class="chal-right">' +
+            choices +
+            '<div class="feedback" id="fb-' + act.id + '-' + step.id + '"></div>' +
+          '</div>' +
+        '</div>';
       chalHost.appendChild(wrap);
       wrap.scrollIntoView({ behavior: "smooth", block: "center" });
       wireFolds(wrap);

@@ -133,22 +133,27 @@ function renderChoices(idBase, choices) {
 /** Render one challenge block (a single math choice point). */
 function renderChallenge(chalId, choicesId, fbId, frameId, ch) {
   const hint = ch.hint
-    ? `          <div class="hint">&#128161; <b>Hint:</b> ${esc(ch.hint)}</div>\n`
+    ? `            <div class="hint">&#128161; <b>Hint:</b> ${esc(ch.hint)}</div>\n`
     : "";
   const frame = ch.frame
-    ? `        <div class="frame" id="${frameId}" style="display:none"><b>Sentence frame:</b> &ldquo;${esc(
+    ? `            <div class="frame" id="${frameId}" style="display:none"><b>Sentence frame:</b> &ldquo;${esc(
         ch.frame,
       )}&rdquo;</div>\n`
     : "";
   return `        <div class="challenge" id="${chalId}" style="display:none">
-          <h3>${esc(ch.lockTitle || "Math Lock")}</h3>
-          <p class="prompt">${esc(ch.prompt)}<span class="es">${esc(ch.promptEs || "")}</span></p>
-${hint}          <div class="choices" id="${choicesId}">
+          <div class="chal-grid">
+            <div class="chal-left">
+              <h3>${esc(ch.lockTitle || "Math Lock")}</h3>
+              <p class="prompt" style="font-size:1.1rem;font-weight:700;line-height:1.45;margin-bottom:12px;">${esc(ch.prompt)}<span class="es" style="display:block;margin-top:6px;font-style:italic;color:var(--muted);font-weight:normal;">${esc(ch.promptEs || "")}</span></p>
+${hint}${frame}            </div>
+            <div class="chal-right">
+              <div class="choices" id="${choicesId}">
 ${renderChoices(choicesId, ch.choices)}
+              </div>
+              <div class="feedback" id="${fbId}"></div>
+            </div>
           </div>
-          <div class="feedback" id="${fbId}"></div>
-        </div>
-${frame}`;
+        </div>`;
 }
 
 /** Render a full Act section (dialogue + 1 or 2 challenges + advance button). */
@@ -283,15 +288,21 @@ function buildNovel(group, novel, lessons) {
   const c = novel.complete || {};
   const bonus = c.bonus
     ? `        <div class="challenge bonus" id="chalComplete" style="margin-top:24px;text-align:left;background:#1c1606;border:2px solid #ffd166;">
-          <span class="bonus-tag" style="background:#ffd166;color:#1a1200;font-weight:800;font-size:0.72rem;letter-spacing:0.1em;padding:3px 8px;border-radius:6px;display:inline-block;">&#127942; MASTER RANK CHALLENGE</span>
-          <h3 style="color:#ffd166;font-size:1.1rem;margin-top:8px;margin-bottom:6px;font-weight:700;">Bonus challenge — for mastery, not required.</h3>
-          <p class="prompt" style="font-size:1.05rem;margin-bottom:12px;line-height:1.55;">${esc(
-            c.bonus.prompt,
-          )}<span class="es">${esc(c.bonus.promptEs || "")}</span></p>
-          <div class="choices" id="choicesComplete" style="display:grid;gap:10px;">
+          <div class="chal-grid">
+            <div class="chal-left">
+              <span class="bonus-tag" style="background:#ffd166;color:#1a1200;font-weight:800;font-size:0.72rem;letter-spacing:0.1em;padding:3px 8px;border-radius:6px;display:inline-block;">&#127942; MASTER RANK CHALLENGE</span>
+              <h3 style="color:#ffd166;font-size:1.15rem;margin-top:8px;margin-bottom:6px;font-weight:700;">Bonus challenge — for mastery, not required.</h3>
+              <p class="prompt" style="font-size:1.05rem;margin-bottom:12px;line-height:1.55;">${esc(
+                c.bonus.prompt,
+              )}<span class="es" style="display:block;margin-top:6px;font-style:italic;color:var(--muted);">${esc(c.bonus.promptEs || "")}</span></p>
+            </div>
+            <div class="chal-right">
+              <div class="choices" id="choicesComplete" style="display:grid;gap:10px;">
 ${renderChoices("choicesComplete", c.bonus.choices)}
+              </div>
+              <div class="feedback" id="fbComplete" style="margin-top:12px;border-radius:12px;padding:12px 14px;font-size:1rem;display:none;"></div>
+            </div>
           </div>
-          <div class="feedback" id="fbComplete" style="margin-top:12px;border-radius:12px;padding:12px 14px;font-size:1rem;display:none;"></div>
         </div>\n`
     : "";
 
@@ -361,6 +372,11 @@ ${renderChoices("choicesComplete", c.bonus.choices)}
       .challenge h3{font-size:1.05rem;margin-bottom:4px;color:var(--accent);}
       .challenge .prompt{font-size:1.05rem;margin-bottom:6px;}
       .challenge .prompt .es{display:block;font-size:0.9rem;color:var(--muted);font-style:italic;margin-top:4px;}
+      .chal-grid{display:flex;flex-direction:column;gap:16px;}
+      @media (min-width:768px){
+        .chal-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:24px;align-items:start;}
+        .chal-left{border-right:1px dashed rgba(42,67,120,0.4);padding-right:24px;}
+      }
       .hint{font-size:0.9rem;color:#ffd9b3;background:#3a2410;border:1px solid #7a4d1f;border-radius:10px;padding:8px 12px;margin:8px 0;}
       .hint b{color:var(--accent);}
       .choices{display:grid;gap:10px;margin-top:10px;}
