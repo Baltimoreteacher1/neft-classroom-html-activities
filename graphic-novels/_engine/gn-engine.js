@@ -36,13 +36,32 @@
     return v == null ? "" : v;
   }
 
+  /* Per-unit signature colors so each world looks distinct (the comic shell is
+     shared, but the accent/ink differ by unit; version 2 gets a deeper accent). */
+  var UNIT_ACCENT = {
+    1: "#1d4ed8",
+    2: "#b42318",
+    3: "#0d9488",
+    4: "#7c3aed",
+    5: "#ea580c",
+    6: "#db2777",
+    7: "#334155",
+    8: "#047857",
+    9: "#b45309",
+    10: "#0891b2",
+  };
+
   /* ---------- theme + document chrome ---------- */
   function applyTheme() {
     document.documentElement.lang = "en";
     document.title =
       "Graphic Novel #" + S.meta.version + " · " + stripTags(S.meta.title);
+    var r = document.documentElement;
+    var accent = UNIT_ACCENT[S.meta.unit] || "#1d4ed8";
+    r.style.setProperty("--accent", accent);
+    // Enrichment (#2) reads a touch deeper/darker so the two versions differ.
+    if (S.meta.version === 2) r.style.setProperty("--accent2", "#0f172a");
     if (S.meta.theme) {
-      var r = document.documentElement;
       Object.keys(S.meta.theme).forEach(function (k) {
         r.style.setProperty(k, S.meta.theme[k]);
       });
@@ -58,16 +77,32 @@
       (S.cast && S.cast[id]) || { name: id, color: "#c2461d", avatar: null }
     );
   }
+  /* Resolve a character portrait URL. Explicit avatar wins; otherwise auto-derive
+     from the convention /graphic-novels/_art/characters/u{unit}-{key}.png so no
+     per-story edits are needed. Narrators have no portrait. */
+  function avatarSrc(spkId) {
+    var c = speaker(spkId);
+    if (c.avatar) {
+      return c.avatar.charAt(0) === "/" || c.avatar.indexOf("../") === 0
+        ? c.avatar
+        : art(c.avatar);
+    }
+    if (c.role === "narrator") return null;
+    return (
+      "/graphic-novels/_art/characters/u" + S.meta.unit + "-" + spkId + ".png"
+    );
+  }
   function whoTag(spkId, isMe) {
     var c = speaker(spkId);
-    var inner;
-    if (c.avatar) {
-      inner =
-        '<span class="av"><img src="' + art(c.avatar) + '" alt="" /></span>';
-    } else {
-      var initial = (c.tagIcon || c.name.charAt(0)).toString();
-      inner = '<span class="av" aria-hidden="true">' + initial + "</span>";
-    }
+    var initial = (c.tagIcon || c.name.charAt(0)).toString();
+    var src = avatarSrc(spkId);
+    var inner = src
+      ? '<span class="av"><img src="' +
+        src +
+        '" alt="" loading="lazy" onerror="this.parentNode.textContent=\'' +
+        initial.replace(/'/g, "") +
+        "'\" /></span>"
+      : '<span class="av" aria-hidden="true">' + initial + "</span>";
     return (
       '<span class="who" style="--spk:' +
       (c.color || "#c2461d") +
@@ -157,11 +192,29 @@
     }
   });
 
-  /* ---------- bubble builder ---------- */
+  /* ---------- bubble builder ----------
+     Returns a fragment: the speaking character's large "stage" portrait pinned
+     to the panel (for non-narrator beats) + the speech bubble itself. */
   function bubble(beat) {
     var c = speaker(beat.who);
     var isCap = c.role === "narrator" || beat.caption;
     var pos = beat.pos || (c.role === "protagonist" ? "right" : "left");
+    var frag = document.createDocumentFragment();
+
+    if (!isCap) {
+      var src = avatarSrc(beat.who);
+      if (src) {
+        var fig = el("img", "speaker-fig " + pos);
+        fig.src = src;
+        fig.alt = c.name;
+        fig.setAttribute("aria-hidden", "true");
+        fig.onerror = function () {
+          fig.remove();
+        };
+        frag.appendChild(fig);
+      }
+    }
+
     var b = el(
       "div",
       "bubble " +
@@ -176,7 +229,8 @@
       en +
       "</div>" +
       (beat.es ? '<div class="es">' + beat.es + "</div>" : "");
-    return b;
+    frag.appendChild(b);
+    return frag;
   }
 
   /* =========================================================================
@@ -206,9 +260,6 @@
     var bar = el("div", "topbar");
     var inner = el("div", "topbar-inner");
     inner.innerHTML =
-      '<a class="home" href="' +
-      (S.meta.home || "../index.html") +
-      '">&#8592; Home</a>' +
       '<span class="title"><span class="v">#' +
       S.meta.version +
       "</span> " +
@@ -255,16 +306,20 @@
     Object.keys(S.cast || {}).forEach(function (k) {
       var c = S.cast[k];
       if (c.role === "narrator") return;
-      var av = c.avatar
+      var psrc = avatarSrc(k);
+      var initial = (c.tagIcon || c.name.charAt(0)).toString();
+      var av = psrc
         ? '<span class="av" style="background:' +
           c.color +
           '"><img src="' +
-          art(c.avatar) +
-          '" alt=""></span>'
+          psrc +
+          '" alt="" onerror="this.parentNode.textContent=\'' +
+          initial.replace(/'/g, "") +
+          "'\"></span>"
         : '<span class="av" style="background:' +
           c.color +
           '">' +
-          (c.tagIcon || c.name.charAt(0)) +
+          initial +
           "</span>";
       castChips +=
         '<span class="cast-chip">' +

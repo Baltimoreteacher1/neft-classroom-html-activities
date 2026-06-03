@@ -304,6 +304,37 @@ main {
   pointer-events: auto;
 }
 
+/* ---- Speaking character "stage" figure pinned to the panel ---- */
+.speaker-fig {
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+  height: 86%;
+  width: auto;
+  max-width: 46%;
+  object-fit: contain;
+  object-position: bottom center;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.5));
+  animation: figrise 0.35s ease;
+}
+.speaker-fig.left {
+  left: 6px;
+}
+.speaker-fig.right {
+  right: 6px;
+}
+@keyframes figrise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ---- Speech bubble (white, name tag, hard shadow) ---- */
 .bubble {
   background: var(--bubble);
@@ -312,7 +343,8 @@ main {
   border-radius: 10px;
   padding: 11px 13px;
   position: relative;
-  max-width: min(560px, 88%);
+  z-index: 2;
+  max-width: min(520px, 80%);
   font-weight: 700;
   box-shadow: var(--sh);
 }
