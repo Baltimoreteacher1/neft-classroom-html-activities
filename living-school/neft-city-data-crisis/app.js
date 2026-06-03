@@ -122,8 +122,21 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      // shallow-merge to tolerate older saves
-      return Object.assign(defaultState(), parsed);
+      // Deep-merge onto a fresh default so older/partial saves keep every
+      // nested key (prevents undefined-property crashes if the schema grows).
+      const merge = (target, source) => {
+        for (const key in source) {
+          const val = source[key];
+          if (val && typeof val === "object" && !Array.isArray(val)) {
+            if (!target[key] || typeof target[key] !== "object") target[key] = {};
+            merge(target[key], val);
+          } else {
+            target[key] = val;
+          }
+        }
+        return target;
+      };
+      return merge(defaultState(), parsed);
     } catch (e) { return null; }
   }
 
@@ -217,10 +230,10 @@
     nameInput.addEventListener("input", () => { state.name = nameInput.value; save(); refresh(); });
 
     $$("#roleGrid .role-card").forEach((btn) => {
-      if (btn.dataset.role === state.role) btn.setAttribute("aria-checked", "true");
+      if (btn.dataset.role === state.role) btn.setAttribute("aria-pressed", "true");
       btn.addEventListener("click", () => {
         state.role = btn.dataset.role;
-        $$("#roleGrid .role-card").forEach((b) => b.setAttribute("aria-checked", String(b === btn)));
+        $$("#roleGrid .role-card").forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
         save();
         refresh();
       });
@@ -430,7 +443,7 @@
       const set = new Set(nums);
       return set.size === ANSWERS.mode.length && ANSWERS.mode.every((m) => set.has(m));
     }
-    const v = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+    const v = parseFloat(raw.replace(/,/g, ".").replace(/[^0-9.\-]/g, ""));
     if (Number.isNaN(v)) return false;
     if (key === "mean") return Math.abs(v - ANSWERS.mean) < 0.05;
     return Math.abs(v - ANSWERS[key]) < 0.001;
@@ -438,7 +451,7 @@
 
   // Targeted, misconception-aware feedback (generated locally).
   function calcMissMessage(key, raw) {
-    const v = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+    const v = parseFloat(raw.replace(/,/g, ".").replace(/[^0-9.\-]/g, ""));
     if (key === "mean") {
       if (Math.abs(v - 226) < 0.5) return "That's the total. Now divide by the number of values (20).";
       if (Math.abs(v - 11) < 0.001) return "Close! Did you forget the decimal? Try dividing more exactly.";
@@ -658,7 +671,7 @@
     $$("#decisionChoices .choice").forEach((btn) => {
       btn.addEventListener("click", () => {
         state.decision.choice = btn.dataset.choice;
-        $$("#decisionChoices .choice").forEach((b) => b.setAttribute("aria-checked", String(b === btn)));
+        $$("#decisionChoices .choice").forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
         save();
       });
     });
@@ -686,7 +699,7 @@
 
   function renderDecision() {
     $$("#decisionChoices .choice").forEach((b) =>
-      b.setAttribute("aria-checked", String(b.dataset.choice === state.decision.choice))
+      b.setAttribute("aria-pressed", String(b.dataset.choice === state.decision.choice))
     );
     $("#decisionText").value = state.decision.text;
     updateCount("#decisionCount", state.decision.text, 18);
@@ -971,7 +984,8 @@
     document.body.appendChild(a);
     a.click();
     a.remove();
-    URL.revokeObjectURL(url);
+    // Delay revocation so slower browsers (Firefox/Safari/mobile) finish the fetch.
+    setTimeout(() => URL.revokeObjectURL(url), 100);
     toast("⬇️ Progress downloaded");
   }
 
@@ -1187,9 +1201,9 @@
     $("#vocabClose").addEventListener("click", () => hideModal("#vocabModal"));
     $("#teacherBtn").addEventListener("click", openTeacher);
     $("#teacherClose").addEventListener("click", () => hideModal("#teacherModal"));
-    $$(".modal").forEach((m) => m.addEventListener("click", (e) => { if (e.target === m) m.hidden = true; }));
+    $$(".modal").forEach((m) => m.addEventListener("click", (e) => { if (e.target === m) hideModal("#" + m.id); }));
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") $$(".modal").forEach((m) => (m.hidden = true));
+      if (e.key === "Escape") $$(".modal").forEach((m) => { if (!m.hidden) hideModal("#" + m.id); });
       if (e.shiftKey && (e.key === "T" || e.key === "t") && !/input|textarea/i.test(document.activeElement.tagName)) openTeacher();
     });
 
