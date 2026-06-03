@@ -5,16 +5,17 @@ const path = require("path");
 const vm = require("vm");
 
 const dir = path.join(__dirname, "stories");
-const files = fs
-  .readdirSync(dir)
-  .filter((f) => f.endsWith(".story.js"))
-  .sort();
+const argFile = process.argv[2];
+const single = argFile
+  ? { base: path.dirname(path.resolve(argFile)), names: [path.basename(argFile)] }
+  : { base: dir, names: fs.readdirSync(dir).filter((f) => f.endsWith(".story.js")).sort() };
+const files = single.names;
 
 let hardFail = 0;
 const rows = [];
 
 for (const f of files) {
-  const code = fs.readFileSync(path.join(dir, f), "utf8");
+  const code = fs.readFileSync(path.join(single.base, f), "utf8");
   const sandbox = { window: {} };
   vm.createContext(sandbox);
   const issues = [];
@@ -26,6 +27,7 @@ for (const f of files) {
     issues.push("PARSE: " + e.message);
   }
   let scored = 0,
+    reading = 0,
     acts = 0,
     misc = 0,
     bonuses = 0;
@@ -57,24 +59,47 @@ for (const f of files) {
             if (!b.who || !b.en) issues.push(a.id + ": beat missing who/en");
           });
         } else {
-          // challenge
-          if (st.optional) bonuses++;
-          scored++;
-          if (ids.has(st.id)) issues.push(a.id + ": dup challenge id " + st.id);
+          // challenge (math) or comprehension (reading)
+          const isComp = st.type === "comprehension";
+          if (isComp) {
+            reading++;
+            if (!st.skill)
+              issues.push(a.id + "/" + st.id + ": comprehension missing skill");
+            if (!st.standard)
+              issues.push(
+                a.id + "/" + st.id + ": comprehension missing standard",
+              );
+          } else {
+            if (st.optional) bonuses++;
+            scored++;
+          }
+          if (ids.has(st.id)) issues.push(a.id + ": dup step id " + st.id);
           ids.add(st.id);
           if (!st.ask || !st.ask.en)
             issues.push(a.id + "/" + st.id + ": no ask");
-          const ch = st.choices || [];
-          if (ch.length < 2) issues.push(a.id + "/" + st.id + ": <2 choices");
-          const correct = ch.filter((c) => c.correct === true).length;
-          if (correct !== 1)
-            issues.push(
-              a.id + "/" + st.id + ": " + correct + " correct (need 1)",
-            );
-          ch.forEach((c) => {
-            if (!c.en) issues.push(a.id + "/" + st.id + ": choice missing en");
-          });
-          if (!st.goodEn || !st.badEn)
+          if (st.interaction === "sequence") {
+            if (!Array.isArray(st.items) || st.items.length < 2)
+              issues.push(a.id + "/" + st.id + ": sequence needs >=2 items");
+            else
+              st.items.forEach((it) => {
+                if (typeof it.order !== "number")
+                  issues.push(
+                    a.id + "/" + st.id + ": item missing numeric order",
+                  );
+              });
+          } else {
+            const ch = st.choices || [];
+            if (ch.length < 2) issues.push(a.id + "/" + st.id + ": <2 choices");
+            const correct = ch.filter((c) => c.correct === true).length;
+            if (correct !== 1)
+              issues.push(
+                a.id + "/" + st.id + ": " + correct + " correct (need 1)",
+              );
+            ch.forEach((c) => {
+              if (!c.en) issues.push(a.id + "/" + st.id + ": choice missing en");
+            });
+          }
+          if (!isComp && (!st.goodEn || !st.badEn))
             issues.push(a.id + "/" + st.id + ": missing good/bad feedback");
         }
       });
@@ -98,6 +123,7 @@ for (const f of files) {
     std: S && S.meta ? S.meta.standard : "?",
     acts,
     scored,
+    reading,
     bonuses,
     misc,
     status: issues.length ? "FAIL" : "ok",
@@ -107,7 +133,7 @@ for (const f of files) {
 
 rows.forEach((r) => {
   console.log(
-    `${r.status === "ok" ? "✓" : "✗"} ${r.file.padEnd(16)} U${r.unit} v${r.ver} ${String(r.std).padEnd(8)} acts=${r.acts} scored=${r.scored} bonus=${r.bonuses} misc=${r.misc}` +
+    `${r.status === "ok" ? "✓" : "✗"} ${r.file.padEnd(16)} U${r.unit} v${r.ver} ${String(r.std).padEnd(8)} acts=${r.acts} scored=${r.scored} reading=${r.reading} bonus=${r.bonuses} misc=${r.misc}` +
       (r.issues.length ? "\n    " + r.issues.join("\n    ") : ""),
   );
 });
