@@ -1812,6 +1812,24 @@
           if (won) sfx.victory();
           else sfx.defeat();
 
+          try {
+            var _epAttempted = STATE.totalCorrect + STATE.totalWrong;
+            var _epPct =
+              _epAttempted > 0
+                ? Math.round((STATE.totalCorrect / _epAttempted) * 100)
+                : 0;
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: STATE.totalCorrect,
+                maxScore: _epAttempted,
+                problemsCorrect: STATE.totalCorrect,
+                problemsAttempted: _epAttempted,
+                percent: _epPct,
+                standard: "6.EE",
+              });
+          } catch (e) {}
+
           // Background particles
           for (let i = 0; i < 30; i++) {
             const p = this.add.circle(
@@ -2191,6 +2209,8 @@
 
       const game = new Phaser.Game(config);
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

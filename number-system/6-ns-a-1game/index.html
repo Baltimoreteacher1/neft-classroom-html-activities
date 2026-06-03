@@ -1239,6 +1239,21 @@
           create() {
             const d = this.data;
 
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: d.correct,
+                  maxScore: d.total,
+                  percent: d.total
+                    ? Math.round((d.correct / d.total) * 100)
+                    : 0,
+                  problemsCorrect: d.correct,
+                  problemsAttempted: d.total,
+                  standard: "6.NS.A.1",
+                });
+            } catch (e) {}
+
             // Background
             const bg = this.add.graphics();
             bg.fillGradientStyle(0x031321, 0x031321, 0x072a44, 0x072a44, 1);
@@ -1437,6 +1452,8 @@
         const game = new Phaser.Game(config);
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

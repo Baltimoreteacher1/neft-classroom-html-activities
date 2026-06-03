@@ -4,82 +4,304 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Expression Express — Lessons 6.1–6.7 Game | Neft Teacher</title>
-    <meta name="description" content="Arcade review game for Grade 6 lessons 6.1–6.7: expressions, exponents, and order of operations (6.EE.1–4)." />
+    <meta
+      name="description"
+      content="Arcade review game for Grade 6 lessons 6.1–6.7: expressions, exponents, and order of operations (6.EE.1–4)."
+    />
     <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      :root { --navy:#0f2b3c; --blue:#1a6fb5; --teal:#0e8a7d; --gold:#d4952a; --coral:#c45a3c; --green:#2d874b; --ink:#1a2633; --muted:#5e6e7e; --line:#e2e7ec; --bg:#f7f9fb; --font:"Segoe UI",system-ui,sans-serif; }
-      * { box-sizing:border-box; }
-      body { margin:0; font-family:var(--font); color:var(--ink); background:var(--bg); line-height:1.5; }
-      .wrap { max-width:680px; margin:0 auto; padding:0 18px 60px; }
-      .ghero { background:linear-gradient(135deg,#6b35c7,#1a6fb5); color:#fff; text-align:center; padding:30px 20px 26px; }
-      .ghero .deco { font-size:48px; }
-      .ghero h1 { margin:8px 0 6px; font-size:clamp(24px,5vw,34px); }
-      .ghero p { margin:0 auto; max-width:520px; color:rgba(255,255,255,.9); }
-      .breadcrumb { font-size:13px; padding:14px 0; color:var(--muted); }
-      .breadcrumb a { color:var(--blue); text-decoration:none; font-weight:600; }
-      .hud { display:flex; justify-content:space-between; gap:10px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin:18px 0; font-weight:800; box-shadow:0 2px 10px rgba(15,43,60,.06); }
-      .hud .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); display:block; }
-      .hud .val { font-size:22px; }
-      .hearts { color:var(--coral); letter-spacing:2px; }
-      .card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px 22px; box-shadow:0 6px 22px rgba(15,43,60,.08); text-align:center; }
-      .mode-tag { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--teal); }
-      .prompt { font-size:clamp(22px,5vw,30px); font-weight:800; margin:8px 0 4px; }
-      .sub { color:var(--muted); margin:0 0 18px; }
-      .opts { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-      @media (max-width:460px){ .opts{ grid-template-columns:1fr; } }
-      .opt { padding:16px; border:2px solid var(--line); border-radius:14px; background:#fff; font-size:20px; font-weight:800; cursor:pointer; font-family:inherit; color:var(--ink); transition:transform .06s, border-color .15s; }
-      .opt:hover { border-color:var(--blue); }
-      .opt:active { transform:scale(.97); }
-      .opt.right { border-color:var(--green); background:#e6f4eb; color:var(--green); animation:pop .3s; }
-      .opt.wrong { border-color:var(--coral); background:#fdeee9; color:var(--coral); animation:shake .3s; }
-      @keyframes pop { 50%{ transform:scale(1.06);} }
-      @keyframes shake { 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
-      .feedback { min-height:26px; margin-top:16px; font-weight:800; }
-      .feedback.ok { color:var(--green); } .feedback.no { color:var(--coral); }
-      .btn { background:var(--blue); color:#fff; border:none; border-radius:12px; padding:13px 26px; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit; margin-top:8px; }
-      .btn:hover { filter:brightness(1.08); }
-      .btn.start { background:var(--teal); font-size:18px; padding:15px 34px; }
-      .bar { height:10px; background:var(--line); border-radius:50px; overflow:hidden; margin:14px 0 2px; }
-      .bar > div { height:100%; width:100%; background:linear-gradient(90deg,var(--gold),var(--coral)); transition:width .25s linear; }
-      .hidden { display:none; }
-      .big-score { font-size:52px; font-weight:900; color:var(--blue); margin:6px 0; }
-      .legend { font-size:13px; color:var(--muted); margin-top:18px; }
-      .legend a { color:var(--blue); font-weight:700; }
-      ul.modes { text-align:left; max-width:430px; margin:14px auto; color:var(--muted); font-size:15px; }
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --teal: #0e8a7d;
+        --gold: #d4952a;
+        --coral: #c45a3c;
+        --green: #2d874b;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 0 18px 60px;
+      }
+      .ghero {
+        background: linear-gradient(135deg, #6b35c7, #1a6fb5);
+        color: #fff;
+        text-align: center;
+        padding: 30px 20px 26px;
+      }
+      .ghero .deco {
+        font-size: 48px;
+      }
+      .ghero h1 {
+        margin: 8px 0 6px;
+        font-size: clamp(24px, 5vw, 34px);
+      }
+      .ghero p {
+        margin: 0 auto;
+        max-width: 520px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .breadcrumb {
+        font-size: 13px;
+        padding: 14px 0;
+        color: var(--muted);
+      }
+      .breadcrumb a {
+        color: var(--blue);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin: 18px 0;
+        font-weight: 800;
+        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
+      }
+      .hud .lbl {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        display: block;
+      }
+      .hud .val {
+        font-size: 22px;
+      }
+      .hearts {
+        color: var(--coral);
+        letter-spacing: 2px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 26px 22px;
+        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
+        text-align: center;
+      }
+      .mode-tag {
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--teal);
+      }
+      .prompt {
+        font-size: clamp(22px, 5vw, 30px);
+        font-weight: 800;
+        margin: 8px 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 18px;
+      }
+      .opts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 460px) {
+        .opts {
+          grid-template-columns: 1fr;
+        }
+      }
+      .opt {
+        padding: 16px;
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        font-size: 20px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        color: var(--ink);
+        transition:
+          transform 0.06s,
+          border-color 0.15s;
+      }
+      .opt:hover {
+        border-color: var(--blue);
+      }
+      .opt:active {
+        transform: scale(0.97);
+      }
+      .opt.right {
+        border-color: var(--green);
+        background: #e6f4eb;
+        color: var(--green);
+        animation: pop 0.3s;
+      }
+      .opt.wrong {
+        border-color: var(--coral);
+        background: #fdeee9;
+        color: var(--coral);
+        animation: shake 0.3s;
+      }
+      @keyframes pop {
+        50% {
+          transform: scale(1.06);
+        }
+      }
+      @keyframes shake {
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+      .feedback {
+        min-height: 26px;
+        margin-top: 16px;
+        font-weight: 800;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+      .btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 26px;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 8px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.start {
+        background: var(--teal);
+        font-size: 18px;
+        padding: 15px 34px;
+      }
+      .bar {
+        height: 10px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+        margin: 14px 0 2px;
+      }
+      .bar > div {
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(90deg, var(--gold), var(--coral));
+        transition: width 0.25s linear;
+      }
+      .hidden {
+        display: none;
+      }
+      .big-score {
+        font-size: 52px;
+        font-weight: 900;
+        color: var(--blue);
+        margin: 6px 0;
+      }
+      .legend {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 18px;
+      }
+      .legend a {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      ul.modes {
+        text-align: left;
+        max-width: 430px;
+        margin: 14px auto;
+        color: var(--muted);
+        font-size: 15px;
+      }
     </style>
   </head>
   <body>
     <header class="ghero">
       <div class="deco">🧮</div>
       <h1>Expression Express</h1>
-      <p>Race the clock on exponents, evaluating expressions, and order of operations.</p>
+      <p>
+        Race the clock on exponents, evaluating expressions, and order of
+        operations.
+      </p>
     </header>
     <div class="wrap">
       <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> / <a href="/math/games/">Games</a> / Expression Express
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/games/">Games</a> / Expression Express
       </nav>
 
       <section class="card" id="startScreen">
         <p class="mode-tag">Lessons 6.1–6.7 · 6.EE.1–4</p>
-        <h2 style="margin:6px 0;">Ready to board?</h2>
+        <h2 style="margin: 6px 0">Ready to board?</h2>
         <ul class="modes">
-          <li><strong>Round 1 — Evaluate Powers.</strong> Compute base² and base³.</li>
-          <li><strong>Round 2 — Evaluate Expressions.</strong> Substitute a value and simplify <em>ax + b</em>.</li>
-          <li><strong>Round 3 — Order of Operations.</strong> Apply ×/÷ before +/− correctly.</li>
+          <li>
+            <strong>Round 1 — Evaluate Powers.</strong> Compute base² and base³.
+          </li>
+          <li>
+            <strong>Round 2 — Evaluate Expressions.</strong> Substitute a value
+            and simplify <em>ax + b</em>.
+          </li>
+          <li>
+            <strong>Round 3 — Order of Operations.</strong> Apply ×/÷ before +/−
+            correctly.
+          </li>
         </ul>
-        <p class="sub">You have <strong>3 ❤</strong> and a timer on each question. Build a streak for bonus points!</p>
-        <button class="btn start" id="startBtn" type="button">Start Game ▶</button>
+        <p class="sub">
+          You have <strong>3 ❤</strong> and a timer on each question. Build a
+          streak for bonus points!
+        </p>
+        <button class="btn start" id="startBtn" type="button">
+          Start Game ▶
+        </button>
       </section>
 
       <section id="playScreen" class="hidden">
         <div class="hud">
-          <div><span class="lbl">Score</span><span class="val" id="score">0</span></div>
-          <div><span class="lbl">Streak</span><span class="val" id="streak">0</span></div>
-          <div><span class="lbl">Lives</span><span class="val hearts" id="lives">❤❤❤</span></div>
-          <div><span class="lbl">Question</span><span class="val" id="qnum">1</span></div>
+          <div>
+            <span class="lbl">Score</span><span class="val" id="score">0</span>
+          </div>
+          <div>
+            <span class="lbl">Streak</span
+            ><span class="val" id="streak">0</span>
+          </div>
+          <div>
+            <span class="lbl">Lives</span
+            ><span class="val hearts" id="lives">❤❤❤</span>
+          </div>
+          <div>
+            <span class="lbl">Question</span
+            ><span class="val" id="qnum">1</span>
+          </div>
         </div>
         <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top:14px;">
+        <div class="card" style="margin-top: 14px">
           <span class="mode-tag" id="modeTag"></span>
           <div class="prompt" id="prompt"></div>
           <p class="sub" id="sub"></p>
@@ -92,155 +314,340 @@
       <section class="card hidden" id="resultScreen">
         <p class="mode-tag">Game Over</p>
         <div class="big-score" id="finalScore">0</div>
-        <p id="resultMsg" style="font-weight:700;"></p>
+        <p id="resultMsg" style="font-weight: 700"></p>
         <p class="sub" id="resultDetail"></p>
-        <button class="btn start" id="againBtn" type="button">Play Again 🔁</button>
-        <p class="legend">More review: <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> · <a href="/math/games/">All Games</a></p>
+        <button class="btn start" id="againBtn" type="button">
+          Play Again 🔁
+        </button>
+        <p class="legend">
+          More review:
+          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> ·
+          <a href="/math/games/">All Games</a>
+        </p>
       </section>
     </div>
 
     <script>
-      function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-      function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
-
-      var TOTAL=12, TIME=12;
-      var state={};
-
-      function distinctOpts(correct, makeWrong){
-        var set={}; set[String(correct)]=true; var opts=[String(correct)];
-        var guard=0;
-        while(opts.length<4 && guard<80){ guard++; var w=makeWrong(); var k=String(w); if(!set[k]){ set[k]=true; opts.push(k); } }
-        var pad=1;
-        while(opts.length<4){ var k=String(correct+pad); if(!set[k]){ set[k]=true; opts.push(k); } pad++; }
-        return { opts:shuffle(opts), correct:String(correct) };
+      function rnd(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+      function shuffle(a) {
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = a[i];
+          a[i] = a[j];
+          a[j] = t;
+        }
+        return a;
       }
 
-      function expChar(e){ return e===2 ? "²" : "³"; }
+      var TOTAL = 12,
+        TIME = 12;
+      var state = {};
 
-      function buildQuestion(i){
-        var round = i<4 ? 1 : (i<8 ? 2 : 3);
+      function distinctOpts(correct, makeWrong) {
+        var set = {};
+        set[String(correct)] = true;
+        var opts = [String(correct)];
+        var guard = 0;
+        while (opts.length < 4 && guard < 80) {
+          guard++;
+          var w = makeWrong();
+          var k = String(w);
+          if (!set[k]) {
+            set[k] = true;
+            opts.push(k);
+          }
+        }
+        var pad = 1;
+        while (opts.length < 4) {
+          var k = String(correct + pad);
+          if (!set[k]) {
+            set[k] = true;
+            opts.push(k);
+          }
+          pad++;
+        }
+        return { opts: shuffle(opts), correct: String(correct) };
+      }
 
-        if(round===1){
+      function expChar(e) {
+        return e === 2 ? "²" : "³";
+      }
+
+      function buildQuestion(i) {
+        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
+
+        if (round === 1) {
           // Evaluate a power: base^exp, base in [2,6], exp in [2,3]
-          var base=rnd(2,6), exp=rnd(2,3);
-          var ans=Math.pow(base,exp); // base**exp
-          var o=distinctOpts(ans, function(){
+          var base = rnd(2, 6),
+            exp = rnd(2, 3);
+          var ans = Math.pow(base, exp); // base**exp
+          var o = distinctOpts(ans, function () {
             // wrong answers: nearby values, not equal to correct
-            var delta=rnd(1,8)*(Math.random()<0.5?1:-1);
-            var w=ans+delta;
-            return w>0 ? w : ans+rnd(1,5);
+            var delta = rnd(1, 8) * (Math.random() < 0.5 ? 1 : -1);
+            var w = ans + delta;
+            return w > 0 ? w : ans + rnd(1, 5);
           });
-          var promptStr=base+expChar(exp)+" = ?";
-          var why=base+expChar(exp)+" = "+ans+".";
-          return { tag:"Evaluate Powers", prompt:promptStr, sub:"Compute the power (exponent).", opts:o.opts, correct:o.correct, why:why };
+          var promptStr = base + expChar(exp) + " = ?";
+          var why = base + expChar(exp) + " = " + ans + ".";
+          return {
+            tag: "Evaluate Powers",
+            prompt: promptStr,
+            sub: "Compute the power (exponent).",
+            opts: o.opts,
+            correct: o.correct,
+            why: why,
+          };
         }
 
-        if(round===2){
+        if (round === 2) {
           // Evaluate ax + b at x=val: a in [2,5], b in [1,9], x in [2,6]
-          var a=rnd(2,5), b=rnd(1,9), x=rnd(2,6);
-          var ans2=a*x+b;
-          var o2=distinctOpts(ans2, function(){
-            var delta=rnd(1,9)*(Math.random()<0.5?1:-1);
-            var w=ans2+delta;
-            return w>0 ? w : ans2+rnd(1,5);
+          var a = rnd(2, 5),
+            b = rnd(1, 9),
+            x = rnd(2, 6);
+          var ans2 = a * x + b;
+          var o2 = distinctOpts(ans2, function () {
+            var delta = rnd(1, 9) * (Math.random() < 0.5 ? 1 : -1);
+            var w = ans2 + delta;
+            return w > 0 ? w : ans2 + rnd(1, 5);
           });
-          var promptStr2="Evaluate "+a+"x + "+b+" when x = "+x;
-          var why2=a+"("+x+") + "+b+" = "+a*x+" + "+b+" = "+ans2+".";
-          return { tag:"Evaluate Expressions", prompt:promptStr2, sub:"Substitute x = "+x+" and simplify.", opts:o2.opts, correct:o2.correct, why:why2 };
+          var promptStr2 = "Evaluate " + a + "x + " + b + " when x = " + x;
+          var why2 =
+            a +
+            "(" +
+            x +
+            ") + " +
+            b +
+            " = " +
+            a * x +
+            " + " +
+            b +
+            " = " +
+            ans2 +
+            ".";
+          return {
+            tag: "Evaluate Expressions",
+            prompt: promptStr2,
+            sub: "Substitute x = " + x + " and simplify.",
+            opts: o2.opts,
+            correct: o2.correct,
+            why: why2,
+          };
         }
 
         // Round 3: order of operations
         // Pick one of two forms: "a + b × c" or "a × b − c"
         // Keep numbers small so answers are positive integers and distinct opts are easy
-        var form=rnd(1,2);
-        if(form===1){
+        var form = rnd(1, 2);
+        if (form === 1) {
           // a + b × c  →  answer = a + (b*c)
-          var a3=rnd(1,9), b3=rnd(2,9), c3=rnd(2,9);
-          var ans3=a3+b3*c3;
-          var o3=distinctOpts(ans3, function(){
-            var delta=rnd(1,15)*(Math.random()<0.5?1:-1);
-            var w=ans3+delta;
-            return w>0 ? w : ans3+rnd(1,8);
+          var a3 = rnd(1, 9),
+            b3 = rnd(2, 9),
+            c3 = rnd(2, 9);
+          var ans3 = a3 + b3 * c3;
+          var o3 = distinctOpts(ans3, function () {
+            var delta = rnd(1, 15) * (Math.random() < 0.5 ? 1 : -1);
+            var w = ans3 + delta;
+            return w > 0 ? w : ans3 + rnd(1, 8);
           });
-          var promptStr3=a3+" + "+b3+" × "+c3+" = ?";
-          var why3=a3+" + "+b3+" × "+c3+" = "+a3+" + "+b3*c3+" = "+ans3+". (Multiply first.)";
-          return { tag:"Order of Operations", prompt:promptStr3, sub:"Remember: multiply before you add.", opts:o3.opts, correct:o3.correct, why:why3 };
+          var promptStr3 = a3 + " + " + b3 + " × " + c3 + " = ?";
+          var why3 =
+            a3 +
+            " + " +
+            b3 +
+            " × " +
+            c3 +
+            " = " +
+            a3 +
+            " + " +
+            b3 * c3 +
+            " = " +
+            ans3 +
+            ". (Multiply first.)";
+          return {
+            tag: "Order of Operations",
+            prompt: promptStr3,
+            sub: "Remember: multiply before you add.",
+            opts: o3.opts,
+            correct: o3.correct,
+            why: why3,
+          };
         } else {
           // a × b − c  →  answer = a*b - c  (ensure positive: c < a*b)
-          var a4=rnd(2,8), b4=rnd(2,8);
-          var prod4=a4*b4;
-          var c4=rnd(1, Math.max(1, prod4-1));
-          var ans4=prod4-c4;
-          var o4=distinctOpts(ans4, function(){
-            var delta=rnd(1,15)*(Math.random()<0.5?1:-1);
-            var w=ans4+delta;
-            return w>0 ? w : ans4+rnd(1,8);
+          var a4 = rnd(2, 8),
+            b4 = rnd(2, 8);
+          var prod4 = a4 * b4;
+          var c4 = rnd(1, Math.max(1, prod4 - 1));
+          var ans4 = prod4 - c4;
+          var o4 = distinctOpts(ans4, function () {
+            var delta = rnd(1, 15) * (Math.random() < 0.5 ? 1 : -1);
+            var w = ans4 + delta;
+            return w > 0 ? w : ans4 + rnd(1, 8);
           });
-          var promptStr4=a4+" × "+b4+" − "+c4+" = ?";
-          var why4=a4+" × "+b4+" − "+c4+" = "+prod4+" − "+c4+" = "+ans4+". (Multiply first.)";
-          return { tag:"Order of Operations", prompt:promptStr4, sub:"Remember: multiply before you subtract.", opts:o4.opts, correct:o4.correct, why:why4 };
+          var promptStr4 = a4 + " × " + b4 + " − " + c4 + " = ?";
+          var why4 =
+            a4 +
+            " × " +
+            b4 +
+            " − " +
+            c4 +
+            " = " +
+            prod4 +
+            " − " +
+            c4 +
+            " = " +
+            ans4 +
+            ". (Multiply first.)";
+          return {
+            tag: "Order of Operations",
+            prompt: promptStr4,
+            sub: "Remember: multiply before you subtract.",
+            opts: o4.opts,
+            correct: o4.correct,
+            why: why4,
+          };
         }
       }
 
-      function startGame(){
-        state={ i:0, score:0, streak:0, lives:3, locked:false };
+      function startGame() {
+        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
         document.getElementById("startScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.add("hidden");
         document.getElementById("playScreen").classList.remove("hidden");
         nextQuestion();
       }
-      function nextQuestion(){
-        if(state.lives<=0 || state.i>=TOTAL){ return endGame(); }
-        state.locked=false; state.q=buildQuestion(state.i);
-        document.getElementById("qnum").textContent=(state.i+1)+"/"+TOTAL;
-        document.getElementById("modeTag").textContent=state.q.tag;
-        document.getElementById("prompt").textContent=state.q.prompt;
-        document.getElementById("sub").textContent=state.q.sub;
-        document.getElementById("feedback").textContent=""; document.getElementById("feedback").className="feedback";
+      function nextQuestion() {
+        if (state.lives <= 0 || state.i >= TOTAL) {
+          return endGame();
+        }
+        state.locked = false;
+        state.q = buildQuestion(state.i);
+        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
+        document.getElementById("modeTag").textContent = state.q.tag;
+        document.getElementById("prompt").textContent = state.q.prompt;
+        document.getElementById("sub").textContent = state.q.sub;
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
         document.getElementById("nextBtn").classList.add("hidden");
-        var box=document.getElementById("opts"); box.innerHTML="";
-        state.q.opts.forEach(function(o){ var b=document.createElement("button"); b.type="button"; b.className="opt"; b.textContent=o; b.onclick=function(){ answer(o,b); }; box.appendChild(b); });
+        var box = document.getElementById("opts");
+        box.innerHTML = "";
+        state.q.opts.forEach(function (o) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "opt";
+          b.textContent = o;
+          b.onclick = function () {
+            answer(o, b);
+          };
+          box.appendChild(b);
+        });
         startTimer();
       }
-      function startTimer(){
-        var t=TIME, bar=document.getElementById("timebar"); bar.style.width="100%"; clearInterval(state.timer);
-        state.timer=setInterval(function(){ t-=0.1; bar.style.width=Math.max(0,(t/TIME*100))+"%"; if(t<=0){ clearInterval(state.timer); if(!state.locked){ timeUp(); } } },100);
+      function startTimer() {
+        var t = TIME,
+          bar = document.getElementById("timebar");
+        bar.style.width = "100%";
+        clearInterval(state.timer);
+        state.timer = setInterval(function () {
+          t -= 0.1;
+          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
+          if (t <= 0) {
+            clearInterval(state.timer);
+            if (!state.locked) {
+              timeUp();
+            }
+          }
+        }, 100);
       }
-      function answer(choice, btn){
-        if(state.locked) return; state.locked=true; clearInterval(state.timer);
-        var fb=document.getElementById("feedback"), correct = choice===state.q.correct;
-        Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){ if(b.textContent===state.q.correct) b.classList.add("right"); else if(b===btn) b.classList.add("wrong"); });
-        if(correct){ state.streak++; state.score += 10+Math.min(state.streak,5)*2; fb.textContent="✓ Correct! "+state.q.why+(state.streak>1?"  🔥 Streak ×"+state.streak:""); fb.className="feedback ok"; }
-        else { state.streak=0; state.lives--; fb.textContent="✗ "+state.q.why+"  (−1 ❤)"; fb.className="feedback no"; }
-        updateHud(); document.getElementById("nextBtn").classList.remove("hidden");
+      function answer(choice, btn) {
+        if (state.locked) return;
+        state.locked = true;
+        clearInterval(state.timer);
+        var fb = document.getElementById("feedback"),
+          correct = choice === state.q.correct;
+        Array.prototype.forEach.call(
+          document.querySelectorAll(".opt"),
+          function (b) {
+            if (b.textContent === state.q.correct) b.classList.add("right");
+            else if (b === btn) b.classList.add("wrong");
+          },
+        );
+        if (correct) {
+          state.streak++;
+          state.score += 10 + Math.min(state.streak, 5) * 2;
+          fb.textContent =
+            "✓ Correct! " +
+            state.q.why +
+            (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
+          fb.className = "feedback ok";
+        } else {
+          state.streak = 0;
+          state.lives--;
+          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
+          fb.className = "feedback no";
+        }
+        updateHud();
+        document.getElementById("nextBtn").classList.remove("hidden");
       }
-      function timeUp(){
-        state.locked=true; state.streak=0; state.lives--;
-        Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){ if(b.textContent===state.q.correct) b.classList.add("right"); });
-        var fb=document.getElementById("feedback"); fb.textContent="⏰ Time! "+state.q.why+"  (−1 ❤)"; fb.className="feedback no";
-        updateHud(); document.getElementById("nextBtn").classList.remove("hidden");
+      function timeUp() {
+        state.locked = true;
+        state.streak = 0;
+        state.lives--;
+        Array.prototype.forEach.call(
+          document.querySelectorAll(".opt"),
+          function (b) {
+            if (b.textContent === state.q.correct) b.classList.add("right");
+          },
+        );
+        var fb = document.getElementById("feedback");
+        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
+        fb.className = "feedback no";
+        updateHud();
+        document.getElementById("nextBtn").classList.remove("hidden");
       }
-      function updateHud(){
-        document.getElementById("score").textContent=state.score;
-        document.getElementById("streak").textContent=state.streak;
-        document.getElementById("lives").textContent= state.lives>0 ? "❤".repeat(state.lives) : "—";
+      function updateHud() {
+        document.getElementById("score").textContent = state.score;
+        document.getElementById("streak").textContent = state.streak;
+        document.getElementById("lives").textContent =
+          state.lives > 0 ? "❤".repeat(state.lives) : "—";
       }
-      function endGame(){
+      function endGame() {
         clearInterval(state.timer);
         document.getElementById("playScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.remove("hidden");
-        document.getElementById("finalScore").textContent=state.score;
+        document.getElementById("finalScore").textContent = state.score;
         var msg;
-        if(state.score>=180) msg="🏆 Expression Champion!";
-        else if(state.score>=120) msg="🌟 Sharp and speedy!";
-        else if(state.score>=60) msg="👍 Nice work — keep practicing.";
-        else msg="💪 Try again to beat your score!";
-        document.getElementById("resultMsg").textContent=msg;
-        document.getElementById("resultDetail").textContent=(state.lives<=0?"Out of lives! ":"You finished all "+TOTAL+" questions! ")+"Final score: "+state.score+".";
+        if (state.score >= 180) msg = "🏆 Expression Champion!";
+        else if (state.score >= 120) msg = "🌟 Sharp and speedy!";
+        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
+        else msg = "💪 Try again to beat your score!";
+        document.getElementById("resultMsg").textContent = msg;
+        document.getElementById("resultDetail").textContent =
+          (state.lives <= 0
+            ? "Out of lives! "
+            : "You finished all " + TOTAL + " questions! ") +
+          "Final score: " +
+          state.score +
+          ".";
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: state.score,
+              problemsAttempted: state.i,
+              standard: "6.EE.2",
+            });
+        } catch (e) {}
       }
-      document.getElementById("startBtn").onclick=startGame;
-      document.getElementById("againBtn").onclick=startGame;
-      document.getElementById("nextBtn").onclick=function(){ state.i++; nextQuestion(); };
+      document.getElementById("startBtn").onclick = startGame;
+      document.getElementById("againBtn").onclick = startGame;
+      document.getElementById("nextBtn").onclick = function () {
+        state.i++;
+        nextQuestion();
+      };
     </script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

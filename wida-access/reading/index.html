@@ -610,9 +610,20 @@
           padding: 20px 18px;
         }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <main class="page-shell">
@@ -1830,6 +1841,16 @@
           `<div class="item-actions" style="justify-content:center;margin-top:14px">` +
           `<button class="btn btn-primary" id="retryBtn" type="button">Try this set again</button>` +
           `</div></div>`;
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: state.score,
+              maxScore: total,
+              problemsCorrect: state.score,
+              problemsAttempted: total,
+            });
+        } catch (e) {}
         $("retryBtn").onclick = () => selectSet(state.setIdx);
       }
 
@@ -1844,6 +1865,8 @@
       }
       document.addEventListener("DOMContentLoaded", init);
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

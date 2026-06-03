@@ -1,1657 +1,2922 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ecology Part II Interactive Review</title>
-  <style>
-    :root{
-      --ink:#16313c;
-      --muted:#59717a;
-      --bg:#f6fbf6;
-      --panel:#ffffff;
-      --leaf:#2d8a62;
-      --leaf-dark:#176647;
-      --water:#2387c9;
-      --water-dark:#11628f;
-      --sun:#f4b942;
-      --coral:#ef7b5f;
-      --cream:#fff8e8;
-      --mint:#e7f6ed;
-      --sky:#e8f6ff;
-      --rose:#fff0ee;
-      --gold:#fff4cf;
-      --border:#d7e7dc;
-      --shadow:0 16px 40px rgba(22,49,60,.12);
-      --radius:22px;
-      --correct:#138a52;
-      --wrong:#c23b3b;
-      --focus:#7a5cff;
-    }
-
-    *{box-sizing:border-box}
-
-    html{scroll-behavior:smooth}
-
-    body{
-      margin:0;
-      font-family: Calibri, Arial, sans-serif;
-      color:var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(35,135,201,.16), transparent 34rem),
-        radial-gradient(circle at top right, rgba(244,185,66,.20), transparent 30rem),
-        linear-gradient(180deg, #f8fff9 0%, #eef8f1 100%);
-      line-height:1.45;
-    }
-
-    button, input, select, textarea{
-      font-family:inherit;
-      font-size:1rem;
-    }
-
-    .app{
-      max-width:1180px;
-      margin:0 auto;
-      padding:26px 18px 40px;
-    }
-
-    .hero{
-      position:relative;
-      overflow:hidden;
-      background:linear-gradient(135deg, #173f50 0%, #1f7654 55%, #4aa37d 100%);
-      color:#fff;
-      border-radius:30px;
-      padding:28px;
-      box-shadow:var(--shadow);
-      min-height:220px;
-    }
-
-    .hero:before{
-      content:"";
-      position:absolute;
-      width:380px;
-      height:380px;
-      right:-95px;
-      top:-120px;
-      border-radius:50%;
-      background:rgba(255,255,255,.11);
-    }
-
-    .hero:after{
-      content:"";
-      position:absolute;
-      width:240px;
-      height:240px;
-      left:-90px;
-      bottom:-120px;
-      border-radius:50%;
-      background:rgba(244,185,66,.25);
-    }
-
-    .hero-inner{
-      position:relative;
-      z-index:1;
-      display:grid;
-      grid-template-columns:1.3fr .7fr;
-      gap:24px;
-      align-items:center;
-    }
-
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      background:rgba(255,255,255,.16);
-      border:1px solid rgba(255,255,255,.32);
-      color:#fff;
-      padding:7px 12px;
-      border-radius:999px;
-      font-size:.95rem;
-      margin-bottom:12px;
-    }
-
-    h1{
-      margin:0 0 10px;
-      font-size:clamp(2rem, 4vw, 3.75rem);
-      line-height:.98;
-      letter-spacing:-.04em;
-    }
-
-    .hero p{
-      max-width:760px;
-      margin:0;
-      font-size:1.12rem;
-      color:rgba(255,255,255,.91);
-    }
-
-    .score-card{
-      background:rgba(255,255,255,.13);
-      border:1px solid rgba(255,255,255,.26);
-      border-radius:24px;
-      padding:18px;
-      backdrop-filter:blur(8px);
-    }
-
-    .score-card strong{
-      font-size:1.08rem;
-      display:block;
-      margin-bottom:10px;
-    }
-
-    .progress-shell{
-      background:rgba(255,255,255,.22);
-      border-radius:999px;
-      height:14px;
-      overflow:hidden;
-      margin:10px 0 8px;
-    }
-
-    .progress-fill{
-      width:0%;
-      height:100%;
-      background:linear-gradient(90deg, #ffe27a, #9cf0bd);
-      transition:width .35s ease;
-    }
-
-    .progress-copy{
-      font-size:.92rem;
-      color:rgba(255,255,255,.90);
-    }
-
-    .toolbar{
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:space-between;
-      gap:12px;
-      margin:18px 0 12px;
-      align-items:center;
-    }
-
-    .tabs{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-    }
-
-    .tab-btn{
-      border:0;
-      background:#fff;
-      color:var(--ink);
-      border-radius:999px;
-      padding:11px 15px;
-      cursor:pointer;
-      box-shadow:0 7px 18px rgba(22,49,60,.08);
-      border:1px solid var(--border);
-      transition:.2s ease;
-      font-weight:700;
-    }
-
-    .tab-btn:hover{
-      transform:translateY(-1px);
-      box-shadow:0 10px 24px rgba(22,49,60,.13);
-    }
-
-    .tab-btn.active{
-      background:var(--ink);
-      color:#fff;
-      border-color:var(--ink);
-    }
-
-    .utility-buttons{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .small-btn{
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--ink);
-      border-radius:999px;
-      padding:10px 13px;
-      font-weight:700;
-      cursor:pointer;
-    }
-
-    .small-btn:hover{background:var(--cream)}
-
-    .tab-panel{display:none}
-    .tab-panel.active{display:block}
-
-    .section{
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:24px;
-      margin-top:18px;
-      box-shadow:var(--shadow);
-    }
-
-    .section-header{
-      display:flex;
-      justify-content:space-between;
-      gap:20px;
-      align-items:flex-start;
-      margin-bottom:18px;
-      border-bottom:1px solid #e8f1eb;
-      padding-bottom:16px;
-    }
-
-    .section-header h2{
-      margin:0 0 6px;
-      font-size:clamp(1.6rem, 3vw, 2.25rem);
-      letter-spacing:-.025em;
-    }
-
-    .section-header p{
-      margin:0;
-      color:var(--muted);
-      max-width:760px;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      background:var(--mint);
-      color:var(--leaf-dark);
-      border:1px solid #c8ead7;
-      padding:8px 11px;
-      border-radius:999px;
-      font-weight:800;
-      white-space:nowrap;
-    }
-
-    .grid{
-      display:grid;
-      gap:16px;
-    }
-
-    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
-
-    .card{
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:16px;
-      box-shadow:0 8px 22px rgba(22,49,60,.06);
-    }
-
-    .card.tint-mint{background:linear-gradient(180deg,#ffffff,#f2fbf5)}
-    .card.tint-sky{background:linear-gradient(180deg,#ffffff,#eef9ff)}
-    .card.tint-gold{background:linear-gradient(180deg,#ffffff,#fff8da)}
-    .card.tint-rose{background:linear-gradient(180deg,#ffffff,#fff2ef)}
-
-    .term-card{
-      min-height:190px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      transition:.2s ease;
-      cursor:pointer;
-    }
-
-    .term-card:hover{
-      transform:translateY(-2px);
-      box-shadow:0 14px 30px rgba(22,49,60,.10);
-    }
-
-    .term-icon{
-      width:52px;
-      height:52px;
-      border-radius:17px;
-      display:grid;
-      place-items:center;
-      font-size:1.7rem;
-      background:var(--sky);
-      margin-bottom:12px;
-    }
-
-    .term-card h3, .card h3{
-      margin:0 0 8px;
-      font-size:1.18rem;
-      letter-spacing:-.01em;
-    }
-
-    .term-card p, .card p{
-      margin:0;
-      color:var(--muted);
-    }
-
-    .term-back{
-      display:none;
-      margin-top:12px;
-      background:rgba(255,255,255,.82);
-      border:1px dashed #bfd9ca;
-      border-radius:14px;
-      padding:10px;
-      color:var(--ink);
-      font-weight:700;
-    }
-
-    .term-card.revealed .term-back{display:block}
-
-    .callout{
-      border-left:7px solid var(--leaf);
-      background:var(--mint);
-      border-radius:18px;
-      padding:16px;
-      margin:16px 0;
-    }
-
-    .callout strong{display:block;margin-bottom:4px}
-
-    .formula{
-      font-size:1.18rem;
-      font-weight:900;
-      text-align:center;
-      background:#fff;
-      border:2px solid #d8ebdd;
-      border-radius:18px;
-      padding:15px;
-      margin:12px 0;
-    }
-
-    .mini-label{
-      display:inline-flex;
-      align-items:center;
-      background:#eef6f0;
-      border:1px solid #d9eadf;
-      color:#35604a;
-      border-radius:999px;
-      padding:5px 9px;
-      font-size:.85rem;
-      font-weight:800;
-      margin-bottom:8px;
-    }
-
-    .activity-row{
-      display:grid;
-      grid-template-columns:1fr minmax(180px, 270px);
-      gap:14px;
-      align-items:center;
-      padding:13px;
-      border:1px solid #e1eee6;
-      border-radius:16px;
-      background:#fff;
-      margin:10px 0;
-    }
-
-    .activity-row.compact{
-      grid-template-columns:1fr minmax(140px, 220px);
-    }
-
-    select, input[type="text"], textarea{
-      width:100%;
-      border:2px solid #d8e6dd;
-      border-radius:13px;
-      padding:10px 11px;
-      background:#fff;
-      color:var(--ink);
-      outline:none;
-    }
-
-    select:focus, input[type="text"]:focus, textarea:focus{
-      border-color:var(--focus);
-      box-shadow:0 0 0 4px rgba(122,92,255,.12);
-    }
-
-    textarea{min-height:96px; resize:vertical}
-
-    .checkbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      margin-top:16px;
-    }
-
-    .primary-btn{
-      border:0;
-      border-radius:999px;
-      padding:12px 18px;
-      background:linear-gradient(135deg,var(--leaf),var(--water));
-      color:#fff;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow:0 10px 24px rgba(45,138,98,.24);
-    }
-
-    .primary-btn:hover{transform:translateY(-1px)}
-    .secondary-btn{
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--ink);
-      border-radius:999px;
-      padding:11px 15px;
-      font-weight:800;
-      cursor:pointer;
-    }
-
-    .feedback{
-      min-height:34px;
-      border-radius:15px;
-      padding:10px 12px;
-      display:none;
-      font-weight:800;
-    }
-
-    .feedback.show{display:block}
-    .feedback.correct{
-      background:#e7f8ef;
-      border:1px solid #bcebd0;
-      color:var(--correct);
-    }
-    .feedback.partial{
-      background:#fff6d7;
-      border:1px solid #f1dc85;
-      color:#7a5b00;
-    }
-    .feedback.wrong{
-      background:#fff0ee;
-      border:1px solid #f5c0b8;
-      color:var(--wrong);
-    }
-
-    .visual-cycle{
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:12px;
-      margin:14px 0;
-    }
-
-    .cycle-node{
-      border-radius:20px;
-      padding:16px;
-      min-height:120px;
-      background:linear-gradient(180deg,#fff,#f5fbff);
-      border:1px solid #dbeaf2;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .cycle-node strong{
-      display:block;
-      font-size:1.05rem;
-      margin-bottom:5px;
-    }
-
-    .cycle-node span{
-      color:var(--muted);
-      font-size:.96rem;
-    }
-
-    .cycle-node .emoji{
-      position:absolute;
-      right:12px;
-      bottom:8px;
-      font-size:2.2rem;
-      opacity:.85;
-    }
-
-    .lab-table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0 10px;
-    }
-
-    .lab-table th{
-      text-align:left;
-      color:#48616a;
-      font-size:.92rem;
-      padding:0 10px 3px;
-    }
-
-    .lab-table td{
-      background:#fff;
-      border-top:1px solid #e0ece5;
-      border-bottom:1px solid #e0ece5;
-      padding:12px 10px;
-      vertical-align:middle;
-    }
-
-    .lab-table td:first-child{
-      border-left:1px solid #e0ece5;
-      border-radius:15px 0 0 15px;
-      font-weight:900;
-    }
-
-    .lab-table td:last-child{
-      border-right:1px solid #e0ece5;
-      border-radius:0 15px 15px 0;
-    }
-
-    .choice-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-      margin-top:10px;
-    }
-
-    .choice-card{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      border:2px solid #dfece5;
-      background:#fff;
-      border-radius:16px;
-      padding:12px;
-      cursor:pointer;
-    }
-
-    .choice-card:hover{
-      background:#fafffb;
-      border-color:#b9dac8;
-    }
-
-    .choice-card input{margin-top:4px}
-
-    .pill-bank{
-      display:flex;
-      flex-wrap:wrap;
-      gap:9px;
-      margin:12px 0;
-    }
-
-    .pill{
-      background:#fff;
-      border:1px solid #d8e6dd;
-      border-radius:999px;
-      padding:8px 11px;
-      font-weight:800;
-      box-shadow:0 5px 12px rgba(22,49,60,.05);
-    }
-
-    .scenario{
-      border:1px solid #e1eee6;
-      border-radius:20px;
-      background:#fff;
-      padding:16px;
-      display:grid;
-      grid-template-columns:70px 1fr minmax(160px, 230px);
-      gap:14px;
-      align-items:center;
-      margin-bottom:12px;
-    }
-
-    .scenario .icon{
-      font-size:2.4rem;
-      width:62px;
-      height:62px;
-      border-radius:20px;
-      display:grid;
-      place-items:center;
-      background:var(--cream);
-      border:1px solid #f0e0b6;
-    }
-
-    .sort-board{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:16px;
-    }
-
-    .sort-box{
-      background:#fff;
-      border:2px dashed #bfd9ca;
-      border-radius:22px;
-      padding:15px;
-      min-height:150px;
-    }
-
-    .sort-box h3{
-      margin-top:0;
-    }
-
-    .check-list{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:10px;
-      margin-top:10px;
-    }
-
-    .check-item{
-      border:2px solid #dfece5;
-      border-radius:15px;
-      padding:10px;
-      background:#fff;
-      cursor:pointer;
-    }
-
-    .check-item:hover{border-color:#b8d9c8;background:#fbfffc}
-    .check-item input{margin-right:8px}
-
-    .test-question{
-      background:#fff;
-      border:1px solid #dfece5;
-      border-radius:20px;
-      padding:17px;
-      margin-bottom:14px;
-      box-shadow:0 8px 20px rgba(22,49,60,.04);
-    }
-
-    .test-question h3{
-      margin:0 0 10px;
-      font-size:1.08rem;
-    }
-
-    .test-options{
-      display:grid;
-      gap:9px;
-    }
-
-    .test-options label{
-      display:flex;
-      gap:9px;
-      align-items:flex-start;
-      background:#fbfefd;
-      border:1px solid #e1eee6;
-      border-radius:14px;
-      padding:10px;
-      cursor:pointer;
-    }
-
-    .test-options label:hover{
-      background:var(--mint);
-    }
-
-    .result-chip{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      border-radius:999px;
-      padding:6px 9px;
-      margin-top:8px;
-      font-weight:800;
-      font-size:.9rem;
-    }
-
-    .result-chip.correct{
-      background:#e7f8ef;
-      color:var(--correct);
-    }
-
-    .result-chip.wrong{
-      background:#fff0ee;
-      color:var(--wrong);
-    }
-
-    .reflection-box{
-      background:linear-gradient(135deg,#fff,#f2f8ff);
-      border:1px solid #dcecf5;
-      border-radius:22px;
-      padding:18px;
-      margin-top:16px;
-    }
-
-    .watermark{
-      color:#78909a;
-      font-size:.9rem;
-      text-align:center;
-      margin-top:22px;
-    }
-
-    .sr-only{
-      position:absolute;
-      left:-9999px;
-      width:1px;
-      height:1px;
-      overflow:hidden;
-    }
-
-    @media (max-width:900px){
-      .hero-inner,
-      .grid.two,
-      .grid.three,
-      .grid.four,
-      .visual-cycle,
-      .sort-board{
-        grid-template-columns:1fr;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ecology Part II Interactive Review</title>
+    <style>
+      :root {
+        --ink: #16313c;
+        --muted: #59717a;
+        --bg: #f6fbf6;
+        --panel: #ffffff;
+        --leaf: #2d8a62;
+        --leaf-dark: #176647;
+        --water: #2387c9;
+        --water-dark: #11628f;
+        --sun: #f4b942;
+        --coral: #ef7b5f;
+        --cream: #fff8e8;
+        --mint: #e7f6ed;
+        --sky: #e8f6ff;
+        --rose: #fff0ee;
+        --gold: #fff4cf;
+        --border: #d7e7dc;
+        --shadow: 0 16px 40px rgba(22, 49, 60, 0.12);
+        --radius: 22px;
+        --correct: #138a52;
+        --wrong: #c23b3b;
+        --focus: #7a5cff;
       }
 
-      .section-header{
-        flex-direction:column;
+      * {
+        box-sizing: border-box;
       }
 
-      .activity-row,
-      .activity-row.compact,
-      .scenario{
-        grid-template-columns:1fr;
+      html {
+        scroll-behavior: smooth;
       }
 
-      .choice-grid,
-      .check-list{
-        grid-template-columns:1fr;
+      body {
+        margin: 0;
+        font-family: Calibri, Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(35, 135, 201, 0.16),
+            transparent 34rem
+          ),
+          radial-gradient(
+            circle at top right,
+            rgba(244, 185, 66, 0.2),
+            transparent 30rem
+          ),
+          linear-gradient(180deg, #f8fff9 0%, #eef8f1 100%);
+        line-height: 1.45;
       }
-    }
 
-    @media print{
-      .toolbar,.checkbar,.small-btn,.primary-btn,.secondary-btn{display:none!important}
-      body{background:#fff}
-      .section,.hero{box-shadow:none}
-      .tab-panel{display:block!important; break-inside:avoid}
-      .tab-btn{display:none}
-    }
-  
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
-</head>
-<body>
-  <main class="app">
-    <section class="hero" aria-label="Ecology Part II review header">
-      <div class="hero-inner">
-        <div>
-          <div class="eyebrow">🌿 Ecology Part II Review Lab</div>
-          <h1>Mission: Master the Ecosystem</h1>
-          <p>Review water cycles, stream health, photosynthesis, relationships, pH, watersheds, composting, and decomposers through short, active learning tabs. Study the terms first, then check your answers as you go.</p>
-        </div>
-        <aside class="score-card" aria-label="Progress tracker">
-          <strong>Review Progress</strong>
-          <div class="progress-shell" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
-          <div class="progress-copy" id="progressText">0 of 7 checked activities completed.</div>
-          <p style="margin-top:12px;font-size:.95rem;color:rgba(255,255,255,.86)">Tip: Try each activity before pressing “Check.” The goal is learning, not guessing.</p>
-        </aside>
-      </div>
-    </section>
+      button,
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+        font-size: 1rem;
+      }
 
-    <div class="toolbar">
-      <nav class="tabs" aria-label="Activity tabs">
-        <button class="tab-btn active" data-tab="terms">1. Terms</button>
-        <button class="tab-btn" data-tab="water">2. Water Cycle</button>
-        <button class="tab-btn" data-tab="quality">3. Stream Lab</button>
-        <button class="tab-btn" data-tab="photo">4. Photosynthesis</button>
-        <button class="tab-btn" data-tab="relationships">5. Relationships</button>
-        <button class="tab-btn" data-tab="bay">6. Bay Quest</button>
-        <button class="tab-btn" data-tab="compost">7. Compost Lab</button>
-        <button class="tab-btn" data-tab="test">8. Practice Test</button>
-      </nav>
-      <div class="utility-buttons">
-        <button class="small-btn" onclick="showTabById('terms')">Study Terms</button>
-        <button class="small-btn" onclick="resetAll()">Reset All</button>
-        <button class="small-btn" onclick="window.print()">Print</button>
-      </div>
-    </div>
+      .app {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 26px 18px 40px;
+      }
 
-    <section class="tab-panel active" id="terms">
-      <div class="section">
-        <div class="section-header">
+      .hero {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(
+          135deg,
+          #173f50 0%,
+          #1f7654 55%,
+          #4aa37d 100%
+        );
+        color: #fff;
+        border-radius: 30px;
+        padding: 28px;
+        box-shadow: var(--shadow);
+        min-height: 220px;
+      }
+
+      .hero:before {
+        content: "";
+        position: absolute;
+        width: 380px;
+        height: 380px;
+        right: -95px;
+        top: -120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.11);
+      }
+
+      .hero:after {
+        content: "";
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        left: -90px;
+        bottom: -120px;
+        border-radius: 50%;
+        background: rgba(244, 185, 66, 0.25);
+      }
+
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: 24px;
+        align-items: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.32);
+        color: #fff;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2rem, 4vw, 3.75rem);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+      }
+
+      .hero p {
+        max-width: 760px;
+        margin: 0;
+        font-size: 1.12rem;
+        color: rgba(255, 255, 255, 0.91);
+      }
+
+      .score-card {
+        background: rgba(255, 255, 255, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.26);
+        border-radius: 24px;
+        padding: 18px;
+        backdrop-filter: blur(8px);
+      }
+
+      .score-card strong {
+        font-size: 1.08rem;
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .progress-shell {
+        background: rgba(255, 255, 255, 0.22);
+        border-radius: 999px;
+        height: 14px;
+        overflow: hidden;
+        margin: 10px 0 8px;
+      }
+
+      .progress-fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #ffe27a, #9cf0bd);
+        transition: width 0.35s ease;
+      }
+
+      .progress-copy {
+        font-size: 0.92rem;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 18px 0 12px;
+        align-items: center;
+      }
+
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .tab-btn {
+        border: 0;
+        background: #fff;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 11px 15px;
+        cursor: pointer;
+        box-shadow: 0 7px 18px rgba(22, 49, 60, 0.08);
+        border: 1px solid var(--border);
+        transition: 0.2s ease;
+        font-weight: 700;
+      }
+
+      .tab-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(22, 49, 60, 0.13);
+      }
+
+      .tab-btn.active {
+        background: var(--ink);
+        color: #fff;
+        border-color: var(--ink);
+      }
+
+      .utility-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .small-btn {
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 10px 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .small-btn:hover {
+        background: var(--cream);
+      }
+
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      .section {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-top: 18px;
+        box-shadow: var(--shadow);
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: flex-start;
+        margin-bottom: 18px;
+        border-bottom: 1px solid #e8f1eb;
+        padding-bottom: 16px;
+      }
+
+      .section-header h2 {
+        margin: 0 0 6px;
+        font-size: clamp(1.6rem, 3vw, 2.25rem);
+        letter-spacing: -0.025em;
+      }
+
+      .section-header p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 760px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--mint);
+        color: var(--leaf-dark);
+        border: 1px solid #c8ead7;
+        padding: 8px 11px;
+        border-radius: 999px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .grid.four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 16px;
+        box-shadow: 0 8px 22px rgba(22, 49, 60, 0.06);
+      }
+
+      .card.tint-mint {
+        background: linear-gradient(180deg, #ffffff, #f2fbf5);
+      }
+      .card.tint-sky {
+        background: linear-gradient(180deg, #ffffff, #eef9ff);
+      }
+      .card.tint-gold {
+        background: linear-gradient(180deg, #ffffff, #fff8da);
+      }
+      .card.tint-rose {
+        background: linear-gradient(180deg, #ffffff, #fff2ef);
+      }
+
+      .term-card {
+        min-height: 190px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: 0.2s ease;
+        cursor: pointer;
+      }
+
+      .term-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(22, 49, 60, 0.1);
+      }
+
+      .term-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 17px;
+        display: grid;
+        place-items: center;
+        font-size: 1.7rem;
+        background: var(--sky);
+        margin-bottom: 12px;
+      }
+
+      .term-card h3,
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 1.18rem;
+        letter-spacing: -0.01em;
+      }
+
+      .term-card p,
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .term-back {
+        display: none;
+        margin-top: 12px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px dashed #bfd9ca;
+        border-radius: 14px;
+        padding: 10px;
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      .term-card.revealed .term-back {
+        display: block;
+      }
+
+      .callout {
+        border-left: 7px solid var(--leaf);
+        background: var(--mint);
+        border-radius: 18px;
+        padding: 16px;
+        margin: 16px 0;
+      }
+
+      .callout strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .formula {
+        font-size: 1.18rem;
+        font-weight: 900;
+        text-align: center;
+        background: #fff;
+        border: 2px solid #d8ebdd;
+        border-radius: 18px;
+        padding: 15px;
+        margin: 12px 0;
+      }
+
+      .mini-label {
+        display: inline-flex;
+        align-items: center;
+        background: #eef6f0;
+        border: 1px solid #d9eadf;
+        color: #35604a;
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+
+      .activity-row {
+        display: grid;
+        grid-template-columns: 1fr minmax(180px, 270px);
+        gap: 14px;
+        align-items: center;
+        padding: 13px;
+        border: 1px solid #e1eee6;
+        border-radius: 16px;
+        background: #fff;
+        margin: 10px 0;
+      }
+
+      .activity-row.compact {
+        grid-template-columns: 1fr minmax(140px, 220px);
+      }
+
+      select,
+      input[type="text"],
+      textarea {
+        width: 100%;
+        border: 2px solid #d8e6dd;
+        border-radius: 13px;
+        padding: 10px 11px;
+        background: #fff;
+        color: var(--ink);
+        outline: none;
+      }
+
+      select:focus,
+      input[type="text"]:focus,
+      textarea:focus {
+        border-color: var(--focus);
+        box-shadow: 0 0 0 4px rgba(122, 92, 255, 0.12);
+      }
+
+      textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+
+      .checkbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 16px;
+      }
+
+      .primary-btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        background: linear-gradient(135deg, var(--leaf), var(--water));
+        color: #fff;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 10px 24px rgba(45, 138, 98, 0.24);
+      }
+
+      .primary-btn:hover {
+        transform: translateY(-1px);
+      }
+      .secondary-btn {
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 11px 15px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .feedback {
+        min-height: 34px;
+        border-radius: 15px;
+        padding: 10px 12px;
+        display: none;
+        font-weight: 800;
+      }
+
+      .feedback.show {
+        display: block;
+      }
+      .feedback.correct {
+        background: #e7f8ef;
+        border: 1px solid #bcebd0;
+        color: var(--correct);
+      }
+      .feedback.partial {
+        background: #fff6d7;
+        border: 1px solid #f1dc85;
+        color: #7a5b00;
+      }
+      .feedback.wrong {
+        background: #fff0ee;
+        border: 1px solid #f5c0b8;
+        color: var(--wrong);
+      }
+
+      .visual-cycle {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 14px 0;
+      }
+
+      .cycle-node {
+        border-radius: 20px;
+        padding: 16px;
+        min-height: 120px;
+        background: linear-gradient(180deg, #fff, #f5fbff);
+        border: 1px solid #dbeaf2;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cycle-node strong {
+        display: block;
+        font-size: 1.05rem;
+        margin-bottom: 5px;
+      }
+
+      .cycle-node span {
+        color: var(--muted);
+        font-size: 0.96rem;
+      }
+
+      .cycle-node .emoji {
+        position: absolute;
+        right: 12px;
+        bottom: 8px;
+        font-size: 2.2rem;
+        opacity: 0.85;
+      }
+
+      .lab-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+      }
+
+      .lab-table th {
+        text-align: left;
+        color: #48616a;
+        font-size: 0.92rem;
+        padding: 0 10px 3px;
+      }
+
+      .lab-table td {
+        background: #fff;
+        border-top: 1px solid #e0ece5;
+        border-bottom: 1px solid #e0ece5;
+        padding: 12px 10px;
+        vertical-align: middle;
+      }
+
+      .lab-table td:first-child {
+        border-left: 1px solid #e0ece5;
+        border-radius: 15px 0 0 15px;
+        font-weight: 900;
+      }
+
+      .lab-table td:last-child {
+        border-right: 1px solid #e0ece5;
+        border-radius: 0 15px 15px 0;
+      }
+
+      .choice-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .choice-card {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        border: 2px solid #dfece5;
+        background: #fff;
+        border-radius: 16px;
+        padding: 12px;
+        cursor: pointer;
+      }
+
+      .choice-card:hover {
+        background: #fafffb;
+        border-color: #b9dac8;
+      }
+
+      .choice-card input {
+        margin-top: 4px;
+      }
+
+      .pill-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin: 12px 0;
+      }
+
+      .pill {
+        background: #fff;
+        border: 1px solid #d8e6dd;
+        border-radius: 999px;
+        padding: 8px 11px;
+        font-weight: 800;
+        box-shadow: 0 5px 12px rgba(22, 49, 60, 0.05);
+      }
+
+      .scenario {
+        border: 1px solid #e1eee6;
+        border-radius: 20px;
+        background: #fff;
+        padding: 16px;
+        display: grid;
+        grid-template-columns: 70px 1fr minmax(160px, 230px);
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .scenario .icon {
+        font-size: 2.4rem;
+        width: 62px;
+        height: 62px;
+        border-radius: 20px;
+        display: grid;
+        place-items: center;
+        background: var(--cream);
+        border: 1px solid #f0e0b6;
+      }
+
+      .sort-board {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .sort-box {
+        background: #fff;
+        border: 2px dashed #bfd9ca;
+        border-radius: 22px;
+        padding: 15px;
+        min-height: 150px;
+      }
+
+      .sort-box h3 {
+        margin-top: 0;
+      }
+
+      .check-list {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .check-item {
+        border: 2px solid #dfece5;
+        border-radius: 15px;
+        padding: 10px;
+        background: #fff;
+        cursor: pointer;
+      }
+
+      .check-item:hover {
+        border-color: #b8d9c8;
+        background: #fbfffc;
+      }
+      .check-item input {
+        margin-right: 8px;
+      }
+
+      .test-question {
+        background: #fff;
+        border: 1px solid #dfece5;
+        border-radius: 20px;
+        padding: 17px;
+        margin-bottom: 14px;
+        box-shadow: 0 8px 20px rgba(22, 49, 60, 0.04);
+      }
+
+      .test-question h3 {
+        margin: 0 0 10px;
+        font-size: 1.08rem;
+      }
+
+      .test-options {
+        display: grid;
+        gap: 9px;
+      }
+
+      .test-options label {
+        display: flex;
+        gap: 9px;
+        align-items: flex-start;
+        background: #fbfefd;
+        border: 1px solid #e1eee6;
+        border-radius: 14px;
+        padding: 10px;
+        cursor: pointer;
+      }
+
+      .test-options label:hover {
+        background: var(--mint);
+      }
+
+      .result-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 6px 9px;
+        margin-top: 8px;
+        font-weight: 800;
+        font-size: 0.9rem;
+      }
+
+      .result-chip.correct {
+        background: #e7f8ef;
+        color: var(--correct);
+      }
+
+      .result-chip.wrong {
+        background: #fff0ee;
+        color: var(--wrong);
+      }
+
+      .reflection-box {
+        background: linear-gradient(135deg, #fff, #f2f8ff);
+        border: 1px solid #dcecf5;
+        border-radius: 22px;
+        padding: 18px;
+        margin-top: 16px;
+      }
+
+      .watermark {
+        color: #78909a;
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 22px;
+      }
+
+      .sr-only {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+
+      @media (max-width: 900px) {
+        .hero-inner,
+        .grid.two,
+        .grid.three,
+        .grid.four,
+        .visual-cycle,
+        .sort-board {
+          grid-template-columns: 1fr;
+        }
+
+        .section-header {
+          flex-direction: column;
+        }
+
+        .activity-row,
+        .activity-row.compact,
+        .scenario {
+          grid-template-columns: 1fr;
+        }
+
+        .choice-grid,
+        .check-list {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        .toolbar,
+        .checkbar,
+        .small-btn,
+        .primary-btn,
+        .secondary-btn {
+          display: none !important;
+        }
+        body {
+          background: #fff;
+        }
+        .section,
+        .hero {
+          box-shadow: none;
+        }
+        .tab-panel {
+          display: block !important;
+          break-inside: avoid;
+        }
+        .tab-btn {
+          display: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="hero" aria-label="Ecology Part II review header">
+        <div class="hero-inner">
           <div>
-            <h2>Start Here: Term Review</h2>
-            <p>This first page is only for going over the key terms. Click a card to reveal a student-friendly definition and memory hint.</p>
+            <div class="eyebrow">🌿 Ecology Part II Review Lab</div>
+            <h1>Mission: Master the Ecosystem</h1>
+            <p>
+              Review water cycles, stream health, photosynthesis, relationships,
+              pH, watersheds, composting, and decomposers through short, active
+              learning tabs. Study the terms first, then check your answers as
+              you go.
+            </p>
           </div>
-          <div class="badge">No score yet — just learn</div>
+          <aside class="score-card" aria-label="Progress tracker">
+            <strong>Review Progress</strong>
+            <div class="progress-shell" aria-hidden="true">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-copy" id="progressText">
+              0 of 7 checked activities completed.
+            </div>
+            <p
+              style="
+                margin-top: 12px;
+                font-size: 0.95rem;
+                color: rgba(255, 255, 255, 0.86);
+              "
+            >
+              Tip: Try each activity before pressing “Check.” The goal is
+              learning, not guessing.
+            </p>
+          </aside>
         </div>
+      </section>
 
-        <div class="grid four">
-          <article class="term-card card tint-sky" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">💧</div>
-              <h3>Evaporation</h3>
-              <p>Water changes into water vapor.</p>
-            </div>
-            <div class="term-back">Memory hint: ocean or puddle → invisible vapor.</div>
-          </article>
-          <article class="term-card card tint-mint" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🌳</div>
-              <h3>Transpiration</h3>
-              <p>Plants release water vapor into the air.</p>
-            </div>
-            <div class="term-back">Memory hint: trees “breathe out” water vapor.</div>
-          </article>
-          <article class="term-card card tint-sky" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">☁️</div>
-              <h3>Condensation</h3>
-              <p>Water vapor cools and forms clouds.</p>
-            </div>
-            <div class="term-back">Memory hint: vapor comes together as cloud droplets.</div>
-          </article>
-          <article class="term-card card tint-sky" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🌧️</div>
-              <h3>Precipitation</h3>
-              <p>Water falls from clouds to Earth.</p>
-            </div>
-            <div class="term-back">Examples: rain, snow, sleet, hail.</div>
-          </article>
-
-          <article class="term-card card tint-gold" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🏃</div>
-              <h3>Runoff</h3>
-              <p>Water moves across land into a body of water.</p>
-            </div>
-            <div class="term-back">Memory hint: water “runs off” the ground.</div>
-          </article>
-          <article class="term-card card tint-mint" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">⬇️</div>
-              <h3>Infiltration</h3>
-              <p>Water soaks into the ground.</p>
-            </div>
-            <div class="term-back">Memory hint: into the ground = infiltration.</div>
-          </article>
-          <article class="term-card card tint-gold" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">☀️</div>
-              <h3>Photosynthesis</h3>
-              <p>Plants use sunlight, carbon dioxide, and water to make glucose and oxygen.</p>
-            </div>
-            <div class="term-back">Inputs → outputs: Sun + CO₂ + H₂O → glucose + O₂.</div>
-          </article>
-          <article class="term-card card tint-mint" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🍃</div>
-              <h3>Chlorophyll</h3>
-              <p>The green plant pigment that absorbs energy from sunlight.</p>
-            </div>
-            <div class="term-back">Without it, plants could not make food well, grow, or reproduce.</div>
-          </article>
-
-          <article class="term-card card tint-rose" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🤝</div>
-              <h3>Mutualism</h3>
-              <p>Both organisms benefit.</p>
-            </div>
-            <div class="term-back">Example: yucca moth gets a place for eggs; yucca plant gets pollinated.</div>
-          </article>
-          <article class="term-card card tint-rose" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🦟</div>
-              <h3>Parasitism</h3>
-              <p>One organism benefits while the other is harmed.</p>
-            </div>
-            <div class="term-back">Example: a tick sucks blood from a human.</div>
-          </article>
-          <article class="term-card card tint-rose" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🦌</div>
-              <h3>Competition</h3>
-              <p>Organisms fight or compete for the same resource.</p>
-            </div>
-            <div class="term-back">Example: male elk fight over mates.</div>
-          </article>
-          <article class="term-card card tint-rose" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🦅</div>
-              <h3>Predation</h3>
-              <p>One organism hunts and eats another organism.</p>
-            </div>
-            <div class="term-back">Predator = hunter; prey = hunted.</div>
-          </article>
-
-          <article class="term-card card tint-sky" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🧪</div>
-              <h3>pH</h3>
-              <p>A measure of how acidic or basic a substance is.</p>
-            </div>
-            <div class="term-back">7 is neutral. Lemon juice is acidic. Soap is basic.</div>
-          </article>
-          <article class="term-card card tint-sky" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🌊</div>
-              <h3>Watershed</h3>
-              <p>An area where runoff drains into a specific body of water.</p>
-            </div>
-            <div class="term-back">When rain falls there, water eventually moves toward the same water body.</div>
-          </article>
-          <article class="term-card card tint-sky" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🧂</div>
-              <h3>Salinity / Brackish</h3>
-              <p>Salinity is the amount of salt in water. Brackish water is freshwater mixed with saltwater.</p>
-            </div>
-            <div class="term-back">The Chesapeake Bay has brackish areas.</div>
-          </article>
-          <article class="term-card card tint-mint" onclick="this.classList.toggle('revealed')">
-            <div>
-              <div class="term-icon">🪱</div>
-              <h3>Decomposers</h3>
-              <p>Living things that break down dead matter.</p>
-            </div>
-            <div class="term-back">Examples: worms, bacteria, fungi, and insects.</div>
-          </article>
-        </div>
-
-        <div class="callout">
-          <strong>Ready check before moving on:</strong>
-          Can you explain the difference between runoff and infiltration? Can you name the inputs and outputs of photosynthesis? Can you identify an example of mutualism, parasitism, and competition?
+      <div class="toolbar">
+        <nav class="tabs" aria-label="Activity tabs">
+          <button class="tab-btn active" data-tab="terms">1. Terms</button>
+          <button class="tab-btn" data-tab="water">2. Water Cycle</button>
+          <button class="tab-btn" data-tab="quality">3. Stream Lab</button>
+          <button class="tab-btn" data-tab="photo">4. Photosynthesis</button>
+          <button class="tab-btn" data-tab="relationships">
+            5. Relationships
+          </button>
+          <button class="tab-btn" data-tab="bay">6. Bay Quest</button>
+          <button class="tab-btn" data-tab="compost">7. Compost Lab</button>
+          <button class="tab-btn" data-tab="test">8. Practice Test</button>
+        </nav>
+        <div class="utility-buttons">
+          <button class="small-btn" onclick="showTabById('terms')">
+            Study Terms
+          </button>
+          <button class="small-btn" onclick="resetAll()">Reset All</button>
+          <button class="small-btn" onclick="window.print()">Print</button>
         </div>
       </div>
-    </section>
 
-    <section class="tab-panel" id="water">
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <h2>Water Cycle Mission</h2>
-            <p>Build the major water cycle processes, then connect movement clues to the correct process.</p>
-          </div>
-          <div class="badge">Skill: systems thinking</div>
-        </div>
-
-        <div class="visual-cycle" aria-label="Water cycle visual">
-          <div class="cycle-node"><strong>Surface Water</strong><span>Oceans, rivers, lakes, puddles</span><div class="emoji">🌊</div></div>
-          <div class="cycle-node"><strong>Air / Clouds</strong><span>Water vapor cools and gathers</span><div class="emoji">☁️</div></div>
-          <div class="cycle-node"><strong>Land / Groundwater</strong><span>Water runs off or soaks in</span><div class="emoji">⛰️</div></div>
-        </div>
-
-        <div class="grid two">
-          <div class="card tint-sky">
-            <span class="mini-label">Part A: Name the six processes</span>
-            <p>Choose the six parts of the water cycle from the answer bank.</p>
-            <div class="pill-bank">
-              <span class="pill">Evaporation</span><span class="pill">Transpiration</span><span class="pill">Condensation</span><span class="pill">Precipitation</span><span class="pill">Runoff</span><span class="pill">Infiltration</span>
+      <section class="tab-panel active" id="terms">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h2>Start Here: Term Review</h2>
+              <p>
+                This first page is only for going over the key terms. Click a
+                card to reveal a student-friendly definition and memory hint.
+              </p>
             </div>
-            <div class="activity-row compact"><span>Water changes to vapor.</span><select data-check="water" data-answer="Evaporation"><option value="">Choose</option><option>Evaporation</option><option>Condensation</option><option>Runoff</option><option>Infiltration</option></select></div>
-            <div class="activity-row compact"><span>Plants release water vapor.</span><select data-check="water" data-answer="Transpiration"><option value="">Choose</option><option>Transpiration</option><option>Precipitation</option><option>Runoff</option><option>Condensation</option></select></div>
-            <div class="activity-row compact"><span>Vapor cools and forms clouds.</span><select data-check="water" data-answer="Condensation"><option value="">Choose</option><option>Evaporation</option><option>Condensation</option><option>Precipitation</option><option>Infiltration</option></select></div>
+            <div class="badge">No score yet — just learn</div>
           </div>
 
-          <div class="card tint-mint">
-            <span class="mini-label">Part B: Movement clues</span>
-            <p>Choose the missing process needed to move water between locations.</p>
-            <div class="activity-row compact"><span>Ocean → water vapor</span><select data-check="water" data-answer="Evaporation"><option value="">Choose</option><option>Evaporation</option><option>Precipitation</option><option>Infiltration</option><option>Transpiration</option></select></div>
-            <div class="activity-row compact"><span>Clouds → ground</span><select data-check="water" data-answer="Precipitation"><option value="">Choose</option><option>Condensation</option><option>Precipitation</option><option>Runoff</option><option>Transpiration</option></select></div>
-            <div class="activity-row compact"><span>Ground → underground</span><select data-check="water" data-answer="Infiltration"><option value="">Choose</option><option>Runoff</option><option>Infiltration</option><option>Evaporation</option><option>Condensation</option></select></div>
-            <div class="activity-row compact"><span>Trees → water vapor</span><select data-check="water" data-answer="Transpiration"><option value="">Choose</option><option>Transpiration</option><option>Precipitation</option><option>Runoff</option><option>Infiltration</option></select></div>
+          <div class="grid four">
+            <article
+              class="term-card card tint-sky"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">💧</div>
+                <h3>Evaporation</h3>
+                <p>Water changes into water vapor.</p>
+              </div>
+              <div class="term-back">
+                Memory hint: ocean or puddle → invisible vapor.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-mint"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🌳</div>
+                <h3>Transpiration</h3>
+                <p>Plants release water vapor into the air.</p>
+              </div>
+              <div class="term-back">
+                Memory hint: trees “breathe out” water vapor.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-sky"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">☁️</div>
+                <h3>Condensation</h3>
+                <p>Water vapor cools and forms clouds.</p>
+              </div>
+              <div class="term-back">
+                Memory hint: vapor comes together as cloud droplets.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-sky"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🌧️</div>
+                <h3>Precipitation</h3>
+                <p>Water falls from clouds to Earth.</p>
+              </div>
+              <div class="term-back">Examples: rain, snow, sleet, hail.</div>
+            </article>
+
+            <article
+              class="term-card card tint-gold"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🏃</div>
+                <h3>Runoff</h3>
+                <p>Water moves across land into a body of water.</p>
+              </div>
+              <div class="term-back">
+                Memory hint: water “runs off” the ground.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-mint"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">⬇️</div>
+                <h3>Infiltration</h3>
+                <p>Water soaks into the ground.</p>
+              </div>
+              <div class="term-back">
+                Memory hint: into the ground = infiltration.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-gold"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">☀️</div>
+                <h3>Photosynthesis</h3>
+                <p>
+                  Plants use sunlight, carbon dioxide, and water to make glucose
+                  and oxygen.
+                </p>
+              </div>
+              <div class="term-back">
+                Inputs → outputs: Sun + CO₂ + H₂O → glucose + O₂.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-mint"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🍃</div>
+                <h3>Chlorophyll</h3>
+                <p>
+                  The green plant pigment that absorbs energy from sunlight.
+                </p>
+              </div>
+              <div class="term-back">
+                Without it, plants could not make food well, grow, or reproduce.
+              </div>
+            </article>
+
+            <article
+              class="term-card card tint-rose"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🤝</div>
+                <h3>Mutualism</h3>
+                <p>Both organisms benefit.</p>
+              </div>
+              <div class="term-back">
+                Example: yucca moth gets a place for eggs; yucca plant gets
+                pollinated.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-rose"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🦟</div>
+                <h3>Parasitism</h3>
+                <p>One organism benefits while the other is harmed.</p>
+              </div>
+              <div class="term-back">
+                Example: a tick sucks blood from a human.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-rose"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🦌</div>
+                <h3>Competition</h3>
+                <p>Organisms fight or compete for the same resource.</p>
+              </div>
+              <div class="term-back">Example: male elk fight over mates.</div>
+            </article>
+            <article
+              class="term-card card tint-rose"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🦅</div>
+                <h3>Predation</h3>
+                <p>One organism hunts and eats another organism.</p>
+              </div>
+              <div class="term-back">Predator = hunter; prey = hunted.</div>
+            </article>
+
+            <article
+              class="term-card card tint-sky"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🧪</div>
+                <h3>pH</h3>
+                <p>A measure of how acidic or basic a substance is.</p>
+              </div>
+              <div class="term-back">
+                7 is neutral. Lemon juice is acidic. Soap is basic.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-sky"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🌊</div>
+                <h3>Watershed</h3>
+                <p>
+                  An area where runoff drains into a specific body of water.
+                </p>
+              </div>
+              <div class="term-back">
+                When rain falls there, water eventually moves toward the same
+                water body.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-sky"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🧂</div>
+                <h3>Salinity / Brackish</h3>
+                <p>
+                  Salinity is the amount of salt in water. Brackish water is
+                  freshwater mixed with saltwater.
+                </p>
+              </div>
+              <div class="term-back">
+                The Chesapeake Bay has brackish areas.
+              </div>
+            </article>
+            <article
+              class="term-card card tint-mint"
+              onclick="this.classList.toggle('revealed')"
+            >
+              <div>
+                <div class="term-icon">🪱</div>
+                <h3>Decomposers</h3>
+                <p>Living things that break down dead matter.</p>
+              </div>
+              <div class="term-back">
+                Examples: worms, bacteria, fungi, and insects.
+              </div>
+            </article>
+          </div>
+
+          <div class="callout">
+            <strong>Ready check before moving on:</strong>
+            Can you explain the difference between runoff and infiltration? Can
+            you name the inputs and outputs of photosynthesis? Can you identify
+            an example of mutualism, parasitism, and competition?
           </div>
         </div>
+      </section>
 
-        <div class="checkbar">
-          <button class="primary-btn" onclick="checkSelects('water','waterFeedback')">Check Water Cycle</button>
-          <button class="secondary-btn" onclick="clearGroup('water','waterFeedback')">Try Again</button>
-          <div class="feedback" id="waterFeedback"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="tab-panel" id="quality">
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <h2>Stream Health Lab</h2>
-            <p>Use the stream data to decide whether each measurement looks healthy or unhealthy. Healthy data gets a smile; unhealthy data gets a frown.</p>
-          </div>
-          <div class="badge">Skill: data interpretation</div>
-        </div>
-
-        <div class="callout">
-          <strong>Lab rule:</strong>
-          You are not memorizing random numbers. You are practicing how scientists use data to make a claim about water quality.
-        </div>
-
-        <table class="lab-table" aria-label="Water quality data table">
-          <thead>
-            <tr><th>Measurement</th><th>Data</th><th>Your claim</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>pH</td><td>3, acidic</td><td><select data-check="quality" data-answer="Frown"><option value="">Choose</option><option>Smile</option><option>Frown</option></select></td></tr>
-            <tr><td>Nitrates</td><td>20</td><td><select data-check="quality" data-answer="Frown"><option value="">Choose</option><option>Smile</option><option>Frown</option></select></td></tr>
-            <tr><td>Phosphates</td><td>0</td><td><select data-check="quality" data-answer="Smile"><option value="">Choose</option><option>Smile</option><option>Frown</option></select></td></tr>
-            <tr><td>Turbidity</td><td>Very cloudy</td><td><select data-check="quality" data-answer="Frown"><option value="">Choose</option><option>Smile</option><option>Frown</option></select></td></tr>
-            <tr><td>Dissolved Oxygen</td><td>2%</td><td><select data-check="quality" data-answer="Frown"><option value="">Choose</option><option>Smile</option><option>Frown</option></select></td></tr>
-            <tr><td>Temperature</td><td>89° Celsius</td><td><select data-check="quality" data-answer="Frown"><option value="">Choose</option><option>Smile</option><option>Frown</option></select></td></tr>
-          </tbody>
-        </table>
-
-        <div class="reflection-box">
-          <h3 style="margin-top:0">Explain like a scientist</h3>
-          <p>Pick one frown result. Write one sentence explaining why it is a warning sign for stream health.</p>
-          <textarea id="streamExplain" placeholder="Example: Very cloudy water is a warning sign because..."></textarea>
-          <div class="checkbar">
-            <button class="secondary-btn" onclick="checkReflection('streamExplain','streamReflectFeedback')">Check My Explanation</button>
-            <div class="feedback" id="streamReflectFeedback"></div>
-          </div>
-        </div>
-
-        <div class="checkbar">
-          <button class="primary-btn" onclick="checkSelects('quality','qualityFeedback')">Check Stream Lab</button>
-          <button class="secondary-btn" onclick="clearGroup('quality','qualityFeedback')">Try Again</button>
-          <div class="feedback" id="qualityFeedback"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="tab-panel" id="photo">
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <h2>Photosynthesis Factory</h2>
-            <p>Sort the ingredients and products, then explain why chlorophyll matters.</p>
-          </div>
-          <div class="badge">Skill: cause and effect</div>
-        </div>
-
-        <div class="formula">☀️ Sunlight + CO₂ + H₂O → C₆H₁₂O₆ + O₂</div>
-
-        <div class="grid two">
-          <div class="card tint-gold">
-            <span class="mini-label">Factory Sort</span>
-            <p>Decide whether each item is an ingredient/input or a product/output.</p>
-            <div class="activity-row compact"><span>Sunlight</span><select data-check="photo" data-answer="Input"><option value="">Choose</option><option>Input</option><option>Output</option></select></div>
-            <div class="activity-row compact"><span>Carbon dioxide / CO₂</span><select data-check="photo" data-answer="Input"><option value="">Choose</option><option>Input</option><option>Output</option></select></div>
-            <div class="activity-row compact"><span>Water / H₂O</span><select data-check="photo" data-answer="Input"><option value="">Choose</option><option>Input</option><option>Output</option></select></div>
-            <div class="activity-row compact"><span>Glucose / C₆H₁₂O₆</span><select data-check="photo" data-answer="Output"><option value="">Choose</option><option>Input</option><option>Output</option></select></div>
-            <div class="activity-row compact"><span>Oxygen / O₂</span><select data-check="photo" data-answer="Output"><option value="">Choose</option><option>Input</option><option>Output</option></select></div>
+      <section class="tab-panel" id="water">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h2>Water Cycle Mission</h2>
+              <p>
+                Build the major water cycle processes, then connect movement
+                clues to the correct process.
+              </p>
+            </div>
+            <div class="badge">Skill: systems thinking</div>
           </div>
 
-          <div class="card tint-mint">
-            <span class="mini-label">Chlorophyll Check</span>
-            <p>Complete the plant-energy explanation.</p>
-            <div class="activity-row"><span>Chlorophyll makes plants look...</span><select data-check="photo" data-answer="Green"><option value="">Choose</option><option>Green</option><option>Cloudy</option><option>Acidic</option><option>Brackish</option></select></div>
-            <div class="activity-row"><span>Chlorophyll absorbs energy from...</span><select data-check="photo" data-answer="Sunlight"><option value="">Choose</option><option>Oxygen</option><option>Sunlight</option><option>Soil salt</option><option>Nitrates only</option></select></div>
-            <div class="activity-row"><span>Without chlorophyll, plants could not...</span><select data-check="photo" data-answer="Grow and reproduce"><option value="">Choose</option><option>Grow and reproduce</option><option>Make rocks</option><option>Become brackish</option><option>Turn into runoff</option></select></div>
+          <div class="visual-cycle" aria-label="Water cycle visual">
+            <div class="cycle-node">
+              <strong>Surface Water</strong
+              ><span>Oceans, rivers, lakes, puddles</span>
+              <div class="emoji">🌊</div>
+            </div>
+            <div class="cycle-node">
+              <strong>Air / Clouds</strong
+              ><span>Water vapor cools and gathers</span>
+              <div class="emoji">☁️</div>
+            </div>
+            <div class="cycle-node">
+              <strong>Land / Groundwater</strong
+              ><span>Water runs off or soaks in</span>
+              <div class="emoji">⛰️</div>
+            </div>
+          </div>
 
-            <div class="reflection-box">
-              <h3 style="margin-top:0">One-sentence challenge</h3>
-              <textarea id="chlorophyllSentence" placeholder="Chlorophyll is important because..."></textarea>
-              <div class="checkbar">
-                <button class="secondary-btn" onclick="checkKeywords('chlorophyllSentence','chlorophyllFeedback',['chlorophyll','sun','energy'],'Strong answer: mention chlorophyll, sunlight/sun, and energy.')">Check Sentence</button>
-                <div class="feedback" id="chlorophyllFeedback"></div>
+          <div class="grid two">
+            <div class="card tint-sky">
+              <span class="mini-label">Part A: Name the six processes</span>
+              <p>
+                Choose the six parts of the water cycle from the answer bank.
+              </p>
+              <div class="pill-bank">
+                <span class="pill">Evaporation</span
+                ><span class="pill">Transpiration</span
+                ><span class="pill">Condensation</span
+                ><span class="pill">Precipitation</span
+                ><span class="pill">Runoff</span
+                ><span class="pill">Infiltration</span>
+              </div>
+              <div class="activity-row compact">
+                <span>Water changes to vapor.</span
+                ><select data-check="water" data-answer="Evaporation">
+                  <option value="">Choose</option>
+                  <option>Evaporation</option>
+                  <option>Condensation</option>
+                  <option>Runoff</option>
+                  <option>Infiltration</option>
+                </select>
+              </div>
+              <div class="activity-row compact">
+                <span>Plants release water vapor.</span
+                ><select data-check="water" data-answer="Transpiration">
+                  <option value="">Choose</option>
+                  <option>Transpiration</option>
+                  <option>Precipitation</option>
+                  <option>Runoff</option>
+                  <option>Condensation</option>
+                </select>
+              </div>
+              <div class="activity-row compact">
+                <span>Vapor cools and forms clouds.</span
+                ><select data-check="water" data-answer="Condensation">
+                  <option value="">Choose</option>
+                  <option>Evaporation</option>
+                  <option>Condensation</option>
+                  <option>Precipitation</option>
+                  <option>Infiltration</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="card tint-mint">
+              <span class="mini-label">Part B: Movement clues</span>
+              <p>
+                Choose the missing process needed to move water between
+                locations.
+              </p>
+              <div class="activity-row compact">
+                <span>Ocean → water vapor</span
+                ><select data-check="water" data-answer="Evaporation">
+                  <option value="">Choose</option>
+                  <option>Evaporation</option>
+                  <option>Precipitation</option>
+                  <option>Infiltration</option>
+                  <option>Transpiration</option>
+                </select>
+              </div>
+              <div class="activity-row compact">
+                <span>Clouds → ground</span
+                ><select data-check="water" data-answer="Precipitation">
+                  <option value="">Choose</option>
+                  <option>Condensation</option>
+                  <option>Precipitation</option>
+                  <option>Runoff</option>
+                  <option>Transpiration</option>
+                </select>
+              </div>
+              <div class="activity-row compact">
+                <span>Ground → underground</span
+                ><select data-check="water" data-answer="Infiltration">
+                  <option value="">Choose</option>
+                  <option>Runoff</option>
+                  <option>Infiltration</option>
+                  <option>Evaporation</option>
+                  <option>Condensation</option>
+                </select>
+              </div>
+              <div class="activity-row compact">
+                <span>Trees → water vapor</span
+                ><select data-check="water" data-answer="Transpiration">
+                  <option value="">Choose</option>
+                  <option>Transpiration</option>
+                  <option>Precipitation</option>
+                  <option>Runoff</option>
+                  <option>Infiltration</option>
+                </select>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="checkbar">
-          <button class="primary-btn" onclick="checkSelects('photo','photoFeedback')">Check Photosynthesis</button>
-          <button class="secondary-btn" onclick="clearGroup('photo','photoFeedback')">Try Again</button>
-          <div class="feedback" id="photoFeedback"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="tab-panel" id="relationships">
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <h2>Ecology Relationships Safari</h2>
-            <p>Classify each interaction. Look for who benefits, who is harmed, and whether organisms are competing for the same resource.</p>
-          </div>
-          <div class="badge">Skill: classification</div>
-        </div>
-
-        <div class="grid two">
-          <div class="card tint-rose">
-            <h3>Relationship Clue Board</h3>
-            <p><strong>Mutualism:</strong> both benefit.</p>
-            <p><strong>Parasitism:</strong> one benefits, one is harmed.</p>
-            <p><strong>Competition:</strong> organisms compete for the same resource.</p>
-            <p><strong>Predation:</strong> one organism hunts/eats another.</p>
-            <p><strong>Commensalism:</strong> one benefits, the other is not helped or harmed.</p>
-          </div>
-          <div class="card tint-mint">
-            <h3>Yucca Mutualism Spotlight</h3>
-            <p>Yucca moths lay eggs in yucca seedpods while pollinating the plant. The larvae eat some seeds, but the plant still gets pollinated.</p>
-            <p><strong>Why mutualism?</strong> The moth gets a place to lay eggs, and the yucca plant gets pollinated.</p>
-          </div>
-        </div>
-
-        <div style="margin-top:16px">
-          <div class="scenario">
-            <div class="icon">🦟</div>
-            <div><strong>Tick sucking blood from humans</strong><br><span style="color:var(--muted)">One organism benefits; the other is harmed.</span></div>
-            <select data-check="relationships" data-answer="Parasitism"><option value="">Choose</option><option>Mutualism</option><option>Commensalism</option><option>Parasitism</option><option>Predation</option><option>Competition</option></select>
-          </div>
-          <div class="scenario">
-            <div class="icon">🦌</div>
-            <div><strong>Male elk fight over mates</strong><br><span style="color:var(--muted)">Two organisms compete for the same resource.</span></div>
-            <select data-check="relationships" data-answer="Competition"><option value="">Choose</option><option>Mutualism</option><option>Commensalism</option><option>Parasitism</option><option>Predation</option><option>Competition</option></select>
-          </div>
-          <div class="scenario">
-            <div class="icon">🌺</div>
-            <div><strong>Ghost orchid and the moth that pollinates it</strong><br><span style="color:var(--muted)">The moth gets something useful and the plant gets pollinated.</span></div>
-            <select data-check="relationships" data-answer="Mutualism"><option value="">Choose</option><option>Mutualism</option><option>Commensalism</option><option>Parasitism</option><option>Predation</option><option>Competition</option></select>
-          </div>
-          <div class="scenario">
-            <div class="icon">🦉</div>
-            <div><strong>An owl catches and eats a mouse</strong><br><span style="color:var(--muted)">One organism hunts another organism for food.</span></div>
-            <select data-check="relationships" data-answer="Predation"><option value="">Choose</option><option>Mutualism</option><option>Commensalism</option><option>Parasitism</option><option>Predation</option><option>Competition</option></select>
-          </div>
-          <div class="scenario">
-            <div class="icon">🐦</div>
-            <div><strong>A bird builds a nest in a tree without harming the tree</strong><br><span style="color:var(--muted)">One benefits; the other is not helped or harmed.</span></div>
-            <select data-check="relationships" data-answer="Commensalism"><option value="">Choose</option><option>Mutualism</option><option>Commensalism</option><option>Parasitism</option><option>Predation</option><option>Competition</option></select>
-          </div>
-        </div>
-
-        <div class="reflection-box">
-          <h3 style="margin-top:0">Explain the yucca example</h3>
-          <textarea id="yuccaExplain" placeholder="This is mutualism because the moth... and the yucca plant..."></textarea>
           <div class="checkbar">
-            <button class="secondary-btn" onclick="checkKeywords('yuccaExplain','yuccaFeedback',['moth','eggs','pollinated'],'Strong answer: mention the moth gets a place to lay eggs and the yucca plant gets pollinated.')">Check Explanation</button>
-            <div class="feedback" id="yuccaFeedback"></div>
+            <button
+              class="primary-btn"
+              onclick="checkSelects('water', 'waterFeedback')"
+            >
+              Check Water Cycle
+            </button>
+            <button
+              class="secondary-btn"
+              onclick="clearGroup('water', 'waterFeedback')"
+            >
+              Try Again
+            </button>
+            <div class="feedback" id="waterFeedback"></div>
           </div>
         </div>
+      </section>
 
-        <div class="checkbar">
-          <button class="primary-btn" onclick="checkSelects('relationships','relationshipsFeedback')">Check Safari</button>
-          <button class="secondary-btn" onclick="clearGroup('relationships','relationshipsFeedback')">Try Again</button>
-          <div class="feedback" id="relationshipsFeedback"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="tab-panel" id="bay">
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <h2>pH + Chesapeake Bay Quest</h2>
-            <p>Review acidity, basic substances, neutral water, watershed states, and key vocabulary.</p>
-          </div>
-          <div class="badge">Skill: vocabulary application</div>
-        </div>
-
-        <div class="grid two">
-          <div class="card tint-sky">
-            <h3>pH Speed Check</h3>
-            <div class="activity-row"><span>What does pH measure?</span><select data-check="bay" data-answer="Acidity"><option value="">Choose</option><option>Acidity</option><option>Temperature only</option><option>Amount of sunlight</option><option>Plant height</option></select></div>
-            <div class="activity-row"><span>What liquid is neutral?</span><select data-check="bay" data-answer="Water"><option value="">Choose</option><option>Lemon juice</option><option>Water</option><option>Soap</option><option>Vegetable oil</option></select></div>
-            <div class="activity-row"><span>What liquid is acidic with a pH of 2?</span><select data-check="bay" data-answer="Lemon juice"><option value="">Choose</option><option>Water</option><option>Soap</option><option>Lemon juice</option><option>Grass clippings</option></select></div>
-            <div class="activity-row"><span>What substance is basic with a pH of 12?</span><select data-check="bay" data-answer="Soap"><option value="">Choose</option><option>Soap</option><option>Lemon juice</option><option>Water</option><option>Carbon dioxide</option></select></div>
-          </div>
-
-          <div class="card tint-mint">
-            <h3>Chesapeake Bay Watershed States</h3>
-            <p>Select at least three states in the Chesapeake Bay Watershed.</p>
-            <div class="check-list" id="stateChecks">
-              <label class="check-item"><input type="checkbox" data-state="correct">Maryland</label>
-              <label class="check-item"><input type="checkbox" data-state="correct">Pennsylvania</label>
-              <label class="check-item"><input type="checkbox" data-state="correct">New York</label>
-              <label class="check-item"><input type="checkbox" data-state="correct">Delaware</label>
-              <label class="check-item"><input type="checkbox" data-state="correct">Virginia</label>
-              <label class="check-item"><input type="checkbox" data-state="correct">West Virginia</label>
-              <label class="check-item"><input type="checkbox" data-state="wrong">Florida</label>
-              <label class="check-item"><input type="checkbox" data-state="wrong">Texas</label>
-              <label class="check-item"><input type="checkbox" data-state="wrong">California</label>
+      <section class="tab-panel" id="quality">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h2>Stream Health Lab</h2>
+              <p>
+                Use the stream data to decide whether each measurement looks
+                healthy or unhealthy. Healthy data gets a smile; unhealthy data
+                gets a frown.
+              </p>
             </div>
+            <div class="badge">Skill: data interpretation</div>
+          </div>
+
+          <div class="callout">
+            <strong>Lab rule:</strong>
+            You are not memorizing random numbers. You are practicing how
+            scientists use data to make a claim about water quality.
+          </div>
+
+          <table class="lab-table" aria-label="Water quality data table">
+            <thead>
+              <tr>
+                <th>Measurement</th>
+                <th>Data</th>
+                <th>Your claim</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>pH</td>
+                <td>3, acidic</td>
+                <td>
+                  <select data-check="quality" data-answer="Frown">
+                    <option value="">Choose</option>
+                    <option>Smile</option>
+                    <option>Frown</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Nitrates</td>
+                <td>20</td>
+                <td>
+                  <select data-check="quality" data-answer="Frown">
+                    <option value="">Choose</option>
+                    <option>Smile</option>
+                    <option>Frown</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Phosphates</td>
+                <td>0</td>
+                <td>
+                  <select data-check="quality" data-answer="Smile">
+                    <option value="">Choose</option>
+                    <option>Smile</option>
+                    <option>Frown</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Turbidity</td>
+                <td>Very cloudy</td>
+                <td>
+                  <select data-check="quality" data-answer="Frown">
+                    <option value="">Choose</option>
+                    <option>Smile</option>
+                    <option>Frown</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Dissolved Oxygen</td>
+                <td>2%</td>
+                <td>
+                  <select data-check="quality" data-answer="Frown">
+                    <option value="">Choose</option>
+                    <option>Smile</option>
+                    <option>Frown</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Temperature</td>
+                <td>89° Celsius</td>
+                <td>
+                  <select data-check="quality" data-answer="Frown">
+                    <option value="">Choose</option>
+                    <option>Smile</option>
+                    <option>Frown</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="reflection-box">
+            <h3 style="margin-top: 0">Explain like a scientist</h3>
+            <p>
+              Pick one frown result. Write one sentence explaining why it is a
+              warning sign for stream health.
+            </p>
+            <textarea
+              id="streamExplain"
+              placeholder="Example: Very cloudy water is a warning sign because..."
+            ></textarea>
             <div class="checkbar">
-              <button class="secondary-btn" onclick="checkStates()">Check States</button>
-              <div class="feedback" id="statesFeedback"></div>
+              <button
+                class="secondary-btn"
+                onclick="
+                  checkReflection('streamExplain', 'streamReflectFeedback')
+                "
+              >
+                Check My Explanation
+              </button>
+              <div class="feedback" id="streamReflectFeedback"></div>
             </div>
           </div>
-        </div>
 
-        <div class="card tint-gold" style="margin-top:16px">
-          <h3>Vocabulary Match-Up</h3>
-          <div class="activity-row"><span>A mixture of freshwater and saltwater</span><select data-check="bay" data-answer="Brackish"><option value="">Choose</option><option>Brackish</option><option>Salinity</option><option>Watershed</option><option>Runoff</option></select></div>
-          <div class="activity-row"><span>The amount of salt in water</span><select data-check="bay" data-answer="Salinity"><option value="">Choose</option><option>Brackish</option><option>Salinity</option><option>Watershed</option><option>Runoff</option></select></div>
-          <div class="activity-row"><span>An area where rain and runoff drain into a specific body of water</span><select data-check="bay" data-answer="Watershed"><option value="">Choose</option><option>Brackish</option><option>Salinity</option><option>Watershed</option><option>Runoff</option></select></div>
-          <div class="activity-row"><span>Anything that runs off into a body of water</span><select data-check="bay" data-answer="Runoff"><option value="">Choose</option><option>Brackish</option><option>Salinity</option><option>Watershed</option><option>Runoff</option></select></div>
-        </div>
-
-        <div class="checkbar">
-          <button class="primary-btn" onclick="checkSelects('bay','bayFeedback')">Check Bay Quest</button>
-          <button class="secondary-btn" onclick="clearGroup('bay','bayFeedback')">Try Again</button>
-          <div class="feedback" id="bayFeedback"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="tab-panel" id="compost">
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <h2>Compost + Decomposer Lab</h2>
-            <p>Decide what cannot go into a backyard compost pile, then name common decomposers.</p>
+          <div class="checkbar">
+            <button
+              class="primary-btn"
+              onclick="checkSelects('quality', 'qualityFeedback')"
+            >
+              Check Stream Lab
+            </button>
+            <button
+              class="secondary-btn"
+              onclick="clearGroup('quality', 'qualityFeedback')"
+            >
+              Try Again
+            </button>
+            <div class="feedback" id="qualityFeedback"></div>
           </div>
-          <div class="badge">Skill: sorting evidence</div>
         </div>
+      </section>
 
-        <div class="grid two">
-          <div class="card tint-mint">
-            <h3>Backyard Compost Sort</h3>
-            <p>Click the items that <strong>cannot</strong> be composted in a backyard compost pile.</p>
-            <div class="check-list">
-              <label class="check-item"><input type="checkbox" data-compost="safe">Banana peel</label>
-              <label class="check-item"><input type="checkbox" data-compost="safe">Tea bags</label>
-              <label class="check-item"><input type="checkbox" data-compost="safe">Coffee grounds</label>
-              <label class="check-item"><input type="checkbox" data-compost="safe">Paper</label>
-              <label class="check-item"><input type="checkbox" data-compost="cannot">Chicken bone</label>
-              <label class="check-item"><input type="checkbox" data-compost="safe">Orange peel</label>
-              <label class="check-item"><input type="checkbox" data-compost="cannot">Butter</label>
-              <label class="check-item"><input type="checkbox" data-compost="safe">Grass clippings</label>
-              <label class="check-item"><input type="checkbox" data-compost="safe">Apple core</label>
-              <label class="check-item"><input type="checkbox" data-compost="cannot">Rotten meat</label>
-              <label class="check-item"><input type="checkbox" data-compost="cannot">Vegetable oil</label>
-              <label class="check-item"><input type="checkbox" data-compost="safe">Broccoli stem</label>
+      <section class="tab-panel" id="photo">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h2>Photosynthesis Factory</h2>
+              <p>
+                Sort the ingredients and products, then explain why chlorophyll
+                matters.
+              </p>
             </div>
+            <div class="badge">Skill: cause and effect</div>
+          </div>
+
+          <div class="formula">☀️ Sunlight + CO₂ + H₂O → C₆H₁₂O₆ + O₂</div>
+
+          <div class="grid two">
+            <div class="card tint-gold">
+              <span class="mini-label">Factory Sort</span>
+              <p>
+                Decide whether each item is an ingredient/input or a
+                product/output.
+              </p>
+              <div class="activity-row compact">
+                <span>Sunlight</span
+                ><select data-check="photo" data-answer="Input">
+                  <option value="">Choose</option>
+                  <option>Input</option>
+                  <option>Output</option>
+                </select>
+              </div>
+              <div class="activity-row compact">
+                <span>Carbon dioxide / CO₂</span
+                ><select data-check="photo" data-answer="Input">
+                  <option value="">Choose</option>
+                  <option>Input</option>
+                  <option>Output</option>
+                </select>
+              </div>
+              <div class="activity-row compact">
+                <span>Water / H₂O</span
+                ><select data-check="photo" data-answer="Input">
+                  <option value="">Choose</option>
+                  <option>Input</option>
+                  <option>Output</option>
+                </select>
+              </div>
+              <div class="activity-row compact">
+                <span>Glucose / C₆H₁₂O₆</span
+                ><select data-check="photo" data-answer="Output">
+                  <option value="">Choose</option>
+                  <option>Input</option>
+                  <option>Output</option>
+                </select>
+              </div>
+              <div class="activity-row compact">
+                <span>Oxygen / O₂</span
+                ><select data-check="photo" data-answer="Output">
+                  <option value="">Choose</option>
+                  <option>Input</option>
+                  <option>Output</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="card tint-mint">
+              <span class="mini-label">Chlorophyll Check</span>
+              <p>Complete the plant-energy explanation.</p>
+              <div class="activity-row">
+                <span>Chlorophyll makes plants look...</span
+                ><select data-check="photo" data-answer="Green">
+                  <option value="">Choose</option>
+                  <option>Green</option>
+                  <option>Cloudy</option>
+                  <option>Acidic</option>
+                  <option>Brackish</option>
+                </select>
+              </div>
+              <div class="activity-row">
+                <span>Chlorophyll absorbs energy from...</span
+                ><select data-check="photo" data-answer="Sunlight">
+                  <option value="">Choose</option>
+                  <option>Oxygen</option>
+                  <option>Sunlight</option>
+                  <option>Soil salt</option>
+                  <option>Nitrates only</option>
+                </select>
+              </div>
+              <div class="activity-row">
+                <span>Without chlorophyll, plants could not...</span
+                ><select data-check="photo" data-answer="Grow and reproduce">
+                  <option value="">Choose</option>
+                  <option>Grow and reproduce</option>
+                  <option>Make rocks</option>
+                  <option>Become brackish</option>
+                  <option>Turn into runoff</option>
+                </select>
+              </div>
+
+              <div class="reflection-box">
+                <h3 style="margin-top: 0">One-sentence challenge</h3>
+                <textarea
+                  id="chlorophyllSentence"
+                  placeholder="Chlorophyll is important because..."
+                ></textarea>
+                <div class="checkbar">
+                  <button
+                    class="secondary-btn"
+                    onclick="
+                      checkKeywords(
+                        'chlorophyllSentence',
+                        'chlorophyllFeedback',
+                        ['chlorophyll', 'sun', 'energy'],
+                        'Strong answer: mention chlorophyll, sunlight/sun, and energy.',
+                      )
+                    "
+                  >
+                    Check Sentence
+                  </button>
+                  <div class="feedback" id="chlorophyllFeedback"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="checkbar">
+            <button
+              class="primary-btn"
+              onclick="checkSelects('photo', 'photoFeedback')"
+            >
+              Check Photosynthesis
+            </button>
+            <button
+              class="secondary-btn"
+              onclick="clearGroup('photo', 'photoFeedback')"
+            >
+              Try Again
+            </button>
+            <div class="feedback" id="photoFeedback"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="relationships">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h2>Ecology Relationships Safari</h2>
+              <p>
+                Classify each interaction. Look for who benefits, who is harmed,
+                and whether organisms are competing for the same resource.
+              </p>
+            </div>
+            <div class="badge">Skill: classification</div>
+          </div>
+
+          <div class="grid two">
+            <div class="card tint-rose">
+              <h3>Relationship Clue Board</h3>
+              <p><strong>Mutualism:</strong> both benefit.</p>
+              <p><strong>Parasitism:</strong> one benefits, one is harmed.</p>
+              <p>
+                <strong>Competition:</strong> organisms compete for the same
+                resource.
+              </p>
+              <p>
+                <strong>Predation:</strong> one organism hunts/eats another.
+              </p>
+              <p>
+                <strong>Commensalism:</strong> one benefits, the other is not
+                helped or harmed.
+              </p>
+            </div>
+            <div class="card tint-mint">
+              <h3>Yucca Mutualism Spotlight</h3>
+              <p>
+                Yucca moths lay eggs in yucca seedpods while pollinating the
+                plant. The larvae eat some seeds, but the plant still gets
+                pollinated.
+              </p>
+              <p>
+                <strong>Why mutualism?</strong> The moth gets a place to lay
+                eggs, and the yucca plant gets pollinated.
+              </p>
+            </div>
+          </div>
+
+          <div style="margin-top: 16px">
+            <div class="scenario">
+              <div class="icon">🦟</div>
+              <div>
+                <strong>Tick sucking blood from humans</strong><br /><span
+                  style="color: var(--muted)"
+                  >One organism benefits; the other is harmed.</span
+                >
+              </div>
+              <select data-check="relationships" data-answer="Parasitism">
+                <option value="">Choose</option>
+                <option>Mutualism</option>
+                <option>Commensalism</option>
+                <option>Parasitism</option>
+                <option>Predation</option>
+                <option>Competition</option>
+              </select>
+            </div>
+            <div class="scenario">
+              <div class="icon">🦌</div>
+              <div>
+                <strong>Male elk fight over mates</strong><br /><span
+                  style="color: var(--muted)"
+                  >Two organisms compete for the same resource.</span
+                >
+              </div>
+              <select data-check="relationships" data-answer="Competition">
+                <option value="">Choose</option>
+                <option>Mutualism</option>
+                <option>Commensalism</option>
+                <option>Parasitism</option>
+                <option>Predation</option>
+                <option>Competition</option>
+              </select>
+            </div>
+            <div class="scenario">
+              <div class="icon">🌺</div>
+              <div>
+                <strong>Ghost orchid and the moth that pollinates it</strong
+                ><br /><span style="color: var(--muted)"
+                  >The moth gets something useful and the plant gets
+                  pollinated.</span
+                >
+              </div>
+              <select data-check="relationships" data-answer="Mutualism">
+                <option value="">Choose</option>
+                <option>Mutualism</option>
+                <option>Commensalism</option>
+                <option>Parasitism</option>
+                <option>Predation</option>
+                <option>Competition</option>
+              </select>
+            </div>
+            <div class="scenario">
+              <div class="icon">🦉</div>
+              <div>
+                <strong>An owl catches and eats a mouse</strong><br /><span
+                  style="color: var(--muted)"
+                  >One organism hunts another organism for food.</span
+                >
+              </div>
+              <select data-check="relationships" data-answer="Predation">
+                <option value="">Choose</option>
+                <option>Mutualism</option>
+                <option>Commensalism</option>
+                <option>Parasitism</option>
+                <option>Predation</option>
+                <option>Competition</option>
+              </select>
+            </div>
+            <div class="scenario">
+              <div class="icon">🐦</div>
+              <div>
+                <strong
+                  >A bird builds a nest in a tree without harming the
+                  tree</strong
+                ><br /><span style="color: var(--muted)"
+                  >One benefits; the other is not helped or harmed.</span
+                >
+              </div>
+              <select data-check="relationships" data-answer="Commensalism">
+                <option value="">Choose</option>
+                <option>Mutualism</option>
+                <option>Commensalism</option>
+                <option>Parasitism</option>
+                <option>Predation</option>
+                <option>Competition</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="reflection-box">
+            <h3 style="margin-top: 0">Explain the yucca example</h3>
+            <textarea
+              id="yuccaExplain"
+              placeholder="This is mutualism because the moth... and the yucca plant..."
+            ></textarea>
             <div class="checkbar">
-              <button class="secondary-btn" onclick="checkCompost()">Check Compost Sort</button>
-              <div class="feedback" id="compostSortFeedback"></div>
+              <button
+                class="secondary-btn"
+                onclick="
+                  checkKeywords(
+                    'yuccaExplain',
+                    'yuccaFeedback',
+                    ['moth', 'eggs', 'pollinated'],
+                    'Strong answer: mention the moth gets a place to lay eggs and the yucca plant gets pollinated.',
+                  )
+                "
+              >
+                Check Explanation
+              </button>
+              <div class="feedback" id="yuccaFeedback"></div>
             </div>
           </div>
 
-          <div class="card tint-gold">
-            <h3>Decomposer Detective</h3>
-            <p>Name three types of decomposers from the review.</p>
-            <div class="activity-row"><span>Decomposer 1</span><input type="text" id="decomp1" placeholder="Type one decomposer"></div>
-            <div class="activity-row"><span>Decomposer 2</span><input type="text" id="decomp2" placeholder="Type one decomposer"></div>
-            <div class="activity-row"><span>Decomposer 3</span><input type="text" id="decomp3" placeholder="Type one decomposer"></div>
-            <div class="pill-bank">
-              <span class="pill">Possible answers: worms</span>
-              <span class="pill">bacteria</span>
-              <span class="pill">fungi</span>
-              <span class="pill">insects</span>
-            </div>
-            <div class="checkbar">
-              <button class="primary-btn" onclick="checkDecomposers()">Check Decomposers</button>
-              <div class="feedback" id="decompFeedback"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="callout">
-          <strong>Study connection:</strong>
-          Composting works because decomposers break down once-living matter and return nutrients to the ecosystem.
-        </div>
-      </div>
-    </section>
-
-    <section class="tab-panel" id="test">
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <h2>Final Tab: Practice Test</h2>
-            <p>Try every question first. Press “Score Practice Test” when you are ready. Your results will show what to review.</p>
-          </div>
-          <div class="badge">Skill: test readiness</div>
-        </div>
-
-        <div id="practiceTest">
-          <div class="test-question" data-q="q1" data-answer="Condensation">
-            <h3>1. Which water cycle process forms clouds when water vapor cools?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q1" value="Evaporation">Evaporation</label>
-              <label><input type="radio" name="q1" value="Condensation">Condensation</label>
-              <label><input type="radio" name="q1" value="Runoff">Runoff</label>
-              <label><input type="radio" name="q1" value="Infiltration">Infiltration</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q2" data-answer="Precipitation">
-            <h3>2. Clouds → ground is best described as...</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q2" value="Transpiration">Transpiration</label>
-              <label><input type="radio" name="q2" value="Precipitation">Precipitation</label>
-              <label><input type="radio" name="q2" value="Evaporation">Evaporation</label>
-              <label><input type="radio" name="q2" value="Salinity">Salinity</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q3" data-answer="Frown">
-            <h3>3. A stream has dissolved oxygen of 2%. What claim should you make?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q3" value="Smile">This is healthy; draw a smile.</label>
-              <label><input type="radio" name="q3" value="Frown">This is unhealthy; draw a frown.</label>
-              <label><input type="radio" name="q3" value="Neutral">This is neutral water.</label>
-              <label><input type="radio" name="q3" value="Basic">This means the stream is basic.</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q4" data-answer="Sunlight, carbon dioxide, and water">
-            <h3>4. Which list contains the main ingredients for photosynthesis?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q4" value="Glucose and oxygen">Glucose and oxygen</label>
-              <label><input type="radio" name="q4" value="Sunlight, carbon dioxide, and water">Sunlight, carbon dioxide, and water</label>
-              <label><input type="radio" name="q4" value="Soap, water, and oxygen">Soap, water, and oxygen</label>
-              <label><input type="radio" name="q4" value="Nitrates, phosphates, and turbidity">Nitrates, phosphates, and turbidity</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q5" data-answer="It absorbs energy from sunlight">
-            <h3>5. What is the role of chlorophyll?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q5" value="It absorbs energy from sunlight">It absorbs energy from sunlight.</label>
-              <label><input type="radio" name="q5" value="It makes water brackish">It makes water brackish.</label>
-              <label><input type="radio" name="q5" value="It measures acidity">It measures acidity.</label>
-              <label><input type="radio" name="q5" value="It is runoff">It is runoff.</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q6" data-answer="Parasitism">
-            <h3>6. A tick sucking blood from a human is an example of...</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q6" value="Mutualism">Mutualism</label>
-              <label><input type="radio" name="q6" value="Commensalism">Commensalism</label>
-              <label><input type="radio" name="q6" value="Parasitism">Parasitism</label>
-              <label><input type="radio" name="q6" value="Competition">Competition</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q7" data-answer="Both organisms benefit">
-            <h3>7. Why is the yucca moth and yucca plant relationship mutualism?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q7" value="Both organisms benefit">Both organisms benefit.</label>
-              <label><input type="radio" name="q7" value="Both organisms are harmed">Both organisms are harmed.</label>
-              <label><input type="radio" name="q7" value="Only the plant is harmed">Only the plant is harmed.</label>
-              <label><input type="radio" name="q7" value="They compete for sunlight">They compete for sunlight.</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q8" data-answer="Acidity">
-            <h3>8. What does pH measure?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q8" value="Acidity">The acidity of a substance</label>
-              <label><input type="radio" name="q8" value="Temperature">Temperature only</label>
-              <label><input type="radio" name="q8" value="Salt">The amount of salt in water</label>
-              <label><input type="radio" name="q8" value="Oxygen">The amount of oxygen only</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q9" data-answer="Water">
-            <h3>9. What liquid is considered neutral?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q9" value="Lemon juice">Lemon juice</label>
-              <label><input type="radio" name="q9" value="Soap">Soap</label>
-              <label><input type="radio" name="q9" value="Water">Water</label>
-              <label><input type="radio" name="q9" value="Vegetable oil">Vegetable oil</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q10" data-answer="Brackish">
-            <h3>10. A mixture of freshwater and saltwater is called...</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q10" value="Runoff">Runoff</label>
-              <label><input type="radio" name="q10" value="Brackish">Brackish</label>
-              <label><input type="radio" name="q10" value="Watershed">Watershed</label>
-              <label><input type="radio" name="q10" value="Turbidity">Turbidity</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q11" data-answer="Watershed">
-            <h3>11. An area where runoff drains into a specific body of water is a...</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q11" value="Watershed">Watershed</label>
-              <label><input type="radio" name="q11" value="Salinity">Salinity</label>
-              <label><input type="radio" name="q11" value="Brackish">Brackish</label>
-              <label><input type="radio" name="q11" value="Chlorophyll">Chlorophyll</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q12" data-answer="Rotten meat">
-            <h3>12. Which item should not go in a backyard compost pile?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q12" value="Apple core">Apple core</label>
-              <label><input type="radio" name="q12" value="Coffee grounds">Coffee grounds</label>
-              <label><input type="radio" name="q12" value="Rotten meat">Rotten meat</label>
-              <label><input type="radio" name="q12" value="Grass clippings">Grass clippings</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q13" data-answer="Fungi">
-            <h3>13. Which is a decomposer?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q13" value="Fungi">Fungi</label>
-              <label><input type="radio" name="q13" value="Sunlight">Sunlight</label>
-              <label><input type="radio" name="q13" value="Water vapor">Water vapor</label>
-              <label><input type="radio" name="q13" value="Lemon juice">Lemon juice</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q14" data-answer="Maryland">
-            <h3>14. Which state is in the Chesapeake Bay Watershed?</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q14" value="Texas">Texas</label>
-              <label><input type="radio" name="q14" value="California">California</label>
-              <label><input type="radio" name="q14" value="Maryland">Maryland</label>
-              <label><input type="radio" name="q14" value="Florida">Florida</label>
-            </div>
-          </div>
-
-          <div class="test-question" data-q="q15" data-answer="Competition">
-            <h3>15. Male elk fighting over mates is an example of...</h3>
-            <div class="test-options">
-              <label><input type="radio" name="q15" value="Predation">Predation</label>
-              <label><input type="radio" name="q15" value="Competition">Competition</label>
-              <label><input type="radio" name="q15" value="Commensalism">Commensalism</label>
-              <label><input type="radio" name="q15" value="Transpiration">Transpiration</label>
-            </div>
+          <div class="checkbar">
+            <button
+              class="primary-btn"
+              onclick="checkSelects('relationships', 'relationshipsFeedback')"
+            >
+              Check Safari
+            </button>
+            <button
+              class="secondary-btn"
+              onclick="clearGroup('relationships', 'relationshipsFeedback')"
+            >
+              Try Again
+            </button>
+            <div class="feedback" id="relationshipsFeedback"></div>
           </div>
         </div>
+      </section>
 
-        <div class="checkbar">
-          <button class="primary-btn" onclick="scoreTest()">Score Practice Test</button>
-          <button class="secondary-btn" onclick="resetTest()">Reset Test</button>
-          <div class="feedback" id="testFeedback"></div>
+      <section class="tab-panel" id="bay">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h2>pH + Chesapeake Bay Quest</h2>
+              <p>
+                Review acidity, basic substances, neutral water, watershed
+                states, and key vocabulary.
+              </p>
+            </div>
+            <div class="badge">Skill: vocabulary application</div>
+          </div>
+
+          <div class="grid two">
+            <div class="card tint-sky">
+              <h3>pH Speed Check</h3>
+              <div class="activity-row">
+                <span>What does pH measure?</span
+                ><select data-check="bay" data-answer="Acidity">
+                  <option value="">Choose</option>
+                  <option>Acidity</option>
+                  <option>Temperature only</option>
+                  <option>Amount of sunlight</option>
+                  <option>Plant height</option>
+                </select>
+              </div>
+              <div class="activity-row">
+                <span>What liquid is neutral?</span
+                ><select data-check="bay" data-answer="Water">
+                  <option value="">Choose</option>
+                  <option>Lemon juice</option>
+                  <option>Water</option>
+                  <option>Soap</option>
+                  <option>Vegetable oil</option>
+                </select>
+              </div>
+              <div class="activity-row">
+                <span>What liquid is acidic with a pH of 2?</span
+                ><select data-check="bay" data-answer="Lemon juice">
+                  <option value="">Choose</option>
+                  <option>Water</option>
+                  <option>Soap</option>
+                  <option>Lemon juice</option>
+                  <option>Grass clippings</option>
+                </select>
+              </div>
+              <div class="activity-row">
+                <span>What substance is basic with a pH of 12?</span
+                ><select data-check="bay" data-answer="Soap">
+                  <option value="">Choose</option>
+                  <option>Soap</option>
+                  <option>Lemon juice</option>
+                  <option>Water</option>
+                  <option>Carbon dioxide</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="card tint-mint">
+              <h3>Chesapeake Bay Watershed States</h3>
+              <p>
+                Select at least three states in the Chesapeake Bay Watershed.
+              </p>
+              <div class="check-list" id="stateChecks">
+                <label class="check-item"
+                  ><input type="checkbox" data-state="correct" />Maryland</label
+                >
+                <label class="check-item"
+                  ><input
+                    type="checkbox"
+                    data-state="correct"
+                  />Pennsylvania</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-state="correct" />New York</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-state="correct" />Delaware</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-state="correct" />Virginia</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-state="correct" />West
+                  Virginia</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-state="wrong" />Florida</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-state="wrong" />Texas</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-state="wrong" />California</label
+                >
+              </div>
+              <div class="checkbar">
+                <button class="secondary-btn" onclick="checkStates()">
+                  Check States
+                </button>
+                <div class="feedback" id="statesFeedback"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card tint-gold" style="margin-top: 16px">
+            <h3>Vocabulary Match-Up</h3>
+            <div class="activity-row">
+              <span>A mixture of freshwater and saltwater</span
+              ><select data-check="bay" data-answer="Brackish">
+                <option value="">Choose</option>
+                <option>Brackish</option>
+                <option>Salinity</option>
+                <option>Watershed</option>
+                <option>Runoff</option>
+              </select>
+            </div>
+            <div class="activity-row">
+              <span>The amount of salt in water</span
+              ><select data-check="bay" data-answer="Salinity">
+                <option value="">Choose</option>
+                <option>Brackish</option>
+                <option>Salinity</option>
+                <option>Watershed</option>
+                <option>Runoff</option>
+              </select>
+            </div>
+            <div class="activity-row">
+              <span
+                >An area where rain and runoff drain into a specific body of
+                water</span
+              ><select data-check="bay" data-answer="Watershed">
+                <option value="">Choose</option>
+                <option>Brackish</option>
+                <option>Salinity</option>
+                <option>Watershed</option>
+                <option>Runoff</option>
+              </select>
+            </div>
+            <div class="activity-row">
+              <span>Anything that runs off into a body of water</span
+              ><select data-check="bay" data-answer="Runoff">
+                <option value="">Choose</option>
+                <option>Brackish</option>
+                <option>Salinity</option>
+                <option>Watershed</option>
+                <option>Runoff</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="checkbar">
+            <button
+              class="primary-btn"
+              onclick="checkSelects('bay', 'bayFeedback')"
+            >
+              Check Bay Quest
+            </button>
+            <button
+              class="secondary-btn"
+              onclick="clearGroup('bay', 'bayFeedback')"
+            >
+              Try Again
+            </button>
+            <div class="feedback" id="bayFeedback"></div>
+          </div>
         </div>
+      </section>
 
-        <div class="reflection-box" id="studyPlan" style="display:none">
-          <h3 style="margin-top:0">Your Review Plan</h3>
-          <p id="studyPlanText"></p>
+      <section class="tab-panel" id="compost">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h2>Compost + Decomposer Lab</h2>
+              <p>
+                Decide what cannot go into a backyard compost pile, then name
+                common decomposers.
+              </p>
+            </div>
+            <div class="badge">Skill: sorting evidence</div>
+          </div>
+
+          <div class="grid two">
+            <div class="card tint-mint">
+              <h3>Backyard Compost Sort</h3>
+              <p>
+                Click the items that <strong>cannot</strong> be composted in a
+                backyard compost pile.
+              </p>
+              <div class="check-list">
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="safe" />Banana
+                  peel</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="safe" />Tea bags</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="safe" />Coffee
+                  grounds</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="safe" />Paper</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="cannot" />Chicken
+                  bone</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="safe" />Orange
+                  peel</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="cannot" />Butter</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="safe" />Grass
+                  clippings</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="safe" />Apple
+                  core</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="cannot" />Rotten
+                  meat</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="cannot" />Vegetable
+                  oil</label
+                >
+                <label class="check-item"
+                  ><input type="checkbox" data-compost="safe" />Broccoli
+                  stem</label
+                >
+              </div>
+              <div class="checkbar">
+                <button class="secondary-btn" onclick="checkCompost()">
+                  Check Compost Sort
+                </button>
+                <div class="feedback" id="compostSortFeedback"></div>
+              </div>
+            </div>
+
+            <div class="card tint-gold">
+              <h3>Decomposer Detective</h3>
+              <p>Name three types of decomposers from the review.</p>
+              <div class="activity-row">
+                <span>Decomposer 1</span
+                ><input
+                  type="text"
+                  id="decomp1"
+                  placeholder="Type one decomposer"
+                />
+              </div>
+              <div class="activity-row">
+                <span>Decomposer 2</span
+                ><input
+                  type="text"
+                  id="decomp2"
+                  placeholder="Type one decomposer"
+                />
+              </div>
+              <div class="activity-row">
+                <span>Decomposer 3</span
+                ><input
+                  type="text"
+                  id="decomp3"
+                  placeholder="Type one decomposer"
+                />
+              </div>
+              <div class="pill-bank">
+                <span class="pill">Possible answers: worms</span>
+                <span class="pill">bacteria</span>
+                <span class="pill">fungi</span>
+                <span class="pill">insects</span>
+              </div>
+              <div class="checkbar">
+                <button class="primary-btn" onclick="checkDecomposers()">
+                  Check Decomposers
+                </button>
+                <div class="feedback" id="decompFeedback"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout">
+            <strong>Study connection:</strong>
+            Composting works because decomposers break down once-living matter
+            and return nutrients to the ecosystem.
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <p class="watermark">Ecology Part II Interactive Review • Self-checking HTML study tool</p>
-  </main>
+      <section class="tab-panel" id="test">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h2>Final Tab: Practice Test</h2>
+              <p>
+                Try every question first. Press “Score Practice Test” when you
+                are ready. Your results will show what to review.
+              </p>
+            </div>
+            <div class="badge">Skill: test readiness</div>
+          </div>
 
-  <script>
-    const completedActivities = new Set();
+          <div id="practiceTest">
+            <div class="test-question" data-q="q1" data-answer="Condensation">
+              <h3>
+                1. Which water cycle process forms clouds when water vapor
+                cools?
+              </h3>
+              <div class="test-options">
+                <label
+                  ><input
+                    type="radio"
+                    name="q1"
+                    value="Evaporation"
+                  />Evaporation</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q1"
+                    value="Condensation"
+                  />Condensation</label
+                >
+                <label
+                  ><input type="radio" name="q1" value="Runoff" />Runoff</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q1"
+                    value="Infiltration"
+                  />Infiltration</label
+                >
+              </div>
+            </div>
 
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => showTabById(btn.dataset.tab));
-    });
+            <div class="test-question" data-q="q2" data-answer="Precipitation">
+              <h3>2. Clouds → ground is best described as...</h3>
+              <div class="test-options">
+                <label
+                  ><input
+                    type="radio"
+                    name="q2"
+                    value="Transpiration"
+                  />Transpiration</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q2"
+                    value="Precipitation"
+                  />Precipitation</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q2"
+                    value="Evaporation"
+                  />Evaporation</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q2"
+                    value="Salinity"
+                  />Salinity</label
+                >
+              </div>
+            </div>
 
-    function showTabById(tabId){
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
-      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === tabId));
-      window.scrollTo({top:0, behavior:'smooth'});
-    }
+            <div class="test-question" data-q="q3" data-answer="Frown">
+              <h3>
+                3. A stream has dissolved oxygen of 2%. What claim should you
+                make?
+              </h3>
+              <div class="test-options">
+                <label
+                  ><input type="radio" name="q3" value="Smile" />This is
+                  healthy; draw a smile.</label
+                >
+                <label
+                  ><input type="radio" name="q3" value="Frown" />This is
+                  unhealthy; draw a frown.</label
+                >
+                <label
+                  ><input type="radio" name="q3" value="Neutral" />This is
+                  neutral water.</label
+                >
+                <label
+                  ><input type="radio" name="q3" value="Basic" />This means the
+                  stream is basic.</label
+                >
+              </div>
+            </div>
 
-    function normalize(value){
-      return String(value || '').trim().toLowerCase().replace(/\s+/g,' ');
-    }
+            <div
+              class="test-question"
+              data-q="q4"
+              data-answer="Sunlight, carbon dioxide, and water"
+            >
+              <h3>
+                4. Which list contains the main ingredients for photosynthesis?
+              </h3>
+              <div class="test-options">
+                <label
+                  ><input
+                    type="radio"
+                    name="q4"
+                    value="Glucose and oxygen"
+                  />Glucose and oxygen</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q4"
+                    value="Sunlight, carbon dioxide, and water"
+                  />Sunlight, carbon dioxide, and water</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q4"
+                    value="Soap, water, and oxygen"
+                  />Soap, water, and oxygen</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q4"
+                    value="Nitrates, phosphates, and turbidity"
+                  />Nitrates, phosphates, and turbidity</label
+                >
+              </div>
+            </div>
 
-    function setFeedback(id, type, message){
-      const el = document.getElementById(id);
-      el.className = 'feedback show ' + type;
-      el.textContent = message;
-    }
+            <div
+              class="test-question"
+              data-q="q5"
+              data-answer="It absorbs energy from sunlight"
+            >
+              <h3>5. What is the role of chlorophyll?</h3>
+              <div class="test-options">
+                <label
+                  ><input
+                    type="radio"
+                    name="q5"
+                    value="It absorbs energy from sunlight"
+                  />It absorbs energy from sunlight.</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q5"
+                    value="It makes water brackish"
+                  />It makes water brackish.</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q5"
+                    value="It measures acidity"
+                  />It measures acidity.</label
+                >
+                <label
+                  ><input type="radio" name="q5" value="It is runoff" />It is
+                  runoff.</label
+                >
+              </div>
+            </div>
 
-    function checkSelects(group, feedbackId){
-      const items = [...document.querySelectorAll(`[data-check="${group}"]`)];
-      let correct = 0;
-      let blank = 0;
-      items.forEach(item => {
-        const isCorrect = normalize(item.value) === normalize(item.dataset.answer);
-        if(!item.value) blank++;
-        item.style.borderColor = item.value ? (isCorrect ? 'var(--correct)' : 'var(--wrong)') : '#d8e6dd';
-        if(isCorrect) correct++;
+            <div class="test-question" data-q="q6" data-answer="Parasitism">
+              <h3>6. A tick sucking blood from a human is an example of...</h3>
+              <div class="test-options">
+                <label
+                  ><input
+                    type="radio"
+                    name="q6"
+                    value="Mutualism"
+                  />Mutualism</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q6"
+                    value="Commensalism"
+                  />Commensalism</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q6"
+                    value="Parasitism"
+                  />Parasitism</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q6"
+                    value="Competition"
+                  />Competition</label
+                >
+              </div>
+            </div>
+
+            <div
+              class="test-question"
+              data-q="q7"
+              data-answer="Both organisms benefit"
+            >
+              <h3>
+                7. Why is the yucca moth and yucca plant relationship mutualism?
+              </h3>
+              <div class="test-options">
+                <label
+                  ><input
+                    type="radio"
+                    name="q7"
+                    value="Both organisms benefit"
+                  />Both organisms benefit.</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q7"
+                    value="Both organisms are harmed"
+                  />Both organisms are harmed.</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q7"
+                    value="Only the plant is harmed"
+                  />Only the plant is harmed.</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q7"
+                    value="They compete for sunlight"
+                  />They compete for sunlight.</label
+                >
+              </div>
+            </div>
+
+            <div class="test-question" data-q="q8" data-answer="Acidity">
+              <h3>8. What does pH measure?</h3>
+              <div class="test-options">
+                <label
+                  ><input type="radio" name="q8" value="Acidity" />The acidity
+                  of a substance</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q8"
+                    value="Temperature"
+                  />Temperature only</label
+                >
+                <label
+                  ><input type="radio" name="q8" value="Salt" />The amount of
+                  salt in water</label
+                >
+                <label
+                  ><input type="radio" name="q8" value="Oxygen" />The amount of
+                  oxygen only</label
+                >
+              </div>
+            </div>
+
+            <div class="test-question" data-q="q9" data-answer="Water">
+              <h3>9. What liquid is considered neutral?</h3>
+              <div class="test-options">
+                <label
+                  ><input type="radio" name="q9" value="Lemon juice" />Lemon
+                  juice</label
+                >
+                <label><input type="radio" name="q9" value="Soap" />Soap</label>
+                <label
+                  ><input type="radio" name="q9" value="Water" />Water</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q9"
+                    value="Vegetable oil"
+                  />Vegetable oil</label
+                >
+              </div>
+            </div>
+
+            <div class="test-question" data-q="q10" data-answer="Brackish">
+              <h3>10. A mixture of freshwater and saltwater is called...</h3>
+              <div class="test-options">
+                <label
+                  ><input type="radio" name="q10" value="Runoff" />Runoff</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q10"
+                    value="Brackish"
+                  />Brackish</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q10"
+                    value="Watershed"
+                  />Watershed</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q10"
+                    value="Turbidity"
+                  />Turbidity</label
+                >
+              </div>
+            </div>
+
+            <div class="test-question" data-q="q11" data-answer="Watershed">
+              <h3>
+                11. An area where runoff drains into a specific body of water is
+                a...
+              </h3>
+              <div class="test-options">
+                <label
+                  ><input
+                    type="radio"
+                    name="q11"
+                    value="Watershed"
+                  />Watershed</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q11"
+                    value="Salinity"
+                  />Salinity</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q11"
+                    value="Brackish"
+                  />Brackish</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q11"
+                    value="Chlorophyll"
+                  />Chlorophyll</label
+                >
+              </div>
+            </div>
+
+            <div class="test-question" data-q="q12" data-answer="Rotten meat">
+              <h3>12. Which item should not go in a backyard compost pile?</h3>
+              <div class="test-options">
+                <label
+                  ><input type="radio" name="q12" value="Apple core" />Apple
+                  core</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q12"
+                    value="Coffee grounds"
+                  />Coffee grounds</label
+                >
+                <label
+                  ><input type="radio" name="q12" value="Rotten meat" />Rotten
+                  meat</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q12"
+                    value="Grass clippings"
+                  />Grass clippings</label
+                >
+              </div>
+            </div>
+
+            <div class="test-question" data-q="q13" data-answer="Fungi">
+              <h3>13. Which is a decomposer?</h3>
+              <div class="test-options">
+                <label
+                  ><input type="radio" name="q13" value="Fungi" />Fungi</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q13"
+                    value="Sunlight"
+                  />Sunlight</label
+                >
+                <label
+                  ><input type="radio" name="q13" value="Water vapor" />Water
+                  vapor</label
+                >
+                <label
+                  ><input type="radio" name="q13" value="Lemon juice" />Lemon
+                  juice</label
+                >
+              </div>
+            </div>
+
+            <div class="test-question" data-q="q14" data-answer="Maryland">
+              <h3>14. Which state is in the Chesapeake Bay Watershed?</h3>
+              <div class="test-options">
+                <label
+                  ><input type="radio" name="q14" value="Texas" />Texas</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q14"
+                    value="California"
+                  />California</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q14"
+                    value="Maryland"
+                  />Maryland</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q14"
+                    value="Florida"
+                  />Florida</label
+                >
+              </div>
+            </div>
+
+            <div class="test-question" data-q="q15" data-answer="Competition">
+              <h3>15. Male elk fighting over mates is an example of...</h3>
+              <div class="test-options">
+                <label
+                  ><input
+                    type="radio"
+                    name="q15"
+                    value="Predation"
+                  />Predation</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q15"
+                    value="Competition"
+                  />Competition</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q15"
+                    value="Commensalism"
+                  />Commensalism</label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="q15"
+                    value="Transpiration"
+                  />Transpiration</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="checkbar">
+            <button class="primary-btn" onclick="scoreTest()">
+              Score Practice Test
+            </button>
+            <button class="secondary-btn" onclick="resetTest()">
+              Reset Test
+            </button>
+            <div class="feedback" id="testFeedback"></div>
+          </div>
+
+          <div class="reflection-box" id="studyPlan" style="display: none">
+            <h3 style="margin-top: 0">Your Review Plan</h3>
+            <p id="studyPlanText"></p>
+          </div>
+        </div>
+      </section>
+
+      <p class="watermark">
+        Ecology Part II Interactive Review • Self-checking HTML study tool
+      </p>
+    </main>
+
+    <script>
+      const completedActivities = new Set();
+
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => showTabById(btn.dataset.tab));
       });
-      if(correct === items.length){
-        setFeedback(feedbackId, 'correct', `Excellent: ${correct}/${items.length} correct.`);
-        markComplete(group);
-      } else if(blank > 0){
-        setFeedback(feedbackId, 'partial', `You answered ${items.length - blank}/${items.length}. Finish the blank items, then check again.`);
-      } else {
-        setFeedback(feedbackId, 'wrong', `You have ${correct}/${items.length} correct. Look for the red boxes and try again.`);
+
+      function showTabById(tabId) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((btn) =>
+            btn.classList.toggle("active", btn.dataset.tab === tabId),
+          );
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((panel) =>
+            panel.classList.toggle("active", panel.id === tabId),
+          );
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
-    }
 
-    function clearGroup(group, feedbackId){
-      document.querySelectorAll(`[data-check="${group}"]`).forEach(item => {
-        item.value = '';
-        item.style.borderColor = '#d8e6dd';
-      });
-      const el = document.getElementById(feedbackId);
-      el.className = 'feedback';
-      el.textContent = '';
-    }
-
-    function checkReflection(textareaId, feedbackId){
-      const text = normalize(document.getElementById(textareaId).value);
-      if(text.length < 25){
-        setFeedback(feedbackId, 'partial', 'Add a little more detail. A strong science sentence explains why the data matters.');
-      } else if(text.includes('because') || text.includes('warning') || text.includes('unhealthy') || text.includes('harm')){
-        setFeedback(feedbackId, 'correct', 'Strong explanation: you connected evidence to a water-quality claim.');
-      } else {
-        setFeedback(feedbackId, 'partial', 'Good start. Add “because” and explain why this data could be unhealthy.');
+      function normalize(value) {
+        return String(value || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, " ");
       }
-    }
 
-    function checkKeywords(textareaId, feedbackId, keywords, hint){
-      const text = normalize(document.getElementById(textareaId).value);
-      const hits = keywords.filter(k => text.includes(k)).length;
-      if(hits === keywords.length && text.length > 25){
-        setFeedback(feedbackId, 'correct', 'Strong answer: your explanation includes the key science ideas.');
-      } else if(text.length < 25){
-        setFeedback(feedbackId, 'partial', 'Add a complete sentence with more science detail.');
-      } else {
-        setFeedback(feedbackId, 'partial', hint);
+      function setFeedback(id, type, message) {
+        const el = document.getElementById(id);
+        el.className = "feedback show " + type;
+        el.textContent = message;
       }
-    }
 
-    function checkStates(){
-      const checks = [...document.querySelectorAll('[data-state]')];
-      const correctSelected = checks.filter(c => c.checked && c.dataset.state === 'correct').length;
-      const wrongSelected = checks.filter(c => c.checked && c.dataset.state === 'wrong').length;
-      checks.forEach(c => c.parentElement.style.borderColor = c.checked ? (c.dataset.state === 'correct' ? 'var(--correct)' : 'var(--wrong)') : '#dfece5');
-      if(correctSelected >= 3 && wrongSelected === 0){
-        setFeedback('statesFeedback','correct',`Correct. You selected ${correctSelected} Chesapeake Bay Watershed states.`);
-        markComplete('states');
-      } else if(wrongSelected > 0) {
-        setFeedback('statesFeedback','wrong','Check the red item. That state is not part of the review answer set.');
-      } else {
-        setFeedback('statesFeedback','partial','Select at least three correct watershed states.');
-      }
-    }
-
-    function checkCompost(){
-      const checks = [...document.querySelectorAll('[data-compost]')];
-      const cannot = checks.filter(c => c.dataset.compost === 'cannot');
-      const selectedCannot = cannot.filter(c => c.checked).length;
-      const wrongSelected = checks.filter(c => c.checked && c.dataset.compost === 'safe').length;
-      checks.forEach(c => c.parentElement.style.borderColor = c.checked ? (c.dataset.compost === 'cannot' ? 'var(--correct)' : 'var(--wrong)') : '#dfece5');
-      if(selectedCannot === cannot.length && wrongSelected === 0){
-        setFeedback('compostSortFeedback','correct','Correct. Chicken bone, butter, rotten meat, and vegetable oil should not go in a backyard compost pile.');
-        markComplete('compost');
-      } else if(wrongSelected > 0) {
-        setFeedback('compostSortFeedback','wrong','One or more selected items can go in backyard compost. Look for the red boxes and try again.');
-      } else {
-        setFeedback('compostSortFeedback','partial',`You found ${selectedCannot}/${cannot.length}. Keep sorting.`);
-      }
-    }
-
-    function checkDecomposers(){
-      const valid = ['worm','worms','bacteria','fungi','fungus','insect','insects'];
-      const values = ['decomp1','decomp2','decomp3'].map(id => normalize(document.getElementById(id).value));
-      const unique = [...new Set(values.filter(v => v))];
-      const correct = unique.filter(v => valid.some(answer => v.includes(answer))).length;
-      ['decomp1','decomp2','decomp3'].forEach(id => {
-        const input = document.getElementById(id);
-        const ok = valid.some(answer => normalize(input.value).includes(answer));
-        input.style.borderColor = input.value ? (ok ? 'var(--correct)' : 'var(--wrong)') : '#d8e6dd';
-      });
-      if(correct >= 3){
-        setFeedback('decompFeedback','correct','Correct. Worms, bacteria, fungi, and insects are decomposers.');
-        markComplete('decomposers');
-      } else {
-        setFeedback('decompFeedback','partial',`You have ${correct}/3 strong decomposer examples. Use worms, bacteria, fungi, or insects.`);
-      }
-    }
-
-    function scoreTest(){
-      const questions = [...document.querySelectorAll('.test-question')];
-      let correct = 0;
-      let unanswered = 0;
-      let missed = [];
-      questions.forEach((q, index) => {
-        const name = q.dataset.q;
-        const answer = q.dataset.answer;
-        const selected = q.querySelector(`input[name="${name}"]:checked`);
-        q.querySelectorAll('.result-chip').forEach(chip => chip.remove());
-        if(!selected){
-          unanswered++;
-          const chip = document.createElement('div');
-          chip.className = 'result-chip wrong';
-          chip.textContent = 'Not answered yet.';
-          q.appendChild(chip);
-          missed.push(index + 1);
-          return;
+      function checkSelects(group, feedbackId) {
+        const items = [...document.querySelectorAll(`[data-check="${group}"]`)];
+        let correct = 0;
+        let blank = 0;
+        items.forEach((item) => {
+          const isCorrect =
+            normalize(item.value) === normalize(item.dataset.answer);
+          if (!item.value) blank++;
+          item.style.borderColor = item.value
+            ? isCorrect
+              ? "var(--correct)"
+              : "var(--wrong)"
+            : "#d8e6dd";
+          if (isCorrect) correct++;
+        });
+        if (correct === items.length) {
+          setFeedback(
+            feedbackId,
+            "correct",
+            `Excellent: ${correct}/${items.length} correct.`,
+          );
+          markComplete(group);
+        } else if (blank > 0) {
+          setFeedback(
+            feedbackId,
+            "partial",
+            `You answered ${items.length - blank}/${items.length}. Finish the blank items, then check again.`,
+          );
+        } else {
+          setFeedback(
+            feedbackId,
+            "wrong",
+            `You have ${correct}/${items.length} correct. Look for the red boxes and try again.`,
+          );
         }
-        const isCorrect = normalize(selected.value) === normalize(answer);
-        if(isCorrect) correct++;
-        const chip = document.createElement('div');
-        chip.className = 'result-chip ' + (isCorrect ? 'correct' : 'wrong');
-        chip.textContent = isCorrect ? 'Correct' : `Review this one. Hint: go back to the tab that matches this topic.`;
-        q.appendChild(chip);
-        if(!isCorrect) missed.push(index + 1);
-      });
-
-      const pct = Math.round((correct / questions.length) * 100);
-      if(unanswered > 0){
-        setFeedback('testFeedback','partial',`You answered ${questions.length - unanswered}/${questions.length}. Finish every question before using this as a final score.`);
-      } else if(pct >= 85){
-        setFeedback('testFeedback','correct',`Score: ${correct}/${questions.length} (${pct}%). Strong review work.`);
-        markComplete('practice');
-      } else {
-        setFeedback('testFeedback','wrong',`Score: ${correct}/${questions.length} (${pct}%). Review the missed questions, then reset and try again.`);
       }
 
-      const plan = document.getElementById('studyPlan');
-      const planText = document.getElementById('studyPlanText');
-      plan.style.display = 'block';
-      if(missed.length === 0){
-        planText.textContent = 'You are ready. For extra practice, explain photosynthesis and mutualism out loud without looking.';
-      } else {
-        planText.textContent = `Review questions ${missed.join(', ')}. Use the matching activity tabs, then come back for a second attempt.`;
+      function clearGroup(group, feedbackId) {
+        document.querySelectorAll(`[data-check="${group}"]`).forEach((item) => {
+          item.value = "";
+          item.style.borderColor = "#d8e6dd";
+        });
+        const el = document.getElementById(feedbackId);
+        el.className = "feedback";
+        el.textContent = "";
       }
-    }
 
-    function resetTest(){
-      document.querySelectorAll('#practiceTest input[type="radio"]').forEach(r => r.checked = false);
-      document.querySelectorAll('.result-chip').forEach(chip => chip.remove());
-      const fb = document.getElementById('testFeedback');
-      fb.className = 'feedback';
-      fb.textContent = '';
-      document.getElementById('studyPlan').style.display = 'none';
-    }
+      function checkReflection(textareaId, feedbackId) {
+        const text = normalize(document.getElementById(textareaId).value);
+        if (text.length < 25) {
+          setFeedback(
+            feedbackId,
+            "partial",
+            "Add a little more detail. A strong science sentence explains why the data matters.",
+          );
+        } else if (
+          text.includes("because") ||
+          text.includes("warning") ||
+          text.includes("unhealthy") ||
+          text.includes("harm")
+        ) {
+          setFeedback(
+            feedbackId,
+            "correct",
+            "Strong explanation: you connected evidence to a water-quality claim.",
+          );
+        } else {
+          setFeedback(
+            feedbackId,
+            "partial",
+            "Good start. Add “because” and explain why this data could be unhealthy.",
+          );
+        }
+      }
 
-    function markComplete(activity){
-      completedActivities.add(activity);
-      updateProgress();
-    }
+      function checkKeywords(textareaId, feedbackId, keywords, hint) {
+        const text = normalize(document.getElementById(textareaId).value);
+        const hits = keywords.filter((k) => text.includes(k)).length;
+        if (hits === keywords.length && text.length > 25) {
+          setFeedback(
+            feedbackId,
+            "correct",
+            "Strong answer: your explanation includes the key science ideas.",
+          );
+        } else if (text.length < 25) {
+          setFeedback(
+            feedbackId,
+            "partial",
+            "Add a complete sentence with more science detail.",
+          );
+        } else {
+          setFeedback(feedbackId, "partial", hint);
+        }
+      }
 
-    function updateProgress(){
-      const total = 7;
-      const count = Math.min(completedActivities.size, total);
-      const pct = Math.round((count / total) * 100);
-      document.getElementById('progressFill').style.width = pct + '%';
-      document.getElementById('progressText').textContent = `${count} of ${total} checked activities completed.`;
-    }
+      function checkStates() {
+        const checks = [...document.querySelectorAll("[data-state]")];
+        const correctSelected = checks.filter(
+          (c) => c.checked && c.dataset.state === "correct",
+        ).length;
+        const wrongSelected = checks.filter(
+          (c) => c.checked && c.dataset.state === "wrong",
+        ).length;
+        checks.forEach(
+          (c) =>
+            (c.parentElement.style.borderColor = c.checked
+              ? c.dataset.state === "correct"
+                ? "var(--correct)"
+                : "var(--wrong)"
+              : "#dfece5"),
+        );
+        if (correctSelected >= 3 && wrongSelected === 0) {
+          setFeedback(
+            "statesFeedback",
+            "correct",
+            `Correct. You selected ${correctSelected} Chesapeake Bay Watershed states.`,
+          );
+          markComplete("states");
+        } else if (wrongSelected > 0) {
+          setFeedback(
+            "statesFeedback",
+            "wrong",
+            "Check the red item. That state is not part of the review answer set.",
+          );
+        } else {
+          setFeedback(
+            "statesFeedback",
+            "partial",
+            "Select at least three correct watershed states.",
+          );
+        }
+      }
 
-    function resetAll(){
-      document.querySelectorAll('select').forEach(s => {
-        s.value = '';
-        s.style.borderColor = '#d8e6dd';
-      });
-      document.querySelectorAll('input[type="checkbox"]').forEach(c => {
-        c.checked = false;
-        c.parentElement.style.borderColor = '#dfece5';
-      });
-      document.querySelectorAll('input[type="text"], textarea').forEach(i => {
-        i.value = '';
-        i.style.borderColor = '#d8e6dd';
-      });
-      document.querySelectorAll('.feedback').forEach(f => {
-        f.className = 'feedback';
-        f.textContent = '';
-      });
-      document.querySelectorAll('.result-chip').forEach(chip => chip.remove());
-      document.querySelectorAll('.term-card').forEach(card => card.classList.remove('revealed'));
-      document.getElementById('studyPlan').style.display = 'none';
-      completedActivities.clear();
-      updateProgress();
-      showTabById('terms');
-    }
-  </script>
+      function checkCompost() {
+        const checks = [...document.querySelectorAll("[data-compost]")];
+        const cannot = checks.filter((c) => c.dataset.compost === "cannot");
+        const selectedCannot = cannot.filter((c) => c.checked).length;
+        const wrongSelected = checks.filter(
+          (c) => c.checked && c.dataset.compost === "safe",
+        ).length;
+        checks.forEach(
+          (c) =>
+            (c.parentElement.style.borderColor = c.checked
+              ? c.dataset.compost === "cannot"
+                ? "var(--correct)"
+                : "var(--wrong)"
+              : "#dfece5"),
+        );
+        if (selectedCannot === cannot.length && wrongSelected === 0) {
+          setFeedback(
+            "compostSortFeedback",
+            "correct",
+            "Correct. Chicken bone, butter, rotten meat, and vegetable oil should not go in a backyard compost pile.",
+          );
+          markComplete("compost");
+        } else if (wrongSelected > 0) {
+          setFeedback(
+            "compostSortFeedback",
+            "wrong",
+            "One or more selected items can go in backyard compost. Look for the red boxes and try again.",
+          );
+        } else {
+          setFeedback(
+            "compostSortFeedback",
+            "partial",
+            `You found ${selectedCannot}/${cannot.length}. Keep sorting.`,
+          );
+        }
+      }
+
+      function checkDecomposers() {
+        const valid = [
+          "worm",
+          "worms",
+          "bacteria",
+          "fungi",
+          "fungus",
+          "insect",
+          "insects",
+        ];
+        const values = ["decomp1", "decomp2", "decomp3"].map((id) =>
+          normalize(document.getElementById(id).value),
+        );
+        const unique = [...new Set(values.filter((v) => v))];
+        const correct = unique.filter((v) =>
+          valid.some((answer) => v.includes(answer)),
+        ).length;
+        ["decomp1", "decomp2", "decomp3"].forEach((id) => {
+          const input = document.getElementById(id);
+          const ok = valid.some((answer) =>
+            normalize(input.value).includes(answer),
+          );
+          input.style.borderColor = input.value
+            ? ok
+              ? "var(--correct)"
+              : "var(--wrong)"
+            : "#d8e6dd";
+        });
+        if (correct >= 3) {
+          setFeedback(
+            "decompFeedback",
+            "correct",
+            "Correct. Worms, bacteria, fungi, and insects are decomposers.",
+          );
+          markComplete("decomposers");
+        } else {
+          setFeedback(
+            "decompFeedback",
+            "partial",
+            `You have ${correct}/3 strong decomposer examples. Use worms, bacteria, fungi, or insects.`,
+          );
+        }
+      }
+
+      function scoreTest() {
+        const questions = [...document.querySelectorAll(".test-question")];
+        let correct = 0;
+        let unanswered = 0;
+        let missed = [];
+        questions.forEach((q, index) => {
+          const name = q.dataset.q;
+          const answer = q.dataset.answer;
+          const selected = q.querySelector(`input[name="${name}"]:checked`);
+          q.querySelectorAll(".result-chip").forEach((chip) => chip.remove());
+          if (!selected) {
+            unanswered++;
+            const chip = document.createElement("div");
+            chip.className = "result-chip wrong";
+            chip.textContent = "Not answered yet.";
+            q.appendChild(chip);
+            missed.push(index + 1);
+            return;
+          }
+          const isCorrect = normalize(selected.value) === normalize(answer);
+          if (isCorrect) correct++;
+          const chip = document.createElement("div");
+          chip.className = "result-chip " + (isCorrect ? "correct" : "wrong");
+          chip.textContent = isCorrect
+            ? "Correct"
+            : `Review this one. Hint: go back to the tab that matches this topic.`;
+          q.appendChild(chip);
+          if (!isCorrect) missed.push(index + 1);
+        });
+
+        const pct = Math.round((correct / questions.length) * 100);
+        if (unanswered === 0) {
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: correct,
+                maxScore: questions.length,
+                percent: pct,
+                problemsCorrect: correct,
+                problemsAttempted: questions.length,
+              });
+          } catch (e) {}
+        }
+        if (unanswered > 0) {
+          setFeedback(
+            "testFeedback",
+            "partial",
+            `You answered ${questions.length - unanswered}/${questions.length}. Finish every question before using this as a final score.`,
+          );
+        } else if (pct >= 85) {
+          setFeedback(
+            "testFeedback",
+            "correct",
+            `Score: ${correct}/${questions.length} (${pct}%). Strong review work.`,
+          );
+          markComplete("practice");
+        } else {
+          setFeedback(
+            "testFeedback",
+            "wrong",
+            `Score: ${correct}/${questions.length} (${pct}%). Review the missed questions, then reset and try again.`,
+          );
+        }
+
+        const plan = document.getElementById("studyPlan");
+        const planText = document.getElementById("studyPlanText");
+        plan.style.display = "block";
+        if (missed.length === 0) {
+          planText.textContent =
+            "You are ready. For extra practice, explain photosynthesis and mutualism out loud without looking.";
+        } else {
+          planText.textContent = `Review questions ${missed.join(", ")}. Use the matching activity tabs, then come back for a second attempt.`;
+        }
+      }
+
+      function resetTest() {
+        document
+          .querySelectorAll('#practiceTest input[type="radio"]')
+          .forEach((r) => (r.checked = false));
+        document
+          .querySelectorAll(".result-chip")
+          .forEach((chip) => chip.remove());
+        const fb = document.getElementById("testFeedback");
+        fb.className = "feedback";
+        fb.textContent = "";
+        document.getElementById("studyPlan").style.display = "none";
+      }
+
+      function markComplete(activity) {
+        completedActivities.add(activity);
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const total = 7;
+        const count = Math.min(completedActivities.size, total);
+        const pct = Math.round((count / total) * 100);
+        document.getElementById("progressFill").style.width = pct + "%";
+        document.getElementById("progressText").textContent =
+          `${count} of ${total} checked activities completed.`;
+      }
+
+      function resetAll() {
+        document.querySelectorAll("select").forEach((s) => {
+          s.value = "";
+          s.style.borderColor = "#d8e6dd";
+        });
+        document.querySelectorAll('input[type="checkbox"]').forEach((c) => {
+          c.checked = false;
+          c.parentElement.style.borderColor = "#dfece5";
+        });
+        document
+          .querySelectorAll('input[type="text"], textarea')
+          .forEach((i) => {
+            i.value = "";
+            i.style.borderColor = "#d8e6dd";
+          });
+        document.querySelectorAll(".feedback").forEach((f) => {
+          f.className = "feedback";
+          f.textContent = "";
+        });
+        document
+          .querySelectorAll(".result-chip")
+          .forEach((chip) => chip.remove());
+        document
+          .querySelectorAll(".term-card")
+          .forEach((card) => card.classList.remove("revealed"));
+        document.getElementById("studyPlan").style.display = "none";
+        completedActivities.clear();
+        updateProgress();
+        showTabById("terms");
+      }
+    </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

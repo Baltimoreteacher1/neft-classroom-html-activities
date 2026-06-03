@@ -958,6 +958,19 @@
               this.total > 0
                 ? Math.round((this.correct / this.total) * 100)
                 : 0;
+
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: this.correct,
+                  maxScore: this.total,
+                  problemsCorrect: this.correct,
+                  problemsAttempted: this.total,
+                  standard: "6.RP.A.1",
+                });
+            } catch (e) {}
+
             let rank, emoji;
             if (pct >= 90) {
               rank = "S RANK — MASTER CHEF!";
@@ -1096,6 +1109,8 @@
         new Phaser.Game(config);
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>
