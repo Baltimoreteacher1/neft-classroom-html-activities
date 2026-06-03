@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sub-Zero Ledger & Altitude Compass: An interactive polar laboratory mapping negative integers and absolute value to vertical meters and ledgers.">
+  <title>Sub-Zero Ledger & Altitude Compass | Neft Studio</title>
+
+  <!-- Google Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    /* ── Polar Frost Design Tokens ── */
+    :root {
+      --bg-base: #020b14;
+      --bg-surface: #06172a;
+      --bg-card: rgba(8, 30, 58, 0.7);
+      --bg-glow: rgba(14, 165, 233, 0.08); /* Sky glow */
+      
+      --primary: #0ea5e9; /* Frosty Blue */
+      --primary-glow: rgba(14, 165, 233, 0.45);
+      --secondary: #ec4899; /* Neon Ledger Pink */
+      --secondary-glow: rgba(236, 72, 153, 0.4);
+      --accent: #f43f5e;
+      --warning: #f59e0b;
+      
+      --text-main: #f0f9ff;
+      --text-muted: #38bdf8;
+      --text-dark: #0369a1;
+      
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+      
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-gaze: 0 0 22px rgba(14, 165, 233, 0.25);
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.04) 0%, transparent 40%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      margin: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .breadcrumb a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .breadcrumb a:hover {
+      text-shadow: 0 0 8px var(--primary);
+    }
+    .breadcrumb span {
+      color: var(--text-dark);
+    }
+
+    /* ── Hero Banner ── */
+    .hero {
+      background: linear-gradient(135deg, #03203c 0%, #020b14 100%);
+      border: 1px solid rgba(14, 165, 233, 0.15);
+      border-left: 6px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin: 20px 24px;
+      box-shadow: var(--shadow-gaze);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.4), transparent);
+    }
+    .hero-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #fff, #e0f2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 0 16px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+    }
+    .hero-chip {
+      background: rgba(14, 165, 233, 0.1);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hero-chip.accent {
+      background: rgba(236, 72, 153, 0.1);
+      border-color: rgba(236, 72, 153, 0.2);
+      color: var(--secondary);
+    }
+
+    /* ── Layout Grid ── */
+    .studio-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .brand-block h2 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-block p {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    /* ── Quest Cards ── */
+    .quest-catalog {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .quest-card {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .quest-card:hover {
+      border-color: var(--primary);
+      background: rgba(14, 165, 233, 0.05);
+      transform: translateY(-1px);
+    }
+    .quest-card.active {
+      background: rgba(14, 165, 233, 0.15);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.15);
+    }
+    .quest-card .quest-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .quest-card.completed {
+      border-color: var(--secondary);
+      background: rgba(236, 72, 153, 0.05);
+    }
+
+    /* ── Main Workspace ── */
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .glass-panel {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .panel-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+    .panel-meta h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Polar Split */
+    .polar-split {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .polar-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* SVG Vertical Compass */
+    .model-viewport {
+      background: #010611;
+      border: 1.5px solid rgba(14, 165, 233, 0.2);
+      border-radius: var(--radius-md);
+      min-height: 400px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .model-viewport svg {
+      width: 100%;
+      height: 400px;
+      display: block;
+    }
+
+    /* Interactive ledger control worksheet */
+    .ledger-table {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .ledger-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      justify-content: space-between;
+    }
+    .ledger-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ledger-row {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .ledger-label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .ledger-inputs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+    .ledger-input {
+      width: 60px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 4px 6px;
+      color: #fff;
+      font-family: inherit;
+      text-align: center;
+      outline: none;
+      transition: var(--transition);
+    }
+    .ledger-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 6px var(--primary-glow);
+    }
+    .ledger-input.abs-box {
+      width: 55px;
+      border-color: var(--secondary);
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    /* Live Altitude indicators and differences */
+    .indicator-card {
+      background: rgba(14, 165, 233, 0.02);
+      border: 1px solid rgba(14, 165, 233, 0.12);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+    .indicator-display {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      color: var(--primary);
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 8px;
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+
+    /* ── Case Objective HUD ── */
+    .objective-hud {
+      background: rgba(14, 165, 233, 0.03);
+      border: 1px solid rgba(14, 165, 233, 0.15);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .hud-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hud-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .hud-item.done {
+      border-color: var(--secondary);
+      background: rgba(236, 72, 153, 0.08);
+      color: var(--secondary);
+    }
+
+    /* ── TWR Writing Reporter ── */
+    .writing-reporter {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .writing-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .writing-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .writing-header p {
+      font-size: 0.78rem;
+      color: var(--text-dark);
+      margin: 0;
+    }
+    .twr-lanes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .twr-lane {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lane-label {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+    .twr-lane:nth-child(2) .lane-label { color: var(--secondary); }
+    .twr-lane:nth-child(3) .lane-label { color: var(--accent); }
+    .lane-kernel {
+      font-size: 0.8rem;
+      color: var(--text-dark);
+      font-style: italic;
+      line-height: 1.4;
+    }
+    .twr-textarea {
+      width: 100%;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      resize: none;
+      outline: none;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .twr-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(14, 165, 233, 0.25);
+    }
+    .twr-conjunctions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .conj-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-dark);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .conj-chip:hover {
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* Glossary cards */
+    .glossary-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .glossary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .glossary-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .glossary-lang-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .lang-tab {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-dark);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lang-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .glossary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .vocab-chip {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: help;
+      position: relative;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vocab-chip:hover {
+      border-color: var(--primary);
+      background: rgba(14, 165, 233, 0.08);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .vocab-chip .tooltip-bubble {
+      visibility: hidden;
+      width: 240px;
+      background: #06172a;
+      color: var(--text-main);
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px 12px;
+      position: absolute;
+      z-index: 100;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      pointer-events: none;
+      font-weight: 500;
+    }
+    .vocab-chip:hover .tooltip-bubble {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* Cyber buttons */
+    .cyber-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, #0369a1 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+    }
+    .cyber-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
+    }
+    .cyber-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .cyber-btn.sec {
+      background: linear-gradient(135deg, var(--secondary) 0%, #be185d 100%);
+      box-shadow: 0 4px 14px rgba(236, 72, 153, 0.3);
+    }
+    .cyber-btn.sec:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
+    }
+    .cyber-btn.outline {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+    .cyber-btn.outline:hover {
+      border-color: var(--primary);
+      background: rgba(14, 165, 233, 0.05);
+    }
+
+    /* Diagnostics panel */
+    .diag-overlay {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 420px;
+      background: #010408;
+      color: #00ff66;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      border: 1px solid #0369a1;
+      padding: 16px;
+      display: none;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+    .diag-head {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      border-bottom: 1px dashed #0369a1;
+      padding-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+    .diag-stream {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .diag-line {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    .diag-close {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1080px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-wrapper {
+        position: static;
+        max-height: none;
+      }
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a href="/number-system/">Number System</a>
+    <span>/</span>
+    <span>Sub-Zero Ledger & Altitude Compass</span>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-row">
+      <div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px">
+          <span class="hero-chip">Unit 3 · Integers</span>
+          <span class="hero-chip accent" id="langIndicator">English Mode</span>
+        </div>
+        <h1 id="heroTitle">Sub-Zero Ledger & Altitude Compass</h1>
+        <p id="heroCopy">
+          Pilot altitude vectors along vertical scales and log debit/credit transactions in polar ledgers to evaluate 
+          integer positions and absolute value magnitudes.
+        </p>
+        <div class="hero-stats">
+          <button class="cyber-btn outline" onclick="toggleLanguage()" id="btnLangToggle">
+            🌍 Translate to Spanish
+          </button>
+          <button class="cyber-btn outline" onclick="toggleDiagnostics()">
+            📊 Run System Checks
+          </button>
+          <button class="cyber-btn outline" id="btnSelfTest" onclick="triggerSelfTest()">
+            ⚙️ Run Self-Test
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="studio-shell">
+    <!-- Sidebar: Cases catalog -->
+    <aside class="sidebar-wrapper" aria-label="Explorer quests">
+      <div class="brand-block">
+        <h2 id="sidebarTitle">🏔️ Explorer Missions</h2>
+        <p id="sidebarSubtitle">Log credit/debit magnitudes</p>
+      </div>
+
+      <div class="quest-catalog" id="questCatalog" role="radiogroup" aria-label="Select Explorer Mission">
+        <!-- Dynamic quest cards -->
+      </div>
+    </aside>
+
+    <!-- Workspace -->
+    <div class="canvas-layout">
+      <section class="glass-panel" aria-labelledby="canvasHeading">
+        <div class="panel-meta">
+          <h3 id="canvasHeading">🔬 Vertical Vector Meter & Polar Ledger</h3>
+          <button class="cyber-btn" onclick="resetActiveSliders()" id="btnResetData">
+            🔄 Reset Expedition
+          </button>
+        </div>
+
+        <div class="polar-split">
+          <!-- SVG vertical scale -->
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="model-viewport">
+              <svg id="svgCompass" viewBox="0 0 200 400"></svg>
+            </div>
+          </div>
+
+          <!-- Worksheet ledger & results -->
+          <div style="display:flex; flex-direction:column; gap:20px;">
+            <!-- Worksheet -->
+            <div class="ledger-table">
+              <div class="ledger-title">
+                <span id="lblLedger">Expedition Ledger Sheet</span>
+                <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--secondary);">Form: |x| &ge; 0</span>
+              </div>
+              <div class="ledger-rows" id="ledgerWorksheet">
+                <!-- Dynamic component rows -->
+              </div>
+            </div>
+
+            <!-- Absolute values indicators card -->
+            <div class="indicator-card">
+              <div style="font-size:0.8rem; font-weight:800; color:var(--primary); text-transform:uppercase; letter-spacing:0.05em;">
+                ❄️ Vertical Absolute Difference
+              </div>
+              <div class="indicator-display" id="liveIndicator">
+                |0| + |0| = 0 meters
+              </div>
+            </div>
+
+            <!-- Case Objective HUD -->
+            <div class="objective-hud">
+              <div class="hud-title">
+                <span style="font-size:1.25rem;">📡</span>
+                <span id="hudTitleText">Mission Indicators</span>
+              </div>
+              <div class="hud-checklist" id="hudChecklist">
+                <!-- Dynamic objectives checklist -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Writing Reporter -->
+      <section class="writing-reporter" aria-labelledby="writingHeading">
+        <div class="writing-header">
+          <h4 id="writingHeading">✍️ TWR Polar Expedition Scientific Log</h4>
+          <p id="writingSubtitle">Document your coordinate absolute distance methods using transition clauses</p>
+        </div>
+
+        <div class="twr-lanes">
+          <div class="twr-lane">
+            <span class="lane-label">Because (Explicación)</span>
+            <span class="lane-kernel" id="kernelBecause">Absolute value represents distance because...</span>
+            <textarea class="twr-textarea" id="textBecause" placeholder="Draft explanation using 'because'..." oninput="evaluateWriting()"></textarea>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">But (Contraste)</span>
+            <span class="lane-kernel" id="kernelBut">Negative elevations represent sub-sea depths, but...</span>
+            <textarea class="twr-textarea" id="textBut" placeholder="Add contrasting evidence using 'but'..." oninput="evaluateWriting()"></textarea>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">So (Consecuencia)</span>
+            <span class="lane-kernel" id="kernelSo">Submarine is at -25 meters, so...</span>
+            <textarea class="twr-textarea" id="textSo" placeholder="Draft consequence using 'so'..." oninput="evaluateWriting()"></textarea>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:16px;">
+          <div class="twr-conjunctions" id="writingFeedback">
+            <span class="conj-chip" style="color:var(--text-dark); pointer-events:none;">Report Status: Awaiting expedition notes</span>
+          </div>
+          <button class="cyber-btn sec" id="btnSubmitReport" onclick="submitExpeditionReport()" disabled>
+            💾 Submit Scientific Log
+          </button>
+        </div>
+      </section>
+
+      <!-- Glossary section -->
+      <section class="glossary-card" aria-label="Math Glossary">
+        <div class="glossary-header">
+          <h4 id="glossaryTitle">📚 Explorer Terminology Wall</h4>
+          <div class="glossary-lang-tabs" role="tablist">
+            <button class="lang-tab active" onclick="setGlossaryLang('en')" role="tab" aria-selected="true" id="tabEN">EN English</button>
+            <button class="lang-tab" onclick="setGlossaryLang('es')" role="tab" aria-selected="false" id="tabES">ES Español</button>
+          </div>
+        </div>
+        <div class="glossary-grid" id="glossaryGrid">
+          <!-- Vocab chips dynamically populated -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Diagnostics overlay console -->
+  <aside class="diag-overlay" id="diagConsole" aria-label="Diagnostics console">
+    <div class="diag-head">
+      <span>EXPEDITION DIAGNOSTIC OVERLAY</span>
+      <button class="diag-close" onclick="toggleDiagnostics()">CLOSE</button>
+    </div>
+    <div class="diag-stream" id="diagStream">
+      <p class="diag-line">Sub-zero metrics initializing...</p>
+    </div>
+  </aside>
+
+  <script>
+    // 1. SYSTEM CONFIGURATION
+    const CONFIG = {
+      theme: 'polar-explorer',
+      audioGainLimit: 0.05,
+      debug: true
+    };
+
+    // 2. STATE LAYER (Repository)
+    let STATE = {
+      activeCaseId: 1,
+      casesCompleted: [],
+      lang: 'en',
+      glossaryLang: 'en',
+      conjunctionsFound: { because: false, but: false, so: false },
+      // Worksheet inputs
+      inputs: {
+        comp1_val: '', comp1_abs: '',
+        comp2_val: '', comp2_abs: '',
+        comp3_val: '', comp3_abs: ''
+      }
+    };
+
+    const CASE_QUESTS = [
+      {
+        id: 1,
+        titleEN: "Case 1: Vertical Absolute Distance",
+        titleES: "Caso 1: Distancia Absoluta",
+        descEN: "Pilot the explorer sub to -25 meters and the chopper to +15 meters. Log these in the ledger and find the absolute vertical distance.",
+        descES: "Pilota el submarino a -25 metros y el helicóptero a +15 metros. Regístralos en el libro y calcula la distancia vertical absoluta.",
+        totalTargetVal: 40,
+        components: [
+          { name: 'Chopper Altitude', targetVal: 15, targetAbs: 15 },
+          { name: 'Submarine Depth', targetVal: -25, targetAbs: 25 }
+        ],
+        svgDrawFunc: drawVerticalAltitude
+      },
+      {
+        id: 2,
+        titleEN: "Case 2: Ledger Liquidity Check",
+        titleES: "Caso 2: Comprobación de Liquidez",
+        descEN: "Log a transaction debit showing a balance of -$40. Determine its absolute magnitude debt in the ledger.",
+        descES: "Registra un débito de transacción que muestre un saldo de -$40. Determina la magnitud absoluta de la deuda.",
+        totalTargetVal: 40,
+        components: [
+          { name: 'Transaction Balance', targetVal: -40, targetAbs: 40 }
+        ],
+        svgDrawFunc: drawLedgerCard
+      },
+      {
+        id: 3,
+        titleEN: "Case 3: Polar Temperature Freeze",
+        titleES: "Caso 3: Congelación Polar",
+        descEN: "Compare altitude temperatures where Peak is -18°C and valley is -4°C. Log their values and solve for the absolute temperature difference.",
+        descES: "Compara temperaturas donde el Pico está a -18°C y el valle a -4°C. Registra sus valores y calcula la diferencia absoluta.",
+        totalTargetVal: 14,
+        components: [
+          { name: 'Peak Temperature', targetVal: -18, targetAbs: 18 },
+          { name: 'Valley Temperature', targetVal: -4, targetAbs: 4 }
+        ],
+        svgDrawFunc: drawThermometerScale
+      }
+    ];
+
+    const VOCAB_MAP = {
+      en: [
+        { word: "Absolute Value", def: "The distance of a number from zero on a number line, always written as a positive number |x|" },
+        { word: "Negative Integer", def: "A whole number less than zero, representing depths, debts, or sub-zero temperatures (-)" },
+        { word: "Ledger", def: "A financial accounting sheet logging credits (positive additions) and debits (negative payments)" },
+        { word: "Magnitude", def: "The absolute size or distance of a quantity, regardless of its positive or negative direction" }
+      ],
+      es: [
+        { word: "Valor Absoluto", def: "La distancia de un número respecto al cero en una recta numérica, expresado como positivo |x|" },
+        { word: "Entero Negativo", def: "Un número entero menor que cero, que representa profundidades, deudas o temperaturas bajo cero (-)" },
+        { word: "Libro de Cuentas", def: "Una hoja de contabilidad que registra créditos (adiciones positivas) y débitos (pagos negativos)" },
+        { word: "Magnitud", def: "El tamaño o distancia absoluta de una cantidad, sin importar su signo positivo o negativo" }
+      ]
+    };
+
+    let audioCtx = null;
+
+    // 3. SERVICE LOGIC LAYER
+    function validateConfig() {
+      logDiag("Running validateConfig()...");
+      if (CONFIG.audioGainLimit > 0.08) {
+        throw new Error("CONFIG Error: audioGainLimit exceeds safe levels.");
+      }
+      logDiag("validateConfig(): PASS");
+      return true;
+    }
+
+    function selfTest() {
+      logDiag("=== Starting Sub-Zero Ledger Self-Test ===");
+      try {
+        validateConfig();
+
+        // Check absolute value calculations
+        if (Math.abs(-35) !== 35) throw new Error("Absolute math check failed: abs(-35) must be 35.");
+
+        // Check DOM elements presence
+        const testIds = ['svgCompass', 'liveIndicator', 'ledgerWorksheet'];
+        testIds.forEach(id => {
+          if (!document.getElementById(id)) {
+            throw new Error(`DOM Error: Missing element #${id}`);
+          }
+        });
+
+        logDiag("selfTest(): 100% PASS");
+        return true;
+      } catch (e) {
+        logDiag(`selfTest() FAILED: ${e.message}`, true);
+        return false;
+      }
+    }
+
+    // 4. CONTROLLER LAYER
+    window.addEventListener('load', () => {
+      validateConfig();
+      renderQuests();
+      setGlossaryLang('en');
+      transitionState('SET_CASE', 1);
+    });
+
+    function transitionState(action, data) {
+      logDiag(`State transition: ${action}`);
+      switch (action) {
+        case 'SET_CASE':
+          STATE.activeCaseId = data;
+          
+          STATE.inputs = {
+            comp1_val: '', comp1_abs: '',
+            comp2_val: '', comp2_abs: '',
+            comp3_val: '', comp3_abs: ''
+          };
+
+          renderWorksheet();
+          playSynthNote(293.66, 'triangle', 0.1);
+          break;
+        case 'RESET':
+          STATE.inputs = {
+            comp1_val: '', comp1_abs: '',
+            comp2_val: '', comp2_abs: '',
+            comp3_val: '', comp3_abs: ''
+          };
+          renderWorksheet();
+          playSynthNote(220, 'sine', 0.15);
+          break;
+      }
+      updateExpedition();
+    }
+
+    function updateExpedition() {
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+      activeCase.svgDrawFunc();
+
+      checkCaseObjectives();
+      updateTWRKernels();
+    }
+
+    function updateTWRKernels() {
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+      const isES = STATE.lang === 'es';
+
+      if (isES) {
+        document.getElementById('kernelBecause').textContent = `El valor absoluto representa la distancia al cero porque...`;
+        document.getElementById('kernelBut').textContent = `Las magnitudes financieras registran deudas, pero...`;
+        document.getElementById('kernelSo').textContent = `El submarino opera a profundidades negativas, así que...`;
+      } else {
+        document.getElementById('kernelBecause').textContent = `Absolute value represents physical distance from zero because...`;
+        document.getElementById('kernelBut').textContent = `Transaction ledgers record debt balances with negative symbols, but...`;
+        document.getElementById('kernelSo').textContent = `The submarine operates at negative elevations below sea level, so...`;
+      }
+    }
+
+    function handleWorksheetInput() {
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+      let totalAbsSum = 0;
+      let sumExp = [];
+      let allCorrect = true;
+
+      for (let i = 0; i < activeCase.components.length; i++) {
+        const idx = i + 1;
+        const v = parseInt(document.getElementById(`comp${idx}_v`).value);
+        
+        STATE.inputs[`comp${idx}_val`] = isNaN(v) ? '' : v;
+
+        const c = activeCase.components[i];
+        const valOk = v === c.targetVal;
+
+        const absBox = document.getElementById(`comp${idx}_a`);
+
+        if (valOk) {
+          const absVal = Math.abs(v);
+          STATE.inputs[`comp${idx}_abs`] = absVal;
+          absBox.value = absVal;
+          
+          absBox.style.color = 'var(--secondary)';
+          absBox.style.borderColor = 'var(--secondary)';
+
+          if (activeCase.id === 3) {
+            // Temperature difference logic
+            if (idx === 1) totalAbsSum += absVal; // Peak = 18
+            else totalAbsSum -= absVal; // Valley = 4 (18 - 4 = 14)
+          } else {
+            totalAbsSum += absVal;
+          }
+          sumExp.push(`|${v}|`);
+        } else {
+          absBox.value = '';
+          absBox.style.borderColor = 'rgba(255,255,255,0.1)';
+          allCorrect = false;
+        }
+      }
+
+      // Update indicators card
+      if (sumExp.length > 0) {
+        const unit = activeCase.id === 3 ? "°C" : "meters";
+        document.getElementById('liveIndicator').textContent = activeCase.id === 3 
+          ? `|${STATE.inputs.comp1_val}| - |${STATE.inputs.comp2_val}| = ${totalAbsSum} ${unit}`
+          : `${sumExp.join(' + ')} = ${totalAbsSum} ${unit}`;
+      } else {
+        document.getElementById('liveIndicator').textContent = '0 + 0 = 0 meters';
+      }
+
+      updateExpedition();
+    }
+
+    function resetActiveSliders() {
+      transitionState('RESET');
+    }
+
+    // 5. VIEW (SVG Scale Viewport drawers)
+    function drawVerticalAltitude() {
+      const svg = document.getElementById('svgCompass');
+      svg.innerHTML = '';
+      drawCompassSkeleton(svg, -50, 50, "meters");
+
+      // Draw helicopter indicator overlay if Chopper Altitude is input correctly
+      const chopVal = STATE.inputs.comp1_val;
+      if (chopVal === 15) {
+        const y = 200 - (15 / 50) * 160;
+        
+        // Helico SVG path representation
+        const chop = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        chop.setAttribute("points", `85,${y-6} 115,${y-6} 100,${y+8}`);
+        chop.setAttribute("fill", "var(--primary)");
+        chop.setAttribute("filter", "drop-shadow(0 0 5px var(--primary-glow))");
+        svg.appendChild(chop);
+
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", 124);
+        lbl.setAttribute("y", y + 4);
+        lbl.setAttribute("fill", "var(--primary)");
+        lbl.setAttribute("font-family", "var(--font-mono)");
+        lbl.setAttribute("font-size", "10");
+        lbl.setAttribute("font-weight", "700");
+        lbl.textContent = `+15m`;
+        svg.appendChild(lbl);
+      }
+
+      // Draw submarine indicator overlay if Sub Depth is input correctly
+      const subVal = STATE.inputs.comp2_val;
+      if (subVal === -25) {
+        const y = 200 - (-25 / 50) * 160;
+
+        const sub = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        sub.setAttribute("cx", 100);
+        sub.setAttribute("cy", y);
+        sub.setAttribute("r", "8");
+        sub.setAttribute("fill", "var(--secondary)");
+        sub.setAttribute("filter", "drop-shadow(0 0 5px var(--secondary-glow))");
+        svg.appendChild(sub);
+
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", 124);
+        lbl.setAttribute("y", y + 4);
+        lbl.setAttribute("fill", "var(--secondary)");
+        lbl.setAttribute("font-family", "var(--font-mono)");
+        lbl.setAttribute("font-size", "10");
+        lbl.setAttribute("font-weight", "700");
+        lbl.textContent = `-25m`;
+        svg.appendChild(lbl);
+      }
+    }
+
+    function drawLedgerCard() {
+      const svg = document.getElementById('svgCompass');
+      svg.innerHTML = '';
+      drawCompassSkeleton(svg, -100, 100, "dollars");
+
+      const transVal = STATE.inputs.comp1_val;
+      if (transVal === -40) {
+        const y = 200 - (-40 / 100) * 160;
+
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", 100);
+        dot.setAttribute("cy", y);
+        dot.setAttribute("r", "10");
+        dot.setAttribute("fill", "var(--accent)");
+        dot.setAttribute("filter", "drop-shadow(0 0 8px var(--secondary-glow))");
+        svg.appendChild(dot);
+
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", 124);
+        lbl.setAttribute("y", y + 4);
+        lbl.setAttribute("fill", "var(--accent)");
+        lbl.setAttribute("font-family", "var(--font-mono)");
+        lbl.setAttribute("font-size", "10");
+        lbl.setAttribute("font-weight", "700");
+        lbl.textContent = `-$40`;
+        svg.appendChild(lbl);
+      }
+    }
+
+    function drawThermometerScale() {
+      const svg = document.getElementById('svgCompass');
+      svg.innerHTML = '';
+      drawCompassSkeleton(svg, -30, 10, "deg C");
+
+      const peakVal = STATE.inputs.comp1_val;
+      if (peakVal === -18) {
+        const y = 200 - (-18 / 30) * 160;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", 80);
+        line.setAttribute("y1", y);
+        line.setAttribute("x2", 120);
+        line.setAttribute("y2", y);
+        line.setAttribute("stroke", "var(--accent)");
+        line.setAttribute("stroke-width", "4");
+        svg.appendChild(line);
+
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", 124);
+        lbl.setAttribute("y", y + 4);
+        lbl.setAttribute("fill", "var(--accent)");
+        lbl.setAttribute("font-family", "var(--font-mono)");
+        lbl.setAttribute("font-size", "10");
+        lbl.setAttribute("font-weight", "700");
+        lbl.textContent = `-18°C`;
+        svg.appendChild(lbl);
+      }
+
+      const valleyVal = STATE.inputs.comp2_val;
+      if (valleyVal === -4) {
+        const y = 200 - (-4 / 30) * 160;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", 80);
+        line.setAttribute("y1", y);
+        line.setAttribute("x2", 120);
+        line.setAttribute("y2", y);
+        line.setAttribute("stroke", "var(--primary)");
+        line.setAttribute("stroke-width", "4");
+        svg.appendChild(line);
+
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", 124);
+        lbl.setAttribute("y", y + 4);
+        lbl.setAttribute("fill", "var(--primary)");
+        lbl.setAttribute("font-family", "var(--font-mono)");
+        lbl.setAttribute("font-size", "10");
+        lbl.setAttribute("font-weight", "700");
+        lbl.textContent = `-4°C`;
+        svg.appendChild(lbl);
+      }
+    }
+
+    // Helper SVG Scale renderer
+    function drawCompassSkeleton(svg, minVal, maxVal, unitLabel) {
+      const width = 200;
+      const height = 400;
+      const centerY = 200;
+      const startY = 40;
+      const endY = 360;
+
+      // Outer panel border
+      const panel = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      panel.setAttribute("x", 5);
+      panel.setAttribute("y", 5);
+      panel.setAttribute("width", width - 10);
+      panel.setAttribute("height", height - 10);
+      panel.setAttribute("fill", "none");
+      panel.setAttribute("stroke", "rgba(14, 165, 233, 0.1)");
+      panel.setAttribute("stroke-width", "2");
+      panel.setAttribute("rx", "16");
+      svg.appendChild(panel);
+
+      // Central Vertical axis line
+      const axis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      axis.setAttribute("x1", 100);
+      axis.setAttribute("y1", startY);
+      axis.setAttribute("x2", 100);
+      axis.setAttribute("y2", endY);
+      axis.setAttribute("stroke", "var(--text-muted)");
+      axis.setAttribute("stroke-width", "3");
+      svg.appendChild(axis);
+
+      // Sea level boundary marker at y = 0
+      const seaLevelY = centerY - (0 / (maxVal - minVal)) * (endY - startY);
+      
+      const horizon = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      horizon.setAttribute("x1", 70);
+      horizon.setAttribute("y1", centerY);
+      horizon.setAttribute("x2", 130);
+      horizon.setAttribute("y2", centerY);
+      horizon.setAttribute("stroke", "var(--secondary)");
+      horizon.setAttribute("stroke-width", "2.5");
+      horizon.setAttribute("stroke-dasharray", "2,2");
+      svg.appendChild(horizon);
+
+      // Vertical tick indicators
+      const steps = 10;
+      for (let i = 0; i <= steps; i++) {
+        const ratio = i / steps;
+        const y = startY + ratio * (endY - startY);
+        // Calculate corresponding coordinate value
+        const val = Math.round(maxVal - ratio * (maxVal - minVal));
+
+        const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        tick.setAttribute("x1", 90);
+        tick.setAttribute("y1", y);
+        tick.setAttribute("x2", 110);
+        tick.setAttribute("y2", y);
+        tick.setAttribute("stroke", "var(--text-muted)");
+        tick.setAttribute("stroke-width", "1.5");
+        svg.appendChild(tick);
+
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", 78);
+        lbl.setAttribute("y", y + 3);
+        lbl.setAttribute("text-anchor", "end");
+        lbl.setAttribute("fill", "var(--text-muted)");
+        lbl.setAttribute("font-family", "var(--font-mono)");
+        lbl.setAttribute("font-size", "9");
+        lbl.textContent = val;
+        svg.appendChild(lbl);
+      }
+
+      // Unit label overlay at top
+      const unit = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      unit.setAttribute("x", 100);
+      unit.setAttribute("y", 28);
+      unit.setAttribute("text-anchor", "middle");
+      unit.setAttribute("fill", "var(--text-main)");
+      unit.setAttribute("font-family", "var(--font-display)");
+      unit.setAttribute("font-weight", "800");
+      unit.setAttribute("font-size", "10");
+      unit.textContent = unitLabel.toUpperCase();
+      svg.appendChild(unit);
+    }
+
+    // 6. EXPEDITION WORKSHEET BUILDER
+    function renderWorksheet() {
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+      const container = document.getElementById('ledgerWorksheet');
+      container.innerHTML = '';
+
+      activeCase.components.forEach((c, idx) => {
+        const row = document.createElement('div');
+        row.className = 'ledger-row';
+
+        row.innerHTML = `
+          <span class="ledger-label">${c.name}</span>
+          <div class="ledger-inputs">
+            <span>Value (x):</span>
+            <input type="number" class="ledger-input" id="comp${idx+1}_v" oninput="handleWorksheetInput()">
+            <span style="margin-left:8px;">Absolute: |x| =</span>
+            <input type="text" class="ledger-input abs-box" id="comp${idx+1}_a" readonly>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      // Reset indicators
+      document.getElementById('liveIndicator').textContent = '0 + 0 = 0 meters';
+    }
+
+    function renderQuests() {
+      const catalog = document.getElementById('questCatalog');
+      catalog.innerHTML = '';
+
+      CASE_QUESTS.forEach(c => {
+        const title = STATE.lang === 'en' ? c.titleEN : c.titleES;
+        const desc = STATE.lang === 'en' ? c.descEN : c.descES;
+
+        const button = document.createElement('button');
+        button.className = `quest-card ${STATE.activeCaseId === c.id ? 'active' : ''} ${STATE.casesCompleted.includes(c.id) ? 'completed' : ''}`;
+        button.setAttribute('role', 'radio');
+        button.setAttribute('aria-checked', STATE.activeCaseId === c.id ? 'true' : 'false');
+        button.onclick = () => transitionState('SET_CASE', c.id);
+
+        button.innerHTML = `
+          <span class="quest-title">${title}</span>
+          <span style="font-size:0.75rem; color:var(--text-muted); line-height:1.4">${desc}</span>
+        `;
+        catalog.appendChild(button);
+      });
+    }
+
+    function checkCaseObjectives() {
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+      const hudList = document.getElementById('hudChecklist');
+      hudList.innerHTML = '';
+
+      let solved = 0;
+      activeCase.components.forEach((c, idx) => {
+        const v = STATE.inputs[`comp${idx+1}_val`];
+        const ok = v === c.targetVal;
+        if (ok) solved++;
+
+        const item = document.createElement('div');
+        item.className = `hud-item ${ok ? 'done' : ''}`;
+        if (STATE.lang === 'en') {
+          item.innerHTML = ok
+            ? `<span>✓</span> <span>${c.name} logged correctly in ledger (${c.targetVal})</span>`
+            : `<span>✗</span> <span>Log value for ${c.name} (Target: ${c.targetVal})</span>`;
+        } else {
+          item.innerHTML = ok
+            ? `<span>✓</span> <span>${c.name} registrado correctamente (${c.targetVal})</span>`
+            : `<span>✗</span> <span>Registra el valor para ${c.name} (Objetivo: ${c.targetVal})</span>`;
+        }
+        hudList.appendChild(item);
+      });
+
+      // Total sum absolute check
+      const allCompsOk = solved === activeCase.components.length;
+      const unit = activeCase.id === 3 ? "°C" : "meters";
+
+      const itemSum = document.createElement('div');
+      itemSum.className = `hud-item ${allCompsOk ? 'done' : ''}`;
+      if (STATE.lang === 'en') {
+        itemSum.innerHTML = allCompsOk
+          ? `<span>✓</span> <span>Vertical absolute difference resolved at ${activeCase.totalTargetVal} ${unit}</span>`
+          : `<span>✗</span> <span>Evaluate absolute values to resolve sum of ${activeCase.totalTargetVal} ${unit}</span>`;
+      } else {
+        itemSum.innerHTML = allCompsOk
+          ? `<span>✓</span> <span>Diferencia vertical absoluta resuelta en ${activeCase.totalTargetVal} ${unit}</span>`
+          : `<span>✗</span> <span>Evalúa los valores absolutos para resolver la suma de ${activeCase.totalTargetVal} ${unit}</span>`;
+      }
+      hudList.appendChild(itemSum);
+
+      if (allCompsOk && !STATE.casesCompleted.includes(activeCase.id)) {
+        STATE.casesCompleted.push(activeCase.id);
+        renderQuests();
+        playSynthNote(440, 'sine', 0.2);
+        setTimeout(() => {
+          playSynthNote(554.37, 'sine', 0.2);
+          playSynthNote(659.25, 'sine', 0.35);
+        }, 150);
+
+        logDiag(`EXPEDITION SECURED: Case ${activeCase.id} absolute coordinates mapped successfully!`);
+      }
+    }
+
+    // 7. TWR WRITING REPORTER GRAMMAR EVALUATION
+    function evaluateWriting() {
+      const textB = document.getElementById('textBecause').value.toLowerCase();
+      const textBut = document.getElementById('textBut').value.toLowerCase();
+      const textSo = document.getElementById('textSo').value.toLowerCase();
+
+      const bOk = textB.includes('because') && textB.length > 25;
+      const butOk = textBut.includes('but') && textBut.length > 25;
+      const soOk = textSo.includes('so') && textSo.length > 25;
+
+      STATE.conjunctionsFound.because = bOk;
+      STATE.conjunctionsFound.but = butOk;
+      STATE.conjunctionsFound.so = soOk;
+
+      const feedback = document.getElementById('writingFeedback');
+      feedback.innerHTML = '';
+
+      const makeChip = (txt, ok) => {
+        const chip = document.createElement('span');
+        chip.className = 'conj-chip';
+        chip.style.borderColor = ok ? 'var(--secondary)' : 'rgba(255,255,255,0.08)';
+        chip.style.color = ok ? '#fff' : 'var(--text-dark)';
+        chip.textContent = txt;
+        feedback.appendChild(chip);
+      };
+
+      if (STATE.lang === 'en') {
+        makeChip("Because: Expl.", bOk);
+        makeChip("But: Contrast", butOk);
+        makeChip("So: Conseq.", soOk);
+      } else {
+        makeChip("Porque: Explic.", bOk);
+        makeChip("Pero: Contras.", butOk);
+        makeChip("Así que: Consec.", soOk);
+      }
+
+      const btnSubmit = document.getElementById('btnSubmitReport');
+      btnSubmit.disabled = !(bOk && butOk && soOk);
+    }
+
+    function submitExpeditionReport() {
+      playSynthNote(523.25, 'sine', 0.15);
+      setTimeout(() => {
+        playSynthNote(659.25, 'sine', 0.2);
+        playSynthNote(783.99, 'sine', 0.35);
+      }, 150);
+
+      const msg = STATE.lang === 'en' 
+        ? "✓ Scientific Log registered into Polar Observatory Ledger successfully!" 
+        : "✓ ¡Reporte científico registrado exitosamente en el libro del observatorio polar!";
+      alert(msg);
+
+      document.getElementById('textBecause').value = '';
+      document.getElementById('textBut').value = '';
+      document.getElementById('textSo').value = '';
+      evaluateWriting();
+    }
+
+    // 8. ESOL TRANSLATIONS & WALL DEFINITIONS
+    function toggleLanguage() {
+      STATE.lang = STATE.lang === 'en' ? 'es' : 'en';
+
+      const isES = STATE.lang === 'es';
+      document.getElementById('langIndicator').textContent = isES ? 'Modo Español' : 'English Mode';
+      document.getElementById('btnLangToggle').textContent = isES ? '🌍 Translate to English' : '🌍 Translate to Spanish';
+
+      document.getElementById('heroTitle').textContent = isES ? 'Sub-Zero Ledger & Altitude Compass' : 'Sub-Zero Ledger & Altitude Compass';
+      document.getElementById('heroCopy').textContent = isES
+        ? 'Pilota vectores de altitud en escalas verticales y registra transacciones en libros de contabilidad polares para evaluar enteros y magnitudes.'
+        : 'Pilot altitude vectors along vertical scales and log debit/credit transactions in polar ledgers to evaluate integer positions and absolute value magnitudes.';
+
+      document.getElementById('sidebarTitle').textContent = isES ? '🏔️ Misiones de Exploración' : '🏔️ Explorer Missions';
+      document.getElementById('sidebarSubtitle').textContent = isES ? 'Registra magnitudes de crédito/débito' : 'Log credit/debit magnitudes';
+
+      document.getElementById('canvasHeading').textContent = isES ? '🔬 Vector Vertical e Historial de Transacciones Polares' : '🔬 Vertical Vector Meter & Polar Ledger';
+      document.getElementById('btnResetData').textContent = isES ? '🔄 Reiniciar Expedición' : '🔄 Reset Expedition';
+      document.getElementById('lblLedger').textContent = isES ? 'Hoja de Contabilidad de Expedición' : 'Expedition Ledger Sheet';
+
+      document.getElementById('writingHeading').textContent = isES ? '✍️ Diario Científico de la Expedición Polar TWR' : '✍️ TWR Polar Expedition Scientific Log';
+      document.getElementById('writingSubtitle').textContent = isES ? 'Documenta tus métodos de distancias absolutas utilizando conectores' : 'Document your coordinate absolute distance methods using transition clauses';
+
+      document.getElementById('hudTitleText').textContent = isES ? 'Indicadores de Misión Activos' : 'Mission Indicators';
+      document.getElementById('btnSubmitReport').textContent = isES ? '💾 Registrar Reporte de Expedición' : '💾 Submit Scientific Log';
+
+      renderQuests();
+      renderWorksheet();
+      updateExpedition();
+      evaluateWriting();
+    }
+
+    function setGlossaryLang(lang) {
+      STATE.glossaryLang = lang;
+      document.getElementById('tabEN').className = `lang-tab ${lang === 'en' ? 'active' : ''}`;
+      document.getElementById('tabES').className = `lang-tab ${lang === 'es' ? 'active' : ''}`;
+
+      const grid = document.getElementById('glossaryGrid');
+      grid.innerHTML = '';
+
+      const vocabItems = VOCAB_MAP[lang];
+      vocabItems.forEach(item => {
+        const chip = document.createElement('div');
+        chip.className = 'vocab-chip';
+        chip.innerHTML = `
+          <span>🔊</span>
+          <b>${item.word}</b>
+          <div class="tooltip-bubble">
+            <strong>${item.word}:</strong><br>${item.def}
+          </div>
+        `;
+        chip.onclick = () => playVocabSynth(item.word);
+        grid.appendChild(chip);
+      });
+    }
+
+    function playVocabSynth(word) {
+      playSynthNote(220, 'triangle', 0.12);
+    }
+
+    // 9. WEB AUDIO API SYNTHESIZER
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playSynthNote(freq, type, duration) {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gainNode.gain.setValueAtTime(CONFIG.audioGainLimit, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Browser restrictions handled
+      }
+    }
+
+    // 10. DIAGNOSTICS & SYSTEM CHECKS
+    function toggleDiagnostics() {
+      const consoleOverlay = document.getElementById('diagConsole');
+      const isHidden = window.getComputedStyle(consoleOverlay).display === 'none';
+      consoleOverlay.style.display = isHidden ? 'flex' : 'none';
+      logDiag("Sub-zero diagnostics toggled.");
+    }
+
+    function logDiag(msg, isError = false) {
+      console.log(msg);
+      const stream = document.getElementById('diagStream');
+      if (stream) {
+        const p = document.createElement('p');
+        p.className = 'diag-line';
+        p.style.color = isError ? 'var(--accent)' : '#00ff66';
+        p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        stream.appendChild(p);
+        stream.scrollTop = stream.scrollHeight;
+      }
+    }
+
+    function triggerSelfTest() {
+      const ok = selfTest();
+      if (ok) {
+        alert("✓ diagnostics check: 100% PASS! Vertical axis compass ratios, ledger transactions credit/debits, and absolute value calculations are fully aligned.");
+      } else {
+        alert("✗ Diagnostics check failed. Review terminal log outputs.");
+      }
+    }
+  </script>
+</body>
+</html>

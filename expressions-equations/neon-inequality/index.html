@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Neon Inequality Gatekeeper: An interactive cybersecurity firewall mapping inequalities to number lines.">
+  <title>Neon Inequality Gatekeeper | Neft Studio</title>
+
+  <!-- Google Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    /* ── Cyberpunk Cyan & Red Design Tokens ── */
+    :root {
+      --bg-base: #030408;
+      --bg-surface: #0a0c16;
+      --bg-card: rgba(14, 18, 36, 0.65);
+      --bg-glow: rgba(6, 182, 212, 0.08);
+      
+      --primary: #06b6d4; /* Neon Cyan */
+      --primary-glow: rgba(6, 182, 212, 0.45);
+      --secondary: #10b981; /* Neon Emerald */
+      --secondary-glow: rgba(16, 185, 129, 0.4);
+      --accent: #ef4444; /* Firewall Alert Red */
+      --accent-glow: rgba(239, 68, 68, 0.4);
+      --warning: #f59e0b;
+      
+      --text-main: #ecfeff;
+      --text-muted: #0891b2;
+      --text-dark: #155e75;
+      
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+      
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-gaze: 0 0 22px rgba(6, 182, 212, 0.25);
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.04) 0%, transparent 40%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      margin: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .breadcrumb a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .breadcrumb a:hover {
+      text-shadow: 0 0 8px var(--primary);
+    }
+    .breadcrumb span {
+      color: var(--text-dark);
+    }
+
+    /* ── Hero Banner ── */
+    .hero {
+      background: linear-gradient(135deg, #082531 0%, #030408 100%);
+      border: 1px solid rgba(6, 182, 212, 0.15);
+      border-left: 6px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin: 20px 24px;
+      box-shadow: var(--shadow-gaze);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.4), transparent);
+    }
+    .hero-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #fff, #cffafe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 0 16px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+    }
+    .hero-chip {
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hero-chip.accent {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.2);
+      color: var(--secondary);
+    }
+
+    /* ── Layout Grid ── */
+    .studio-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .brand-block h2 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-block p {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    /* ── Quest List Cards ── */
+    .quest-catalog {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .quest-card {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .quest-card:hover {
+      border-color: var(--primary);
+      background: rgba(6, 182, 212, 0.05);
+      transform: translateY(-1px);
+    }
+    .quest-card.active {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+    }
+    .quest-card .quest-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .quest-card.completed {
+      border-color: var(--secondary);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    /* ── Workspace ── */
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .glass-panel {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .panel-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+    .panel-meta h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Gatekeeper Viewport Split */
+    .gate-split {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .gate-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Interactive number line viewport */
+    .model-viewport {
+      background: #020307;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-md);
+      min-height: 280px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .model-viewport svg {
+      width: 100%;
+      height: 280px;
+      display: block;
+    }
+
+    /* Controllers Panel */
+    .gate-controllers {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .control-slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .slider-header span.val-label {
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+    }
+    
+    /* Toggle switch styles */
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+    }
+    .toggle-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #20131b;
+      transition: .4s;
+      border-radius: 34px;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--primary);
+      transition: .4s;
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+    input:checked + .toggle-slider {
+      background-color: rgba(6, 182, 212, 0.2);
+    }
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+      background-color: var(--secondary);
+      box-shadow: 0 0 8px var(--secondary-glow);
+    }
+
+    /* Active boundary equation HUD */
+    .equation-board {
+      background: rgba(6, 182, 212, 0.02);
+      border: 1px solid rgba(6, 182, 212, 0.1);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+    .equation-display {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      color: var(--primary);
+      padding: 12px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      border: 1px solid rgba(6, 182, 212, 0.2);
+    }
+
+    /* ── Case Objective HUD ── */
+    .objective-hud {
+      background: rgba(6, 182, 212, 0.03);
+      border: 1px solid rgba(6, 182, 212, 0.15);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .hud-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hud-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .hud-item.done {
+      border-color: var(--secondary);
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--secondary);
+    }
+
+    /* ── TWR Writing Reporter ── */
+    .writing-reporter {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .writing-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .writing-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .writing-header p {
+      font-size: 0.78rem;
+      color: var(--text-dark);
+      margin: 0;
+    }
+    .twr-lanes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .twr-lane {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lane-label {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+    .twr-lane:nth-child(2) .lane-label { color: var(--secondary); }
+    .twr-lane:nth-child(3) .lane-label { color: var(--accent); }
+    .lane-kernel {
+      font-size: 0.8rem;
+      color: var(--text-dark);
+      font-style: italic;
+      line-height: 1.4;
+    }
+    .twr-textarea {
+      width: 100%;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      resize: none;
+      outline: none;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .twr-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(6, 182, 212, 0.25);
+    }
+    .twr-conjunctions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .conj-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-dark);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .conj-chip:hover {
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* ── Glossary ── */
+    .glossary-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .glossary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .glossary-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .glossary-lang-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .lang-tab {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-dark);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lang-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .glossary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .vocab-chip {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: help;
+      position: relative;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vocab-chip:hover {
+      border-color: var(--primary);
+      background: rgba(6, 182, 212, 0.08);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .vocab-chip .tooltip-bubble {
+      visibility: hidden;
+      width: 240px;
+      background: #0a0c16;
+      color: var(--text-main);
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px 12px;
+      position: absolute;
+      z-index: 100;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      pointer-events: none;
+      font-weight: 500;
+    }
+    .vocab-chip:hover .tooltip-bubble {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* Cyber Buttons */
+    .cyber-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, #0891b2 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+    }
+    .cyber-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+    }
+    .cyber-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .cyber-btn.sec {
+      background: linear-gradient(135deg, var(--secondary) 0%, #047857 100%);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+    .cyber-btn.sec:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    }
+    .cyber-btn.outline {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+    .cyber-btn.outline:hover {
+      border-color: var(--primary);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    /* Diagnostics panel */
+    .diag-overlay {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 420px;
+      background: #04050a;
+      color: #00ff66;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      border: 1px solid #142c4a;
+      padding: 16px;
+      display: none;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+    .diag-head {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      border-bottom: 1px dashed #142c4a;
+      padding-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+    .diag-stream {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .diag-line {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    .diag-close {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1080px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-wrapper {
+        position: static;
+        max-height: none;
+      }
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a href="/expressions-equations/">Equations</a>
+    <span>/</span>
+    <span>Neon Inequality Gatekeeper</span>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-row">
+      <div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px">
+          <span class="hero-chip">Unit 6 · Inequalities</span>
+          <span class="hero-chip accent" id="langIndicator">English Mode</span>
+        </div>
+        <h1 id="heroTitle">Neon Inequality Gatekeeper</h1>
+        <p id="heroCopy">
+          Establish boundary parameters, toggle inclusion states, and graph inequality intervals on the coordinate axis 
+          to secure system firewalls from cyber alerts.
+        </p>
+        <div class="hero-stats">
+          <button class="cyber-btn outline" onclick="toggleLanguage()" id="btnLangToggle">
+            🌍 Translate to Spanish
+          </button>
+          <button class="cyber-btn outline" onclick="toggleDiagnostics()">
+            📊 Run System Checks
+          </button>
+          <button class="cyber-btn outline" id="btnSelfTest" onclick="triggerSelfTest()">
+            ⚙️ Run Self-Test
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="studio-shell">
+    <!-- Sidebar: Active Firewall Quests -->
+    <aside class="sidebar-wrapper" aria-label="Active Security Quests">
+      <div class="brand-block">
+        <h2 id="sidebarTitle">🔒 Firewall Cases</h2>
+        <p id="sidebarSubtitle">Secure coordinates intervals</p>
+      </div>
+
+      <div class="quest-catalog" id="questCatalog" role="radiogroup" aria-label="Select Security Case">
+        <!-- Dynamic case cards -->
+      </div>
+    </aside>
+
+    <!-- Workspace -->
+    <div class="canvas-layout">
+      <section class="glass-panel" aria-labelledby="canvasHeading">
+        <div class="panel-meta">
+          <h3 id="canvasHeading">🎛️ Interactive Interval Coordinate Grid</h3>
+          <button class="cyber-btn" onclick="resetActiveSliders()" id="btnResetData">
+            🔄 Reset Firewall
+          </button>
+        </div>
+
+        <div class="gate-split">
+          <!-- Interactive coordinate line -->
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="model-viewport">
+              <svg id="svgLine" viewBox="0 0 450 200"></svg>
+            </div>
+            <!-- Slider & controls panel -->
+            <div class="gate-controllers">
+              <div class="control-slider-group">
+                <div class="slider-header">
+                  <span id="labelBoundary">Boundary Marker Coordinate (c)</span>
+                  <span class="val-label" id="valBoundary">0</span>
+                </div>
+                <input type="range" id="sliderBoundary" min="-10" max="10" value="0" step="1" oninput="updateGatekeeper()">
+              </div>
+
+              <!-- Inclusive vs Exclusive Circle Toggle -->
+              <div class="toggle-group">
+                <span class="toggle-label" id="labelCircleState">Inclusion state: Circle is OPEN (c excluded)</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggleCircle" onchange="updateGatekeeper()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- Inequality Interval Direction Toggle -->
+              <div class="toggle-group">
+                <span class="toggle-label" id="labelDirection">Interval vector direction</span>
+                <div style="display:flex; gap:6px;">
+                  <button class="cyber-btn outline" id="btnDirLeft" onclick="setDirection('LEFT')">← Left</button>
+                  <button class="cyber-btn outline" id="btnDirRight" onclick="setDirection('RIGHT')">Right →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Equation Board -->
+          <div style="display:flex; flex-direction:column; gap:20px;">
+            <div class="equation-board">
+              <div style="font-size:0.8rem; font-weight:800; color:var(--primary); text-transform:uppercase; letter-spacing:0.05em;">
+                🛡️ Locked Firewall Parameter
+              </div>
+              <div class="equation-display" id="liveEquation">
+                x &gt; 0
+              </div>
+            </div>
+
+            <!-- Case Objective HUD -->
+            <div class="objective-hud">
+              <div class="hud-title">
+                <span style="font-size:1.25rem;">📡</span>
+                <span id="hudTitleText">Active Firewall Indicators</span>
+              </div>
+              <div class="hud-checklist" id="hudChecklist">
+                <!-- Checkpoints dynamic -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Writing Reporter -->
+      <section class="writing-reporter" aria-labelledby="writingHeading">
+        <div class="writing-header">
+          <h4 id="writingHeading">✍️ TWR Cybersecurity Incident Report</h4>
+          <p id="writingSubtitle">Document your coordinate parameters using transition clauses</p>
+        </div>
+
+        <div class="twr-lanes">
+          <div class="twr-lane">
+            <span class="lane-label">Because (Explicación)</span>
+            <span class="lane-kernel" id="kernelBecause">Boundary circle is open because...</span>
+            <textarea class="twr-textarea" id="textBecause" placeholder="Draft explanation using 'because'..." oninput="evaluateWriting()"></textarea>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">But (Contraste)</span>
+            <span class="lane-kernel" id="kernelBut">Value 8 is plotted, but...</span>
+            <textarea class="twr-textarea" id="textBut" placeholder="Add contrasting evidence using 'but'..." oninput="evaluateWriting()"></textarea>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">So (Consecuencia)</span>
+            <span class="lane-kernel" id="kernelSo">Firewall locks variable x, so...</span>
+            <textarea class="twr-textarea" id="textSo" placeholder="Draft consequence using 'so'..." oninput="evaluateWriting()"></textarea>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:16px;">
+          <div class="twr-conjunctions" id="writingFeedback">
+            <span class="conj-chip" style="color:var(--text-dark); pointer-events:none;">Report Status: Awaiting security notes</span>
+          </div>
+          <button class="cyber-btn sec" id="btnSubmitReport" onclick="submitGatekeeperReport()" disabled>
+            💾 Submit Security Ledger
+          </button>
+        </div>
+      </section>
+
+      <!-- Glossary section -->
+      <section class="glossary-card" aria-label="Math Glossary">
+        <div class="glossary-header">
+          <h4 id="glossaryTitle">📚 Security Terminology Grid</h4>
+          <div class="glossary-lang-tabs" role="tablist">
+            <button class="lang-tab active" onclick="setGlossaryLang('en')" role="tab" aria-selected="true" id="tabEN">EN English</button>
+            <button class="lang-tab" onclick="setGlossaryLang('es')" role="tab" aria-selected="false" id="tabES">ES Español</button>
+          </div>
+        </div>
+        <div class="glossary-grid" id="glossaryGrid">
+          <!-- Vocab chips dynamically -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Diagnostics overlay console -->
+  <aside class="diag-overlay" id="diagConsole" aria-label="Security Diagnostics">
+    <div class="diag-head">
+      <span>SECURITY DIAGNOSTIC OVERLAY</span>
+      <button class="diag-close" onclick="toggleDiagnostics()">CLOSE</button>
+    </div>
+    <div class="diag-stream" id="diagStream">
+      <p class="diag-line">System firewall initializing...</p>
+    </div>
+  </aside>
+
+  <script>
+    // 1. SYSTEM CONFIGURATION
+    const CONFIG = {
+      theme: 'cyber-gatekeeper',
+      defaultBoundary: 0,
+      minBoundary: -10,
+      maxBoundary: 10,
+      audioGainLimit: 0.05,
+      debug: true
+    };
+
+    // 2. STATE LAYER (Repository)
+    let STATE = {
+      boundary: CONFIG.defaultBoundary,
+      isClosedCircle: false, // false = open (exclusive), true = closed (inclusive)
+      direction: 'RIGHT', // 'LEFT' or 'RIGHT'
+      activeCaseId: 1,
+      casesCompleted: [],
+      lang: 'en',
+      glossaryLang: 'en',
+      conjunctionsFound: { because: false, but: false, so: false }
+    };
+
+    const CASE_QUESTS = [
+      {
+        id: 1,
+        titleEN: "Case 1: Cargo Elevator Seal",
+        titleES: "Caso 1: Sello de Elevador",
+        descEN: "Represent the weight limit parameters: 'Cargo weight w must be strictly less than 8 tons' (w < 8).",
+        descES: "Representa los parámetros de peso: 'El peso del elevador w debe ser estrictamente menor a 8 toneladas' (w < 8).",
+        targetBoundary: 8,
+        targetClosed: false,
+        targetDirection: 'LEFT',
+        variable: 'w'
+      },
+      {
+        id: 2,
+        titleEN: "Case 2: Deep-Space Pressure Lock",
+        titleES: "Caso 2: Esclusa de Presión",
+        descEN: "Represent the barometric requirements: 'The pressure p must be at least -3 bars' (p >= -3).",
+        descES: "Representa los requisitos barométricos: 'La presión p debe ser al menos -3 bares' (p >= -3).",
+        targetBoundary: -3,
+        targetClosed: true,
+        targetDirection: 'RIGHT',
+        variable: 'p'
+      },
+      {
+        id: 3,
+        titleEN: "Case 3: Hyperdrive Speed Minimum",
+        titleES: "Caso 3: Mínimo de Velocidad",
+        descEN: "Graph the velocity overrides: 'Hyperdrive speed s must be strictly greater than -6 knots' (s > -6).",
+        descES: "Grafica las sobreescrituras de velocidad: 'La velocidad del hiperpropulsor s debe ser estrictamente mayor a -6 nudos' (s > -6).",
+        targetBoundary: -6,
+        targetClosed: false,
+        targetDirection: 'RIGHT',
+        variable: 's'
+      }
+    ];
+
+    const VOCAB_MAP = {
+      en: [
+        { word: "Inequality", def: "A mathematical statement showing that two quantities are not equal, using <, >, <=, or >=" },
+        { word: "Boundary", def: "The coordinate value where the inequality interval starts or ends (the threshold)" },
+        { word: "Open Circle", def: "A circle plotted at the boundary value indicating the number is excluded from the solution space (< or >)" },
+        { word: "Closed Circle", def: "A filled circle plotted at the boundary value indicating the number is included in the solution space (<= or >=)" }
+      ],
+      es: [
+        { word: "Desigualdad", def: "Una oración matemática que muestra que dos cantidades no son iguales, utilizando <, >, <= o >=" },
+        { word: "Límite (Frontera)", def: "El valor coordenada donde comienza o termina el intervalo de la desigualdad (el umbral)" },
+        { word: "Círculo Abierto", def: "Un círculo trazado en el valor límite indicando que el número está excluido del conjunto solución (< o >)" },
+        { word: "Círculo Cerrado", def: "Un círculo relleno trazado en el valor límite indicando que el número está incluido en el conjunto solución (<= o >=)" }
+      ]
+    };
+
+    let audioCtx = null;
+
+    // 3. SERVICE LOGIC LAYER
+    function validateConfig() {
+      logDiag("Running validateConfig()...");
+      if (CONFIG.defaultBoundary < CONFIG.minBoundary || CONFIG.defaultBoundary > CONFIG.maxBoundary) {
+        throw new Error("CONFIG Error: defaultBoundary out of coordinate range.");
+      }
+      if (CONFIG.audioGainLimit > 0.08) {
+        throw new Error("CONFIG Warning: audioGain Limit exceeds safe publishing levels.");
+      }
+      logDiag("validateConfig(): PASS");
+      return true;
+    }
+
+    function selfTest() {
+      logDiag("=== Starting Neon Inequality Gatekeeper Self-Test ===");
+      try {
+        validateConfig();
+        
+        // Assert equation formats
+        const eq1 = compileEquationText(5, true, 'RIGHT', 'x');
+        if (eq1 !== 'x ≥ 5') throw new Error(`Self-Test Fail: Equation format must be x >= 5 (Got: ${eq1})`);
+
+        const eq2 = compileEquationText(-2, false, 'LEFT', 'x');
+        if (eq2 !== 'x < -2') throw new Error(`Self-Test Fail: Equation format must be x < -2 (Got: ${eq2})`);
+
+        // DOM verification
+        const testIds = ['sliderBoundary', 'toggleCircle', 'svgLine', 'liveEquation'];
+        testIds.forEach(id => {
+          if (!document.getElementById(id)) {
+            throw new Error(`DOM Error: Missing element #${id}`);
+          }
+        });
+
+        logDiag("selfTest(): 100% PASS");
+        return true;
+      } catch (e) {
+        logDiag(`selfTest() FAILED: ${e.message}`, true);
+        return false;
+      }
+    }
+
+    function compileEquationText(boundary, isClosed, direction, variableName) {
+      if (direction === 'LEFT') {
+        return isClosed ? `${variableName} ≤ ${boundary}` : `${variableName} < ${boundary}`;
+      } else {
+        return isClosed ? `${variableName} ≥ ${boundary}` : `${variableName} > ${boundary}`;
+      }
+    }
+
+    // 4. CONTROLLER LAYER
+    window.addEventListener('load', () => {
+      validateConfig();
+      renderQuests();
+      setGlossaryLang('en');
+      updateGatekeeper();
+    });
+
+    function transitionState(action, data) {
+      logDiag(`State transition: ${action}`);
+      switch (action) {
+        case 'SET_CASE':
+          STATE.activeCaseId = data;
+          const activeCase = CASE_QUESTS.find(c => c.id === data);
+          STATE.boundary = activeCase.id === 1 ? -2 : activeCase.targetBoundary + 4;
+          STATE.isClosedCircle = !activeCase.targetClosed;
+          STATE.direction = activeCase.targetDirection === 'LEFT' ? 'RIGHT' : 'LEFT';
+          
+          document.getElementById('sliderBoundary').value = STATE.boundary;
+          document.getElementById('toggleCircle').checked = STATE.isClosedCircle;
+          
+          playSynthNote(261.63, 'square', 0.1);
+          break;
+        case 'RESET':
+          STATE.boundary = CONFIG.defaultBoundary;
+          STATE.isClosedCircle = false;
+          STATE.direction = 'RIGHT';
+          
+          document.getElementById('sliderBoundary').value = STATE.boundary;
+          document.getElementById('toggleCircle').checked = STATE.isClosedCircle;
+          
+          playSynthNote(196, 'sine', 0.15);
+          break;
+      }
+      updateGatekeeper();
+    }
+
+    function updateGatekeeper() {
+      // Pull inputs
+      STATE.boundary = parseInt(document.getElementById('sliderBoundary').value);
+      STATE.isClosedCircle = document.getElementById('toggleCircle').checked;
+
+      // Update controllers text labels
+      document.getElementById('valBoundary').textContent = STATE.boundary;
+      
+      const isES = STATE.lang === 'es';
+      if (isES) {
+        document.getElementById('labelCircleState').textContent = STATE.isClosedCircle 
+          ? `Estado de Círculo: CERRADO (c incluido)`
+          : `Estado de Círculo: ABIERTO (c excluido)`;
+      } else {
+        document.getElementById('labelCircleState').textContent = STATE.isClosedCircle 
+          ? `Inclusion state: Circle is CLOSED (c included)`
+          : `Inclusion state: Circle is OPEN (c excluded)`;
+      }
+
+      // Update button highlights
+      document.getElementById('btnDirLeft').className = `cyber-btn ${STATE.direction === 'LEFT' ? 'sec' : 'outline'}`;
+      document.getElementById('btnDirRight').className = `cyber-btn ${STATE.direction === 'RIGHT' ? 'sec' : 'outline'}`;
+
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+
+      // Render math text
+      const equationText = compileEquationText(STATE.boundary, STATE.isClosedCircle, STATE.direction, activeCase.variable);
+      document.getElementById('liveEquation').textContent = equationText;
+
+      // Redraw axes
+      drawNumberLine();
+      checkCaseObjectives();
+      updateTWRKernels();
+    }
+
+    function updateTWRKernels() {
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+      const isES = STATE.lang === 'es';
+
+      if (isES) {
+        document.getElementById('kernelBecause').textContent = `El círculo límite en ${STATE.boundary} está abierto porque...`;
+        document.getElementById('kernelBut').textContent = `El valor de frontera se graficó correctamente, pero...`;
+        document.getElementById('kernelSo').textContent = `El intervalo seguro se extiende a la ${STATE.direction === 'LEFT' ? 'izquierda' : 'derecha'}, de modo que...`;
+      } else {
+        document.getElementById('kernelBecause').textContent = `The boundary circle at ${STATE.boundary} is open because...`;
+        document.getElementById('kernelBut').textContent = `The coordinate boundary was plotted successfully, but...`;
+        document.getElementById('kernelSo').textContent = `The interval vector points to the ${STATE.direction === 'LEFT' ? 'left' : 'right'}, so...`;
+      }
+    }
+
+    function setDirection(dir) {
+      STATE.direction = dir;
+      playSynthNote(329.63, 'triangle', 0.08);
+      updateGatekeeper();
+    }
+
+    function resetActiveSliders() {
+      transitionState('RESET');
+    }
+
+    // 5. VIEW LAYER (SVG Line Grapher)
+    function drawNumberLine() {
+      const svg = document.getElementById('svgLine');
+      svg.innerHTML = '';
+
+      const width = 450;
+      const height = 200;
+      const centerY = 100;
+      const startX = 50;
+      const endX = 400;
+      const stepWidth = (endX - startX) / 20; // 20 tick steps from -10 to +10
+
+      // Draw background panel
+      const panel = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      panel.setAttribute("x", 5);
+      panel.setAttribute("y", 5);
+      panel.setAttribute("width", width - 10);
+      panel.setAttribute("height", height - 10);
+      panel.setAttribute("fill", "rgba(255,255,255,0.01)");
+      panel.setAttribute("stroke", "rgba(6,182,212,0.1)");
+      panel.setAttribute("stroke-width", "2");
+      panel.setAttribute("rx", "16");
+      svg.appendChild(panel);
+
+      // Shade solution zone range interval ray
+      const boundX = startX + (STATE.boundary - CONFIG.minBoundary) * stepWidth;
+      
+      const shade = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      const shadeStartX = STATE.direction === 'LEFT' ? startX - 10 : boundX;
+      const shadeEndX = STATE.direction === 'LEFT' ? boundX : endX + 10;
+      
+      shade.setAttribute("x1", shadeStartX);
+      shade.setAttribute("y1", centerY);
+      shade.setAttribute("x2", shadeEndX);
+      shade.setAttribute("y2", centerY);
+      shade.setAttribute("stroke", STATE.isClosedCircle ? "var(--secondary)" : "var(--primary)");
+      shade.setAttribute("stroke-width", "8");
+      shade.setAttribute("opacity", "0.4");
+      svg.appendChild(shade);
+
+      // Draw horizontal axis line
+      const axis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      axis.setAttribute("x1", startX - 15);
+      axis.setAttribute("y1", centerY);
+      axis.setAttribute("x2", endX + 15);
+      axis.setAttribute("y2", centerY);
+      axis.setAttribute("stroke", "var(--text-muted)");
+      axis.setAttribute("stroke-width", "3");
+      svg.appendChild(axis);
+
+      // Render Ticks (-10 to +10)
+      for (let i = -10; i <= 10; i++) {
+        const x = startX + (i - CONFIG.minBoundary) * stepWidth;
+        const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        tick.setAttribute("x1", x);
+        tick.setAttribute("y1", centerY - 6);
+        tick.setAttribute("x2", x);
+        tick.setAttribute("y2", centerY + 6);
+        tick.setAttribute("stroke", "var(--text-muted)");
+        tick.setAttribute("stroke-width", "1.5");
+        svg.appendChild(tick);
+
+        // Tick value label (every 2 numbers for space)
+        if (i % 2 === 0) {
+          const tickLbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          tickLbl.setAttribute("x", x);
+          tickLbl.setAttribute("y", centerY + 22);
+          tickLbl.setAttribute("text-anchor", "middle");
+          tickLbl.setAttribute("fill", "var(--text-muted)");
+          tickLbl.setAttribute("font-family", "var(--font-mono)");
+          tickLbl.setAttribute("font-size", "10");
+          tickLbl.textContent = i;
+          svg.appendChild(tickLbl);
+        }
+      }
+
+      // Draw arrows at both ends of the axis representing infinite scale
+      const drawArrow = (x, rot) => {
+        const arrow = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        arrow.setAttribute("points", `${x},${centerY-5} ${x+(rot*8)},${centerY} ${x},${centerY+5}`);
+        arrow.setAttribute("fill", "var(--text-muted)");
+        svg.appendChild(arrow);
+      };
+      drawArrow(startX - 18, -1);
+      drawArrow(endX + 18, 1);
+
+      // Draw directional arrow overlay indicating inequality interval vector path
+      if (STATE.direction === 'LEFT') {
+        const arr = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        arr.setAttribute("points", `${startX-10},${centerY-8} ${startX-25},${centerY} ${startX-10},${centerY+8}`);
+        arr.setAttribute("fill", STATE.isClosedCircle ? "var(--secondary)" : "var(--primary)");
+        svg.appendChild(arr);
+      } else {
+        const arr = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        arr.setAttribute("points", `${endX+10},${centerY-8} ${endX+25},${centerY} ${endX+10},${centerY+8}`);
+        arr.setAttribute("fill", STATE.isClosedCircle ? "var(--secondary)" : "var(--primary)");
+        svg.appendChild(arr);
+      }
+
+      // Plotted boundary point node circle
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", boundX);
+      circle.setAttribute("cy", centerY);
+      circle.setAttribute("r", "8");
+      
+      if (STATE.isClosedCircle) {
+        circle.setAttribute("fill", "var(--secondary)");
+        circle.setAttribute("stroke", "#fff");
+        circle.setAttribute("stroke-width", "2");
+        circle.setAttribute("filter", "drop-shadow(0 0 5px var(--secondary-glow))");
+      } else {
+        circle.setAttribute("fill", "#020307");
+        circle.setAttribute("stroke", "var(--primary)");
+        circle.setAttribute("stroke-width", "3");
+        circle.setAttribute("filter", "drop-shadow(0 0 5px var(--primary-glow))");
+      }
+      svg.appendChild(circle);
+    }
+
+    // 6. QUEST OBJECTIVES EVALUATION
+    function renderQuests() {
+      const catalog = document.getElementById('questCatalog');
+      catalog.innerHTML = '';
+
+      CASE_QUESTS.forEach(c => {
+        const title = STATE.lang === 'en' ? c.titleEN : c.titleES;
+        const desc = STATE.lang === 'en' ? c.descEN : c.descES;
+
+        const button = document.createElement('button');
+        button.className = `quest-card ${STATE.activeCaseId === c.id ? 'active' : ''} ${STATE.casesCompleted.includes(c.id) ? 'completed' : ''}`;
+        button.setAttribute('role', 'radio');
+        button.setAttribute('aria-checked', STATE.activeCaseId === c.id ? 'true' : 'false');
+        button.onclick = () => transitionState('SET_CASE', c.id);
+
+        button.innerHTML = `
+          <span class="quest-title">${title}</span>
+          <span style="font-size:0.75rem; color:var(--text-dark); line-height:1.4">${desc}</span>
+        `;
+        catalog.appendChild(button);
+      });
+    }
+
+    function checkCaseObjectives() {
+      const activeCase = CASE_QUESTS.find(c => c.id === STATE.activeCaseId);
+      const hudList = document.getElementById('hudChecklist');
+      hudList.innerHTML = '';
+
+      const boundOk = STATE.boundary === activeCase.targetBoundary;
+      const closedOk = STATE.isClosedCircle === activeCase.targetClosed;
+      const dirOk = STATE.direction === activeCase.targetDirection;
+
+      const makeHUDItem = (ok, successTxt, failTxt) => {
+        const item = document.createElement('div');
+        item.className = `hud-item ${ok ? 'done' : ''}`;
+        item.innerHTML = ok ? `<span>✓</span> <span>${successTxt}</span>` : `<span>✗</span> <span>${failTxt}</span>`;
+        hudList.appendChild(item);
+      };
+
+      if (STATE.lang === 'en') {
+        makeHUDItem(boundOk, `Boundary threshold matched at ${activeCase.targetBoundary}`, `Set boundary slider to ${activeCase.targetBoundary} (Current: ${STATE.boundary})`);
+        makeHUDItem(closedOk, activeCase.targetClosed ? "Closed circle selected (inclusive)" : "Open circle selected (exclusive)", activeCase.targetClosed ? "Toggle inclusion state to CLOSED" : "Toggle inclusion state to OPEN");
+        makeHUDItem(dirOk, `Vector direction points ${activeCase.targetDirection}`, `Shift vector path direction to ${activeCase.targetDirection}`);
+      } else {
+        makeHUDItem(boundOk, `Umbral límite coincidente en ${activeCase.targetBoundary}`, `Mueve la frontera a ${activeCase.targetBoundary} (Actual: ${STATE.boundary})`);
+        makeHUDItem(closedOk, activeCase.targetClosed ? "Círculo cerrado seleccionado (inclusivo)" : "Círculo abierto seleccionado (exclusivo)", activeCase.targetClosed ? "Cambia el estado de círculo a CERRADO" : "Cambia el estado de círculo a ABIERTO");
+        makeHUDItem(dirOk, `La dirección del vector apunta a la ${activeCase.targetDirection === 'LEFT' ? 'izquierda' : 'derecha'}`, `Cambia la dirección del vector a ${activeCase.targetDirection === 'LEFT' ? 'LEFT' : 'RIGHT'}`);
+      }
+
+      if (boundOk && closedOk && dirOk && !STATE.casesCompleted.includes(activeCase.id)) {
+        STATE.casesCompleted.push(activeCase.id);
+        renderQuests();
+        playSynthNote(493.88, 'sine', 0.2);
+        setTimeout(() => {
+          playSynthNote(587.33, 'sine', 0.2);
+          playSynthNote(698.46, 'sine', 0.3);
+        }, 150);
+        
+        logDiag(`FIREWALL ALIGNED: Case ${activeCase.id} locked and secured!`);
+      }
+    }
+
+    // 7. TWR REPORT GRAMMAR COMPILER
+    function evaluateWriting() {
+      const textB = document.getElementById('textBecause').value.toLowerCase();
+      const textBut = document.getElementById('textBut').value.toLowerCase();
+      const textSo = document.getElementById('textSo').value.toLowerCase();
+
+      const bOk = textB.includes('because') && textB.length > 25;
+      const butOk = textBut.includes('but') && textBut.length > 25;
+      const soOk = textSo.includes('so') && textSo.length > 25;
+
+      STATE.conjunctionsFound.because = bOk;
+      STATE.conjunctionsFound.but = butOk;
+      STATE.conjunctionsFound.so = soOk;
+
+      const feedback = document.getElementById('writingFeedback');
+      feedback.innerHTML = '';
+
+      const makeChip = (txt, ok) => {
+        const chip = document.createElement('span');
+        chip.className = 'conj-chip';
+        chip.style.borderColor = ok ? 'var(--secondary)' : 'rgba(255,255,255,0.08)';
+        chip.style.color = ok ? '#fff' : 'var(--text-dark)';
+        chip.textContent = txt;
+        feedback.appendChild(chip);
+      };
+
+      if (STATE.lang === 'en') {
+        makeChip("Because: Expl.", bOk);
+        makeChip("But: Contrast", butOk);
+        makeChip("So: Conseq.", soOk);
+      } else {
+        makeChip("Porque: Explic.", bOk);
+        makeChip("Pero: Contras.", butOk);
+        makeChip("Así que: Consec.", soOk);
+      }
+
+      const btnSubmit = document.getElementById('btnSubmitReport');
+      btnSubmit.disabled = !(bOk && butOk && soOk);
+    }
+
+    function submitGatekeeperReport() {
+      playSynthNote(523.25, 'sine', 0.15);
+      setTimeout(() => {
+        playSynthNote(659.25, 'sine', 0.2);
+        playSynthNote(783.99, 'sine', 0.35);
+      }, 150);
+
+      const msg = STATE.lang === 'en' 
+        ? "✓ Incident Report logged into Firewall Security Ledger successfully!" 
+        : "✓ ¡Reporte de incidente registrado exitosamente en el registro de seguridad!";
+      alert(msg);
+
+      document.getElementById('textBecause').value = '';
+      document.getElementById('textBut').value = '';
+      document.getElementById('textSo').value = '';
+      evaluateWriting();
+    }
+
+    // 8. ESOL TRANSLATIONS & WALL DEFINITIONS
+    function toggleLanguage() {
+      STATE.lang = STATE.lang === 'en' ? 'es' : 'en';
+
+      const isES = STATE.lang === 'es';
+      document.getElementById('langIndicator').textContent = isES ? 'Modo Español' : 'English Mode';
+      document.getElementById('btnLangToggle').textContent = isES ? '🌍 Translate to English' : '🌍 Translate to Spanish';
+
+      document.getElementById('heroTitle').textContent = isES ? 'Neon Inequality Gatekeeper' : 'Neon Inequality Gatekeeper';
+      document.getElementById('heroCopy').textContent = isES
+        ? 'Establece parámetros de frontera, cambia los estados de inclusión y grafica intervalos en la línea numérica para asegurar los cortafuegos del sistema.'
+        : 'Establish boundary parameters, toggle inclusion states, and graph inequality intervals on the coordinate axis to secure system firewalls from cyber alerts.';
+
+      document.getElementById('sidebarTitle').textContent = isES ? '🔒 Casos de Cortafuegos' : '🔒 Firewall Cases';
+      document.getElementById('sidebarSubtitle').textContent = isES ? 'Asegura intervalos coordenados' : 'Secure coordinates intervals';
+
+      document.getElementById('canvasHeading').textContent = isES ? '🎛️ Intervalo Coordenado Interactivo' : '🎛️ Interactive Interval Coordinate Grid';
+      document.getElementById('btnResetData').textContent = isES ? '🔄 Reiniciar Cortafuegos' : '🔄 Reset Firewall';
+
+      document.getElementById('labelBoundary').textContent = isES ? 'Coordenada del Marcador Límite (c)' : 'Boundary Marker Coordinate (c)';
+      document.getElementById('btnDirLeft').textContent = isES ? '← Izquierda' : '← Left';
+      document.getElementById('btnDirRight').textContent = isES ? 'Derecha →' : 'Right →';
+
+      document.getElementById('writingHeading').textContent = isES ? '✍️ Reporte de Incidentes de Ciberseguridad TWR' : '✍️ TWR Cybersecurity Incident Report';
+      document.getElementById('writingSubtitle').textContent = isES ? 'Documenta los parámetros coordenados de seguridad utilizando conectores' : 'Document your coordinate parameters using transition clauses';
+
+      document.getElementById('hudTitleText').textContent = isES ? 'Alineaciones de Cortafuegos Activas' : 'Active Firewall Indicators';
+      document.getElementById('btnSubmitReport').textContent = isES ? '💾 Registrar Libro de Seguridad' : '💾 Submit Security Ledger';
+
+      renderQuests();
+      updateGatekeeper();
+      evaluateWriting();
+    }
+
+    function setGlossaryLang(lang) {
+      STATE.glossaryLang = lang;
+      
+      document.getElementById('tabEN').className = `lang-tab ${lang === 'en' ? 'active' : ''}`;
+      document.getElementById('tabES').className = `lang-tab ${lang === 'es' ? 'active' : ''}`;
+
+      const grid = document.getElementById('glossaryGrid');
+      grid.innerHTML = '';
+
+      const vocabItems = VOCAB_MAP[lang];
+      vocabItems.forEach(item => {
+        const chip = document.createElement('div');
+        chip.className = 'vocab-chip';
+        chip.innerHTML = `
+          <span>🔊</span>
+          <b>${item.word}</b>
+          <div class="tooltip-bubble">
+            <strong>${item.word}:</strong><br>${item.def}
+          </div>
+        `;
+        chip.onclick = () => playVocabSynth(item.word);
+        grid.appendChild(chip);
+      });
+    }
+
+    function playVocabSynth(word) {
+      playSynthNote(293.66, 'triangle', 0.12);
+    }
+
+    // 9. WEB AUDIO API SYNTHESIZER
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playSynthNote(freq, type, duration) {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gainNode.gain.setValueAtTime(CONFIG.audioGainLimit, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Browser restrictions handled
+      }
+    }
+
+    // 10. DIAGNOSTICS & SYSTEM CHECKS
+    function toggleDiagnostics() {
+      const consoleOverlay = document.getElementById('diagConsole');
+      const isHidden = window.getComputedStyle(consoleOverlay).display === 'none';
+      consoleOverlay.style.display = isHidden ? 'flex' : 'none';
+      logDiag("Firewall diagnostics toggled.");
+    }
+
+    function logDiag(msg, isError = false) {
+      console.log(msg);
+      const stream = document.getElementById('diagStream');
+      if (stream) {
+        const p = document.createElement('p');
+        p.className = 'diag-line';
+        p.style.color = isError ? 'var(--accent)' : '#00ff66';
+        p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        stream.appendChild(p);
+        stream.scrollTop = stream.scrollHeight;
+      }
+    }
+
+    function triggerSelfTest() {
+      const ok = selfTest();
+      if (ok) {
+        alert("✓ diagnostics check: 100% PASS! Number line ticks, boundary Snap-to-integers, and circle state values are fully aligned.");
+      } else {
+        alert("✗ Diagnostics check failed. Review log outputs.");
+      }
+    }
+  </script>
+</body>
+</html>

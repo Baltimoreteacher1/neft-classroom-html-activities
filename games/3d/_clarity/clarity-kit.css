@@ -1,0 +1,321 @@
+/* ============================================================================
+   clarity-kit.css — shared onboarding / clarity overlays for engine3d games
+   Pure DOM/CSS layers rendered OVER the 3D canvas. No build deps, no ASCII art.
+   Reuses Neft design tokens from /assets/design-tokens.css.
+   All overlays sit inside the positioned game mount element.
+   ============================================================================ */
+
+.ck-root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* the root never blocks the canvas; children opt in */
+  z-index: 30; /* above HUD (HUD ~16-25), below nothing the game needs */
+  font-family: var(--font-body, system-ui, sans-serif);
+  color: #fff;
+}
+
+/* ---- Full-screen modal layers (start, help, end) -------------------------- */
+.ck-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 3vw, 28px);
+  pointer-events: auto; /* modal layers DO capture input */
+  background: radial-gradient(
+    120% 120% at 50% 0%,
+    rgba(18, 53, 91, 0.82),
+    rgba(8, 18, 34, 0.92)
+  );
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  overflow: auto;
+}
+.ck-layer[hidden] {
+  display: none;
+}
+
+/* ---- Card (panel) --------------------------------------------------------- */
+.ck-card {
+  width: min(560px, 100%);
+  max-height: 92%;
+  overflow: auto;
+  background: linear-gradient(
+    180deg,
+    rgba(24, 70, 111, 0.97),
+    rgba(15, 40, 70, 0.97)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-lg, 22px);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+  padding: clamp(18px, 3vw, 30px);
+  text-align: center;
+}
+
+.ck-eyebrow {
+  font: 700 12px/1.2 var(--font-body, system-ui, sans-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber, #f2c15b);
+  margin: 0 0 6px;
+}
+.ck-title {
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-weight: 700;
+  font-size: clamp(22px, 4vw, 30px);
+  line-height: 1.12;
+  margin: 0 0 12px;
+}
+.ck-objective {
+  font-size: clamp(15px, 2.4vw, 18px);
+  line-height: 1.4;
+  margin: 0 auto 6px;
+  max-width: 42ch;
+}
+.ck-objective strong {
+  color: var(--teal-light, #dff2ee);
+}
+.ck-objective-es {
+  font-size: clamp(13px, 2vw, 15px);
+  line-height: 1.4;
+  opacity: 0.82;
+  font-style: italic;
+  margin: 0 auto 14px;
+  max-width: 42ch;
+}
+.ck-standard {
+  display: inline-block;
+  font: 700 12px/1 var(--font-body, system-ui, sans-serif);
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: rgba(31, 166, 162, 0.32);
+  border: 1px solid rgba(31, 166, 162, 0.6);
+  border-radius: 999px;
+  padding: 6px 12px;
+  margin: 0 0 18px;
+}
+
+/* ---- Buttons -------------------------------------------------------------- */
+.ck-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.ck-btn {
+  pointer-events: auto;
+  appearance: none;
+  font: 700 1rem/1 var(--font-body, system-ui, sans-serif);
+  min-height: 48px;
+  padding: 12px 22px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.ck-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+.ck-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+.ck-btn:focus-visible {
+  outline: 3px solid var(--amber, #f2c15b);
+  outline-offset: 2px;
+}
+.ck-btn--primary {
+  background: var(--teal, #1fa6a2);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 6px 18px rgba(31, 166, 162, 0.4);
+  font-size: 1.1rem;
+  padding: 14px 30px;
+}
+.ck-btn--primary:hover {
+  background: #28bdb8;
+}
+.ck-btn--ghost {
+  background: transparent;
+}
+
+/* ---- How-to-play / controls panel ---------------------------------------- */
+.ck-controls {
+  text-align: left;
+  margin: 6px 0 18px;
+  display: grid;
+  gap: 8px;
+}
+.ck-control {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+.ck-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  padding: 4px 8px;
+  font: 700 13px/1.2 var(--font-body, system-ui, sans-serif);
+  color: #0e2238;
+  background: #e7f0f7;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-bottom-width: 3px;
+  border-radius: 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+.ck-action-text {
+  font-size: 14px;
+  line-height: 1.3;
+}
+.ck-action-text .ck-es {
+  display: block;
+  font-size: 12.5px;
+  opacity: 0.78;
+  font-style: italic;
+}
+.ck-howto-head {
+  font: 700 14px/1.2 var(--font-body, system-ui, sans-serif);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--amber, #f2c15b);
+  margin: 14px 0 6px;
+  text-align: left;
+}
+.ck-win-howto {
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.4;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 0 0 16px;
+}
+
+/* ---- Persistent "?" Help button (visible during play) --------------------- */
+.ck-help-btn {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  pointer-events: auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(18, 53, 91, 0.86);
+  color: #fff;
+  font: 700 20px/1 var(--font-body, system-ui, sans-serif);
+  cursor: pointer;
+  z-index: 31;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease;
+}
+.ck-help-btn:hover {
+  background: rgba(31, 166, 162, 0.95);
+}
+.ck-help-btn:active {
+  transform: scale(0.94);
+}
+.ck-help-btn:focus-visible {
+  outline: 3px solid var(--amber, #f2c15b);
+  outline-offset: 2px;
+}
+.ck-help-btn[hidden] {
+  display: none;
+}
+
+/* ---- Persistent mini-HUD strip (objective + target reminder) -------------- */
+/* Sits at top-left, complements the engine HUD (score/lives) without
+   covering the canvas. Wraps on small screens. */
+.ck-hud {
+  /* Sits just BELOW the engine HUD objective panel (engine objective is at
+     top:52px left:16px), so the clarity objective/target chips never overlap
+     the engine score/lives top bar. */
+  position: absolute;
+  top: 104px;
+  left: 16px;
+  right: 16px;
+  pointer-events: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  align-items: center;
+  z-index: 29;
+}
+.ck-hud[hidden] {
+  display: none;
+}
+.ck-chip {
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 13px/1.1 var(--font-body, system-ui, sans-serif);
+  color: #fff;
+  background: rgba(8, 22, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 5px 11px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  max-width: 100%;
+}
+.ck-chip b {
+  color: var(--amber, #f2c15b);
+  font-weight: 700;
+}
+.ck-chip--objective {
+  max-width: min(60vw, 520px);
+  white-space: normal;
+  line-height: 1.25;
+}
+.ck-chip--target b {
+  color: var(--teal-light, #dff2ee);
+}
+
+/* ---- End screen result styling ------------------------------------------- */
+.ck-result-badge {
+  font-size: 46px;
+  line-height: 1;
+  margin: 0 0 8px;
+}
+.ck-result-stats {
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  opacity: 0.92;
+}
+.ck-card--lose {
+  background: linear-gradient(
+    180deg,
+    rgba(111, 60, 50, 0.97),
+    rgba(70, 30, 26, 0.97)
+  );
+}
+
+/* ---- Reduced-motion: drop transitions ------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .ck-layer {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .ck-btn,
+  .ck-help-btn {
+    transition: none;
+  }
+}

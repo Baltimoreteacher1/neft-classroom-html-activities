@@ -29,11 +29,17 @@ function copyStandaloneHtml() {
     "scripts",
     "docs",
   ]);
-  const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
+  const ROOT_FILES = [
+    "_headers",
+    "_redirects",
+    "404.html",
+    "robots.txt",
+    "sitemap.xml",
+  ];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
   // folders and loose markdown docs (QA reports, READMEs) should never ship.
   const SKIP_COPY_RE =
-    /(^|[\\/])\.(claude|git|wrangler)([\\/]|$)|(^|[\\/])node_modules([\\/]|$)|\.md$/i;
+    /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$/i;
   const copyFilter = (src) => !SKIP_COPY_RE.test(src);
 
   return {
@@ -95,6 +101,20 @@ function copyStandaloneHtml() {
             );
             mkdirSync(destDir, { recursive: true });
             cpSync(downloads, destDir, { recursive: true });
+          }
+          // Readiness pre-lesson (static index.html + printable practice.docx)
+          // lives in lessons/<id>/readiness/ and is linked from the lesson.
+          const readiness = resolve(lessonsDir, dir.name, "readiness");
+          if (existsSync(readiness)) {
+            const destDir = resolve(
+              __dirname,
+              "dist",
+              "lessons",
+              dir.name,
+              "readiness",
+            );
+            mkdirSync(destDir, { recursive: true });
+            cpSync(readiness, destDir, { recursive: true });
           }
         }
       }

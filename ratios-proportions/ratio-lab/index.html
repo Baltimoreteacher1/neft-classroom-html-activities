@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ratio Lab — The Liquid Mixer</title>
+  <meta name="description" content="Mix colorful chemical formulas to explore equivalent ratios, double number lines, tape diagrams, and scaling ratio tables." />
+  
+  <!-- CSS Imports -->
+  <link rel="stylesheet" href="/assets/shared.css" />
+  <link rel="stylesheet" href="/assets/design-tokens.css" />
+  
+  <style>
+    /* Premium Local Styles Override */
+    :root {
+      --accent: var(--coral);
+      --accent-dark: #b64e2f;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --shadow-premium: 0 12px 30px rgba(18, 53, 91, 0.08);
+      
+      /* Chemical Lab Colors */
+      --liquid-blue: #1b75bc;
+      --liquid-yellow: #fcee21;
+      --liquid-glass: #e6f0fa;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .main-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--sp-6);
+      margin-top: var(--sp-4);
+    }
+
+    @media (max-width: 1024px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Workspace Panel */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+    }
+
+    .board-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-premium);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .board-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--liquid-blue), #2dd4bf, var(--liquid-yellow));
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--sp-4);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: var(--sp-3);
+    }
+
+    .board-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    /* Interactive Lab Apparatus */
+    .lab-bay {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--sp-4);
+      background: #f0f4f8;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: var(--sp-5);
+      margin-bottom: var(--sp-5);
+      align-items: center;
+      justify-items: center;
+    }
+
+    @media (max-width: 600px) {
+      .lab-bay {
+        grid-template-columns: 1fr;
+        gap: var(--sp-5);
+      }
+    }
+
+    .tube-station {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-2);
+      width: 100%;
+    }
+
+    .beaker-glass {
+      width: 140px;
+      height: 180px;
+      border: 6px solid #b3c5d7;
+      border-top: none;
+      border-radius: 0 0 16px 16px;
+      position: relative;
+      background: var(--liquid-glass);
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .beaker-glass::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      width: 6px;
+      height: 160px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 3px;
+    }
+
+    /* Beaker markings */
+    .beaker-markings {
+      position: absolute;
+      left: 6px;
+      top: 0;
+      bottom: 0;
+      width: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 15px 0;
+      box-sizing: border-box;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .beaker-mark {
+      width: 12px;
+      height: 2px;
+      background: #7a8b9e;
+      position: relative;
+    }
+
+    .beaker-mark::after {
+      content: attr(data-val);
+      position: absolute;
+      left: 16px;
+      top: -6px;
+      font-size: 8px;
+      font-family: var(--font-body);
+      font-weight: bold;
+      color: #555;
+    }
+
+    .liquid-fill {
+      width: 100%;
+      height: 0%; /* Dynamic fill */
+      background: rgba(27, 117, 188, 0.8);
+      transition: height 0.3s ease-out, background-color 0.3s;
+      position: relative;
+    }
+
+    /* Chemical Mix Bubbles */
+    .liquid-bubbles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -10px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 50%;
+      animation: floatUp 3s infinite linear;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(-160px) scale(0.6); opacity: 0; }
+    }
+
+    .slider-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-3) var(--sp-4);
+      width: 100%;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+      text-align: center;
+    }
+
+    .chemical-label {
+      font-size: 0.88rem;
+      font-weight: 800;
+      font-family: var(--font-display);
+      margin-bottom: var(--sp-2);
+    }
+
+    .chemical-slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+      -webkit-appearance: none;
+      background: var(--line);
+      margin: var(--sp-2) 0;
+    }
+
+    .chemical-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      border: 2px solid white;
+    }
+
+    .blue-theme::-webkit-slider-thumb { background: var(--liquid-blue); }
+    .yellow-theme::-webkit-slider-thumb { background: #dcb807; }
+
+    /* SVGs and Tables */
+    .chart-container {
+      width: 100%;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-4);
+      margin-bottom: var(--sp-5);
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Scaling factor selector */
+    .scale-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-4);
+      background: var(--cream);
+      border: 1px solid var(--line);
+      padding: var(--sp-2) var(--sp-3);
+      border-radius: var(--radius-sm);
+      width: fit-content;
+    }
+
+    .scale-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: white;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .scale-btn.active {
+      background: var(--coral);
+      color: white;
+      border-color: var(--coral);
+    }
+
+    /* Ratio Table */
+    .ratio-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: var(--sp-2);
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+    }
+
+    .ratio-table th, .ratio-table td {
+      border: 1px solid var(--line);
+      padding: var(--sp-2) var(--sp-3);
+      text-align: center;
+    }
+
+    .ratio-table th {
+      background: var(--cream);
+      font-family: var(--font-display);
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .ratio-table tr.active-row {
+      background: rgba(217, 121, 93, 0.08);
+      font-weight: bold;
+    }
+
+    /* Challenges */
+    .challenges-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-premium);
+      align-self: start;
+    }
+
+    .challenge-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      margin-top: var(--sp-4);
+    }
+
+    .challenge-item {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-3);
+      background: white;
+      transition: all 0.2s;
+    }
+
+    .challenge-item.solved {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .challenge-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      cursor: pointer;
+    }
+
+    .chk-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: white;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .challenge-item.solved .chk-icon {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .challenge-title {
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: var(--navy);
+    }
+
+    .challenge-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: var(--sp-1);
+      line-height: 1.35;
+    }
+
+    /* Audio alert feedback */
+    .toast {
+      position: fixed;
+      bottom: var(--sp-6);
+      right: var(--sp-6);
+      background: var(--navy);
+      color: white;
+      padding: var(--sp-3) var(--sp-5);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .btn {
+      min-height: 40px;
+      padding: 8px var(--sp-4);
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      transition: all 0.15s;
+      border: none;
+      font-family: var(--font-display);
+    }
+
+    .btn-secondary {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: var(--navy);
+    }
+    .btn-secondary:hover { background: var(--line); }
+
+    .btn-accent {
+      background: var(--coral);
+      color: white;
+    }
+    .btn-accent:hover { background: #b84f33; }
+
+    /* Print media override */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .page-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .hero, .site-footer, .scale-bar, .chk-icon, input[type=range], .btn, .beaker-markings::after {
+        display: none !important;
+      }
+      .main-container {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+      }
+      .board-card, .challenges-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        background: transparent !important;
+      }
+      .board-card::before {
+        display: none;
+      }
+      .lab-bay {
+        border: 2px solid black !important;
+        background: transparent !important;
+        page-break-inside: avoid;
+      }
+      .chart-container {
+        border: 2px solid black !important;
+        page-break-inside: avoid;
+      }
+      .ratio-table {
+        border: 2px solid black !important;
+      }
+      .ratio-table th, .ratio-table td {
+        border: 1px solid black !important;
+      }
+      .challenges-card {
+        margin-top: 30px;
+        page-break-before: always;
+      }
+      .challenge-item {
+        border: 1px solid black !important;
+        margin-bottom: 10px;
+      }
+      .challenge-item.solved {
+        background: #f0f0f0 !important;
+      }
+      .print-report-header {
+        display: block !important;
+        margin-bottom: 20px;
+        border-bottom: 3px double black;
+        padding-bottom: 10px;
+      }
+      .student-meta-inputs {
+        display: flex !important;
+        gap: 40px;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+    }
+
+    .print-report-header { display: none; }
+    .student-meta-inputs { display: none; }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+
+  <div class="page-shell">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="/">Neft Hub</a> &middot; <a href="/math/">Grade 6 Math</a> &middot; <span>Ratio Lab</span>
+    </div>
+
+    <!-- Printable Report Header -->
+    <div class="print-report-header">
+      <h1 style="font-size: 2rem; margin: 0; font-family: Outfit, sans-serif;">LAB MIXTURE FORMULA SHEET</h1>
+      <p style="margin: 5px 0 0 0; color: #555;">Topic: 6.RP.A.3 — Equivalent Ratios, Double Number Lines, & Tape Diagrams</p>
+      <div class="student-meta-inputs">
+        <div>STUDENT NAME: ___________________________</div>
+        <div>DATE: __________________</div>
+      </div>
+    </div>
+
+    <!-- Page Title / Hero -->
+    <div class="hero">
+      <span class="eyebrow">🧪 Unit 3 Ratios & Rates</span>
+      <h1>Ratio Lab — The Liquid Mixer</h1>
+      <p class="hero-copy">
+        Adjust chemical sliders to mix custom formulas. Renders dynamic beakers, equivalent double number lines, tape diagrams, and ratio tables scaling programmatically in real-time. Solve the mixing achievements!
+      </p>
+    </div>
+
+    <main class="main-container">
+      
+      <!-- LEFT COLUMN: Main Workspace -->
+      <div class="workspace">
+        
+        <div class="board-card">
+          <div class="board-header">
+            <div class="board-title">
+              <span>🔬</span> Laboratory Mixing Deck
+            </div>
+            
+            <div class="controls-row">
+              <button class="btn btn-secondary" onclick="resetSliders()" title="Reset chemical values">🗑️ Reset Lab</button>
+              <button class="btn btn-accent" onclick="window.print()" title="Print formula worksheet">🖨️ Print Formula</button>
+            </div>
+          </div>
+
+          <!-- Lab Apparatus Beakers and Sliders -->
+          <div class="lab-bay">
+            
+            <!-- Blue Acid Sliders -->
+            <div class="tube-station">
+              <div class="chemical-label" style="color: var(--liquid-blue);">🔵 Chemical A (Blue)</div>
+              <div class="beaker-glass" style="width: 70px; height: 110px;">
+                <div class="liquid-fill" id="blue-fill" style="background: rgba(27, 117, 188, 0.85); height: 50%;"></div>
+              </div>
+              <div class="slider-card">
+                <input type="range" class="chemical-slider blue-theme" id="blue-range" min="1" max="10" value="3" oninput="mixRatio()">
+                <div style="font-weight: 800; font-size: 1.1rem; color: var(--liquid-blue);" id="blue-val">3 Parts</div>
+              </div>
+            </div>
+
+            <!-- MIXING STATION -->
+            <div class="tube-station">
+              <div class="chemical-label" style="color: var(--navy);">🧪 Reaction Beaker</div>
+              <div class="beaker-glass">
+                <div class="beaker-markings">
+                  <div class="beaker-mark" data-val="150"></div>
+                  <div class="beaker-mark" data-val="120"></div>
+                  <div class="beaker-mark" data-val="90"></div>
+                  <div class="beaker-mark" data-val="60"></div>
+                  <div class="beaker-mark" data-val="30"></div>
+                </div>
+                <div class="liquid-fill" id="mix-fill">
+                  <div class="liquid-bubbles" id="mix-bubbles"></div>
+                </div>
+              </div>
+              <div style="text-align: center; margin-top: var(--sp-1);">
+                <div style="font-weight: 900; font-size: 1.05rem;" id="mix-total-lbl">0 ml</div>
+                <div style="font-size: 0.72rem; color: var(--muted); font-weight: bold; text-transform: uppercase;">Total Volume</div>
+              </div>
+            </div>
+
+            <!-- Yellow Catalyst Sliders -->
+            <div class="tube-station">
+              <div class="chemical-label" style="color: #dcb807;">🟡 Chemical B (Yellow)</div>
+              <div class="beaker-glass" style="width: 70px; height: 110px;">
+                <div class="liquid-fill" id="yellow-fill" style="background: rgba(252, 238, 33, 0.85); height: 50%;"></div>
+              </div>
+              <div class="slider-card">
+                <input type="range" class="chemical-slider yellow-theme" id="yellow-range" min="1" max="10" value="2" oninput="mixRatio()">
+                <div style="font-weight: 800; font-size: 1.1rem; color: #dcb807;" id="yellow-val">2 Parts</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Scale Factor Slider -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h3 style="font-family: var(--font-display); font-weight: 800; color: var(--navy); margin: 0; font-size: 1rem;">
+              📏 Adjust Scale Factor (Multiplier):
+            </h3>
+            <div class="scale-bar">
+              <button class="scale-btn active" id="btn-scale-1" onclick="changeScale(1)">1x</button>
+              <button class="scale-btn" id="btn-scale-2" onclick="changeScale(2)">2x</button>
+              <button class="scale-btn" id="btn-scale-3" onclick="changeScale(3)">3x</button>
+              <button class="scale-btn" id="btn-scale-4" onclick="changeScale(4)">4x</button>
+              <button class="scale-btn" id="btn-scale-5" onclick="changeScale(5)">5x</button>
+            </div>
+          </div>
+
+          <!-- Double Number Line Chart -->
+          <h3 style="font-family: var(--font-display); font-weight: 800; color: var(--navy); margin-bottom: 8px; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+            📈 Equivalent Double Number Line:
+          </h3>
+          <div class="chart-container" style="height: 120px;">
+            <svg id="double-line-svg" class="chart-svg" viewBox="0 0 800 120" preserveAspectRatio="xMidYMid meet">
+              <!-- Double number lines rendered programmatically -->
+            </svg>
+          </div>
+
+          <!-- Tape Diagram Chart -->
+          <h3 style="font-family: var(--font-display); font-weight: 800; color: var(--navy); margin-bottom: 8px; font-size: 0.95rem;">
+            🧱 Visual Tape Diagram (Base Parts):
+          </h3>
+          <div class="chart-container" style="height: 110px;">
+            <svg id="tape-diagram-svg" class="chart-svg" viewBox="0 0 800 110" preserveAspectRatio="xMidYMid meet">
+              <!-- Tape diagram parts drawn programmatically -->
+            </svg>
+          </div>
+
+          <!-- Equivalent Ratio Table -->
+          <h3 style="font-family: var(--font-display); font-weight: 800; color: var(--navy); margin-bottom: 6px; font-size: 0.95rem;">
+            📊 Equivalent Ratio Scaling Ledger:
+          </h3>
+          <table class="ratio-table" id="ratio-ledger">
+            <thead>
+              <tr>
+                <th>Scale Step</th>
+                <th>🔵 Chemical A (Blue)</th>
+                <th>🟡 Chemical B (Yellow)</th>
+                <th>🧪 Combined Total (ml)</th>
+                <th>✨ Simplified Ratio</th>
+              </tr>
+            </thead>
+            <tbody id="ratio-ledger-body">
+              <!-- Dynamic rows -->
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Challenges -->
+      <div class="challenges-card">
+        <h2 style="font-family: var(--font-display); font-weight: 900; color: var(--navy); margin-bottom: var(--sp-2);">🎯 Mix Recipes</h2>
+        <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: var(--sp-4);">
+          Mix and scale formulas to unlock achievements in your laboratory ledger.
+        </p>
+
+        <div class="challenge-list">
+          <!-- Challenge 1 -->
+          <div class="challenge-item" id="chk-item-1">
+            <div class="challenge-checkbox">
+              <div class="chk-icon" id="chk-icon-1">✓</div>
+              <div>
+                <div class="challenge-title">Recipe 1: The Vibrant Teal</div>
+                <div class="challenge-desc">
+                  Set a base ratio of **3 parts Blue** to **2 parts Yellow**, then adjust the scale factor to make exactly **150 ml** of combined teal liquid.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 2 -->
+          <div class="challenge-item" id="chk-item-2">
+            <div class="challenge-checkbox">
+              <div class="chk-icon" id="chk-icon-2">✓</div>
+              <div>
+                <div class="challenge-title">Recipe 2: The Sunny Lime scale</div>
+                <div class="challenge-desc">
+                  Set a base ratio of **1 part Blue** to **4 parts Yellow**. Find the equivalent mixture that scales Chemical A (Blue) to exactly **8 ml**. What is the Yellow scale value?
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Challenge 3 -->
+          <div class="challenge-item" id="chk-item-3">
+            <div class="challenge-checkbox">
+              <div class="chk-icon" id="chk-icon-3">✓</div>
+              <div>
+                <div class="challenge-title">Recipe 3: Balanced Formula</div>
+                <div class="challenge-desc">
+                  Mix a solution containing **equal amounts** (ratio 1:1) of both chemicals. Scale the total volume to exactly **120 ml**.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div>Neft Teacher &middot; Grade 6 Mathematics</div>
+      <div>Standard Reference: CCSS.MATH.CONTENT.6.RP.A.3</div>
+    </footer>
+  </div>
+
+  <!-- Audio and Achievement Toast -->
+  <div id="toast" class="toast">
+    <span style="font-size: 1.5rem;">🧪</span>
+    <div>
+      <div style="font-weight: 800;" id="toast-title">Formula Unlocked!</div>
+      <div style="font-size: 0.78rem; opacity: 0.9;" id="toast-desc">Recipe completed successfully.</div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script>
+    // Audio Synth Engine (Retro Web Audio API)
+    const Synth = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) this.ctx = new AudioContextClass();
+        }
+      },
+      play(type) {
+        this.init();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+
+        const osc = this.ctx.createOscillator();
+        const gainNode = this.ctx.createGain();
+        const t = this.ctx.currentTime;
+
+        const presets = {
+          click: { type: 'sine', f: [250, 150], d: 0.08, v: 0.04 },
+          correct: { type: 'sine', f: [587.33, 880], d: 0.2, v: 0.08 }, // D5 to A5 sliding
+          complete: { type: 'triangle', f: [300, 600], d: 0.3, v: 0.07 }
+        };
+
+        const config = presets[type] || presets.click;
+        osc.type = config.type;
+        osc.frequency.setValueAtTime(config.f[0], t);
+        osc.frequency.exponentialRampToValueAtTime(config.f[1], t + config.d);
+
+        gainNode.gain.setValueAtTime(0.001, t);
+        gainNode.gain.linearRampToValueAtTime(config.v, t + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, t + config.d);
+
+        osc.connect(gainNode).connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + config.d + 0.01);
+      }
+    };
+
+    // State Variables
+    let activeScale = 1;
+    let blueParts = 3;
+    let yellowParts = 2;
+    let solvedMissions = { 1: false, 2: false, 3: false };
+
+    // HTML Elements
+    const blueFill = document.getElementById('blue-fill');
+    const yellowFill = document.getElementById('yellow-fill');
+    const mixFill = document.getElementById('mix-fill');
+    const mixBubbles = document.getElementById('mix-bubbles');
+
+    const blueRange = document.getElementById('blue-range');
+    const yellowRange = document.getElementById('yellow-range');
+
+    const blueValLbl = document.getElementById('blue-val');
+    const yellowValLbl = document.getElementById('yellow-val');
+    const mixTotalLbl = document.getElementById('mix-total-lbl');
+
+    const doubleLineSvg = document.getElementById('double-line-svg');
+    const tapeDiagramSvg = document.getElementById('tape-diagram-svg');
+    const ratioLedgerBody = document.getElementById('ratio-ledger-body');
+
+    // Startup Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      mixRatio();
+      createBubbles();
+    });
+
+    // Bubble animation generator in Beaker
+    function createBubbles() {
+      mixBubbles.innerHTML = '';
+      for (let i = 0; i < 8; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.style.left = `${Math.random() * 90 + 5}%`;
+        bubble.style.width = `${Math.random() * 6 + 3}px`;
+        bubble.style.height = bubble.style.width;
+        bubble.style.animationDelay = `${Math.random() * 3}s`;
+        bubble.style.animationDuration = `${Math.random() * 2 + 2}s`;
+        mixBubbles.appendChild(bubble);
+      }
+    }
+
+    // Mix Formula Calculations & Rendering
+    function mixRatio() {
+      blueParts = parseInt(blueRange.value);
+      yellowParts = parseInt(yellowRange.value);
+
+      // 1. Update Slider Labels
+      blueValLbl.innerText = `${blueParts} Part${blueParts > 1 ? 's' : ''}`;
+      yellowValLbl.innerText = `${yellowParts} Part${yellowParts > 1 ? 's' : ''}`;
+
+      // 2. Fills for source beakers
+      blueFill.style.height = `${(blueParts / 10) * 100}%`;
+      yellowFill.style.height = `${(yellowParts / 10) * 100}%`;
+
+      // 3. Central reaction beaker color blending
+      // Interpolate colors: Blue is RGB(27, 117, 188), Yellow is RGB(252, 238, 33)
+      const totalParts = blueParts + yellowParts;
+      const blueRatio = blueParts / totalParts;
+      const yellowRatio = yellowParts / totalParts;
+
+      const r = Math.round(27 * blueRatio + 252 * yellowRatio);
+      const g = Math.round(117 * blueRatio + 238 * yellowRatio);
+      const b = Math.round(188 * blueRatio + 33 * yellowRatio);
+
+      // Volume scaling
+      const baseVolume = 10; // ml per part
+      const totalVolume = totalParts * activeScale * baseVolume;
+      
+      mixFill.style.height = `${Math.min(100, (totalVolume / 180) * 100)}%`;
+      mixFill.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.85)`;
+
+      mixTotalLbl.innerText = `${totalVolume} ml`;
+
+      // 4. Render SVG Diagrams
+      renderDoubleNumberLine();
+      renderTapeDiagram();
+      renderRatioTable(r, g, b);
+
+      // 5. Audit recipes
+      checkRecipes(totalVolume);
+    }
+
+    // Change scale factor
+    function changeScale(scale) {
+      Synth.play('click');
+      activeScale = scale;
+      document.querySelectorAll('.scale-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`btn-scale-${scale}`).classList.add('active');
+      mixRatio();
+    }
+
+    // Reset Lab
+    function resetSliders() {
+      Synth.play('click');
+      blueRange.value = 3;
+      yellowRange.value = 2;
+      activeScale = 1;
+      document.querySelectorAll('.scale-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('btn-scale-1').classList.add('active');
+      mixRatio();
+    }
+
+    // Great Common Divisor for ratio simplification
+    function gcd(x, y) {
+      while (y) {
+        var t = y;
+        y = x % y;
+        x = t;
+      }
+      return x;
+    }
+
+    // RENDER: Double Number Line SVG
+    function renderDoubleNumberLine() {
+      let html = '';
+      
+      // Margins: left=70, right=70, width=660
+      const startX = 70;
+      const width = 660;
+
+      // Draw two horizontal line scales
+      html += `
+        <!-- Line A: Blue -->
+        <line x1="${startX}" y1="35" x2="${startX + width}" y2="35" stroke="var(--liquid-blue)" stroke-width="3" stroke-linecap="round" />
+        <text x="${startX - 15}" y="40" font-family="var(--font-display)" font-size="12" font-weight="900" fill="var(--liquid-blue)" text-anchor="end">BLUE</text>
+
+        <!-- Line B: Yellow -->
+        <line x1="${startX}" y1="85" x2="${startX + width}" y2="85" stroke="#dcb807" stroke-width="3" stroke-linecap="round" />
+        <text x="${startX - 15}" y="90" font-family="var(--font-display)" font-size="12" font-weight="900" fill="#dcb807" text-anchor="end">YELLOW</text>
+      `;
+
+      // Render 6 equivalent ticking intervals (scale multipliers 0 to 5)
+      for (let i = 0; i <= 5; i++) {
+        const x = startX + (i / 5) * width;
+        const blueVal = blueParts * i;
+        const yellowVal = yellowParts * i;
+
+        // Draw ticks
+        html += `
+          <!-- Ticks -->
+          <line x1="${x}" y1="30" x2="${x}" y2="40" stroke="var(--liquid-blue)" stroke-width="2.5" />
+          <text x="${x}" y="22" font-family="var(--font-body)" font-size="11" font-weight="bold" fill="var(--navy)" text-anchor="middle">${blueVal}</text>
+
+          <line x1="${x}" y1="80" x2="${x}" y2="90" stroke="#dcb807" stroke-width="2.5" />
+          <text x="${x}" y="104" font-family="var(--font-body)" font-size="11" font-weight="bold" fill="var(--navy)" text-anchor="middle">${yellowVal}</text>
+
+          <!-- Connecting guideline -->
+          <line x1="${x}" y1="40" x2="${x}" y2="80" stroke="#d7e2ed" stroke-dasharray="2,4" />
+        `;
+
+        // Highlight Active scale factor bubble marker
+        if (i === activeScale) {
+          html += `
+            <circle cx="${x}" cy="35" r="7" fill="var(--coral)" stroke="white" stroke-width="1.5" />
+            <circle cx="${x}" cy="85" r="7" fill="var(--coral)" stroke="white" stroke-width="1.5" />
+          `;
+        }
+      }
+
+      doubleLineSvg.innerHTML = html;
+    }
+
+    // RENDER: Visual Tape Diagram SVG
+    function renderTapeDiagram() {
+      let html = '';
+      
+      const startX = 140;
+      const boxSize = 34;
+      const boxSpacing = 6;
+      const yLine1 = 20;
+      const yLine2 = 60;
+
+      // Draw labels
+      html += `
+        <text x="${startX - 20}" y="${yLine1 + 22}" font-family="var(--font-display)" font-size="12" font-weight="900" fill="var(--liquid-blue)" text-anchor="end">Blue Parts:</text>
+        <text x="${startX - 20}" y="${yLine2 + 22}" font-family="var(--font-display)" font-size="12" font-weight="900" fill="#dcb807" text-anchor="end">Yellow Parts:</text>
+      `;
+
+      // Render blue tape blocks
+      for (let i = 0; i < blueParts; i++) {
+        const x = startX + i * (boxSize + boxSpacing);
+        html += `
+          <rect x="${x}" y="${yLine1}" width="${boxSize}" height="${boxSize}" fill="#dff2ee" stroke="var(--liquid-blue)" stroke-width="2.5" rx="4" />
+          <text x="${x + boxSize/2}" y="${yLine1 + 21}" font-family="var(--font-body)" font-size="12" font-weight="bold" fill="var(--liquid-blue)" text-anchor="middle">1</text>
+        `;
+      }
+
+      // Render yellow tape blocks
+      for (let i = 0; i < yellowParts; i++) {
+        const x = startX + i * (boxSize + boxSpacing);
+        html += `
+          <rect x="${x}" y="${yLine2}" width="${boxSize}" height="${boxSize}" fill="#fef7e0" stroke="#dcb807" stroke-width="2.5" rx="4" />
+          <text x="${x + boxSize/2}" y="${yLine2 + 21}" font-family="var(--font-body)" font-size="12" font-weight="bold" fill="#dcb807" text-anchor="middle">1</text>
+        `;
+      }
+
+      tapeDiagramSvg.innerHTML = html;
+    }
+
+    // RENDER: Equivalent Ratios Table Grid
+    function renderRatioTable(r, g, b) {
+      let html = '';
+      
+      const simplifyDiv = gcd(blueParts, yellowParts);
+      const simpBlue = blueParts / simplifyDiv;
+      const simpYellow = yellowParts / simplifyDiv;
+
+      // Draw rows 1 to 5
+      for (let step = 1; step <= 5; step++) {
+        const isCurrent = step === activeScale;
+        const rowClass = isCurrent ? 'class="active-row"' : '';
+        
+        const blueVal = blueParts * step;
+        const yellowVal = yellowParts * step;
+        const combined = (blueVal + yellowVal) * 10; // 10ml volume
+
+        html += `
+          <tr ${rowClass}>
+            <td><strong>${step}x</strong> ${isCurrent ? '👈 Active' : ''}</td>
+            <td style="color: var(--liquid-blue); font-weight: bold;">${blueVal}</td>
+            <td style="color: #c49a02; font-weight: bold;">${yellowVal}</td>
+            <td><strong>${combined} ml</strong></td>
+            <td style="color: var(--muted); font-size: 0.85rem;">${simpBlue} : ${simpYellow}</td>
+          </tr>
+        `;
+      }
+
+      ratioLedgerBody.innerHTML = html;
+    }
+
+    // Validate Recipes / Challenges
+    function checkRecipes(totalVolume) {
+      // RECIPE 1: Vibrant Teal
+      // Requirements: Base 3:2, scale factor results in totalVolume = 150ml (requires 3x scale)
+      let m1 = false;
+      if (blueParts === 3 && yellowParts === 2 && totalVolume === 150) {
+        m1 = true;
+      }
+
+      // RECIPE 2: Sunny Lime scale
+      // Requirements: Base 1:4, scaled Blue to 8ml (requires 8x scale, but we check equivalent ratio where blueParts*scale = 8)
+      let m2 = false;
+      if (blueParts === 1 && yellowParts === 4 && (blueParts * activeScale === 8 || (blueParts / yellowParts === 0.25 && blueParts * activeScale === 8))) {
+        m2 = true;
+      }
+      // Wait, our scale only goes up to 5x. But if blueParts is 2 and yellowParts is 8, and activeScale is 4x, then blue is 2*4 = 8, which is also equivalent! Let's cover that!
+      if (blueParts * activeScale === 8 && (blueParts / yellowParts === 0.25)) {
+        m2 = true;
+      }
+
+      // RECIPE 3: Balanced Formula
+      // Requirements: Base 1:1, total volume 120ml (total parts = 2, scale factor = 6? Wait, if parts are 6:6 and scale is 1x -> 120ml, or 3:3 and scale 4x -> 120ml)
+      let m3 = false;
+      if (blueParts === yellowParts && totalVolume === 120) {
+        m3 = true;
+      }
+
+      updateMissionUI(1, m1);
+      updateMissionUI(2, m2);
+      updateMissionUI(3, m3);
+    }
+
+    function updateMissionUI(id, isSolved) {
+      const item = document.getElementById(`chk-item-${id}`);
+      
+      if (isSolved && !solvedMissions[id]) {
+        solvedMissions[id] = true;
+        item.classList.add('solved');
+        
+        // Show celebration toast
+        const titles = {
+          1: "Teal Formula Discovered!",
+          2: "Sunny Lime Formula Decoded!",
+          3: "Balanced Reaction Completed!"
+        };
+        showToast(titles[id], "Mixture successfully validated.");
+        Synth.play('correct');
+      } else if (!isSolved && solvedMissions[id]) {
+        solvedMissions[id] = false;
+        item.classList.remove('solved');
+      }
+    }
+
+    function showToast(title, desc) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').innerText = title;
+      document.getElementById('toast-desc').innerText = desc;
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

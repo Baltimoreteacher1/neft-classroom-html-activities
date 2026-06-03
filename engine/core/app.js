@@ -9,12 +9,54 @@ export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+  // Browser tab / SEO title (the engine shell ships a generic <title>).
+  if (config.title) {
+    const bits = [config.title];
+    if (config.lessonId) bits.push("Lesson " + config.lessonId);
+    document.title = bits.join(" · ") + " — Neft Teacher";
+  }
+  // SEO meta (the static lesson shell has no description/canonical).
+  injectSeoMeta(config);
   if (config.theme) {
     document.documentElement.setAttribute("data-theme", config.theme);
     root.setAttribute("data-theme", config.theme);
   }
 
   showIdentityScreen(root, config);
+}
+
+function injectSeoMeta(config) {
+  if (typeof document === "undefined" || !document.head) return;
+
+  // Build a sensible description: prefer the lesson's content objective.
+  const description =
+    config.contentObjective ||
+    `${config.title} — Grade 6 Reveal Math (${config.standard}), Unit ${config.unit}.`;
+  upsertMetaName("description", description);
+
+  if (config.lessonId) {
+    upsertLinkRel("canonical", `/lessons/${config.lessonId}/`);
+  }
+}
+
+function upsertMetaName(name, content) {
+  let el = document.head.querySelector(`meta[name="${name}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute("name", name);
+    document.head.append(el);
+  }
+  el.setAttribute("content", content);
+}
+
+function upsertLinkRel(rel, href) {
+  let el = document.head.querySelector(`link[rel="${rel}"]`);
+  if (!el) {
+    el = document.createElement("link");
+    el.setAttribute("rel", rel);
+    document.head.append(el);
+  }
+  el.setAttribute("href", href);
 }
 
 function showIdentityScreen(root, config) {
@@ -28,6 +70,14 @@ function showIdentityScreen(root, config) {
       <div class="identity-emoji">${themeEmoji}</div>
       <h1 class="identity-title">${escHtml(config.title)}</h1>
       <p class="identity-sub">${escHtml(config.standard)} · Unit ${config.unit}</p>
+      ${
+        config.readiness
+          ? `<a class="identity-readiness" href="/lessons/${encodeURIComponent(config.lessonId)}/readiness/" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
+              <span style="font-size:1.5rem;" aria-hidden="true">📚</span>
+              <span><strong>New to this topic?</strong> Take the quick 10-minute Get Ready check first — it finds what you're missing. <span style="white-space:nowrap; font-weight:700; color:var(--blue,#1a6fb5);">Start &rarr;</span></span>
+            </a>`
+          : ""
+      }
       <div class="identity-form">
         <label for="id-name">Your Name</label>
         <input id="id-name" type="text" placeholder="First name Last initial" autocomplete="off" />
@@ -173,10 +223,81 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     },
 
     navigateTo(index) {
+      this.clearExtraActive();
       state.setPhase(index);
       if (config.phases[index]) {
         this.renderPhase(index, config.phases[index]);
       }
+    },
+
+    // Mark/unmark which (if any) pre-lesson tab is currently being viewed.
+    setExtraActive(kind) {
+      sidebar
+        .querySelectorAll(".extra-btn")
+        .forEach((b) => b.classList.toggle("active", b.dataset.extra === kind));
+      sidebar.setAttribute("data-viewing-extra", kind || "");
+    },
+    clearExtraActive() {
+      this.setExtraActive(null);
+    },
+
+    // Render a pre-lesson material (Readiness or Guided Notes) inline in the
+    // lesson shell. Non-graded: this never touches phase state, XP, or stars —
+    // the student's place in the graded flow is preserved underneath.
+    openExtra(kind) {
+      const id = encodeURIComponent(config.lessonId);
+      const meta =
+        kind === "readiness"
+          ? {
+              src: `/lessons/${id}/readiness/?embed=1`,
+              full: `/lessons/${id}/readiness/`,
+              icon: "📚",
+              title: "Get Ready",
+              desc: "A quick check of the skills you need first — not graded.",
+            }
+          : {
+              src: `/lessons/${id}/notes.html?embed=1`,
+              full: `/lessons/${id}/notes.html`,
+              icon: "📝",
+              title: "Guided Notes",
+              desc: "Read along and fill these in. Use Print for a paper copy.",
+            };
+
+      this.setExtraActive(kind);
+      phaseContainer.innerHTML = "";
+      const el = document.createElement("div");
+      el.className = "phase active extra-panel";
+      el.setAttribute("role", "region");
+      el.setAttribute("aria-label", meta.title);
+      el.innerHTML = `
+        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-3, 12px);">
+          <div>
+            <div class="section-title" style="font-size:1.6rem;">${meta.icon} ${escHtml(meta.title)}</div>
+            <div class="section-desc">${escHtml(meta.desc)}</div>
+          </div>
+          <div class="extra-actions" style="display:flex; gap:var(--sp-2, 8px); flex-wrap:wrap;">
+            ${kind === "notes" ? `<button class="btn btn-secondary" data-act="print">🖨️ Print</button>` : ""}
+            <a class="btn btn-secondary" href="${meta.full}" target="_blank" rel="noopener">Open full page ↗</a>
+          </div>
+        </div>
+        <iframe class="extra-frame" title="${escHtml(meta.title)}" src="${meta.src}"
+          style="width:100%; height:calc(100vh - 190px); min-height:560px; border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff);"></iframe>
+      `;
+      phaseContainer.append(el);
+
+      const frame = el.querySelector(".extra-frame");
+      const printBtn = el.querySelector('[data-act="print"]');
+      if (printBtn) {
+        printBtn.addEventListener("click", () => {
+          try {
+            frame.contentWindow.focus();
+            frame.contentWindow.print();
+          } catch (e) {
+            window.open(meta.full, "_blank", "noopener");
+          }
+        });
+      }
+      el.scrollIntoView({ block: "start" });
     },
 
     start() {
@@ -189,6 +310,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   document.addEventListener("rma:navigate", (e) =>
     app.navigateTo(e.detail.phase),
   );
+
+  // Pre-lesson tabs (Get Ready / Notes) open inline without disturbing the
+  // graded phase flow.
+  sidebar.querySelectorAll(".extra-btn").forEach((btn) => {
+    btn.addEventListener("click", () => app.openExtra(btn.dataset.extra));
+  });
 
   // Mount the export toolbar (sticky top bar with Save / Copy buttons)
   mountExportToolbar(state, config);
@@ -230,6 +357,8 @@ function buildSidebar(config, state, phaseConfigs) {
       </div>
     </div>
 
+    ${preLessonNavHtml(config)}
+
     <div class="phase-nav" data-bind="phases"></div>
 
     <div style="margin-top:auto; opacity:0.5; font-size:0.7rem; text-align:center;">
@@ -238,6 +367,34 @@ function buildSidebar(config, state, phaseConfigs) {
   `;
 
   return sidebar;
+}
+
+// "Before the lesson" group: non-graded tabs for the pre-lesson materials that
+// used to live only as links on the Launch screen. Get Ready (Readiness) shows
+// only when the lesson ships a readiness check; Guided Notes is always present.
+// These open inline in the lesson shell (see app.openExtra) and never affect
+// XP, stars, or phase completion.
+function preLessonNavHtml(config) {
+  const items = [];
+  if (config.readiness) {
+    items.push(
+      `<button class="phase-btn extra-btn" data-extra="readiness">
+        <span class="phase-num">📚</span>
+        <span>Get Ready</span>
+      </button>`,
+    );
+  }
+  items.push(
+    `<button class="phase-btn extra-btn" data-extra="notes">
+      <span class="phase-num">📝</span>
+      <span>Notes</span>
+    </button>`,
+  );
+  return `
+    <div class="prelesson-nav" data-bind="prelesson">
+      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Before the lesson</div>
+      ${items.join("\n      ")}
+    </div>`;
 }
 
 function updateSidebar(sidebar, state, phaseConfigs) {

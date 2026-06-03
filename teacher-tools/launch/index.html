@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Teacher Launch Mode: pick a unit and lesson to get one-click links to every resource — student activity, teacher notes, guided notes, homework, and readiness."
+    />
+    <title>Teacher Launch Mode | Neft Hub Professional</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/teacher-tools/tools.css" />
+    <link rel="stylesheet" href="/teacher-tools/launch/launch.css" />
+  </head>
+  <body class="tools-page">
+    <a class="skip-link" href="#launch-main">Skip to Launch Mode</a>
+    <main id="launch-main" class="page-shell">
+      <nav class="breadcrumb tools-breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Neft Hub</a></li>
+          <li><a href="/teacher-tools/">Professional</a></li>
+          <li><span aria-current="page">Launch Mode</span></li>
+        </ol>
+      </nav>
+
+      <section
+        class="hero compact-hero tools-hero"
+        aria-labelledby="launch-title"
+      >
+        <div>
+          <p class="eyebrow">Neft Hub · Professional</p>
+          <h1 id="launch-title">Teacher Launch Mode</h1>
+          <p class="hero-copy">
+            Pick a unit and lesson to open every resource for that lesson in one
+            click: student activity, teacher notes, guided notes (PDF + DOCX),
+            homework, and the Get Ready readiness check.
+          </p>
+          <p class="hero-support">
+            This is a teacher launchpad. Open links in new tabs, project the
+            activity, or print a packet for sub plans. No sign-in needed.
+          </p>
+        </div>
+        <aside class="summary-card" aria-labelledby="launch-summary-title">
+          <p class="eyebrow">How to use</p>
+          <h2 id="launch-summary-title">Three steps</h2>
+          <dl class="summary-list">
+            <div>
+              <dt>1 · Pick</dt>
+              <dd>Choose a unit, then a lesson</dd>
+            </div>
+            <div>
+              <dt>2 · Open</dt>
+              <dd>Click any resource button</dd>
+            </div>
+            <div>
+              <dt>3 · Print</dt>
+              <dd>Use Print Packet for notes + homework</dd>
+            </div>
+          </dl>
+        </aside>
+      </section>
+
+      <section class="section-block" aria-labelledby="launch-pick-title">
+        <div class="section-heading">
+          <p class="eyebrow">Choose a lesson</p>
+          <h2 id="launch-pick-title">Find your lesson</h2>
+          <p class="tools-section-intro">
+            Filter by unit and lesson, or search by lesson title or standard
+            (e.g. "divide" or "6.NS.1").
+          </p>
+        </div>
+
+        <div class="launch-controls" role="search" aria-label="Choose a lesson">
+          <div class="launch-field">
+            <label for="unitSelect">Unit</label>
+            <select id="unitSelect" data-unit-select>
+              <option value="all">All units</option>
+            </select>
+          </div>
+          <div class="launch-field">
+            <label for="lessonSelect">Lesson</label>
+            <select id="lessonSelect" data-lesson-select disabled>
+              <option value="">Pick a unit first</option>
+            </select>
+          </div>
+          <div class="launch-field">
+            <label for="launchSearch">Search title or standard</label>
+            <input
+              id="launchSearch"
+              data-launch-search
+              type="search"
+              placeholder="e.g. divide, ratios, 6.NS.1…"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+
+        <div
+          class="unit-chips"
+          data-unit-chips
+          aria-label="Filter by unit"
+        ></div>
+
+        <p class="launch-count" data-launch-count aria-live="polite"></p>
+
+        <div class="launch-error" data-launch-error hidden>
+          <h2>Lesson list could not load</h2>
+          <p>
+            The launch manifest at <code>/data/launch-manifest.json</code> is
+            missing or unreadable. Run <code>npm run generate-launch</code> to
+            build it, then reload this page.
+          </p>
+        </div>
+
+        <div class="lesson-pick-grid" data-lesson-grid></div>
+      </section>
+
+      <section class="section-block" aria-labelledby="launch-detail-title">
+        <h2 id="launch-detail-title" class="visually-hidden">
+          Selected lesson resources
+        </h2>
+        <div class="launch-empty" data-launch-empty>
+          <h2>No lesson selected yet</h2>
+          <p>Pick a lesson above to see its one-click resource buttons.</p>
+        </div>
+        <div class="launch-detail" data-launch-detail hidden></div>
+      </section>
+
+      <footer class="site-footer">
+        <span>Neft Hub · Professional</span>
+        <span>Teacher Launch Mode · <span data-current-year></span></span>
+      </footer>
+    </main>
+    <script src="/assets/app.js" defer></script>
+    <script src="/teacher-tools/launch/launch.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  </body>
+</html>

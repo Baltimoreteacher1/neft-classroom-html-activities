@@ -1,0 +1,2089 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bridge to Grade 6 Resource Studio</title>
+    <link rel="icon" href="data:," />
+    <meta property="og:title" content="Bridge to Grade 6 Resource Studio" />
+    <meta
+      property="og:description"
+      content="Resource studio for bridging students into Grade 6 math — readiness lessons and supports."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Neft Teacher" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Bridge to Grade 6 Resource Studio" />
+    <meta
+      name="twitter:description"
+      content="Resource studio for bridging students into Grade 6 math — readiness lessons and supports."
+    />
+    <style>
+      :root {
+        --ink: #17202a;
+        --muted: #5d6d7e;
+        --paper: #fbfcfd;
+        --panel: #ffffff;
+        --line: #d9e2ec;
+        --navy: #24476f;
+        --teal: #087f8c;
+        --green: #3b7a57;
+        --gold: #b7791f;
+        --rose: #b4475f;
+        --soft-blue: #eaf3fb;
+        --soft-green: #eaf6ef;
+        --soft-gold: #fff4d8;
+        --soft-rose: #fdecef;
+        --shadow: 0 14px 35px rgba(23, 32, 42, 0.12);
+        color-scheme: light;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.8rem clamp(1rem, 3vw, 2.5rem);
+        background: rgba(255, 255, 255, 0.94);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(10px);
+      }
+
+      .brand {
+        display: flex;
+        flex-direction: column;
+        gap: 0.05rem;
+        min-width: 14rem;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+
+      .brand span {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .topbar nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: flex-end;
+      }
+
+      .topbar a,
+      .button,
+      button,
+      select,
+      input {
+        border-radius: 8px;
+        font: inherit;
+      }
+
+      .topbar a,
+      .button,
+      button {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        min-height: 2.35rem;
+        padding: 0.55rem 0.8rem;
+        text-decoration: none;
+        font-weight: 800;
+      }
+
+      .button.primary,
+      button.primary {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #fff;
+      }
+
+      .button.secondary,
+      button.secondary {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.12fr) minmax(18rem, 0.88fr);
+        gap: clamp(1.4rem, 4vw, 3rem);
+        align-items: center;
+        min-height: 78vh;
+        padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 4vw, 4rem);
+        border-bottom: 1px solid var(--line);
+        background:
+          linear-gradient(
+            115deg,
+            rgba(36, 71, 111, 0.08),
+            rgba(8, 127, 140, 0.04)
+          ),
+          radial-gradient(
+            circle at 12% 20%,
+            rgba(255, 244, 216, 0.9),
+            transparent 28%
+          ),
+          #f7fafc;
+      }
+
+      .eyebrow {
+        color: var(--teal);
+        font-size: 0.82rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 13ch;
+        margin-bottom: 0.8rem;
+        font-size: clamp(2.7rem, 7vw, 6.6rem);
+        line-height: 0.95;
+        letter-spacing: 0;
+      }
+
+      .hero-copy {
+        max-width: 48rem;
+        color: #334155;
+        font-size: clamp(1rem, 2vw, 1.3rem);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        margin-top: 1.4rem;
+      }
+
+      .quick-panel {
+        display: grid;
+        gap: 1rem;
+        padding: 1.2rem;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+
+      .metric {
+        min-height: 6.4rem;
+        padding: 0.95rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--soft-blue);
+      }
+
+      .metric:nth-child(2) {
+        background: var(--soft-green);
+      }
+
+      .metric:nth-child(3) {
+        background: var(--soft-gold);
+      }
+
+      .metric:nth-child(4) {
+        background: var(--soft-rose);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 1.75rem;
+        line-height: 1;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 0.85rem;
+        font-weight: 800;
+      }
+
+      main > section {
+        padding: clamp(2rem, 4vw, 3.6rem) clamp(1rem, 4vw, 4rem);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .section-head h2 {
+        margin-bottom: 0;
+        font-size: clamp(1.6rem, 3vw, 2.6rem);
+        line-height: 1.05;
+      }
+
+      .section-head p {
+        max-width: 42rem;
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .resource-grid,
+      .download-grid,
+      .part-grid,
+      .assessment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+        gap: 1rem;
+      }
+
+      .resource-card,
+      .download-card,
+      .part-card,
+      .assessment-card,
+      .lesson,
+      .drill-panel,
+      .packet-panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 8px 22px rgba(23, 32, 42, 0.07);
+      }
+
+      .resource-card,
+      .download-card,
+      .part-card,
+      .assessment-card {
+        padding: 1rem;
+      }
+
+      .resource-card h3,
+      .download-card h3,
+      .part-card h3,
+      .assessment-card h3 {
+        margin-bottom: 0.35rem;
+        font-size: 1.05rem;
+      }
+
+      .download-card {
+        display: grid;
+        gap: 0.85rem;
+        align-content: start;
+        border-top: 5px solid var(--teal);
+      }
+
+      .download-card:nth-child(2) {
+        border-top-color: var(--navy);
+      }
+
+      .download-card:nth-child(3) {
+        border-top-color: var(--green);
+      }
+
+      .download-card:nth-child(4) {
+        border-top-color: var(--gold);
+      }
+
+      .download-card:nth-child(5) {
+        border-top-color: var(--rose);
+      }
+
+      .download-card:nth-child(6) {
+        border-top-color: #6b4fbb;
+      }
+
+      .download-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: auto;
+      }
+
+      .download-card p {
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.8rem;
+      }
+
+      .tag {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.2rem 0.5rem;
+        background: #f8fafc;
+        color: #425466;
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      .part-card {
+        border-top: 5px solid var(--navy);
+      }
+
+      .part-card:nth-child(2) {
+        border-top-color: var(--teal);
+      }
+
+      .part-card:nth-child(3) {
+        border-top-color: var(--green);
+      }
+
+      .part-card:nth-child(4) {
+        border-top-color: var(--gold);
+      }
+
+      .part-card:nth-child(5) {
+        border-top-color: var(--rose);
+      }
+
+      .part-card:nth-child(6) {
+        border-top-color: #6b4fbb;
+      }
+
+      .part-card ol {
+        padding-left: 1.3rem;
+        margin: 0.7rem 0 0;
+      }
+
+      .lesson-list {
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .lesson {
+        overflow: hidden;
+      }
+
+      .lesson summary {
+        cursor: pointer;
+        display: grid;
+        gap: 0.25rem;
+        padding: 1rem;
+        list-style: none;
+      }
+
+      .lesson summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .lesson summary strong {
+        font-size: 1.05rem;
+      }
+
+      .lesson summary span {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .lesson-body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.45fr);
+        gap: 1rem;
+        padding: 0 1rem 1rem;
+      }
+
+      .lesson-box {
+        padding: 0.85rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #f9fbfd;
+      }
+
+      .lesson-box h4 {
+        margin: 0 0 0.45rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+      }
+
+      .lesson-box ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+
+      .packet-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 0.72fr) minmax(17rem, 0.28fr);
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .packet-panel {
+        padding: 1rem;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 28rem;
+        padding: 1rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        font:
+          0.9rem/1.45 "Courier New",
+          monospace;
+        resize: vertical;
+      }
+
+      .drill-panel {
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      .drill-controls {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.75rem;
+        align-items: end;
+      }
+
+      label {
+        display: grid;
+        gap: 0.25rem;
+        color: #334155;
+        font-size: 0.82rem;
+        font-weight: 900;
+      }
+
+      select,
+      input {
+        min-height: 2.45rem;
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 0.45rem 0.6rem;
+        color: var(--ink);
+      }
+
+      .problem-stage {
+        display: grid;
+        gap: 0.8rem;
+        padding: 1rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, #f8fbff, #fff);
+      }
+
+      .problem-text {
+        font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+        font-weight: 900;
+      }
+
+      .feedback {
+        min-height: 2rem;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .practice-table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .practice-table th,
+      .practice-table td {
+        padding: 0.65rem;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .practice-table th {
+        background: #eef5fb;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+      }
+
+      .print-only {
+        display: none;
+      }
+
+      footer {
+        padding: 2rem clamp(1rem, 4vw, 4rem);
+        color: var(--muted);
+        background: #fff;
+      }
+
+      @media (max-width: 860px) {
+        .hero,
+        .lesson-body,
+        .packet-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .drill-controls {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .topbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .topbar nav {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .quick-grid,
+        .drill-controls {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 2.65rem;
+        }
+      }
+
+      @media print {
+        .topbar,
+        .hero-actions,
+        .drill-panel,
+        .packet-panel aside,
+        footer {
+          display: none !important;
+        }
+
+        body {
+          background: #fff;
+        }
+
+        main > section {
+          padding: 0.6rem 0;
+          border: 0;
+        }
+
+        .resource-card,
+        .download-card,
+        .part-card,
+        .assessment-card,
+        .lesson,
+        .packet-panel {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+
+        .print-only {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        Bridge to Grade 6
+        <span>Neft Teacher Resource Studio</span>
+      </div>
+      <nav aria-label="Page sections">
+        <a href="/">Dashboard</a>
+        <a href="#planner">Planner</a>
+        <a href="#lessons">Lessons</a>
+        <a href="#downloads">Downloads</a>
+        <a href="#packets">Packets</a>
+        <a href="#drills">Drills</a>
+        <a href="#assessments">Assessments</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">
+          Summer bridge, intervention, or first 3 weeks of Grade 6
+        </p>
+        <h1>Bridge to Grade 6</h1>
+        <p class="hero-copy">
+          A complete classroom-ready resource set with six units, eighteen
+          lessons, printable handouts, fluency drills, online practice, exit
+          tickets, assessments, rubrics, and answer keys. Built for students who
+          need a confident launch into Grade 6 math.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#lessons">Open Lessons</a>
+          <a class="button secondary" href="#drills">Practice Online</a>
+          <a class="button" href="resources/student-workbook.html" download
+            >Download Workbook</a
+          >
+          <a class="button" href="resources/teacher-guide.html" download
+            >Download Teacher Guide</a
+          >
+          <button type="button" id="print-page">Print Resource</button>
+          <button type="button" id="download-student">
+            Download Student Packet
+          </button>
+          <button type="button" id="download-teacher">
+            Download Teacher Guide
+          </button>
+        </div>
+      </div>
+      <aside class="quick-panel" aria-label="Resource summary">
+        <div class="quick-grid">
+          <div class="metric">
+            <strong>6</strong><span>major readiness parts</span>
+          </div>
+          <div class="metric"><strong>18</strong><span>full lessons</span></div>
+          <div class="metric">
+            <strong>90+</strong><span>practice prompts</span>
+          </div>
+          <div class="metric">
+            <strong>6</strong><span>downloadable resource files</span>
+          </div>
+        </div>
+        <table class="practice-table">
+          <thead>
+            <tr>
+              <th>Use Case</th>
+              <th>Best Pace</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Summer bridge</td>
+              <td>6 weeks, 3 lessons each week</td>
+            </tr>
+            <tr>
+              <td>Back-to-school launch</td>
+              <td>18 school days plus quiz days</td>
+            </tr>
+            <tr>
+              <td>Intervention block</td>
+              <td>2 to 3 lessons each week</td>
+            </tr>
+          </tbody>
+        </table>
+      </aside>
+    </section>
+
+    <main>
+      <section id="library">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Resource Library</p>
+            <h2>Everything a teacher needs to run the bridge</h2>
+          </div>
+          <p>
+            Each part includes teacher moves, student handouts, practice drills,
+            application tasks, exit tickets, reteach ideas, extension prompts,
+            and keys.
+          </p>
+        </div>
+        <div class="resource-grid">
+          <article class="resource-card">
+            <h3>Teacher-facing lesson plans</h3>
+            <p>
+              Mini-lesson script, launch question, misconception watchlist,
+              checks for understanding, guided practice, and closure for every
+              lesson.
+            </p>
+            <div class="tag-row">
+              <span class="tag">I do</span><span class="tag">We do</span
+              ><span class="tag">You do</span>
+            </div>
+          </article>
+          <article class="resource-card">
+            <h3>Student handouts</h3>
+            <p>
+              Structured notes, worked examples, scaffolded practice,
+              independent practice, challenge items, and reflection prompts.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Print-ready</span
+              ><span class="tag">Editable text</span
+              ><span class="tag">Chromebook safe</span>
+            </div>
+          </article>
+          <article class="resource-card">
+            <h3>Supplemental drills</h3>
+            <p>
+              Fluency builders for computation, fractions, decimals, ratios,
+              algebra, geometry, and data with quick score checks.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Timed warm-ups</span
+              ><span class="tag">Mixed review</span
+              ><span class="tag">Answer checking</span>
+            </div>
+          </article>
+          <article class="resource-card">
+            <h3>Assessments and rubrics</h3>
+            <p>
+              Diagnostics, part quizzes, constructed response tasks, final
+              readiness check, and a teacher rubric for grouping and next steps.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Diagnostic</span
+              ><span class="tag">Exit tickets</span
+              ><span class="tag">Final task</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="downloads">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Download Center</p>
+            <h2>Printable resources teachers can use immediately</h2>
+          </div>
+          <p>
+            These files open as clean printable pages in the browser and can
+            also be downloaded for sharing through Google Classroom, LMS links,
+            or substitute folders.
+          </p>
+        </div>
+        <div class="download-grid">
+          <article class="download-card">
+            <h3>★ Summer Bridge Practice Packet</h3>
+            <p>
+              Giant TpT-quality workbook: 270+ problems across six parts (place
+              value &amp; decimals, fractions, fluency &amp; factors, ratios
+              &amp; percents, expressions &amp; coordinate plane, geometry &amp;
+              data) with worked examples, Level 1 and Level 2 sets, spiral
+              review, full answer keys, and links to the unit notes for every
+              skill.
+            </p>
+            <div class="tag-row">
+              <span class="tag">270+ problems</span
+              ><span class="tag">Answer keys</span
+              ><span class="tag">Notes links</span>
+            </div>
+            <div class="download-actions">
+              <a class="button primary" href="resources/practice-packet.html"
+                >Open</a
+              >
+              <a class="button" href="resources/practice-packet.html" download
+                >Download</a
+              >
+            </div>
+          </article>
+          <article class="download-card">
+            <h3>Student Workbook</h3>
+            <p>
+              Complete 18-lesson student packet with readiness tracker, guided
+              notes, practice sets, exit tickets, and reflection pages.
+            </p>
+            <div class="tag-row">
+              <span class="tag">18 lessons</span
+              ><span class="tag">Print packet</span
+              ><span class="tag">Student-facing</span>
+            </div>
+            <div class="download-actions">
+              <a class="button primary" href="resources/student-workbook.html"
+                >Open</a
+              >
+              <a class="button" href="resources/student-workbook.html" download
+                >Download</a
+              >
+            </div>
+          </article>
+          <article class="download-card">
+            <h3>Teacher Guide</h3>
+            <p>
+              Pacing plan, daily routine, grouping guidance, misconceptions,
+              intervention moves, extension bank, and full answer key.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Pacing</span><span class="tag">Keys</span
+              ><span class="tag">Differentiation</span>
+            </div>
+            <div class="download-actions">
+              <a class="button primary" href="resources/teacher-guide.html"
+                >Open</a
+              >
+              <a class="button" href="resources/teacher-guide.html" download
+                >Download</a
+              >
+            </div>
+          </article>
+          <article class="download-card">
+            <h3>Fluency Drill Book</h3>
+            <p>
+              Thirty short warm-ups across number sense, fractions, decimals,
+              ratios, expressions, geometry, and data.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Timed drills</span
+              ><span class="tag">Spiral review</span
+              ><span class="tag">Answers</span>
+            </div>
+            <div class="download-actions">
+              <a class="button primary" href="resources/fluency-drills.html"
+                >Open</a
+              >
+              <a class="button" href="resources/fluency-drills.html" download
+                >Download</a
+              >
+            </div>
+          </article>
+          <article class="download-card">
+            <h3>Assessments and Rubrics</h3>
+            <p>
+              Diagnostic, six part quizzes, final readiness task, retake
+              protocol, rubric, and progress conference sheet.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Diagnostic</span
+              ><span class="tag">Part quizzes</span
+              ><span class="tag">Final task</span>
+            </div>
+            <div class="download-actions">
+              <a class="button primary" href="resources/assessments.html"
+                >Open</a
+              >
+              <a class="button" href="resources/assessments.html" download
+                >Download</a
+              >
+            </div>
+          </article>
+          <article class="download-card">
+            <h3>Family Practice Pack</h3>
+            <p>
+              Family letter, weekly choice boards, at-home practice routines,
+              and quick answer checks for caregivers.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Home practice</span
+              ><span class="tag">Choice boards</span
+              ><span class="tag">Caregiver-ready</span>
+            </div>
+            <div class="download-actions">
+              <a class="button primary" href="resources/family-practice.html"
+                >Open</a
+              >
+              <a class="button" href="resources/family-practice.html" download
+                >Download</a
+              >
+            </div>
+          </article>
+          <article class="download-card">
+            <h3>Editable Item Bank</h3>
+            <p>
+              CSV-ready quiz, drill, retake, and small-group items that can be
+              imported into Sheets or copied into a quiz tool.
+            </p>
+            <div class="tag-row">
+              <span class="tag">CSV</span><span class="tag">Quiz bank</span
+              ><span class="tag">Editable</span>
+            </div>
+            <div class="download-actions">
+              <a class="button primary" href="resources/item-bank.csv">Open</a>
+              <a class="button" href="resources/item-bank.csv" download
+                >Download</a
+              >
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="planner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Scope and Sequence</p>
+            <h2>Six significant parts, not six single lessons</h2>
+          </div>
+          <p>
+            Run each part as three core lessons plus a quiz, spiral review day,
+            or station rotation.
+          </p>
+        </div>
+        <div class="part-grid" id="part-grid"></div>
+      </section>
+
+      <section id="lessons">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Lesson Bank</p>
+            <h2>Full lesson set with handouts and practice</h2>
+          </div>
+          <p>
+            Open any lesson to see the teacher moves, printable student work,
+            practice activities, supports, extensions, and key.
+          </p>
+        </div>
+        <div class="lesson-list" id="lesson-list"></div>
+      </section>
+
+      <section id="packets">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Downloadable Packets</p>
+            <h2>Student packet and teacher guide generator</h2>
+          </div>
+          <p>
+            Use the printable files above for polished downloads. Use this
+            generator when you want editable text that can be pasted into Google
+            Docs, Word, or your LMS.
+          </p>
+        </div>
+        <div class="packet-layout">
+          <div class="packet-panel">
+            <h3>Student Packet Preview</h3>
+            <textarea
+              id="student-packet"
+              aria-label="Student packet preview"
+            ></textarea>
+          </div>
+          <aside class="packet-panel">
+            <h3>Packet Includes</h3>
+            <ul>
+              <li>Readiness tracker and goal sheet</li>
+              <li>Structured handouts for all 18 lessons</li>
+              <li>Independent practice sets</li>
+              <li>Exit tickets and reflection prompts</li>
+              <li>Family practice menu</li>
+            </ul>
+            <h3>Teacher Guide Includes</h3>
+            <ul>
+              <li>Daily pacing guide</li>
+              <li>Misconception notes and interventions</li>
+              <li>Answer keys</li>
+              <li>Quiz and final task rubric</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section id="drills">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Online Practice</p>
+            <h2>Bridge Drill Lab</h2>
+          </div>
+          <p>
+            Students can practice directly on the page. Teachers can choose the
+            part and difficulty, then project or assign quick checks.
+          </p>
+        </div>
+        <div class="drill-panel">
+          <div class="drill-controls">
+            <label for="part-select"
+              >Part
+              <select id="part-select"></select>
+            </label>
+            <label for="difficulty-select"
+              >Difficulty
+              <select id="difficulty-select">
+                <option value="core">Core</option>
+                <option value="stretch">Stretch</option>
+                <option value="challenge">Challenge</option>
+              </select>
+            </label>
+            <button type="button" class="primary" id="new-question">
+              New Practice
+            </button>
+            <button type="button" id="show-solution">Show Solution</button>
+          </div>
+          <div class="problem-stage">
+            <div class="problem-text" id="question-text">
+              Choose a part, then start a practice question.
+            </div>
+            <label for="answer-input"
+              >Student answer
+              <input id="answer-input" type="text" autocomplete="off" />
+            </label>
+            <div>
+              <button type="button" class="secondary" id="check-answer">
+                Check Answer
+              </button>
+              <button type="button" id="reset-score">Reset Score</button>
+            </div>
+            <div class="feedback" id="feedback" aria-live="polite">
+              Score: 0 correct out of 0 attempts
+            </div>
+            <div id="solution-text"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="assessments">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Assessment Suite</p>
+            <h2>Placement, progress, and final readiness</h2>
+          </div>
+          <p>
+            Use these alongside the lessons to group students, choose reteach
+            lessons, and show growth.
+          </p>
+        </div>
+        <div class="assessment-grid">
+          <article class="assessment-card">
+            <h3>Bridge Diagnostic</h3>
+            <p>
+              24 questions covering computation, fractions, ratios, algebra,
+              geometry, and data. Use before Part 1.
+            </p>
+            <ul>
+              <li>Score 0-8: begin with guided small group</li>
+              <li>Score 9-16: assign core pathway</li>
+              <li>Score 17-24: add extension tasks</li>
+            </ul>
+          </article>
+          <article class="assessment-card">
+            <h3>Part Quizzes</h3>
+            <p>
+              Six 10-point quizzes with 6 fluency items, 3 reasoning items, and
+              1 written explanation.
+            </p>
+            <ul>
+              <li>8-10: ready to spiral</li>
+              <li>6-7: reteach one skill</li>
+              <li>0-5: assign conference and practice set</li>
+            </ul>
+          </article>
+          <article class="assessment-card">
+            <h3>Final Readiness Task</h3>
+            <p>
+              Students design a mini school fair budget, compare rates, write
+              expressions, graph a layout, and analyze survey data.
+            </p>
+            <ul>
+              <li>Math accuracy: 40%</li>
+              <li>Reasoning and explanation: 30%</li>
+              <li>Organization and precision: 20%</li>
+              <li>Reflection: 10%</li>
+            </ul>
+          </article>
+        </div>
+        <table class="practice-table" style="margin-top: 1rem">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Teacher Action</th>
+              <th>Student Resource</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Needs reteach</td>
+              <td>
+                Model one more concrete or visual example before numbers only.
+              </td>
+              <td>Guided notes plus 8 core practice items.</td>
+            </tr>
+            <tr>
+              <td>Nearly ready</td>
+              <td>Use error analysis and partner explanation.</td>
+              <td>Mixed review plus exit ticket redo.</td>
+            </tr>
+            <tr>
+              <td>Ready</td>
+              <td>Assign extension, application, or peer coaching role.</td>
+              <td>Challenge task and written reasoning prompt.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer>
+      <strong>Neft Teacher</strong> Bridge to Grade 6 Resource Studio. Static,
+      editable, printable, and Cloudflare Pages-compatible.
+    </footer>
+
+    <script>
+      const curriculum = [
+        {
+          id: "number-fluency",
+          title: "Part 1: Number Fluency and Operations",
+          focus:
+            "Whole-number fluency, place value, factors, multiples, and multi-digit operations.",
+          standards: ["5.NBT", "5.OA", "6.NS.B"],
+          lessons: [
+            {
+              title: "Place Value Power and Estimation",
+              objective:
+                "Students read, write, compare, round, and estimate with whole numbers and decimals.",
+              launch:
+                "Which is closer to 1 million: 906,450 or 1,094,200? Explain without subtracting first.",
+              miniLesson: [
+                "Use place value language before procedures.",
+                "Model rounding on a number line.",
+                "Compare estimates to exact answers and discuss reasonableness.",
+              ],
+              handout: [
+                "Write 604,982 in expanded form.",
+                "Round 48,739 to the nearest thousand.",
+                "Estimate 398 x 21, then explain whether the exact answer should be greater or smaller.",
+              ],
+              practice: [
+                "Order 0.708, 0.78, 0.087, and 0.807.",
+                "A school orders 29 boxes with 48 pencils each. Estimate and solve.",
+                "Find the error: 6,041 rounded to the nearest hundred is 6,000.",
+              ],
+              exit: "Round 73,592 to the nearest ten thousand and justify with a number line.",
+              support: "Use place value charts and digit cards.",
+              extension:
+                "Create three numbers that round to 80,000 but have different ten-thousands digits.",
+              key: [
+                "604,982 = 600,000 + 4,000 + 900 + 80 + 2",
+                "48,739 rounds to 49,000",
+                "29 x 48 = 1,392",
+              ],
+            },
+            {
+              title: "Multiplication and Long Division Lab",
+              objective:
+                "Students solve multi-digit multiplication and division problems and interpret remainders.",
+              launch:
+                "A bus holds 42 students. How many buses are needed for 289 students?",
+              miniLesson: [
+                "Connect area model multiplication to the standard algorithm.",
+                "Use partial quotients before standard division when helpful.",
+                "Interpret remainders based on context.",
+              ],
+              handout: [
+                "Solve 47 x 36 using two methods.",
+                "Solve 628 divided by 24.",
+                "Write a story problem where the remainder is ignored.",
+              ],
+              practice: [
+                "83 x 29",
+                "1,248 divided by 16",
+                "A rope is 157 inches. Pieces are 12 inches each. How many full pieces can be cut?",
+              ],
+              exit: "Explain why 289 divided by 42 means 7 buses, not 6 remainder 37 buses.",
+              support: "Provide grid paper for partial products.",
+              extension:
+                "Find three division problems with quotient 18 remainder 5.",
+              key: [
+                "47 x 36 = 1,692",
+                "628 divided by 24 = 26 r4",
+                "157 inches makes 13 full pieces",
+              ],
+            },
+            {
+              title: "Factors, Multiples, and Prime Thinking",
+              objective:
+                "Students identify factors, multiples, primes, composites, GCF, and LCM.",
+              launch:
+                "Two bells ring every 12 minutes and 18 minutes. If they ring together now, when will they ring together again?",
+              miniLesson: [
+                "List factor pairs systematically.",
+                "Use prime factorization as an organized tool.",
+                "Connect GCF to grouping and LCM to timing.",
+              ],
+              handout: [
+                "List all factors of 36.",
+                "Find the GCF of 24 and 40.",
+                "Find the LCM of 9 and 15.",
+              ],
+              practice: [
+                "Sort 2, 21, 29, 39, 51 as prime or composite.",
+                "Make equal snack bags using 18 apples and 30 granola bars.",
+                "Two lights blink every 8 and 14 seconds. Find the next same-time blink.",
+              ],
+              exit: "How can you tell 37 is prime?",
+              support: "Use arrays and counters for factor pairs.",
+              extension: "Find two numbers with GCF 6 and LCM 72.",
+              key: [
+                "Factors of 36: 1,2,3,4,6,9,12,18,36",
+                "GCF(24,40)=8",
+                "LCM(9,15)=45",
+              ],
+            },
+          ],
+        },
+        {
+          id: "fractions-decimals",
+          title: "Part 2: Fractions, Decimals, and Percents",
+          focus:
+            "Equivalent forms, fraction operations, decimal operations, and percent foundations.",
+          standards: ["5.NF", "5.NBT", "6.RP.A"],
+          lessons: [
+            {
+              title: "Equivalent Forms Workshop",
+              objective:
+                "Students convert between fractions, decimals, and percents using models and reasoning.",
+              launch: "Which is larger: 3/5 or 0.58?",
+              miniLesson: [
+                "Represent fractions on hundred grids.",
+                "Convert fractions to decimals by reasoning with denominators.",
+                "Connect percent to out of 100.",
+              ],
+              handout: [
+                "Convert 7/10 to a decimal and percent.",
+                "Convert 0.35 to a fraction and percent.",
+                "Write 62% as a decimal and fraction.",
+              ],
+              practice: [
+                "Order 1/4, 0.3, 28%, 0.19.",
+                "Find three forms of 4/5.",
+                "Explain why 0.6 and 60% are equivalent.",
+              ],
+              exit: "Which is greatest: 0.72, 7/10, or 75%?",
+              support: "Use hundred grids and benchmark cards.",
+              extension: "Create a card sort with six equivalent-form matches.",
+              key: [
+                "7/10 = 0.7 = 70%",
+                "0.35 = 35/100 = 35%",
+                "62% = 0.62 = 62/100",
+              ],
+            },
+            {
+              title: "Fraction Operations With Models",
+              objective:
+                "Students add, subtract, and multiply fractions using models before algorithms.",
+              launch: "Why is 1/2 + 1/3 not 2/5?",
+              miniLesson: [
+                "Use visual common denominators.",
+                "Estimate with benchmarks before calculating.",
+                "Connect multiplication of fractions to part of a part.",
+              ],
+              handout: ["1/4 + 2/3", "5/6 - 1/4", "2/3 x 3/5"],
+              practice: [
+                "3/8 + 1/2",
+                "1 1/5 - 3/10",
+                "A recipe uses 3/4 cup sugar. You make 2/3 of the recipe. How much sugar?",
+              ],
+              exit: "Solve 2/5 + 1/10 and draw a model.",
+              support: "Give fraction strips and denominator multiples chart.",
+              extension: "Write two different expressions equal to 7/12.",
+              key: ["1/4 + 2/3 = 11/12", "5/6 - 1/4 = 7/12", "2/3 x 3/5 = 2/5"],
+            },
+            {
+              title: "Decimal Operations and Money Sense",
+              objective:
+                "Students add, subtract, multiply, and divide decimals in real contexts.",
+              launch:
+                "A student buys 3 notebooks for $2.45 each. About how much will it cost?",
+              miniLesson: [
+                "Align decimal points for addition and subtraction.",
+                "Estimate products and quotients before calculating.",
+                "Interpret decimals as money, measurement, and place value.",
+              ],
+              handout: ["4.82 + 13.7", "25 - 8.64", "3.6 x 1.4"],
+              practice: [
+                "18.75 divided by 5",
+                "A snack costs $1.35. Find the cost of 8 snacks.",
+                "Find the error in 2.4 x 0.5 = 12.",
+              ],
+              exit: "Explain why 2.4 x 0.5 is less than 2.4.",
+              support: "Use place value grids and money models.",
+              extension:
+                "Design a store receipt with four items totaling $20 exactly.",
+              key: [
+                "4.82 + 13.7 = 18.52",
+                "25 - 8.64 = 16.36",
+                "3.6 x 1.4 = 5.04",
+              ],
+            },
+          ],
+        },
+        {
+          id: "ratios-rates",
+          title: "Part 3: Ratios, Rates, and Proportional Reasoning",
+          focus:
+            "Ratio language, equivalent ratios, tables, tape diagrams, unit rates, and percent applications.",
+          standards: ["6.RP.A"],
+          lessons: [
+            {
+              title: "Ratio Language and Tape Diagrams",
+              objective:
+                "Students describe ratio relationships with words, symbols, tables, and tape diagrams.",
+              launch:
+                "There are 8 blue tiles and 12 green tiles. How many different ratios can describe the group?",
+              miniLesson: [
+                "Distinguish part-to-part and part-to-whole ratios.",
+                "Build tape diagrams with equal units.",
+                "Use ratio language precisely.",
+              ],
+              handout: [
+                "Write three ratios for 6 red and 10 yellow counters.",
+                "Draw a tape diagram for cats:dogs = 3:5.",
+                "If the whole tape has 32 units, find each part.",
+              ],
+              practice: [
+                "A recipe has 2 cups rice for 5 cups water. Write two ratio statements.",
+                "Make an equivalent ratio table for 4:7.",
+                "Find missing values in 3:8 = 15:blank.",
+              ],
+              exit: "Explain the difference between 3 to 5 and 3 out of 5.",
+              support: "Use color tiles and sentence frames.",
+              extension: "Write a misleading ratio statement and correct it.",
+              key: [
+                "6:10, 10:6, 6:16, 10:16",
+                "Cats 12, dogs 20 when whole is 32",
+                "3:8 = 15:40",
+              ],
+            },
+            {
+              title: "Equivalent Ratios and Double Number Lines",
+              objective:
+                "Students use tables and double number lines to solve equivalent ratio problems.",
+              launch: "If 4 tickets cost $18, how much do 10 tickets cost?",
+              miniLesson: [
+                "Scale ratios by multiplying or dividing both terms.",
+                "Use double number lines for aligned quantities.",
+                "Choose efficient jumps.",
+              ],
+              handout: [
+                "Complete a table for 5 apples cost $3.",
+                "Use a double number line for 6 miles in 48 minutes.",
+                "Find the cost of 14 pencils if 7 cost $2.80.",
+              ],
+              practice: [
+                "3 smoothies use 12 strawberries. How many for 8 smoothies?",
+                "A car travels 120 miles in 3 hours. How far in 5 hours?",
+                "Find the missing value: 9/12 = x/20.",
+              ],
+              exit: "Why must both columns in a ratio table scale the same way?",
+              support: "Mark scale factors in different colors.",
+              extension:
+                "Solve one problem two ways: table and double number line.",
+              key: [
+                "10 tickets cost $45",
+                "8 smoothies use 32 strawberries",
+                "x = 15",
+              ],
+            },
+            {
+              title: "Unit Rate and Percent Applications",
+              objective:
+                "Students calculate unit rates and solve percent problems with reasoning.",
+              launch:
+                "Which is the better buy: 12 ounces for $3.60 or 20 ounces for $5.40?",
+              miniLesson: [
+                "Define unit rate as per 1.",
+                "Use division to compare rates.",
+                "Find 10%, 25%, 50%, and 1% as benchmarks for percent.",
+              ],
+              handout: [
+                "Find dollars per ounce for $6.25 for 5 lb.",
+                "Find 30% of 80.",
+                "A $48 backpack is 25% off. Find the sale price.",
+              ],
+              practice: [
+                "72 miles in 1.5 hours",
+                "18 correct out of 24 as a percent",
+                "Find 15% tip on $34.",
+              ],
+              exit: "Explain how 10% helps find 30%.",
+              support: "Use ratio tables with a per-1 row.",
+              extension:
+                "Create a better-buy comparison with close unit rates.",
+              key: [
+                "$1.25 per lb",
+                "30% of 80 = 24",
+                "$48 with 25% off is $36",
+              ],
+            },
+          ],
+        },
+        {
+          id: "expressions-equations",
+          title: "Part 4: Expressions, Equations, and Inequalities",
+          focus:
+            "Variables, expressions, substitution, one-step equations, inequalities, and real-world modeling.",
+          standards: ["6.EE.A", "6.EE.B"],
+          lessons: [
+            {
+              title: "Variables and Expressions",
+              objective:
+                "Students write and evaluate expressions with variables.",
+              launch:
+                "A movie ticket costs $9. Write an expression for any number of tickets.",
+              miniLesson: [
+                "Define variables as quantities that can change.",
+                "Translate phrases into expressions.",
+                "Evaluate by substitution with clear steps.",
+              ],
+              handout: [
+                "Write an expression for 7 more than n.",
+                "Evaluate 4x + 3 when x = 6.",
+                "Write a story for 12 - p.",
+              ],
+              practice: [
+                "The product of 5 and a number",
+                "Evaluate 2a + b when a = 8 and b = 5.",
+                "A club has m members and gains 14 more.",
+              ],
+              exit: "What does 3s represent if s is the number of stickers in one sheet?",
+              support: "Use phrase cards and variable boxes.",
+              extension:
+                "Write two different expressions that match the same story.",
+              key: ["7 + n", "4(6)+3=27", "2(8)+5=21"],
+            },
+            {
+              title: "One-Step Equations",
+              objective:
+                "Students solve one-step equations using inverse operations and balance reasoning.",
+              launch:
+                "A mystery number plus 14 equals 39. How can you prove the number?",
+              miniLesson: [
+                "Use balance scale language.",
+                "Undo addition, subtraction, multiplication, or division.",
+                "Check solutions by substitution.",
+              ],
+              handout: ["x + 18 = 52", "p - 9 = 31", "6m = 72", "k/5 = 11"],
+              practice: [
+                "a + 4.5 = 12",
+                "42 = 7n",
+                "A number divided by 8 is 9. What is it?",
+              ],
+              exit: "Solve y - 13 = 28 and check.",
+              support: "Use equation mats and inverse operation arrows.",
+              extension: "Write a word problem for 3x = 27.",
+              key: ["x=34", "p=40", "m=12", "k=55"],
+            },
+            {
+              title: "Inequalities and Real-World Constraints",
+              objective:
+                "Students write, solve, and graph inequalities from contexts.",
+              launch:
+                "You can spend at most $20. Snacks cost $3 each. How many can you buy?",
+              miniLesson: [
+                "Connect inequality symbols to phrases.",
+                "Graph solutions on a number line.",
+                "Discuss whole-number constraints in contexts.",
+              ],
+              handout: [
+                "Write an inequality for at least 12.",
+                "Graph x < 5.",
+                "Solve n + 7 <= 18.",
+              ],
+              practice: [
+                "Tickets cost $4 and you have more than $30.",
+                "A backpack can hold no more than 25 lb.",
+                "Solve 3x > 21.",
+              ],
+              exit: "Why is x = 5 not a solution to x < 5?",
+              support: "Use phrase-to-symbol anchor chart.",
+              extension: "Write a context where the graph has an open circle.",
+              key: ["At least 12: x >= 12", "n <= 11", "3x > 21 means x > 7"],
+            },
+          ],
+        },
+        {
+          id: "geometry-measurement",
+          title: "Part 5: Geometry, Measurement, and Coordinate Plane",
+          focus:
+            "Area, volume, nets, coordinate plane, and measurement reasoning.",
+          standards: ["6.G.A", "6.NS.C"],
+          lessons: [
+            {
+              title: "Area Models and Composite Figures",
+              objective:
+                "Students find area of rectangles, triangles, parallelograms, and composite figures.",
+              launch:
+                "How many ways can you split an L-shaped figure into familiar shapes?",
+              miniLesson: [
+                "Review base and height.",
+                "Decompose composite figures.",
+                "Label units squared.",
+              ],
+              handout: [
+                "Find area of a 9 by 4 rectangle.",
+                "Find area of a triangle with base 10 and height 6.",
+                "Decompose a 12 by 8 rectangle with a 4 by 3 corner missing.",
+              ],
+              practice: [
+                "Parallelogram base 7 height 5",
+                "Triangle base 14 height 3",
+                "Composite garden with two rectangles.",
+              ],
+              exit: "Why does a triangle use half of base times height?",
+              support: "Use grid paper and color decomposition.",
+              extension: "Design a composite figure with area 96 square units.",
+              key: [
+                "Rectangle area 36",
+                "Triangle area 30",
+                "Missing-corner area 84",
+              ],
+            },
+            {
+              title: "Volume, Nets, and Surface Area Preview",
+              objective:
+                "Students build and analyze rectangular prisms using volume and nets.",
+              launch: "A box is 5 by 4 by 3. What do the numbers tell you?",
+              miniLesson: [
+                "Connect volume to layers.",
+                "Use V = lwh for rectangular prisms.",
+                "Use nets to reason about surface area.",
+              ],
+              handout: [
+                "Find volume of a 6 x 2 x 5 prism.",
+                "Draw a net for a 3 x 4 x 2 box.",
+                "Find the area of each face pair.",
+              ],
+              practice: [
+                "Box A is 8 x 3 x 4. Find volume.",
+                "How many unit cubes in 5 layers of 12?",
+                "Compare two prisms with same volume.",
+              ],
+              exit: "Explain the difference between volume and surface area.",
+              support: "Use linking cubes and folded nets.",
+              extension: "Find two different prisms with volume 72.",
+              key: [
+                "6 x 2 x 5 = 60 cubic units",
+                "8 x 3 x 4 = 96",
+                "5 layers of 12 is 60",
+              ],
+            },
+            {
+              title: "Coordinate Plane Readiness",
+              objective:
+                "Students plot ordered pairs, name quadrants, and solve distance problems on grids.",
+              launch: "How are (4, -2) and (-2, 4) different?",
+              miniLesson: [
+                "Review x-axis, y-axis, and origin.",
+                "Move horizontally before vertically.",
+                "Use absolute distance for same-row or same-column points.",
+              ],
+              handout: [
+                "Plot (3, 5), (-4, 2), and (0, -6).",
+                "Name the quadrant of (-7, -1).",
+                "Find distance from (2, -3) to (2, 4).",
+              ],
+              practice: [
+                "Reflect (5, -2) over the y-axis.",
+                "Find the perimeter of a rectangle with vertices (1,1), (7,1), (7,4), (1,4).",
+                "Create a hidden shape with four points.",
+              ],
+              exit: "Why does the order of an ordered pair matter?",
+              support: "Use floor grids and step directions.",
+              extension: "Write coordinate clues for a partner to draw.",
+              key: [
+                "(-7,-1) is Quadrant III",
+                "Distance is 7 units",
+                "Rectangle perimeter is 18 units",
+              ],
+            },
+          ],
+        },
+        {
+          id: "data-readiness",
+          title: "Part 6: Data, Statistics, and Readiness Project",
+          focus:
+            "Statistical questions, measures of center, displays, variability, and a final application project.",
+          standards: ["6.SP.A", "6.SP.B"],
+          lessons: [
+            {
+              title: "Statistical Questions and Data Displays",
+              objective:
+                "Students identify statistical questions and create appropriate displays.",
+              launch:
+                "Is 'How tall is our teacher?' statistical? Why or why not?",
+              miniLesson: [
+                "Define variability.",
+                "Sort statistical and non-statistical questions.",
+                "Choose dot plots, bar graphs, or histograms based on data.",
+              ],
+              handout: [
+                "Rewrite a non-statistical question.",
+                "Make a dot plot for a class reading list.",
+                "Describe the shape of a data set.",
+              ],
+              practice: [
+                "Classify five questions.",
+                "Build a frequency table.",
+                "Write two observations from a dot plot.",
+              ],
+              exit: "Write one statistical question about sixth grade students.",
+              support: "Use question stems and class survey examples.",
+              extension: "Collect 10 real responses and choose a display.",
+              key: [
+                "Statistical questions expect variability",
+                "A dot plot shows individual values",
+                "A histogram groups intervals",
+              ],
+            },
+            {
+              title: "Mean, Median, Mode, and Range",
+              objective:
+                "Students calculate and interpret measures of center and variability.",
+              launch: "Which measure best represents 4, 5, 6, 7, 38?",
+              miniLesson: [
+                "Use leveling to understand mean.",
+                "Order data before finding median.",
+                "Use range to discuss spread.",
+              ],
+              handout: [
+                "Find mean, median, mode, range for 6, 8, 8, 10, 13.",
+                "Explain which measure is affected most by an outlier.",
+                "Create a data set with median 12.",
+              ],
+              practice: [
+                "Scores: 70, 85, 85, 90, 100",
+                "Add one number to make the mode 4.",
+                "Compare two data sets with same mean but different range.",
+              ],
+              exit: "Why can the mean be a decimal even when every data point is whole?",
+              support: "Use snap cubes to level data values.",
+              extension:
+                "Make two data sets with same median and different means.",
+              key: [
+                "Mean 9, median 8, mode 8, range 7",
+                "Outliers affect mean most",
+                "70,85,85,90,100 has mean 86, median 85, mode 85, range 30",
+              ],
+            },
+            {
+              title: "Grade 6 Readiness Project",
+              objective:
+                "Students apply bridge skills to a multi-step real-world task.",
+              launch:
+                "How can math help plan a fair, game day, or classroom store?",
+              miniLesson: [
+                "Read the whole task before calculating.",
+                "Create a plan with labels and units.",
+                "Check each answer for reasonableness and explain choices.",
+              ],
+              handout: [
+                "Choose a project context.",
+                "Build a budget with decimals.",
+                "Compare two rates.",
+                "Create one equation and solve it.",
+                "Graph a layout or data set.",
+              ],
+              practice: [
+                "Peer review using the rubric.",
+                "Revise one explanation.",
+                "Prepare a two-minute math defense.",
+              ],
+              exit: "Name one Grade 6 skill you are now ready to use and one skill you will keep practicing.",
+              support:
+                "Provide a project planning template and sentence starters.",
+              extension: "Add a percent discount, tax, or survey display.",
+              key: [
+                "Use the rubric: accuracy, reasoning, organization, precision, reflection",
+                "Accept multiple project solutions when math is valid",
+              ],
+            },
+          ],
+        },
+      ];
+
+      const drillMakers = {
+        "number-fluency": () => {
+          const a = randomInt(24, 89);
+          const b = randomInt(12, 46);
+          return makeProblem(
+            `Compute ${a} x ${b}.`,
+            a * b,
+            `Use partial products: ${a} x ${b} = ${a * b}.`,
+          );
+        },
+        "fractions-decimals": () => {
+          const options = [
+            makeProblem(
+              "Convert 3/4 to a decimal.",
+              0.75,
+              "3 divided by 4 = 0.75.",
+            ),
+            makeProblem(
+              "Find 2/5 + 1/10.",
+              "1/2",
+              "Use tenths: 4/10 + 1/10 = 5/10 = 1/2.",
+            ),
+            makeProblem(
+              "Find 15% of 80.",
+              12,
+              "10% is 8 and 5% is 4, so 15% is 12.",
+            ),
+          ];
+          return sample(options);
+        },
+        "ratios-rates": () => {
+          const a = randomInt(3, 8);
+          const b = a * randomInt(4, 9);
+          const scale = randomInt(3, 6);
+          return makeProblem(
+            `${a} notebooks cost $${b}. How much do ${a * scale} notebooks cost?`,
+            b * scale,
+            `Scale both quantities by ${scale}: $${b} x ${scale} = $${b * scale}.`,
+          );
+        },
+        "expressions-equations": () => {
+          const x = randomInt(6, 20);
+          const add = randomInt(4, 18);
+          return makeProblem(
+            `Solve x + ${add} = ${x + add}.`,
+            x,
+            `Subtract ${add} from both sides. x = ${x}.`,
+          );
+        },
+        "geometry-measurement": () => {
+          const base = randomInt(6, 16);
+          const height = randomInt(4, 12);
+          return makeProblem(
+            `Find the area of a triangle with base ${base} and height ${height}.`,
+            (base * height) / 2,
+            `Area = 1/2 x ${base} x ${height} = ${(base * height) / 2}.`,
+          );
+        },
+        "data-readiness": () => {
+          const values = [
+            randomInt(4, 9),
+            randomInt(10, 15),
+            randomInt(16, 20),
+          ];
+          const mean =
+            values.reduce((sum, value) => sum + value, 0) / values.length;
+          return makeProblem(
+            `Find the mean of ${values.join(", ")}.`,
+            mean,
+            `Add to get ${values.reduce((sum, value) => sum + value, 0)}, then divide by 3 to get ${mean}.`,
+          );
+        },
+      };
+
+      const state = {
+        currentProblem: null,
+        correct: 0,
+        attempts: 0,
+      };
+
+      const partGrid = document.querySelector("#part-grid");
+      const lessonList = document.querySelector("#lesson-list");
+      const partSelect = document.querySelector("#part-select");
+      const studentPacket = document.querySelector("#student-packet");
+
+      function renderParts() {
+        partGrid.innerHTML = curriculum
+          .map(
+            (part, index) => `
+        <article class="part-card">
+          <h3>${part.title}</h3>
+          <p>${part.focus}</p>
+          <div class="tag-row">${part.standards.map((standard) => `<span class="tag">${standard}</span>`).join("")}</div>
+          <ol>${part.lessons.map((lesson) => `<li>${lesson.title}</li>`).join("")}</ol>
+        </article>
+      `,
+          )
+          .join("");
+
+        partSelect.innerHTML = curriculum
+          .map(
+            (part) =>
+              `<option value="${part.id}">${part.title.replace("Part ", "P")}</option>`,
+          )
+          .join("");
+      }
+
+      function renderLessons() {
+        lessonList.innerHTML = curriculum
+          .map((part, partIndex) =>
+            part.lessons
+              .map((lesson, lessonIndex) => {
+                const number = `${partIndex + 1}.${lessonIndex + 1}`;
+                return `
+          <details class="lesson">
+            <summary>
+              <strong>${number} ${lesson.title}</strong>
+              <span>${part.title} | Objective: ${lesson.objective}</span>
+            </summary>
+            <div class="lesson-body">
+              <div class="lesson-box">
+                <h4>Teacher Plan</h4>
+                <p><strong>Launch:</strong> ${lesson.launch}</p>
+                <ul>${lesson.miniLesson.map((item) => `<li>${item}</li>`).join("")}</ul>
+              </div>
+              <div class="lesson-box">
+                <h4>Student Handout</h4>
+                <ul>${lesson.handout.map((item) => `<li>${item}</li>`).join("")}</ul>
+              </div>
+              <div class="lesson-box">
+                <h4>Practice and Exit Ticket</h4>
+                <ul>${lesson.practice.map((item) => `<li>${item}</li>`).join("")}</ul>
+                <p><strong>Exit:</strong> ${lesson.exit}</p>
+              </div>
+              <div class="lesson-box">
+                <h4>Support, Extension, Key</h4>
+                <p><strong>Support:</strong> ${lesson.support}</p>
+                <p><strong>Extension:</strong> ${lesson.extension}</p>
+                <ul>${lesson.key.map((item) => `<li>${item}</li>`).join("")}</ul>
+              </div>
+            </div>
+          </details>
+        `;
+              })
+              .join(""),
+          )
+          .join("");
+      }
+
+      function buildStudentPacket() {
+        const lines = [
+          "BRIDGE TO GRADE 6 STUDENT PACKET",
+          "Name: ___________________________  Dates: ___________________________",
+          "",
+          "Readiness Tracker",
+          "[ ] I can explain my strategy.",
+          "[ ] I can show work clearly.",
+          "[ ] I can check whether an answer is reasonable.",
+          "[ ] I can ask for the exact help I need.",
+          "",
+        ];
+
+        curriculum.forEach((part, partIndex) => {
+          lines.push(`${part.title.toUpperCase()}`);
+          lines.push(`Focus: ${part.focus}`);
+          part.lessons.forEach((lesson, lessonIndex) => {
+            lines.push("");
+            lines.push(
+              `Lesson ${partIndex + 1}.${lessonIndex + 1}: ${lesson.title}`,
+            );
+            lines.push(`Objective: ${lesson.objective}`);
+            lines.push(`Launch: ${lesson.launch}`);
+            lines.push("Guided Practice:");
+            lesson.handout.forEach((item, itemIndex) =>
+              lines.push(`${itemIndex + 1}. ${item}`),
+            );
+            lines.push("Independent Practice:");
+            lesson.practice.forEach((item, itemIndex) =>
+              lines.push(`${itemIndex + 1}. ${item}`),
+            );
+            lines.push(`Exit Ticket: ${lesson.exit}`);
+            lines.push("Reflection: What mistake did you avoid or fix today?");
+          });
+          lines.push("");
+        });
+
+        lines.push("Family Practice Menu");
+        lines.push("1. Explain one solved problem out loud.");
+        lines.push("2. Make a new problem that uses the same skill.");
+        lines.push("3. Check an answer with estimation.");
+        return lines.join("\n");
+      }
+
+      function buildTeacherGuide() {
+        const lines = [
+          "BRIDGE TO GRADE 6 TEACHER GUIDE",
+          "",
+          "Recommended pacing: Teach one core lesson per day. Add a quiz, station day, or reteach day after each part.",
+          "Daily format: 5-minute launch, 10-minute mini-lesson, 15-minute guided practice, 15-minute independent or partner practice, 5-minute exit ticket.",
+          "",
+        ];
+
+        curriculum.forEach((part, partIndex) => {
+          lines.push(`${part.title.toUpperCase()}`);
+          lines.push(`Focus: ${part.focus}`);
+          part.lessons.forEach((lesson, lessonIndex) => {
+            lines.push("");
+            lines.push(
+              `Lesson ${partIndex + 1}.${lessonIndex + 1}: ${lesson.title}`,
+            );
+            lines.push(`Objective: ${lesson.objective}`);
+            lines.push(`Teacher launch: ${lesson.launch}`);
+            lines.push(`Support: ${lesson.support}`);
+            lines.push(`Extension: ${lesson.extension}`);
+            lines.push("Answer Key:");
+            lesson.key.forEach((item) => lines.push(`- ${item}`));
+          });
+          lines.push("");
+        });
+
+        lines.push(
+          "Final Rubric: Accuracy 40%, reasoning 30%, organization and precision 20%, reflection 10%.",
+        );
+        return lines.join("\n");
+      }
+
+      function downloadText(filename, text) {
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function sample(items) {
+        return items[Math.floor(Math.random() * items.length)];
+      }
+
+      function makeProblem(question, answer, solution) {
+        return { question, answer, solution };
+      }
+
+      function normalizeAnswer(value) {
+        const trimmed = String(value).trim().toLowerCase();
+        if (trimmed.includes("/")) {
+          const pieces = trimmed.split("/");
+          if (pieces.length === 2) {
+            const numerator = Number(pieces[0]);
+            const denominator = Number(pieces[1]);
+            if (
+              Number.isFinite(numerator) &&
+              Number.isFinite(denominator) &&
+              denominator !== 0
+            ) {
+              return numerator / denominator;
+            }
+          }
+        }
+        const numeric = Number(trimmed.replace(/[$,%]/g, ""));
+        return Number.isFinite(numeric) ? numeric : trimmed;
+      }
+
+      function answerMatches(given, expected) {
+        const normalizedGiven = normalizeAnswer(given);
+        const normalizedExpected = normalizeAnswer(expected);
+        if (
+          typeof normalizedGiven === "number" &&
+          typeof normalizedExpected === "number"
+        ) {
+          return Math.abs(normalizedGiven - normalizedExpected) < 0.001;
+        }
+        return normalizedGiven === normalizedExpected;
+      }
+
+      function updateScore(message) {
+        document.querySelector("#feedback").textContent =
+          `${message} Score: ${state.correct} correct out of ${state.attempts} attempts`;
+      }
+
+      function newQuestion() {
+        const partId = partSelect.value;
+        const difficulty = document.querySelector("#difficulty-select").value;
+        let problem = drillMakers[partId]();
+        if (difficulty === "stretch" && partId === "number-fluency") {
+          const dividend = randomInt(400, 900);
+          const divisor = randomInt(6, 18);
+          problem = makeProblem(
+            `Compute ${dividend} divided by ${divisor}. Round to the nearest tenth if needed.`,
+            Math.round((dividend / divisor) * 10) / 10,
+            `${dividend} divided by ${divisor} is about ${Math.round((dividend / divisor) * 10) / 10}.`,
+          );
+        }
+        if (difficulty === "challenge" && partId === "expressions-equations") {
+          const x = randomInt(4, 12);
+          const multiplier = randomInt(2, 6);
+          const add = randomInt(3, 11);
+          problem = makeProblem(
+            `Solve ${multiplier}x + ${add} = ${multiplier * x + add}.`,
+            x,
+            `Subtract ${add}, then divide by ${multiplier}. x = ${x}.`,
+          );
+        }
+        state.currentProblem = problem;
+        document.querySelector("#question-text").textContent = problem.question;
+        document.querySelector("#answer-input").value = "";
+        document.querySelector("#solution-text").textContent = "";
+        updateScore("");
+      }
+
+      function checkAnswer() {
+        if (!state.currentProblem) {
+          newQuestion();
+        }
+        const given = document.querySelector("#answer-input").value;
+        if (!given.trim()) {
+          updateScore("Enter an answer first.");
+          return;
+        }
+        state.attempts += 1;
+        if (answerMatches(given, state.currentProblem.answer)) {
+          state.correct += 1;
+          updateScore("Correct.");
+        } else {
+          updateScore(
+            `Not yet. Expected answer: ${state.currentProblem.answer}.`,
+          );
+        }
+      }
+
+      function showSolution() {
+        if (!state.currentProblem) {
+          newQuestion();
+        }
+        document.querySelector("#solution-text").textContent =
+          state.currentProblem.solution;
+      }
+
+      function init() {
+        renderParts();
+        renderLessons();
+        studentPacket.value = buildStudentPacket();
+        document
+          .querySelector("#download-student")
+          .addEventListener("click", () =>
+            downloadText(
+              "bridge-to-grade-6-student-packet.txt",
+              buildStudentPacket(),
+            ),
+          );
+        document
+          .querySelector("#download-teacher")
+          .addEventListener("click", () =>
+            downloadText(
+              "bridge-to-grade-6-teacher-guide.txt",
+              buildTeacherGuide(),
+            ),
+          );
+        document
+          .querySelector("#print-page")
+          .addEventListener("click", () => window.print());
+        document
+          .querySelector("#new-question")
+          .addEventListener("click", newQuestion);
+        document
+          .querySelector("#check-answer")
+          .addEventListener("click", checkAnswer);
+        document
+          .querySelector("#show-solution")
+          .addEventListener("click", showSolution);
+        document.querySelector("#reset-score").addEventListener("click", () => {
+          state.correct = 0;
+          state.attempts = 0;
+          updateScore("");
+        });
+        newQuestion();
+      }
+
+      init();
+    </script>
+    <script src="/assets/nt-chrome.js" defer></script>
+  </body>
+</html>

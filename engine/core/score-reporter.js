@@ -1,4 +1,4 @@
-const SCORE_API = "https://eduwonderlab.pages.dev/api/scores";
+const SCORE_API = "/api/scores";
 
 export async function reportScore(state, config) {
   const s = state.get();

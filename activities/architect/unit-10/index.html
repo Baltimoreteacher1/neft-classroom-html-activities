@@ -1,20 +1,21 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Unit 10 — Volume Architect | Volume of Prisms (6.G.A.2)</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unit 10 — Coral Cove Aquarium | Volume &amp; Surface Area Design Challenge
+      (6.G.A.2, 6.G.A.4)
+    </title>
 
     <!-- Shared theme -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <script src="/assets/neft-theme.js" defer></script>
-    <!-- Activity kit -->
+    <!-- Activity kit (grading + save) -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      :root {
-        --max: 860px;
-      }
       * {
         box-sizing: border-box;
       }
@@ -28,859 +29,2493 @@
           sans-serif;
         background: var(--nt-bg);
         color: var(--nt-text);
-        font-size: 18px;
         line-height: 1.5;
+        font-size: 18px;
       }
       .wrap {
-        max-width: var(--max);
+        max-width: 980px;
         margin: 0 auto;
-        padding: 18px 16px 64px;
+        padding: 20px 16px 72px;
       }
 
-      header.hero {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 20px;
-        margin-bottom: 18px;
-      }
-      header.hero h1 {
-        margin: 0 0 6px;
-        font-size: 1.7rem;
-      }
-      .standard {
-        display: inline-block;
-        font-weight: 700;
-        color: var(--nt-accent);
-        border: 1px solid var(--nt-border);
-        border-radius: 999px;
-        padding: 2px 12px;
-        font-size: 0.95rem;
-        margin-bottom: 10px;
-      }
-      .lead {
-        color: var(--nt-muted);
-        margin: 8px 0 0;
-      }
-
-      /* ---- Learning Target box ---- */
+      /* ── Learning target ── */
       .learning-target {
         background: var(--nt-surface);
         border: 2px solid var(--nt-accent);
-        border-radius: 14px;
-        padding: 18px 22px;
+        border-radius: 16px;
+        padding: 20px 22px 18px;
         margin-bottom: 18px;
       }
       .learning-target h2 {
         margin: 0 0 10px;
-        font-size: 1.1rem;
-        color: var(--nt-accent);
+        font-size: 18px;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
       }
       .learning-target ul {
         margin: 0 0 12px;
         padding-left: 1.4em;
       }
-      .learning-target ul li {
-        margin-bottom: 6px;
+      .learning-target li {
+        margin-bottom: 4px;
       }
       .lt-meta {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
-        font-size: 0.9rem;
+        margin-top: 10px;
+        font-size: 15px;
         color: var(--nt-muted);
-        border-top: 1px solid var(--nt-border);
-        padding-top: 10px;
-        margin-top: 4px;
       }
       .lt-meta span {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
       }
 
-      /* ---- Teacher Notes / Answer Key (collapsible) ---- */
-      details.teacher-block {
+      /* ── Hero ── */
+      header.hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+        color: #e7fbff;
+        background:
+          radial-gradient(
+            1100px 280px at 80% -40%,
+            rgba(56, 200, 222, 0.45),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #06304a, #021726);
+        border: 1px solid rgba(56, 200, 222, 0.35);
+      }
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #6fe3f5;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 4vw, 34px);
+        line-height: 1.1;
+        color: #fff;
+      }
+      header.hero .lede {
+        margin: 0;
+        max-width: 64ch;
+        color: #bfeefc;
+        font-size: 16px;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .badge {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #e3f7ff;
+      }
+
+      /* ── Design-cycle ribbon ── */
+      .cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 140px;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #d3f3fb;
+        background: rgba(56, 200, 222, 0.08);
+      }
+      .cycle b {
+        display: block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6fe3f5;
+        margin-bottom: 3px;
+      }
+
+      /* ── Progress ── */
+      .progress {
+        margin-top: 16px;
+        font-weight: 700;
+        color: #e7fbff;
+      }
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #33d6a6, #38c8de);
+        transition: width 0.3s ease;
+      }
+
+      /* ── Cards / tasks ── */
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .card h3 {
+        margin: 16px 0 6px;
+        font-size: 16px;
+      }
+      .tag-shape {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: var(--nt-bg);
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+      }
+      .scale {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+
+      .grid2 {
+        display: grid;
+        gap: 18px;
+      }
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid3 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+      }
+
+      /* ── Blueprint ── */
+      .bp {
+        background: #021726;
+        border: 1px solid rgba(56, 200, 222, 0.4);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .bp svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .bp-grid {
+        stroke: rgba(56, 200, 222, 0.22);
+      }
+      .bp-edge {
+        fill: none;
+        stroke: #8fe6f7;
+        stroke-width: 2;
+      }
+      .bp-hidden {
+        fill: none;
+        stroke: #5a8aa0;
+        stroke-width: 1.3;
+        stroke-dasharray: 5 4;
+      }
+      .bp-dim {
+        stroke: #ffcc66;
+        stroke-width: 1.2;
+      }
+      .bp-dimtext {
+        fill: #ffcc66;
+        font:
+          700 12px ui-monospace,
+          monospace;
+      }
+      .bp-water {
+        fill: rgba(56, 200, 222, 0.22);
+        stroke: #38c8de;
+        stroke-width: 2;
+      }
+      .bp-fa {
+        fill: rgba(51, 214, 166, 0.2);
+        stroke: #33d6a6;
+        stroke-width: 2;
+      }
+      .bp-fb {
+        fill: rgba(56, 200, 222, 0.2);
+        stroke: #38c8de;
+        stroke-width: 2;
+      }
+      .bp-fc {
+        fill: rgba(155, 108, 255, 0.2);
+        stroke: #9b6cff;
+        stroke-width: 2;
+      }
+      .bp-fd {
+        fill: rgba(255, 159, 95, 0.2);
+        stroke: #ff9f5f;
+        stroke-width: 2;
+      }
+      .bp-label {
+        fill: #eef7ff;
+        font:
+          700 14px system-ui,
+          sans-serif;
+      }
+      .bp-sub {
+        fill: #b9e4ee;
+        font:
+          600 11px system-ui,
+          sans-serif;
+      }
+      .bp-cap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: #6fe3f5;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      /* ── Formula figures ── */
+      .fig {
+        text-align: center;
+      }
+      .fig svg {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+      }
+      .fig figcaption {
+        font-weight: 700;
+        margin-top: 4px;
+        font-size: 15px;
+      }
+      .fcode {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+        display: block;
+        margin-top: 2px;
+      }
+
+      /* ── Question blocks ── */
+      .q {
+        margin: 14px 0;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
+      }
+      .q .lbl {
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+      .q .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q input[type="text"] {
+        width: 130px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .q .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 8px 0 0;
+      }
+      .q .fb.ok {
+        color: #0f9d6b;
+      }
+      .q .fb.bad {
+        color: #d23f54;
+      }
+      .q input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      .q input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      #submitBtn {
+        font-size: 1.2rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+
+      /* ── Differentiation callouts ── */
+      .lvl {
+        border-radius: 12px;
+        padding: 13px 15px;
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .lvl1 {
+        background: rgba(51, 214, 166, 0.12);
+        border: 1px solid rgba(51, 214, 166, 0.45);
+      }
+      .lvl1 .pill {
+        background: #0f9d6b;
+      }
+      .lvl2 {
+        background: rgba(155, 108, 255, 0.12);
+        border: 1px solid rgba(155, 108, 255, 0.45);
+      }
+      .lvl2 .pill {
+        background: #7b4fd0;
+      }
+      .lvl3 {
+        background: rgba(255, 204, 102, 0.14);
+        border: 1px solid rgba(255, 204, 102, 0.5);
+      }
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
+      /* ── Material chooser ── */
+      .matgrid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 6px;
+      }
+      @media (max-width: 560px) {
+        .matgrid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .matcard {
+        font: inherit;
+        cursor: pointer;
+        text-align: left;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      .matcard[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        box-shadow: 0 0 0 3px rgba(56, 200, 222, 0.2);
+      }
+      .matcard .sw {
+        height: 46px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+      }
+      .matcard b {
+        font-size: 15px;
+      }
+      .matcard small {
+        color: var(--nt-muted);
+      }
+
+      /* ── Readout + table ── */
+      .readout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        border: 1px solid var(--nt-border);
+      }
+      .readout .k {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        letter-spacing: 0.06em;
+      }
+      .readout .v {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      .readout .v.big {
+        font-size: 26px;
+      }
+      table.bt {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+      }
+      table.bt th,
+      table.bt td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--nt-border);
+        text-align: left;
+        font-size: 15px;
+      }
+      table.bt thead th {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+      }
+      table.bt tfoot th {
+        font-size: 17px;
+      }
+      table.bt input {
+        font: inherit;
+        width: 120px;
+        font-weight: 700;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+
+      /* ── Cube-packing interactive ── */
+      .cuber {
+        display: grid;
+        gap: 14px;
+      }
+      @media (min-width: 620px) {
+        .cuber {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 8px 0;
+        flex-wrap: wrap;
+      }
+      .stepper label {
+        font-weight: 700;
+        min-width: 9em;
+      }
+      .stepbtn {
+        font: inherit;
+        font-weight: 800;
+        font-size: 20px;
+        line-height: 1;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        cursor: pointer;
+      }
+      .stepbtn:hover {
+        border-color: var(--nt-accent);
+      }
+      .stepval {
+        font:
+          800 22px ui-monospace,
+          monospace;
+        min-width: 2.2em;
+        text-align: center;
+      }
+
+      /* ── Net builder (interactive panel toggles) ── */
+      .net-panel {
+        cursor: pointer;
+        transition:
+          fill 0.15s ease,
+          stroke 0.15s ease;
+      }
+      .net-panel:focus-visible {
+        outline: 3px solid var(--nt-focus);
+      }
+      .net-counter {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
         background: var(--nt-surface);
         border: 1px dashed var(--nt-border);
         border-radius: 14px;
-        padding: 0;
         margin-bottom: 18px;
       }
-      details.teacher-block summary {
-        padding: 14px 20px;
-        font-weight: 700;
-        font-size: 1rem;
+      details.teacher-only summary {
         cursor: pointer;
-        color: var(--nt-muted);
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
         list-style: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border-radius: 14px;
+        user-select: none;
       }
-      details.teacher-block summary::-webkit-details-marker { display: none; }
-      details.teacher-block summary::before {
-        content: "▶";
-        font-size: 0.75rem;
-        transition: transform 0.2s;
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
       }
-      details.teacher-block[open] summary::before {
-        transform: rotate(90deg);
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
       }
-      details.teacher-block summary:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
       }
-      .teacher-body {
-        padding: 4px 20px 18px;
-        border-top: 1px solid var(--nt-border);
-      }
-      .teacher-body h3 {
-        font-size: 1rem;
+      .details-body h3 {
+        font-size: 16px;
         margin: 14px 0 6px;
         color: var(--nt-accent);
       }
-      .teacher-body p,
-      .teacher-body li {
-        font-size: 0.95rem;
-        color: var(--nt-muted);
-      }
-      .teacher-body ul {
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
         padding-left: 1.4em;
-        margin: 4px 0;
       }
 
-      /* ---- Rubric ---- */
+      /* ── Rubric ── */
       .rubric-wrap {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 18px 20px;
-        margin-bottom: 18px;
+        margin-top: 6px;
         overflow-x: auto;
-      }
-      .rubric-wrap h2 {
-        margin: 0 0 12px;
-        font-size: 1.1rem;
       }
       table.rubric {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.9rem;
+        font-size: 15px;
+        min-width: 480px;
       }
       table.rubric th,
       table.rubric td {
         border: 1px solid var(--nt-border);
-        padding: 8px 10px;
+        padding: 9px 12px;
         text-align: left;
         vertical-align: top;
       }
-      table.rubric th {
+      table.rubric thead th {
         background: var(--nt-bg);
-        font-weight: 700;
-        color: var(--nt-text);
-      }
-      table.rubric td:first-child {
-        font-weight: 700;
-        white-space: nowrap;
+        font-weight: 800;
         color: var(--nt-accent);
       }
 
-      /* ---- Activity cards ---- */
-      .card {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 18px;
-        margin: 16px 0;
+      #ntkit {
+        margin-top: 18px;
       }
-      .card h2 {
-        margin: 0 0 4px;
-        font-size: 1.25rem;
-      }
-      .qmeta {
-        color: var(--nt-muted);
-        font-size: 0.95rem;
-        margin: 0 0 10px;
-      }
-      .directions {
-        font-weight: 700;
-        margin: 0 0 12px;
-        padding: 10px 12px;
-        border-left: 5px solid var(--nt-accent);
-        border-radius: 6px;
-        background: color-mix(in srgb, var(--nt-accent) 9%, var(--nt-surface));
-      }
-
-      /* Cube-packing builder */
-      .builder {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        align-items: flex-start;
-      }
-      .stage {
-        border: 2px dashed var(--nt-border);
-        border-radius: 10px;
-        padding: 10px;
-        background: var(--nt-bg);
-      }
-      .layer-label {
-        font-weight: 700;
-        color: var(--nt-muted);
-        font-size: 0.85rem;
-        margin: 0 0 4px;
-      }
-      .grid {
-        display: grid;
-        gap: 3px;
-      }
-      .cube {
-        width: 26px;
-        height: 26px;
-        border: 1px solid var(--nt-border);
-        border-radius: 4px;
-        background: var(--nt-surface);
-        padding: 0;
-        cursor: pointer;
-      }
-      .cube[aria-pressed="true"] {
-        background: var(--nt-accent);
-        border-color: var(--nt-accent);
-      }
-      .cube:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-
-      .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
-        margin-top: 12px;
-      }
-      label.f {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        font-weight: 700;
-        font-size: 0.95rem;
-      }
-      input[type="number"] {
-        width: 92px;
-        font-size: 1.05rem;
-        padding: 8px 10px;
-        border: 1px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-      }
-      input[type="number"]:focus {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      .countpill {
-        font-weight: 700;
-        padding: 6px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--nt-border);
-        background: var(--nt-bg);
-      }
-      .dims {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      button.btn {
-        font-size: 1.05rem;
-        font-weight: 700;
-        cursor: pointer;
-        padding: 12px 20px;
-        border-radius: 10px;
-        border: 1px solid var(--nt-accent);
-        background: var(--nt-accent);
-        color: #fff;
-      }
-      button.btn:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      button.btn.secondary {
-        background: var(--nt-surface);
-        color: var(--nt-accent);
-      }
-
-      .progress {
-        font-weight: 700;
-        color: var(--nt-muted);
-        margin: 0 0 8px;
-      }
-      .barwrap {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 999px;
-        height: 12px;
-        overflow: hidden;
-      }
-      .bar {
-        height: 100%;
-        width: 0;
-        background: var(--nt-accent);
-        transition: width 0.25s ease;
-      }
-
-      .actions {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-top: 10px;
-      }
-
-      /* ---- Reflection + Deliverable ---- */
-      .reflection-card {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 18px 20px;
-        margin-bottom: 18px;
-      }
-      .reflection-card h2 {
-        margin: 0 0 8px;
-        font-size: 1.1rem;
-      }
-      .reflection-card textarea {
-        width: 100%;
-        min-height: 90px;
-        font-size: 1rem;
-        font-family: inherit;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        resize: vertical;
-        margin-top: 8px;
-      }
-      .reflection-card textarea:focus {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      .deliverable {
-        background: var(--nt-bg);
-        border-left: 5px solid var(--nt-accent);
-        border-radius: 6px;
-        padding: 10px 14px;
-        margin-top: 14px;
-        font-size: 0.95rem;
-      }
-      .deliverable strong {
-        color: var(--nt-accent);
-      }
-
-      /* ---- Feedback live region ---- */
-      #liveRegion {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-
-      .visually-hidden {
+      #a11y-feedback {
         position: absolute;
         width: 1px;
         height: 1px;
         overflow: hidden;
         clip: rect(0 0 0 0);
+        white-space: nowrap;
       }
 
-      /* ---- Print styles ---- */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
       @media print {
-        details.teacher-block,
-        button.btn,
-        .actions {
+        details.teacher-only,
+        .actions,
+        #submitBtn,
+        .btn {
           display: none !important;
         }
         .wrap {
-          padding: 0;
+          padding-bottom: 0;
         }
-        body {
-          font-size: 14px;
+        .card {
+          break-inside: avoid;
         }
       }
-    </style>
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
   </head>
 
   <body class="nt-theme-aware">
-    <!-- Accessible live region for screen reader feedback -->
-    <div id="liveRegion" aria-live="polite" aria-atomic="true"></div>
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
     <div class="wrap">
-      <header class="hero">
-        <span class="standard">CCSS 6.G.A.2 &middot; Volume of Prisms</span>
-        <h1>Volume Architect &mdash; Pack the Prism</h1>
-        <p class="lead">
-          You are the architect of the Volume Vault. Pack each box with unit
-          cubes, then use <strong>V = length &times; width &times; height</strong> to find
-          the volume.
-        </p>
-      </header>
-
-      <!-- Learning Target -->
-      <section class="learning-target" aria-label="Learning Targets">
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
         <h2>Learning Targets</h2>
         <ul>
-          <li>I can find the volume of a rectangular prism by packing it with unit cubes and counting them.</li>
-          <li>I can use the formula <strong>V = l &times; w &times; h</strong> to calculate the volume of a rectangular prism.</li>
-          <li>I can apply the volume formula when one dimension is a fractional (decimal) length.</li>
-          <li>I can work backwards from a known volume to find a missing edge length.</li>
+          <li>
+            I can find the volume of a right rectangular prism using V = l × w ×
+            h, including with fractional edge lengths.
+          </li>
+          <li>
+            I can find the volume of a triangular prism using V = (area of the
+            triangle base) × length.
+          </li>
+          <li>
+            I can use a net to find the total surface area of a prism and of a
+            pyramid.
+          </li>
+          <li>
+            I can use volume and surface area to estimate water weight, glass,
+            and material cost and keep a build within budget.
+          </li>
         </ul>
         <div class="lt-meta">
-          <span><strong>Standard:</strong> 6.G.A.2</span>
-          <span><strong>Est. time:</strong> 35–45 min</span>
-          <span><strong>Materials:</strong> This page, optional physical unit cubes</span>
-          <span><strong>Format:</strong> Individual or pair work</span>
+          <span>Standards: CCSS 6.G.A.2 · 6.G.A.4</span>
+          <span>Time: ~45 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
         </div>
       </section>
 
-      <!-- Teacher Notes (hidden in print) -->
-      <details class="teacher-block" aria-label="Teacher Notes">
-        <summary>&#x1F4CB; Teacher Notes</summary>
-        <div class="teacher-body">
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
           <h3>Pacing</h3>
-          <p>Allow 5–7 min for Q1 (cube builder), 3–4 min each for Q2–Q4, 5 min for Q5 (fractions), and 5 min for Q6 (inverse). Reserve 5 min for the reflection.</p>
-
-          <h3>Grouping</h3>
-          <p>Works well as individual practice. For pairs, one student designs the box in Q3 and the partner verifies the volume. For whole-class launch, project Q1 and ask: "How many cubes does one row hold? How many rows?"</p>
-
-          <h3>Differentiation — Support</h3>
           <ul>
-            <li>Provide physical unit cubes so students can build the models for Q1–Q3 before typing.</li>
-            <li>For Q5, write out 1.5 as 3/2 and multiply step-by-step: 3 &times; 2 = 6, then 6 &times; 1.5 = 9.</li>
-            <li>For Q6, provide a graphic organizer: write the formula, substitute the known values, then solve for the missing variable.</li>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Brief" together. Anchor
+              the scale: "1 grid square = 1 foot." Model reading length, width,
+              and water depth off the tank blueprint.
+            </li>
+            <li>
+              <strong>Design work (30–35 min):</strong> Students complete Task 1
+              → 4 in order. Task 4 (the Build Sheet) uses results from Tasks
+              1–3, so encourage them to check each surface as they go.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Discuss the fractional-edge
+              volume, the net → surface-area connection, and the Level 2 water
+              weight and glass-budget reasoning.
+            </li>
           </ul>
-
-          <h3>Differentiation — Challenge</h3>
+          <h3>Differentiation</h3>
           <ul>
-            <li>Ask: if you double the height of the box in Q4, what happens to the volume? What if you double all three dimensions?</li>
-            <li>Challenge Q3: can you find two different boxes with the same volume but different dimensions?</li>
-            <li>Extension: if the box in Q6 needs to hold 96 cubic units, what possible integer dimensions would work?</li>
+            <li>
+              <strong>Level 1 (support):</strong> Use the green callouts and
+              bilingual (EN/ES) prompts. Provide a printed formula card. Let
+              students count unit cubes on the volume blueprint and click the
+              net panels one at a time.
+            </li>
+            <li>
+              <strong>Level 2 (enrichment):</strong> Have students compute the
+              water weight (62.4 lb per cubic foot) and solve the glass-budget
+              inequality for the most expensive glass grade the build can
+              afford.
+            </li>
           </ul>
-
-          <h3>ESOL / Language Supports</h3>
+          <h3>STEM Connection</h3>
           <ul>
-            <li>Key vocabulary with visuals: <em>rectangular prism, volume, length, width, height, unit cube, layer, edge, dimension</em>.</li>
-            <li>Sentence frame for Q2: "There are ___ cubes in one layer. There are ___ layers. The total is ___ &times; ___ = ___."</li>
-            <li>Sentence frame for Q6: "I know V = ___, l = ___, and w = ___. I solve h = V &divide; (l &times; w) = ___."</li>
-            <li>Post the formula V = l &times; w &times; h visually in the room. Allow native-language glossaries.</li>
+            <li>
+              This is a true engineering design task: Define → Model → Calculate
+              → Estimate → Decide. Students apply volume and surface-area math
+              the way an aquarium engineer does — sizing tanks by volume,
+              cutting glass panels from nets, and pricing a build against a hard
+              budget and a structural water-weight limit.
+            </li>
+          </ul>
+          <h3>Answer key</h3>
+          <ul>
+            <li>Q1.1 main-tank volume = 18 × 8 × 6 = 864 ft³</li>
+            <li>
+              Q1.2 fractional ledge volume = 8 × 3 × 1½ = 8 × 3 × 1.5 = 36 ft³
+            </li>
+            <li>Q2.1 triangle base area = ½ × 6 × 4 = 12 ft²</li>
+            <li>Q2.2 reef-wedge volume = 12 × 10 = 120 ft³</li>
+            <li>
+              Q3.1 net panel count = 6; Q3.2 surface area = 2(18×8) + 2(18×6) +
+              2(8×6) = 288 + 216 + 96 = 600 ft²
+            </li>
+            <li>
+              Q4.1 pyramid skylight surface area = base 36 + 4 triangles 4×(½ ×
+              6 × 5)=60 → 96 ft²
+            </li>
           </ul>
         </div>
       </details>
 
-      <!-- Rubric -->
-      <section class="rubric-wrap" aria-label="Scoring Rubric">
-        <h2>Scoring Rubric</h2>
-        <table class="rubric">
-          <thead>
-            <tr>
-              <th scope="col">Level</th>
-              <th scope="col">Score</th>
-              <th scope="col">Descriptor</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Mastery</td>
-              <td>6 / 6</td>
-              <td>Correctly packs the cube layer; uses V = l &times; w &times; h without error for all word problems; correctly handles the fractional edge; algebraically solves for the missing dimension.</td>
-            </tr>
-            <tr>
-              <td>Proficient</td>
-              <td>4–5 / 6</td>
-              <td>Mostly correct with at most one arithmetic error; packs the layer correctly; applies the formula consistently; may make a minor error with the fractional edge or the inverse problem.</td>
-            </tr>
-            <tr>
-              <td>Developing</td>
-              <td>2–3 / 6</td>
-              <td>Can pack the cube layer and state the formula but makes errors applying it; confuses area with volume; struggles with fractional edges or working backwards from volume.</td>
-            </tr>
-            <tr>
-              <td>Beginning</td>
-              <td>0–1 / 6</td>
-              <td>Cannot consistently pack the layer to the target; does not recall V = l &times; w &times; h; needs direct re-teaching of the relationship between layers and volume.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag"
+          >Unit 10 · Math Architect · Volume &amp; Surface Area (6.G.A.2 ·
+          6.G.A.4)</span
+        >
+        <h1>Design Challenge: The Coral Cove Aquarium</h1>
+        <p class="lede">
+          You are the lead exhibit engineer for
+          <strong>Coral Cove Aquarium</strong>. The director wants a brand-new
+          ocean exhibit built from glass prism tanks and a glass pyramid
+          skylight. Use volume to size the water, use nets to size the glass,
+          estimate the cost and the water weight, and bring the build in
+          <strong>under $90,000</strong> without overloading the floor.
+        </p>
+        <div class="badges">
+          <span class="badge">Standard 6.G.A.2</span>
+          <span class="badge">Standard 6.G.A.4</span>
+          <span class="badge">Volume of Prisms</span>
+          <span class="badge">Nets &amp; Surface Area</span>
+          <span class="badge">STEM Design Cycle</span>
+        </div>
+        <div class="cycle">
+          <div>
+            <b>1 · Define</b>Read the brief &amp; constraints (budget, weight,
+            scale).
+          </div>
+          <div><b>2 · Model</b>Read dimensions off each scale blueprint.</div>
+          <div><b>3 · Calculate</b>Find volumes and surface areas.</div>
+          <div><b>4 · Estimate</b>Turn volume &amp; area into cost.</div>
+          <div>
+            <b>5 · Decide</b>Adjust the plan to meet budget &amp; weight.
+          </div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Specs approved: <span id="pcount">0</span> / 7
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="7"
+            aria-label="Specs approved"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
 
-      <!-- Activity kit mount: student name + Save PDF/DOC + results -->
-      <div id="ntkit"></div>
-
-      <section class="card" aria-label="Progress">
-        <p class="progress" id="progressText">Step 0 of 6 done</p>
-        <div class="barwrap" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" aria-label="Activity progress">
-          <div class="bar" id="bar"></div>
+      <!-- ══ BRIEF ══ -->
+      <section class="card" aria-label="The brief">
+        <h2>The Brief</h2>
+        <p>
+          The director handed you a scaled exhibit plan. Every blueprint on this
+          page uses the <strong>same scale</strong>:
+        </p>
+        <p class="scale">
+          SCALE&nbsp; 1 grid square = 1 foot &nbsp;·&nbsp; exhibit plan drawn to
+          scale
+        </p>
+        <div class="grid3">
+          <div class="lvl lvl1" style="margin-top: 0">
+            <b>Deliverable 1</b><br />Compute the volume of each tank from its
+            scale drawing.
+          </div>
+          <div class="lvl lvl2" style="margin-top: 0">
+            <b>Deliverable 2</b><br />Use nets to find the glass surface area,
+            then price it.
+          </div>
+          <div class="lvl lvl3" style="margin-top: 0">
+            <b>Deliverable 3</b><br />Keep the build under
+            <strong>$90,000</strong> and the water weight safe.
+          </div>
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            <strong>Volume</strong> is how much space a solid fills, measured in
+            cubic feet (ft³). <strong>Surface area</strong> is how much flat
+            material covers the outside, measured in square feet (ft²). A
+            <strong>net</strong> is the shape you get when you unfold a solid
+            flat — every face becomes a piece you can measure.
+          </p>
+          <span class="es"
+            >Español: El <strong>volumen</strong> es cuánto espacio llena un
+            sólido (pies cúbicos, ft³). El
+            <strong>área de superficie</strong> es cuánto material cubre el
+            exterior (pies cuadrados, ft²). Una <strong>red (net)</strong> es el
+            sólido desdoblado en plano: cada cara es una pieza que puedes
+            medir.</span
+          >
         </div>
       </section>
 
-      <!-- Q1: Cube builder -->
-      <section class="card" aria-labelledby="q1h">
-        <h2 id="q1h">1. Build one layer</h2>
-        <p class="qmeta">Skill: Cubes in one layer</p>
-        <p class="directions">
-          Click cubes to fill the floor. Make a layer with
-          <strong>12 cubes</strong> (length 4, width 3).
+      <!-- ══ FORMULA TOOLKIT ══ -->
+      <section class="card" aria-label="Formula toolkit">
+        <h2>Engineer's Formula Toolkit</h2>
+        <div class="grid3">
+          <figure class="fig">
+            <svg
+              viewBox="0 0 200 130"
+              role="img"
+              aria-label="Rectangular prism: volume equals length times width times height"
+            >
+              <polygon points="30,50 130,50 160,30 60,30" class="bp-fb" />
+              <polygon points="30,50 130,50 130,110 30,110" class="bp-fb" />
+              <polygon points="130,50 160,30 160,90 130,110" class="bp-fb" />
+              <text
+                x="80"
+                y="126"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="currentColor"
+              >
+                l × w × h
+              </text>
+            </svg>
+            <figcaption>
+              Rectangular prism<span class="fcode">V = l × w × h</span>
+            </figcaption>
+          </figure>
+          <figure class="fig">
+            <svg
+              viewBox="0 0 200 130"
+              role="img"
+              aria-label="Triangular prism: volume equals area of the triangle base times the length"
+            >
+              <polygon points="35,95 95,95 65,45" class="bp-fa" />
+              <polygon points="95,95 65,45 135,30 165,80" class="bp-fa" />
+              <polygon points="35,95 95,95 165,80 105,80" class="bp-fa" />
+              <line
+                x1="65"
+                y1="45"
+                x2="135"
+                y2="30"
+                stroke="#33d6a6"
+                stroke-width="1.4"
+              />
+              <text
+                x="100"
+                y="124"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="currentColor"
+              >
+                (½ b h) × length
+              </text>
+            </svg>
+            <figcaption>
+              Triangular prism<span class="fcode">V = (½ b h) × L</span>
+            </figcaption>
+          </figure>
+          <figure class="fig">
+            <svg
+              viewBox="0 0 200 130"
+              role="img"
+              aria-label="Surface area from a net: add the area of every face"
+            >
+              <rect x="80" y="10" width="40" height="40" class="bp-fc" />
+              <rect x="80" y="50" width="40" height="40" class="bp-fc" />
+              <rect x="40" y="50" width="40" height="40" class="bp-fc" />
+              <rect x="120" y="50" width="40" height="40" class="bp-fc" />
+              <rect x="80" y="90" width="40" height="30" class="bp-fc" />
+              <text
+                x="100"
+                y="128"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="currentColor"
+              >
+                add every face
+              </text>
+            </svg>
+            <figcaption>
+              Surface area (net)<span class="fcode">SA = Σ face areas</span>
+            </figcaption>
+          </figure>
+        </div>
+        <p class="muted" style="margin-bottom: 0">
+          Strategy — for <strong>volume</strong>, fill the solid with unit
+          cubes. For <strong>surface area</strong>, unfold the solid into a
+          <strong>net</strong>, find each flat face, then add them all up. Same
+          solid, two different questions.
         </p>
-        <div class="builder">
-          <div class="stage">
-            <p class="layer-label" id="g1label">Bottom layer (top view)</p>
-            <div
-              class="grid"
-              id="g1"
-              style="grid-template-columns: repeat(4, 26px)"
-              role="group"
-              aria-labelledby="g1label"
-            ></div>
+      </section>
+
+      <!-- ══ TASK 1 · RECTANGULAR PRISM TANK ══ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">
+          Task 1 · The Main Reef Tank
+          <span class="tag-shape">Rectangular prism · V = l × w × h</span>
+        </h2>
+        <p>
+          The centerpiece is a glass <strong>rectangular prism</strong> tank.
+          Read its dimensions off the scale blueprint, then size the water it
+          holds. Use the <strong>cube packer</strong> below to see how unit
+          cubes fill the tank before you calculate. A low
+          <strong>coral ledge</strong> runs along the back with a fractional
+          height — size that too.
+        </p>
+
+        <!-- interactive cube packer -->
+        <div class="cuber">
+          <div class="bp" aria-hidden="false">
+            <svg
+              id="cuberSvg"
+              viewBox="0 0 220 200"
+              role="img"
+              aria-label="Cube packer showing a prism filled with unit-cube layers. Adjust the three sliders to see how volume grows."
+            >
+              <defs>
+                <pattern
+                  id="g18"
+                  width="18"
+                  height="18"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M18 0H0V18"
+                    fill="none"
+                    class="bp-grid"
+                    stroke-width="1"
+                  />
+                </pattern>
+              </defs>
+              <rect x="6" y="6" width="208" height="188" fill="url(#g18)" />
+              <!-- outline prism (fixed 5×4×3 visual) -->
+              <polygon
+                points="28,60 148,60 196,28 76,28"
+                class="bp-water"
+                opacity="0.3"
+              />
+              <polygon
+                points="28,60 148,60 148,160 28,160"
+                class="bp-water"
+                opacity="0.3"
+              />
+              <polygon
+                points="148,60 196,28 196,128 148,160"
+                class="bp-water"
+                opacity="0.3"
+              />
+              <!-- filled layers (JS updates height) -->
+              <polygon
+                id="cp-top"
+                points="28,60 148,60 196,28 76,28"
+                fill="rgba(56,200,222,.55)"
+                stroke="#38c8de"
+                stroke-width="1.5"
+              />
+              <polygon
+                id="cp-front"
+                points="28,60 148,60 148,160 28,160"
+                fill="rgba(56,200,222,.45)"
+                stroke="#38c8de"
+                stroke-width="1.5"
+              />
+              <polygon
+                id="cp-side"
+                points="148,60 196,28 196,128 148,160"
+                fill="rgba(56,200,222,.35)"
+                stroke="#38c8de"
+                stroke-width="1.5"
+              />
+              <!-- grid lines overlay for cube grid feel -->
+              <line
+                x1="28"
+                y1="160"
+                x2="196"
+                y2="128"
+                stroke="rgba(56,200,222,.3)"
+                stroke-width="1"
+              />
+              <text
+                id="cpLabel"
+                x="110"
+                y="185"
+                text-anchor="middle"
+                class="bp-dimtext"
+                font-size="13"
+              >
+                V = ?
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Cube packer — live preview</span
+              ><span id="cpCap">0 cubes</span>
+            </div>
           </div>
           <div>
-            <p class="countpill">Cubes placed: <span id="c1" aria-live="polite">0</span></p>
+            <div class="stepper">
+              <label for="cpL">Length (ft)</label>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="L"
+                data-dir="-1"
+                aria-label="Decrease length"
+              >
+                −
+              </button>
+              <span class="stepval" id="cpL" aria-live="polite">1</span>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="L"
+                data-dir="1"
+                aria-label="Increase length"
+              >
+                +
+              </button>
+            </div>
+            <div class="stepper">
+              <label for="cpW">Width (ft)</label>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="W"
+                data-dir="-1"
+                aria-label="Decrease width"
+              >
+                −
+              </button>
+              <span class="stepval" id="cpW" aria-live="polite">1</span>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="W"
+                data-dir="1"
+                aria-label="Increase width"
+              >
+                +
+              </button>
+            </div>
+            <div class="stepper">
+              <label for="cpH">Height (ft)</label>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="H"
+                data-dir="-1"
+                aria-label="Decrease height"
+              >
+                −
+              </button>
+              <span class="stepval" id="cpH" aria-live="polite">1</span>
+              <button
+                type="button"
+                class="stepbtn"
+                data-cp="H"
+                data-dir="1"
+                aria-label="Increase height"
+              >
+                +
+              </button>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Layer (L × W)</span><br />
+                <span class="v" id="cpLayer">1</span>
+              </div>
+              <div>
+                <span class="k">Layers stacked</span><br />
+                <span class="v" id="cpLayers">1</span>
+              </div>
+              <div>
+                <span class="k">Volume</span><br />
+                <span class="v" id="cpVol">1 ft³</span>
+              </div>
+            </div>
+            <p class="muted" style="margin-top: 8px; font-size: 15px">
+              Build up to 18 × 8 × 6 one layer at a time. The volume equals the
+              <strong>base layer</strong> (l × w) multiplied by the
+              <strong>number of layers</strong> (h).
+            </p>
+          </div>
+        </div>
+
+        <!-- blueprint + questions -->
+        <div class="grid2" style="margin-top: 18px">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 250"
+              role="img"
+              aria-label="Scale blueprint of the rectangular prism main tank, length 18 feet, width 8 feet, height 6 feet, drawn as a 3D box. One grid square equals one foot."
+            >
+              <rect x="20" y="20" width="324" height="210" fill="url(#g18)" />
+              <!-- 3D rectangular prism -->
+              <polygon points="60,90 250,90 312,52 122,52" class="bp-water" />
+              <polygon points="60,90 250,90 250,200 60,200" class="bp-water" />
+              <polygon
+                points="250,90 312,52 312,162 250,200"
+                class="bp-water"
+              />
+              <line x1="60" y1="90" x2="122" y2="52" class="bp-hidden" />
+              <line x1="122" y1="52" x2="122" y2="162" class="bp-hidden" />
+              <line x1="60" y1="200" x2="122" y2="162" class="bp-hidden" />
+              <!-- dims -->
+              <line x1="60" y1="214" x2="250" y2="214" class="bp-dim" />
+              <text x="155" y="230" text-anchor="middle" class="bp-dimtext">
+                length = 18 ft
+              </text>
+              <line x1="46" y1="90" x2="46" y2="200" class="bp-dim" />
+              <text
+                x="40"
+                y="150"
+                class="bp-dimtext"
+                transform="rotate(-90 40 150)"
+              >
+                h = 6 ft
+              </text>
+              <line x1="258" y1="200" x2="320" y2="162" class="bp-dim" />
+              <text x="300" y="196" class="bp-dimtext">w = 8 ft</text>
+              <text x="155" y="150" text-anchor="middle" class="bp-label">
+                Main Reef Tank
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Isometric view · Glass tank</span
+              ><span>1 square = 1 ft</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="tank-vol">
+              <p class="lbl">
+                Q1.1 — Volume of the main tank (18 ft × 8 ft × 6 ft)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-tank-vol"
+                  data-ans="864"
+                  data-tol="0.5"
+                  data-why="V = l × w × h = 18 × 8 × 6 = 864 ft³"
+                  aria-label="Main tank volume in cubic feet"
+                />
+                <span class="unit">ft³</span>
+                <button type="button" class="btn" data-check="tank-vol">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="tank-vol">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-tank-vol"></p>
+            </div>
+            <div class="q" data-q="ledge-vol">
+              <p class="lbl">
+                Q1.2 — The coral ledge is a smaller prism: 8 ft long, 3 ft wide,
+                and only <strong>1½ ft</strong> high. Find its volume. (Hint: 1½
+                = 1.5)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-ledge-vol"
+                  data-ans="36"
+                  data-tol="0.25"
+                  data-why="V = l × w × h = 8 × 3 × 1.5 = 24 × 1.5 = 36 ft³"
+                  aria-label="Coral ledge volume in cubic feet"
+                />
+                <span class="unit">ft³</span>
+                <button type="button" class="btn" data-check="ledge-vol">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="ledge-vol">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-ledge-vol"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Volume of a box = <strong>length × width × height</strong>.
+                Multiply two numbers first, then multiply by the third. For 1½,
+                use <strong>1.5</strong>.
+              </p>
+              <span class="es"
+                >Español: Volumen de una caja = largo × ancho × altura.
+                Multiplica dos números y luego por el tercero. Para 1½ usa
+                1.5.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Saltwater weighs about <strong>62.4 lb per cubic foot</strong>.
+                If the main tank is filled, about how many pounds of water sit
+                on the floor? (864 × 62.4). Why does an engineer need to know
+                that number before building?
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Q2: Multiply layer x height -->
-      <section class="card" aria-labelledby="q2h">
-        <h2 id="q2h">2. Stack the layers</h2>
-        <p class="qmeta">Skill: Layers &times; height</p>
-        <p class="directions">
-          One layer has 12 cubes. The box is 5 layers tall. How many unit cubes
-          fill the box? Type the total.
+      <!-- ══ TASK 2 · TRIANGULAR PRISM ══ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">
+          Task 2 · The Shark-View Wedge
+          <span class="tag-shape">Triangular prism</span>
+        </h2>
+        <p>
+          A wedge-shaped viewing tunnel sits beside the reef. Its cross-section
+          is a <strong>triangle</strong>, and it runs the full
+          <strong>length</strong> of the wall — that makes it a
+          <strong>triangular prism</strong>. Find the triangle base area first,
+          then the volume.
         </p>
-        <label class="f" for="a2">Total cubes (volume)
-          <input
-            type="number"
-            id="a2"
-            min="0"
-            inputmode="numeric"
-            aria-describedby="q2h"
-          />
-        </label>
-      </section>
-
-      <!-- Q3: Build dims, compute V -->
-      <section class="card" aria-labelledby="q3h">
-        <h2 id="q3h">3. Design your own box</h2>
-        <p class="qmeta">Skill: V = l &times; w &times; h</p>
-        <p class="directions">
-          Pick length, width, and height. The cube count updates. Type the
-          volume in cubic units.
-        </p>
-        <div class="controls dims">
-          <label class="f" for="dL">Length <input type="number" id="dL" min="1" max="6" value="3" /></label>
-          <label class="f" for="dW">Width <input type="number" id="dW" min="1" max="6" value="2" /></label>
-          <label class="f" for="dH">Height <input type="number" id="dH" min="1" max="6" value="4" /></label>
-        </div>
-        <div class="builder" style="margin-top: 12px">
-          <div class="stage">
-            <p class="layer-label" id="g3label">One layer (length &times; width)</p>
-            <div class="grid" id="g3" role="img" aria-labelledby="g3label"></div>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 250"
+              role="img"
+              aria-label="Scale blueprint of a triangular prism. The triangle cross-section has base 6 feet and height 4 feet, and the prism length is 10 feet. One grid square equals one foot."
+            >
+              <rect x="20" y="20" width="324" height="210" fill="url(#g18)" />
+              <!-- triangular prism: front triangle + extruded -->
+              <polygon points="60,190 168,190 60,118" class="bp-fa" />
+              <polygon points="60,118 60,190 300,140 300,68" class="bp-fa" />
+              <polygon points="168,190 60,190 300,140" class="bp-fa" />
+              <line x1="60" y1="118" x2="300" y2="68" class="bp-edge" />
+              <!-- dims: triangle base + height -->
+              <line x1="60" y1="204" x2="168" y2="204" class="bp-dim" />
+              <text x="114" y="220" text-anchor="middle" class="bp-dimtext">
+                base = 6 ft
+              </text>
+              <line x1="46" y1="118" x2="46" y2="190" class="bp-dim" />
+              <text
+                x="40"
+                y="158"
+                class="bp-dimtext"
+                transform="rotate(-90 40 158)"
+              >
+                h = 4 ft
+              </text>
+              <line x1="174" y1="188" x2="306" y2="138" class="bp-dim" />
+              <text x="250" y="180" class="bp-dimtext">length = 10 ft</text>
+              <text x="120" y="168" text-anchor="middle" class="bp-label">
+                Wedge
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Triangle base 6 × 4 · runs 10 ft</span
+              ><span>1 square = 1 ft</span>
+            </div>
           </div>
-          <p class="countpill" id="hint3" aria-live="polite">Cubes per layer: 6 &middot; Layers: 4</p>
-        </div>
-        <div class="controls">
-          <label class="f" for="a3">Volume (cubic units)
-            <input type="number" id="a3" min="0" inputmode="numeric" />
-          </label>
+          <div>
+            <div class="q" data-q="tri-base">
+              <p class="lbl">
+                Q2.1 — Area of the triangle cross-section (½ × 6 × 4)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-tri-base"
+                  data-ans="12"
+                  data-tol="0.5"
+                  data-why="Triangle base area = ½ × b × h = ½ × 6 × 4 = 12 ft²"
+                  aria-label="Triangle base area"
+                />
+                <span class="unit">ft²</span>
+                <button type="button" class="btn" data-check="tri-base">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="tri-base">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-tri-base"></p>
+            </div>
+            <div class="q" data-q="tri-vol">
+              <p class="lbl">
+                Q2.2 — Volume of the wedge (base area × length, length = 10 ft)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-tri-vol"
+                  data-ans="120"
+                  data-tol="0.5"
+                  data-why="V = (base area) × length = 12 × 10 = 120 ft³"
+                  aria-label="Wedge volume"
+                />
+                <span class="unit">ft³</span>
+                <button type="button" class="btn" data-check="tri-vol">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="tri-vol">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-tri-vol"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Two steps. <strong>(1)</strong> Find the triangle area: ½ × base
+                × height. <strong>(2)</strong> Multiply that area by how long
+                the prism is.
+              </p>
+              <span class="es"
+                >Español: Dos pasos. (1) Área del triángulo: ½ × base × altura.
+                (2) Multiplica esa área por el largo del prisma.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                A triangular prism holds <em>half</em> the water of the
+                rectangular box that surrounds it (6 × 4 × 10 = 240 ft³). Does
+                your answer match 240 ÷ 2? Explain why the triangle prism is
+                exactly half.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- Q4: Given dims word -->
-      <section class="card" aria-labelledby="q4h">
-        <h2 id="q4h">4. Find the volume</h2>
-        <p class="qmeta">Skill: V = l &times; w &times; h</p>
-        <p class="directions">
-          A storage box is 7 cm long, 4 cm wide, and 5 cm tall. Type the volume
-          in cubic centimeters (cm&sup3;).
+      <!-- ══ TASK 3 · NET → SURFACE AREA ══ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">
+          Task 3 · Cutting the Glass (Unfold the Tank)
+          <span class="tag-shape">Net · surface area</span>
+        </h2>
+        <p>
+          Before the glass shop can cut panels, you must
+          <strong>unfold the main tank into a net</strong> — every face becomes
+          a flat panel. <strong>Click each panel</strong> on the net to mark it
+          "counted," then add the areas to get the total glass surface area.
         </p>
-        <label class="f" for="a4">Volume (cm&sup3;)
-          <input type="number" id="a4" min="0" inputmode="numeric" />
-        </label>
-      </section>
-
-      <!-- Q5: Fractional edge -->
-      <section class="card" aria-labelledby="q5h">
-        <h2 id="q5h">5. A half-unit edge</h2>
-        <p class="qmeta">Skill: Fractional edge lengths</p>
-        <p class="directions">
-          A box is 3 units long, 2 units wide, and <strong>1&frac12;</strong> (1.5)
-          units tall. Type the volume in cubic units. You may type 9 or 9.0.
-        </p>
-        <label class="f" for="a5">Volume (cubic units)
-          <input type="number" id="a5" min="0" step="0.5" inputmode="decimal" />
-        </label>
-      </section>
-
-      <!-- Q6: Missing edge -->
-      <section class="card" aria-labelledby="q6h">
-        <h2 id="q6h">6. Find the missing edge</h2>
-        <p class="qmeta">Skill: Solve for an edge</p>
-        <p class="directions">
-          A box has volume 48 cubic units. It is 4 units long and 2 units wide.
-          How tall is it? Type the height in units.
-        </p>
-        <label class="f" for="a6">Height (units)
-          <input type="number" id="a6" min="0" inputmode="numeric" />
-        </label>
-      </section>
-
-      <!-- Reflection -->
-      <section class="reflection-card" aria-labelledby="reflHeading">
-        <h2 id="reflHeading">Reflection</h2>
-        <p>Think about what you learned in this activity:</p>
-        <label for="reflectionText"><strong>Explain in your own words why V = l &times; w &times; h works. How does building layers of cubes connect to the formula?</strong></label>
-        <textarea
-          id="reflectionText"
-          name="reflectionText"
-          placeholder="Write 2–3 sentences here…"
-          aria-describedby="deliverableNote"
-        ></textarea>
-        <div class="deliverable" id="deliverableNote">
-          <strong>Deliverable:</strong> When you finish all 6 problems and the reflection, press <em>Check my work</em> below, then use <em>Save as PDF</em> or <em>Save as DOC</em> to submit your Volume Architect activity to your teacher.
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 300"
+              role="img"
+              aria-label="Net of the rectangular tank unfolded into six rectangular panels: top and bottom are 18 by 8, front and back are 18 by 6, and two ends are 8 by 6. One grid square equals one foot. Each panel can be clicked to count it."
+            >
+              <rect x="10" y="10" width="340" height="280" fill="url(#g18)" />
+              <!-- Net cross layout: center column = back/bottom/front/top stacked, sides = ends -->
+              <!-- Back 18x6 -->
+              <rect
+                class="net-panel"
+                data-area="108"
+                data-name="Back 18×6"
+                x="96"
+                y="20"
+                width="162"
+                height="54"
+                tabindex="0"
+                role="button"
+                aria-pressed="false"
+                aria-label="Back panel, 18 by 6 feet"
+                fill="rgba(56,200,222,.16)"
+                stroke="#38c8de"
+                stroke-width="2"
+              />
+              <text x="177" y="51" text-anchor="middle" class="bp-sub">
+                Back 18×6
+              </text>
+              <!-- Left end 8x6 -->
+              <rect
+                class="net-panel"
+                data-area="48"
+                data-name="End 8×6"
+                x="24"
+                y="74"
+                width="72"
+                height="54"
+                tabindex="0"
+                role="button"
+                aria-pressed="false"
+                aria-label="Left end panel, 8 by 6 feet"
+                fill="rgba(155,108,255,.16)"
+                stroke="#9b6cff"
+                stroke-width="2"
+              />
+              <text x="60" y="105" text-anchor="middle" class="bp-sub">
+                End 8×6
+              </text>
+              <!-- Bottom 18x8 (center) -->
+              <rect
+                class="net-panel"
+                data-area="144"
+                data-name="Bottom 18×8"
+                x="96"
+                y="74"
+                width="162"
+                height="72"
+                tabindex="0"
+                role="button"
+                aria-pressed="false"
+                aria-label="Bottom panel, 18 by 8 feet"
+                fill="rgba(51,214,166,.16)"
+                stroke="#33d6a6"
+                stroke-width="2"
+              />
+              <text x="177" y="114" text-anchor="middle" class="bp-sub">
+                Bottom 18×8
+              </text>
+              <!-- Right end 8x6 -->
+              <rect
+                class="net-panel"
+                data-area="48"
+                data-name="End 8×6"
+                x="258"
+                y="74"
+                width="72"
+                height="54"
+                tabindex="0"
+                role="button"
+                aria-pressed="false"
+                aria-label="Right end panel, 8 by 6 feet"
+                fill="rgba(155,108,255,.16)"
+                stroke="#9b6cff"
+                stroke-width="2"
+              />
+              <text x="294" y="105" text-anchor="middle" class="bp-sub">
+                End 8×6
+              </text>
+              <!-- Front 18x6 -->
+              <rect
+                class="net-panel"
+                data-area="108"
+                data-name="Front 18×6"
+                x="96"
+                y="146"
+                width="162"
+                height="54"
+                tabindex="0"
+                role="button"
+                aria-pressed="false"
+                aria-label="Front panel, 18 by 6 feet"
+                fill="rgba(56,200,222,.16)"
+                stroke="#38c8de"
+                stroke-width="2"
+              />
+              <text x="177" y="177" text-anchor="middle" class="bp-sub">
+                Front 18×6
+              </text>
+              <!-- Top 18x8 -->
+              <rect
+                class="net-panel"
+                data-area="144"
+                data-name="Top 18×8"
+                x="96"
+                y="200"
+                width="162"
+                height="72"
+                tabindex="0"
+                role="button"
+                aria-pressed="false"
+                aria-label="Top panel, 18 by 8 feet"
+                fill="rgba(51,214,166,.16)"
+                stroke="#33d6a6"
+                stroke-width="2"
+              />
+              <text x="177" y="240" text-anchor="middle" class="bp-sub">
+                Top 18×8
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span
+                >Panels counted:
+                <span class="net-counter" id="netCount">0</span> / 6</span
+              ><span>1 square = 1 ft</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="net-count">
+              <p class="lbl">
+                Q3.1 — How many panels (faces) does the tank net have? Click all
+                of them on the diagram, then enter the count.
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  id="q-net-count"
+                  data-ans="6"
+                  data-tol="0"
+                  data-why="A rectangular prism has 6 faces, so the net has 6 panels."
+                  aria-label="Number of net panels"
+                />
+                <span class="unit">panels</span>
+                <button type="button" class="btn" data-check="net-count">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="net-count">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-net-count"></p>
+            </div>
+            <div class="q" data-q="net-sa">
+              <p class="lbl">
+                Q3.2 — Total glass surface area. Add the six panels: two 18×8 +
+                two 18×6 + two 8×6.
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-net-sa"
+                  data-ans="600"
+                  data-tol="0.5"
+                  data-why="SA = 2(18×8) + 2(18×6) + 2(8×6) = 288 + 216 + 96 = 600 ft²"
+                  aria-label="Total surface area"
+                />
+                <span class="unit">ft²</span>
+                <button type="button" class="btn" data-check="net-sa">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="net-sa">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-net-sa"></p>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Counted area</span><br /><span
+                  class="v"
+                  id="netArea"
+                  >0 ft²</span
+                >
+              </div>
+              <div>
+                <span class="k">Panels left</span><br /><span
+                  class="v"
+                  id="netLeft"
+                  >6</span
+                >
+              </div>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                A box has <strong>3 pairs</strong> of matching faces: top &amp;
+                bottom, front &amp; back, two ends. Find one of each, then
+                double it, then add.
+              </p>
+              <span class="es"
+                >Español: Una caja tiene 3 pares de caras iguales: arriba y
+                abajo, frente y atrás, dos extremos. Halla una de cada par,
+                duplícala y suma todo.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                The real tank has <strong>no glass top</strong> (it is open for
+                feeding). What surface area of glass do you actually order if
+                you skip the top 18×8 panel? (600 − 144).
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="card">
-        <div class="actions">
-          <button type="button" class="btn" id="checkBtn">Check my work</button>
-          <button type="button" class="btn secondary" id="resetBtn">
-            Start over
-          </button>
-        </div>
-        <p class="qmeta" style="margin-top: 10px">
-          Your score and a per-skill report appear at the top. Use Save as PDF
-          or Save as DOC to turn it in.
+      <!-- ══ TASK 4 · PYRAMID SKYLIGHT + BUILD SHEET ══ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">
+          Task 4 · The Pyramid Skylight &amp; Build Sheet
+          <span class="tag-shape">Pyramid net · budget</span>
+        </h2>
+        <p>
+          A glass <strong>square pyramid</strong> skylight crowns the exhibit.
+          Its net is one <strong>square base</strong> plus
+          <strong>four triangles</strong>. Find its surface area, choose a glass
+          grade, then complete the Build Sheet under the
+          <strong>$90,000</strong> budget.
         </p>
+
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 270"
+              role="img"
+              aria-label="Net of a square pyramid: a 6 by 6 foot square base in the center with four triangles folding out from each side. Each triangle has base 6 feet and slant height 5 feet. One grid square equals one foot."
+            >
+              <rect x="10" y="10" width="340" height="250" fill="url(#g18)" />
+              <!-- center square base 6x6 -> 72px -->
+              <rect x="144" y="100" width="72" height="72" class="bp-fd" />
+              <text x="180" y="140" text-anchor="middle" class="bp-sub">
+                Base 6×6
+              </text>
+              <!-- top triangle -->
+              <polygon points="144,100 216,100 180,40" class="bp-fc" />
+              <text x="180" y="92" text-anchor="middle" class="bp-sub">
+                slant 5
+              </text>
+              <!-- bottom triangle -->
+              <polygon points="144,172 216,172 180,232" class="bp-fc" />
+              <text x="180" y="190" text-anchor="middle" class="bp-sub">
+                slant 5
+              </text>
+              <!-- left triangle -->
+              <polygon points="144,100 144,172 84,136" class="bp-fc" />
+              <text x="120" y="140" text-anchor="middle" class="bp-sub">5</text>
+              <!-- right triangle -->
+              <polygon points="216,100 216,172 276,136" class="bp-fc" />
+              <text x="240" y="140" text-anchor="middle" class="bp-sub">5</text>
+              <!-- dims -->
+              <line x1="144" y1="186" x2="216" y2="186" class="bp-dim" />
+              <text x="180" y="202" text-anchor="middle" class="bp-dimtext">
+                base 6 ft
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Square pyramid net · 1 base + 4 triangles</span
+              ><span>1 square = 1 ft</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="pyr-sa">
+              <p class="lbl">
+                Q4.1 — Surface area of the pyramid skylight. Square base (6×6)
+                plus four triangles (each ½ × 6 × 5).
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-pyr-sa"
+                  data-ans="96"
+                  data-tol="0.5"
+                  data-why="Base = 6×6 = 36. Each triangle = ½×6×5 = 15, four of them = 60. SA = 36 + 60 = 96 ft²"
+                  aria-label="Pyramid surface area"
+                />
+                <span class="unit">ft²</span>
+                <button type="button" class="btn" data-check="pyr-sa">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="pyr-sa">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-pyr-sa"></p>
+            </div>
+
+            <h3>Choose a glass grade (for the 600 ft² tank)</h3>
+            <div
+              class="matgrid"
+              id="matChooser"
+              role="group"
+              aria-label="Glass grade options"
+            >
+              <button
+                type="button"
+                class="matcard"
+                data-mat="Standard glass"
+                data-price="40"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #38c8de, #6fe3f5)"
+                ></div>
+                <b>Standard</b><br /><small>$40 / ft²</small>
+              </button>
+              <button
+                type="button"
+                class="matcard"
+                data-mat="Low-iron glass"
+                data-price="55"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #33d6a6, #38c8de)"
+                ></div>
+                <b>Low-iron</b><br /><small>$55 / ft²</small>
+              </button>
+              <button
+                type="button"
+                class="matcard"
+                data-mat="Acrylic panel"
+                data-price="70"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #9b6cff, #6c8cff)"
+                ></div>
+                <b>Acrylic</b><br /><small>$70 / ft²</small>
+              </button>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Selected</span><br /><span
+                  class="v"
+                  id="matName"
+                  >—</span
+                >
+              </div>
+              <div>
+                <span class="k">Tank glass</span><br /><span class="v"
+                  >600 ft²</span
+                >
+              </div>
+              <div>
+                <span class="k">Glass cost</span><br /><span
+                  class="v"
+                  id="matCost"
+                  >$0</span
+                >
+              </div>
+            </div>
+            <p class="muted" style="margin-bottom: 0">
+              Live glass cost = <span class="scale">600 ft² × price/ft²</span>.
+              This feeds straight into your Build Sheet below.
+            </p>
+          </div>
+        </div>
+
+        <h3>Final Build Sheet</h3>
+        <div class="grid2">
+          <div>
+            <table class="bt">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Your cost ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tank glass — your grade</td>
+                  <td>600 ft²</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="cGlass"
+                      aria-label="Tank glass cost (auto)"
+                      readonly
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Pyramid skylight — low-iron @ $55/ft²</td>
+                  <td>96 ft²</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="cPyr"
+                      placeholder="?"
+                      aria-label="Pyramid cost"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Saltwater fill — 864 + 120 ft³ @ $3/ft³</td>
+                  <td>984 ft³</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="cWater"
+                      placeholder="?"
+                      aria-label="Water cost"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Pumps, frame &amp; labor — fixed</td>
+                  <td>—</td>
+                  <td>
+                    <input type="text" id="cFixed" value="38000" readonly />
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Total estimate</th>
+                  <th></th>
+                  <th><span id="grandTotal">$0</span></th>
+                </tr>
+              </tfoot>
+            </table>
+            <p class="muted">
+              Pyramid cost = 96 ft² × $55. Water cost = 984 ft³ × $3. Compute
+              each and enter it to confirm you can turn area and volume into
+              money.
+            </p>
+          </div>
+          <div>
+            <div class="readout">
+              <div>
+                <span class="k">Budget</span><br /><span class="v big"
+                  >$90,000</span
+                >
+              </div>
+              <div>
+                <span class="k">Remaining</span><br /><span
+                  class="v big"
+                  id="remaining"
+                  >—</span
+                >
+              </div>
+            </div>
+            <p
+              class="fb"
+              id="verdict"
+              style="margin-top: 12px; font-size: 15px"
+            ></p>
+            <button type="button" class="btn" id="tallyBtn">
+              Tally the build
+            </button>
+
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                If the acrylic grade ($70/ft²) pushes you over budget, what is
+                the most expensive tank-glass price <em>p</em> you can still
+                afford? Set up and solve the inequality:
+              </p>
+              <p class="scale" style="margin: 8px 0 0">
+                600·p + 5280 + 2952 + 38000 ≤ 90000
+              </p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Total = tank glass + pyramid + water + fixed. Remaining = budget
+                − total. Positive remaining = under budget (good). Negative =
+                pick a cheaper glass grade.
+              </p>
+              <span class="es"
+                >Español: Total = vidrio del tanque + pirámide + agua + fijo.
+                Restante = presupuesto − total. Si es positivo, estás dentro del
+                presupuesto.</span
+              >
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- Answer Key (hidden in print) -->
-      <details class="teacher-block" aria-label="Answer Key">
-        <summary>&#x1F511; Answer Key (Teacher Only)</summary>
-        <div class="teacher-body">
-          <h3>Q1: Build one layer (4 &times; 3)</h3>
-          <p><strong>Answer: 12 cubes.</strong> The grid is 4 columns &times; 3 rows = 12 cells. All 12 cubes should be filled (pressed).</p>
+      <!-- ══ SIGN-OFF ══ -->
+      <section class="card" aria-label="Engineer sign-off">
+        <h2>Engineer's Sign-off</h2>
+        <p class="muted" style="margin-top: 0">
+          When every spec checks out and your plan is under budget, submit it to
+          the aquarium director. Enter your name in the field below, then press
+          <strong>Submit plan &amp; grade</strong> to save your score as a PDF
+          or DOC.
+        </p>
+        <button type="button" class="btn" id="submitBtn">
+          Submit plan &amp; grade
+        </button>
+        <div id="ntkit"></div>
+      </section>
 
-          <h3>Q2: Stack the layers (12 cubes/layer, 5 layers)</h3>
-          <p><strong>Answer: 60.</strong> 12 &times; 5 = 60. This models V = (area of base) &times; height = 12 &times; 5.</p>
-
-          <h3>Q3: Design your own box</h3>
-          <p><strong>Answer: varies</strong> based on student's chosen dimensions. The correct volume equals l &times; w &times; h for the values selected. The default (l=3, w=2, h=4) gives 3 &times; 2 &times; 4 = <strong>24</strong>. The grader accepts whatever V = L &times; W &times; H computes for the chosen values.</p>
-
-          <h3>Q4: Storage box 7 cm &times; 4 cm &times; 5 cm</h3>
-          <p><strong>Answer: 140 cm&sup3;.</strong> V = 7 &times; 4 &times; 5 = 28 &times; 5 = 140.</p>
-
-          <h3>Q5: Box 3 &times; 2 &times; 1.5</h3>
-          <p><strong>Answer: 9 cubic units.</strong> V = 3 &times; 2 &times; 1.5 = 6 &times; 1.5 = 9. You can also think of it as 3 &times; 2 &times; (3/2) = 18/2 = 9.</p>
-
-          <h3>Q6: Find the missing height (V=48, l=4, w=2)</h3>
-          <p><strong>Answer: 6 units.</strong> V = l &times; w &times; h &Rightarrow; 48 = 4 &times; 2 &times; h = 8h &Rightarrow; h = 48 &divide; 8 = 6.</p>
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>
+          Performance Rubric — Volume &amp; Surface Area Design Challenge
+          (6.G.A.2 · 6.G.A.4)
+        </h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>7 / 7</td>
+                <td>
+                  Reads every scale blueprint accurately. Finds prism volumes
+                  (including a fractional edge) and triangular-prism volume
+                  correctly, uses nets to find surface area of a prism and a
+                  pyramid, and brings the build under budget. Can explain water
+                  weight and the glass-budget inequality.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>6 / 7</td>
+                <td>
+                  Correctly computes most volumes and surface areas with at most
+                  one arithmetic slip. Completes the Build Sheet and reaches a
+                  valid under-budget plan.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>4–5 / 7</td>
+                <td>
+                  Computes simple volumes but struggles with the fractional
+                  edge, the triangular prism, or the net surface area (e.g.,
+                  forgets to double matching faces or to halve the triangle).
+                  Partial cost/budget work.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–3 / 7</td>
+                <td>
+                  Few correct answers. Confuses volume with surface area, or
+                  misreads the scale. Needs reteaching on prism volume and on
+                  building surface area from a net.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </details>
+      </section>
     </div>
 
-    <!-- Activity kit -->
-    <script src="/assets/nt-activity-kit.js"></script>
     <script>
       (function () {
         "use strict";
 
-        /* ---------- Live region helper ---------- */
-        function announce(msg) {
-          var lr = document.getElementById("liveRegion");
-          if (lr) { lr.textContent = ""; lr.textContent = msg; }
+        function num(s) {
+          return parseFloat(String(s == null ? "" : s).replace(/[$,\s]/g, ""));
+        }
+        function money(n) {
+          return "$" + Number(n || 0).toLocaleString("en-US");
+        }
+        function live(msg) {
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) fb.textContent = msg;
         }
 
-        /* ---------- Q1 + Q3 interactive cube grids ---------- */
-        var cube1Count = 0;
+        var TANK_GLASS = 600;
+        var BUDGET = 90000;
 
-        function buildGrid(el, cols, rows, onChange) {
-          el.style.gridTemplateColumns = "repeat(" + cols + ", 26px)";
-          el.innerHTML = "";
-          for (var i = 0; i < cols * rows; i++) {
-            var b = document.createElement("button");
-            b.type = "button";
-            b.className = "cube";
-            b.setAttribute("aria-pressed", "false");
-            b.setAttribute("aria-label", "cube " + (i + 1));
-            b.addEventListener("click", function () {
-              var on = this.getAttribute("aria-pressed") === "true";
-              this.setAttribute("aria-pressed", on ? "false" : "true");
-              if (onChange) onChange();
+        /* Auto-graded problems (string-compared by NTKit) */
+        var problems = [
+          {
+            id: "tank-vol",
+            ans: "864",
+            skill: "Volume of a rectangular prism",
+            prompt: "Main tank volume: 18 × 8 × 6",
+          },
+          {
+            id: "ledge-vol",
+            ans: "36",
+            skill: "Volume with a fractional edge",
+            prompt: "Coral ledge volume: 8 × 3 × 1½",
+          },
+          {
+            id: "tri-base",
+            ans: "12",
+            skill: "Area of a triangle base",
+            prompt: "Wedge triangle area: ½ × 6 × 4",
+          },
+          {
+            id: "tri-vol",
+            ans: "120",
+            skill: "Volume of a triangular prism",
+            prompt: "Wedge volume: 12 × 10",
+          },
+          {
+            id: "net-count",
+            ans: "6",
+            skill: "Faces of a prism (net)",
+            prompt: "Number of panels in the tank net",
+          },
+          {
+            id: "net-sa",
+            ans: "600",
+            skill: "Surface area of a prism from a net",
+            prompt: "Tank surface area: 2(18×8)+2(18×6)+2(8×6)",
+          },
+          {
+            id: "pyr-sa",
+            ans: "96",
+            skill: "Surface area of a pyramid from a net",
+            prompt: "Pyramid skylight: 36 + 4(½×6×5)",
+          },
+        ];
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {};
+
+        function inputFor(id) {
+          return document.getElementById("q-" + id);
+        }
+        function isCorrect(id) {
+          var inp = inputFor(id);
+          if (!inp) return false;
+          var got = num(inp.value);
+          var want = num(inp.getAttribute("data-ans"));
+          var tol = num(inp.getAttribute("data-tol"));
+          if (isNaN(tol)) tol = 0.5;
+          return !isNaN(got) && Math.abs(got - want) <= tol;
+        }
+
+        function paint() {
+          var n = 0;
+          problems.forEach(function (p) {
+            if (correct[p.id]) n++;
+          });
+          document.getElementById("pcount").textContent = n;
+          document.getElementById("pbar").style.width =
+            (n / problems.length) * 100 + "%";
+          document.getElementById("progBar").setAttribute("aria-valuenow", n);
+        }
+
+        function check(id) {
+          var p = pById[id];
+          if (!p) return;
+          var inp = inputFor(id);
+          var fb = document.getElementById("fb-" + id);
+          var ok = isCorrect(id);
+          if (inp) {
+            inp.classList.toggle("ok", ok);
+            inp.classList.toggle("bad", !ok);
+          }
+          if (fb) {
+            fb.className = "fb " + (ok ? "ok" : "bad");
+            fb.textContent = ok
+              ? "✓ Approved — " + inp.getAttribute("data-why")
+              : "✗ Not yet. Re-read the blueprint, set up the formula, then substitute.";
+          }
+          correct[id] = ok;
+          live(ok ? "Spec approved." : "Not correct yet, try again.");
+          paint();
+        }
+
+        /* Event delegation for Check / Hint buttons */
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var c = e.target.closest("[data-check]");
+          if (c) {
+            check(c.getAttribute("data-check"));
+            return;
+          }
+          var h = e.target.closest("[data-hint]");
+          if (h) {
+            var id = h.getAttribute("data-hint");
+            var p = pById[id];
+            var inp = inputFor(id);
+            var fb = document.getElementById("fb-" + id);
+            if (p && fb && inp) {
+              fb.className = "fb";
+              fb.textContent =
+                "Hint: " +
+                inp.getAttribute("data-why").split("=")[0].trim() +
+                " = …  Set up the formula first, then plug in the numbers from the blueprint.";
+            }
+          }
+        });
+        problems.forEach(function (p) {
+          var inp = inputFor(p.id);
+          if (inp)
+            inp.addEventListener("keydown", function (e) {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                check(p.id);
+              }
             });
-            el.appendChild(b);
+        });
+
+        /* Task 1: cube-packing interactive */
+        var cpState = { L: 1, W: 1, H: 1 };
+        var cpMax = { L: 18, W: 8, H: 6 };
+        var cpLbl = document.getElementById("cpL");
+        var cpWbl = document.getElementById("cpW");
+        var cpHbl = document.getElementById("cpH");
+        var cpLayerEl = document.getElementById("cpLayer");
+        var cpLayersEl = document.getElementById("cpLayers");
+        var cpVolEl = document.getElementById("cpVol");
+        var cpCap = document.getElementById("cpCap");
+        var cpLabel = document.getElementById("cpLabel");
+
+        function renderCuber() {
+          var L = cpState.L,
+            W = cpState.W,
+            H = cpState.H;
+          var layer = L * W;
+          var vol = layer * H;
+          if (cpLbl) cpLbl.textContent = L;
+          if (cpWbl) cpWbl.textContent = W;
+          if (cpHbl) cpHbl.textContent = H;
+          if (cpLayerEl) cpLayerEl.textContent = layer + " cubes";
+          if (cpLayersEl)
+            cpLayersEl.textContent = H + (H === 1 ? " layer" : " layers");
+          if (cpVolEl) cpVolEl.textContent = vol + " ft³";
+          if (cpCap)
+            cpCap.textContent =
+              L + " × " + W + " × " + H + " = " + vol + " cubes";
+          if (cpLabel)
+            cpLabel.textContent =
+              "V = " + L + " × " + W + " × " + H + " = " + vol + " ft³";
+
+          /* Animate the 3D box fill proportionally */
+          var pctH = H / cpMax.H; /* 0–1 fill fraction */
+          var pctW = W / cpMax.W;
+          var pctL = L / cpMax.L;
+          /* Top face scale (perspective-fixed corners) */
+          var svg = document.getElementById("cuberSvg");
+          if (!svg) return;
+          /* Full-size corners of the outline prism */
+          var TL = { x: 28, y: 60 },
+            TR = { x: 148, y: 60 },
+            TBR = { x: 196, y: 28 },
+            TBL = { x: 76, y: 28 };
+          var BL = { x: 28, y: 160 },
+            BR = { x: 148, y: 160 },
+            BBR = { x: 196, y: 128 };
+          /* Mix from bottom to full based on height fraction */
+          function lerp(a, b, t) {
+            return a + (b - a) * t;
+          }
+          var ftl = { x: lerp(BL.x, TL.x, pctH), y: lerp(BL.y, TL.y, pctH) };
+          var ftr = { x: lerp(BR.x, TR.x, pctH), y: lerp(BR.y, TR.y, pctH) };
+          var ftbr = {
+            x: lerp(BBR.x, TBR.x, pctH),
+            y: lerp(BBR.y, TBR.y, pctH),
+          };
+          var ftbl = {
+            x: lerp(BR.x, TBL.x, pctH),
+            y: lerp(BR.y, TBL.y, pctH),
+          };
+          var top = document.getElementById("cp-top");
+          var front = document.getElementById("cp-front");
+          var side = document.getElementById("cp-side");
+          if (top)
+            top.setAttribute(
+              "points",
+              ftl.x +
+                "," +
+                ftl.y +
+                " " +
+                ftr.x +
+                "," +
+                ftr.y +
+                " " +
+                ftbr.x +
+                "," +
+                ftbr.y +
+                " " +
+                ftbl.x +
+                "," +
+                ftbl.y,
+            );
+          if (front)
+            front.setAttribute(
+              "points",
+              ftl.x +
+                "," +
+                ftl.y +
+                " " +
+                ftr.x +
+                "," +
+                ftr.y +
+                " " +
+                BR.x +
+                "," +
+                BR.y +
+                " " +
+                BL.x +
+                "," +
+                BL.y,
+            );
+          if (side)
+            side.setAttribute(
+              "points",
+              ftr.x +
+                "," +
+                ftr.y +
+                " " +
+                ftbr.x +
+                "," +
+                ftbr.y +
+                " " +
+                BBR.x +
+                "," +
+                BBR.y +
+                " " +
+                BR.x +
+                "," +
+                BR.y,
+            );
+        }
+
+        document.querySelectorAll(".stepbtn[data-cp]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var key = b.getAttribute("data-cp");
+            var dir = parseInt(b.getAttribute("data-dir"), 10);
+            cpState[key] = Math.max(
+              1,
+              Math.min(cpMax[key], cpState[key] + dir),
+            );
+            renderCuber();
+            live(
+              "Prism is now " +
+                cpState.L +
+                " × " +
+                cpState.W +
+                " × " +
+                cpState.H +
+                ", volume " +
+                cpState.L * cpState.W * cpState.H +
+                " cubic feet.",
+            );
+          });
+        });
+        renderCuber();
+
+        /* Task 3: interactive net — click panels to count area + faces */
+        var counted = {};
+        var netPanels = document.querySelectorAll(".net-panel");
+        var netCountEl = document.getElementById("netCount");
+        var netAreaEl = document.getElementById("netArea");
+        var netLeftEl = document.getElementById("netLeft");
+
+        function netUpdate() {
+          var n = 0;
+          var area = 0;
+          netPanels.forEach(function (el, i) {
+            if (counted[i]) {
+              n++;
+              area += num(el.getAttribute("data-area")) || 0;
+            }
+          });
+          if (netCountEl) netCountEl.textContent = n;
+          if (netAreaEl) netAreaEl.textContent = area + " ft²";
+          if (netLeftEl) netLeftEl.textContent = netPanels.length - n;
+        }
+        netPanels.forEach(function (el, i) {
+          function toggle() {
+            counted[i] = !counted[i];
+            el.setAttribute("aria-pressed", counted[i] ? "true" : "false");
+            el.setAttribute(
+              "fill",
+              counted[i]
+                ? "rgba(51,214,166,.5)"
+                : el.getAttribute("stroke") === "#9b6cff"
+                  ? "rgba(155,108,255,.16)"
+                  : el.getAttribute("stroke") === "#33d6a6"
+                    ? "rgba(51,214,166,.16)"
+                    : "rgba(56,200,222,.16)",
+            );
+            netUpdate();
+            live(
+              (counted[i] ? "Counted " : "Removed ") +
+                el.getAttribute("data-name"),
+            );
+          }
+          el.addEventListener("click", toggle);
+          el.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggle();
+            }
+          });
+        });
+
+        /* Task 4: glass grade chooser → live cost → Build Sheet */
+        var matName = document.getElementById("matName");
+        var matCost = document.getElementById("matCost");
+        var cGlass = document.getElementById("cGlass");
+
+        document
+          .querySelectorAll("#matChooser .matcard")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              document
+                .querySelectorAll("#matChooser .matcard")
+                .forEach(function (b) {
+                  b.setAttribute("aria-pressed", "false");
+                });
+              btn.setAttribute("aria-pressed", "true");
+              var price = num(btn.getAttribute("data-price"));
+              var cost = TANK_GLASS * price;
+              if (matName) matName.textContent = btn.getAttribute("data-mat");
+              if (matCost) matCost.textContent = money(cost);
+              if (cGlass) cGlass.value = cost;
+              tally();
+            });
+          });
+
+        /* Task 4: build sheet */
+        function tally() {
+          var glass = num((document.getElementById("cGlass") || {}).value) || 0;
+          var pyr = num((document.getElementById("cPyr") || {}).value) || 0;
+          var water = num((document.getElementById("cWater") || {}).value) || 0;
+          var fixed = num((document.getElementById("cFixed") || {}).value) || 0;
+          var total = glass + pyr + water + fixed;
+          document.getElementById("grandTotal").textContent = money(total);
+          var remaining = BUDGET - total;
+          var rem = document.getElementById("remaining");
+          rem.textContent = money(remaining);
+          rem.style.color = remaining < 0 ? "#d23f54" : "#0f9d6b";
+          var v = document.getElementById("verdict");
+          if (total === fixed) {
+            v.className = "fb";
+            v.textContent =
+              "Pick a glass grade and enter your costs to tally the build.";
+            return;
+          }
+          if (remaining < 0) {
+            v.className = "fb bad";
+            v.textContent =
+              "✗ Over budget by " +
+              money(Math.abs(remaining)) +
+              ". Choose a cheaper glass grade.";
+          } else {
+            v.className = "fb ok";
+            v.textContent =
+              "✓ Plan approved! " +
+              money(remaining) +
+              " under budget. Submit to the director.";
           }
         }
-
-        function countOn(el) {
-          return el.querySelectorAll('.cube[aria-pressed="true"]').length;
-        }
-
-        var g1 = document.getElementById("g1");
-        var c1 = document.getElementById("c1");
-        buildGrid(g1, 4, 3, function () {
-          cube1Count = countOn(g1);
-          c1.textContent = cube1Count;
-          announce("Cubes placed: " + cube1Count);
-          updateProgress();
+        ["cPyr", "cWater"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.addEventListener("input", tally);
         });
+        document.getElementById("tallyBtn").addEventListener("click", tally);
 
-        /* Q3 dynamic layer grid */
-        var dL = document.getElementById("dL");
-        var dW = document.getElementById("dW");
-        var dH = document.getElementById("dH");
-        var g3 = document.getElementById("g3");
-        var hint3 = document.getElementById("hint3");
-
-        function clampDim(input) {
-          var v = parseInt(input.value, 10);
-          if (isNaN(v) || v < 1) v = 1;
-          if (v > 6) v = 6;
-          input.value = v;
-          return v;
-        }
-        function refreshQ3() {
-          var L = clampDim(dL),
-            W = clampDim(dW),
-            H = clampDim(dH);
-          buildGrid(g3, L, W, null);
-          hint3.textContent = "Cubes per layer: " + L * W + " · Layers: " + H;
-          g3.setAttribute("aria-label", "Layer grid " + L + " by " + W);
-        }
-        [dL, dW, dH].forEach(function (i) {
-          i.addEventListener("input", refreshQ3);
-        });
-        refreshQ3();
-
-        /* ---------- Progress ---------- */
-        var ids = ["a2", "a3", "a4", "a5", "a6"];
-        function updateProgress() {
-          var done = 0;
-          if (cube1Count > 0) done++;
-          ids.forEach(function (id) {
-            var v = document.getElementById(id).value;
-            if (v !== "" && v !== null) done++;
-          });
-          document.getElementById("progressText").textContent =
-            "Step " + done + " of 6 done";
-          var barEl = document.getElementById("bar");
-          barEl.style.width = (done / 6) * 100 + "%";
-          var barWrap = document.querySelector(".barwrap");
-          if (barWrap) barWrap.setAttribute("aria-valuenow", done);
-        }
-        ids.forEach(function (id) {
-          document.getElementById(id).addEventListener("input", updateProgress);
-        });
-        updateProgress();
-
-        /* ---------- Grading ---------- */
-        var num = function (id) {
-          return document.getElementById(id).value;
-        };
+        /* Mount NTKit + grade on submit */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
 
         document
-          .getElementById("checkBtn")
+          .getElementById("submitBtn")
           .addEventListener("click", function () {
-            var L = parseInt(dL.value, 10),
-              W = parseInt(dW.value, 10),
-              H = parseInt(dH.value, 10);
-            var q3Vol = L * W * H;
-
-            var result = NTKit.grade({
-              activityId: "architect-unit-10",
-              activityTitle: "Unit 10 · Volume Architect — Pack the Prism",
-              standard: "6.G.A.2",
-              items: [
-                {
-                  prompt: "Build a bottom layer with 12 cubes (4 × 3).",
-                  studentAnswer: String(cube1Count),
-                  correctAnswer: "12",
-                  points: 1,
-                  skill: "Cubes in one layer",
-                },
-                {
-                  prompt:
-                    "12 cubes per layer, 5 layers tall — total cubes (volume)?",
-                  studentAnswer: num("a2"),
-                  correctAnswer: "60",
-                  points: 1,
-                  skill: "Layers × height",
-                },
-                {
-                  prompt:
-                    "Volume of your box (" + L + " × " + W + " × " + H + ").",
-                  studentAnswer: num("a3"),
-                  correctAnswer: String(q3Vol),
-                  points: 1,
-                  skill: "V = l × w × h",
-                },
-                {
-                  prompt: "Box 7 cm × 4 cm × 5 cm — volume in cm³?",
-                  studentAnswer: num("a4"),
-                  correctAnswer: "140",
-                  points: 1,
-                  skill: "V = l × w × h",
-                },
-                {
-                  prompt: "Box 3 × 2 × 1.5 — volume in cubic units?",
-                  studentAnswer: num("a5"),
-                  correctAnswer: "9",
-                  points: 1,
-                  skill: "Fractional edge lengths",
-                },
-                {
-                  prompt: "Volume 48, length 4, width 2 — find the height.",
-                  studentAnswer: num("a6"),
-                  correctAnswer: "6",
-                  points: 1,
-                  skill: "Solve for an edge",
-                },
-              ],
+            var items = problems.map(function (p) {
+              var inp = inputFor(p.id);
+              return {
+                prompt: p.prompt,
+                studentAnswer: inp ? String(num(inp.value)) : "",
+                correctAnswer: p.ans,
+                points: 1,
+                skill: p.skill,
+              };
             });
-
-            document
-              .getElementById("ntkit")
-              .scrollIntoView({ behavior: "smooth", block: "start" });
-            return result;
+            if (window.NTKit && NTKit.grade) {
+              NTKit.grade({
+                activityId: "architect-unit-10",
+                activityTitle:
+                  "Unit 10 · Math Architect — Coral Cove Aquarium (Volume & Surface Area Design Challenge)",
+                standard: "6.G.A.2, 6.G.A.4",
+                items: items,
+              });
+              var panel = document.getElementById("ntkit");
+              if (panel && panel.scrollIntoView)
+                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              var n = items.filter(function (x) {
+                return num(x.studentAnswer) === num(x.correctAnswer);
+              }).length;
+              alert(
+                "Plan submitted: " +
+                  n +
+                  " of " +
+                  items.length +
+                  " specs correct.",
+              );
+            }
           });
 
-        /* ---------- Reset ---------- */
-        document
-          .getElementById("resetBtn")
-          .addEventListener("click", function () {
-            cube1Count = 0;
-            c1.textContent = "0";
-            g1.querySelectorAll(".cube").forEach(function (b) {
-              b.setAttribute("aria-pressed", "false");
-            });
-            ids.forEach(function (id) {
-              document.getElementById(id).value = "";
-            });
-            dL.value = 3;
-            dW.value = 2;
-            dH.value = 4;
-            refreshQ3();
-            updateProgress();
-          });
-
-        NTKit.mount("#ntkit");
+        paint();
+        netUpdate();
+        tally();
       })();
     </script>
   </body>

@@ -3,983 +3,1521 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unit 9 HyperDoc — The Coordinate Plane | Neft Teacher</title>
-    <link rel="icon" href="/assets/favicon.svg" />
+    <title>
+      Unit 9 HyperDoc — Integers &amp; the Coordinate Plane | Neft Teacher
+    </title>
+    <meta
+      name="description"
+      content="Grade 6 interactive HyperDoc for Unit 9: positive and negative numbers, absolute value, comparing and ordering rational numbers, the four-quadrant coordinate plane, distance, and reflections (6.NS.5–8)."
+    />
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/neft-theme.js" defer></script>
-    <script src="/assets/nt-activity-kit.js"></script>
+    <script defer src="/assets/neft-theme.js"></script>
+    <script defer src="/assets/nt-activity-kit.js"></script>
     <style>
-      /* ── Base ── */
-      body {
-        margin: 0;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        font-size: 19px;
-        line-height: 1.6;
-      }
-      .wrap {
-        max-width: 880px;
+      /* ---- Unit 9 HyperDoc: scoped styles layered on the shared Neft theme ---- */
+      .u9-wrap {
+        max-width: 920px;
         margin: 0 auto;
-        padding: 24px 18px 80px;
+        padding: 0 18px 64px;
       }
 
-      /* ── Hero ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 26px 24px;
-        margin-bottom: 22px;
+      .u9-hero {
+        position: relative;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background:
+          radial-gradient(
+            900px 240px at 10% -10%,
+            rgba(37, 99, 235, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            720px 220px at 96% 0%,
+            rgba(219, 39, 119, 0.15),
+            transparent 55%
+          ),
+          var(--nt-surface, #fff);
+        border-radius: 22px;
+        padding: 26px 26px 22px;
+        margin: 18px 0 22px;
+        overflow: hidden;
       }
-      .eyebrow {
-        font-size: 15px;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--nt-accent);
-        margin: 0 0 6px;
-      }
-      h1 {
-        font-size: 34px;
+      .u9-hero h1 {
+        margin: 6px 0 4px;
+        font-size: clamp(1.5rem, 1.1rem + 2vw, 2.2rem);
         line-height: 1.15;
-        margin: 0 0 8px;
-        color: var(--nt-text);
       }
-      .standard {
-        display: inline-block;
+      .u9-hero .u9-sub {
+        color: var(--nt-muted, #5b6472);
+        margin: 0 0 12px;
+        font-size: 1.02rem;
+      }
+      .u9-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         font-weight: 700;
-        font-size: 15px;
-        color: var(--nt-bg);
-        background: var(--nt-accent);
-        padding: 4px 12px;
-        border-radius: 999px;
-      }
-
-      /* ── Cards ── */
-      section.card {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 22px 22px 24px;
-        margin: 0 0 20px;
-      }
-      .step-label {
-        display: inline-block;
-        font-size: 14px;
-        font-weight: 800;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
-        color: var(--nt-accent);
-        margin: 0 0 4px;
+        font-size: 0.72rem;
+        color: var(--nt-accent, #2563eb);
+        background: color-mix(
+          in srgb,
+          var(--nt-accent, #2563eb) 12%,
+          transparent
+        );
+        border-radius: 999px;
+        padding: 5px 12px;
       }
-      h2 {
-        font-size: 26px;
-        margin: 2px 0 10px;
-        color: var(--nt-text);
+      .u9-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
       }
-      h3 {
-        font-size: 20px;
-        margin: 16px 0 6px;
-        color: var(--nt-text);
+      .u9-chip {
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--nt-bg, #f4f6fb);
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 4px 11px;
       }
-      p, li { color: var(--nt-text); }
 
-      /* ── Learning Target box ── */
-      .learning-target {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 0 0 20px;
+      .u9-toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 8px;
       }
-      .learning-target h2 {
-        font-size: 20px;
-        margin: 0 0 10px;
-        color: var(--nt-accent);
+      .u9-toc a {
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 6px 13px;
+        background: var(--nt-surface, #fff);
       }
-      .lt-grid {
+      .u9-toc a:hover {
+        border-color: var(--nt-accent, #2563eb);
+        color: var(--nt-accent, #2563eb);
+      }
+      .u9-toc a:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+
+      .u9-step {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        border-radius: 18px;
+        padding: 22px 22px 20px;
+        margin: 16px 0;
+      }
+      .u9-step > h2 {
+        margin: 0 0 4px;
+        font-size: 1.28rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .u9-badge {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: inline-grid;
+        place-items: center;
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .b1 {
+        background: #2563eb;
+      }
+      .b2 {
+        background: #0ea5e9;
+      }
+      .b3 {
+        background: #0d9488;
+      }
+      .b4 {
+        background: #7c3aed;
+      }
+      .b5 {
+        background: #db2777;
+      }
+      .u9-step .u9-phase {
+        color: var(--nt-muted, #5b6472);
+        font-weight: 700;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 10px 40px;
+      }
+
+      .u9-card {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 12px 0;
+        background: var(--nt-bg, #f7f9fc);
+      }
+      .u9-card h3 {
+        margin: 0 0 6px;
+        font-size: 1.02rem;
+      }
+
+      .u9-grid2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px 18px;
-        margin-top: 10px;
-        font-size: 17px;
+        gap: 14px;
       }
-      .lt-grid div { display: flex; gap: 6px; }
-      .lt-icon { font-style: normal; }
-      @media (max-width: 540px) { .lt-grid { grid-template-columns: 1fr; } }
+      @media (max-width: 640px) {
+        .u9-grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
 
-      /* ── Teacher Notes ── */
-      details.teacher-notes {
-        border: 2px dashed var(--nt-border);
-        border-radius: 14px;
-        margin: 0 0 20px;
-        background: var(--nt-surface);
+      .u9-fig {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
       }
-      details.teacher-notes summary {
+      .u9-fig svg {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      .u9-cap {
+        font-size: 0.82rem;
+        color: var(--nt-muted, #5b6472);
+        text-align: center;
+      }
+
+      .u9-formula {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        background: var(--nt-text, #1c2330);
+        color: var(--nt-surface, #fff);
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: inline-block;
+        font-size: 1rem;
+      }
+
+      details.u9-level {
+        border: 1px dashed var(--nt-border, #c3cad6);
+        border-radius: 12px;
+        padding: 4px 14px;
+        margin: 12px 0;
+        background: var(--nt-surface, #fff);
+      }
+      details.u9-level > summary {
         cursor: pointer;
-        font-weight: 800;
-        font-size: 15px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--nt-accent);
-        padding: 14px 18px;
+        font-weight: 700;
+        padding: 8px 0;
         list-style: none;
-        user-select: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-      details.teacher-notes summary::-webkit-details-marker { display: none; }
-      details.teacher-notes summary::before { content: "▶ "; }
-      details.teacher-notes[open] summary::before { content: "▼ "; }
-      .tn-body {
-        padding: 4px 18px 18px;
-        font-size: 17px;
-        border-top: 2px dashed var(--nt-border);
-      }
-      .tn-body h3 { font-size: 17px; margin: 14px 0 4px; color: var(--nt-accent); }
-      .tn-body ul { margin: 4px 0 0 18px; }
-      .tn-body li { margin-bottom: 4px; }
-
-      /* ── Utility ── */
-      .do-this {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 8px;
-        padding: 10px 14px;
-        margin: 12px 0;
-        font-weight: 600;
-      }
-      .links { list-style: none; padding: 0; margin: 12px 0 0; }
-      .links li { margin: 0 0 10px; }
-      .links a {
-        display: block;
-        padding: 14px 16px;
-        border-radius: 12px;
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        color: var(--nt-text);
-        text-decoration: none;
-        font-weight: 700;
-      }
-      .links a:hover { border-color: var(--nt-accent); }
-      .links a:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
-      .links .sub { display: block; font-weight: 500; font-size: 16px; color: var(--nt-muted); margin-top: 2px; }
-
-      /* ── Vocab ── */
-      .vocab { display: grid; gap: 10px; margin: 12px 0 0; }
-      .vocab dt { font-weight: 800; color: var(--nt-accent); font-size: 18px; }
-      .vocab dd { margin: 2px 0 8px; }
-
-      /* ── Coordinate figure ── */
-      .example {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin: 12px 0;
-      }
-      .grid-fig {
-        display: block;
-        margin: 14px auto;
-        max-width: 340px;
-        width: 100%;
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 12px;
-      }
-
-      /* ── Apply questions ── */
-      .q {
-        margin: 18px 0 0;
-        padding: 16px 0 0;
-        border-top: 2px solid var(--nt-border);
-      }
-      .q:first-child { border-top: 0; padding-top: 0; }
-      .q .qnum { font-weight: 800; color: var(--nt-accent); }
-      .q label { display: block; font-weight: 600; margin: 6px 0; }
-      input[type="text"] {
-        font-size: 19px;
-        padding: 10px 12px;
-        width: 100%;
-        max-width: 320px;
-        border-radius: 10px;
-        border: 2px solid var(--nt-border);
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        box-sizing: border-box;
-      }
-      input[type="text"]:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 1px;
-        border-color: var(--nt-accent);
-      }
-      .choices { list-style: none; padding: 0; margin: 6px 0 0; }
-      .choices li { margin: 4px 0; }
-      .choices label { font-weight: 500; display: flex; gap: 10px; align-items: center; cursor: pointer; }
-      textarea {
-        font-size: 18px;
-        width: 100%;
-        min-height: 90px;
-        padding: 10px 12px;
-        border-radius: 10px;
-        border: 2px solid var(--nt-border);
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        box-sizing: border-box;
-        resize: vertical;
-      }
-      textarea:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 1px;
-        border-color: var(--nt-accent);
-      }
-
-      /* ── Self-check ── */
-      .selfcheck-item {
-        margin: 0 0 18px;
-        padding: 14px 16px;
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 12px;
-      }
-      .selfcheck-item p { margin: 0 0 10px; font-weight: 600; }
-      .sc-choices { list-style: none; padding: 0; margin: 0 0 10px; }
-      .sc-choices li { margin: 4px 0; }
-      .sc-choices label { display: flex; gap: 8px; align-items: center; cursor: pointer; font-weight: 500; }
-      .sc-btn {
-        font-size: 17px;
-        font-weight: 700;
-        cursor: pointer;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 9px 20px;
-      }
-      .sc-btn:hover { filter: brightness(1.06); }
-      .sc-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
-      .sc-feedback {
-        margin-top: 10px;
-        padding: 10px 14px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 17px;
+      details.u9-level > summary::-webkit-details-marker {
         display: none;
       }
-      .sc-feedback.correct {
-        background: #d4edda;
-        color: #1a5e2b;
-        border: 2px solid #68c083;
-        display: block;
+      details.u9-level > summary::before {
+        content: "▸";
+        transition: transform 0.15s;
+        color: var(--nt-accent, #2563eb);
       }
-      .sc-feedback.wrong {
-        background: #fde8e8;
-        color: #7a1a1a;
-        border: 2px solid #e07b7b;
-        display: block;
+      details.u9-level[open] > summary::before {
+        transform: rotate(90deg);
       }
-
-      /* ── NTKit submit button ── */
-      .btn-primary {
-        font-size: 20px;
+      .u9-tag {
+        font-size: 0.68rem;
         font-weight: 800;
-        cursor: pointer;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 12px;
-        padding: 14px 26px;
-        margin-top: 8px;
+        letter-spacing: 0.03em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        color: #fff;
       }
-      .btn-primary:hover { filter: brightness(1.05); }
-      .btn-primary:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
+      .u9-tag.l1 {
+        background: #0d9488;
+      }
+      .u9-tag.l2 {
+        background: #7c3aed;
+      }
+      .u9-es {
+        color: var(--nt-muted, #5b6472);
+        font-style: italic;
+      }
 
-      /* ── Rubric ── */
-      .rubric-table {
-        width: 100%;
-        border-collapse: collapse;
+      .u9-q {
         margin: 14px 0;
-        font-size: 17px;
       }
-      .rubric-table th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        padding: 10px 12px;
-        text-align: left;
+      .u9-q p.u9-prompt {
+        font-weight: 600;
+        margin: 0 0 8px;
+      }
+      .u9-q input[type="text"],
+      .u9-q input[type="number"] {
+        font: inherit;
+        padding: 9px 11px;
+        border-radius: 10px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        width: 170px;
+        max-width: 100%;
+      }
+      .u9-q input:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+      .u9-opts {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .u9-opts li label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 11px;
+        padding: 10px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u9-opts li label:hover {
+        border-color: var(--nt-accent, #2563eb);
+      }
+      .u9-unit {
+        color: var(--nt-muted, #5b6472);
+        margin-left: 6px;
+      }
+      .u9-fb {
+        margin-top: 7px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        min-height: 1.1em;
+      }
+      .u9-fb.ok {
+        color: #0d9488;
+      }
+      .u9-fb.no {
+        color: #db2777;
+      }
+
+      .u9-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
+      }
+      .u9-btn {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--nt-accent, #2563eb);
+        background: var(--nt-accent, #2563eb);
+        color: #fff;
+        border-radius: 11px;
+        padding: 11px 18px;
+      }
+      .u9-btn.ghost {
+        background: transparent;
+        color: var(--nt-accent, #2563eb);
+      }
+      .u9-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+      .u9-score {
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+
+      .u9-explore {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .u9-explore a.u9-link {
+        text-decoration: none;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        display: block;
+      }
+      .u9-explore a.u9-link:hover {
+        border-color: var(--nt-accent, #2563eb);
+        transform: translateY(-1px);
+      }
+      .u9-explore .u9-link strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 3px;
+      }
+      .u9-explore .u9-link span {
+        font-size: 0.85rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      .u9-reflect textarea {
+        width: 100%;
+        min-height: 96px;
+        font: inherit;
+        padding: 11px 13px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        resize: vertical;
+      }
+      .u9-reflect textarea:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+
+      .u9-vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+      }
+      .u9-vocab dt {
         font-weight: 800;
       }
-      .rubric-table td {
-        border: 2px solid var(--nt-border);
-        padding: 9px 12px;
-        vertical-align: top;
+      .u9-vocab dd {
+        margin: 2px 0 0;
+        font-size: 0.9rem;
+        color: var(--nt-muted, #5b6472);
       }
-      .rubric-table tr:nth-child(even) td { background: var(--nt-bg); }
 
-      /* ── Answer Key ── */
-      details.answer-key {
-        border: 2px dashed var(--nt-border);
-        border-radius: 14px;
-        margin: 20px 0 0;
-        background: var(--nt-surface);
+      /* number-line + sign callouts unique to Unit 9 */
+      .u9-signrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 10px 0;
       }
-      details.answer-key summary {
+      .u9-signcell {
+        flex: 1 1 160px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: var(--nt-surface, #fff);
+      }
+      .u9-signcell .u9-big {
+        font-size: 1.6rem;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+      .u9-neg {
+        color: #db2777;
+      }
+      .u9-pos {
+        color: #0d9488;
+      }
+
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only > summary {
         cursor: pointer;
         font-weight: 800;
-        font-size: 15px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--nt-accent);
+        font-size: 1rem;
         padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
         list-style: none;
         user-select: none;
       }
-      details.answer-key summary::-webkit-details-marker { display: none; }
-      details.answer-key summary::before { content: "▶ "; }
-      details.answer-key[open] summary::before { content: "▼ "; }
-      .ak-body {
-        padding: 4px 18px 18px;
-        font-size: 17px;
-        border-top: 2px dashed var(--nt-border);
+      details.teacher-only > summary::-webkit-details-marker {
+        display: none;
       }
-      .ak-body ol { margin: 10px 0 0 18px; }
-      .ak-body li { margin-bottom: 8px; }
-
-      /* ── Reflect deliverable ── */
-      .deliverable-box {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 12px 16px;
+      details.teacher-only > summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] > summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
         margin: 14px 0 6px;
-        font-size: 17px;
-        font-weight: 600;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
       }
 
-      /* ── Accessibility ── */
-      .skip {
-        position: absolute;
-        left: -9999px;
-      }
-      .skip:focus {
-        position: static;
-        display: inline-block;
-        padding: 8px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-      }
-      .hint { color: var(--nt-muted); font-size: 16px; }
-
-      /* ── Print ── */
       @media print {
-        body { font-size: 14px; background: #fff; color: #000; }
-        .wrap { max-width: 100%; padding: 0; }
-        section.card, header.hero, .learning-target {
-          border: 1px solid #999;
-          border-radius: 0;
-          margin-bottom: 14px;
+        details.teacher-only,
+        .u9-toc,
+        .u9-actions,
+        .u9-explore a.u9-link::after {
+          display: none !important;
+        }
+        .u9-step {
           break-inside: avoid;
         }
-        details.teacher-notes, details.answer-key { display: block; }
-        details.teacher-notes summary::before, details.answer-key summary::before { content: ""; }
-        .tn-body, .ak-body { display: block !important; }
-        .btn-primary, .sc-btn { display: none; }
-        input[type="text"], textarea { border: 1px solid #999; }
-        a { color: #000; text-decoration: underline; }
       }
-
-      /* ── Responsive ── */
-      @media (max-width: 600px) {
-        h1 { font-size: 26px; }
-        h2 { font-size: 21px; }
-        .btn-primary { width: 100%; }
-        input[type="text"] { max-width: 100%; }
-        .rubric-table { font-size: 15px; }
-      }
-    </style>
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
   </head>
   <body class="nt-theme-aware">
-    <p style="font:14px system-ui;padding:10px 16px;"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
-    <a class="skip" href="#apply">Skip to the activity</a>
-    <div class="wrap">
+    <div id="ntkit"></div>
 
-      <!-- ═══ HERO ═══ -->
-      <header class="hero">
-        <p class="eyebrow">Neft Teacher · Grade 6 HyperDoc</p>
-        <h1>Unit 9 — The Coordinate Plane</h1>
-        <p><span class="standard">CCSS 6.NS.C.6 &amp; 6.G.A.3</span></p>
-        <p>
-          Follow the 5 steps: Engage, Explore, Explain, Apply, and Reflect. Type
-          your name in the box below before you start so your work is saved with
-          your name.
+    <main class="u9-wrap">
+      <header class="u9-hero">
+        <span class="u9-kicker">Grade 6 • Unit 9 HyperDoc</span>
+        <h1>Above, Below &amp; Across: Mapping a World of Integers</h1>
+        <p class="u9-sub">
+          You are the navigator for the
+          <strong>Mariana Deep-Dive</strong> submarine team. Sea level is
+          <strong>zero</strong>. Wreck sites sit below it, drone buoys float
+          above it, and every search point is a coordinate on the map. To find
+          anything, you have to think in positives <em>and</em> negatives.
+          <span class="u9-es"
+            >Eres el navegante del equipo del submarino: el nivel del mar es
+            cero.</span
+          >
         </p>
+        <div class="u9-meta">
+          <span class="u9-chip">Standards: 6.NS.5–8</span>
+          <span class="u9-chip"
+            >Topic: Integers &amp; the Coordinate Plane</span
+          >
+          <span class="u9-chip">MCAP-aligned</span>
+          <span class="u9-chip">Work time: ~50 min</span>
+        </div>
       </header>
 
-      <!-- ═══ LEARNING TARGET ═══ -->
-      <div class="learning-target" role="region" aria-label="Learning Target">
-        <h2>Learning Target</h2>
-        <ul style="margin:0 0 8px 18px;">
-          <li><strong>I can</strong> plot and name ordered pairs in all four quadrants of the coordinate plane.</li>
-          <li><strong>I can</strong> reflect a point over the x-axis or y-axis and write the new coordinates.</li>
-          <li><strong>I can</strong> find the distance between two points that share the same x- or y-coordinate.</li>
-          <li><strong>I can</strong> use coordinates to identify vertices of polygons on the coordinate plane.</li>
-        </ul>
-        <div class="lt-grid">
-          <div><span class="lt-icon">📋</span><span><strong>Standard:</strong> CCSS 6.NS.C.6 &amp; 6.G.A.3</span></div>
-          <div><span class="lt-icon">⏱</span><span><strong>Estimated time:</strong> 50 – 60 minutes</span></div>
-          <div><span class="lt-icon">📦</span><span><strong>Materials:</strong> This page, pencil (optional graph paper)</span></div>
-          <div><span class="lt-icon">🎯</span><span><strong>Unit:</strong> Number Sense &amp; Geometry — Unit 9</span></div>
-        </div>
-      </div>
+      <nav class="u9-toc" aria-label="HyperDoc sections">
+        <a href="#engage">1 · Engage</a>
+        <a href="#explore">2 · Explore</a>
+        <a href="#explain">3 · Explain</a>
+        <a href="#apply">4 · Apply</a>
+        <a href="#reflect">5 · Reflect</a>
+        <a href="#extend">6 · Extend</a>
+      </nav>
 
-      <!-- ═══ TEACHER NOTES (hidden from students) ═══ -->
-      <details class="teacher-notes">
-        <summary>Teacher Notes — Pacing, Grouping &amp; Differentiation</summary>
-        <div class="tn-body">
-          <h3>Pacing Guide</h3>
-          <ul>
-            <li><strong>Engage (5 min)</strong> — Hook discussion; no writing required yet.</li>
-            <li><strong>Explore (10–15 min)</strong> — Students open game/hub in new tabs; circulate and ask "Which quadrant is your character in?"</li>
-            <li><strong>Explain (10 min)</strong> — Class reads together; cold-call vocab and SVG diagram.</li>
-            <li><strong>Apply (15–20 min)</strong> — Self-check items first (independent), then NTKit graded set; pair-share before submit.</li>
-            <li><strong>Reflect (5–8 min)</strong> — Students type responses; collect PDF or DOC at end of class.</li>
-          </ul>
-          <h3>Grouping Suggestions</h3>
-          <ul>
-            <li>Apply Self-Check: individual, then turn-and-talk after each item.</li>
-            <li>NTKit graded form: individual; partners may discuss after submit.</li>
-            <li>Reflect: individual only.</li>
-          </ul>
-          <h3>Differentiation — Support</h3>
-          <ul>
-            <li>Provide a printed four-quadrant grid and counters to physically plot points.</li>
-            <li>Allow calculator for fraction / negative arithmetic if needed.</li>
-            <li>Pre-teach quadrant sign rules with a mnemonic: "+ + I, − + II, − − III, + − IV".</li>
-            <li>Reduce Apply to Q1–Q4 and offer Q5–Q6 as extension.</li>
-          </ul>
-          <h3>Differentiation — Challenge</h3>
-          <ul>
-            <li>Ask students to create a polygon with at least 5 vertices across 3 quadrants, list its vertices, and compute the perimeter.</li>
-            <li>Pose: "If A(a, b) reflects over the y-axis to A', what are A's coordinates? Justify algebraically."</li>
-          </ul>
-          <h3>ESOL / Language Supports</h3>
-          <ul>
-            <li>Display a labeled coordinate plane anchor chart with translations for key terms (origin, axis, quadrant, reflect).</li>
-            <li>Sentence frames: "The point ___ is in Quadrant ___ because the x-value is ___ and the y-value is ___."</li>
-            <li>Pair newcomers with a bilingual partner during Explore.</li>
-            <li>Allow labeled diagrams as evidence in Reflect instead of prose.</li>
-          </ul>
-        </div>
-      </details>
+      <!-- ============ 1. ENGAGE ============ -->
+      <section class="u9-step" id="engage">
+        <h2><span class="u9-badge b1">1</span> Engage</h2>
+        <p class="u9-phase">Hook &amp; essential question</p>
 
-      <!-- ═══ NTKit identity bar ═══ -->
-      <section class="card">
-        <p class="step-label">Your Name</p>
-        <h2>Sign in to save your work</h2>
-        <p class="hint">
-          Type your name and class section. Use the buttons to save your
-          finished HyperDoc as a PDF or DOC.
-        </p>
-        <div id="ntkit"></div>
-      </section>
-
-      <!-- ═══ ENGAGE ═══ -->
-      <section class="card">
-        <p class="step-label">Step 1 · Engage</p>
-        <h2>Chart the Star Map</h2>
         <p>
-          You are a space navigator in <strong>Coordinate Quest</strong>. To
-          reach each star, you must give its exact spot on a grid using two
-          numbers: <strong>(x, y)</strong>.
+          The sub team logs four readings on the dive board. Each one is a
+          distance from sea level (0). A <strong>drone buoy</strong> floats
+          <strong>+18 m</strong> above the water; the
+          <strong>wreck</strong> rests at <strong>−40 m</strong>; a
+          <strong>diver</strong> hovers at <strong>−12 m</strong>; a
+          <strong>gull</strong> is at <strong>+6 m</strong>.
         </p>
-        <div class="do-this">
-          Think: How can you tell a friend exactly where a dot is on a grid,
-          using only numbers?
+
+        <div class="u9-card">
+          <div class="u9-fig">
+            <svg
+              viewBox="0 0 360 240"
+              width="360"
+              role="img"
+              aria-label="A vertical number line for sea level. Zero is the surface. A gull is at plus 6, a drone buoy at plus 18, a diver at minus 12, and a wreck at minus 40."
+            >
+              <defs>
+                <linearGradient id="sky9" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#dff1ff" />
+                  <stop offset="1" stop-color="#bfe3ff" />
+                </linearGradient>
+                <linearGradient id="sea9" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#7cc3e8" />
+                  <stop offset="1" stop-color="#1d5f86" />
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="360" height="90" fill="url(#sky9)" />
+              <rect x="0" y="90" width="360" height="150" fill="url(#sea9)" />
+              <line
+                x1="0"
+                y1="90"
+                x2="360"
+                y2="90"
+                stroke="#0b3a55"
+                stroke-width="2.5"
+              />
+              <text
+                x="296"
+                y="86"
+                font-size="12"
+                fill="#0b3a55"
+                font-weight="700"
+              >
+                0 = sea level
+              </text>
+              <line
+                x1="120"
+                y1="14"
+                x2="120"
+                y2="226"
+                stroke="#1c2330"
+                stroke-width="2"
+              />
+              <circle cx="120" cy="40" r="7" fill="#0d9488" />
+              <text
+                x="134"
+                y="44"
+                font-size="12"
+                fill="#0b3a55"
+                font-weight="700"
+              >
+                drone buoy +18
+              </text>
+              <circle cx="120" cy="70" r="7" fill="#0d9488" />
+              <text
+                x="134"
+                y="74"
+                font-size="12"
+                fill="#0b3a55"
+                font-weight="700"
+              >
+                gull +6
+              </text>
+              <circle cx="120" cy="140" r="7" fill="#db2777" />
+              <text
+                x="134"
+                y="144"
+                font-size="12"
+                fill="#ffffff"
+                font-weight="700"
+              >
+                diver −12
+              </text>
+              <circle cx="120" cy="200" r="7" fill="#db2777" />
+              <text
+                x="134"
+                y="204"
+                font-size="12"
+                fill="#ffffff"
+                font-weight="700"
+              >
+                wreck −40
+              </text>
+            </svg>
+            <p class="u9-cap">
+              Up is positive, down is negative. Zero is the surface.
+            </p>
+          </div>
+          <p>
+            <strong>Quick think (no calculator):</strong> Which object is
+            <em>closest</em> to the surface? Which is <em>farthest</em>? Write
+            your two answers and one reason in your notebook. You will prove it
+            with absolute value in the Apply section.
+          </p>
+        </div>
+
+        <p style="margin-top: 14px">
+          <strong>Essential question:</strong>
+          <em
+            >How do positive and negative numbers — and the coordinate plane —
+            let me describe an exact location and the distance between any two
+            points?</em
+          >
+        </p>
+      </section>
+
+      <!-- ============ 2. EXPLORE ============ -->
+      <section class="u9-step" id="explore">
+        <h2><span class="u9-badge b2">2</span> Explore</h2>
+        <p class="u9-phase">Investigate before the lesson</p>
+
+        <p>
+          Explore each tool below for a few minutes. As you go, hunt for
+          <strong>one big idea</strong>: a negative sign tells you the
+          <em>direction</em> from zero, while
+          <strong>absolute value</strong> tells you the <em>distance</em> from
+          zero.
+        </p>
+
+        <div class="u9-explore">
+          <a
+            class="u9-link"
+            href="/games/3d/unit-9/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🎮 Quadrant Quest (3D Game)</strong>
+            <span
+              >Pilot the sub to coordinates, cross the axes, and watch the signs
+              of x and y flip in each quadrant.</span
+            >
+          </a>
+          <a
+            class="u9-link"
+            href="/math/unit-9/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>📐 Unit 9 Math Hub</strong>
+            <span
+              >Worked examples for absolute value, ordering rational numbers,
+              and plotting points.</span
+            >
+          </a>
+          <a
+            class="u9-link"
+            href="/webquests/unit-9/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🧭 Coordinate Cartographer WebQuest</strong>
+            <span
+              >Map a real location and defend every coordinate you place.</span
+            >
+          </a>
+        </div>
+
+        <div class="u9-card" style="margin-top: 14px">
+          <h3>Direction vs. distance experiment</h3>
+          <p>
+            Look at the two divers below. One is at <strong>−12 m</strong> and
+            one is at <strong>−40 m</strong>. The diver at −40 is a
+            <em>smaller</em> number, but is <em>farther</em> from the surface.
+            That is the whole trick of this unit.
+          </p>
+          <div class="u9-signrow">
+            <div class="u9-signcell">
+              <div class="u9-big u9-neg">−12</div>
+              <p style="margin: 4px 0 0">
+                Position: 12 m <em>below</em> 0.<br />
+                Distance from 0: <strong>|−12| = 12 m</strong>
+              </p>
+            </div>
+            <div class="u9-signcell">
+              <div class="u9-big u9-neg">−40</div>
+              <p style="margin: 4px 0 0">
+                Position: 40 m <em>below</em> 0.<br />
+                Distance from 0: <strong>|−40| = 40 m</strong>
+              </p>
+            </div>
+          </div>
+          <p>
+            <strong>Notice:</strong> On a number line, −40 sits to the
+            <em>left</em> of −12, so
+            <span class="u9-formula">−40 &lt; −12</span>. But its absolute value
+            is larger, so it is <em>deeper</em>. Sign and size are two different
+            questions.
+          </p>
         </div>
       </section>
 
-      <!-- ═══ EXPLORE ═══ -->
-      <section class="card">
-        <p class="step-label">Step 2 · Explore</p>
-        <h2>Play and explore</h2>
-        <p>Open these in a new tab. Explore first, then come back to finish.</p>
-        <ul class="links">
-          <li>
-            <a href="/games/3d/unit-9/" target="_blank" rel="noopener">
-              Play the 3D Game: Coordinate Quest
-              <span class="sub">Plot points and explore all four quadrants.</span>
-            </a>
-          </li>
-          <li>
-            <a href="/math/" target="_blank" rel="noopener">
-              Math Hub
-              <span class="sub">More Unit 9 practice and tools.</span>
-            </a>
-          </li>
-          <li>
-            <a href="/graphic-novels/" target="_blank" rel="noopener">
-              Graphic Novels
-              <span class="sub">Read the Unit 9 math story.</span>
-            </a>
-          </li>
-        </ul>
-      </section>
+      <!-- ============ 3. EXPLAIN ============ -->
+      <section class="u9-step" id="explain">
+        <h2><span class="u9-badge b3">3</span> Explain</h2>
+        <p class="u9-phase">The math, in plain language</p>
 
-      <!-- ═══ EXPLAIN ═══ -->
-      <section class="card">
-        <p class="step-label">Step 3 · Explain</p>
-        <h2>How the coordinate plane works</h2>
         <p>
-          The <strong>coordinate plane</strong> has two number lines that cross
-          at <strong>(0, 0)</strong>, called the <strong>origin</strong>.
+          A number line and a coordinate plane both use
+          <strong>zero</strong> as their starting point. Moving one direction is
+          positive; the opposite direction is negative. Two numbers the same
+          distance from zero on opposite sides (like 5 and −5) are called
+          <strong>opposites</strong>.
         </p>
 
-        <dl class="vocab">
-          <dt>x-axis</dt>
-          <dd>The line that goes left and right. The <strong>x</strong> number is first.</dd>
-          <dt>y-axis</dt>
-          <dd>The line that goes up and down. The <strong>y</strong> number is second.</dd>
-          <dt>ordered pair (x, y)</dt>
-          <dd>Two numbers that name one point. Go right/left first, then up/down.</dd>
-          <dt>quadrant</dt>
-          <dd>One of the 4 corners of the plane. Named I (top-right), II (top-left), III (bottom-left), IV (bottom-right).</dd>
-          <dt>reflect</dt>
-          <dd>To flip a point over an axis — like a mirror. Reflecting over the x-axis flips the y sign; over the y-axis flips the x sign.</dd>
+        <dl class="u9-vocab u9-card">
+          <div>
+            <dt>integer</dt>
+            <dd>
+              a whole number: positive, negative, or zero
+              <span class="u9-es">· el número entero</span>
+            </dd>
+          </div>
+          <div>
+            <dt>opposite</dt>
+            <dd>
+              same distance from 0, other side (5 and −5)
+              <span class="u9-es">· el opuesto</span>
+            </dd>
+          </div>
+          <div>
+            <dt>absolute value |x|</dt>
+            <dd>
+              distance from 0, always 0 or positive
+              <span class="u9-es">· el valor absoluto</span>
+            </dd>
+          </div>
+          <div>
+            <dt>rational number</dt>
+            <dd>
+              any number you can write as a fraction or decimal
+              <span class="u9-es">· el número racional</span>
+            </dd>
+          </div>
+          <div>
+            <dt>coordinate plane</dt>
+            <dd>
+              two number lines that cross at the origin
+              <span class="u9-es">· el plano de coordenadas</span>
+            </dd>
+          </div>
+          <div>
+            <dt>quadrant</dt>
+            <dd>
+              one of four regions, labeled I–IV
+              <span class="u9-es">· el cuadrante</span>
+            </dd>
+          </div>
         </dl>
 
-        <svg
-          class="grid-fig"
-          viewBox="0 0 220 220"
-          role="img"
-          aria-label="Coordinate plane with quadrant labels I through IV. Point A is at (3, 2) in Quadrant I."
-        >
-          <rect x="0" y="0" width="220" height="220" fill="var(--nt-bg)" />
-          <!-- grid lines -->
-          <g stroke="var(--nt-border)" stroke-width="0.8">
-            <line x1="20" y1="0" x2="20" y2="220"/>
-            <line x1="60" y1="0" x2="60" y2="220"/>
-            <line x1="100" y1="0" x2="100" y2="220"/>
-            <line x1="140" y1="0" x2="140" y2="220"/>
-            <line x1="180" y1="0" x2="180" y2="220"/>
-            <line x1="0" y1="20" x2="220" y2="20"/>
-            <line x1="0" y1="60" x2="220" y2="60"/>
-            <line x1="0" y1="100" x2="220" y2="100"/>
-            <line x1="0" y1="140" x2="220" y2="140"/>
-            <line x1="0" y1="180" x2="220" y2="180"/>
-          </g>
-          <!-- axes -->
-          <line x1="0" y1="110" x2="220" y2="110" stroke="var(--nt-text)" stroke-width="2.5"/>
-          <line x1="110" y1="0" x2="110" y2="220" stroke="var(--nt-text)" stroke-width="2.5"/>
-          <!-- quadrant labels -->
-          <text x="155" y="55" font-size="13" fill="var(--nt-muted)" font-weight="700">I</text>
-          <text x="58" y="55" font-size="13" fill="var(--nt-muted)" font-weight="700">II</text>
-          <text x="54" y="170" font-size="13" fill="var(--nt-muted)" font-weight="700">III</text>
-          <text x="152" y="170" font-size="13" fill="var(--nt-muted)" font-weight="700">IV</text>
-          <!-- axis labels -->
-          <text x="200" y="107" font-size="12" fill="var(--nt-text)">x</text>
-          <text x="113" y="12" font-size="12" fill="var(--nt-text)">y</text>
-          <!-- Point A at (3, 2) — each unit = 20px, origin at (110, 110) -->
-          <circle cx="170" cy="70" r="6" fill="var(--nt-accent)"/>
-          <text x="176" y="64" font-size="13" fill="var(--nt-text)">A (3, 2)</text>
-        </svg>
+        <div class="u9-grid2">
+          <div class="u9-card">
+            <h3>Compare &amp; order (6.NS.7)</h3>
+            <p>
+              On a number line, the number farther <strong>right</strong> is
+              always greater. So
+              <span class="u9-formula">−6 &lt; −2 &lt; 0 &lt; 3</span>.
+            </p>
+            <p>
+              A statement like
+              <span class="u9-formula">−7 °C &lt; −3 °C</span> means −7° is the
+              <em>colder</em> temperature.
+            </p>
+          </div>
+          <div class="u9-card">
+            <h3>Absolute value (6.NS.7c)</h3>
+            <p class="u9-formula">|−40| = 40 &nbsp; |+18| = 18</p>
+            <p>
+              The bars strip the sign and report only the
+              <strong>distance</strong> from 0. A bank balance of −$40 is a
+              <strong>$40 debt</strong> — the <em>size</em> of what is owed.
+            </p>
+          </div>
+          <div class="u9-card">
+            <h3>Plotting points (6.NS.6c)</h3>
+            <p>
+              An ordered pair is <span class="u9-formula">(x, y)</span>. Start
+              at the origin (0, 0). Move <strong>x</strong> left/right
+              <em>first</em>, then <strong>y</strong> up/down.
+            </p>
+          </div>
+          <div class="u9-card">
+            <h3>Distance &amp; reflection (6.NS.8)</h3>
+            <p>
+              When two points share an x- or y-value, the distance between them
+              is the
+              <strong>sum or difference of the absolute values</strong> of the
+              coordinate that changes.
+            </p>
+            <p>
+              A <strong>reflection</strong> across an axis flips one sign:
+              <span class="u9-formula">(4, 3) → (−4, 3)</span> across the
+              y-axis.
+            </p>
+          </div>
+        </div>
 
-        <div class="example">
-          <h3>Worked example</h3>
+        <div class="u9-card">
+          <div class="u9-fig">
+            <svg
+              viewBox="0 0 300 300"
+              width="300"
+              role="img"
+              aria-label="A four-quadrant coordinate plane. Point A is at 4, 3 in Quadrant 1. Point B is at minus 4, 3 in Quadrant 2, the reflection of A across the y-axis. Point C is at minus 4, minus 2 in Quadrant 3."
+            >
+              <g stroke="#e3e8f0" stroke-width="1">
+                <line x1="30" y1="0" x2="30" y2="300" />
+                <line x1="60" y1="0" x2="60" y2="300" />
+                <line x1="90" y1="0" x2="90" y2="300" />
+                <line x1="120" y1="0" x2="120" y2="300" />
+                <line x1="180" y1="0" x2="180" y2="300" />
+                <line x1="210" y1="0" x2="210" y2="300" />
+                <line x1="240" y1="0" x2="240" y2="300" />
+                <line x1="270" y1="0" x2="270" y2="300" />
+                <line x1="0" y1="30" x2="300" y2="30" />
+                <line x1="0" y1="60" x2="300" y2="60" />
+                <line x1="0" y1="90" x2="300" y2="90" />
+                <line x1="0" y1="120" x2="300" y2="120" />
+                <line x1="0" y1="180" x2="300" y2="180" />
+                <line x1="0" y1="210" x2="300" y2="210" />
+                <line x1="0" y1="240" x2="300" y2="240" />
+                <line x1="0" y1="270" x2="300" y2="270" />
+              </g>
+              <line
+                x1="0"
+                y1="150"
+                x2="300"
+                y2="150"
+                stroke="#1c2330"
+                stroke-width="2"
+              />
+              <line
+                x1="150"
+                y1="0"
+                x2="150"
+                y2="300"
+                stroke="#1c2330"
+                stroke-width="2"
+              />
+              <text x="288" y="145" font-size="11" fill="#1c2330">x</text>
+              <text x="155" y="12" font-size="11" fill="#1c2330">y</text>
+              <text
+                x="220"
+                y="70"
+                font-size="13"
+                fill="#94a3b8"
+                font-weight="700"
+              >
+                I
+              </text>
+              <text
+                x="78"
+                y="70"
+                font-size="13"
+                fill="#94a3b8"
+                font-weight="700"
+              >
+                II
+              </text>
+              <text
+                x="78"
+                y="240"
+                font-size="13"
+                fill="#94a3b8"
+                font-weight="700"
+              >
+                III
+              </text>
+              <text
+                x="220"
+                y="240"
+                font-size="13"
+                fill="#94a3b8"
+                font-weight="700"
+              >
+                IV
+              </text>
+              <line
+                x1="270"
+                y1="60"
+                x2="30"
+                y2="60"
+                stroke="#7c3aed"
+                stroke-width="1.5"
+                stroke-dasharray="5 4"
+              />
+              <circle cx="270" cy="60" r="6" fill="#0d9488" />
+              <text
+                x="234"
+                y="52"
+                font-size="11"
+                fill="#0d9488"
+                font-weight="700"
+              >
+                A (4, 3)
+              </text>
+              <circle cx="30" cy="60" r="6" fill="#7c3aed" />
+              <text
+                x="14"
+                y="52"
+                font-size="11"
+                fill="#7c3aed"
+                font-weight="700"
+              >
+                B (−4, 3)
+              </text>
+              <circle cx="30" cy="210" r="6" fill="#db2777" />
+              <text
+                x="14"
+                y="228"
+                font-size="11"
+                fill="#db2777"
+                font-weight="700"
+              >
+                C (−4, −2)
+              </text>
+              <line
+                x1="30"
+                y1="60"
+                x2="30"
+                y2="210"
+                stroke="#db2777"
+                stroke-width="1.5"
+                stroke-dasharray="3 3"
+              />
+            </svg>
+            <p class="u9-cap">
+              A → B is a reflection across the y-axis (x changes sign). B → C
+              shares x = −4, so the distance is |3| + |−2| = 5 units.
+            </p>
+          </div>
+        </div>
+
+        <div class="u9-card">
+          <h3>Worked example — how deep is the wreck?</h3>
           <p>
-            To plot point <strong>A (3, 2)</strong>: start at the origin (0, 0).
-            Move <strong>3 right</strong> (x = 3). Then move
-            <strong>2 up</strong> (y = 2). Mark the point. Because x and y are
-            both positive, A is in <strong>Quadrant I</strong>.
+            Back to Engage: the diver is at −12 m and the wreck is at −40 m.
           </p>
           <p>
-            To <strong>reflect A over the x-axis</strong>: keep x the same, flip y to negative.
-            A(3, 2) → A'(3, −2). That new point is in <strong>Quadrant IV</strong>.
+            Distance the diver must descend = |−40| − |−12| = 40 − 12 =
+            <strong>28 m</strong>.
           </p>
           <p>
-            <strong>Distance example:</strong> Points (1, 4) and (6, 4) share the same y-value.
-            Distance = |6 − 1| = <strong>5 units</strong>.
+            The wreck is deeper because <strong>|−40| &gt; |−12|</strong>, even
+            though <strong>−40 &lt; −12</strong> as a number. Sign tells
+            direction; absolute value tells distance.
           </p>
         </div>
-      </section>
 
-      <!-- ═══ APPLY ═══ -->
-      <section class="card" id="apply">
-        <p class="step-label">Step 4 · Apply</p>
-        <h2>Show what you know</h2>
+        <details class="u9-level">
+          <summary>
+            <span class="u9-tag l1">Level 1 · support</span> Step-by-step helper
+            / Ayuda paso a paso
+          </summary>
+          <ol>
+            <li>
+              <strong>Sign first.</strong> Up / right / above 0 = positive. Down
+              / left / below 0 = negative.
+            </li>
+            <li>
+              <strong>Compare:</strong> draw a number line. The number farther
+              right is greater.
+              <span class="u9-es">El número a la derecha es mayor.</span>
+            </li>
+            <li>
+              <strong>Absolute value</strong> = how far from 0. Drop the sign:
+              |−9| = 9.
+            </li>
+            <li>
+              <strong>Plot (x, y):</strong> go across (x)
+              <em>before</em> up/down (y).
+              <span class="u9-es">Primero x, luego y.</span>
+            </li>
+          </ol>
+        </details>
 
-        <!-- ── Self-Check (instant feedback) ── -->
-        <h3 style="margin-top:0;">Quick Self-Check — try these first!</h3>
-        <p class="hint">Choose an answer, then press Check to see instant feedback.</p>
-
-        <!-- SC 1 -->
-        <div class="selfcheck-item">
-          <p><strong>SC 1.</strong> The point (−4, 7) is in which quadrant?</p>
-          <ul class="sc-choices" role="radiogroup" aria-label="SC 1 choices">
-            <li><label><input type="radio" name="sc1" value="I" /> Quadrant I (x positive, y positive)</label></li>
-            <li><label><input type="radio" name="sc1" value="II" /> Quadrant II (x negative, y positive)</label></li>
-            <li><label><input type="radio" name="sc1" value="III" /> Quadrant III (x negative, y negative)</label></li>
-            <li><label><input type="radio" name="sc1" value="IV" /> Quadrant IV (x positive, y negative)</label></li>
-          </ul>
-          <button type="button" class="sc-btn" data-sc="sc1" data-correct="II">Check</button>
-          <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC 2 -->
-        <div class="selfcheck-item">
-          <p><strong>SC 2.</strong> Reflect the point (−3, 5) over the <strong>y-axis</strong>. What is the new point?</p>
-          <ul class="sc-choices" role="radiogroup" aria-label="SC 2 choices">
-            <li><label><input type="radio" name="sc2" value="A" /> (3, 5)</label></li>
-            <li><label><input type="radio" name="sc2" value="B" /> (−3, −5)</label></li>
-            <li><label><input type="radio" name="sc2" value="C" /> (3, −5)</label></li>
-            <li><label><input type="radio" name="sc2" value="D" /> (−3, 5)</label></li>
-          </ul>
-          <button type="button" class="sc-btn" data-sc="sc2" data-correct="A">Check</button>
-          <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC 3 -->
-        <div class="selfcheck-item">
-          <p><strong>SC 3.</strong> Points P(2, −3) and Q(2, 4) are on the same vertical line. How many units apart are they?</p>
-          <ul class="sc-choices" role="radiogroup" aria-label="SC 3 choices">
-            <li><label><input type="radio" name="sc3" value="1" /> 1 unit</label></li>
-            <li><label><input type="radio" name="sc3" value="7" /> 7 units</label></li>
-            <li><label><input type="radio" name="sc3" value="3" /> 3 units</label></li>
-            <li><label><input type="radio" name="sc3" value="4" /> 4 units</label></li>
-          </ul>
-          <button type="button" class="sc-btn" data-sc="sc3" data-correct="7">Check</button>
-          <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- ── NTKit graded questions ── -->
-        <h3>Graded Practice — submit with NTKit</h3>
-        <p class="hint">
-          Answer every question. Type ordered pairs like
-          <strong>(3, 2)</strong>. Then press Check My Answers.
-        </p>
-        <form id="apply-form">
-          <div class="q">
-            <p><span class="qnum">1.</span> What is the name of the point (0, 0) where the two axes cross?</p>
-            <label for="q1" class="hint">Type one word.</label>
-            <input type="text" id="q1" name="q1" autocomplete="off" placeholder="one word" />
-          </div>
-
-          <div class="q">
-            <p><span class="qnum">2.</span> Start at the origin. Move 4 to the <strong>right</strong> and 1 <strong>up</strong>. Write the ordered pair.</p>
-            <label for="q2" class="hint">Write it as (x, y).</label>
-            <input type="text" id="q2" name="q2" autocomplete="off" placeholder="(x, y)" />
-          </div>
-
-          <div class="q">
-            <p><span class="qnum">3.</span> The point (2, 3) has both numbers positive. Which quadrant is it in?</p>
-            <ul class="choices">
-              <li><label><input type="radio" name="q3" value="Quadrant I" /> Quadrant I</label></li>
-              <li><label><input type="radio" name="q3" value="Quadrant II" /> Quadrant II</label></li>
-              <li><label><input type="radio" name="q3" value="Quadrant III" /> Quadrant III</label></li>
-              <li><label><input type="radio" name="q3" value="Quadrant IV" /> Quadrant IV</label></li>
-            </ul>
-          </div>
-
-          <div class="q">
-            <p><span class="qnum">4.</span> Reflect the point (5, 2) over the <strong>x-axis</strong>. What is the new point?</p>
-            <label for="q4" class="hint">Flip the y number to negative.</label>
-            <input type="text" id="q4" name="q4" autocomplete="off" placeholder="(x, y)" />
-          </div>
-
-          <div class="q">
-            <p><span class="qnum">5.</span> A rectangle has corners at (1, 1), (1, 4), and (6, 1). What is the 4th corner?</p>
-            <label for="q5" class="hint">It lines up with the others.</label>
-            <input type="text" id="q5" name="q5" autocomplete="off" placeholder="(x, y)" />
-          </div>
-
-          <div class="q">
-            <p><span class="qnum">6.</span> Point (1, 1) and point (6, 1) are on the same horizontal line. How many units apart are they?</p>
-            <label for="q6" class="hint">Type a number.</label>
-            <input type="text" id="q6" name="q6" autocomplete="off" placeholder="number" />
-          </div>
-
-          <button type="submit" class="btn-primary">Check My Answers</button>
-        </form>
-
-        <!-- ── Answer Key (teacher-only) ── -->
-        <details class="answer-key">
-          <summary>Teacher Answer Key</summary>
-          <div class="ak-body">
-            <p><strong>Self-Check answers:</strong></p>
-            <ol>
-              <li><strong>SC 1:</strong> Quadrant II — x is negative (−4), y is positive (7). Rule: (−, +) → QII.</li>
-              <li><strong>SC 2:</strong> (3, 5) — reflecting over the y-axis flips the x sign: (−3, 5) → (3, 5).</li>
-              <li><strong>SC 3:</strong> 7 units — |4 − (−3)| = |4 + 3| = 7. Same x-coordinate means vertical distance.</li>
-            </ol>
-            <p><strong>Graded practice answers:</strong></p>
-            <ol>
-              <li><strong>Q1:</strong> origin</li>
-              <li><strong>Q2:</strong> (4, 1)</li>
-              <li><strong>Q3:</strong> Quadrant I (both x and y positive)</li>
-              <li><strong>Q4:</strong> (5, −2) — reflection over x-axis keeps x, negates y</li>
-              <li><strong>Q5:</strong> (6, 4) — the fourth corner that completes the rectangle</li>
-              <li><strong>Q6:</strong> 5 units — |6 − 1| = 5</li>
-            </ol>
-          </div>
+        <details class="u9-level">
+          <summary>
+            <span class="u9-tag l2">Level 2 · enrichment</span> Push your
+            thinking
+          </summary>
+          <p>
+            For which values of <em>n</em> is
+            <span class="u9-formula">|n| = −n</span> a <em>true</em> statement?
+            Test n = 5, n = 0, and n = −5, then write a rule describing exactly
+            which numbers make it work, and why.
+          </p>
         </details>
       </section>
 
-      <!-- ═══ RUBRIC ═══ -->
-      <section class="card" aria-label="Scoring Rubric">
-        <p class="step-label">Rubric</p>
-        <h2>How your work is scored</h2>
-        <table class="rubric-table">
-          <thead>
-            <tr>
-              <th scope="col">Level</th>
-              <th scope="col">Score</th>
-              <th scope="col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Mastery</strong></td>
-              <td>5 – 6 / 6</td>
-              <td>All or nearly all graded questions correct. Self-check completed. Reflect responses explain reasoning with coordinate vocabulary (quadrant, ordered pair, reflect, axis).</td>
-            </tr>
-            <tr>
-              <td><strong>Proficient</strong></td>
-              <td>4 / 6</td>
-              <td>Most graded questions correct. Minor errors in reflection or distance. Reflect responses address both prompts with at least one vocab term.</td>
-            </tr>
-            <tr>
-              <td><strong>Developing</strong></td>
-              <td>2 – 3 / 6</td>
-              <td>Several questions incorrect; may confuse quadrant signs or x/y order. Reflect responses are short or missing vocab. Needs targeted reteach on signs and plotting steps.</td>
-            </tr>
-            <tr>
-              <td><strong>Beginning</strong></td>
-              <td>0 – 1 / 6</td>
-              <td>Most questions blank or incorrect. Reflect not attempted. Student needs one-on-one re-teaching of ordered pairs and the four-quadrant plane before attempting independently.</td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- ============ 4. APPLY ============ -->
+      <section class="u9-step" id="apply">
+        <h2><span class="u9-badge b4">4</span> Apply</h2>
+        <p class="u9-phase">Show what you can do — auto-checked</p>
+
+        <form id="u9-quiz" novalidate>
+          <div
+            class="u9-q"
+            data-type="text"
+            data-answer="40"
+            data-tol="0"
+            id="q1"
+          >
+            <p class="u9-prompt">
+              1. The wreck is at −40 m. What is its distance from sea level,
+              |−40|? (number only)
+            </p>
+            <label
+              >|−40| =
+              <input
+                type="number"
+                inputmode="numeric"
+                aria-label="Absolute value of negative 40"
+              />
+              <span class="u9-unit">m</span></label
+            >
+            <p class="u9-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u9-q" data-type="mc" data-answer="c" id="q2">
+            <p class="u9-prompt">
+              2. Two divers report depths of −12 m and −40 m. Which statement is
+              true?
+            </p>
+            <ul class="u9-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q2" value="a" /> −40 &gt; −12, so
+                  −40 m is closer to the surface</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q2" value="b" /> −12 m is deeper
+                  than −40 m</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q2" value="c" /> −40 &lt; −12, and
+                  −40 m is the deeper diver</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q2" value="d" /> The two depths are
+                  equal</label
+                >
+              </li>
+            </ul>
+            <p class="u9-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u9-q"
+            data-type="text"
+            data-answer="28"
+            data-tol="0"
+            id="q3"
+          >
+            <p class="u9-prompt">
+              3. A diver at −12 m wants to reach the wreck at −40 m. How many
+              meters must she descend? (Use |−40| − |−12|.)
+            </p>
+            <label
+              >Descend =
+              <input
+                type="number"
+                inputmode="numeric"
+                aria-label="Meters to descend"
+              />
+              <span class="u9-unit">m</span></label
+            >
+            <p class="u9-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u9-q" data-type="mc" data-answer="b" id="q4">
+            <p class="u9-prompt">
+              4. The sub is at point S (5, −3). Which quadrant is it in?
+            </p>
+            <ul class="u9-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="a" /> Quadrant I</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="b" /> Quadrant IV</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="c" /> Quadrant II</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="d" /> Quadrant
+                  III</label
+                >
+              </li>
+            </ul>
+            <p class="u9-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u9-q"
+            data-type="text"
+            data-answer="-5"
+            data-tol="0"
+            id="q5"
+          >
+            <p class="u9-prompt">
+              5. A drone buoy is at D (5, 2). The team reflects it across the
+              y-axis to mark a mirror search point. What is the new
+              <em>x-coordinate</em>?
+            </p>
+            <div class="u9-fig" style="margin: 6px 0">
+              <svg
+                viewBox="0 0 220 140"
+                width="240"
+                role="img"
+                aria-label="Point D at 5, 2 reflected across the y-axis to a new point at negative 5, 2."
+              >
+                <line
+                  x1="0"
+                  y1="70"
+                  x2="220"
+                  y2="70"
+                  stroke="#1c2330"
+                  stroke-width="1.5"
+                />
+                <line
+                  x1="110"
+                  y1="0"
+                  x2="110"
+                  y2="140"
+                  stroke="#1c2330"
+                  stroke-width="1.5"
+                />
+                <text x="208" y="64" font-size="10" fill="#1c2330">x</text>
+                <text x="114" y="12" font-size="10" fill="#1c2330">y</text>
+                <line
+                  x1="170"
+                  y1="40"
+                  x2="50"
+                  y2="40"
+                  stroke="#7c3aed"
+                  stroke-width="1.4"
+                  stroke-dasharray="4 3"
+                />
+                <circle cx="170" cy="40" r="5" fill="#0d9488" />
+                <text
+                  x="150"
+                  y="34"
+                  font-size="10"
+                  fill="#0d9488"
+                  font-weight="700"
+                >
+                  D (5, 2)
+                </text>
+                <circle cx="50" cy="40" r="5" fill="#7c3aed" />
+                <text
+                  x="20"
+                  y="34"
+                  font-size="10"
+                  fill="#7c3aed"
+                  font-weight="700"
+                >
+                  D' (?, 2)
+                </text>
+              </svg>
+            </div>
+            <label
+              >New x =
+              <input
+                type="number"
+                inputmode="numeric"
+                aria-label="New x coordinate after reflection"
+              />
+            </label>
+            <p class="u9-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u9-q"
+            data-type="text"
+            data-answer="7"
+            data-tol="0"
+            id="q6"
+          >
+            <p class="u9-prompt">
+              6. Two buoys sit at A (−3, 1) and B (4, 1). They share the same
+              y-value, so the distance between them is |−3| + |4|. How many
+              units apart are they?
+            </p>
+            <label
+              >Distance =
+              <input
+                type="number"
+                inputmode="numeric"
+                aria-label="Distance between buoys in units"
+              />
+              <span class="u9-unit">units</span></label
+            >
+            <p class="u9-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u9-actions">
+            <button type="button" class="u9-btn" id="u9-check">
+              Check my answers
+            </button>
+            <button type="button" class="u9-btn ghost" id="u9-reset">
+              Clear
+            </button>
+            <span class="u9-score" id="u9-scoreout" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <details class="u9-level" style="margin-top: 14px">
+          <summary>
+            <span class="u9-tag l1">Level 1 · support</span> Sentence starters
+            for explaining
+          </summary>
+          <p>
+            "The number ____ is greater than ____ because it is farther to the
+            ____ on the number line. Its absolute value is ____, which means it
+            is ____ units from zero."
+          </p>
+          <p class="u9-es">
+            "El número ____ es mayor que ____ porque está más a la ____. Su
+            valor absoluto es ____, así que está a ____ unidades del cero."
+          </p>
+        </details>
+
+        <details class="u9-level">
+          <summary>
+            <span class="u9-tag l2">Level 2 · enrichment</span> Reverse it
+          </summary>
+          <p>
+            A point P is in Quadrant III and is exactly 6 units from each axis.
+            Write its ordered pair. Then reflect P across the x-axis and name
+            the quadrant the image lands in. Explain how you knew the signs.
+          </p>
+        </details>
       </section>
 
-      <!-- ═══ REFLECT ═══ -->
-      <section class="card">
-        <p class="step-label">Step 5 · Reflect</p>
-        <h2>Think and write</h2>
-        <p>
-          Use complete sentences. Try to use at least one math word from the
-          Explain section (quadrant, origin, ordered pair, reflect, axis).
+      <!-- ============ 5. REFLECT ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>
+            Stage-by-Stage Notes (Engage → Explore → Explain → Apply → Reflect)
+          </h3>
+          <ul>
+            <li>
+              <strong>Engage:</strong> dive depths motivate negative numbers and
+              absolute value.
+            </li>
+            <li>
+              <strong>Explore:</strong> place integers on a vertical number line
+              and plot points.
+            </li>
+            <li>
+              <strong>Explain:</strong> absolute value as distance; quadrants;
+              reflections.
+            </li>
+            <li><strong>Apply:</strong> answer key below.</li>
+            <li><strong>Reflect:</strong> students explain why |−40| = 40.</li>
+          </ul>
+          <h3>Apply — Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Q1 — Distance |−40|:</strong> <strong>40</strong> m.
+            </li>
+            <li>
+              <strong>Q2 — Compare depths (MC):</strong> answer
+              <strong>c</strong>.
+            </li>
+            <li>
+              <strong>Q3 — Distance −12 to −40:</strong> |−40 − (−12)| =
+              <strong>28</strong> m.
+            </li>
+            <li>
+              <strong>Q4 — Quadrant of (5, −3) (MC):</strong> answer
+              <strong>b</strong> (Quadrant IV).
+            </li>
+            <li>
+              <strong>Q5 — Reflect D(5, 2) across the y-axis:</strong> x changes
+              sign → new x-coordinate <strong>−5</strong> (new point (−5, 2)).
+            </li>
+            <li>
+              <strong>Q6 — Distance A(−3,1) to B(4,1):</strong> 3 + 4 =
+              <strong>7</strong>.
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.NS.C.5–8</strong>.</p>
+        </div>
+      </details>
+
+      <section class="u9-step u9-reflect" id="reflect">
+        <h2><span class="u9-badge b5">5</span> Reflect</h2>
+        <p class="u9-phase">Think about your thinking</p>
+
+        <div class="u9-q">
+          <p class="u9-prompt">
+            A. In your own words, what is the difference between
+            <strong>−40 &lt; −12</strong> and <strong>|−40| &gt; |−12|</strong>?
+            Use the words <em>direction</em> and <em>distance</em>.
+          </p>
+          <textarea aria-label="Reflection A"></textarea>
+        </div>
+        <div class="u9-q">
+          <p class="u9-prompt">
+            B. Where in real life (temperature, money, elevation, a game map)
+            would you use negative numbers or a coordinate plane? Describe one
+            situation.
+          </p>
+          <textarea aria-label="Reflection B"></textarea>
+        </div>
+        <div class="u9-q">
+          <p class="u9-prompt">
+            C. One thing that is now clear to me / Una cosa que ahora entiendo
+            bien:
+          </p>
+          <textarea aria-label="Reflection C"></textarea>
+        </div>
+        <p class="u9-cap">
+          Your reflections save with this HyperDoc when you use Save as PDF or
+          Save as DOC above.
         </p>
-        <div class="deliverable-box">
-          <strong>Deliverable:</strong> Type your responses below, then save your finished HyperDoc as a
-          <strong>PDF or DOC</strong> using the Save buttons at the top. Submit the saved file to your
-          teacher's Google Drive folder or turn it in as directed.
-        </div>
-        <div class="q">
-          <label for="r1"><strong>1.</strong> In your own words, how do you plot the point (x, y)? Say what you do first and second.</label>
-          <textarea id="r1" name="r1" aria-required="true" placeholder="Write 2–3 sentences..."></textarea>
-        </div>
-        <div class="q">
-          <label for="r2"><strong>2.</strong> What was the trickiest part of Unit 9 for you? How did you figure it out?</label>
-          <textarea id="r2" name="r2" aria-required="true" placeholder="Write 2–3 sentences..."></textarea>
-        </div>
       </section>
 
-    </div><!-- /.wrap -->
+      <!-- ============ 6. EXTEND ============ -->
+      <section class="u9-step" id="extend">
+        <h2>
+          <span class="u9-badge b3" style="background: #475569">6</span> Extend
+        </h2>
+        <p class="u9-phase">Optional challenge project</p>
+        <div class="u9-card">
+          <h3>Chart the dive site for the Mariana team</h3>
+          <p>
+            On grid paper, draw a four-quadrant coordinate plane and plot a real
+            dive map with at least <strong>five labeled points</strong>, using
+            at least one point in each quadrant. Then:
+          </p>
+          <ol>
+            <li>
+              Write the ordered pair for each point and name its quadrant (or
+              axis).
+            </li>
+            <li>
+              Pick two points that share an x- or y-value and find the exact
+              distance between them using absolute value.
+            </li>
+            <li>
+              Reflect one point across an axis, plot its image, and write a
+              sentence explaining which coordinate changed sign and why.
+            </li>
+          </ol>
+          <p class="u9-es">
+            Dibuja un plano de coordenadas con cinco puntos, calcula una
+            distancia con valor absoluto y refleja un punto sobre un eje.
+          </p>
+        </div>
+      </section>
+    </main>
 
     <script>
       (function () {
-        function ready(fn) {
-          if (document.readyState !== "loading") {
-            fn();
+        "use strict";
+
+        // ---- Mount the shared Neft Activity Kit (name bar + Save as PDF/DOC + results) ----
+        function mountKit() {
+          if (window.NTKit && typeof NTKit.mount === "function") {
+            try {
+              NTKit.mount("#ntkit");
+            } catch (e) {
+              /* kit optional */
+            }
+          }
+        }
+        if (document.readyState !== "loading") mountKit();
+        else document.addEventListener("DOMContentLoaded", mountKit);
+
+        var form = document.getElementById("u9-quiz");
+
+        function checkOne(q) {
+          var type = q.getAttribute("data-type");
+          var fb = q.querySelector(".u9-fb");
+          var correct = false,
+            answered = true;
+
+          if (type === "mc") {
+            var sel = q.querySelector('input[type="radio"]:checked');
+            answered = !!sel;
+            correct = answered && sel.value === q.getAttribute("data-answer");
           } else {
-            document.addEventListener("DOMContentLoaded", fn);
+            var input = q.querySelector(
+              'input[type="number"], input[type="text"]',
+            );
+            var raw = (input.value || "").trim();
+            answered = raw !== "";
+            var ans = parseFloat(q.getAttribute("data-answer"));
+            var tol = parseFloat(q.getAttribute("data-tol") || "0");
+            var val = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+            correct = answered && !isNaN(val) && Math.abs(val - ans) <= tol;
+          }
+
+          if (fb) {
+            if (!answered) {
+              fb.textContent = "";
+              fb.className = "u9-fb";
+            } else if (correct) {
+              fb.textContent = "✓ Correct";
+              fb.className = "u9-fb ok";
+            } else {
+              fb.textContent =
+                "✗ Not yet — recheck the sign, the absolute value, and which way you moved.";
+              fb.className = "u9-fb no";
+            }
+          }
+          return { correct: correct, answered: answered };
+        }
+
+        function checkAll() {
+          var qs = form.querySelectorAll(".u9-q[data-type]");
+          var score = 0,
+            total = qs.length;
+          var items = [];
+          qs.forEach(function (q, i) {
+            var r = checkOne(q);
+            if (r.correct) score++;
+            var promptEl = q.querySelector(".u9-prompt");
+            items.push({
+              id: q.id || "q" + (i + 1),
+              prompt: promptEl
+                ? promptEl.textContent.trim()
+                : "Question " + (i + 1),
+              correct: r.correct,
+            });
+          });
+
+          var out = document.getElementById("u9-scoreout");
+          var pct = Math.round((score / total) * 100);
+          out.textContent =
+            "Score: " + score + " / " + total + " (" + pct + "%)";
+
+          if (window.NTKit && typeof NTKit.grade === "function") {
+            try {
+              NTKit.grade({
+                activityId: "hyperdoc-unit-9-integers",
+                activityTitle:
+                  "Unit 9 HyperDoc — Integers & the Coordinate Plane",
+                standard: "6.NS.5-8",
+                score: score,
+                total: total,
+                items: items,
+              });
+            } catch (e) {
+              /* fallback score already shown */
+            }
           }
         }
 
-        ready(function () {
-          /* ── NTKit ── */
-          if (window.NTKit) {
-            NTKit.mount("#ntkit");
-          } else {
-            console.error("NTKit not loaded");
-          }
-
-          /* ─────────────────────────────────────────────────────────
-             Tolerant answer normaliser
-             - trim, lowercase, collapse whitespace
-             - strip leading "$", trailing "%"
-             - strip commas used as thousands separators
-             - strip trailing unit words (units, cubic, cm, cm3, cm³, etc.)
-             - for coordinate answers: remove parens but KEEP minus signs
-             ───────────────────────────────────────────────────────── */
-          function norm(raw) {
-            var s = String(raw == null ? "" : raw).trim().toLowerCase();
-            s = s.replace(/\s+/g, " ");
-            s = s.replace(/^\$/, "");
-            s = s.replace(/%$/, "");
-            s = s.replace(/,(\d{3})/g, "$1");
-            s = s.replace(/\b(units?|cubic|cm3|cm³|cm|m2|m²|mph|km|ft|in|degrees?)\s*$/g, "");
-            s = s.trim();
-            return s;
-          }
-
-          /* Normalise a coordinate string: remove parens + spaces, keep "-" */
-          function normCoord(raw) {
-            var s = norm(raw);
-            /* remove parens */
-            s = s.replace(/[()]/g, "");
-            /* collapse spaces around comma: "5, -2" → "5,-2" */
-            s = s.replace(/\s*,\s*/g, ",");
-            s = s.trim();
-            return s;
-          }
-
-          /* Numeric equality with epsilon */
-          function numEq(a, b) {
-            var na = parseFloat(a);
-            var nb = parseFloat(b);
-            if (isNaN(na) || isNaN(nb)) return false;
-            return Math.abs(na - nb) < 1e-9;
-          }
-
-          /* General match: try exact normalised, then numeric */
-          function answersMatch(studentRaw, correctRaw, type) {
-            if (type === "coord") {
-              return normCoord(studentRaw) === normCoord(correctRaw);
-            }
-            var s = norm(studentRaw);
-            var c = norm(correctRaw);
-            if (s === c) return true;
-            if (type === "numeric") return numEq(s, c);
-            return false;
-          }
-
-          /* ── Self-check feedback ── */
-          var SC_EXPLANATIONS = {
-            sc1: {
-              correct: "Correct! (−4, 7) has a negative x and positive y, placing it in Quadrant II.",
-              wrong: "Not quite. Quadrant II has negative x and positive y. Here x = −4 (negative) and y = 7 (positive), so the answer is Quadrant II."
-            },
-            sc2: {
-              correct: "Correct! Reflecting over the y-axis flips the x-sign: (−3, 5) becomes (3, 5).",
-              wrong: "Not quite. Reflecting over the y-axis keeps y the same and flips the sign of x. So (−3, 5) → (3, 5)."
-            },
-            sc3: {
-              correct: "Correct! Both points share x = 2, so distance = |4 − (−3)| = 7 units.",
-              wrong: "Not quite. When two points share the same x-value, subtract the y-values: |4 − (−3)| = 7 units."
-            }
-          };
-
-          var scButtons = document.querySelectorAll(".sc-btn");
-          for (var i = 0; i < scButtons.length; i++) {
-            scButtons[i].addEventListener("click", function (e) {
-              var btn = e.currentTarget;
-              var scName = btn.getAttribute("data-sc");
-              var correctVal = btn.getAttribute("data-correct");
-              var radios = document.querySelectorAll('input[name="' + scName + '"]');
-              var chosen = "";
-              for (var j = 0; j < radios.length; j++) {
-                if (radios[j].checked) { chosen = radios[j].value; break; }
-              }
-              var fb = document.getElementById(scName + "-fb");
-              if (!fb) return;
-              var exp = SC_EXPLANATIONS[scName] || {};
-              if (chosen === "") {
-                fb.className = "sc-feedback wrong";
-                fb.textContent = "Please choose an answer first.";
-              } else if (chosen === correctVal) {
-                fb.className = "sc-feedback correct";
-                fb.textContent = "✓ " + (exp.correct || "Correct!");
-              } else {
-                fb.className = "sc-feedback wrong";
-                fb.textContent = "✗ " + (exp.wrong || "Try again.");
-              }
+        document.getElementById("u9-check").addEventListener("click", checkAll);
+        document
+          .getElementById("u9-reset")
+          .addEventListener("click", function () {
+            form.reset();
+            form.querySelectorAll(".u9-fb").forEach(function (f) {
+              f.textContent = "";
+              f.className = "u9-fb";
             });
-          }
-
-          /* ── NTKit graded form ── */
-          var form = document.getElementById("apply-form");
-          if (form) {
-            form.addEventListener("submit", function (e) {
-              e.preventDefault();
-              var f = function (n) {
-                var el = form.elements[n];
-                if (!el) return "";
-                if (el.length && el[0] && el[0].type === "radio") {
-                  for (var i = 0; i < el.length; i++) {
-                    if (el[i].checked) return el[i].value;
-                  }
-                  return "";
-                }
-                return el.value || "";
-              };
-
-              /*
-               * For NTKit.grade the comparison is studentAnswer === correctAnswer,
-               * so we pre-normalise both sides to the same canonical form.
-               * Coordinate answers: strip parens/spaces, keep "-".
-               * Numeric answers: pass as plain number string.
-               * Text/radio: normalise lightly (trim + lowercase).
-               */
-              var items = [
-                {
-                  prompt: "1. Name the point (0, 0) where the axes cross.",
-                  studentAnswer: norm(f("q1")),
-                  correctAnswer: "origin",
-                  points: 1,
-                  skill: "6.NS.C.6 origin"
-                },
-                {
-                  prompt: "2. Move 4 right and 1 up from the origin. Ordered pair?",
-                  studentAnswer: normCoord(f("q2")),
-                  correctAnswer: normCoord("(4, 1)"),
-                  points: 1,
-                  skill: "6.NS.C.6 plot point"
-                },
-                {
-                  prompt: "3. Which quadrant holds (2, 3)?",
-                  studentAnswer: f("q3"),
-                  correctAnswer: "Quadrant I",
-                  points: 1,
-                  skill: "6.NS.C.6 quadrants"
-                },
-                {
-                  prompt: "4. Reflect (5, 2) over the x-axis.",
-                  studentAnswer: normCoord(f("q4")),
-                  correctAnswer: normCoord("(5, -2)"),
-                  points: 1,
-                  skill: "6.NS.C.6 reflection"
-                },
-                {
-                  prompt: "5. 4th corner of rectangle (1,1)(1,4)(6,1).",
-                  studentAnswer: normCoord(f("q5")),
-                  correctAnswer: normCoord("(6, 4)"),
-                  points: 1,
-                  skill: "6.G.A.3 polygon vertices"
-                },
-                {
-                  prompt: "6. Distance between (1, 1) and (6, 1).",
-                  studentAnswer: norm(f("q6")),
-                  correctAnswer: "5",
-                  points: 1,
-                  skill: "6.G.A.3 distance"
-                }
-              ];
-
-              if (window.NTKit) {
-                NTKit.grade({
-                  activityId: "hyperdoc-unit-9",
-                  activityTitle: "Unit 9 HyperDoc — The Coordinate Plane",
-                  standard: "6.NS.C.6 & 6.G.A.3",
-                  items: items
-                });
-                var res = document.getElementById("ntkit-results");
-                if (res && res.scrollIntoView) {
-                  res.scrollIntoView({ behavior: "smooth", block: "start" });
-                }
-              }
-            });
-          }
-        });
+            document.getElementById("u9-scoreout").textContent = "";
+          });
       })();
     </script>
-  </body>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+</body>
 </html>

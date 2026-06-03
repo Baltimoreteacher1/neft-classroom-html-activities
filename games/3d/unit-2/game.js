@@ -1,5 +1,6 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /* ---------------------------------------------------------------------------
  * Unit 2 — Fraction Kitchen (Bakery)
@@ -121,6 +122,11 @@ export default {
 
     const cfg = makeLevel(level);
     const reduced = feel.reducedMotion;
+
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
 
     const group = new THREE.Group();
     scene.add(group);
@@ -272,6 +278,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong Serve costs one. Run out and
+    // the kitchen closes (lose screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     const timers = [];
     const unbinders = [];
 
@@ -387,6 +398,16 @@ export default {
       updateLive();
       refreshSelection();
       feel.sfx("pop");
+
+      if (clarity) {
+        let targetTxt = "";
+        if (round.type === "divide")
+          targetTxt = round.whole + " ÷ 1/" + round.unitDenom;
+        else if (round.type === "combine")
+          targetTxt = round._sum.n + "/" + round._sum.d;
+        else targetTxt = round._orderTxt;
+        clarity.setTarget(targetTxt);
+      }
     }
 
     function addToolLabel(text, x, z) {
@@ -636,6 +657,14 @@ export default {
             ".",
         );
       }
+      if (clarity)
+        clarity.setObjective(
+          "Round " +
+            (roundIndex + 1) +
+            " of " +
+            cfg.rounds.length +
+            ": match the order, then SERVE.",
+        );
     }
 
     // ---- Add / remove slices ------------------------------------------------
@@ -790,7 +819,7 @@ export default {
 
     // ---- Serve / check ------------------------------------------------------
     function serve() {
-      if (solved || busy) return;
+      if (solved || busy || gameOver) return;
       let correct = false;
       let detail = "";
       if (round.type === "build") {
@@ -805,18 +834,25 @@ export default {
       }
 
       if (!correct) {
-        const msg =
-          round.type === "divide"
-            ? "Not yet. The answer is " + round._answer + " scoops. Keep going."
-            : "Not yet. The plate does not match the order.";
         streak = 0;
         hud.setStreak(0);
-        hud.message(msg, { tone: "warn", duration: 2200 });
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.18);
-        announce(msg);
         serveBtn.material.emissive.setHex(PALETTE.serveBad);
         later(() => serveBtn.material.emissive.setHex(PALETTE.serve), 480);
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        if (lives <= 0) {
+          loseGame();
+          return;
+        }
+        const base =
+          round.type === "divide"
+            ? "Not yet. Keep scooping to share it out evenly."
+            : "Not yet. The plate does not match the order.";
+        const msg = `${base} ${lives} ${lives === 1 ? "try" : "tries"} left.`;
+        hud.message(msg, { tone: "warn", duration: 2200 });
+        announce(msg);
         return;
       }
 
@@ -848,6 +884,23 @@ export default {
           finish();
         }
       }, 2400);
+    }
+
+    function loseGame() {
+      gameOver = true;
+      busy = true;
+      feel.sfx("wrong");
+      const msg = `Kitchen closed! You filled ${solvedCount} of ${cfg.rounds.length} orders.`;
+      hud.setObjective(msg);
+      announce(`Out of tries. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Kitchen closed!",
+          badge: "🍰",
+          stats: `${msg} Tip: count the unit fractions on the plate and match the order exactly.`,
+        });
+      }
     }
 
     function finish() {
@@ -885,11 +938,136 @@ export default {
           bestStreak +
           ". Wonderful work at the Fraction Kitchen.",
       );
+
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "Bakery closed!",
+          badge: "🧁",
+          stats:
+            "You filled " +
+            solvedCount +
+            " of " +
+            cfg.rounds.length +
+            " orders. Best streak: " +
+            bestStreak +
+            ". Score saved.",
+        });
+      }
     }
 
-    // ---- Pointer picking ----------------------------------------------------
+    // ---- Drag-to-build: physically carry a slice/scoop onto the plate -------
+    // Genuine 3D manipulation (like unit-5/unit-10): the student grabs a tool
+    // from the tray and *drags* it onto the glowing drop zone over the plate to
+    // commit. Tapping a tool still works as a fallback (it auto-flies in), so
+    // keyboard players and quick taps are unaffected.
+    //
+    // A wide invisible ground plane lets us raycast the pointer to a world point
+    // every frame while a piece is held. The held mesh follows the pointer; on
+    // release, if it is over the plate drop zone we run the same add/scoop math.
+    const dragPlane = track(
+      new THREE.Mesh(
+        new THREE.PlaneGeometry(60, 60),
+        new THREE.MeshBasicMaterial({ visible: false }),
+      ),
+    );
+    dragPlane.rotation.x = -Math.PI / 2;
+    dragPlane.position.y = 0.62;
+    group.add(dragPlane);
+
+    // Glowing target ring on the plate that lights up while dragging a valid
+    // piece — the "build-to-target" affordance.
+    const dropZone = track(
+      new THREE.Mesh(
+        new THREE.RingGeometry(1.7, 2.9, 40),
+        new THREE.MeshBasicMaterial({
+          color: PALETTE.serve,
+          transparent: true,
+          opacity: 0.0,
+          side: THREE.DoubleSide,
+        }),
+      ),
+    );
+    dropZone.rotation.x = -Math.PI / 2;
+    dropZone.position.set(
+      plate.position.x,
+      plate.position.y + 0.18,
+      plate.position.z,
+    );
+    group.add(dropZone);
+    const DROP_RADIUS = 2.9; // world distance from plate center that counts as "on the plate"
+
+    const drag = { active: false, item: null, home: null, pointerDown: false };
+
+    function planePoint() {
+      const hits = input.raycast(camera, [dragPlane], false);
+      return hits.length ? hits[0].point : null;
+    }
+    function overPlate(p) {
+      if (!p) return false;
+      const dx = p.x - plate.position.x;
+      const dz = p.z - plate.position.z;
+      return Math.hypot(dx, dz) <= DROP_RADIUS;
+    }
+
+    function beginDrag(item) {
+      if (solved || busy || gameOver) return;
+      drag.active = true;
+      drag.item = item;
+      drag.home = item.position.clone();
+      item.userData.dragging = true;
+      if (!reduced) item.scale.setScalar(1.18);
+      feel.sfx("select");
+      announce(
+        "Picked up " +
+          kindName(item.userData.kind) +
+          ". Drag it onto the plate.",
+      );
+    }
+
+    function updateDrag() {
+      if (!drag.active || !drag.item) return;
+      const p = planePoint();
+      if (p) {
+        drag.item.position.set(p.x, drag.home.y + 0.5, p.z);
+        const on = overPlate(p);
+        dropZone.material.opacity = on ? 0.5 : 0.16;
+        if (drag.item.material && drag.item.material.emissive) {
+          drag.item.material.emissiveIntensity = on ? 0.7 : 0.25;
+          drag.item.material.emissive.setHex(on ? PALETTE.serve : 0x111522);
+        }
+      }
+    }
+
+    function endDrag() {
+      if (!drag.active || !drag.item) {
+        dropZone.material.opacity = 0;
+        return;
+      }
+      const item = drag.item;
+      const p = planePoint();
+      const dropped = overPlate(p);
+      // Return the tool to its tray home regardless; the math spawns its own
+      // mesh on the plate (matching the existing tap flow).
+      item.position.copy(drag.home);
+      item.userData.dragging = false;
+      if (!reduced) item.scale.setScalar(1);
+      dropZone.material.opacity = 0;
+      drag.active = false;
+      drag.item = null;
+      drag.home = null;
+      refreshSelection();
+      if (dropped) {
+        activateKind(item.userData.kind);
+      } else {
+        feel.sfx("remove");
+      }
+    }
+
+    // ---- Pointer picking (tap = quick-use; press-drag = carry to plate) -----
     function pointerPick() {
       if (busy) return;
+      drag.pointerDown = true;
       const hits = input.raycast(camera, [...sceneItems, serveBtn], true);
       if (!hits.length) return;
       let obj = hits[0].object;
@@ -905,7 +1083,14 @@ export default {
           selected = idx;
           refreshSelection();
         }
-        activateKind(obj.userData.kind);
+        // "Add"/"Scoop" tools are draggable onto the plate. Remove/put-back are
+        // instant taps (no target to drag to).
+        const k = obj.userData.kind;
+        if (k === "removeSlice" || k === "unscoop") {
+          activateKind(k);
+        } else {
+          beginDrag(obj);
+        }
       }
     }
 
@@ -937,23 +1122,101 @@ export default {
           });
         }
 
-        startRound();
         caption("Match the gold order, then tap green SERVE.");
 
-        unbinders.push(
-          input.onPress((name) => {
-            if (busy) return;
-            if (name === "left") moveSelection(-1);
-            else if (name === "right") moveSelection(1);
-            else if (name === "up") moveSelection(-1);
-            else if (name === "down") moveSelection(1);
-            else if (name === "action") {
-              const it = sceneItems[selected];
-              if (it) activateKind(it.userData.kind);
-            } else if (name === "confirm") serve();
-          }),
-        );
-        unbinders.push(input.onTap(pointerPick));
+        // Begin the actual round loop + input binding only after the student
+        // presses Start in the clarity overlay. This is the single entry point
+        // both for first play and for Play Again.
+        function beginGameplay() {
+          roundIndex = 0;
+          solvedCount = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
+          startRound();
+
+          unbinders.push(
+            input.onPress((name) => {
+              if (busy) return;
+              if (name === "left") moveSelection(-1);
+              else if (name === "right") moveSelection(1);
+              else if (name === "up") moveSelection(-1);
+              else if (name === "down") moveSelection(1);
+              else if (name === "action") {
+                const it = sceneItems[selected];
+                if (it) activateKind(it.userData.kind);
+              } else if (name === "confirm") serve();
+            }),
+          );
+          unbinders.push(input.onTap(pointerPick));
+
+          // Pointer-up ends a drag (commit if over the plate, else snap back).
+          // input.js fires pointerup on window but exposes no callback, so we
+          // attach our own tracked listener.
+          const onUp = () => {
+            drag.pointerDown = false;
+            if (drag.active) endDrag();
+          };
+          window.addEventListener("pointerup", onUp);
+          unbinders.push(() => window.removeEventListener("pointerup", onUp));
+
+          // Drive the held piece every frame so it follows the pointer.
+          unbinders.push(
+            onFrame(() => {
+              if (drag.active) updateDrag();
+            }),
+          );
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Fraction Kitchen — Fill the Orders",
+          objectiveEn:
+            "Read each bakery order, build or scoop the exact fraction on the plate, then Serve to fill it.",
+          objectiveEs:
+            "Lee cada orden, arma o sirve la fracción exacta en el plato y pulsa Servir.",
+          standard: "6.NS.A.1 · Dividing Fractions & Mixed Numbers",
+          controls: [
+            {
+              key: "Drag / Click",
+              actionEn:
+                "Drag a slice or scoop from the tray onto the glowing plate to add it (or just tap it). Remove / Put-back are instant taps. Tap green SERVE to check",
+              actionEs:
+                "Arrastra una porción o cucharada del estante al plato brillante (o tócala). Toca SERVE para revisar",
+            },
+            {
+              key: "← / → (or ↑ / ↓)",
+              actionEn: "Move the highlight to the next tool",
+              actionEs: "Mueve el resaltado a la siguiente herramienta",
+            },
+            {
+              key: "Space",
+              actionEn:
+                "Use the highlighted tool — add or remove a slice, or scoop a serving",
+              actionEs:
+                "Usa la herramienta resaltada — agrega/quita una porción o sirve",
+            },
+            {
+              key: "Enter",
+              actionEn: "SERVE — check if the plate matches the order",
+              actionEs: "SERVE — revisa si el plato coincide con la orden",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Make the gold order exactly — drag slices onto the plate to build the fraction, or drag scoops to portion the servings — then Serve. Fill every order to win.",
+          howToWinEs:
+            "Haz la orden dorada exacta y sirve. Completa todas las órdenes para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
 
         // Idle motion: gentle serve-button pulse + slow oven-glow shimmer.
         if (!reduced) {
@@ -970,6 +1233,7 @@ export default {
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         unbinders.forEach((u) => u && u());
         unbinders.length = 0;
         timers.forEach(clearTimeout);

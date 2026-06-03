@@ -1,6 +1,7 @@
 import { prismVolume } from "/games/engine3d/geometry-math.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /* ============================================================================
  * Unit 10 — VOLUME VAULT  (CCSS 6.G.A.2)
@@ -113,6 +114,11 @@ export default {
     const cfg = makeLevel(level);
     const reduced = feel.reducedMotion;
 
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
+
     const group = new THREE.Group();
     scene.add(group);
 
@@ -164,6 +170,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts. A wrong answer costs one; run out
+    // and the mission fails (lose screen). Level 1 gets more cushion.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let unbindFrame = null;
     let unbindIdle = null;
 
@@ -323,19 +334,21 @@ export default {
       cursorMesh.visible = true;
       cursorMesh.scale.setScalar(step);
 
-      const targetVol = prismVolume(round.l, round.w, round.h);
+      // Show the dimensions and the V = l × w × h set-up, but NOT the result —
+      // the student works out the volume by packing the cubes. The answer is
+      // revealed in the post-solve feedback (see markCorrect below).
       setProblemCard(
         `V = ${fracLabel(round.l)} × ${fracLabel(round.w)} × ${fracLabel(
           round.h,
-        )} = ${fracLabel(targetVol)} cubic units`,
+        )} = ?  cubic units`,
       );
 
       announce(
-        `Round ${roundIndex + 1}. Fill the box with cubes. ` +
+        `Round ${roundIndex + 1}. Fill the box with cubes to find its volume. ` +
           `It is ${fracLabel(round.l)} long, ${fracLabel(
             round.w,
           )} wide, ${fracLabel(round.h)} tall. ` +
-          `The answer is ${fracLabel(targetVol)} cubic units.`,
+          `Multiply length times width times height.`,
       );
 
       if (cfg.hints) {
@@ -354,11 +367,16 @@ export default {
     }
 
     function updateFillObjective() {
-      const targetVol = prismVolume(round.l, round.w, round.h);
-      hud.setObjective(
-        `Fill the box. Answer = ${fracLabel(targetVol)} cubic units.  ` +
-          `Cubes: ${placedCount} / ${targetCount}`,
-      );
+      // Don't reveal the volume here — show progress only so the student has to
+      // pack the box to discover it.
+      const text =
+        `Fill the box, then read off its volume.  ` +
+        `Cubes: ${placedCount} / ${targetCount}`;
+      hud.setObjective(text);
+      if (clarity) {
+        clarity.setObjective(text);
+        clarity.setTarget(`Pack the box · V = l × w × h`);
+      }
     }
 
     function refreshCursor() {
@@ -559,10 +577,16 @@ export default {
           round.volume,
         )}`,
       );
-      hud.setObjective(
+      const text =
         `Height = ${fracLabel(guess)}. Your volume = ${fracLabel(vol)}. ` +
-          `Goal = ${fracLabel(round.volume)} cubic units.`,
-      );
+        `Goal = ${fracLabel(round.volume)} cubic units.`;
+      hud.setObjective(text);
+      if (clarity) {
+        clarity.setObjective(text);
+        clarity.setTarget(
+          `Find the height · Goal V = ${fracLabel(round.volume)} cubic units`,
+        );
+      }
     }
 
     function adjustGuess(delta) {
@@ -642,6 +666,12 @@ export default {
       hud.setObjective(
         "Use left / right to pick the bigger box. Then tap to check.",
       );
+      if (clarity) {
+        clarity.setObjective(
+          "Use left / right to pick the bigger box. Then tap to check.",
+        );
+        clarity.setTarget("Pick the box with the bigger volume");
+      }
       announce(
         `Round ${roundIndex + 1}. Two boxes. ` +
           `Find the volume of each one. ` +
@@ -751,8 +781,33 @@ export default {
     function markWrong(warnMsg, duration = 2000) {
       streak = 0;
       if (typeof hud.setStreak === "function") hud.setStreak(0);
-      if (typeof hud.feedback === "function") hud.feedback(false, warnMsg);
-      else hud.message(warnMsg, { tone: "warn", duration });
+      lives = Math.max(0, lives - 1);
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      if (lives <= 0) {
+        loseGame();
+        return;
+      }
+      const livesMsg = ` ${lives} ${lives === 1 ? "try" : "tries"} left.`;
+      if (typeof hud.feedback === "function")
+        hud.feedback(false, warnMsg + livesMsg);
+      else hud.message(warnMsg + livesMsg, { tone: "warn", duration });
+    }
+
+    function loseGame() {
+      gameOver = true;
+      feel.sfx("wrong");
+      const msg = `Vault locked! You solved ${solvedCount} of ${cfg.rounds.length}.`;
+      setProblemCard("VAULT LOCKED");
+      hud.setObjective(msg);
+      announce(`Mission over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Vault locked!",
+          badge: "🔒",
+          stats: `${msg} Tip: count the cubes along each edge, then multiply length × width × height.`,
+        });
+      }
     }
 
     function nextRoundSoon() {
@@ -796,18 +851,26 @@ export default {
       announce(
         `All rounds complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great work, Vault Keeper.`,
       );
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "Vault secured!",
+          badge: "🧊",
+          stats: `You solved ${solvedCount} of ${cfg.rounds.length} vaults · best streak ${bestStreak}. Score saved.`,
+        });
+      }
     }
 
     // ===================== Input wiring ===================================
     function onPrimary() {
-      if (!round) return;
+      if (!round || gameOver) return;
       if (round.kind === "fill") placeCube();
       else if (round.kind === "missing") checkMissing();
       else if (round.kind === "compare") checkCompare();
     }
 
     function onDirection(name) {
-      if (!round) return;
+      if (!round || gameOver) return;
       if (round.kind === "fill") {
         if (name === "up") moveCursor(0, 0, -1);
         else if (name === "down") moveCursor(0, 0, 1);
@@ -831,7 +894,7 @@ export default {
 
     // Secondary (keyboard Enter): vertical layer move in fill, hint elsewhere.
     function onConfirm() {
-      if (!round) return;
+      if (!round || gameOver) return;
       if (round.kind === "fill") {
         if (layerUp && cursor.y < ny - 1) moveCursor(0, 1, 0);
         else if (!layerUp && cursor.y > 0) moveCursor(0, -1, 0);
@@ -889,27 +952,8 @@ export default {
           });
         }
 
-        roundIndex = 0;
-        startRound();
-
-        unbindPress = input.onPress((name) => {
-          if (
-            name === "up" ||
-            name === "down" ||
-            name === "left" ||
-            name === "right"
-          )
-            onDirection(name);
-          else if (name === "action") onPrimary();
-          else if (name === "confirm") onConfirm();
-        });
-
-        unbindTap = input.onTap(() => {
-          if (!round || solved) return;
-          onPrimary();
-        });
-
-        // Idle cursor pulse (gated behind reduced motion).
+        // Idle cursor pulse (gated behind reduced motion). Safe to run behind
+        // the start overlay — it touches no round state.
         if (!reduced) {
           unbindFrame = ctx.onFrame((dt, t) => {
             if (cursorMesh.visible) {
@@ -919,9 +963,83 @@ export default {
             problemCard.position.y = 5.4 + Math.sin(t * 1.1) * 0.06;
           });
         }
+
+        // Begin the actual round loop + input binding only after the student
+        // presses Start in the clarity overlay. Single entry point for first
+        // play and Play Again.
+        function beginGameplay() {
+          roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
+          startRound();
+
+          unbindPress = input.onPress((name) => {
+            if (
+              name === "up" ||
+              name === "down" ||
+              name === "left" ||
+              name === "right"
+            )
+              onDirection(name);
+            else if (name === "action") onPrimary();
+            else if (name === "confirm") onConfirm();
+          });
+
+          unbindTap = input.onTap(() => {
+            if (!round || solved || gameOver) return;
+            onPrimary();
+          });
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Volume Vault — Pack the Prism, Find the Volume",
+          objectiveEn:
+            "Pack each rectangular prism full of unit cubes to find its volume: V = length × width × height.",
+          objectiveEs:
+            "Llena cada caja con cubos para hallar su volumen: V = largo × ancho × alto.",
+          standard: "6.G.A.2 · Volume of Rectangular Prisms",
+          controls: [
+            {
+              key: "← / → / ↑ / ↓",
+              actionEn:
+                "Move the glowing cube cursor (fill); pick box A or B (compare); raise/lower the height (missing edge)",
+              actionEs:
+                "Mueve el cursor; elige caja A o B; sube o baja la altura",
+            },
+            {
+              key: "Space / Tap",
+              actionEn:
+                "Drop a unit cube into the box — or check your answer (compare and missing-edge rounds)",
+              actionEs: "Coloca un cubo, o revisa tu respuesta",
+            },
+            {
+              key: "Enter",
+              actionEn:
+                "Move the cursor up or down a layer while filling (or show a hint on missing-edge rounds)",
+              actionEs: "Cambia de capa al llenar (o muestra una pista)",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Fill each prism completely with unit cubes (the count is the volume), find the missing height, or pick the bigger box. Clear all 6 vaults to win. Each cube is 1 cubic unit (or 1/8 when edges are half-units).",
+          howToWinEs:
+            "Llena cada caja, halla la altura, o elige la caja más grande. Completa las 6 para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();

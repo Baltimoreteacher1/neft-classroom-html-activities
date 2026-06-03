@@ -2,804 +2,1600 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Unit 1 HyperDoc — Ratios &amp; Unit Rates (6.RP.A.1–3) | Neft Teacher</title>
-
-    <!-- Shared theme -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 1 HyperDoc — Ratios &amp; Unit Rates | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Grade 6 interactive HyperDoc for Unit 1: understand ratios, equivalent ratios, and unit rates to solve real problems (6.RP.A.1–3)."
+    />
     <link rel="stylesheet" href="/assets/neft-theme.css" />
-    <script src="/assets/neft-theme.js" defer></script>
-
-    <!-- Activity kit -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-
+    <script defer src="/assets/neft-theme.js"></script>
+    <script defer src="/assets/nt-activity-kit.js"></script>
     <style>
-      /* ── Base ── */
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        background: var(--nt-bg, #f8f9fa);
-        color: var(--nt-text, #1a1a2e);
-        line-height: 1.6;
-        font-size: 19px;
-      }
-      .wrap {
-        max-width: 880px;
+      /* ---- Unit 1 HyperDoc: scoped styles layered on the shared Neft theme ---- */
+      .u1-wrap {
+        max-width: 920px;
         margin: 0 auto;
-        padding: 20px 18px 80px;
+        padding: 0 18px 64px;
       }
 
-      /* ── Skip link ── */
-      .skip-link {
-        position: absolute;
-        left: -999px;
-        background: var(--nt-accent, #2563eb);
-        color: #fff;
-        padding: 0.6rem 1rem;
-        border-radius: 8px;
-        z-index: 50;
-        font-weight: 700;
+      .u1-hero {
+        position: relative;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background:
+          radial-gradient(
+            900px 240px at 12% -10%,
+            rgba(235, 87, 56, 0.16),
+            transparent 60%
+          ),
+          radial-gradient(
+            700px 220px at 95% 0%,
+            rgba(242, 177, 52, 0.18),
+            transparent 55%
+          ),
+          var(--nt-surface, #fff);
+        border-radius: 22px;
+        padding: 26px 26px 22px;
+        margin: 18px 0 22px;
+        overflow: hidden;
       }
-      .skip-link:focus { left: 1rem; top: 1rem; }
-
-      /* ── Hero ── */
-      header.hero {
-        background: var(--nt-surface, #fff);
-        border: 2px solid var(--nt-border, #e2e8f0);
-        border-radius: 16px;
-        padding: 22px 24px;
-        margin-bottom: 20px;
+      .u1-hero h1 {
+        margin: 6px 0 4px;
+        font-size: clamp(1.5rem, 1.1rem + 2vw, 2.2rem);
+        line-height: 1.15;
       }
-      .kicker {
-        color: var(--nt-accent, #2563eb);
-        font-weight: 700;
-        letter-spacing: .04em;
-        text-transform: uppercase;
-        font-size: .9rem;
+      .u1-hero .u1-sub {
+        color: var(--nt-muted, #5b6472);
+        margin: 0 0 12px;
+        font-size: 1.02rem;
       }
-      header.hero h1 {
-        margin: 6px 0 8px;
-        font-size: 30px;
-        line-height: 1.25;
-      }
-      .tag {
-        display: inline-block;
-        background: var(--nt-accent, #2563eb);
-        color: #fff;
-        border-radius: 999px;
-        padding: 4px 14px;
-        font-weight: 700;
-        font-size: 15px;
-        margin-right: 6px;
-      }
-      .sub { color: var(--nt-muted, #64748b); margin: 8px 0 0; font-size: 16px; }
-
-      /* ── Cards / Sections ── */
-      section.step {
-        background: var(--nt-surface, #fff);
-        border: 2px solid var(--nt-border, #e2e8f0);
-        border-radius: 16px;
-        padding: 20px 22px;
-        margin: 18px 0;
-      }
-      section.step h2 {
-        margin: 0 0 10px;
-        font-size: 22px;
-        display: flex;
+      .u1-kicker {
+        display: inline-flex;
         align-items: center;
-        gap: 10px;
-      }
-      .pill {
-        background: var(--nt-accent, #2563eb);
-        color: #fff;
-        border-radius: 8px;
-        font-size: 14px;
+        gap: 8px;
         font-weight: 700;
-        padding: 2px 10px;
-        flex-shrink: 0;
-      }
-
-      /* ── Learning Target box ── */
-      .target-box {
-        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-        border: 2px solid var(--nt-accent, #2563eb);
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin: 18px 0;
-      }
-      .target-box h3 {
-        margin: 0 0 10px;
-        font-size: 18px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
         color: var(--nt-accent, #2563eb);
+        background: color-mix(
+          in srgb,
+          var(--nt-accent, #2563eb) 12%,
+          transparent
+        );
+        border-radius: 999px;
+        padding: 5px 12px;
       }
-      .target-box ul {
-        margin: 0 0 10px;
-        padding-left: 20px;
-      }
-      .target-box ul li { margin-bottom: 4px; }
-      .target-meta {
+      .u1-meta {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
-        font-size: 15px;
+        gap: 8px;
+        margin-top: 6px;
       }
-      .target-meta span {
-        background: #fff;
-        border: 1px solid var(--nt-border, #e2e8f0);
-        border-radius: 8px;
-        padding: 4px 10px;
+      .u1-chip {
+        font-size: 0.78rem;
         font-weight: 600;
+        background: var(--nt-bg, #f4f6fb);
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 4px 11px;
       }
 
-      /* ── Teacher notes ── */
-      .teacher-notes {
-        background: #fefce8;
-        border: 2px solid #facc15;
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin: 18px 0;
+      .u1-toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 8px;
       }
-      .teacher-notes h3 {
-        margin: 0 0 10px;
-        font-size: 17px;
-        color: #92400e;
-      }
-      .teacher-notes h4 {
-        margin: 10px 0 4px;
-        font-size: 15px;
-        color: #78350f;
-      }
-      .teacher-notes p, .teacher-notes li { font-size: 15px; }
-      .teacher-notes ul { margin: 4px 0 0; padding-left: 20px; }
-      .teacher-notes summary { cursor: pointer; font-weight: 700; color: #92400e; font-size: 16px; }
-      .tn-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-top: 8px;
-      }
-      .tn-col {
-        background: #fffbeb;
-        border: 1px solid #fde68a;
-        border-radius: 10px;
-        padding: 10px 14px;
-      }
-      @media (max-width: 600px) { .tn-grid { grid-template-columns: 1fr; } }
-
-      /* ── Do-this callout ── */
-      .do {
-        background: var(--nt-bg, #f8f9fa);
-        border-left: 6px solid var(--nt-accent, #2563eb);
-        border-radius: 8px;
-        padding: 10px 14px;
-        margin: 12px 0;
-        font-weight: 600;
-      }
-
-      /* ── Vocab ── */
-      .vocab { display: grid; gap: 10px; margin: 12px 0; }
-      .vocab div {
-        background: var(--nt-bg, #f8f9fa);
-        border: 1px solid var(--nt-border, #e2e8f0);
-        border-radius: 10px;
-        padding: 10px 14px;
-      }
-      .vocab b { color: var(--nt-accent, #2563eb); }
-
-      /* ── Worked example ── */
-      .example {
-        background: var(--nt-bg, #f8f9fa);
-        border: 1px dashed var(--nt-border, #e2e8f0);
-        border-radius: 10px;
-        padding: 12px 16px;
-        margin: 12px 0;
-      }
-
-      /* ── Explore links ── */
-      .links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
-      a.btn {
-        display: inline-block;
-        background: var(--nt-accent, #2563eb);
-        color: #fff;
+      .u1-toc a {
         text-decoration: none;
-        font-weight: 700;
-        padding: 12px 18px;
-        border-radius: 10px;
-        border: 2px solid var(--nt-accent, #2563eb);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 6px 13px;
+        background: var(--nt-surface, #fff);
       }
-      a.btn:hover { filter: brightness(0.88); }
-
-      /* ── Focus styles ── */
-      a.btn:focus-visible,
-      button:focus-visible,
-      input:focus-visible,
-      textarea:focus-visible,
-      select:focus-visible {
-        outline: 3px solid var(--nt-focus, #f59e0b);
+      .u1-toc a:hover {
+        border-color: var(--nt-accent, #2563eb);
+        color: var(--nt-accent, #2563eb);
+      }
+      .u1-toc a:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
         outline-offset: 2px;
       }
 
-      /* ── Self-check items ── */
-      .qitem {
-        background: var(--nt-bg, #f8f9fa);
-        border: 1px solid var(--nt-border, #e2e8f0);
-        border-radius: 10px;
-        padding: 14px 16px;
-        margin: 12px 0;
-      }
-      .qitem label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
-      .qnum { color: var(--nt-accent, #2563eb); font-weight: 800; }
-      .qitem input[type="text"] {
-        width: 100%;
-        box-sizing: border-box;
-        font-size: 18px;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border, #e2e8f0);
-        border-radius: 8px;
+      .u1-step {
+        border: 1px solid var(--nt-border, #d7dbe3);
         background: var(--nt-surface, #fff);
-        color: var(--nt-text, #1a1a2e);
+        border-radius: 18px;
+        padding: 22px 22px 20px;
+        margin: 16px 0;
       }
-      .qitem input[type="text"]:focus {
-        border-color: var(--nt-accent, #2563eb);
-      }
-
-      /* Multiple choice */
-      .mc-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-      .mc-options label {
+      .u1-step > h2 {
+        margin: 0 0 4px;
+        font-size: 1.28rem;
         display: flex;
         align-items: center;
-        gap: 6px;
-        background: var(--nt-surface, #fff);
-        border: 2px solid var(--nt-border, #e2e8f0);
-        border-radius: 8px;
-        padding: 8px 14px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 17px;
-        transition: border-color .15s;
+        gap: 10px;
       }
-      .mc-options input[type="radio"] { accent-color: var(--nt-accent, #2563eb); width: 18px; height: 18px; }
-      .mc-options label:hover { border-color: var(--nt-accent, #2563eb); }
-
-      /* Feedback badges */
-      .fb {
-        display: none;
-        margin-top: 8px;
-        border-radius: 8px;
-        padding: 8px 14px;
-        font-weight: 700;
-        font-size: 16px;
-      }
-      .fb.correct   { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-      .fb.incorrect { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-
-      /* Check button */
-      .check {
-        font-size: 20px;
+      .u1-badge {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: inline-grid;
+        place-items: center;
+        font-size: 0.9rem;
         font-weight: 800;
-        padding: 14px 26px;
-        border-radius: 12px;
-        border: none;
-        background: var(--nt-accent, #2563eb);
         color: #fff;
-        cursor: pointer;
-        margin-top: 6px;
       }
-      .check:hover { filter: brightness(0.88); }
-
-      /* Score banner */
-      #score-banner {
-        display: none;
-        margin-top: 14px;
-        background: #dbeafe;
-        border: 2px solid var(--nt-accent, #2563eb);
-        border-radius: 12px;
-        padding: 14px 18px;
-        font-size: 18px;
+      .b1 {
+        background: #e8554e;
+      }
+      .b2 {
+        background: #f2913c;
+      }
+      .b3 {
+        background: #d9a40a;
+      }
+      .b4 {
+        background: #2563eb;
+      }
+      .b5 {
+        background: #0d9488;
+      }
+      .u1-step .u1-phase {
+        color: var(--nt-muted, #5b6472);
         font-weight: 700;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 10px 40px;
+      }
+
+      .u1-card {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 12px 0;
+        background: var(--nt-bg, #f7f9fc);
+      }
+      .u1-card h3 {
+        margin: 0 0 6px;
+        font-size: 1.02rem;
+      }
+
+      .u1-grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 640px) {
+        .u1-grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .u1-fig {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .u1-fig svg {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      .u1-cap {
+        font-size: 0.82rem;
+        color: var(--nt-muted, #5b6472);
+        text-align: center;
+      }
+
+      .u1-formula {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        background: var(--nt-text, #1c2330);
+        color: var(--nt-surface, #fff);
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: inline-block;
+        font-size: 1rem;
+      }
+
+      /* Ratio notation pill (a : b) */
+      .u1-ratio {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+      .u1-ratio b {
+        background: #e8554e;
+        color: #fff;
+        border-radius: 8px;
+        padding: 2px 10px;
+      }
+      .u1-ratio b.j {
+        background: #f2b134;
+        color: #4a3500;
+      }
+      .u1-ratio .colon {
+        font-weight: 800;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      details.u1-level {
+        border: 1px dashed var(--nt-border, #c3cad6);
+        border-radius: 12px;
+        padding: 4px 14px;
+        margin: 12px 0;
+        background: var(--nt-surface, #fff);
+      }
+      details.u1-level > summary {
+        cursor: pointer;
+        font-weight: 700;
+        padding: 8px 0;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      details.u1-level > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.u1-level > summary::before {
+        content: "▸";
+        transition: transform 0.15s;
         color: var(--nt-accent, #2563eb);
       }
-
-      /* ── Reflect ── */
-      textarea {
-        width: 100%;
-        box-sizing: border-box;
-        font-size: 18px;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border, #e2e8f0);
-        border-radius: 8px;
-        background: var(--nt-surface, #fff);
-        color: var(--nt-text, #1a1a2e);
-        min-height: 74px;
-        resize: vertical;
+      details.u1-level[open] > summary::before {
+        transform: rotate(90deg);
       }
-      textarea:focus { border-color: var(--nt-accent, #2563eb); }
-      .hint { color: var(--nt-muted, #64748b); font-size: 16px; }
+      .u1-tag {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        color: #fff;
+      }
+      .u1-tag.l1 {
+        background: #0d9488;
+      }
+      .u1-tag.l2 {
+        background: #7c3aed;
+      }
+      .u1-es {
+        color: var(--nt-muted, #5b6472);
+        font-style: italic;
+      }
 
-      .deliverable {
-        background: #f0fdf4;
-        border: 2px solid #22c55e;
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin-top: 14px;
+      .u1-q {
+        margin: 14px 0;
+      }
+      .u1-q p.u1-prompt {
         font-weight: 600;
+        margin: 0 0 8px;
       }
-      .deliverable strong { color: #15803d; }
+      .u1-q input[type="text"],
+      .u1-q input[type="number"] {
+        font: inherit;
+        padding: 9px 11px;
+        border-radius: 10px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        width: 160px;
+        max-width: 100%;
+      }
+      .u1-q input:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+      .u1-opts {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .u1-opts li label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 11px;
+        padding: 10px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u1-opts li label:hover {
+        border-color: var(--nt-accent, #2563eb);
+      }
+      .u1-unit {
+        color: var(--nt-muted, #5b6472);
+        margin-left: 6px;
+      }
+      .u1-fb {
+        margin-top: 7px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        min-height: 1.1em;
+      }
+      .u1-fb.ok {
+        color: #0d9488;
+      }
+      .u1-fb.no {
+        color: #db2777;
+      }
 
-      /* ── Rubric table ── */
-      .rubric-wrap { overflow-x: auto; margin: 12px 0; }
-      table.rubric {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 15px;
-        min-width: 500px;
+      .u1-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
       }
-      table.rubric th {
+      .u1-btn {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--nt-accent, #2563eb);
         background: var(--nt-accent, #2563eb);
         color: #fff;
-        padding: 10px 12px;
-        text-align: left;
+        border-radius: 11px;
+        padding: 11px 18px;
       }
-      table.rubric td {
-        border: 1px solid var(--nt-border, #e2e8f0);
-        padding: 10px 12px;
-        vertical-align: top;
+      .u1-btn.ghost {
+        background: transparent;
+        color: var(--nt-accent, #2563eb);
       }
-      table.rubric tr:nth-child(even) td { background: #f1f5f9; }
-      table.rubric td:first-child { font-weight: 700; }
+      .u1-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+      .u1-score {
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
 
-      /* ── Answer key details ── */
-      details.answer-key {
-        background: #f8fafc;
-        border: 2px solid var(--nt-border, #e2e8f0);
+      .u1-explore {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .u1-explore a.u1-link {
+        text-decoration: none;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
         border-radius: 14px;
-        padding: 12px 18px;
-        margin-top: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        display: block;
       }
-      details.answer-key summary {
-        cursor: pointer;
+      .u1-explore a.u1-link:hover {
+        border-color: var(--nt-accent, #2563eb);
+        transform: translateY(-1px);
+      }
+      .u1-explore .u1-link strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 3px;
+      }
+      .u1-explore .u1-link span {
+        font-size: 0.85rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      /* Interactive ratio mixer */
+      .u1-mixer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: center;
+      }
+      @media (max-width: 560px) {
+        .u1-mixer {
+          grid-template-columns: 1fr;
+        }
+      }
+      .u1-mix-controls label {
+        display: block;
         font-weight: 700;
-        font-size: 16px;
-        color: #475569;
+        margin: 10px 0 4px;
+      }
+      .u1-mix-controls input[type="range"] {
+        width: 100%;
+      }
+      .u1-mix-read {
+        font-size: 1.05rem;
+        margin-top: 10px;
+      }
+      .u1-mix-read .big {
+        font-weight: 800;
+      }
+      .u1-glass {
+        width: 130px;
+        min-height: 170px;
+        margin: 0 auto;
+        border: 3px solid var(--nt-border, #b9c0cc);
+        border-top: none;
+        border-radius: 8px 8px 46px 46px;
+        display: flex;
+        flex-direction: column-reverse;
+        overflow: hidden;
+        background: var(--nt-surface, #fff);
+      }
+      .u1-glass .seg {
+        width: 100%;
+        transition: height 0.2s ease;
+      }
+      .u1-glass .seg.berry {
+        background: repeating-linear-gradient(
+          45deg,
+          #e8554e,
+          #e8554e 9px,
+          #d8463f 9px,
+          #d8463f 18px
+        );
+      }
+      .u1-glass .seg.juice {
+        background: linear-gradient(#f7c455, #f2b134);
+      }
+
+      .u1-reflect textarea {
+        width: 100%;
+        min-height: 96px;
+        font: inherit;
+        padding: 11px 13px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        resize: vertical;
+      }
+      .u1-reflect textarea:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+
+      .u1-vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+      .u1-vocab dt {
+        font-weight: 800;
+      }
+      .u1-vocab dd {
+        margin: 2px 0 0;
+        font-size: 0.9rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      /* Tape diagram + double number line tables */
+      table.u1-table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 8px 0;
+        font-size: 0.95rem;
+      }
+      table.u1-table th,
+      table.u1-table td {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        padding: 7px 10px;
+        text-align: center;
+      }
+      table.u1-table th {
+        background: var(--nt-bg, #f4f6fb);
+      }
+
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only > summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
         list-style: none;
+        user-select: none;
       }
-      details.answer-key summary::-webkit-details-marker { display: none; }
-      details.answer-key summary::before { content: "▶ "; font-size: 13px; }
-      details.answer-key[open] summary::before { content: "▼ "; }
-      details.answer-key ol { margin: 10px 0 0; padding-left: 22px; }
-      details.answer-key li { margin-bottom: 6px; font-size: 15px; }
+      details.teacher-only > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only > summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] > summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
 
-      /* ── Print stylesheet ── */
       @media print {
-        body { font-size: 14px; background: #fff; color: #000; }
-        .wrap { max-width: 100%; padding: 0; }
-        section.step, .target-box, .teacher-notes, details.answer-key { border: 1px solid #ccc; page-break-inside: avoid; }
-        a.btn { background: #eee; color: #000; border: 1px solid #999; }
-        .check, #score-banner, .skip-link { display: none !important; }
-        .fb { display: none !important; }
-        details.answer-key[open] { display: block; }
-        details.answer-key:not([open]) summary::after { content: " (open on screen to see answers)"; }
+        details.teacher-only,
+        .u1-toc,
+        .u1-actions,
+        .u1-mix-controls {
+          display: none !important;
+        }
+        .u1-step {
+          break-inside: avoid;
+        }
       }
-
-      /* ── Mobile ── */
-      @media (max-width: 600px) {
-        body { font-size: 17px; }
-        .wrap { padding: 12px 12px 60px; }
-        header.hero h1 { font-size: 22px; }
-        section.step h2 { font-size: 19px; }
-        .check { font-size: 18px; padding: 12px 18px; }
-      }
-    </style>
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
   </head>
-
   <body class="nt-theme-aware">
-    <a href="#apply" class="skip-link">Skip to activity</a>
-    <p style="font:14px system-ui;padding:10px 16px;"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
+    <div id="ntkit"></div>
 
-    <div class="wrap">
-
-      <!-- ── HERO ── -->
-      <header class="hero">
-        <div class="kicker">Neft Teacher · Grade 6 Math · HyperDoc</div>
-        <span class="tag">Unit 1</span>
-        <h1>Smoothie Stand: Ratios &amp; Unit Rates</h1>
-        <p class="sub">Standard 6.RP.A.1–3 &nbsp;·&nbsp; Engage → Explore → Explain → Apply → Reflect</p>
+    <main class="u1-wrap">
+      <header class="u1-hero">
+        <span class="u1-kicker">Grade 6 • Unit 1 HyperDoc</span>
+        <h1>Mix It, Match It: Ratios &amp; Unit Rates</h1>
+        <p class="u1-sub">
+          You just got hired at the <strong>Berry Blast Smoothie Cart</strong>.
+          Every recipe, price tag, and refill on the menu is really a
+          <strong>ratio</strong> — and your job is to keep the flavor the same
+          no matter how big the batch gets.
+          <span class="u1-es"
+            >Cada receta y cada precio es una razón (ratio).</span
+          >
+        </p>
+        <div class="u1-meta">
+          <span class="u1-chip">Standards: 6.RP.A.1–3</span>
+          <span class="u1-chip">Topic: Ratios &amp; Unit Rates</span>
+          <span class="u1-chip">MCAP-aligned</span>
+          <span class="u1-chip">Work time: ~45 min</span>
+        </div>
       </header>
 
-      <!-- Student name bar + Save buttons -->
-      <div id="ntkit"></div>
+      <nav class="u1-toc" aria-label="HyperDoc sections">
+        <a href="#engage">1 · Engage</a>
+        <a href="#explore">2 · Explore</a>
+        <a href="#explain">3 · Explain</a>
+        <a href="#apply">4 · Apply</a>
+        <a href="#reflect">5 · Reflect</a>
+        <a href="#extend">6 · Extend</a>
+      </nav>
 
-      <!-- ── LEARNING TARGET ── -->
-      <div class="target-box" role="region" aria-label="Learning Target">
-        <h3>Learning Target</h3>
-        <ul>
-          <li><strong>I can</strong> write a ratio to compare two quantities using words, a colon, or a fraction.</li>
-          <li><strong>I can</strong> find a unit rate by dividing to get a rate per 1.</li>
-          <li><strong>I can</strong> use equivalent ratios to solve real-world problems.</li>
-        </ul>
-        <div class="target-meta">
-          <span>Standard: 6.RP.A.1–3</span>
-          <span>Time: ~50 minutes</span>
-          <span>Materials: pencil, this page, scratch paper</span>
-        </div>
-      </div>
+      <!-- ============ 1. ENGAGE ============ -->
+      <section class="u1-step" id="engage">
+        <h2><span class="u1-badge b1">1</span> Engage</h2>
+        <p class="u1-phase">Hook &amp; essential question</p>
 
-      <!-- ── TEACHER NOTES ── -->
-      <details class="teacher-notes" role="region">
-        <summary>Teacher Notes (click to expand) — not for students</summary>
-
-        <h4>Pacing Guide</h4>
-        <ul>
-          <li><strong>Engage (5 min)</strong> — Think-pair-share the smoothie doubling question.</li>
-          <li><strong>Explore (10 min)</strong> — Independent or partner: 3D game or linked resources.</li>
-          <li><strong>Explain (10 min)</strong> — Vocabulary choral read; teacher models worked example on board.</li>
-          <li><strong>Apply (15 min)</strong> — Individual self-check; debrief incorrect items whole-class.</li>
-          <li><strong>Reflect (10 min)</strong> — Written response; share-out optional.</li>
-        </ul>
-
-        <h4>Grouping</h4>
-        <p>Engage: pairs or triads. Explore: individual with partner talk. Apply: individual. Reflect: individual, then optional share.</p>
-
-        <div class="tn-grid">
-          <div class="tn-col">
-            <strong>Differentiation — Support</strong>
-            <ul>
-              <li>Provide a fraction bar / ratio table graphic organizer.</li>
-              <li>Allow calculators for computation; focus on the concept.</li>
-              <li>Pre-teach "compare" and "per" with a picture card.</li>
-              <li>Pair with a stronger partner during Explore.</li>
-            </ul>
-          </div>
-          <div class="tn-col">
-            <strong>Differentiation — Challenge</strong>
-            <ul>
-              <li>Ask students to write their own unit-rate scenario and solve it.</li>
-              <li>Extend: compare unit rates across three options (best-buy task).</li>
-              <li>Introduce a double number line for equivalent ratios.</li>
-            </ul>
-          </div>
-        </div>
-
-        <h4>ESOL / Language Supports</h4>
-        <ul>
-          <li>Post key terms (ratio, rate, unit rate) with picture examples on a word wall or vocabulary card.</li>
-          <li>Use sentence frames: "The ratio of ___ to ___ is ___." / "The unit rate is ___ per ___."</li>
-          <li>Allow answers in L1 for reflection; accept drawings for ratio models.</li>
-          <li>Read question stems aloud; allow extended time on Apply.</li>
-        </ul>
-      </details>
-
-      <!-- ── 1. ENGAGE ── -->
-      <section class="step" aria-labelledby="h-engage">
-        <h2 id="h-engage"><span class="pill">1</span> Engage</h2>
         <p>
-          You run a smoothie stand. A recipe uses <strong>2 cups of mango</strong> for
-          every <strong>3 cups of ice</strong>.
+          The cart's most popular drink, the <strong>Berry Blast</strong>, uses
+          <strong>2 scoops of berries</strong> for every
+          <strong>3 cups of juice</strong>. A big group orders a giant batch and
+          you pour in <strong>6 cups of juice</strong>. How many scoops of
+          berries do you need so the drink still tastes exactly the same?
         </p>
-        <div class="do" role="note">
-          Think: If you double the recipe, how much mango and ice do you need? Share your answer with a partner.
+
+        <div class="u1-card">
+          <div class="u1-fig">
+            <svg
+              viewBox="0 0 300 150"
+              width="320"
+              role="img"
+              aria-label="Two smoothie cups. The first shows 2 berry scoops and 3 juice cups. The second shows 6 juice cups with empty scoop slots."
+            >
+              <!-- recipe cup -->
+              <rect
+                x="14"
+                y="36"
+                width="120"
+                height="96"
+                rx="6"
+                fill="#fff"
+                stroke="#5b6472"
+                stroke-width="2"
+              />
+              <text
+                x="74"
+                y="26"
+                font-size="12"
+                text-anchor="middle"
+                fill="#1c2330"
+              >
+                Recipe
+              </text>
+              <!-- 2 berries -->
+              <circle
+                cx="40"
+                cy="64"
+                r="11"
+                fill="#e8554e"
+                stroke="#b8362f"
+                stroke-width="2"
+              />
+              <circle
+                cx="68"
+                cy="64"
+                r="11"
+                fill="#e8554e"
+                stroke="#b8362f"
+                stroke-width="2"
+              />
+              <text x="100" y="69" font-size="11" fill="#b8362f">2 scoops</text>
+              <!-- 3 juice -->
+              <rect
+                x="30"
+                y="92"
+                width="16"
+                height="28"
+                fill="#f2b134"
+                stroke="#c98f10"
+                stroke-width="1.5"
+              />
+              <rect
+                x="52"
+                y="92"
+                width="16"
+                height="28"
+                fill="#f2b134"
+                stroke="#c98f10"
+                stroke-width="1.5"
+              />
+              <rect
+                x="74"
+                y="92"
+                width="16"
+                height="28"
+                fill="#f2b134"
+                stroke="#c98f10"
+                stroke-width="1.5"
+              />
+              <text x="110" y="111" font-size="11" fill="#c98f10">3 cups</text>
+
+              <!-- arrow -->
+              <text
+                x="150"
+                y="92"
+                font-size="22"
+                text-anchor="middle"
+                fill="#5b6472"
+              >
+                →
+              </text>
+
+              <!-- batch cup -->
+              <rect
+                x="166"
+                y="36"
+                width="120"
+                height="96"
+                rx="6"
+                fill="#fff"
+                stroke="#5b6472"
+                stroke-width="2"
+              />
+              <text
+                x="226"
+                y="26"
+                font-size="12"
+                text-anchor="middle"
+                fill="#1c2330"
+              >
+                Big batch
+              </text>
+              <!-- ? berries -->
+              <circle
+                cx="192"
+                cy="64"
+                r="11"
+                fill="none"
+                stroke="#b8362f"
+                stroke-width="2"
+                stroke-dasharray="3 3"
+              />
+              <circle
+                cx="220"
+                cy="64"
+                r="11"
+                fill="none"
+                stroke="#b8362f"
+                stroke-width="2"
+                stroke-dasharray="3 3"
+              />
+              <text
+                x="252"
+                y="69"
+                font-size="13"
+                fill="#b8362f"
+                font-weight="bold"
+              >
+                ? scoops
+              </text>
+              <!-- 6 juice -->
+              <rect
+                x="178"
+                y="92"
+                width="11"
+                height="28"
+                fill="#f2b134"
+                stroke="#c98f10"
+                stroke-width="1.5"
+              />
+              <rect
+                x="193"
+                y="92"
+                width="11"
+                height="28"
+                fill="#f2b134"
+                stroke="#c98f10"
+                stroke-width="1.5"
+              />
+              <rect
+                x="208"
+                y="92"
+                width="11"
+                height="28"
+                fill="#f2b134"
+                stroke="#c98f10"
+                stroke-width="1.5"
+              />
+              <rect
+                x="223"
+                y="92"
+                width="11"
+                height="28"
+                fill="#f2b134"
+                stroke="#c98f10"
+                stroke-width="1.5"
+              />
+              <rect
+                x="238"
+                y="92"
+                width="11"
+                height="28"
+                fill="#f2b134"
+                stroke="#c98f10"
+                stroke-width="1.5"
+              />
+              <rect
+                x="253"
+                y="92"
+                width="11"
+                height="28"
+                fill="#f2b134"
+                stroke="#c98f10"
+                stroke-width="1.5"
+              />
+              <text
+                x="226"
+                y="146"
+                font-size="11"
+                text-anchor="middle"
+                fill="#c98f10"
+              >
+                6 cups
+              </text>
+            </svg>
+            <p class="u1-cap">
+              The juice doubled from 3 cups to 6 cups. What has to happen to the
+              berries?
+            </p>
+          </div>
+          <p>
+            <strong>Quick think (no calculator):</strong> Make a first guess. Is
+            the answer <em>3 scoops</em>, <em>4 scoops</em>, or
+            <em>5 scoops</em>? Write your guess and one reason in your notebook.
+            You will check it in the Apply section.
+          </p>
         </div>
-        <p class="hint">
-          A <strong>ratio</strong> compares two amounts. Today you will use ratios and unit rates to run your stand smartly!
+
+        <p style="margin-top: 14px">
+          <strong>Essential question:</strong>
+          <em
+            >When I change the amount of one thing in a recipe or price, how do
+            I change the other thing so the relationship stays equal?</em
+          >
         </p>
       </section>
 
-      <!-- ── 2. EXPLORE ── -->
-      <section class="step" aria-labelledby="h-explore">
-        <h2 id="h-explore"><span class="pill">2</span> Explore</h2>
-        <div class="do" role="note">Open one link. Play and look for ratios. Then come back to this page.</div>
-        <div class="links">
-          <a class="btn" href="/games/3d/unit-1/" target="_blank" rel="noopener">Play the 3D Smoothie Stand game</a>
-          <a class="btn" href="/math/" target="_blank" rel="noopener">Math Hub</a>
-          <a class="btn" href="/graphic-novels/" target="_blank" rel="noopener">Math Graphic Novels</a>
+      <!-- ============ 2. EXPLORE ============ -->
+      <section class="u1-step" id="explore">
+        <h2><span class="u1-badge b2">2</span> Explore</h2>
+        <p class="u1-phase">Investigate before the lesson</p>
+
+        <p>
+          Explore each tool below for a few minutes. As you go, watch for
+          <strong>one big idea</strong>: a ratio keeps tasting (or costing) the
+          same as long as you multiply <em>both</em> numbers by the same amount.
+        </p>
+
+        <div class="u1-explore">
+          <a
+            class="u1-link"
+            href="/games/3d/unit-1/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🎮 Ratio Rally (3D Game)</strong>
+            <span
+              >Mix smoothies and fill orders in 3D to discover how equivalent
+              ratios stay equal.</span
+            >
+          </a>
+          <a
+            class="u1-link"
+            href="/math/unit-1/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>📐 Unit 1 Math Hub</strong>
+            <span
+              >Worked examples and practice for ratios, equivalent ratios, and
+              unit rates.</span
+            >
+          </a>
+          <a
+            class="u1-link"
+            href="/webquests/unit-1/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🧭 Smoothie Stand WebQuest</strong>
+            <span>Run a real cart and defend your pricing with ratios.</span>
+          </a>
         </div>
-        <p class="hint" style="margin-top:12px;">After you explore, write one ratio you noticed below (optional):</p>
-        <div class="qitem" style="margin-top:6px;">
-          <label for="explore-note"><span class="qnum">Quick note:</span> One ratio I saw or noticed was …</label>
-          <input type="text" id="explore-note" autocomplete="off" placeholder="e.g. 2 berries : 1 scoop" />
+
+        <div class="u1-card" style="margin-top: 14px">
+          <h3>Try it: the Berry Blast mixer</h3>
+          <p>
+            Slide to change how many <strong>batches</strong> of the 2 : 3
+            recipe you make. Notice that the
+            <strong>ratio of berries to juice never changes</strong> — only the
+            totals grow. That is what <em>equivalent ratios</em> look like.
+          </p>
+          <div class="u1-mixer">
+            <div class="u1-mix-controls">
+              <label for="u1-batch"
+                >Batches of the recipe:
+                <span id="u1-batch-val" class="big">1</span></label
+              >
+              <input
+                id="u1-batch"
+                type="range"
+                min="1"
+                max="6"
+                step="1"
+                value="1"
+                aria-label="Number of recipe batches"
+              />
+              <p class="u1-mix-read">
+                Berries: <span id="u1-berries" class="big">2</span> scoops
+                &nbsp;·&nbsp; Juice: <span id="u1-juice" class="big">3</span>
+                cups
+              </p>
+              <p class="u1-mix-read">
+                Ratio stays:
+                <span class="u1-ratio"
+                  ><b>2</b><span class="colon">:</span><b class="j">3</b></span
+                >
+                &nbsp;=&nbsp;
+                <span class="u1-ratio"
+                  ><b id="u1-rb">2</b><span class="colon">:</span
+                  ><b class="j" id="u1-rj">3</b></span
+                >
+              </p>
+            </div>
+            <div
+              class="u1-fig"
+              aria-label="Smoothie glass showing the current berry and juice amounts"
+            >
+              <div class="u1-glass">
+                <div
+                  class="seg juice"
+                  id="u1-seg-juice"
+                  style="height: 60%"
+                ></div>
+                <div
+                  class="seg berry"
+                  id="u1-seg-berry"
+                  style="height: 40%"
+                ></div>
+              </div>
+              <p class="u1-cap">Red = berries · Yellow = juice</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- ── 3. EXPLAIN ── -->
-      <section class="step" aria-labelledby="h-explain">
-        <h2 id="h-explain"><span class="pill">3</span> Explain</h2>
+      <!-- ============ 3. EXPLAIN ============ -->
+      <section class="u1-step" id="explain">
+        <h2><span class="u1-badge b3">3</span> Explain</h2>
+        <p class="u1-phase">The math, in plain language</p>
 
-        <div class="vocab" role="list" aria-label="Key vocabulary">
-          <div role="listitem">
-            <b>Ratio:</b> a comparison of two amounts. Example: 2 to 3, written 2:3 or 2/3.
+        <p>
+          A <strong>ratio</strong> compares two amounts. We can write the Berry
+          Blast ratio three ways, and they all mean the same thing:
+          <span class="u1-ratio"
+            ><b>2</b><span class="colon">:</span><b class="j">3</b></span
+          >, or "2 to 3", or the fraction <strong>2/3</strong>. To make an
+          <strong>equivalent ratio</strong>, multiply (or divide) <em>both</em>
+          numbers by the same value.
+        </p>
+
+        <dl class="u1-vocab u1-card">
+          <div>
+            <dt>ratio</dt>
+            <dd>
+              a comparison of two amounts <span class="u1-es">· la razón</span>
+            </dd>
           </div>
-          <div role="listitem">
-            <b>Rate:</b> a ratio that compares two <em>different</em> units. Example: 60 miles in 2 hours.
+          <div>
+            <dt>equivalent ratios</dt>
+            <dd>
+              ratios that show the same relationship
+              <span class="u1-es">· razones equivalentes</span>
+            </dd>
           </div>
-          <div role="listitem">
-            <b>Unit rate:</b> the rate for exactly <b>1</b> of something. Example: 30 miles <em>per</em> 1 hour.
+          <div>
+            <dt>rate</dt>
+            <dd>
+              a ratio of two different units (miles, dollars)
+              <span class="u1-es">· la tasa</span>
+            </dd>
           </div>
-          <div role="listitem">
-            <b>Equivalent ratios:</b> different ratios that name the same comparison. Example: 2:3 = 4:6 = 6:9.
+          <div>
+            <dt>unit rate</dt>
+            <dd>
+              the rate for exactly <strong>1</strong>
+              <span class="u1-es">· la tasa por unidad</span>
+            </dd>
           </div>
+        </dl>
+
+        <div class="u1-card">
+          <h3>Worked example — keeping the flavor equal</h3>
+          <p>
+            Recipe ratio:
+            <span class="u1-ratio"
+              ><b>2</b><span class="colon">:</span><b class="j">3</b></span
+            >
+            berries to juice. You poured 6 cups of juice. The juice went from 3
+            to 6, which is <strong>×2</strong>. So multiply the berries by 2
+            too:
+          </p>
+          <table
+            class="u1-table"
+            aria-label="Equivalent ratio table for berries and juice"
+          >
+            <tr>
+              <th>Berries (scoops)</th>
+              <td>2</td>
+              <td><strong>4</strong></td>
+            </tr>
+            <tr>
+              <th>Juice (cups)</th>
+              <td>3</td>
+              <td>6</td>
+            </tr>
+          </table>
+          <p>
+            2 × 2 = <strong>4 scoops of berries</strong>. The ratio
+            <span class="u1-ratio"
+              ><b>4</b><span class="colon">:</span><b class="j">6</b></span
+            >
+            is equivalent to
+            <span class="u1-ratio"
+              ><b>2</b><span class="colon">:</span><b class="j">3</b></span
+            >, so it tastes the same. (How close was your Engage guess?)
+          </p>
         </div>
 
-        <div class="example" aria-label="Worked example">
-          <p><strong>Worked example.</strong> A pack has 12 cups for $4.</p>
-          <p>Unit rate (price per 1 cup) = $4 ÷ 12 cups = <strong>$0.33 per cup</strong>.</p>
-          <p>Unit rate (cups per $1) = 12 ÷ 4 = <strong>3 cups per dollar</strong>.</p>
-          <p>Equivalent ratio check: 2:3 is the same as 4:6 — multiply both parts by 2.</p>
-          <p class="hint">To find a unit rate: divide the top number by the bottom number (get 1 on the bottom).</p>
-        </div>
-      </section>
-
-      <!-- ── 4. APPLY (self-check) ── -->
-      <section class="step" id="apply" aria-labelledby="h-apply">
-        <h2 id="h-apply"><span class="pill">4</span> Apply — Show What You Know</h2>
-        <div class="do" role="note">
-          Answer each question. Type a number or pick a choice. Then press <strong>Check My Work</strong> to see instant feedback.
-        </div>
-
-        <!-- Q1: text input -->
-        <div class="qitem">
-          <label for="q1"><span class="qnum">Q1.</span> A recipe uses 2 cups of mango and 3 cups of ice. Write the ratio of mango to ice (use a colon, like 2:3).</label>
-          <input type="text" id="q1" inputmode="text" autocomplete="off" aria-describedby="fb1" placeholder="your answer" />
-          <div class="fb" id="fb1" role="alert" aria-live="polite"></div>
+        <div class="u1-card">
+          <h3>Worked example — finding a unit rate (best deal)</h3>
+          <p>
+            A 4-cup bottle of juice costs $6. What is the cost for
+            <strong>1 cup</strong>? A unit rate means "per 1", so divide both
+            numbers until the second number is 1:
+          </p>
+          <p class="u1-formula">$6 ÷ 4 = $1.50 per 1 cup</p>
+          <p>
+            The <strong>unit rate is $1.50 per cup</strong>. Unit rates make it
+            easy to compare deals: the lower the price per cup, the better the
+            buy.
+          </p>
         </div>
 
-        <!-- Q2: text input -->
-        <div class="qitem">
-          <label for="q2"><span class="qnum">Q2.</span> 8 strawberries make 4 smoothies. How many strawberries are needed for <strong>1</strong> smoothie? (unit rate)</label>
-          <input type="text" id="q2" inputmode="numeric" autocomplete="off" aria-describedby="fb2" placeholder="number only" />
-          <div class="fb" id="fb2" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- Q3: text input -->
-        <div class="qitem">
-          <label for="q3"><span class="qnum">Q3.</span> 6 cups cost $12. What is the price for <strong>1</strong> cup? (write like 2 or $2)</label>
-          <input type="text" id="q3" inputmode="text" autocomplete="off" aria-describedby="fb3" placeholder="e.g. $2" />
-          <div class="fb" id="fb3" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- Q4: multiple choice -->
-        <div class="qitem">
-          <fieldset style="border:none;padding:0;margin:0;">
-            <legend><span class="qnum">Q4.</span> The mango:ice ratio is 2:3. If you use <strong>4 cups of mango</strong>, how many cups of ice do you need?</legend>
-            <div class="mc-options">
-              <label><input type="radio" name="q4" value="4" /> 4</label>
-              <label><input type="radio" name="q4" value="5" /> 5</label>
-              <label><input type="radio" name="q4" value="6" /> 6</label>
-              <label><input type="radio" name="q4" value="8" /> 8</label>
-            </div>
-          </fieldset>
-          <div class="fb" id="fb4" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- Q5: multiple choice -->
-        <div class="qitem">
-          <fieldset style="border:none;padding:0;margin:0;">
-            <legend><span class="qnum">Q5.</span> A blender makes 10 cups in 5 minutes. What is the unit rate (cups per <strong>1</strong> minute)?</legend>
-            <div class="mc-options">
-              <label><input type="radio" name="q5" value="1" /> 1 cup/min</label>
-              <label><input type="radio" name="q5" value="2" /> 2 cups/min</label>
-              <label><input type="radio" name="q5" value="5" /> 5 cups/min</label>
-              <label><input type="radio" name="q5" value="10" /> 10 cups/min</label>
-            </div>
-          </fieldset>
-          <div class="fb" id="fb5" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- Q6: text input bonus -->
-        <div class="qitem">
-          <label for="q6"><span class="qnum">Q6.</span> A store sells 15 oranges for $3. What is the unit rate in dollars per orange? (write like 0.20)</label>
-          <input type="text" id="q6" inputmode="decimal" autocomplete="off" aria-describedby="fb6" placeholder="e.g. 0.20" />
-          <div class="fb" id="fb6" role="alert" aria-live="polite"></div>
-        </div>
-
-        <button type="button" class="check" id="checkBtn">Check My Work</button>
-        <div id="score-banner" aria-live="polite"></div>
-
-        <!-- Answer key (teacher) -->
-        <details class="answer-key">
-          <summary>Teacher Answer Key (click to reveal)</summary>
+        <details class="u1-level">
+          <summary>
+            <span class="u1-tag l1">Level 1 · support</span> Step-by-step helper
+            / Ayuda paso a paso
+          </summary>
           <ol>
-            <li><strong>Q1.</strong> <code>2:3</code> — also accepted: <code>2 to 3</code> or <code>2/3</code> as a ratio.</li>
-            <li><strong>Q2.</strong> <code>2</code> — 8 ÷ 4 = 2 strawberries per smoothie.</li>
-            <li><strong>Q3.</strong> <code>$2</code> — $12 ÷ 6 cups = $2 per cup.</li>
-            <li><strong>Q4.</strong> <code>6</code> — 2:3 = 4:6; multiply both by 2.</li>
-            <li><strong>Q5.</strong> <code>2 cups/min</code> — 10 ÷ 5 = 2.</li>
-            <li><strong>Q6.</strong> <code>0.20</code> — $3 ÷ 15 = $0.20 per orange.</li>
+            <li>
+              Write the ratio as a table with two rows (label each row with its
+              unit).
+            </li>
+            <li>
+              Look at the row that changed. Ask: "Times how much?" (e.g., 3 → 6
+              is <strong>×2</strong>).
+            </li>
+            <li>
+              Do the <strong>same</strong> multiplication to the other row.
+              <span class="u1-es"
+                >Multiplica las dos filas por el mismo número.</span
+              >
+            </li>
+            <li>
+              For a <strong>unit rate</strong>, divide both numbers so the
+              second number becomes <strong>1</strong>.
+            </li>
           </ol>
-          <p style="font-size:14px;color:#64748b;margin-top:8px;">Sample reflection — R1: "A unit rate tells you the amount for exactly 1 of something, like cost per 1 item or miles per 1 hour." R2: Accept any real-world context: grocery shopping, cooking, speed, etc.</p>
+        </details>
+
+        <details class="u1-level">
+          <summary>
+            <span class="u1-tag l2">Level 2 · enrichment</span> Push your
+            thinking
+          </summary>
+          <p>
+            Two carts sell lemonade. Cart A: 3 cups for $4. Cart B: 5 cups for
+            $6. Without a calculator, decide which is the better deal by
+            comparing unit rates ($ per cup). Then explain why comparing "per 1"
+            is fairer than just comparing total prices.
+          </p>
         </details>
       </section>
 
-      <!-- ── RUBRIC ── -->
-      <section class="step" aria-labelledby="h-rubric">
-        <h2 id="h-rubric"><span class="pill">★</span> Rubric — Ratios &amp; Unit Rates</h2>
-        <div class="rubric-wrap">
-          <table class="rubric" role="table" aria-label="Scoring rubric">
-            <thead>
-              <tr>
-                <th scope="col">Level</th>
-                <th scope="col">Score</th>
-                <th scope="col">What it looks like</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Exceeds (4)</td>
-                <td>6/6</td>
-                <td>All answers correct; reflection uses precise vocabulary (ratio, rate, unit rate, equivalent); real-life example is detailed and accurate.</td>
-              </tr>
-              <tr>
-                <td>Meets (3)</td>
-                <td>4–5/6</td>
-                <td>Most answers correct; minor errors in notation or arithmetic; reflection clearly explains the concept in own words.</td>
-              </tr>
-              <tr>
-                <td>Approaching (2)</td>
-                <td>2–3/6</td>
-                <td>Some correct answers; confuses ratio with rate or struggles with equivalent ratios; reflection is brief or partially accurate.</td>
-              </tr>
-              <tr>
-                <td>Beginning (1)</td>
-                <td>0–1/6</td>
-                <td>Most answers missing or incorrect; little or no reflection; needs reteaching of ratio concept and unit rate procedure.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <!-- ============ 4. APPLY ============ -->
+      <section class="u1-step" id="apply">
+        <h2><span class="u1-badge b4">4</span> Apply</h2>
+        <p class="u1-phase">Show what you can do — auto-checked</p>
+
+        <form id="u1-quiz" novalidate>
+          <div
+            class="u1-q"
+            data-type="text"
+            data-answer="4"
+            data-tol="0"
+            id="q1"
+          >
+            <p class="u1-prompt">
+              1. The Berry Blast recipe is 2 scoops of berries to 3 cups of
+              juice. You use 6 cups of juice. How many scoops of berries keep
+              the same flavor? (number only)
+            </p>
+            <label
+              >Berries =
+              <input
+                type="number"
+                inputmode="numeric"
+                aria-label="Scoops of berries"
+              />
+              <span class="u1-unit">scoops</span></label
+            >
+            <p class="u1-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u1-q" data-type="mc" data-answer="c" id="q2">
+            <p class="u1-prompt">
+              2. Which ratio is <strong>equivalent</strong> to
+              <span class="u1-ratio"
+                ><b>2</b><span class="colon">:</span><b class="j">3</b></span
+              >?
+            </p>
+            <ul class="u1-opts">
+              <li>
+                <label><input type="radio" name="q2" value="a" /> 3 : 2</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q2" value="b" /> 4 : 5</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q2" value="c" /> 8 : 12</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q2" value="d" /> 2 : 6</label>
+              </li>
+            </ul>
+            <p class="u1-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u1-q"
+            data-type="text"
+            data-answer="1.5"
+            data-tol="0"
+            id="q3"
+          >
+            <p class="u1-prompt">
+              3. A 4-cup bottle of juice costs $6.00. What is the
+              <strong>unit rate</strong> (cost for 1 cup)? Enter the number of
+              dollars only, like 1.5
+            </p>
+            <label
+              >$<input
+                type="number"
+                inputmode="decimal"
+                step="0.01"
+                aria-label="Cost per cup in dollars"
+              />
+              <span class="u1-unit">per cup</span></label
+            >
+            <p class="u1-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u1-q"
+            data-type="text"
+            data-answer="15"
+            data-tol="0"
+            id="q4"
+          >
+            <p class="u1-prompt">
+              4. The cart sells 5 smoothies every 2 minutes. At that rate, how
+              many smoothies are sold in <strong>6 minutes</strong>? Use the
+              double number line below.
+            </p>
+            <div class="u1-fig" style="margin: 6px 0">
+              <svg
+                viewBox="0 0 320 110"
+                width="100%"
+                role="img"
+                aria-label="A double number line. Top line shows smoothies 0, 5, 10, 15. Bottom line shows minutes 0, 2, 4, 6."
+              >
+                <line
+                  x1="20"
+                  y1="35"
+                  x2="300"
+                  y2="35"
+                  stroke="#e8554e"
+                  stroke-width="2"
+                />
+                <line
+                  x1="20"
+                  y1="80"
+                  x2="300"
+                  y2="80"
+                  stroke="#2563eb"
+                  stroke-width="2"
+                />
+                <!-- ticks -->
+                <g font-size="11" text-anchor="middle">
+                  <line
+                    x1="20"
+                    y1="30"
+                    x2="20"
+                    y2="40"
+                    stroke="#e8554e"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="113"
+                    y1="30"
+                    x2="113"
+                    y2="40"
+                    stroke="#e8554e"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="206"
+                    y1="30"
+                    x2="206"
+                    y2="40"
+                    stroke="#e8554e"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="300"
+                    y1="30"
+                    x2="300"
+                    y2="40"
+                    stroke="#e8554e"
+                    stroke-width="2"
+                  />
+                  <text x="20" y="22" fill="#b8362f">0</text>
+                  <text x="113" y="22" fill="#b8362f">5</text>
+                  <text x="206" y="22" fill="#b8362f">10</text>
+                  <text x="300" y="22" fill="#b8362f">?</text>
+                  <text x="160" y="52" fill="#b8362f">smoothies</text>
+
+                  <line
+                    x1="20"
+                    y1="75"
+                    x2="20"
+                    y2="85"
+                    stroke="#2563eb"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="113"
+                    y1="75"
+                    x2="113"
+                    y2="85"
+                    stroke="#2563eb"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="206"
+                    y1="75"
+                    x2="206"
+                    y2="85"
+                    stroke="#2563eb"
+                    stroke-width="2"
+                  />
+                  <line
+                    x1="300"
+                    y1="75"
+                    x2="300"
+                    y2="85"
+                    stroke="#2563eb"
+                    stroke-width="2"
+                  />
+                  <text x="20" y="100" fill="#1d4ed8">0</text>
+                  <text x="113" y="100" fill="#1d4ed8">2</text>
+                  <text x="206" y="100" fill="#1d4ed8">4</text>
+                  <text x="300" y="100" fill="#1d4ed8">6 min</text>
+                </g>
+              </svg>
+            </div>
+            <label
+              >Smoothies =
+              <input
+                type="number"
+                inputmode="numeric"
+                aria-label="Smoothies sold in 6 minutes"
+            /></label>
+            <p class="u1-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u1-q" data-type="mc" data-answer="b" id="q5">
+            <p class="u1-prompt">
+              5. Two bottles of the same juice are on sale. Bottle A: 3 cups for
+              $4.50. Bottle B: 5 cups for $6.50. Which is the
+              <strong>better deal</strong> (lower price per cup)?
+            </p>
+            <ul class="u1-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q5" value="a" /> Bottle A ($1.50
+                  per cup)</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q5" value="b" /> Bottle B ($1.30
+                  per cup)</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q5" value="c" /> They cost the same
+                  per cup</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q5" value="d" /> You cannot compare
+                  them</label
+                >
+              </li>
+            </ul>
+            <p class="u1-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u1-actions">
+            <button type="button" class="u1-btn" id="u1-check">
+              Check my answers
+            </button>
+            <button type="button" class="u1-btn ghost" id="u1-reset">
+              Clear
+            </button>
+            <span class="u1-score" id="u1-scoreout" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <details class="u1-level" style="margin-top: 14px">
+          <summary>
+            <span class="u1-tag l1">Level 1 · support</span> Sentence starters
+            for explaining
+          </summary>
+          <p>
+            "The ratio is ____ to ____. The ____ changed by × ____, so I
+            multiplied the other amount by ____ too. My answer is ____."
+          </p>
+          <p class="u1-es">
+            "La razón es ____ a ____. Multipliqué las dos cantidades por ____.
+            Mi respuesta es ____."
+          </p>
+        </details>
+
+        <details class="u1-level">
+          <summary>
+            <span class="u1-tag l2">Level 2 · enrichment</span> Reverse it
+          </summary>
+          <p>
+            A smoothie batch uses berries and juice in a 2 : 3 ratio and
+            contains
+            <strong>20 cups of juice</strong>. Work backwards to find the scoops
+            of berries. Then write a one-sentence rule for scaling a ratio when
+            you know the larger amount.
+          </p>
+        </details>
       </section>
 
-      <!-- ── 5. REFLECT ── -->
-      <section class="step" aria-labelledby="h-reflect">
-        <h2 id="h-reflect"><span class="pill">5</span> Reflect</h2>
-        <div class="do" role="note">Write 1–2 complete sentences for each prompt. Think carefully — use the vocabulary words.</div>
-
-        <div class="qitem">
-          <label for="r1"><span class="qnum">R1.</span> In your own words, what is a <em>unit rate</em>? Give one example from today.</label>
-          <textarea id="r1" aria-required="true" placeholder="A unit rate is…"></textarea>
+      <!-- ============ 5. REFLECT ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>
+            Stage-by-Stage Notes (Engage → Explore → Explain → Apply → Reflect)
+          </h3>
+          <ul>
+            <li>
+              <strong>Engage:</strong> students guess whether a new mix tastes
+              the same; surface intuition about ratios before formal work.
+            </li>
+            <li>
+              <strong>Explore:</strong> the live mixer lets students build
+              equivalent ratios; have them notice both numbers scale together.
+            </li>
+            <li>
+              <strong>Explain:</strong> define ratio, equivalent ratio, and unit
+              rate; connect to the simplified form.
+            </li>
+            <li><strong>Apply:</strong> see answer key below.</li>
+            <li>
+              <strong>Reflect:</strong> students explain why both numbers must
+              scale and where unit rates help.
+            </li>
+          </ul>
+          <h3>Apply — Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Q1 — Equivalent ratio:</strong> 2 : 3 with 6 cups juice →
+              6 ÷ 3 = 2, so 2 × 2 = <strong>4 scoops berries</strong>.
+            </li>
+            <li>
+              <strong>Q2 — Equivalent ratio (MC):</strong> answer
+              <strong>c</strong>.
+            </li>
+            <li>
+              <strong>Q3 — Unit rate:</strong> <strong>1.5</strong> (e.g. 3 ÷
+              2).
+            </li>
+            <li><strong>Q4 — Scale up:</strong> <strong>15</strong>.</li>
+            <li>
+              <strong>Q5 — Better-deal compare (MC):</strong> answer
+              <strong>b</strong>.
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.RP.A.1–3</strong>.</p>
         </div>
+      </details>
 
-        <div class="qitem">
-          <label for="r2"><span class="qnum">R2.</span> Where could you use a ratio or unit rate in real life outside of school? Explain why it is useful.</label>
-          <textarea id="r2" aria-required="true" placeholder="I could use a ratio when…"></textarea>
+      <section class="u1-step u1-reflect" id="reflect">
+        <h2><span class="u1-badge b5">5</span> Reflect</h2>
+        <p class="u1-phase">Think about your thinking</p>
+
+        <div class="u1-q">
+          <p class="u1-prompt">
+            A. To keep a recipe tasting the same, what do you have to do to both
+            numbers in the ratio? Explain in your own words.
+          </p>
+          <textarea aria-label="Reflection A"></textarea>
         </div>
-
-        <div class="deliverable">
-          <strong>Deliverable:</strong> When you finish, press <em>Check My Work</em> in the Apply section, then use the <em>Save as PDF</em> or <em>Save as DOC</em> button above to turn in your completed HyperDoc. Your teacher will use the rubric above to score it.
+        <div class="u1-q">
+          <p class="u1-prompt">
+            B. Why is a unit rate ("per 1") useful when you are deciding which
+            deal to buy? Give a real example.
+          </p>
+          <textarea aria-label="Reflection B"></textarea>
         </div>
-
-        <p class="hint" style="margin-top:10px;">Your reflection is saved with your work when you save as PDF or DOC.</p>
+        <div class="u1-q">
+          <p class="u1-prompt">
+            C. One thing that is now clear to me / Una cosa que ahora entiendo
+            bien:
+          </p>
+          <textarea aria-label="Reflection C"></textarea>
+        </div>
+        <p class="u1-cap">
+          Your reflections save with this HyperDoc when you use Save as PDF or
+          Save as DOC above.
+        </p>
       </section>
 
-    </div><!-- /.wrap -->
+      <!-- ============ 6. EXTEND ============ -->
+      <section class="u1-step" id="extend">
+        <h2>
+          <span class="u1-badge b3" style="background: #475569">6</span> Extend
+        </h2>
+        <p class="u1-phase">Optional challenge project</p>
+        <div class="u1-card">
+          <h3>Design a smoothie menu for the Berry Blast Cart</h3>
+          <p>Invent <strong>three</strong> new smoothies. For each one:</p>
+          <ol>
+            <li>
+              Write the ingredient ratio (for example, 3 : 2 berries to juice).
+            </li>
+            <li>
+              Scale it up to a "family batch" that serves 6 — show your
+              equivalent-ratio table.
+            </li>
+            <li>
+              Set a price, then calculate the <strong>unit rate</strong> (price
+              per cup) so a customer can compare deals.
+            </li>
+          </ol>
+          <p class="u1-es">
+            Inventa tres batidos. Escribe la razón, haz una tabla de razones
+            equivalentes y calcula el precio por taza (tasa por unidad).
+          </p>
+        </div>
+      </section>
+    </main>
 
-    <script src="/assets/nt-activity-kit.js"></script>
     <script>
-      NTKit.mount("#ntkit");
+      (function () {
+        "use strict";
 
-      // ── Self-check logic ──
-      var answers = {
-        q1: { type: "ratio",   correct: "2:3",  explanation: "The ratio of mango to ice is 2:3 — 2 cups of mango for every 3 cups of ice." },
-        q2: { type: "numeric", correct: "2",    explanation: "8 strawberries ÷ 4 smoothies = 2 strawberries per smoothie." },
-        q3: { type: "numeric", correct: "2",    explanation: "$12 ÷ 6 cups = $2.00 per cup." },
-        q4: { type: "radio",   correct: "6",    explanation: "2:3 = 4:? → multiply both by 2 → 4:6. You need 6 cups of ice." },
-        q5: { type: "radio",   correct: "2",    explanation: "10 cups ÷ 5 minutes = 2 cups per minute." },
-        q6: { type: "numeric", correct: "0.20", explanation: "$3 ÷ 15 oranges = $0.20 per orange." }
-      };
-
-      /* ── Tolerant normaliser ── */
-      function normalise(raw) {
-        var s = String(raw).trim().toLowerCase();
-        s = s.replace(/\s+/g, "");
-        s = s.replace(/^\$/, "");
-        s = s.replace(/%$/, "");
-        s = s.replace(/,(\d{3})/g, "$1");
-        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|bananas?|smoothies?|tarts?|cups?|hours?|minutes?|oranges?|strawberries?)$/, "");
-        return s;
-      }
-
-      /* Numeric equality with epsilon (handles 3 vs 3.0 vs $3) */
-      function numericMatch(a, b) {
-        var na = parseFloat(a);
-        var nb = parseFloat(b);
-        if (isNaN(na) || isNaN(nb)) { return false; }
-        return Math.abs(na - nb) < 1e-9;
-      }
-
-      /* Ratio equivalence: "2/3" ↔ "2:3" ↔ "4:6" */
-      function ratioMatch(a, b) {
-        function toDecimal(s) {
-          var neg = s.charAt(0) === "-";
-          var t = neg ? s.slice(1) : s;
-          var colonForm = t.match(/^(\d+):(\d+)$/);
-          if (colonForm) {
-            var v = parseFloat(colonForm[1]) / parseFloat(colonForm[2]);
-            return neg ? -v : v;
+        // ---- Mount the shared Neft Activity Kit (name bar + Save as PDF/DOC + results) ----
+        function mountKit() {
+          if (window.NTKit && typeof NTKit.mount === "function") {
+            try {
+              NTKit.mount("#ntkit");
+            } catch (e) {
+              /* kit optional */
+            }
           }
-          var slashForm = t.match(/^(\d+)\/(\d+)$/);
-          if (slashForm) {
-            var v2 = parseFloat(slashForm[1]) / parseFloat(slashForm[2]);
-            return neg ? -v2 : v2;
-          }
-          return NaN;
         }
-        var da = toDecimal(a);
-        var db = toDecimal(b);
-        if (isNaN(da) || isNaN(db)) { return false; }
-        return Math.abs(da - db) < 1e-9;
-      }
+        if (document.readyState !== "loading") mountKit();
+        else document.addEventListener("DOMContentLoaded", mountKit);
 
-      function answersMatch(studentRaw, correctRaw, qtype) {
-        var s = normalise(studentRaw);
-        var c = normalise(correctRaw);
-        if (s === c) { return true; }
-        if (qtype === "numeric") { return numericMatch(s, c); }
-        if (qtype === "ratio")   { return ratioMatch(s, c) || numericMatch(s, c); }
-        return false;
-      }
-
-      function getStudentAnswer(key) {
-        if (key === "q4" || key === "q5") {
-          var radios = document.querySelectorAll("input[name='" + key + "']");
-          for (var i = 0; i < radios.length; i++) {
-            if (radios[i].checked) return radios[i].value;
+        // ---- Explore: live equivalent-ratio mixer ----
+        var batch = document.getElementById("u1-batch");
+        if (batch) {
+          var batchVal = document.getElementById("u1-batch-val");
+          var berriesEl = document.getElementById("u1-berries");
+          var juiceEl = document.getElementById("u1-juice");
+          var rb = document.getElementById("u1-rb");
+          var rj = document.getElementById("u1-rj");
+          var segB = document.getElementById("u1-seg-berry");
+          var segJ = document.getElementById("u1-seg-juice");
+          function updateMixer() {
+            var n = parseInt(batch.value, 10) || 1;
+            var b = 2 * n,
+              j = 3 * n;
+            batchVal.textContent = n;
+            berriesEl.textContent = b;
+            juiceEl.textContent = j;
+            rb.textContent = b;
+            rj.textContent = j;
+            // glass fill always shows the 2:3 proportion (40% / 60%)
+            segB.style.height = "40%";
+            segJ.style.height = "60%";
           }
-          return "";
+          batch.addEventListener("input", updateMixer);
+          updateMixer();
         }
-        var el = document.getElementById(key);
-        return el ? el.value : "";
-      }
 
-      function showFeedback(key, isCorrect) {
-        var fb = document.getElementById("fb" + key.slice(1));
-        if (!fb) return;
-        var info = answers[key];
-        fb.className = "fb " + (isCorrect ? "correct" : "incorrect");
-        fb.textContent = (isCorrect ? "Correct! " : "Not quite. ") + info.explanation;
-      }
+        // ---- Apply: auto-grading ----
+        var form = document.getElementById("u1-quiz");
 
-      document.getElementById("checkBtn").addEventListener("click", function () {
-        var score = 0;
-        var total = Object.keys(answers).length;
+        function checkOne(q) {
+          var type = q.getAttribute("data-type");
+          var fb = q.querySelector(".u1-fb");
+          var correct = false,
+            answered = true;
 
-        for (var k in answers) {
-          var studentRaw = getStudentAnswer(k);
-          var cfg = answers[k];
-          var correct;
-          if (cfg.type === "radio") {
-            correct = normalise(studentRaw) === normalise(cfg.correct);
+          if (type === "mc") {
+            var sel = q.querySelector('input[type="radio"]:checked');
+            answered = !!sel;
+            correct = answered && sel.value === q.getAttribute("data-answer");
           } else {
-            correct = answersMatch(studentRaw, cfg.correct, cfg.type);
+            var input = q.querySelector(
+              'input[type="number"], input[type="text"]',
+            );
+            var raw = (input.value || "").trim();
+            answered = raw !== "";
+            var ans = parseFloat(q.getAttribute("data-answer"));
+            var tol = parseFloat(q.getAttribute("data-tol") || "0");
+            var val = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+            correct = answered && !isNaN(val) && Math.abs(val - ans) <= tol;
           }
-          if (correct) score++;
-          showFeedback(k, correct);
+
+          if (fb) {
+            if (!answered) {
+              fb.textContent = "";
+              fb.className = "u1-fb";
+            } else if (correct) {
+              fb.textContent = "✓ Correct";
+              fb.className = "u1-fb ok";
+            } else {
+              fb.textContent =
+                "✗ Not yet — check that you scaled both numbers the same way.";
+              fb.className = "u1-fb no";
+            }
+          }
+          return { correct: correct, answered: answered };
         }
 
-        var banner = document.getElementById("score-banner");
-        banner.style.display = "block";
-        banner.textContent = "You got " + score + " out of " + total + " correct!";
+        function checkAll() {
+          var qs = form.querySelectorAll(".u1-q[data-type]");
+          var score = 0,
+            total = qs.length;
+          var items = [];
+          qs.forEach(function (q, i) {
+            var r = checkOne(q);
+            if (r.correct) score++;
+            var promptEl = q.querySelector(".u1-prompt");
+            items.push({
+              id: q.id || "q" + (i + 1),
+              prompt: promptEl
+                ? promptEl.textContent.trim()
+                : "Question " + (i + 1),
+              correct: r.correct,
+            });
+          });
 
-        // Also send to NTKit grader
-        NTKit.grade({
-          activityId: "hyperdoc-unit-1",
-          activityTitle: "Unit 1 HyperDoc — Smoothie Stand: Ratios & Unit Rates",
-          standard: "6.RP.A.1-3",
-          items: [
-            { prompt: "Q1. Ratio of mango to ice",          studentAnswer: getStudentAnswer("q1"), correctAnswer: "2:3",    points: 1, skill: "Ratio language (6.RP.A.1)" },
-            { prompt: "Q2. Strawberries per 1 smoothie",    studentAnswer: getStudentAnswer("q2"), correctAnswer: "2",      points: 1, skill: "Unit rate (6.RP.A.2)" },
-            { prompt: "Q3. Price per 1 cup",                studentAnswer: getStudentAnswer("q3"), correctAnswer: "2",      points: 1, skill: "Unit rate / price (6.RP.A.2)" },
-            { prompt: "Q4. Equivalent ratio (4 mango → ? ice)", studentAnswer: getStudentAnswer("q4"), correctAnswer: "6", points: 1, skill: "Equivalent ratios (6.RP.A.3)" },
-            { prompt: "Q5. Cups per 1 minute",              studentAnswer: getStudentAnswer("q5"), correctAnswer: "2",      points: 1, skill: "Unit rate (6.RP.A.2)" },
-            { prompt: "Q6. Price per orange",               studentAnswer: getStudentAnswer("q6"), correctAnswer: "0.20",   points: 1, skill: "Unit rate (6.RP.A.2)" },
-            { prompt: "R1. What is a unit rate?",           studentAnswer: (document.getElementById("r1")||{value:""}).value, correctAnswer: "", points: 0, skill: "Reflection" },
-            { prompt: "R2. Real-life ratio use",            studentAnswer: (document.getElementById("r2")||{value:""}).value, correctAnswer: "", points: 0, skill: "Reflection" }
-          ]
-        });
+          var out = document.getElementById("u1-scoreout");
+          var pct = Math.round((score / total) * 100);
+          out.textContent =
+            "Score: " + score + " / " + total + " (" + pct + "%)";
 
-        banner.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      });
+          if (window.NTKit && typeof NTKit.grade === "function") {
+            try {
+              NTKit.grade({
+                activityId: "hyperdoc-unit-1-ratios",
+                activityTitle: "Unit 1 HyperDoc — Ratios & Unit Rates",
+                standard: "6.RP.A.1-3",
+                score: score,
+                total: total,
+                items: items,
+              });
+            } catch (e) {
+              /* fallback score already shown */
+            }
+          }
+        }
+
+        document.getElementById("u1-check").addEventListener("click", checkAll);
+        document
+          .getElementById("u1-reset")
+          .addEventListener("click", function () {
+            form.reset();
+            form.querySelectorAll(".u1-fb").forEach(function (f) {
+              f.textContent = "";
+              f.className = "u1-fb";
+            });
+            document.getElementById("u1-scoreout").textContent = "";
+          });
+      })();
     </script>
-  </body>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+</body>
 </html>

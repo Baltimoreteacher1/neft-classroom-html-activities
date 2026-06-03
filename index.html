@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <title>Neft Hub — Classroom Activities</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -460,6 +461,23 @@
         <div class="sb-brand">
           <h1>Neft Hub</h1>
           <p>208 Classroom Activities</p>
+          <a
+            href="/end-of-year/"
+            class="sb-featured-link"
+            style="
+              display: block;
+              margin-top: 10px;
+              padding: 9px 12px;
+              border-radius: 10px;
+              background: #f2c15b;
+              color: #12355b;
+              font-weight: 700;
+              text-decoration: none;
+              text-align: center;
+              font-size: 0.9rem;
+            "
+            >🏁 End-of-Year Command Center</a
+          >
         </div>
 
         <div class="sb-nav-search">
@@ -635,7 +653,98 @@
           .unit-group.search-empty {
             display: none;
           }
+          /* Teach Today quick-launch band (hidden while searching). */
+          .teach-today {
+            margin: 4px 0 18px;
+          }
+          .teach-today h2 {
+            margin: 0 0 10px;
+            font-size: 1.05rem;
+            color: var(--navy, #12355b);
+          }
+          .teach-today .tt-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+          }
+          .teach-today .tt-card {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 14px;
+            border-radius: 14px;
+            text-decoration: none;
+            background: #fff;
+            border: 1px solid var(--line, #d9dee5);
+            transition:
+              transform 0.12s ease,
+              box-shadow 0.12s ease,
+              border-color 0.12s ease;
+          }
+          .teach-today .tt-card:hover {
+            transform: translateY(-2px);
+            border-color: #1fa6a2;
+            box-shadow: 0 6px 18px rgba(18, 53, 91, 0.12);
+          }
+          .teach-today .tt-emoji {
+            font-size: 1.4rem;
+          }
+          .teach-today .tt-title {
+            font-weight: 700;
+            color: var(--navy, #12355b);
+            font-size: 0.95rem;
+          }
+          .teach-today .tt-sub {
+            font-size: 0.8rem;
+            color: #667085;
+          }
+          .content.searching .teach-today {
+            display: none;
+          }
+          @media (max-width: 980px) {
+            .teach-today .tt-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+          @media (max-width: 560px) {
+            .teach-today .tt-grid {
+              grid-template-columns: 1fr;
+            }
+          }
         </style>
+
+        <!-- ═══ TEACH TODAY (quick launch) ═══ -->
+        <section class="teach-today" aria-label="Teach today quick launch">
+          <h2>🏁 Teach Today — End-of-Year Quick Launch</h2>
+          <div class="tt-grid">
+            <a class="tt-card" href="/end-of-year/">
+              <span class="tt-emoji" aria-hidden="true">🎯</span>
+              <span class="tt-title">End-of-Year Command Center</span>
+              <span class="tt-sub">Review · MCAP · Bridge · projects</span>
+            </a>
+            <a class="tt-card" href="/mcap-review/">
+              <span class="tt-emoji" aria-hidden="true">📝</span>
+              <span class="tt-title">MCAP Review</span>
+              <span class="tt-sub">Domains + full practice tests</span>
+            </a>
+            <a class="tt-card" href="/spiral-review/">
+              <span class="tt-emoji" aria-hidden="true">🔁</span>
+              <span class="tt-title">Spiral Review</span>
+              <span class="tt-sub">Short mixed daily sets</span>
+            </a>
+            <a class="tt-card" href="/games/3d/">
+              <span class="tt-emoji" aria-hidden="true">🎮</span>
+              <span class="tt-title">3D Math Games</span>
+              <span class="tt-sub">Review each unit (2D fallback)</span>
+            </a>
+            <a class="tt-card" href="/summer-bridge/">
+              <span class="tt-emoji" aria-hidden="true">☀️</span>
+              <span class="tt-title">Summer Bridge</span>
+              <span class="tt-sub">Grade 6 → 7 paths</span>
+            </a>
+          </div>
+        </section>
+
         <!-- ═══ LESSONS ═══ -->
         <div class="panel active" id="panel-lessons">
           <div class="content-header">
@@ -953,6 +1062,16 @@
                 </div>
                 <span class="arrow">&rarr;</span></a
               >
+              <a href="/number-system/factor-tree-salvage/" class="card"
+                ><div class="icon u1">🚀</div>
+                <div>
+                  <div class="title">Space Factor Tree</div>
+                  <div class="meta">
+                    Cargo-salvage prime factorization adventure
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
               <a href="./lessons/1-4/index.html" class="card"
                 ><div class="icon u1">1.4</div>
                 <div>
@@ -1050,6 +1169,14 @@
                   <div class="meta">
                     Soccer-themed fractions division & multiplication game
                   </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="/number-system/fraction-division-soccer/" class="card"
+                ><div class="icon u2">⚽</div>
+                <div>
+                  <div class="title">Soccer Fraction Division</div>
+                  <div class="meta">Fraction division on the soccer pitch</div>
                 </div>
                 <span class="arrow">&rarr;</span></a
               >
@@ -1297,6 +1424,18 @@
                 </div>
                 <span class="arrow">&rarr;</span></a
               >
+              <a
+                href="/expressions-equations/distributive-alchemy/"
+                class="card"
+                ><div class="icon u6">⚗️</div>
+                <div>
+                  <div class="title">Alchemy Distributive Property</div>
+                  <div class="meta">
+                    Brew potions with the distributive property
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
               <a href="./lessons/6-6/index.html" class="card"
                 ><div class="icon u6">6.6</div>
                 <div>
@@ -1421,7 +1560,7 @@
                 </div>
                 <span class="arrow">&rarr;</span></a
               >
-              <a href="./statistics-data/stats-of-my-life/" class="card"
+              <a href="./statistics-data/statistics-of-my-life/" class="card"
                 ><div class="icon u8">📊</div>
                 <div>
                   <div class="title">Stats of My Life Project</div>
@@ -1661,9 +1800,12 @@
               <a href="./netfold-pro/" class="card"
                 ><div class="icon u10">📦</div>
                 <div>
-                  <div class="title">NetFold Pro — Surface Area Net Simulator</div>
+                  <div class="title">
+                    NetFold Pro — Surface Area Net Simulator
+                  </div>
                   <div class="meta">
-                    Unit 10 &middot; Geometry &middot; Interactive 3D net folding and surface area calculations.
+                    Unit 10 &middot; Geometry &middot; Interactive 3D net
+                    folding and surface area calculations.
                   </div>
                 </div>
                 <span class="arrow">&rarr;</span></a
@@ -1671,9 +1813,12 @@
               <a href="./ratiolab/" class="card"
                 ><div class="icon u3">🧪</div>
                 <div>
-                  <div class="title">RatioLab — Double Number Lines &amp; Rates</div>
+                  <div class="title">
+                    RatioLab — Double Number Lines &amp; Rates
+                  </div>
                   <div class="meta">
-                    Unit 3 &middot; Ratios &middot; Drag number lines, scale grids, and fill percentage beakers.
+                    Unit 3 &middot; Ratios &middot; Drag number lines, scale
+                    grids, and fill percentage beakers.
                   </div>
                 </div>
                 <span class="arrow">&rarr;</span></a
@@ -1681,9 +1826,12 @@
               <a href="./cartesian-odyssey/" class="card"
                 ><div class="icon u9">🚀</div>
                 <div>
-                  <div class="title">Cartesian Odyssey — Coordinate Star-Map</div>
+                  <div class="title">
+                    Cartesian Odyssey — Coordinate Star-Map
+                  </div>
                   <div class="meta">
-                    Unit 9 &middot; Coordinate Plane &middot; Plot quadrants and measure axis crossings with absolute value.
+                    Unit 9 &middot; Coordinate Plane &middot; Plot quadrants and
+                    measure axis crossings with absolute value.
                   </div>
                 </div>
                 <span class="arrow">&rarr;</span></a
@@ -1693,7 +1841,8 @@
                 <div>
                   <div class="title">Misconception Lab — Math Mythbusters</div>
                   <div class="meta">
-                    Unit 8 &middot; Decimals &amp; Operations &middot; Debug fraction, decimal, and precedence claims made by Error-Bot.
+                    Unit 8 &middot; Decimals &amp; Operations &middot; Debug
+                    fraction, decimal, and precedence claims made by Error-Bot.
                   </div>
                 </div>
                 <span class="arrow">&rarr;</span></a
@@ -1703,7 +1852,9 @@
                 <div>
                   <div class="title">Word-to-Equations — Algebraic Balance</div>
                   <div class="meta">
-                    Unit 6 &middot; Expressions &amp; Equations &middot; Translate story word problems into balanced equations using scale physics.
+                    Unit 6 &middot; Expressions &amp; Equations &middot;
+                    Translate story word problems into balanced equations using
+                    scale physics.
                   </div>
                 </div>
                 <span class="arrow">&rarr;</span></a
@@ -1713,7 +1864,8 @@
                 <div>
                   <div class="title">Statistical Quest — Sports Analytics</div>
                   <div class="meta">
-                    Unit 8 &middot; Statistics &middot; Drag score dots to watch live Mean balance lines, Median markers, and Box Plots.
+                    Unit 8 &middot; Statistics &middot; Drag score dots to watch
+                    live Mean balance lines, Median markers, and Box Plots.
                   </div>
                 </div>
                 <span class="arrow">&rarr;</span></a
@@ -1869,6 +2021,39 @@
                 </div>
                 <span class="arrow">&rarr;</span></a
               >
+              <a href="./ratios-proportions/ratio-fuel-mixer/" class="card"
+                ><div class="icon u3">⛽</div>
+                <div>
+                  <div class="title">Ratio Table Fuel Mixer</div>
+                  <div class="meta">
+                    6.RP.A.3 &middot; Equivalent ratios, tables &amp; coordinate
+                    plots &middot; Mix fuel
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/percent-shadow-caster/" class="card"
+                ><div class="icon u3">☀️</div>
+                <div>
+                  <div class="title">Percent Shadow-Caster</div>
+                  <div class="meta">
+                    6.RP.A.3c &middot; Percents on double-number lines &amp;
+                    grids &middot; Cast shadows
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./ratios-proportions/unit-rate-duel/" class="card"
+                ><div class="icon u3">🛒</div>
+                <div>
+                  <div class="title">Supermarket Unit Rate Duel</div>
+                  <div class="meta">
+                    6.RP.A.2 &middot; Unit rates &middot; Comparative shopping
+                    simulator
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
             </div>
           </div>
 
@@ -1956,6 +2141,52 @@
                 </div>
                 <span class="arrow">&rarr;</span></a
               >
+              <a href="./number-system/subzero-ledger/" class="card"
+                ><div class="icon u7">🧊</div>
+                <div>
+                  <div class="title">
+                    Sub-Zero Ledger &amp; Altitude Compass
+                  </div>
+                  <div class="meta">
+                    6.NS.C.5–7 &middot; Negative integers &amp; absolute value
+                    &middot; Polar lab
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./unit-4/decimals-diner/" class="card"
+                ><div class="icon u6">🍔</div>
+                <div>
+                  <div class="title">Decimals Diner</div>
+                  <div class="meta">
+                    6.NS.B.3 &middot; Decimal operations &middot; Cashier
+                    simulator
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/pixel-area-model/" class="card"
+                ><div class="icon u6">🟦</div>
+                <div>
+                  <div class="title">Pixel Area Model</div>
+                  <div class="meta">
+                    6.NS &middot; Fraction &amp; decimal multiplication &middot;
+                    Area-model canvas
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./number-system/coordinate-navigator/" class="card"
+                ><div class="icon u7">🧭</div>
+                <div>
+                  <div class="title">Coordinate Navigator</div>
+                  <div class="meta">
+                    6.NS.C.6 &middot; 4-quadrant coordinate plane &middot;
+                    Pirate quest
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
             </div>
           </div>
 
@@ -2030,6 +2261,54 @@
                 </div>
                 <span class="arrow">&rarr;</span></a
               >
+              <a href="./expressions-equations/neon-inequality/" class="card"
+                ><div class="icon u8">🛡️</div>
+                <div>
+                  <div class="title">Neon Inequality Gatekeeper</div>
+                  <div class="meta">
+                    6.EE.B.8 &middot; Inequalities on number lines &middot;
+                    Firewall challenges
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./expressions-equations/martian-fuel-pod/" class="card"
+                ><div class="icon u8">👽</div>
+                <div>
+                  <div class="title">Martian Fuel Pod</div>
+                  <div class="meta">
+                    6.EE.B.5–7 &middot; Solve equations &middot; Algebraic
+                    balance scale
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/equivalent-expressions-forge/"
+                class="card"
+                ><div class="icon u8">⚒️</div>
+                <div>
+                  <div class="title">Equivalent Expressions Forge</div>
+                  <div class="meta">
+                    6.EE.A.4 &middot; Equivalent expressions &middot;
+                    Algebra-tile forge
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a
+                href="./expressions-equations/one-step-solver-arena/"
+                class="card"
+                ><div class="icon u8">⚖️</div>
+                <div>
+                  <div class="title">One-Step Solver Arena</div>
+                  <div class="meta">
+                    6.EE.B.5–8 &middot; One-step equations &amp; inequalities
+                    &middot; Balance scale
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
             </div>
           </div>
 
@@ -2080,12 +2359,47 @@
                 </div>
                 <span class="arrow">&rarr;</span></a
               >
+              <a href="./statistics-data/box-plot-detective/" class="card"
+                ><div class="icon u2">🔍</div>
+                <div>
+                  <div class="title">Box Plot Detective</div>
+                  <div class="meta">
+                    6.SP.B.4 &middot; Five-number summary &amp; box-and-whisker
+                    plots &middot; Solve neon cases
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./statistics-data/distribution-detective/" class="card"
+                ><div class="icon u2">🔎</div>
+                <div>
+                  <div class="title">Distribution Detective</div>
+                  <div class="meta">
+                    6.SP.A.2–3 &middot; Center, spread &amp; MAD &middot; Crack
+                    the case
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
             </div>
           </div>
 
           <div class="unit-group">
             <div class="unit-label">Geometry</div>
             <div class="cards">
+              <a
+                href="./geometry-prep/coordinate-polygon-architect/"
+                class="card"
+                ><div class="icon u5">📐</div>
+                <div>
+                  <div class="title">Coordinate Polygon Architect</div>
+                  <div class="meta">
+                    6.G.A.3 &middot; Polygons on the coordinate plane &middot;
+                    Side lengths &amp; area
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
               <a href="./unit-5/parallelogramandrhombusgame/" class="card"
                 ><div class="icon u5">📐</div>
                 <div>
@@ -2103,6 +2417,28 @@
                   <div class="title">Dungeon Crawler RPG</div>
                   <div class="meta">
                     Unit 1 &middot; Math adventure &middot; Explore &amp; solve
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./geometry-prep/surface-area-packer/" class="card"
+                ><div class="icon u5">📦</div>
+                <div>
+                  <div class="title">Surface Area Cyber-Packer</div>
+                  <div class="meta">
+                    6.G.A.4 &middot; Nets &amp; surface area of 3D solids
+                    &middot; Unfold and pack
+                  </div>
+                </div>
+                <span class="arrow">&rarr;</span></a
+              >
+              <a href="./geometry-prep/tangram-architect/" class="card"
+                ><div class="icon u5">📐</div>
+                <div>
+                  <div class="title">Tangram Polygon Architect</div>
+                  <div class="meta">
+                    6.G.A.1 &middot; Decompose composite polygons into area
+                    &middot; Drafting studio
                   </div>
                 </div>
                 <span class="arrow">&rarr;</span></a
@@ -2350,9 +2686,12 @@
             <a href="./esol-study-guide/" class="card"
               ><div class="icon u2">🌍</div>
               <div>
-                <div class="title">Interactive ESOL Study Guide Player</div>
+                <div class="title">
+                  Interactive Study Guide Player · Level 1
+                </div>
                 <div class="meta">
-                  Grade 6 Reveal Math standards &middot; Bilingual read-alouds, visual SVGs, and self-check quizzes
+                  Grade 6 Reveal Math standards &middot; Bilingual read-alouds,
+                  visual SVGs, and self-check quizzes
                 </div>
               </div>
               <span class="arrow">&rarr;</span></a
@@ -2490,9 +2829,12 @@
             <a href="./esol-study-guide/" class="card"
               ><div class="icon u2">🌍</div>
               <div>
-                <div class="title">Interactive ESOL Study Guide Player</div>
+                <div class="title">
+                  Interactive Study Guide Player · Level 1
+                </div>
                 <div class="meta">
-                  Grade 6 Reveal Math &middot; Bilingual read-alouds, visual SVGs, and self-check quizzes
+                  Grade 6 Reveal Math &middot; Bilingual read-alouds, visual
+                  SVGs, and self-check quizzes
                 </div>
               </div>
               <span class="arrow">&rarr;</span></a
@@ -2585,6 +2927,19 @@
                 <div class="meta">
                   Create rigorous math CER drafts using dynamic visual models,
                   speaker read-aloud, and Level 1 language supports.
+                </div>
+              </div>
+              <span class="arrow">&rarr;</span></a
+            >
+            <a
+              href="./esol-reading-writing/twr-math-writing-studio/"
+              class="card"
+              ><div class="icon u2">✍️</div>
+              <div>
+                <div class="title">TWR Math Writing Studio</div>
+                <div class="meta">
+                  The Writing Revolution &middot; Conjunctions &amp; sentence
+                  expansion in math &middot; Graphic organizer
                 </div>
               </div>
               <span class="arrow">&rarr;</span></a
@@ -3118,7 +3473,8 @@
               <div>
                 <div class="title">MCAP &amp; General Review</div>
                 <div class="meta">
-                  MCAP test prep · 5 Grade 6 domain practice sets
+                  MCAP test prep · 5 domain sets + 6 full-length auto-graded
+                  practice tests
                 </div>
               </div>
               <span class="arrow">&rarr;</span></a
@@ -3141,7 +3497,7 @@
               </div>
               <span class="arrow">&rarr;</span></a
             >
-            <a href="./statistics-data/stats-of-my-life/" class="card"
+            <a href="./statistics-data/statistics-of-my-life/" class="card"
               ><div class="icon" style="background: #1fa6a2">📊</div>
               <div>
                 <div class="title">Stats of My Life</div>
@@ -3304,7 +3660,7 @@
               <span class="arrow">&rarr;</span></a
             >
             <a
-              href="https://eduwonderlab.vercel.app"
+              href="https://neft-classroom-html-activities.pages.dev"
               target="_blank"
               rel="noopener"
               class="card"
@@ -3568,6 +3924,7 @@
           });
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
-  </body>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+</body>
 </html>

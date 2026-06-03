@@ -8,7 +8,7 @@ export async function onRequestPost({ request, env }) {
 export async function onRequestGet({ request, env }) {
   await deleteSession(request, env);
   const appBaseUrl = (env.APP_BASE_URL || '').replace(/\/$/, '') || new URL(request.url).origin;
-  return Response.redirect(`${appBaseUrl}/noam-school/?google=disconnected`, 302, {
+  return Response.redirect(`${appBaseUrl}/noam-school-v10/?google=disconnected`, 302, {
     headers: { 'set-cookie': clearSessionCookie() }
   });
 }

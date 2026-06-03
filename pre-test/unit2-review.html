@@ -347,7 +347,9 @@
           font-size: 1rem;
         }
       }
-    </style>
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
   </head>
   <body>
     <!-- LOGIN -->
@@ -454,6 +456,19 @@
     <footer class="footer">Neft Teacher &copy; 2026</footer>
 
     <script src="/teacher-tools/nt-results.js"></script>
+    <!-- Results sync (offline-first). POC wiring — Joel sets endpoint/keys.
+         Loaded AFTER nt-results.js so it can wrap NTResults.finish. -->
+    <script>
+      window.NT_SYNC = {
+        endpoint: "https://neft-results.neftjd.workers.dev", // deployed Worker; nt-sync appends /results
+        teacher_id: "neft",
+        class_code: "P3-MATH",
+        write_key: "wk_41ae8894a1f5b0eb186c", // per-class, NOT secret (ships in client HTML)
+        activity_slug: "unit2-review",
+        standard: "6.NS.1",
+      };
+    </script>
+    <script src="/assets/nt-sync.js"></script>
     <script>
       const STORAGE_KEY = "unit2Review_v1";
 
@@ -1117,6 +1132,6 @@
           });
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
   </body>
 </html>

@@ -3,1612 +3,2509 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Graphic Novel #2 · Theme Park Engineer: Area Architect</title>
+    <title>Graphic Novel #2 · Theme Park Engineer: Area Architect 🎢</title>
     <style>
-      :root {
-        --bg: #070d1f;
-        --ink: #eef3ff;
-        --muted: #9fb0d6;
-        --accent: #ff8a3d;
-        --accent2: #5d7bff;
-        --panel: #101e44;
-        --line: #283f73;
-        --ok: #39d98a;
-        --bad: #ff6b6b;
-        --gold: #ffd166;
-        --bubble: #0e1c40;
-        --bubble-ink: #eef3ff;
-        --font:
-          "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      html,
-      body {
-        background: radial-gradient(
-          900px 600px at 80% -10%,
-          #15265a,
-          var(--bg) 65%
-        );
-        color: var(--ink);
-        font-family: var(--font);
-        line-height: 1.55;
-      }
-      body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      img {
-        max-width: 100%;
-        display: block;
-      }
-      a {
-        color: var(--accent2);
-      }
+/* ===========================================================================
+   Neft Teacher · Graphic-Novel Engine  ·  gn-engine.css
+   COMIC-BOOK theme: bright cream "paper", thick near-black borders, hard offset
+   shadows, gold uppercase tags, white name-tag speech bubbles, bold sans.
+   Matches the Data Detectives / Prism City curriculum comics. One restyle here
+   re-skins every engine novel (units 1-10 + lessons) at once.
+   Accessibility: WCAG-AA, resizable text, 48px targets, gold focus rings,
+   reduced-motion, functional at 320px.
+   =========================================================================== */
+:root {
+  --ink: #121826;
+  --paper: #fff9ef;
+  --panel: #fffdf8;
+  --line: #0f172a; /* comic outline (near-black) */
+  --gold: #f2b705;
+  --blue: #1d4ed8;
+  --red: #b42318;
+  --green: #047857;
+  --muted: #475569;
+  --bubble: #ffffff;
+  --bubble-ink: #121826;
+  --accent: #1d4ed8; /* per-unit signature (stories may override) */
+  --accent2: #b42318;
+  --ok: #047857;
+  --bad: #b42318;
+  --sh: 4px 4px 0 rgba(15, 23, 42, 0.18); /* hard comic shadow */
+  --sh-sm: 3px 3px 0 var(--line);
+  --font: Arial, Helvetica, "Segoe UI", system-ui, sans-serif;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+html,
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.5;
+}
+/* cream comic "paper" grid */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(90deg, rgba(17, 24, 39, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(17, 24, 39, 0.045) 1px, transparent 1px), var(--paper);
+  background-size: 28px 28px;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+a {
+  color: inherit;
+}
+:focus-visible {
+  outline: 4px solid var(--gold);
+  outline-offset: 3px;
+}
 
-      .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 30;
-        background: rgba(7, 13, 31, 0.96);
-        border-bottom: 1px solid var(--line);
-        backdrop-filter: blur(6px);
-      }
-      .topbar-inner {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 10px 14px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .home {
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        color: var(--muted);
-        font-size: 0.85rem;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 0 12px;
-      }
-      .home:hover {
-        color: var(--ink);
-      }
-      .title {
-        font-size: 1rem;
-        font-weight: 700;
-      }
-      .title .v {
-        color: var(--accent2);
-      }
-      .progress-wrap {
-        flex: 1;
-        min-width: 160px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .progress {
-        flex: 1;
-        height: 10px;
-        background: #0a142e;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        overflow: hidden;
-      }
-      .progress > i {
-        display: block;
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--accent2), var(--accent));
-        transition: width 0.4s ease;
-      }
-      .progress-label {
-        font-size: 0.75rem;
-        color: var(--muted);
-        white-space: nowrap;
-      }
+/* ---- Top bar ---- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--paper);
+  border-bottom: 4px solid var(--line);
+}
+.topbar-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.home {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 800;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 0 12px;
+  background: #fff;
+  box-shadow: var(--sh-sm);
+}
+.home:hover {
+  background: var(--gold);
+}
+.title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.title .v {
+  color: var(--red);
+}
+.progress-wrap {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress {
+  flex: 1;
+  height: 14px;
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--gold);
+  border-right: 3px solid var(--line);
+  transition: width 0.4s ease;
+}
+.progress-label {
+  font-size: 0.8rem;
+  color: var(--ink);
+  font-weight: 900;
+  white-space: nowrap;
+}
+.txtsize {
+  min-height: 44px;
+  min-width: 44px;
+  border: 3px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 6px;
+  box-shadow: var(--sh-sm);
+  font-weight: 900;
+  cursor: pointer;
+  padding: 0 10px;
+}
+.txtsize:hover {
+  background: var(--gold);
+}
+body[data-text="lg"] {
+  font-size: 1.12rem;
+}
+body[data-text="xl"] {
+  font-size: 1.26rem;
+}
 
-      .tabs {
-        display: flex;
-        gap: 6px;
-        overflow-x: auto;
-        padding: 8px 14px;
-        max-width: 1000px;
-        margin: 0 auto;
-        width: 100%;
-      }
-      .tab {
-        flex: 0 0 auto;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: #0c1838;
-        border: 1px solid var(--line);
-        color: var(--muted);
-        border-radius: 12px;
-        padding: 8px 14px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        cursor: pointer;
-        white-space: nowrap;
-      }
-      .tab[aria-selected="true"] {
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
-        border-color: transparent;
-      }
-      .tab:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .tab.locked {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .tab .lk {
-        font-size: 0.8rem;
-      }
+/* ---- Tabs (chapter chips) ---- */
+.tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 14px;
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+  scrollbar-width: thin;
+}
+.tab {
+  flex: 0 0 auto;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 3px solid var(--line);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+  box-shadow: var(--sh-sm);
+}
+.tab[aria-selected="true"] {
+  background: var(--accent);
+  color: #fff;
+}
+.tab.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.tab .lk {
+  font-size: 0.8rem;
+}
 
-      main {
-        flex: 1;
-        width: 100%;
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 14px;
-      }
-      .scene {
-        display: none;
-      }
-      .scene.active {
-        display: block;
-        animation: fade 0.35s ease;
-      }
-      @keyframes fade {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
+/* ---- Stage ---- */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 16px 14px;
+}
+.scene {
+  display: none;
+}
+.scene.active {
+  display: block;
+  animation: fade 0.3s ease;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  .scene.active {
+    animation: none !important;
+    transition: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
 
-      .art {
-        position: relative;
-        border-radius: 18px;
-        overflow: hidden;
-        border: 1px solid var(--line);
-        background: #0a142e;
-        aspect-ratio: 16/9;
-      }
-      .art img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      .scene-head {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-bottom: 10px;
-      }
-      .scene-head h2 {
-        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
-      }
-      .scene-head .act {
-        font-size: 0.75rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--accent2);
-      }
+.scene-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.scene-head h2 {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.scene-head .act {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--gold);
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 9px;
+}
 
-      .dialogue {
-        margin-top: 14px;
-        min-height: 96px;
-      }
-      .bubble {
-        background: var(--bubble);
-        color: var(--bubble-ink);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 14px 16px;
-        box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
-        animation: fade 0.25s ease;
-      }
-      .bubble .who {
-        font-weight: 800;
-        color: var(--accent);
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 4px;
-      }
-      .bubble .en {
-        font-size: 1.06rem;
-      }
-      .bubble.caption {
-        background: #0a142e;
-        border-style: dashed;
-      }
-      .dlg-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 10px;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .dots {
-        display: flex;
-        gap: 5px;
-      }
-      .dots i {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #283f73;
-      }
-      .dots i.on {
-        background: var(--accent2);
-      }
-      .next {
-        min-height: 44px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 10px 18px;
-        font-weight: 800;
-        font-size: 1rem;
-        cursor: pointer;
-      }
-      .next:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
+/* ===========================================================================
+   PANEL — framed comic panel (photo art inside a thick black border)
+   =========================================================================== */
+.panel {
+  position: relative;
+  border: 4px solid var(--line);
+  background: #fff;
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  box-shadow: 8px 8px 0 var(--line);
+}
+.panel > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 12, 28, 0) 40%,
+    rgba(8, 12, 28, 0.45) 100%
+  );
+}
+.speech {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px;
+}
+.speech > * {
+  pointer-events: auto;
+}
 
-      .challenge {
-        margin-top: 16px;
-        background: #0c1838;
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 16px;
-      }
-      .challenge h3 {
-        font-size: 1.05rem;
-        margin-bottom: 4px;
-        color: var(--accent2);
-      }
-      .challenge .prompt {
-        font-size: 1.05rem;
-        margin-bottom: 6px;
-      }
-      .challenge.bonus {
-        border-color: var(--gold);
-        background: #1c1606;
-        box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;
-      }
-      .challenge.bonus h3 {
-        color: var(--gold);
-      }
-      .bonus-tag {
-        display: inline-block;
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #1a1200;
-        background: var(--gold);
-        border-radius: 6px;
-        padding: 3px 8px;
-        font-weight: 800;
-        margin-bottom: 6px;
-      }
-      .bonus-skip {
-        font-size: 0.85rem;
-        color: #ffe7ad;
-        margin: 4px 0 8px;
-        font-style: italic;
-      }
-      .figure {
-        font-family: "Courier New", monospace;
-        white-space: normal;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: #9ecbff;
-        background: #0a142e;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px 12px;
-        margin: 10px 0;
-        overflow-x: auto;
-      }
-      .formula {
-        display: inline-block;
-        font-family: "Courier New", monospace;
-        background: #11214d;
-        border: 1px solid var(--accent2);
-        border-radius: 8px;
-        padding: 2px 8px;
-        color: #cfe0ff;
-      }
-      .choices {
-        display: grid;
-        gap: 10px;
-        margin-top: 10px;
-      }
-      .choice {
-        min-height: 48px;
-        text-align: left;
-        background: #101e44;
-        border: 2px solid var(--line);
-        color: var(--ink);
-        border-radius: 12px;
-        padding: 12px 14px;
-        font-size: 1rem;
-        cursor: pointer;
-        font-family: var(--font);
-      }
-      .choice:hover {
-        border-color: var(--accent2);
-      }
-      .choice:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .choice.correct {
-        border-color: var(--ok);
-        background: #10351f;
-      }
-      .choice.wrong {
-        border-color: var(--bad);
-        background: #3a1414;
-      }
-      .choice .tree {
-        font-family: "Courier New", monospace;
-        white-space: pre;
-        font-size: 0.9rem;
-        line-height: 1.35;
-        display: block;
-        margin-top: 4px;
-        color: #9ecbff;
-      }
-      .feedback {
-        margin-top: 12px;
-        border-radius: 12px;
-        padding: 12px 14px;
-        font-size: 1rem;
-        display: none;
-      }
-      .feedback.show {
-        display: block;
-        animation: fade 0.25s ease;
-      }
-      .feedback.good {
-        background: #10351f;
-        border: 1px solid var(--ok);
-        color: #c8ffe0;
-      }
-      .feedback.bad {
-        background: #3a1414;
-        border: 1px solid var(--bad);
-        color: #ffd5d5;
-      }
+/* ---- Speech bubble (white, name tag, hard shadow) ---- */
+.bubble {
+  background: var(--bubble);
+  color: var(--bubble-ink);
+  border: 3px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 13px;
+  position: relative;
+  max-width: min(560px, 88%);
+  font-weight: 700;
+  box-shadow: var(--sh);
+}
+.bubble.left {
+  align-self: flex-start;
+}
+.bubble.right {
+  align-self: flex-end;
+}
+.bubble.center {
+  align-self: center;
+}
+.bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -13px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 13px solid var(--line);
+}
+.bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 9px solid var(--bubble);
+}
+.bubble.left::before {
+  left: 24px;
+}
+.bubble.left::after {
+  left: 28px;
+}
+.bubble.right::before {
+  right: 24px;
+}
+.bubble.right::after {
+  right: 28px;
+}
+.bubble.center::before {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.bubble.center::after {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.bubble .who {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 900;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+  color: var(--muted);
+}
+.bubble .who .av {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  flex: 0 0 auto;
+  border: 2px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #fff;
+  overflow: hidden;
+  background: var(--spk, var(--blue));
+}
+.bubble .who .av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bubble .who .me {
+  font-size: 0.62rem;
+  color: var(--red);
+  letter-spacing: 0.06em;
+}
+.bubble .en {
+  font-size: 1.04rem;
+}
+.bubble .es {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: 6px;
+  font-style: italic;
+  font-weight: 700;
+}
+.bubble.caption {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--line);
+  max-width: min(640px, 94%);
+}
+.bubble.caption::after {
+  border-top-color: var(--ink);
+}
+.bubble.caption .who {
+  color: var(--gold);
+}
+.bubble.caption .es {
+  color: #cbd5e1;
+}
+.bubble.misc {
+  box-shadow:
+    0 0 0 3px var(--gold),
+    var(--sh);
+}
 
-      .scene-foot {
-        margin-top: 18px;
-        display: flex;
-        justify-content: flex-end;
-      }
-      .advance {
-        min-height: 48px;
-        background: linear-gradient(135deg, var(--accent), #ff6a3d);
-        color: #1a0d02;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 22px;
-        font-weight: 800;
-        font-size: 1.05rem;
-        cursor: pointer;
-        display: none;
-      }
-      .advance.show {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        animation: fade 0.3s ease;
-      }
-      .advance:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
+/* ---- Inline vocab tag (pill) ---- */
+.vocab-tag {
+  font: inherit;
+  font-weight: 900;
+  color: var(--blue);
+  cursor: pointer;
+  background: #eff6ff;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  padding: 0 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+.vocab-tag:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 1px;
+}
 
-      .cover-card {
-        text-align: center;
-      }
-      .cover-card .art {
-        margin-bottom: 16px;
-      }
-      .cover-card h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
-      }
-      .cover-card p {
-        color: var(--muted);
-        max-width: 660px;
-        margin: 10px auto;
-      }
-      .start {
-        min-height: 52px;
-        margin-top: 8px;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        color: #fff;
-        border: none;
-        border-radius: 14px;
-        padding: 14px 28px;
-        font-weight: 800;
-        font-size: 1.15rem;
-        cursor: pointer;
-      }
-      .start:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 2px;
-      }
-      .level-pill {
-        display: inline-block;
-        margin-bottom: 10px;
-        font-size: 0.8rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent2), #7a5cff);
-        border-radius: 999px;
-        padding: 5px 14px;
-        font-weight: 700;
-      }
+/* ---- Popover ---- */
+.gn-pop {
+  position: fixed;
+  z-index: 60;
+  max-width: 300px;
+  background: #fff;
+  color: var(--ink);
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  box-shadow: 8px 8px 0 var(--line);
+}
+.gn-pop h4 {
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+  color: var(--red);
+  text-transform: uppercase;
+}
+.gn-pop .es {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 6px;
+  font-weight: 700;
+}
+.gn-pop .x {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  border: none;
+  background: none;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--ink);
+  min-width: 36px;
+  min-height: 36px;
+}
+.gn-pop-back {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(15, 23, 42, 0.25);
+}
 
-      .gloss {
-        display: grid;
-        gap: 12px;
-      }
-      .term {
-        background: #0c1838;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 14px 16px;
-        display: flex;
-        gap: 14px;
-        align-items: flex-start;
-      }
-      .term .ico {
-        font-size: 1.6rem;
-        flex: 0 0 auto;
-      }
-      .term h3 {
-        font-size: 1.1rem;
-      }
-      .term p {
-        color: var(--muted);
-        margin-top: 4px;
-      }
+/* ---- Callout dot ---- */
+.callout {
+  position: absolute;
+  z-index: 4;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--ink);
+  border: 3px solid var(--line);
+  font-weight: 900;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  box-shadow: var(--sh-sm);
+}
+.callout:focus-visible {
+  outline: 3px solid var(--line);
+  outline-offset: 2px;
+}
 
-      .complete {
-        text-align: center;
-        display: none;
-      }
-      .complete.show {
-        display: block;
-      }
-      .complete .art {
-        margin-bottom: 16px;
-      }
-      .complete h2 {
-        font-size: clamp(1.7rem, 5vw, 2.6rem);
-        color: var(--accent2);
-      }
-      .badge-done {
-        display: inline-block;
-        font-size: 3rem;
-        margin: 8px;
-      }
-      .restart {
-        min-height: 48px;
-        margin-top: 14px;
-        background: #0c1838;
-        border: 1px solid var(--line);
-        color: var(--ink);
-        border-radius: 12px;
-        padding: 12px 20px;
-        font-weight: 700;
-        cursor: pointer;
-      }
-      .locked-note {
-        display: none;
-        text-align: center;
-        color: var(--muted);
-        padding: 30px 10px;
-      }
-      .locked-note.show {
-        display: block;
-      }
+/* ---- Beat controls ---- */
+.dlg-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dots {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.dots i {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+}
+.dots i.on {
+  background: var(--gold);
+}
+.next {
+  min-height: 48px;
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--font);
+  text-transform: uppercase;
+  box-shadow: var(--sh-sm);
+}
+.next:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--line);
+}
+.next[disabled] {
+  opacity: 0.4;
+  cursor: default;
+  box-shadow: none;
+}
 
-      @media (max-width: 480px) {
-        .title {
-          font-size: 0.9rem;
-          flex: 1 1 100%;
-        }
-      }
+/* ===========================================================================
+   CHALLENGE — math voiced by a character; choices = protagonist replies
+   =========================================================================== */
+.challenge {
+  margin-top: 16px;
+  background: #fff7ed;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: var(--sh);
+}
+.chal-tools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+}
+.toolbtn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 3px solid var(--line);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: var(--font);
+  box-shadow: var(--sh-sm);
+}
+.toolbtn[aria-expanded="true"] {
+  background: var(--gold);
+}
+.foldout {
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: #fffdf8;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 11px 14px;
+  margin: 0 0 12px;
+  display: none;
+  font-weight: 700;
+}
+.foldout.show {
+  display: block;
+  animation: fade 0.2s ease;
+}
+.foldout.coach {
+  background: #eff6ff;
+}
+.foldout b {
+  color: var(--red);
+}
+.foldout.coach b {
+  color: var(--blue);
+}
+
+.reply-label {
+  display: inline-block;
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  background: var(--gold);
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 9px;
+  margin-bottom: 10px;
+}
+.choices {
+  display: grid;
+  gap: 10px;
+}
+.choice {
+  position: relative;
+  min-height: 48px;
+  text-align: left;
+  background: #fff;
+  border: 3px solid var(--line);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 12px 14px 12px 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--font);
+  font-weight: 700;
+  box-shadow: var(--sh-sm);
+}
+.choice::before {
+  content: "\201C";
+  position: absolute;
+  left: 9px;
+  top: 6px;
+  color: var(--blue);
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+.choice:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--line);
+  background: #fffdf8;
+}
+.choice:focus-visible {
+  outline: 4px solid var(--gold);
+  outline-offset: 2px;
+}
+.choice.correct {
+  border-color: var(--green);
+  background: #ecfdf5;
+}
+.choice.wrong {
+  border-color: var(--red);
+  background: #fef2f2;
+}
+.choice .tree {
+  font-family: "Courier New", monospace;
+  white-space: pre-wrap;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.choice .es {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+.feedback {
+  margin-top: 12px;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  display: none;
+  font-weight: 700;
+}
+.feedback.show {
+  display: block;
+  animation: fade 0.2s ease;
+}
+.feedback.good {
+  background: #ecfdf5;
+  border-color: var(--green);
+  color: #064e3b;
+}
+.feedback.bad {
+  background: #fef2f2;
+  border-color: var(--red);
+  color: #7f1d1d;
+}
+.feedback .es {
+  display: block;
+  font-style: italic;
+  margin-top: 4px;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.scene-foot {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+.advance {
+  min-height: 50px;
+  background: var(--gold);
+  color: var(--ink);
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 22px;
+  font-weight: 900;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: none;
+  font-family: var(--font);
+  text-transform: uppercase;
+  box-shadow: var(--sh);
+}
+.advance.show {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: fade 0.3s ease;
+}
+.advance:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--line);
+}
+
+/* ---- Cover ---- */
+.cover-card {
+  text-align: center;
+}
+.cover-card .panel {
+  aspect-ratio: 16 / 9;
+  margin-bottom: 18px;
+}
+.cover-card h2 {
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  text-transform: uppercase;
+  line-height: 0.98;
+}
+.cover-card p {
+  color: var(--ink);
+  max-width: 640px;
+  margin: 12px auto;
+  font-weight: 700;
+}
+.start {
+  min-height: 54px;
+  margin-top: 10px;
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 30px;
+  font-weight: 900;
+  font-size: 1.2rem;
+  cursor: pointer;
+  font-family: var(--font);
+  text-transform: uppercase;
+  box-shadow: var(--sh);
+}
+.start:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--line);
+}
+.level-pill {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--gold);
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-weight: 900;
+}
+.cast-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 16px 0 4px;
+}
+.cast-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px 6px 6px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  box-shadow: var(--sh-sm);
+}
+.cast-chip .av {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 2px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: #fff;
+  overflow: hidden;
+}
+.cast-chip .av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cast-chip span {
+  color: var(--muted);
+}
+
+/* ---- Glossary ---- */
+.gloss {
+  display: grid;
+  gap: 12px;
+}
+.term {
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  box-shadow: var(--sh-sm);
+}
+.term .ico {
+  font-size: 1.7rem;
+  flex: 0 0 auto;
+}
+.term h3 {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+.term .es-term {
+  color: var(--blue);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.term p {
+  color: var(--ink);
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* ---- Mission complete ---- */
+.complete {
+  text-align: center;
+  display: none;
+}
+.complete.show {
+  display: block;
+}
+.complete .panel {
+  margin-bottom: 18px;
+}
+.complete h2 {
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  color: var(--ink);
+  text-transform: uppercase;
+}
+.badge-done {
+  display: inline-block;
+  font-size: 3rem;
+  margin: 8px;
+}
+.restart {
+  min-height: 48px;
+  margin-top: 14px;
+  background: #fff;
+  border: 3px solid var(--line);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: var(--font);
+  box-shadow: var(--sh-sm);
+}
+.restart:hover {
+  background: var(--gold);
+}
+.locked-note {
+  display: none;
+  text-align: center;
+  color: var(--muted);
+  padding: 30px 10px;
+  font-weight: 800;
+}
+.locked-note.show {
+  display: block;
+}
+.bonus {
+  margin-top: 24px;
+  text-align: left;
+  background: #fffbeb;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--sh);
+}
+.bonus-tag {
+  background: var(--gold);
+  color: var(--ink);
+  font-weight: 900;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  padding: 4px 9px;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  display: inline-block;
+  text-transform: uppercase;
+}
+.bonus h3 {
+  color: var(--ink);
+  font-size: 1.15rem;
+  margin: 10px 0 6px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.bonus .prompt {
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  font-weight: 700;
+}
+.bonus .prompt .es {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* ---- Small screens (down to 320px) ---- */
+@media (max-width: 560px) {
+  .panel {
+    aspect-ratio: 4 / 3;
+    box-shadow: 5px 5px 0 var(--line);
+  }
+  .bubble {
+    max-width: 94%;
+  }
+  .bubble .en {
+    font-size: 1rem;
+  }
+}
+@media (max-width: 380px) {
+  main {
+    padding: 12px 10px;
+  }
+  .title {
+    font-size: 0.92rem;
+    flex: 1 1 100%;
+  }
+  .panel {
+    aspect-ratio: 1 / 1;
+  }
+  .speech {
+    padding: 8px;
+  }
+  .bubble {
+    padding: 10px 12px;
+  }
+}
+
     </style>
   </head>
   <body>
-    <div class="topbar">
-      <div class="topbar-inner">
-        <a class="home" href="../index.html">&#8592; Home</a>
-        <span class="title"
-          ><span class="v">#2</span> Theme Park Engineer: Area Architect</span
-        >
-        <div class="progress-wrap">
-          <div
-            class="progress"
-            role="progressbar"
-            aria-label="Mission progress"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="0"
-          >
-            <i id="bar"></i>
-          </div>
-          <span class="progress-label" id="plabel">0%</span>
-        </div>
-      </div>
-      <div class="tabs" role="tablist" aria-label="Chapters">
-        <button
-          class="tab"
-          role="tab"
-          aria-selected="true"
-          data-scene="cover"
-          id="tab-cover"
-        >
-          Cover
-        </button>
-        <button
-          class="tab"
-          role="tab"
-          aria-selected="false"
-          data-scene="act1"
-          id="tab-act1"
-        >
-          Act 1: The Slanted Plaza
-        </button>
-        <button
-          class="tab locked"
-          role="tab"
-          aria-selected="false"
-          data-scene="act2"
-          id="tab-act2"
-        >
-          <span class="lk">&#128274;</span> Act 2: Signs &amp; Stages
-        </button>
-        <button
-          class="tab locked"
-          role="tab"
-          aria-selected="false"
-          data-scene="final"
-          id="tab-final"
-        >
-          <span class="lk">&#128274;</span> Final Build
-        </button>
-        <button
-          class="tab"
-          role="tab"
-          aria-selected="false"
-          data-scene="gloss"
-          id="tab-gloss"
-        >
-          Glossary
-        </button>
-      </div>
-    </div>
-
-    <main>
-      <!-- COVER -->
-      <section
-        class="scene active cover-card"
-        id="scene-cover"
-        role="tabpanel"
-        aria-labelledby="tab-cover"
-      >
-        <div class="art">
-          <img
-            src="../_art/unit5/cover.png"
-            alt="A young engineer named Maya stands on a hill looking at a glowing futuristic amusement park at sunset"
-          />
-        </div>
-        <span class="level-pill">Graphic Novel #2 &middot; Enrichment</span>
-        <h2>Theme Park Engineer: Area Architect &#127906;</h2>
-        <p>
-          Lead engineer <b>Maya</b> has thirty days to deliver the most
-          ambitious amusement park ever drafted. Every ride, plaza, and pavilion
-          stays locked in the simulator until its <b>surface area</b> is
-          calculated to the square meter. Master the area of parallelograms,
-          triangles, and trapezoids &mdash; then fuse them into
-          <b>composite figures</b> &mdash; to bring the whole park online.
-        </p>
-        <button class="start" id="start-btn">Begin Build &#128640;</button>
-      </section>
-
-      <!-- ACT 1 -->
-      <section
-        class="scene"
-        id="scene-act1"
-        role="tabpanel"
-        aria-labelledby="tab-act1"
-      >
-        <div class="scene-head">
-          <span class="act">Act 1 &middot; Area of Parallelograms</span>
-          <h2>The Slanted Plaza</h2>
-        </div>
-        <div class="art">
-          <img
-            id="art-act1"
-            src="../_art/unit5/design-plaza.png"
-            alt="Maya designs a slanted parallelogram-shaped entry plaza on a glowing holographic table"
-          />
-        </div>
-
-        <div class="dialogue" id="dlg-act1" aria-live="polite"></div>
-        <div class="dlg-row">
-          <div class="dots" id="dots-act1"></div>
-          <button class="next" id="next-act1">Next &#9654;</button>
-        </div>
-
-        <!-- Challenge 1a: parallelogram with slant-height distractor -->
-        <div class="challenge" id="chal1a" style="display: none">
-          <h3>&#127959;&#65039; Build #1 &mdash; The Welcome Plaza</h3>
-          <p class="prompt">
-            The entry plaza is a parallelogram. Use
-            <span class="formula">A = b &times; h</span>, where <b>h</b> is the
-            <b>perpendicular</b> height &mdash; not the slanted side. The base
-            is <b>14 m</b>, the perpendicular height is <b>6 m</b>, and the
-            slanted edge measures <b>7 m</b>. What is the area?
-          </p>
-          <div class="figure">
-            <b>Figure:</b> Parallelogram &#9649;<br />
-            base (b) = 14 m<br />
-            perpendicular height (h) = 6 m &mdash; use THIS in the formula<br />
-            slanted edge = 7 m &mdash; a trap; do NOT use it as the height
-          </div>
-          <div class="choices" id="choices1a">
-            <button class="choice" data-correct="false">
-              98 m&sup2; &nbsp;(used the 7 m slant, not the height)
-            </button>
-            <button class="choice" data-correct="true">
-              84 m&sup2; &nbsp;(14 &times; 6, perpendicular height)
-            </button>
-            <button class="choice" data-correct="false">
-              27 m&sup2; &nbsp;(added 14 + 7 + 6)
-            </button>
-          </div>
-          <div class="feedback" id="fb1a"></div>
-        </div>
-
-        <!-- Challenge 1b: reverse / missing dimension -->
-        <div class="challenge" id="chal1b" style="display: none">
-          <h3>
-            &#127959;&#65039; Build #2 &mdash; The Reverse-Engineered Walkway
-          </h3>
-          <p class="prompt">
-            The walkway must cover exactly <b>96 m&sup2;</b> of ground, and the
-            blueprint fixes the base at <b>12 m</b>. Working backward from
-            <span class="formula">A = b &times; h</span>, what height must the
-            parallelogram have?
-          </p>
-          <div class="choices" id="choices1b">
-            <button class="choice" data-correct="false">
-              108 m &nbsp;(added 96 + 12)
-            </button>
-            <button class="choice" data-correct="true">
-              8 m &nbsp;(h = A &divide; b = 96 &divide; 12)
-            </button>
-            <button class="choice" data-correct="false">
-              1152 m &nbsp;(multiplied 96 &times; 12)
-            </button>
-          </div>
-          <div class="feedback" id="fb1b"></div>
-        </div>
-
-        <!-- Bonus 1 (OPTIONAL) -->
-        <div class="challenge bonus" id="bonus1" style="display: none">
-          <span class="bonus-tag">&#11088; Engineer&rsquo;s Bonus</span>
-          <p class="bonus-skip">
-            Optional &mdash; the plaza is already open. Skip anytime; this never
-            blocks the next act.
-          </p>
-          <h3>The VIP Diamond Court</h3>
-          <p class="prompt">
-            A diamond-shaped VIP court is a parallelogram that must cover
-            <b>150 m&sup2;</b>. Its perpendicular height is fixed at
-            <b>10 m</b>. Reverse-engineer the base it needs.
-          </p>
-          <div class="choices" id="choicesB1">
-            <button class="choice" data-correct="false">
-              1500 m &nbsp;(150 &times; 10)
-            </button>
-            <button class="choice" data-correct="true">
-              15 m &nbsp;(b = A &divide; h = 150 &divide; 10)
-            </button>
-            <button class="choice" data-correct="false">
-              140 m &nbsp;(150 &minus; 10)
-            </button>
-          </div>
-          <div class="feedback" id="fbB1"></div>
-        </div>
-
-        <div class="scene-foot">
-          <button class="advance" id="adv-act1">
-            Open the plaza &#127881;
-          </button>
-        </div>
-      </section>
-
-      <!-- ACT 2 -->
-      <section
-        class="scene"
-        id="scene-act2"
-        role="tabpanel"
-        aria-labelledby="tab-act2"
-      >
-        <div class="locked-note" id="lock-act2">
-          &#128274; Complete Act 1 to unlock Act 2.
-        </div>
-        <div id="body-act2">
-          <div class="scene-head">
-            <span class="act">Act 2 &middot; Triangles &amp; Trapezoids</span>
-            <h2>Signs &amp; Stages</h2>
-          </div>
-          <div class="art">
-            <img
-              id="art-act2"
-              src="../_art/unit5/triangle-trapezoid.png"
-              alt="Maya stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy"
-            />
-          </div>
-
-          <div class="dialogue" id="dlg-act2" aria-live="polite"></div>
-          <div class="dlg-row">
-            <div class="dots" id="dots-act2"></div>
-            <button class="next" id="next-act2">Next &#9654;</button>
-          </div>
-
-          <!-- Challenge 2a: triangle -->
-          <div class="challenge" id="chal2a" style="display: none">
-            <h3>&#128293; Build #3 &mdash; The Beacon Sign</h3>
-            <p class="prompt">
-              The triangular beacon sign uses
-              <span class="formula">A = &frac12; &times; b &times; h</span>. The
-              base spans <b>16 m</b> and the height rises <b>9 m</b>. Find the
-              area of the sign face.
-            </p>
-            <div class="figure">
-              <b>Figure:</b> Triangle &#9651;<br />
-              base (b) = 16 m<br />
-              height (h) = 9 m &mdash; straight up from the base
-            </div>
-            <div class="choices" id="choices2a">
-              <button class="choice" data-correct="false">
-                144 m&sup2; &nbsp;(forgot the &frac12;: that is 16 &times; 9)
-              </button>
-              <button class="choice" data-correct="true">
-                72 m&sup2; &nbsp;(&frac12; &times; 16 &times; 9)
-              </button>
-              <button class="choice" data-correct="false">
-                25 m&sup2; &nbsp;(added 16 + 9)
-              </button>
-            </div>
-            <div class="feedback" id="fb2a"></div>
-          </div>
-
-          <!-- Challenge 2b: trapezoid -->
-          <div class="challenge" id="chal2b" style="display: none">
-            <h3>&#127914; Build #4 &mdash; The Trapezoid Canopy</h3>
-            <p class="prompt">
-              The amphitheater canopy is a trapezoid:
-              <span class="formula">A = &frac12;(b&#8321; + b&#8322;)h</span>.
-              The parallel edges are <b>8 m</b> and <b>14 m</b>, and the height
-              between them is <b>10 m</b>. Compute the canopy area.
-            </p>
-            <div class="figure">
-              <b>Figure:</b> Trapezoid &#9186;<br />
-              top parallel side (b&#8321;) = 8 m<br />
-              bottom parallel side (b&#8322;) = 14 m<br />
-              height (h) = 10 m &mdash; distance between the two parallel sides
-            </div>
-            <div class="choices" id="choices2b">
-              <button class="choice" data-correct="false">
-                220 m&sup2; &nbsp;(forgot the &frac12;)
-              </button>
-              <button class="choice" data-correct="true">
-                110 m&sup2; &nbsp;(&frac12; &times; (8 + 14) &times; 10)
-              </button>
-              <button class="choice" data-correct="false">
-                70 m&sup2; &nbsp;(only &frac12; &times; 14 &times; 10)
-              </button>
-            </div>
-            <div class="feedback" id="fb2b"></div>
-          </div>
-
-          <!-- Bonus 2 (OPTIONAL) -->
-          <div class="challenge bonus" id="bonus2" style="display: none">
-            <span class="bonus-tag">&#11088; Engineer&rsquo;s Bonus</span>
-            <p class="bonus-skip">
-              Optional &mdash; signs and stages are already lit. Skip anytime;
-              this never blocks the final build.
-            </p>
-            <h3>The Reverse Sail Banner</h3>
-            <p class="prompt">
-              A triangular sail banner must cover exactly <b>54 m&sup2;</b>, and
-              its base is locked at <b>12 m</b>. Working backward from
-              <span class="formula">A = &frac12;bh</span>, what height does the
-              sail need?
-            </p>
-            <div class="choices" id="choicesB2">
-              <button class="choice" data-correct="false">
-                4.5 m &nbsp;(divided by base only: 54 &divide; 12)
-              </button>
-              <button class="choice" data-correct="true">
-                9 m &nbsp;(h = 2A &divide; b = 108 &divide; 12)
-              </button>
-              <button class="choice" data-correct="false">
-                18 m &nbsp;(forgot to divide by the base)
-              </button>
-            </div>
-            <div class="feedback" id="fbB2"></div>
-          </div>
-
-          <div class="scene-foot">
-            <button class="advance" id="adv-act2">
-              Light up the park &#10024;
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- FINAL -->
-      <section
-        class="scene"
-        id="scene-final"
-        role="tabpanel"
-        aria-labelledby="tab-final"
-      >
-        <div class="locked-note" id="lock-final">
-          &#128274; Complete Act 2 to unlock the Final Build.
-        </div>
-        <div id="body-final">
-          <div class="scene-head">
-            <span class="act">Final Build &middot; Composite Figure</span>
-            <h2>The Grand Pavilion</h2>
-          </div>
-          <div class="art">
-            <img
-              id="art-final"
-              src="../_art/unit5/composite-challenge.png"
-              alt="Maya faces a giant holographic master blueprint of the whole park made of combined shapes"
-            />
-          </div>
-
-          <div class="dialogue" id="dlg-final" aria-live="polite"></div>
-          <div class="dlg-row">
-            <div class="dots" id="dots-final"></div>
-            <button class="next" id="next-final">Next &#9654;</button>
-          </div>
-
-          <!-- Core final: trapezoid + triangle composite -->
-          <div class="challenge" id="chalF" style="display: none">
-            <h3>&#127914; Final Build &mdash; The Grand Pavilion</h3>
-            <p class="prompt">
-              The pavilion roof is a <b>composite figure</b>: a trapezoid stage
-              with a triangular spire on top. Find each area, then add.
-              <br />Trapezoid: parallel sides <b>10 m</b> and <b>18 m</b>,
-              height <b>8 m</b>. <br />Triangle spire: base <b>18 m</b>, height
-              <b>6 m</b>.
-            </p>
-            <div class="figure">
-              <b>Figure:</b> Composite &mdash; triangle spire on a trapezoid
-              stage &#9651;&#9186;<br />
-              Triangle spire: base = 18 m, height = 6 m<br />
-              Trapezoid stage: parallel sides 10 m and 18 m, height = 8 m<br />
-              Find each area, then ADD them.
-            </div>
-            <div class="choices" id="choicesF">
-              <button class="choice" data-correct="false">
-                112 m&sup2; &nbsp;(only the trapezoid)
-              </button>
-              <button class="choice" data-correct="true">
-                166 m&sup2; &nbsp;(112 + 54, both parts)
-              </button>
-              <button class="choice" data-correct="false">
-                220 m&sup2; &nbsp;(forgot both &frac12; factors)
-              </button>
-            </div>
-            <div class="feedback" id="fbF"></div>
-          </div>
-
-          <!-- Bonus F (OPTIONAL) -->
-          <div class="challenge bonus" id="bonusF" style="display: none">
-            <span class="bonus-tag">&#11088; Master Engineer Bonus</span>
-            <p class="bonus-skip">
-              Optional &mdash; the park is already open! Skip anytime; this
-              never blocks your Grand Opening.
-            </p>
-            <h3>The Reflecting Pool Cutout</h3>
-            <p class="prompt">
-              The central courtyard is a <b>20 m by 12 m</b> rectangle, but a
-              triangular reflecting pool (base <b>8 m</b>, height <b>6 m</b>) is
-              cut OUT of it. How much paved area remains? Subtract the cutout.
-            </p>
-            <div class="choices" id="choicesBF">
-              <button class="choice" data-correct="false">
-                264 m&sup2; &nbsp;(added the pool instead of subtracting)
-              </button>
-              <button class="choice" data-correct="true">
-                216 m&sup2; &nbsp;(240 &minus; 24)
-              </button>
-              <button class="choice" data-correct="false">
-                192 m&sup2; &nbsp;(subtracted the full 8 &times; 6 = 48)
-              </button>
-            </div>
-            <div class="feedback" id="fbBF"></div>
-          </div>
-
-          <div class="scene-foot">
-            <button class="advance" id="adv-final">
-              Open the park! &#127881;
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- COMPLETE -->
-      <section
-        class="scene complete"
-        id="scene-complete"
-        role="tabpanel"
-        aria-label="Mission complete"
-      >
-        <div class="art">
-          <img
-            src="../_art/unit5/grand-opening.png"
-            alt="Maya raises her arms in triumph as the finished theme park glows with rides and fireworks"
-          />
-        </div>
-        <span class="badge-done">&#127881;&#127906;&#11088;</span>
-        <h2>Grand Opening &mdash; Mission Complete!</h2>
-        <p>
-          The park is fully online, Engineer Maya. You computed parallelogram
-          areas with the true perpendicular height, reverse-engineered missing
-          dimensions, mastered triangles and trapezoids, and decomposed the
-          pavilion into a composite figure. Every structure passed inspection to
-          the square meter &mdash; a flawless launch.
-        </p>
-        
-        <div class="challenge bonus" id="chalComplete" style="margin-top: 24px; text-align: left; background: #1c1606; border: 2px solid #ffd166; box-shadow: 0 0 0 1px rgba(255, 209, 102, 0.2) inset;">
-          <span class="bonus-tag" style="background: #ffd166; color: #1a1200; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 6px; display: inline-block;">🏆 MASTER RANK CHALLENGE</span>
-          <h3 style="color: #ffd166; font-size: 1.1rem; margin-top: 8px; margin-bottom: 6px; font-weight: 700;">Prove your rank to certify your Master Certificate!</h3>
-          <p class="prompt" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.55;">
-            Plaza Trapezoid: A trapezoidal performance stage has parallel bases of <strong>6 meters and 10 meters</strong>, and a height of <strong>4 meters</strong>. What is the area of the stage?
-          </p>
-          <div class="choices" id="choicesComplete" style="display: grid; gap: 10px;">
-            
-            <button class="choice" data-correct="false">A) 64 square meters &nbsp;(multiplied sum of bases by height without halving)</button>
-            <button class="choice" data-correct="true">B) 32 square meters &nbsp;($\frac{1}{2} \times (6 + 10) \times 4 = 32$) &nbsp;✅</button>
-            <button class="choice" data-correct="false">C) 16 square meters &nbsp;(halved height incorrectly)</button>
-      
-          </div>
-          <div class="feedback" id="fbComplete" style="margin-top: 12px; border-radius: 12px; padding: 12px 14px; font-size: 1rem; display: none;"></div>
-        </div>
-        <button class="restart" id="restart-btn">Run again &#8635;</button>
-    
-      </section>
-
-      <!-- GLOSSARY -->
-      <section
-        class="scene"
-        id="scene-gloss"
-        role="tabpanel"
-        aria-labelledby="tab-gloss"
-      >
-        <div class="scene-head">
-          <span class="act">Reference</span>
-          <h2>Glossary &middot; Engineering Codex</h2>
-        </div>
-        <div class="gloss" id="gloss-list"></div>
-      </section>
-    </main>
 
     <script>
-      (function () {
-        "use strict";
+/* STORY · Unit 5 · Graphic Novel #2 (Enrichment) · Theme Park Engineer: Area Architect
+   Full novel on the comic engine. Enrichment tier: harder numbers, reverse /
+   missing-dimension problems, optional "Captain's Challenge" bonus rounds
+   (non-gating, still scored), English-only (source has no Spanish), 10-term
+   codex. All math/answers/distractors/hints/glossary carried verbatim from
+   graphic-novels/unit5/graphic-novel-2.html (6.G.1).
+   New: panels, speech, BOLT-voices-the-misconception (slant-as-height / forgets
+   ÷2), vocab pop-ups. */
+window.GN_STORY = {
+  meta: {
+    unit: 5,
+    version: 2,
+    level: "Enrichment",
+    title: "Theme Park Engineer: Area Architect &#127906;",
+    standard: "6.G.1",
+    assessment: "Graphic Novel U5 #2: Theme Park Engineer: Area Architect",
+    artBase: "../_art/unit5/",
+    home: "../index.html",
+  },
 
-        var DLG = {
-          act1: [
+  cast: {
+    engineer: {
+      name: "The Engineer",
+      role: "protagonist",
+      color: "#ff8a3d",
+      tagIcon: "&#128104;&#8205;&#128295;",
+      avatar: null,
+      blurb: "You",
+    },
+    bolt: {
+      name: "BOLT",
+      role: "companion",
+      color: "#3da5ff",
+      tagIcon: "&#129302;",
+      avatar: null,
+      blurb: "Build-bot · grabs the slant edge as the height",
+    },
+    log: { name: "Park AI", role: "narrator", color: "#3da5ff" },
+  },
+
+  cover: {
+    art: "cover.png",
+    alt: "A young engineer named Maya stands on a hill looking at a glowing futuristic amusement park at sunset",
+    blurbEn:
+      "Lead <b>Engineer</b>, you have thirty days to deliver the most ambitious amusement park ever drafted. Every ride, plaza, and pavilion stays locked in the simulator until its <b>surface area</b> is calculated to the square meter. Master the area of parallelograms, triangles, and trapezoids &mdash; then fuse them into <b>composite figures</b> &mdash; to bring the whole park online. BOLT will help… but it keeps grabbing the slanted edge as the height.",
+    blurbEs: "",
+    startLabel: "Begin Build &#128640;",
+  },
+
+  acts: [
+    /* ============================ ACT 1 ============================ */
+    {
+      id: "act1",
+      tab: "Act 1: The Slanted Plaza",
+      kicker: "Act 1 · Area of Parallelograms",
+      title: "The Slanted Plaza",
+      advanceLabel: "Open the plaza &#127881;",
+      steps: [
+        {
+          type: "beats",
+          art: "design-plaza.png",
+          alt: "Maya designs a slanted parallelogram-shaped entry plaza on a glowing holographic table",
+          lastLabel: "Compute area &#9654;",
+          beats: [
             {
-              who: "Park AI",
-              en: "Lead Engineer Maya, the simulator is live. The entry plaza renders as a parallelogram &mdash; pour its slab once you compute the area.",
-              cap: true,
+              who: "log",
+              caption: true,
+              en: "Lead Engineer, the simulator is live. The entry plaza renders as a parallelogram &mdash; pour its slab once you compute the area.",
             },
             {
-              who: "Maya",
+              who: "engineer",
               en: "Standard A = b &times; h. The trap is the slanted edge &mdash; area only ever uses the perpendicular height. Feeding the solver now.",
+              vocab: [
+                {
+                  term: "perpendicular height",
+                  en: "The straight-line distance from a base to the opposite side, meeting at a right angle. It is NOT the slanted side length.",
+                },
+              ],
+            },
+            {
+              who: "bolt",
+              misconception: true,
+              en: "The slanted edge reads 7 m &mdash; I&rsquo;ll plug that in as the height: 14 &times; 7 = 98. Sending the slab spec!",
             },
           ],
-          act1b: [
+        },
+        {
+          type: "challenge",
+          id: "1a",
+          ask: {
+            who: "bolt",
+            en: 'Hold on &mdash; the entry plaza is a parallelogram. Use <span class="formula">A = b &times; h</span>, where <b>h</b> is the <b>perpendicular</b> height &mdash; not the slanted side. The base is <b>14 m</b>, the perpendicular height is <b>6 m</b>, and the slanted edge measures <b>7 m</b>. What is the area?',
+            vocab: [
+              {
+                term: "parallelogram",
+                en: "A quadrilateral with two pairs of parallel sides. A = b &times; h, where h is the perpendicular distance between the bases.",
+              },
+            ],
+          },
+          choices: [
             {
-              who: "Maya",
-              en: "Slab poured. Next the walkway is defined by its target area, not its height &mdash; so I reverse the formula and solve for the missing dimension.",
+              en: "98 m&sup2; &nbsp;(used the 7 m slant, not the height)",
+              correct: false,
+            },
+            {
+              en: "84 m&sup2; &nbsp;(14 &times; 6, perpendicular height)",
+              correct: true,
+            },
+            {
+              en: "27 m&sup2; &nbsp;(added 14 + 7 + 6)",
+              correct: false,
             },
           ],
-          bonus1: [
+          goodEn:
+            "&#9989; Correct. A = 14 &times; 6 = 84 m&sup2;. You ignored the 7 m slant and used the perpendicular height. Slab poured.",
+          badEn:
+            "&#10060; Area uses the PERPENDICULAR height (6 m), never the slanted edge (7 m). Recompute 14 &times; 6.",
+          solveBeat: {
+            who: "engineer",
+            en: "Slab poured. Next the walkway is defined by its target area, not its height &mdash; so I reverse the formula and solve for the missing dimension.",
+          },
+        },
+        {
+          type: "challenge",
+          id: "1b",
+          art: "design-plaza.png",
+          alt: "Maya designs a slanted parallelogram-shaped entry plaza on a glowing holographic table",
+          ask: {
+            who: "engineer",
+            en: 'The walkway must cover exactly <b>96 m&sup2;</b> of ground, and the blueprint fixes the base at <b>12 m</b>. Working backward from <span class="formula">A = b &times; h</span>, what height must the parallelogram have?',
+            vocab: [
+              {
+                term: "reverse problem",
+                en: "Solving for a missing dimension when the area is known: rearrange the formula, e.g. h = A &divide; b, or h = 2A &divide; b for a triangle.",
+              },
+            ],
+          },
+          choices: [
             {
-              who: "Park AI",
-              en: "Optional contract available: the VIP diamond court. Pure prestige, fully skippable &mdash; want to reverse-engineer its base?",
-              cap: true,
+              en: "108 m &nbsp;(added 96 + 12)",
+              correct: false,
+            },
+            {
+              en: "8 m &nbsp;(h = A &divide; b = 96 &divide; 12)",
+              correct: true,
+            },
+            {
+              en: "1152 m &nbsp;(multiplied 96 &times; 12)",
+              correct: false,
             },
           ],
-          act2: [
+          goodEn:
+            "&#9989; Exactly. Rearranged: h = A &divide; b = 96 &divide; 12 = 8 m. Walkway laid to spec. The plaza is open &mdash; advance whenever you like.",
+          badEn:
+            "&#10060; Reverse the formula: since A = b &times; h, solve h = A &divide; b = 96 &divide; 12.",
+          solveArt: "parallelogram-build.png",
+          solveAlt:
+            "Maya watches the glowing slanted plaza floor light up as construction robots finish it",
+          solveBeat: {
+            who: "log",
+            caption: true,
+            en: "Optional contract available: the VIP diamond court. Pure prestige, fully skippable &mdash; want to reverse-engineer its base?",
+          },
+        },
+        {
+          type: "challenge",
+          id: "B1",
+          optional: true,
+          bonusTag: "⭐ Captain's Challenge",
+          ask: {
+            who: "log",
+            en: "Optional &mdash; the plaza is already open. A diamond-shaped VIP court is a parallelogram that must cover <b>150 m&sup2;</b>. Its perpendicular height is fixed at <b>10 m</b>. Reverse-engineer the base it needs.",
+          },
+          choices: [
             {
-              who: "Park AI",
+              en: "1500 m &nbsp;(150 &times; 10)",
+              correct: false,
+            },
+            {
+              en: "15 m &nbsp;(b = A &divide; h = 150 &divide; 10)",
+              correct: true,
+            },
+            {
+              en: "140 m &nbsp;(150 &minus; 10)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "&#11088; Sharp. b = A &divide; h = 150 &divide; 10 = 15 m. The VIP diamond court is yours.",
+          badEn:
+            "&#10060; To find a base from area, divide: b = A &divide; h = 150 &divide; 10.",
+          solveBeat: {
+            who: "engineer",
+            en: "Diamond court secured. On to signs and stages.",
+          },
+        },
+      ],
+    },
+
+    /* ============================ ACT 2 ============================ */
+    {
+      id: "act2",
+      tab: "Act 2: Signs & Stages",
+      kicker: "Act 2 · Triangles & Trapezoids",
+      title: "Signs & Stages",
+      advanceLabel: "Light up the park &#10024;",
+      steps: [
+        {
+          type: "beats",
+          art: "triangle-trapezoid.png",
+          alt: "Maya stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy",
+          lastLabel: "Fabricate sign &#9654;",
+          beats: [
+            {
+              who: "log",
+              caption: true,
               en: "Plaza certified. The beacon sign is triangular and the amphitheater canopy is a trapezoid &mdash; two new formulas to fabricate.",
-              cap: true,
             },
             {
-              who: "Maya",
+              who: "engineer",
               en: "Triangle is half a parallelogram, trapezoid averages its parallel sides. I add the bases first, then apply the one-half. Building.",
+              vocab: [
+                {
+                  term: "triangle",
+                  en: "A three-sided polygon. A = &frac12;bh; it is exactly half of a parallelogram with the same base and height.",
+                },
+              ],
+            },
+            {
+              who: "bolt",
+              misconception: true,
+              en: "Beacon sign: base 16 times height 9 is 144 &mdash; fabricating at 144!",
             },
           ],
-          act2b: [
+        },
+        {
+          type: "challenge",
+          id: "2a",
+          ask: {
+            who: "bolt",
+            en: 'Wait &mdash; the triangular beacon sign uses <span class="formula">A = &frac12; &times; b &times; h</span>. The base spans <b>16 m</b> and the height rises <b>9 m</b>. Find the area of the sign face.',
+          },
+          choices: [
             {
-              who: "Maya",
-              en: "Beacon online. Now the canopy &mdash; two parallel edges, one height. Average the edges, scale by height. Straightforward.",
+              en: "144 m&sup2; &nbsp;(forgot the &frac12;: that is 16 &times; 9)",
+              correct: false,
+            },
+            {
+              en: "72 m&sup2; &nbsp;(&frac12; &times; 16 &times; 9)",
+              correct: true,
+            },
+            {
+              en: "25 m&sup2; &nbsp;(added 16 + 9)",
+              correct: false,
             },
           ],
-          bonus2: [
+          goodEn:
+            "&#9989; A = &frac12; &times; 16 &times; 9 = 72 m&sup2;. Beacon sign fabricated.",
+          badEn:
+            "&#10060; A triangle is HALF a parallelogram. Compute 16 &times; 9 = 144, then halve it.",
+          solveBeat: {
+            who: "engineer",
+            en: "Beacon online. Now the canopy &mdash; two parallel edges, one height. Average the edges, scale by height. Straightforward.",
+          },
+        },
+        {
+          type: "challenge",
+          id: "2b",
+          art: "triangle-trapezoid.png",
+          alt: "Maya stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy",
+          ask: {
+            who: "engineer",
+            en: 'The amphitheater canopy is a trapezoid: <span class="formula">A = &frac12;(b&#8321; + b&#8322;)h</span>. The parallel edges are <b>8 m</b> and <b>14 m</b>, and the height between them is <b>10 m</b>. Compute the canopy area.',
+            vocab: [
+              {
+                term: "trapezoid",
+                en: "A quadrilateral with one pair of parallel sides (bases b&#8321; and b&#8322;). A = &frac12;(b&#8321; + b&#8322;)h.",
+              },
+            ],
+          },
+          choices: [
             {
-              who: "Park AI",
-              en: "Optional flourish: a sail banner with a fixed area. Reverse the triangle formula for its height &mdash; or move straight to the final build.",
-              cap: true,
+              en: "220 m&sup2; &nbsp;(forgot the &frac12;)",
+              correct: false,
+            },
+            {
+              en: "110 m&sup2; &nbsp;(&frac12; &times; (8 + 14) &times; 10)",
+              correct: true,
+            },
+            {
+              en: "70 m&sup2; &nbsp;(only &frac12; &times; 14 &times; 10)",
+              correct: false,
             },
           ],
-          final: [
+          goodEn:
+            "&#9989; A = &frac12;(8 + 14) &times; 10 = &frac12; &times; 220 = 110 m&sup2;. Canopy raised. Signs and stages are lit &mdash; advance whenever you like.",
+          badEn:
+            "&#10060; Add BOTH parallel sides first (8 + 14 = 22), times height 10 = 220, then take half.",
+          solveBeat: {
+            who: "log",
+            caption: true,
+            en: "Optional flourish: a sail banner with a fixed area. Reverse the triangle formula for its height &mdash; or move straight to the final build.",
+          },
+        },
+        {
+          type: "challenge",
+          id: "B2",
+          optional: true,
+          bonusTag: "⭐ Captain's Challenge",
+          ask: {
+            who: "log",
+            en: 'Optional &mdash; signs and stages are already lit. A triangular sail banner must cover exactly <b>54 m&sup2;</b>, and its base is locked at <b>12 m</b>. Working backward from <span class="formula">A = &frac12;bh</span>, what height does the sail need?',
+          },
+          choices: [
             {
-              who: "Park AI",
+              en: "4.5 m &nbsp;(divided by base only: 54 &divide; 12)",
+              correct: false,
+            },
+            {
+              en: "9 m &nbsp;(h = 2A &divide; b = 108 &divide; 12)",
+              correct: true,
+            },
+            {
+              en: "18 m &nbsp;(forgot to divide by the base)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "&#11088; Reverse triangle: h = 2A &divide; b = (2 &times; 54) &divide; 12 = 108 &divide; 12 = 9 m. Sail banner trimmed perfectly.",
+          badEn:
+            "&#10060; Undo the &frac12; first: multiply the area by 2, THEN divide by the base. h = 2A &divide; b.",
+          solveBeat: {
+            who: "engineer",
+            en: "Sail trimmed. To the final build.",
+          },
+        },
+      ],
+    },
+
+    /* ============================ FINAL ============================ */
+    {
+      id: "final",
+      tab: "Final Build",
+      kicker: "Final Build · Composite Figure",
+      title: "The Grand Pavilion",
+      advanceLabel: "Open the park! &#127881;",
+      steps: [
+        {
+          type: "beats",
+          art: "composite-challenge.png",
+          alt: "Maya faces a giant holographic master blueprint of the whole park made of combined shapes",
+          lastLabel: "Run master calc &#9654;",
+          beats: [
+            {
+              who: "log",
+              caption: true,
               en: "Final structure: the Grand Pavilion. The simulator reads it as one composite figure &mdash; a trapezoid stage crowned by a triangular spire.",
-              cap: true,
+              vocab: [
+                {
+                  term: "composite figure",
+                  en: "A figure built from two or more basic shapes. Decompose it, find each area, then add (or subtract a cutout).",
+                },
+              ],
             },
             {
-              who: "Maya",
+              who: "engineer",
               en: "Decompose, solve each region, recombine. One total area and the whole park goes live. Running the master calculation.",
             },
+            {
+              who: "bolt",
+              misconception: true,
+              en: "Spire: base 18 times height 6 is 108 &mdash; plus the trapezoid 112 is 220! Locking in 220!",
+            },
           ],
-        };
-
-        var GLOSS = [
-          {
-            ico: "&#128208;",
-            en: "Area",
-            def: "The measure of the two-dimensional region enclosed by a figure, expressed in square units (m&sup2;).",
+        },
+        {
+          type: "challenge",
+          id: "F",
+          ask: {
+            who: "engineer",
+            en: "Slow down, BOLT &mdash; the triangle still needs its &frac12;. The pavilion roof is a <b>composite figure</b>: a trapezoid stage with a triangular spire on top. Find each area, then add. <br />Trapezoid: parallel sides <b>10 m</b> and <b>18 m</b>, height <b>8 m</b>. <br />Triangle spire: base <b>18 m</b>, height <b>6 m</b>.",
           },
-          {
-            ico: "&#9647;",
-            en: "Parallelogram",
-            def: "A quadrilateral with two pairs of parallel sides. A = b &times; h, where h is the perpendicular distance between the bases.",
-          },
-          {
-            ico: "&#8597;",
-            en: "Perpendicular height",
-            def: "The straight-line distance from a base to the opposite side, meeting at a right angle. It is NOT the slanted side length.",
-          },
-          {
-            ico: "&#9651;",
-            en: "Triangle",
-            def: "A three-sided polygon. A = &frac12;bh; it is exactly half of a parallelogram with the same base and height.",
-          },
-          {
-            ico: "&#9186;",
-            en: "Trapezoid",
-            def: "A quadrilateral with one pair of parallel sides (bases b&#8321; and b&#8322;). A = &frac12;(b&#8321; + b&#8322;)h.",
-          },
-          {
-            ico: "&#9636;",
-            en: "Rectangle",
-            def: "A parallelogram with four right angles. A = length &times; width; the side length equals the perpendicular height.",
-          },
-          {
-            ico: "&#129513;",
-            en: "Composite figure",
-            def: "A figure built from two or more basic shapes. Decompose it, find each area, then add (or subtract a cutout).",
-          },
-          {
-            ico: "&#128260;",
-            en: "Reverse problem",
-            def: "Solving for a missing dimension when the area is known: rearrange the formula, e.g. h = A &divide; b, or h = 2A &divide; b for a triangle.",
-          },
-          {
-            ico: "&#10134;",
-            en: "Cutout / subtraction",
-            def: "When a shape is removed from a larger one, the remaining area = whole area &minus; cutout area.",
-          },
-          {
-            ico: "&#10006;&#65039;",
-            en: "Square unit",
-            def: "The unit of area &mdash; a square measuring one unit on each side, such as a square meter (m&sup2;).",
-          },
-        ];
-
-        var state = { act1: false, act2: false, final: false };
-        var SCENES = ["cover", "act1", "act2", "final", "gloss"];
-        function $(id) {
-          return document.getElementById(id);
-        }
-        function qa(sel, root) {
-          return Array.prototype.slice.call(
-            (root || document).querySelectorAll(sel),
-          );
-        }
-
-        function updateProgress() {
-          var done =
-            (state.act1 ? 1 : 0) + (state.act2 ? 1 : 0) + (state.final ? 1 : 0);
-          var pct = Math.round((done / 3) * 100);
-          $("bar").style.width = pct + "%";
-          $("plabel").textContent = pct + "%";
-          document
-            .querySelector(".progress")
-            .setAttribute("aria-valuenow", pct);
-        }
-        function setLock(tabId, locked) {
-          var t = $(tabId);
-          t.classList.toggle("locked", locked);
-          var label = t.textContent.replace(/^[\s\S]*?(Act|Final)/, "$1");
-          t.innerHTML =
-            (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
-        }
-        function refreshLocks() {
-          setLock("tab-act2", !state.act1);
-          setLock("tab-final", !state.act2);
-          $("lock-act2").classList.toggle("show", !state.act1);
-          $("body-act2").style.display = state.act1 ? "" : "none";
-          $("lock-final").classList.toggle("show", !state.act2);
-          $("body-final").style.display = state.act2 ? "" : "none";
-        }
-        function showScene(name) {
-          SCENES.forEach(function (s) {
-            var sc = $("scene-" + s);
-            if (sc) sc.classList.toggle("active", s === name);
-            var tab = $("tab-" + s);
-            if (tab)
-              tab.setAttribute("aria-selected", s === name ? "true" : "false");
-          });
-          $("scene-complete").classList.remove("active", "show");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        function showComplete() {
-          SCENES.forEach(function (s) {
-            var sc = $("scene-" + s);
-            if (sc) sc.classList.remove("active");
-          });
-          qa(".tab").forEach(function (t) {
-            t.setAttribute("aria-selected", "false");
-          });
-          $("scene-complete").classList.add("active", "show");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        qa(".tab").forEach(function (tab) {
-          tab.addEventListener("click", function () {
-            if (!tab.classList.contains("locked")) showScene(tab.dataset.scene);
-          });
-          tab.addEventListener("keydown", function (e) {
-            var arr = qa(".tab");
-            var i = arr.indexOf(tab);
-            if (e.key === "ArrowRight") {
-              e.preventDefault();
-              (arr[i + 1] || arr[0]).focus();
-            }
-            if (e.key === "ArrowLeft") {
-              e.preventDefault();
-              (arr[i - 1] || arr[arr.length - 1]).focus();
-            }
-          });
-        });
-
-        function runDialogue(opts) {
-          var idx = 0,
-            dlgBox = $(opts.dlgId),
-            nextBtn = $(opts.nextId),
-            dots = $(opts.dotsId);
-          dots.innerHTML = "";
-          opts.dlg.forEach(function () {
-            dots.appendChild(document.createElement("i"));
-          });
-          function render() {
-            var line = opts.dlg[idx];
-            dlgBox.innerHTML =
-              '<div class="bubble' +
-              (line.cap ? " caption" : "") +
-              '"><div class="who">' +
-              line.who +
-              '</div><div class="en">' +
-              line.en +
-              "</div></div>";
-            qa("i", dots).forEach(function (d, k) {
-              d.classList.toggle("on", k <= idx);
-            });
-            nextBtn.textContent =
-              idx === opts.dlg.length - 1
-                ? opts.lastLabel || "Continue ▶"
-                : "Next ▶";
-          }
-          nextBtn.onclick = function () {
-            if (idx < opts.dlg.length - 1) {
-              idx++;
-              render();
-            } else if (opts.onDone) opts.onDone();
-          };
-          render();
-        }
-
-        function wireChoices(opts) {
-          var solved = false;
-          qa(".choice", $(opts.choicesId)).forEach(function (btn) {
-            btn.addEventListener("click", function () {
-              if (solved) return;
-              var fb = $(opts.feedbackId);
-              if (btn.dataset.correct === "true") {
-                solved = true;
-                btn.classList.add("correct");
-                fb.className = "feedback show good";
-                fb.innerHTML = opts.goodEn;
-                qa(".choice", $(opts.choicesId)).forEach(function (b) {
-                  b.disabled = true;
-                });
-                if (opts.onSolve) opts.onSolve();
-              } else {
-                btn.classList.add("wrong");
-                btn.disabled = true;
-                fb.className = "feedback show bad";
-                fb.innerHTML = opts.badEn;
-              }
-            });
-          });
-        }
-
-        (function () {
-          var list = $("gloss-list");
-          GLOSS.forEach(function (g) {
-            var d = document.createElement("div");
-            d.className = "term";
-            d.innerHTML =
-              '<div class="ico">' +
-              g.ico +
-              "</div><div><h3>" +
-              g.en +
-              "</h3><p>" +
-              g.def +
-              "</p></div>";
-            list.appendChild(d);
-          });
-        })();
-
-        function showBubble(boxId, line) {
-          $(boxId).innerHTML =
-            '<div class="bubble' +
-            (line.cap ? " caption" : "") +
-            '"><div class="who">' +
-            line.who +
-            '</div><div class="en">' +
-            line.en +
-            "</div></div>";
-        }
-
-        function initAct1() {
-          runDialogue({
-            dlgId: "dlg-act1",
-            nextId: "next-act1",
-            dotsId: "dots-act1",
-            dlg: DLG.act1,
-            lastLabel: "Compute area ▶",
-            onDone: function () {
-              $("next-act1").style.display = "none";
-              $("chal1a").style.display = "block";
-              $("chal1a").scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
+          choices: [
+            {
+              en: "112 m&sup2; &nbsp;(only the trapezoid)",
+              correct: false,
             },
-          });
-          wireChoices({
-            choicesId: "choices1a",
-            feedbackId: "fb1a",
-            goodEn:
-              "&#9989; Correct. A = 14 &times; 6 = 84 m&sup2;. You ignored the 7 m slant and used the perpendicular height. Slab poured.",
-            badEn:
-              "&#10060; Area uses the PERPENDICULAR height (6 m), never the slanted edge (7 m). Recompute 14 &times; 6.",
-            onSolve: function () {
-              setTimeout(function () {
-                showBubble("dlg-act1", DLG.act1b[0]);
-                $("chal1b").style.display = "block";
-              }, 450);
+            {
+              en: "166 m&sup2; &nbsp;(112 + 54, both parts)",
+              correct: true,
             },
-          });
-          wireChoices({
-            choicesId: "choices1b",
-            feedbackId: "fb1b",
-            goodEn:
-              "&#9989; Exactly. Rearranged: h = A &divide; b = 96 &divide; 12 = 8 m. Walkway laid to spec. The plaza is open &mdash; advance whenever you like.",
-            badEn:
-              "&#10060; Reverse the formula: since A = b &times; h, solve h = A &divide; b = 96 &divide; 12.",
-            onSolve: function () {
-              // CORE locks solved -> reveal advance immediately (bonus stays optional)
-              $("art-act1").src = "../_art/unit5/parallelogram-build.png";
-              $("art-act1").alt =
-                "Maya watches the glowing slanted plaza floor light up as construction robots finish it";
-              $("adv-act1").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act1", DLG.bonus1[0]);
-                $("bonus1").style.display = "block";
-              }, 450);
+            {
+              en: "220 m&sup2; &nbsp;(forgot both &frac12; factors)",
+              correct: false,
             },
-          });
-          wireChoices({
-            choicesId: "choicesB1",
-            feedbackId: "fbB1",
-            goodEn:
-              "&#11088; Sharp. b = A &divide; h = 150 &divide; 10 = 15 m. The VIP diamond court is yours.",
-            badEn:
-              "&#10060; To find a base from area, divide: b = A &divide; h = 150 &divide; 10.",
-            onSolve: function () {}, // optional: no gating
-          });
-          $("adv-act1").addEventListener("click", function () {
-            state.act1 = true;
-            updateProgress();
-            refreshLocks();
-            showScene("act2");
-          });
-        }
+          ],
+          goodEn:
+            "&#9989; Trapezoid &frac12;(10 + 18) &times; 8 = 112, triangle &frac12; &times; 18 &times; 6 = 54, total 112 + 54 = 166 m&sup2;. Pavilion certified &mdash; the park can open!",
+          badEn:
+            "&#10060; Solve each region: trapezoid = &frac12;(10+18)&times;8 = 112; triangle = &frac12;&times;18&times;6 = 54; then ADD: 112 + 54 = 166.",
+          solveBeat: {
+            who: "log",
+            caption: true,
+            en: "Pavilion certified. One optional master flourish remains: the reflecting pool cutout. Skip it anytime &mdash; the park is already cleared to open.",
+          },
+        },
+        {
+          type: "challenge",
+          id: "BF",
+          optional: true,
+          bonusTag: "⭐ Captain's Challenge",
+          ask: {
+            who: "log",
+            en: "Optional &mdash; the park is already open! The central courtyard is a <b>20 m by 12 m</b> rectangle, but a triangular reflecting pool (base <b>8 m</b>, height <b>6 m</b>) is cut OUT of it. How much paved area remains? Subtract the cutout.",
+            vocab: [
+              {
+                term: "cutout",
+                en: "When a shape is removed from a larger one, the remaining area = whole area &minus; cutout area.",
+              },
+            ],
+          },
+          choices: [
+            {
+              en: "264 m&sup2; &nbsp;(added the pool instead of subtracting)",
+              correct: false,
+            },
+            {
+              en: "216 m&sup2; &nbsp;(240 &minus; 24)",
+              correct: true,
+            },
+            {
+              en: "192 m&sup2; &nbsp;(subtracted the full 8 &times; 6 = 48)",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "&#11088; Rectangle 20 &times; 12 = 240, minus triangular pool &frac12; &times; 8 &times; 6 = 24, leaves 240 &minus; 24 = 216 m&sup2; paved. Masterful.",
+          badEn:
+            "&#10060; This is a SUBTRACTION composite: whole rectangle (240) minus the triangle cutout (&frac12;&times;8&times;6 = 24).",
+          solveBeat: {
+            who: "engineer",
+            en: "Courtyard paved around the pool. Open the park.",
+          },
+        },
+      ],
+    },
+  ],
 
-        function initAct2() {
-          runDialogue({
-            dlgId: "dlg-act2",
-            nextId: "next-act2",
-            dotsId: "dots-act2",
-            dlg: DLG.act2,
-            lastLabel: "Fabricate sign ▶",
-            onDone: function () {
-              $("next-act2").style.display = "none";
-              $("chal2a").style.display = "block";
-              $("chal2a").scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            },
-          });
-          wireChoices({
-            choicesId: "choices2a",
-            feedbackId: "fb2a",
-            goodEn:
-              "&#9989; A = &frac12; &times; 16 &times; 9 = 72 m&sup2;. Beacon sign fabricated.",
-            badEn:
-              "&#10060; A triangle is HALF a parallelogram. Compute 16 &times; 9 = 144, then halve it.",
-            onSolve: function () {
-              setTimeout(function () {
-                showBubble("dlg-act2", DLG.act2b[0]);
-                $("chal2b").style.display = "block";
-              }, 450);
-            },
-          });
-          wireChoices({
-            choicesId: "choices2b",
-            feedbackId: "fb2b",
-            goodEn:
-              "&#9989; A = &frac12;(8 + 14) &times; 10 = &frac12; &times; 220 = 110 m&sup2;. Canopy raised. Signs and stages are lit &mdash; advance whenever you like.",
-            badEn:
-              "&#10060; Add BOTH parallel sides first (8 + 14 = 22), times height 10 = 220, then take half.",
-            onSolve: function () {
-              // CORE locks solved -> reveal advance now (bonus optional)
-              $("adv-act2").classList.add("show");
-              setTimeout(function () {
-                showBubble("dlg-act2", DLG.bonus2[0]);
-                $("bonus2").style.display = "block";
-              }, 450);
-            },
-          });
-          wireChoices({
-            choicesId: "choicesB2",
-            feedbackId: "fbB2",
-            goodEn:
-              "&#11088; Reverse triangle: h = 2A &divide; b = (2 &times; 54) &divide; 12 = 108 &divide; 12 = 9 m. Sail banner trimmed perfectly.",
-            badEn:
-              "&#10060; Undo the &frac12; first: multiply the area by 2, THEN divide by the base. h = 2A &divide; b.",
-            onSolve: function () {},
-          });
-          $("adv-act2").addEventListener("click", function () {
-            state.act2 = true;
-            updateProgress();
-            refreshLocks();
-            showScene("final");
-          });
-        }
+  glossary: [
+    {
+      ico: "&#128208;",
+      en: "Area",
+      def: "The measure of the two-dimensional region enclosed by a figure, expressed in square units (m&sup2;).",
+    },
+    {
+      ico: "&#9647;",
+      en: "Parallelogram",
+      def: "A quadrilateral with two pairs of parallel sides. A = b &times; h, where h is the perpendicular distance between the bases.",
+    },
+    {
+      ico: "&#8597;",
+      en: "Perpendicular height",
+      def: "The straight-line distance from a base to the opposite side, meeting at a right angle. It is NOT the slanted side length.",
+    },
+    {
+      ico: "&#9651;",
+      en: "Triangle",
+      def: "A three-sided polygon. A = &frac12;bh; it is exactly half of a parallelogram with the same base and height.",
+    },
+    {
+      ico: "&#9186;",
+      en: "Trapezoid",
+      def: "A quadrilateral with one pair of parallel sides (bases b&#8321; and b&#8322;). A = &frac12;(b&#8321; + b&#8322;)h.",
+    },
+    {
+      ico: "&#9636;",
+      en: "Rectangle",
+      def: "A parallelogram with four right angles. A = length &times; width; the side length equals the perpendicular height.",
+    },
+    {
+      ico: "&#129513;",
+      en: "Composite figure",
+      def: "A figure built from two or more basic shapes. Decompose it, find each area, then add (or subtract a cutout).",
+    },
+    {
+      ico: "&#128260;",
+      en: "Reverse problem",
+      def: "Solving for a missing dimension when the area is known: rearrange the formula, e.g. h = A &divide; b, or h = 2A &divide; b for a triangle.",
+    },
+    {
+      ico: "&#10134;",
+      en: "Cutout / subtraction",
+      def: "When a shape is removed from a larger one, the remaining area = whole area &minus; cutout area.",
+    },
+    {
+      ico: "&#10006;&#65039;",
+      en: "Square unit",
+      def: "The unit of area &mdash; a square measuring one unit on each side, such as a square meter (m&sup2;).",
+    },
+  ],
 
-        function initFinal() {
-          runDialogue({
-            dlgId: "dlg-final",
-            nextId: "next-final",
-            dotsId: "dots-final",
-            dlg: DLG.final,
-            lastLabel: "Run master calc ▶",
-            onDone: function () {
-              $("next-final").style.display = "none";
-              $("chalF").style.display = "block";
-              $("chalF").scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            },
-          });
-          wireChoices({
-            choicesId: "choicesF",
-            feedbackId: "fbF",
-            goodEn:
-              "&#9989; Trapezoid &frac12;(10 + 18) &times; 8 = 112, triangle &frac12; &times; 18 &times; 6 = 54, total 112 + 54 = 166 m&sup2;. Pavilion certified &mdash; the park can open!",
-            badEn:
-              "&#10060; Solve each region: trapezoid = &frac12;(10+18)&times;8 = 112; triangle = &frac12;&times;18&times;6 = 54; then ADD: 112 + 54 = 166.",
-            onSolve: function () {
-              // CORE composite solved -> reveal advance now (bonus optional)
-              $("adv-final").classList.add("show");
-              setTimeout(function () {
-                $("bonusF").style.display = "block";
-              }, 300);
-            },
-          });
-          wireChoices({
-            choicesId: "choicesBF",
-            feedbackId: "fbBF",
-            goodEn:
-              "&#11088; Rectangle 20 &times; 12 = 240, minus triangular pool &frac12; &times; 8 &times; 6 = 24, leaves 240 &minus; 24 = 216 m&sup2; paved. Masterful.",
-            badEn:
-              "&#10060; This is a SUBTRACTION composite: whole rectangle (240) minus the triangle cutout (&frac12;&times;8&times;6 = 24).",
-            onSolve: function () {},
-          });
-          $("adv-final").addEventListener("click", function () {
-            state.final = true;
-            updateProgress();
-            showComplete();
-          });
-        }
+  complete: {
+    art: "grand-opening.png",
+    alt: "Maya raises her arms in triumph as the finished theme park glows with rides and fireworks",
+    badge: "&#127881;&#127906;&#11088;",
+    titleEn: "Grand Opening &mdash; Mission Complete!",
+    en: "The park is fully online, Engineer. You computed parallelogram areas with the true perpendicular height, reverse-engineered missing dimensions, mastered triangles and trapezoids, and decomposed the pavilion into a composite figure. Every structure passed inspection to the square meter &mdash; a flawless launch.",
+    es: "",
+    master: {
+      headingEn: "Prove your rank to certify your Master Certificate!",
+      promptEn:
+        "Plaza Trapezoid: A trapezoidal performance stage has parallel bases of <strong>6 meters and 10 meters</strong>, and a height of <strong>4 meters</strong>. What is the area of the stage?",
+      promptEs: "",
+      choices: [
+        {
+          en: "A) 64 square meters &nbsp;(multiplied sum of bases by height without halving)",
+          correct: false,
+        },
+        {
+          en: "B) 32 square meters &nbsp;(&frac12; &times; (6 + 10) &times; 4 = 32) &nbsp;✅",
+          correct: true,
+        },
+        {
+          en: "C) 16 square meters &nbsp;(halved height incorrectly)",
+          correct: false,
+        },
+      ],
+      goodEn:
+        "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟",
+      badEn:
+        "❌ That is incorrect. Review your calculations and try another option!",
+      certifyTitle: "🏆 Master Certified: Mission Complete!",
+    },
+  },
+};
 
-        $("start-btn").addEventListener("click", function () {
-          showScene("act1");
-        });
-        $("restart-btn").addEventListener("click", function () {
-          location.reload();
-        });
-
-        initAct1();
-        initAct2();
-        initFinal();
-        
-        // Programmatic Master Challenge Wiring
-        (function() {
-          var solved = false;
-          var btnList = document.querySelectorAll("#choicesComplete .choice");
-          var fb = document.getElementById("fbComplete");
-          
-          btnList.forEach(function(btn) {
-            btn.addEventListener("click", function() {
-              if (solved) return;
-              var correct = btn.getAttribute("data-correct") === "true";
-              if (correct) {
-                solved = true;
-                btn.classList.add("correct");
-                fb.className = "feedback show good";
-                fb.innerHTML = "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟";
-                btnList.forEach(function(b) { b.disabled = true; });
-                
-                var h2 = document.querySelector("#scene-complete h2");
-                if (h2) h2.innerHTML = "🏆 Master Certified: Mission Complete!";
-              } else {
-                btn.classList.add("wrong");
-                btn.disabled = true;
-                fb.className = "feedback show bad";
-                fb.innerHTML = "❌ That is incorrect. Review your calculations and try another option!";
-              }
-            });
-          });
-        })();
-
-        refreshLocks();
-        updateProgress();
-      })();
     </script>
-    
-      <script src="/teacher-tools/nt-results.js"></script>
-<script>
-/* Graphic-novel completion tracking → NTResults (Neft Teacher). */
+    <script>
+/* ===========================================================================
+   Neft Teacher · Graphic-Novel Engine  ·  gn-engine.js
+   Renders a STORY object (window.GN_STORY) into a panel-based, dialogue-driven
+   comic. One engine, 20 novels. No build step needed at runtime; fully offline.
+
+   STORY shape is documented in story.schema.md. Key contracts preserved for the
+   existing Neft results pipeline (do NOT rename):
+     • each math choice group is a .choices container holding .choice buttons
+     • a solved choice's correct button gets class "correct"
+     • the master-rank group has id="choicesComplete" (excluded from scoring)
+     • the finish scene is #scene-complete and gets classes show/active when done
+   The nt-results.js tracker at the bottom of each file reads exactly those.
+   =========================================================================== */
 (function () {
   "use strict";
-  var FIRED = false; // dedupe guard: record once per completion
-  var complete = document.getElementById("scene-complete");
-  if (!complete || typeof NTResults === "undefined") return;
-
-  function studentName() {
-    try {
-      var k = "nt_gn_student";
-      var n = localStorage.getItem(k);
-      if (n && n.trim()) return n.trim();
-      n = window.prompt("Type your name so your teacher can see you finished:", "");
-      n = (n || "").trim();
-      if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
-      return n || "Student";
-    } catch (e) { return "Student"; }
+  var S = window.GN_STORY;
+  if (!S) {
+    console.error("GN: window.GN_STORY missing");
+    return;
   }
 
-  function score() {
-    // Core math choice-points = all .choices groups except the bonus one.
-    var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
-      .filter(function (g) { return g.id !== "choicesComplete"; });
-    var total = groups.length || 0;
-    var correct = groups.filter(function (g) {
-      return g.querySelector(".choice.correct");
-    }).length;
-    return { correct: correct, total: total };
+  /* ---------- tiny helpers ---------- */
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function $(id) {
+    return document.getElementById(id);
+  }
+  function art(file) {
+    return (S.meta.artBase || "") + file;
+  }
+  function txt(v) {
+    return v == null ? "" : v;
   }
 
-  function savedNote() {
-    if (document.getElementById("nt-saved-note")) return;
-    var p = document.createElement("p");
-    p.id = "nt-saved-note";
-    p.setAttribute("role", "status");
-    p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
-    p.textContent = "✓ Results saved for your teacher.";
-    complete.insertBefore(p, complete.querySelector(".restart") || null);
-  }
-
-  function record() {
-    if (FIRED) return;
-    FIRED = true;
-    var s = score();
-    try {
-      NTResults.finish({
-        student: studentName(),
-        assessment: "Graphic Novel U5 #2: Theme Park Engineer: Area Architect",
-        standard: "6.G.1",
-        level: "2",
-        sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
-        correct: s.correct,
-        total: s.total,
-        download: false, // log only; teacher pulls the class set
+  /* ---------- theme + document chrome ---------- */
+  function applyTheme() {
+    document.documentElement.lang = "en";
+    document.title =
+      "Graphic Novel #" + S.meta.version + " · " + stripTags(S.meta.title);
+    if (S.meta.theme) {
+      var r = document.documentElement;
+      Object.keys(S.meta.theme).forEach(function (k) {
+        r.style.setProperty(k, S.meta.theme[k]);
       });
-    } catch (e) { /* non-fatal */ }
-    savedNote();
+    }
+  }
+  function stripTags(s) {
+    return String(s).replace(/<[^>]+>/g, "");
   }
 
-  // Fire when the completion scene becomes visible (show/active class added).
-  function visible() {
-    return complete.classList.contains("show") || complete.classList.contains("active");
+  /* ---------- speaker rendering (optional avatar slot) ---------- */
+  function speaker(id) {
+    return (
+      (S.cast && S.cast[id]) || { name: id, color: "#c2461d", avatar: null }
+    );
   }
-  if (visible()) record();
-  var mo = new MutationObserver(function () { if (visible()) record(); });
-  mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+  function whoTag(spkId, isMe) {
+    var c = speaker(spkId);
+    var inner;
+    if (c.avatar) {
+      inner =
+        '<span class="av"><img src="' + art(c.avatar) + '" alt="" /></span>';
+    } else {
+      var initial = (c.tagIcon || c.name.charAt(0)).toString();
+      inner = '<span class="av" aria-hidden="true">' + initial + "</span>";
+    }
+    return (
+      '<span class="who" style="--spk:' +
+      (c.color || "#c2461d") +
+      '">' +
+      inner +
+      "<span>" +
+      c.name +
+      "</span>" +
+      (isMe || c.role === "protagonist"
+        ? '<span class="me">· YOU</span>'
+        : "") +
+      "</span>"
+    );
+  }
+
+  /* ---------- vocab markup: wrap term occurrences with a tappable tag ----------
+     A beat/challenge may carry vocab:[{term,en,es}]. We wrap the FIRST literal
+     occurrence of term in the English text. Definitions open in a popover. */
+  var VOCAB_STORE = [];
+  function injectVocab(htmlEn, vocab) {
+    if (!vocab || !vocab.length) return htmlEn;
+    vocab.forEach(function (v) {
+      var i = VOCAB_STORE.push(v) - 1;
+      var re = new RegExp("(" + escapeRe(v.term) + ")", "i");
+      htmlEn = htmlEn.replace(
+        re,
+        '<button type="button" class="vocab-tag" data-vocab="' +
+          i +
+          '" aria-label="Definition of ' +
+          stripTags(v.term) +
+          '">$1</button>',
+      );
+    });
+    return htmlEn;
+  }
+  function escapeRe(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  /* ---------- popover (vocab + callout) ---------- */
+  function openPop(anchor, title, en, es) {
+    closePop();
+    var back = el("div", "gn-pop-back");
+    back.id = "gn-pop-back";
+    back.addEventListener("click", closePop);
+    var p = el("div", "gn-pop");
+    p.id = "gn-pop";
+    p.setAttribute("role", "dialog");
+    p.setAttribute("aria-label", stripTags(title || "Definition"));
+    p.innerHTML =
+      '<button class="x" aria-label="Close">&times;</button>' +
+      (title ? "<h4>" + title + "</h4>" : "") +
+      '<div class="en">' +
+      en +
+      "</div>" +
+      (es ? '<div class="es">' + es + "</div>" : "");
+    document.body.appendChild(back);
+    document.body.appendChild(p);
+    p.querySelector(".x").addEventListener("click", closePop);
+    // position near anchor, clamped to viewport
+    var r = anchor.getBoundingClientRect();
+    var pw = Math.min(280, window.innerWidth - 20);
+    p.style.width = pw + "px";
+    var left = Math.min(Math.max(10, r.left), window.innerWidth - pw - 10);
+    var top = r.bottom + 8;
+    if (top + p.offsetHeight > window.innerHeight - 10) {
+      top = Math.max(10, r.top - p.offsetHeight - 8);
+    }
+    p.style.left = left + "px";
+    p.style.top = top + "px";
+    p.querySelector(".x").focus();
+  }
+  function closePop() {
+    var a = $("gn-pop"),
+      b = $("gn-pop-back");
+    if (a) a.remove();
+    if (b) b.remove();
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closePop();
+  });
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest && e.target.closest(".vocab-tag");
+    if (t) {
+      var v = VOCAB_STORE[+t.dataset.vocab];
+      if (v) openPop(t, v.term, v.en, v.es);
+    }
+  });
+
+  /* ---------- bubble builder ---------- */
+  function bubble(beat) {
+    var c = speaker(beat.who);
+    var isCap = c.role === "narrator" || beat.caption;
+    var pos = beat.pos || (c.role === "protagonist" ? "right" : "left");
+    var b = el(
+      "div",
+      "bubble " +
+        pos +
+        (isCap ? " caption" : "") +
+        (beat.misconception ? " misc" : ""),
+    );
+    var en = injectVocab(txt(beat.en), beat.vocab);
+    b.innerHTML =
+      whoTag(beat.who) +
+      '<div class="en">' +
+      en +
+      "</div>" +
+      (beat.es ? '<div class="es">' + beat.es + "</div>" : "");
+    return b;
+  }
+
+  /* =========================================================================
+     BUILD DOM
+     ========================================================================= */
+  var SCENE_IDS = []; // cover, act ids..., gloss
+
+  function build() {
+    applyTheme();
+    document.body.appendChild(buildTopbar());
+    var main = el("main");
+    main.appendChild(buildCover());
+    S.acts.forEach(function (act, i) {
+      main.appendChild(buildAct(act, i));
+    });
+    main.appendChild(buildComplete());
+    main.appendChild(buildGloss());
+    document.body.appendChild(main);
+    wireTabs();
+    buildGlossList();
+    refreshLocks();
+    updateProgress();
+    showScene("cover");
+  }
+
+  function buildTopbar() {
+    var bar = el("div", "topbar");
+    var inner = el("div", "topbar-inner");
+    inner.innerHTML =
+      '<a class="home" href="' +
+      (S.meta.home || "../index.html") +
+      '">&#8592; Home</a>' +
+      '<span class="title"><span class="v">#' +
+      S.meta.version +
+      "</span> " +
+      S.meta.title +
+      "</span>" +
+      '<div class="progress-wrap"><div class="progress" role="progressbar" ' +
+      'aria-label="Mission progress" aria-valuemin="0" aria-valuemax="100" ' +
+      'aria-valuenow="0"><i id="bar"></i></div>' +
+      '<span class="progress-label" id="plabel">0%</span></div>' +
+      '<button class="txtsize" id="txtsize" aria-label="Change text size" ' +
+      'title="Text size">A+</button>';
+    bar.appendChild(inner);
+
+    var tabs = el("div", "tabs");
+    tabs.setAttribute("role", "tablist");
+    tabs.setAttribute("aria-label", "Chapters");
+    tabs.appendChild(tabBtn("cover", "Cover", false));
+    S.acts.forEach(function (a, i) {
+      tabs.appendChild(tabBtn(a.id, a.tab, i > 0));
+    });
+    tabs.appendChild(tabBtn("gloss", "Glossary", false));
+    bar.appendChild(tabs);
+    return bar;
+  }
+  function tabBtn(scene, label, locked) {
+    var b = el("button", "tab" + (locked ? " locked" : ""));
+    b.id = "tab-" + scene;
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", scene === "cover" ? "true" : "false");
+    b.dataset.scene = scene;
+    b.dataset.label = label;
+    b.innerHTML = (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+    return b;
+  }
+
+  function buildCover() {
+    var s = el("section", "scene active cover-card");
+    s.id = "scene-cover";
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-labelledby", "tab-cover");
+    SCENE_IDS.push("cover");
+    var cv = S.cover;
+    var castChips = "";
+    Object.keys(S.cast || {}).forEach(function (k) {
+      var c = S.cast[k];
+      if (c.role === "narrator") return;
+      var av = c.avatar
+        ? '<span class="av" style="background:' +
+          c.color +
+          '"><img src="' +
+          art(c.avatar) +
+          '" alt=""></span>'
+        : '<span class="av" style="background:' +
+          c.color +
+          '">' +
+          (c.tagIcon || c.name.charAt(0)) +
+          "</span>";
+      castChips +=
+        '<span class="cast-chip">' +
+        av +
+        "<b>" +
+        c.name +
+        "</b> <span>" +
+        (c.blurb || c.role) +
+        "</span></span>";
+    });
+    s.innerHTML =
+      '<div class="panel"><img src="' +
+      art(cv.art) +
+      '" alt="' +
+      txt(cv.alt) +
+      '"></div>' +
+      '<span class="level-pill">Graphic Novel #' +
+      S.meta.version +
+      " &middot; " +
+      S.meta.level +
+      "</span>" +
+      "<h2>" +
+      S.meta.title +
+      "</h2>" +
+      "<p>" +
+      cv.blurbEn +
+      "</p>" +
+      (cv.blurbEs
+        ? '<p style="font-size:0.92rem"><i>' + cv.blurbEs + "</i></p>"
+        : "") +
+      '<div class="cast-row">' +
+      castChips +
+      "</div>" +
+      '<button class="start" id="start-btn">' +
+      (cv.startLabel || "Start &#128640;") +
+      "</button>";
+    s.querySelector("#start-btn").addEventListener("click", function () {
+      showScene(S.acts[0].id);
+    });
+    return s;
+  }
+
+  function buildAct(act, idx) {
+    var s = el("section", "scene");
+    s.id = "scene-" + act.id;
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-labelledby", "tab-" + act.id);
+    SCENE_IDS.push(act.id);
+
+    var lock = el("div", "locked-note");
+    lock.id = "lock-" + act.id;
+    lock.innerHTML =
+      "&#128274; Finish the previous chapter to unlock " +
+      stripTags(act.title) +
+      ".";
+    s.appendChild(lock);
+
+    var body = el("div");
+    body.id = "body-" + act.id;
+    body.innerHTML =
+      '<div class="scene-head"><span class="act">' +
+      act.kicker +
+      "</span><h2>" +
+      act.title +
+      "</h2></div>" +
+      '<div class="panel" id="panel-' +
+      act.id +
+      '">' +
+      '<img id="art-' +
+      act.id +
+      '" src="" alt="">' +
+      '<div class="speech" id="speech-' +
+      act.id +
+      '" aria-live="polite"></div></div>' +
+      '<div class="dlg-row"><div class="dots" id="dots-' +
+      act.id +
+      '"></div>' +
+      '<button class="next" id="next-' +
+      act.id +
+      '">Next &#9654;</button></div>' +
+      '<div id="chal-' +
+      act.id +
+      '"></div>' +
+      '<div class="scene-foot"><button class="advance" id="adv-' +
+      act.id +
+      '">' +
+      (act.advanceLabel || "Continue &#9654;") +
+      "</button></div>";
+    s.appendChild(body);
+    return s;
+  }
+
+  function buildComplete() {
+    var s = el("section", "scene complete");
+    s.id = "scene-complete";
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-label", "Mission complete");
+    var cp = S.complete;
+    var html =
+      '<div class="panel"><img src="' +
+      art(cp.art) +
+      '" alt="' +
+      txt(cp.alt) +
+      '"></div>' +
+      '<span class="badge-done">' +
+      (cp.badge || "&#127881;") +
+      "</span>" +
+      "<h2>" +
+      (cp.titleEn || "Mission Complete!") +
+      "</h2>" +
+      "<p>" +
+      cp.en +
+      "</p>" +
+      '<p style="color:var(--muted);font-size:0.92rem"><i>' +
+      cp.es +
+      "</i></p>";
+    if (cp.master) {
+      var m = cp.master,
+        ch = "";
+      m.choices.forEach(function (c) {
+        ch +=
+          '<button class="choice" data-correct="' +
+          !!c.correct +
+          '">' +
+          c.en +
+          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+          "</button>";
+      });
+      html +=
+        '<div class="challenge bonus" id="chalComplete">' +
+        '<span class="bonus-tag">&#127942; MASTER RANK CHALLENGE</span>' +
+        "<h3>" +
+        (m.headingEn || "Prove your rank!") +
+        "</h3>" +
+        '<p class="prompt">' +
+        m.promptEn +
+        '<span class="es">' +
+        m.promptEs +
+        "</span></p>" +
+        '<div class="choices" id="choicesComplete">' +
+        ch +
+        "</div>" +
+        '<div class="feedback" id="fbComplete"></div></div>';
+    }
+    html +=
+      '<button class="restart" id="restart-btn">Play again &#8635;</button>';
+    s.innerHTML = html;
+    return s;
+  }
+
+  function buildGloss() {
+    var s = el("section", "scene");
+    s.id = "scene-gloss";
+    s.setAttribute("role", "tabpanel");
+    s.setAttribute("aria-labelledby", "tab-gloss");
+    SCENE_IDS.push("gloss");
+    s.innerHTML =
+      '<div class="scene-head"><span class="act">Reference</span>' +
+      "<h2>Glossary &middot; Word Bank</h2></div>" +
+      '<div class="gloss" id="gloss-list"></div>';
+    return s;
+  }
+  function buildGlossList() {
+    var list = $("gloss-list");
+    (S.glossary || []).forEach(function (g) {
+      var d = el("div", "term");
+      d.innerHTML =
+        '<div class="ico">' +
+        g.ico +
+        "</div><div><h3>" +
+        g.en +
+        ' <span class="es-term">(' +
+        g.es +
+        ")</span></h3><p>" +
+        g.def +
+        "</p></div>";
+      list.appendChild(d);
+    });
+  }
+
+  /* =========================================================================
+     STATE + NAVIGATION
+     ========================================================================= */
+  var state = {};
+  S.acts.forEach(function (a) {
+    state[a.id] = false;
+  });
+
+  function updateProgress() {
+    var done = 0;
+    S.acts.forEach(function (a) {
+      if (state[a.id]) done++;
+    });
+    var pct = Math.round((done / S.acts.length) * 100);
+    $("bar").style.width = pct + "%";
+    $("plabel").textContent = pct + "%";
+    document.querySelector(".progress").setAttribute("aria-valuenow", pct);
+  }
+
+  function refreshLocks() {
+    S.acts.forEach(function (a, i) {
+      if (i === 0) return;
+      var prevDone = state[S.acts[i - 1].id];
+      setLock("tab-" + a.id, !prevDone, a.tab);
+      $("lock-" + a.id).classList.toggle("show", !prevDone);
+      $("body-" + a.id).style.display = prevDone ? "" : "none";
+    });
+  }
+  function setLock(tabId, locked, label) {
+    var t = $(tabId);
+    if (!t) return;
+    t.classList.toggle("locked", locked);
+    t.innerHTML = (locked ? '<span class="lk">&#128274;</span> ' : "") + label;
+  }
+
+  function showScene(name) {
+    SCENE_IDS.forEach(function (s) {
+      var sc = $("scene-" + s);
+      if (sc) sc.classList.toggle("active", s === name);
+      var tab = $("tab-" + s);
+      if (tab) tab.setAttribute("aria-selected", s === name ? "true" : "false");
+    });
+    var cmp = $("scene-complete");
+    cmp.classList.remove("active", "show");
+    // (re)start the act's flow when entered
+    var act = findAct(name);
+    if (act && state.__started !== name) {
+      state.__started = name;
+      runAct(act);
+    }
+    closePop();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  function findAct(id) {
+    for (var i = 0; i < S.acts.length; i++)
+      if (S.acts[i].id === id) return S.acts[i];
+    return null;
+  }
+  function showComplete() {
+    SCENE_IDS.forEach(function (s) {
+      var sc = $("scene-" + s);
+      if (sc) sc.classList.remove("active");
+    });
+    document.querySelectorAll(".tab").forEach(function (t) {
+      t.setAttribute("aria-selected", "false");
+    });
+    var c = $("scene-complete");
+    c.classList.add("active", "show");
+    wireMaster();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function wireTabs() {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        if (tab.classList.contains("locked")) return;
+        showScene(tab.dataset.scene);
+      });
+      tab.addEventListener("keydown", function (e) {
+        var i = tabs.indexOf(tab);
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          (tabs[i + 1] || tabs[0]).focus();
+        }
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          (tabs[i - 1] || tabs[tabs.length - 1]).focus();
+        }
+      });
+    });
+    $("txtsize").addEventListener("click", cycleTextSize);
+    $("restart-btn") &&
+      $("restart-btn").addEventListener("click", function () {
+        location.reload();
+      });
+  }
+  function cycleTextSize() {
+    var order = ["", "lg", "xl"],
+      cur = document.body.dataset.text || "";
+    var nxt = order[(order.indexOf(cur) + 1) % order.length];
+    if (nxt) document.body.dataset.text = nxt;
+    else delete document.body.dataset.text;
+    $("txtsize").textContent = nxt === "lg" ? "A++" : nxt === "xl" ? "A" : "A+";
+  }
+
+  /* =========================================================================
+     ACT RUNNER — plays an act's ordered steps:
+       { type:"beats", art, alt, beats:[...] }   → panel + sequential bubbles
+       { type:"challenge", ... }                 → voiced math, reply choices
+     ========================================================================= */
+  function runAct(act) {
+    var stepIdx = 0;
+    var imgEl = $("art-" + act.id);
+    var speechEl = $("speech-" + act.id);
+    var dotsEl = $("dots-" + act.id);
+    var nextBtn = $("next-" + act.id);
+    var chalHost = $("chal-" + act.id);
+    var advBtn = $("adv-" + act.id);
+    chalHost.innerHTML = "";
+
+    function clearCallouts() {
+      Array.prototype.slice
+        .call($("panel-" + act.id).querySelectorAll(".callout"))
+        .forEach(function (c) {
+          c.remove();
+        });
+    }
+    function setArt(file, alt) {
+      if (file) {
+        imgEl.src = art(file);
+        imgEl.alt = txt(alt);
+      }
+    }
+
+    function playStep() {
+      var step = act.steps[stepIdx];
+      if (!step) {
+        advBtn.classList.add("show");
+        return;
+      }
+      if (step.type === "beats") playBeats(step);
+      else if (step.optional) playOptional(step);
+      else playChallenge(step);
+    }
+
+    /* ---- beats ---- */
+    function playBeats(step) {
+      setArt(step.art, step.alt);
+      clearCallouts();
+      nextBtn.style.display = "";
+      var bi = 0;
+      dotsEl.innerHTML = "";
+      step.beats.forEach(function () {
+        dotsEl.appendChild(el("i"));
+      });
+      function renderBeat() {
+        var beat = step.beats[bi];
+        speechEl.innerHTML = "";
+        speechEl.appendChild(bubble(beat));
+        if (beat.callout) addCallout(beat.callout);
+        Array.prototype.slice.call(dotsEl.children).forEach(function (d, k) {
+          d.classList.toggle("on", k <= bi);
+        });
+        var last = bi === step.beats.length - 1;
+        nextBtn.innerHTML = last
+          ? step.lastLabel || "Continue &#9654;"
+          : "Next &#9654;";
+      }
+      nextBtn.onclick = function () {
+        if (bi < step.beats.length - 1) {
+          bi++;
+          renderBeat();
+        } else {
+          stepIdx++;
+          playStep();
+        }
+      };
+      renderBeat();
+    }
+    function addCallout(co) {
+      var c = el("button", "callout", co.icon || "!");
+      c.style.left = (co.x || 50) + "%";
+      c.style.top = (co.y || 50) + "%";
+      c.setAttribute("aria-label", "Callout: " + stripTags(co.en));
+      c.addEventListener("click", function () {
+        openPop(c, co.title || "", co.en, co.es);
+      });
+      $("panel-" + act.id).appendChild(c);
+    }
+
+    /* ---- challenge: gating (must solve to advance) ---- */
+    function playChallenge(step) {
+      renderCard(step, false);
+      wireChoices(step, act, function () {
+        if (step.solveArt) setArt(step.solveArt, step.solveAlt);
+        if (step.solveBeat) {
+          speechEl.innerHTML = "";
+          speechEl.appendChild(bubble(step.solveBeat));
+        }
+        stepIdx++;
+        // small beat so the success feedback is read before the next panel
+        setTimeout(playStep, 400);
+      });
+    }
+
+    /* ---- challenge: optional bonus (does NOT gate; still scored) ----
+       Renders this and any consecutive optional steps, then reveals advance. */
+    function playOptional(step) {
+      renderCard(step, true);
+      wireChoices(step, act, function () {
+        if (step.solveBeat) {
+          speechEl.innerHTML = "";
+          speechEl.appendChild(bubble(step.solveBeat));
+        }
+      });
+      stepIdx++;
+      var nxt = act.steps[stepIdx];
+      if (nxt && nxt.optional) playOptional(nxt);
+      else advBtn.classList.add("show");
+    }
+
+    /* ---- shared challenge-card renderer ---- */
+    function renderCard(step, optional) {
+      if (step.art) setArt(step.art, step.alt);
+      clearCallouts();
+      nextBtn.style.display = "none";
+      dotsEl.innerHTML = "";
+      // the question is VOICED by a character, over the panel
+      if (step.ask) {
+        speechEl.innerHTML = "";
+        speechEl.appendChild(
+          bubble({
+            who: step.ask.who,
+            en: step.ask.en,
+            es: step.ask.es,
+            vocab: step.ask.vocab,
+            misconception: step.ask.misconception,
+            pos: step.ask.pos,
+          }),
+        );
+        if (step.ask.callout) addCallout(step.ask.callout);
+      }
+      var wrap = el("div", "challenge" + (optional ? " bonus" : ""));
+      wrap.id = "chal-" + act.id + "-" + step.id;
+      if (optional) {
+        wrap.innerHTML =
+          '<span class="bonus-tag">' +
+          (step.bonusTag || "&#11088; Bonus Challenge") +
+          "</span>" +
+          '<p class="prompt" style="font-size:0.82rem;color:var(--muted);' +
+          'margin:6px 0">Optional — try it or press the button to move on.</p>';
+      }
+      var tools = '<div class="chal-tools">';
+      if (step.hint) {
+        tools +=
+          '<button type="button" class="toolbtn" data-fold="hint-' +
+          step.id +
+          '" aria-expanded="false">&#128161; Need a hint?</button>';
+      }
+      if (step.frame) {
+        tools +=
+          '<button type="button" class="toolbtn" data-fold="coach-' +
+          step.id +
+          '" aria-expanded="false">&#9997;&#65039; Writing coach</button>';
+      }
+      tools += "</div>";
+      var folds = "";
+      if (step.hint) {
+        folds +=
+          '<div class="foldout" id="hint-' +
+          step.id +
+          '"><b>Hint:</b> ' +
+          step.hint.en +
+          (step.hint.es
+            ? '<div class="es" style="margin-top:6px;' +
+              'font-style:italic;color:#cdb89a">' +
+              step.hint.es +
+              "</div>"
+            : "") +
+          "</div>";
+      }
+      if (step.frame) {
+        folds +=
+          '<div class="foldout coach" id="coach-' +
+          step.id +
+          '"><b>Sentence frame:</b> ' +
+          step.frame.en +
+          (step.frame.es
+            ? '<div class="es" style="margin-top:6px;font-style:' +
+              'italic;color:#9fc0ef">' +
+              step.frame.es +
+              "</div>"
+            : "") +
+          "</div>";
+      }
+      var choices =
+        '<div class="reply-label">Choose your reply</div>' +
+        '<div class="choices" id="choices-' +
+        act.id +
+        "-" +
+        step.id +
+        '">';
+      step.choices.forEach(function (c) {
+        choices +=
+          '<button class="choice" data-correct="' +
+          !!c.correct +
+          '">' +
+          c.en +
+          (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
+          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+          "</button>";
+      });
+      choices += "</div>";
+      wrap.innerHTML +=
+        tools +
+        folds +
+        choices +
+        '<div class="feedback" id="fb-' +
+        act.id +
+        "-" +
+        step.id +
+        '"></div>';
+      chalHost.appendChild(wrap);
+      wrap.scrollIntoView({ behavior: "smooth", block: "center" });
+      wireFolds(wrap);
+    }
+
+    playStep();
+
+    /* advance button → unlock next chapter / finish */
+    advBtn.onclick = function () {
+      state[act.id] = true;
+      updateProgress();
+      refreshLocks();
+      var i = S.acts.indexOf(act);
+      if (i < S.acts.length - 1) showScene(S.acts[i + 1].id);
+      else showComplete();
+    };
+  }
+
+  function wireFolds(root) {
+    Array.prototype.slice
+      .call(root.querySelectorAll(".toolbtn"))
+      .forEach(function (b) {
+        b.addEventListener("click", function () {
+          var f = $(b.dataset.fold);
+          var open = f.classList.toggle("show");
+          b.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+      });
+  }
+
+  function wireChoices(step, act, onSolve) {
+    var groupId = "choices-" + act.id + "-" + step.id;
+    var fbId = "fb-" + act.id + "-" + step.id;
+    var solved = false;
+    Array.prototype.slice
+      .call($(groupId).querySelectorAll(".choice"))
+      .forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (solved) return;
+          var correct = btn.dataset.correct === "true";
+          var fb = $(fbId);
+          if (correct) {
+            solved = true;
+            btn.classList.add("correct");
+            fb.className = "feedback show good";
+            fb.innerHTML =
+              step.goodEn +
+              (step.goodEs
+                ? '<span class="es">' + step.goodEs + "</span>"
+                : "");
+            Array.prototype.slice
+              .call($(groupId).querySelectorAll(".choice"))
+              .forEach(function (b) {
+                b.disabled = true;
+              });
+            if (onSolve) onSolve();
+          } else {
+            btn.classList.add("wrong");
+            btn.disabled = true;
+            fb.className = "feedback show bad";
+            fb.innerHTML =
+              step.badEn +
+              (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
+          }
+        });
+      });
+  }
+
+  /* ---- master-rank challenge on the complete scene ---- */
+  function wireMaster() {
+    var group = $("choicesComplete");
+    if (!group || group.dataset.wired) return;
+    group.dataset.wired = "1";
+    var fb = $("fbComplete");
+    var solved = false;
+    var m = S.complete.master || {};
+    Array.prototype.slice
+      .call(group.querySelectorAll(".choice"))
+      .forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (solved) return;
+          var correct = btn.dataset.correct === "true";
+          if (correct) {
+            solved = true;
+            btn.classList.add("correct");
+            fb.className = "feedback show good";
+            fb.style.display = "block";
+            fb.innerHTML =
+              m.goodEn ||
+              "&#127942; <b>Master Rank Certified!</b> Perfect work! &#127775;";
+            Array.prototype.slice
+              .call(group.querySelectorAll(".choice"))
+              .forEach(function (b) {
+                b.disabled = true;
+              });
+            var h2 = document.querySelector("#scene-complete h2");
+            if (h2 && m.certifyTitle) h2.innerHTML = m.certifyTitle;
+          } else {
+            btn.classList.add("wrong");
+            btn.disabled = true;
+            fb.className = "feedback show bad";
+            fb.style.display = "block";
+            fb.innerHTML =
+              m.badEn || "&#10060; Not quite. Review and try another option!";
+          }
+        });
+      });
+  }
+
+  /* ---------- go ---------- */
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", build);
+  } else {
+    build();
+  }
 })();
-</script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+
+    </script>
+
+  <script src="/teacher-tools/nt-results.js"></script>
+  <script>
+  /* Graphic-novel completion tracking -> NTResults (Neft Teacher). Unchanged. */
+  (function () {
+    "use strict";
+    var FIRED = false;
+    var complete = document.getElementById("scene-complete");
+    if (!complete || typeof NTResults === "undefined") return;
+    function studentName() {
+      try {
+        var k = "nt_gn_student";
+        var n = localStorage.getItem(k);
+        if (n && n.trim()) return n.trim();
+        n = window.prompt("Type your name so your teacher can see you finished:", "");
+        n = (n || "").trim();
+        if (n) { try { localStorage.setItem(k, n); } catch (e) {} }
+        return n || "Student";
+      } catch (e) { return "Student"; }
+    }
+    function score() {
+      var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+        .filter(function (g) { return g.id !== "choicesComplete"; });
+      var total = groups.length || 0;
+      var correct = groups.filter(function (g) {
+        return g.querySelector(".choice.correct");
+      }).length;
+      return { correct: correct, total: total };
+    }
+    function savedNote() {
+      if (document.getElementById("nt-saved-note")) return;
+      var p = document.createElement("p");
+      p.id = "nt-saved-note";
+      p.setAttribute("role", "status");
+      p.style.cssText = "margin-top:14px;font-size:0.9rem;color:#7bdcb5;font-weight:600;";
+      p.textContent = "✓ Results saved for your teacher.";
+      complete.insertBefore(p, complete.querySelector(".restart") || null);
+    }
+    function record() {
+      if (FIRED) return; FIRED = true;
+      var s = score();
+      try {
+        NTResults.finish({
+          student: studentName(),
+          assessment: window.GN_STORY.meta.assessment,
+          standard: window.GN_STORY.meta.standard,
+          level: String(window.GN_STORY.meta.version),
+          sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
+          correct: s.correct, total: s.total, download: false,
+        });
+      } catch (e) {}
+      savedNote();
+    }
+    function visible() {
+      return complete.classList.contains("show") || complete.classList.contains("active");
+    }
+    if (visible()) record();
+    var mo = new MutationObserver(function () { if (visible()) record(); });
+    mo.observe(complete, { attributes: true, attributeFilter: ["class"] });
+  })();
+  </script>
+  <script src="/assets/nt-page-enhance.js" defer></script>
+
   </body>
 </html>

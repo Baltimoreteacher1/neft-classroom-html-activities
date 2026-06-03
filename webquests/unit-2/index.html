@@ -1,809 +1,1997 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="nt-theme-aware">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>WebQuest · Unit 2 — Dividing Fractions (6.NS.A.1) | Neft Teacher</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      WebQuest · Unit 2 · The Trail Mix Lab — Dividing Fractions (6.NS.1) | Neft
+      Teacher
+    </title>
+    <meta
+      name="description"
+      content="A Grade 6 fraction-division WebQuest: run a Maker Fair snack stand, scoop bulk tubs into fractional portions, and learn how many small parts fit inside a larger amount (6.NS.1)."
+    />
 
-    <!-- Shared theme -->
+    <!-- Shared Neft design system -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
-    <script src="/assets/neft-theme.js" defer></script>
-    <!-- Activity kit -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/nt-activity-kit.js"></script>
 
     <style>
-      /* ── Base layout ── */
+      /* ============================================================
+         Unit 2 WebQuest — "The Trail Mix Lab"
+         Uses shared --nt-* theme variables. Scoped styles only.
+         Visuals are SVG/divs (no ASCII art).
+         ============================================================ */
+      :root {
+        --wq-brand: #c0392b;
+        --wq-brand-2: #16a34a;
+        --wq-accent: #f5a524;
+        --wq-grape: #7c3aed;
+      }
+      * {
+        box-sizing: border-box;
+      }
       body {
-        font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        font-size: 19px;
-        line-height: 1.65;
         margin: 0;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--nt-bg, #f4f7fb);
+        color: var(--nt-text, #17212f);
+        line-height: 1.6;
+        font-size: 18px;
       }
-      .wrap {
-        max-width: 900px;
+      .wq-wrap {
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 24px 20px 100px;
+        padding: 20px 18px 80px;
       }
 
-      /* ── Back-link ── */
-      .back-link {
-        font: 14px system-ui;
-        padding: 10px 0;
-        margin-bottom: 4px;
+      /* inline fraction: <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> */
+      .fr {
+        white-space: nowrap;
+        font-weight: 600;
       }
-      .back-link a { color: var(--nt-accent); font-weight: 700; text-decoration: underline; }
+      .fr sup,
+      .fr sub {
+        font-size: 0.72em;
+      }
 
-      /* ── Hero header ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 28px 26px;
-        margin-bottom: 24px;
+      /* ---------- Hero ---------- */
+      .wq-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 34px 30px;
+        margin: 8px 0 26px;
+        background: linear-gradient(
+          135deg,
+          #c0392b 0%,
+          #e67e22 55%,
+          #f5a524 100%
+        );
+        color: #fff;
+        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
       }
-      .badge {
+      .wq-hero h1 {
+        margin: 0.1em 0 0.15em;
+        font-size: 2.05rem;
+        line-height: 1.15;
+      }
+      .wq-hero .wq-kicker {
         display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
         font-weight: 700;
-        padding: 6px 14px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
         border-radius: 999px;
-        font-size: 15px;
-        letter-spacing: 0.3px;
       }
-      h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; }
-      h2 { font-size: 26px; margin: 0 0 14px; border-bottom: 3px solid var(--nt-accent); padding-bottom: 6px; }
-      h3 { font-size: 21px; margin: 18px 0 6px; }
-      p, li { font-size: 19px; }
-      .lead { font-size: 21px; }
-      .muted { color: var(--nt-muted); }
+      .wq-hero p {
+        margin: 0.4em 0 0;
+        max-width: 64ch;
+        font-size: 1.05rem;
+        color: #fff8f1;
+      }
+      .wq-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .wq-badge {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .wq-hero-art {
+        position: absolute;
+        right: -6px;
+        bottom: -14px;
+        width: 200px;
+        opacity: 0.95;
+        pointer-events: none;
+      }
+      @media (max-width: 640px) {
+        .wq-hero-art {
+          display: none;
+        }
+        .wq-hero h1 {
+          font-size: 1.6rem;
+        }
+      }
 
-      /* ── Cards ── */
-      section.card {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 22px 26px;
-        margin-bottom: 24px;
+      /* ---------- Section cards ---------- */
+      .wq-card {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 18px;
+        padding: 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
       }
-
-      /* ── Learning Target box ── */
-      .learning-target {
-        background: var(--nt-bg);
-        border: 3px solid var(--nt-accent);
-        border-radius: 14px;
-        padding: 20px 24px;
-        margin-bottom: 24px;
-      }
-      .learning-target h2 { border-bottom-color: var(--nt-accent); margin-top: 0; }
-      .learning-target .lt-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      .wq-card > h2 {
+        display: flex;
+        align-items: center;
         gap: 12px;
-        margin-top: 12px;
+        margin: 0 0 0.5em;
+        font-size: 1.4rem;
+        color: var(--nt-text, #17212f);
       }
-      .lt-chip {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 10px 14px;
-        font-size: 17px;
+      .wq-step-num {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        background: var(--wq-brand);
       }
-      .lt-chip strong { display: block; font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--nt-muted); margin-bottom: 4px; }
+      .wq-card h3 {
+        font-size: 1.08rem;
+        margin: 1.1em 0 0.35em;
+        color: var(--wq-brand);
+      }
+      .wq-card p,
+      .wq-card li {
+        font-size: 1.02rem;
+      }
+      .wq-lead {
+        font-size: 1.08rem;
+      }
 
-      /* ── Teacher Notes ── */
-      .teacher-notes {
-        background: #fffde7;
-        border: 2px dashed #f9a825;
+      /* ---------- Differentiation chips ---------- */
+      .wq-diff {
         border-radius: 14px;
-        padding: 20px 24px;
-        margin-bottom: 24px;
-        color: #333;
+        padding: 14px 16px;
+        margin: 14px 0;
+        border: 1px solid;
       }
-      .teacher-notes h2 { border-bottom-color: #f9a825; color: #333; margin-top: 0; }
-      .teacher-notes h3 { font-size: 18px; margin: 14px 0 4px; }
-      .teacher-notes p, .teacher-notes li { color: #333; font-size: 18px; }
+      .wq-l1 {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.45);
+      }
+      .wq-l2 {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: rgba(124, 58, 237, 0.45);
+      }
+      .wq-diff .wq-tag {
+        display: inline-block;
+        font-weight: 800;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .wq-l1 .wq-tag {
+        background: #0f766e;
+      }
+      .wq-l2 .wq-tag {
+        background: #7c3aed;
+      }
+      .wq-es {
+        display: block;
+        margin-top: 4px;
+        font-style: italic;
+        color: var(--nt-muted, #5b6b80);
+        font-size: 0.95rem;
+      }
+
+      /* ---------- Intro concept tiles ---------- */
+      .wq-concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-concept {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-bg, #f8fafc);
+        text-align: center;
+      }
+      .wq-concept svg {
+        display: block;
+        margin: 0 auto 8px;
+      }
+      .wq-concept .wq-cap {
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+
+      /* ---------- Mission / task ---------- */
+      .wq-mission {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 20px;
+        align-items: center;
+      }
+      @media (max-width: 720px) {
+        .wq-mission {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wq-stand {
+        border-radius: 16px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        background: var(--nt-bg, #f8fafc);
+        padding: 10px;
+      }
+      .wq-deliverables {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0;
+      }
+      .wq-deliverables li {
+        position: relative;
+        padding: 8px 8px 8px 34px;
+        border-bottom: 1px dashed var(--nt-border, #dbe3ee);
+      }
+      .wq-deliverables li:last-child {
+        border-bottom: none;
+      }
+      .wq-deliverables li::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 13px;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background: var(--wq-brand-2);
+      }
+
+      /* ---------- Process steps ---------- */
+      .wq-recipe {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 16px 0;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-recipe h3 {
+        margin-top: 0;
+      }
+      .wq-fig {
+        display: block;
+        margin: 12px auto;
+        max-width: 100%;
+        height: auto;
+      }
+      .wq-fig-cap {
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 2px;
+      }
+      .wq-setup {
+        font-family: "Cambria Math", Georgia, serif;
+        font-size: 1.08rem;
+        background: rgba(192, 57, 43, 0.08);
+        border-radius: 8px;
+        padding: 8px 12px;
+        display: inline-block;
+      }
+      .wq-reveal-btn {
+        margin-top: 10px;
+        font-size: 0.92rem;
+        font-weight: 700;
+        border: 2px solid var(--wq-brand);
+        background: var(--nt-surface, #fff);
+        color: var(--wq-brand);
+        border-radius: 10px;
+        padding: 8px 14px;
+        cursor: pointer;
+      }
+      .wq-reveal-btn:hover {
+        background: rgba(192, 57, 43, 0.08);
+      }
+      .wq-hint {
+        margin-top: 10px;
+        background: #f0f6ff;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        color: var(--nt-text, #17212f);
+      }
       @media (prefers-color-scheme: dark) {
-        .teacher-notes { background: #2a2500; border-color: #f9a825; color: #ffe; }
-        .teacher-notes h2, .teacher-notes h3, .teacher-notes p, .teacher-notes li { color: #ffe; }
+        .wq-hint {
+          background: rgba(108, 140, 255, 0.14);
+        }
       }
 
-      /* ── Steps / Lists ── */
-      ol.steps, ul.res { padding-left: 24px; }
-      ol.steps li, ul.res li { margin: 10px 0; }
-
-      /* ── Vocab box ── */
-      .vocab {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 8px 16px;
+      /* ---------- Resource tiles ---------- */
+      .wq-res {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
         margin-top: 8px;
       }
-      .vocab dt { font-weight: 700; margin-top: 10px; font-size: 19px; }
-      .vocab dd { margin: 2px 0 6px 0; font-size: 18px; }
-
-      /* ── Resources ── */
-      a { color: var(--nt-accent); font-weight: 700; }
-
-      /* ── Rubric ── */
-      .table-wrap { overflow-x: auto; }
-      table.rubric { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 17px; min-width: 520px; }
-      table.rubric th, table.rubric td { border: 2px solid var(--nt-border); padding: 10px 12px; text-align: left; vertical-align: top; }
-      table.rubric th { background: var(--nt-accent); color: var(--nt-bg); }
-      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
-
-      /* ── Tip box ── */
-      .tip {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin: 14px 0;
+      .wq-res a {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
       }
-
-      /* ── Self-check quiz ── */
-      .self-check-item {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 12px;
-        padding: 18px 20px;
-        margin-bottom: 18px;
+      .wq-res a:hover,
+      .wq-res a:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        outline: none;
       }
-      .sc-prompt {
-        display: block;
+      .wq-res a:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-res .wq-ricon {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .wq-res .wq-rtitle {
         font-weight: 700;
-        font-size: 20px;
-        margin-bottom: 8px;
+        margin: 0;
       }
-      .sc-hint {
-        color: var(--nt-muted);
-        font-size: 15px;
-        display: block;
-        margin-bottom: 10px;
+      .wq-res .wq-rdesc {
+        margin: 0.15em 0 0;
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
       }
-      .sc-input {
-        font-size: 19px;
-        padding: 10px 12px;
+
+      /* ---------- Word bank table ---------- */
+      .wq-vocab {
         width: 100%;
-        max-width: 280px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
-        box-sizing: border-box;
+        border-collapse: collapse;
+        margin-top: 8px;
+        font-size: 0.96rem;
       }
-      .sc-choices { margin: 6px 0; }
-      .sc-choices label { display: flex; align-items: center; gap: 10px; font-size: 19px; margin: 6px 0; cursor: pointer; }
-      .sc-choices input[type="radio"] { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--nt-accent); }
-      .sc-btn {
-        display: inline-block;
-        margin-top: 10px;
-        font-size: 17px;
+      .wq-vocab th,
+      .wq-vocab td {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .wq-vocab thead th {
+        background: var(--wq-brand);
+        color: #fff;
+      }
+
+      /* ---------- Rubric ---------- */
+      .wq-table-scroll {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #dbe3ee);
+      }
+      table.wq-rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+        font-size: 0.96rem;
+      }
+      table.wq-rubric th,
+      table.wq-rubric td {
+        padding: 11px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--nt-border, #dbe3ee);
+        vertical-align: top;
+      }
+      table.wq-rubric thead th {
+        background: var(--wq-brand);
+        color: #fff;
+        position: sticky;
+        top: 0;
+      }
+      table.wq-rubric tbody tr:nth-child(even) {
+        background: var(--nt-bg, #f8fafc);
+      }
+      table.wq-rubric td:first-child {
         font-weight: 700;
-        padding: 10px 22px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: none;
-        border-radius: 8px;
+        white-space: nowrap;
+      }
+
+      /* ---------- Self-check ---------- */
+      .wq-q {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .wq-q .wq-qhead {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .wq-q .wq-qn {
+        font-weight: 800;
+        color: var(--wq-brand);
+      }
+      .wq-q .wq-qfig {
+        margin: 10px 0;
+      }
+      .wq-q label.wq-opt {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 10px;
+        border-radius: 10px;
         cursor: pointer;
+        border: 1px solid transparent;
       }
-      .sc-btn:hover { filter: brightness(1.08); }
-      .sc-feedback {
+      .wq-q label.wq-opt:hover {
+        background: var(--nt-bg, #f1f5f9);
+      }
+      .wq-q input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--wq-brand);
+      }
+      .wq-text {
+        font-size: 1.05rem;
+        padding: 8px 10px;
+        width: 150px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
+      }
+      .wq-text:focus {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 1px;
+        border-color: var(--wq-brand);
+      }
+      .wq-q .wq-hinttext {
+        font-size: 0.92rem;
+        color: var(--nt-muted, #5b6b80);
+        margin-top: 6px;
+      }
+      .wq-fb {
         margin-top: 10px;
-        font-size: 18px;
         font-weight: 700;
-        padding: 10px 14px;
-        border-radius: 8px;
+        border-radius: 10px;
+        padding: 8px 12px;
         display: none;
       }
-      .sc-feedback.correct { background: #d4edda; color: #155724; border: 2px solid #155724; }
-      .sc-feedback.incorrect { background: #f8d7da; color: #721c24; border: 2px solid #721c24; }
+      .wq-fb.ok {
+        display: block;
+        background: rgba(16, 185, 129, 0.14);
+        color: #065f46;
+      }
+      .wq-fb.no {
+        display: block;
+        background: rgba(239, 68, 68, 0.14);
+        color: #991b1b;
+      }
       @media (prefers-color-scheme: dark) {
-        .sc-feedback.correct { background: #1a3a22; color: #a3f0b5; border-color: #a3f0b5; }
-        .sc-feedback.incorrect { background: #3a1a1a; color: #f0a3a3; border-color: #f0a3a3; }
+        .wq-fb.ok {
+          color: #a3f0b5;
+        }
+        .wq-fb.no {
+          color: #f0a3a3;
+        }
       }
 
-      /* ── NTKit grade button ── */
-      #check {
-        font: inherit;
-        font-weight: 700;
-        font-size: 20px;
-        cursor: pointer;
-        margin: 14px 0;
-        padding: 12px 22px;
-        border: 0;
-        border-radius: 10px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-      }
-      #check:hover { filter: brightness(1.08); }
-
-      /* ── Answer key details ── */
-      details.answer-key {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 12px;
-        padding: 16px 20px;
+      .wq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
         margin-top: 18px;
       }
-      details.answer-key summary {
-        font-size: 18px;
+      .wq-btn {
+        font-size: 1rem;
         font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
         cursor: pointer;
-        color: var(--nt-accent);
+        background: var(--wq-brand);
+        color: #fff;
+        transition: filter 0.12s ease;
       }
-      details.answer-key ol { margin: 12px 0 0 0; padding-left: 20px; }
-      details.answer-key li { margin-bottom: 10px; font-size: 18px; }
+      .wq-btn:hover {
+        filter: brightness(1.08);
+      }
+      .wq-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .wq-btn.secondary {
+        background: var(--nt-surface, #fff);
+        color: var(--wq-brand);
+        border: 2px solid var(--wq-brand);
+      }
+      #wq-score {
+        margin-top: 16px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: none;
+      }
+      #wq-score.show {
+        display: block;
+        background: rgba(192, 57, 43, 0.1);
+        border: 1px solid var(--wq-brand);
+      }
 
-      /* ── Reflection ── */
-      .reflection-area {
+      /* ---------- Conclusion CTA + reflection ---------- */
+      .wq-conc-cta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 10px;
+      }
+      .wq-conc-cta div {
+        border: 1px solid var(--nt-border, #dbe3ee);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: var(--nt-bg, #f8fafc);
+      }
+      .wq-conc-cta h4 {
+        margin: 0.1em 0 0.3em;
+        color: var(--wq-brand);
+      }
+      .wq-reflect textarea {
         width: 100%;
         box-sizing: border-box;
-        font-size: 18px;
-        padding: 12px 14px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-surface);
-        color: var(--nt-text);
         min-height: 90px;
+        border: 2px solid var(--nt-border, #dbe3ee);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #17212f);
         resize: vertical;
         margin-top: 8px;
       }
 
-      /* ── Deliverable box ── */
-      .deliverable {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-accent);
-        border-radius: 10px;
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+      }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
         padding: 14px 18px;
-        margin-top: 14px;
-        font-size: 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
       }
-      .deliverable strong { font-size: 19px; }
-
-      /* ── Focus styles (accessibility) ── */
-      a:focus-visible,
-      button:focus-visible,
-      input:focus-visible,
-      textarea:focus-visible,
-      select:focus-visible {
-        outline: 4px solid var(--nt-focus, #005fcc);
-        outline-offset: 2px;
+      details.teacher-only summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
       }
 
-      /* ── Mobile responsive ── */
-      @media (max-width: 600px) {
-        h1 { font-size: 26px; }
-        h2 { font-size: 21px; }
-        .lt-grid { grid-template-columns: 1fr; }
-        section.card, .learning-target, .teacher-notes { padding: 16px 14px; }
-        .sc-input { max-width: 100%; }
-      }
-
-      /* ── Print stylesheet ── */
       @media print {
-        body { font-size: 13px; line-height: 1.5; background: #fff; color: #000; }
-        .wrap { max-width: 100%; padding: 0; }
-        .teacher-notes { border: 1px dashed #999; background: #f9f9f9; color: #000; }
-        .teacher-notes h2, .teacher-notes h3, .teacher-notes p, .teacher-notes li { color: #000; }
-        #check, .sc-btn { display: none; }
-        .sc-feedback { display: none !important; }
-        details.answer-key { display: none; }
-        a { color: #000; text-decoration: underline; }
-        header.hero { border: 1px solid #ccc; border-radius: 0; }
-        section.card, .learning-target { border: 1px solid #ccc; border-radius: 0; break-inside: avoid; }
-        table.rubric th { background: #555; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .badge { background: #555; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        details.teacher-only,
+        .wq-actions,
+        .wq-btn,
+        .wq-reveal-btn {
+          display: none;
+        }
+        .wq-hint {
+          display: block !important;
+        }
+        .wq-hero {
+          box-shadow: none;
+        }
       }
-    </style>
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
   </head>
+  <body>
+    <!-- Student identity bar + Save PDF/DOC + results panel (shared kit) -->
+    <div id="ntkit"></div>
 
-  <body class="nt-theme-aware">
-    <div class="wrap">
-
-      <!-- Back-link (preserved) -->
-      <p class="back-link"><a href="/webquests/">← All WebQuests</a> · <a href="/math/">Math Hub</a></p>
-
-      <!-- Hero -->
-      <header class="hero">
-        <span class="badge">WebQuest · Unit 2 · CCSS 6.NS.A.1</span>
-        <h1>🍰 Fraction Kitchen WebQuest: Dividing Fractions</h1>
-        <p class="lead">Grade 6 Math — divide fractions to fill real bakery orders!</p>
-        <p class="muted" style="font-size:16px;margin-top:6px;">Neft Teacher · Grade 6 Math</p>
+    <main class="wq-wrap">
+      <!-- ============ HERO / INTRODUCTION ============ -->
+      <header class="wq-hero">
+        <span class="wq-kicker">Grade 6 Math WebQuest · Unit 2 · 6.NS.1</span>
+        <h1>The Trail Mix Lab</h1>
+        <p>
+          You are the new junior food-science apprentice at the
+          <strong>Maker Fair snack stand</strong>. Ingredients arrive in big
+          tubs measured in whole cups — but every customer wants a small
+          <em>fractional</em> portion. Your whole shift is one question repeated
+          all day:
+          <strong
+            >how many small portions fit, and how do you split what is left
+            over?</strong
+          >
+          Today, fraction division pays the bills.
+        </p>
+        <div class="wq-badges">
+          <span class="wq-badge">⏱ 1–2 class periods</span>
+          <span class="wq-badge">➗ Dividing fractions</span>
+          <span class="wq-badge">🥨 Real scoop math</span>
+          <span class="wq-badge">🧮 Keep–Change–Flip</span>
+        </div>
+        <!-- decorative trail-mix tub SVG -->
+        <svg class="wq-hero-art" viewBox="0 0 200 160" aria-hidden="true">
+          <rect
+            x="40"
+            y="55"
+            width="110"
+            height="86"
+            rx="10"
+            fill="#fff"
+            opacity="0.92"
+          />
+          <rect x="40" y="55" width="110" height="20" rx="10" fill="#16a34a" />
+          <circle cx="70" cy="108" r="9" fill="#f5a524" />
+          <circle cx="95" cy="118" r="8" fill="#c0392b" />
+          <circle cx="120" cy="106" r="9" fill="#7c3aed" />
+          <circle cx="84" cy="95" r="6" fill="#16a34a" />
+          <circle cx="112" cy="124" r="6" fill="#f5a524" />
+          <path
+            d="M150 70 h34 v52 a6 6 0 0 1-6 6 h-22 a6 6 0 0 1-6-6 z"
+            fill="#fff"
+            opacity="0.85"
+          />
+          <rect x="153" y="62" width="28" height="9" rx="4" fill="#fff" />
+        </svg>
       </header>
 
-      <!-- Student identity bar + Save PDF/DOC + results panel -->
-      <div id="ntkit"></div>
-
-      <!-- ══════════════════════════════════════════ -->
-      <!-- LEARNING TARGET                            -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="learning-target" aria-label="Learning Target">
-        <h2>Learning Target</h2>
-        <ul style="margin:0 0 14px 0;padding-left:20px;">
-          <li><strong>I can</strong> explain what it means to divide a fraction by a fraction.</li>
-          <li><strong>I can</strong> find the reciprocal (flip) of any fraction.</li>
-          <li><strong>I can</strong> use the keep–change–flip strategy to divide fractions.</li>
-          <li><strong>I can</strong> solve real-world problems that involve dividing fractions.</li>
-        </ul>
-        <div class="lt-grid">
-          <div class="lt-chip"><strong>Standard</strong> CCSS 6.NS.A.1</div>
-          <div class="lt-chip"><strong>Estimated time</strong> 45–60 minutes</div>
-          <div class="lt-chip"><strong>Materials</strong> Pencil, scratch paper, this page</div>
-          <div class="lt-chip"><strong>Product</strong> Completed quiz saved as PDF or DOC</div>
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════════ -->
-      <!-- TEACHER NOTES (teacher-facing)             -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="teacher-notes" aria-label="Teacher Notes">
-        <h2>📋 Teacher Notes <span style="font-size:15px;font-weight:400;">(not for student assessment)</span></h2>
-
-        <h3>Pacing</h3>
-        <p>One 45–60 minute class period. Optional two-day version: Day 1 = Introduction through Vocabulary and game play; Day 2 = Self-Check, Reflection, and save deliverable. Students who finish early can attempt the extension challenge in the differentiation notes below.</p>
-
-        <h3>Grouping Suggestion</h3>
-        <p>Best as <strong>individual work</strong> with a brief pair-share after Step 3 (reviewing the keep–change–flip rule with a partner example). Partners can check each other's scratch work before submitting the final digital check.</p>
-
-        <h3>Differentiation</h3>
-        <ul>
-          <li><strong>Support:</strong> Provide a visual fraction bar or number line model. Have students act out division with manipulatives (e.g., "I have 3/4 of a cup — how many 1/8-cup scoops fit?"). Accept equivalent answers expressed as mixed numbers (e.g., 4 and 3/5 for 23/5).</li>
-          <li><strong>Challenge / Extension:</strong> Ask students to create their own bakery word problem using fractions, solve it two ways (keep–change–flip and a diagram), and explain which method they prefer and why. Extend to dividing mixed numbers.</li>
-        </ul>
-
-        <h3>ESOL / Language Supports</h3>
-        <ul>
-          <li>Pre-teach vocabulary: <em>fraction, reciprocal, dividend, divisor, quotient, equal groups</em>. Use the Vocabulary box on the page and add translated word walls if available.</li>
-          <li>Encourage students to draw a picture model alongside the numerical computation.</li>
-          <li>The bakery context is intentionally concrete — reinforce the meaning of "how many groups fit?" before introducing the algorithm.</li>
-          <li>Pair students strategically for vocabulary review. Allow first-language discussion of strategy before writing in English.</li>
-        </ul>
-      </section>
-
-      <!-- ══════════════════════════════════════════ -->
-      <!-- 1. INTRODUCTION                            -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card">
-        <h2>1. Introduction</h2>
-        <div class="tip">
-          Welcome to the <strong>Fraction Kitchen</strong>! 🧁 A bakery gets big orders.
-          To share the dough, you must <strong>divide fractions</strong>.
-          Example: A baker has <strong>3/4</strong> cup of jam. Each tart needs <strong>1/8</strong> cup.
-          How many tarts can the baker fill? In this WebQuest you will learn to divide fractions and answer real bakery questions.
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════════ -->
-      <!-- 2. TASK                                    -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card">
-        <h2>2. Task</h2>
-        <p>By the end, you will:</p>
-        <ul class="res">
-          <li>Explain what dividing a fraction by a fraction means in a real situation.</li>
-          <li>Show how to divide a fraction by a fraction using the <strong>keep, change, flip</strong> rule (multiply by the reciprocal).</li>
-          <li>Finish the <strong>Interactive Self-Check</strong> and save it as a PDF or DOC to turn in.</li>
-        </ul>
-        <div class="deliverable">
-          <strong>Your Deliverable:</strong> Complete the self-check quiz on this page, then click <em>Grade my answers</em> and save your results as a <strong>PDF or DOC</strong> to turn in.
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════════ -->
-      <!-- 3. PROCESS                                 -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card">
-        <h2>3. Process <span class="muted" style="font-size:16px;">(do these steps in order)</span></h2>
-        <ol class="steps">
-          <li><strong>Learn the words.</strong> Read the Vocabulary box below.</li>
-          <li>
-            <strong>Play the game.</strong> Open the
-            <a href="/games/3d/unit-2/">Unit 2 — Fraction Kitchen 3D game</a> and fill 3 orders.
-          </li>
-          <li>
-            <strong>Review the rule.</strong> To divide, <em>keep</em> the first fraction, <em>change</em> ÷ to ×, and <em>flip</em> the second fraction.
-            <div class="tip">
-              <strong>Example:</strong> 3/4 ÷ 1/8 → keep 3/4, change to ×, flip 1/8 to 8/1<br>
-              3/4 × 8/1 = 24/4 = <strong>6 tarts</strong>
+      <!-- ============ INTRODUCTION CARD ============ -->
+      <section class="wq-card" aria-labelledby="h-intro">
+        <h2 id="h-intro">
+          <span class="wq-step-num" aria-hidden="true">i</span>Why the Scoops
+          Add Up
+        </h2>
+        <p class="wq-lead">
+          Bulk tubs hold whole numbers of cups. Customers buy tiny scoop-bags
+          measured in fractions of a cup. To stock the shelf, you keep asking
+          the same thing all day:
+          <strong
+            >&ldquo;How many small portions can I make from this
+            amount?&rdquo;</strong
+          >
+          That is fraction division.
+        </p>
+        <h3>The Driving Question</h3>
+        <p>
+          <strong
+            >When you divide an amount by a fraction smaller than 1, why do you
+            end up with <em>more</em> pieces than cups you started with?</strong
+          >
+          That surprises most new apprentices — so prove it to yourself before
+          the rush.
+        </p>
+        <div class="wq-concept-grid">
+          <div class="wq-concept">
+            <svg
+              width="130"
+              height="62"
+              viewBox="0 0 130 62"
+              aria-hidden="true"
+            >
+              <rect
+                x="6"
+                y="14"
+                width="48"
+                height="34"
+                rx="4"
+                fill="rgba(192,57,43,0.12)"
+                stroke="#c0392b"
+                stroke-width="2"
+              />
+              <text
+                x="30"
+                y="36"
+                text-anchor="middle"
+                font-size="14"
+                font-weight="700"
+                fill="#c0392b"
+              >
+                1 cup
+              </text>
+              <text
+                x="68"
+                y="34"
+                text-anchor="middle"
+                font-size="16"
+                fill="#5b6b80"
+              >
+                &divide;
+              </text>
+              <rect
+                x="84"
+                y="22"
+                width="20"
+                height="18"
+                rx="3"
+                fill="rgba(16,163,74,0.18)"
+                stroke="#16a34a"
+                stroke-width="2"
+              />
+              <text
+                x="94"
+                y="35"
+                text-anchor="middle"
+                font-size="10"
+                font-weight="700"
+                fill="#16a34a"
+              >
+                1/4
+              </text>
+            </svg>
+            <div class="wq-cap">
+              1 &divide;
+              <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span> =
+              <strong>4 bags</strong>
             </div>
-          </li>
-          <li>
-            <strong>Practice more.</strong> Use the
-            <a href="/math/">Neft Teacher math activities</a> for Unit 2.
-          </li>
-          <li>
-            <strong>Show what you know.</strong> Type your name in the bar above, answer the <strong>Interactive Self-Check</strong> questions below, and click <em>Grade my answers</em>.
-          </li>
-        </ol>
+          </div>
+          <div class="wq-concept">
+            <svg
+              width="130"
+              height="62"
+              viewBox="0 0 130 62"
+              aria-hidden="true"
+            >
+              <rect
+                x="6"
+                y="18"
+                width="118"
+                height="26"
+                rx="4"
+                fill="#fff"
+                stroke="#5b6b80"
+              />
+              <line
+                x1="35.5"
+                y1="18"
+                x2="35.5"
+                y2="44"
+                stroke="#16a34a"
+                stroke-width="1.5"
+              />
+              <line
+                x1="65"
+                y1="18"
+                x2="65"
+                y2="44"
+                stroke="#16a34a"
+                stroke-width="1.5"
+              />
+              <line
+                x1="94.5"
+                y1="18"
+                x2="94.5"
+                y2="44"
+                stroke="#16a34a"
+                stroke-width="1.5"
+              />
+              <text
+                x="20"
+                y="35"
+                text-anchor="middle"
+                font-size="9"
+                fill="#16a34a"
+              >
+                1/4
+              </text>
+              <text
+                x="50"
+                y="35"
+                text-anchor="middle"
+                font-size="9"
+                fill="#16a34a"
+              >
+                1/4
+              </text>
+              <text
+                x="80"
+                y="35"
+                text-anchor="middle"
+                font-size="9"
+                fill="#16a34a"
+              >
+                1/4
+              </text>
+              <text
+                x="109"
+                y="35"
+                text-anchor="middle"
+                font-size="9"
+                fill="#16a34a"
+              >
+                1/4
+              </text>
+            </svg>
+            <div class="wq-cap">Four 1/4-cup bags fit in 1 cup</div>
+          </div>
+          <div class="wq-concept">
+            <svg
+              width="130"
+              height="62"
+              viewBox="0 0 130 62"
+              aria-hidden="true"
+            >
+              <text
+                x="65"
+                y="24"
+                text-anchor="middle"
+                font-size="13"
+                fill="#1f2a44"
+              >
+                Keep–Change–Flip
+              </text>
+              <text
+                x="65"
+                y="46"
+                text-anchor="middle"
+                font-size="13"
+                font-weight="700"
+                fill="#c0392b"
+              >
+                a &divide; b/c = a &times; c/b
+              </text>
+            </svg>
+            <div class="wq-cap">Dividing = multiply by the reciprocal</div>
+          </div>
+        </div>
       </section>
 
-      <!-- VOCABULARY -->
-      <section class="card">
-        <h2>Vocabulary</h2>
-        <dl class="vocab">
-          <dt>Fraction</dt>
-          <dd>A number that shows part of a whole — example: 3/4 means 3 out of 4 equal parts.</dd>
-          <dt>Reciprocal (flip)</dt>
-          <dd>Turn a fraction upside down. The reciprocal of 1/8 is 8/1 (= 8).</dd>
-          <dt>Divide (÷)</dt>
-          <dd>Split into equal groups. "How many equal groups fit?" Example: 3/4 ÷ 1/8 asks "how many 1/8-cups fit in 3/4 cup?"</dd>
-          <dt>Quotient</dt>
-          <dd>The answer you get when you divide. 3/4 ÷ 1/8 = 6, so the quotient is 6.</dd>
-        </dl>
+      <!-- ============ TASK ============ -->
+      <section class="wq-card" aria-labelledby="h-task">
+        <h2 id="h-task">
+          <span class="wq-step-num" aria-hidden="true">1</span>Your Task
+        </h2>
+        <div class="wq-mission">
+          <div>
+            <p>
+              By the end of your shift you will hand the manager a
+              <strong>Stocking Sheet</strong> that answers four real questions
+              from the stand. For each question your sheet must show:
+            </p>
+            <ul class="wq-deliverables">
+              <li>
+                the <strong>division expression</strong> you set up (for example
+                <span style="white-space: nowrap"
+                  >3 &divide;
+                  <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span></span
+                >),
+              </li>
+              <li>
+                the <strong>answer</strong> as a whole number, fraction, or
+                mixed number, and
+              </li>
+              <li>
+                one sentence saying <strong>what the answer means</strong> at
+                the snack stand (bags, batches, or servings).
+              </li>
+              <li>
+                Then pass the <strong>Check Your Understanding</strong>
+                self-check at the bottom and save it as PDF/DOC.
+              </li>
+            </ul>
+          </div>
+          <div class="wq-stand" aria-label="Snack stand price board">
+            <svg viewBox="0 0 260 200" role="img" aria-labelledby="stand-title">
+              <title id="stand-title">
+                Maker Fair snack stand price board showing fractional scoop
+                sizes
+              </title>
+              <rect
+                x="0"
+                y="0"
+                width="260"
+                height="200"
+                fill="var(--nt-bg,#f8fafc)"
+              />
+              <rect
+                x="16"
+                y="14"
+                width="228"
+                height="34"
+                rx="8"
+                fill="#c0392b"
+              />
+              <text
+                x="130"
+                y="37"
+                text-anchor="middle"
+                font-size="16"
+                font-weight="700"
+                fill="#fff"
+              >
+                TRAIL MIX LAB · MENU
+              </text>
+              <!-- rows -->
+              <g font-size="13" fill="#17212f">
+                <text x="28" y="78">🥨 Pretzel bag</text>
+                <text x="232" y="78" text-anchor="end" font-weight="700">
+                  1/4 cup
+                </text>
+                <text x="28" y="108">🍒 Cranberry batch</text>
+                <text x="232" y="108" text-anchor="end" font-weight="700">
+                  1/8 cup
+                </text>
+                <text x="28" y="138">🍯 Honey tray</text>
+                <text x="232" y="138" text-anchor="end" font-weight="700">
+                  split 4 ways
+                </text>
+                <text x="28" y="168">🥜 Sample cup</text>
+                <text x="232" y="168" text-anchor="end" font-weight="700">
+                  1/3 cup
+                </text>
+              </g>
+              <line x1="16" y1="88" x2="244" y2="88" stroke="#dbe3ee" />
+              <line x1="16" y1="118" x2="244" y2="118" stroke="#dbe3ee" />
+              <line x1="16" y1="148" x2="244" y2="148" stroke="#dbe3ee" />
+            </svg>
+          </div>
+        </div>
       </section>
 
-      <!-- ══════════════════════════════════════════ -->
-      <!-- 4. RESOURCES                               -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card">
-        <h2>4. Resources</h2>
-        <ul class="res">
-          <li><a href="/games/3d/unit-2/">Unit 2 — Fraction Kitchen 3D Game</a> (practice dividing fractions)</li>
-          <li><a href="/math/">Neft Teacher Math Activities</a> (Unit 2 practice)</li>
-          <li><a href="/graphic-novels/unit2/graphic-novel-1.html">Unit 2 Graphic Novel</a> — the fraction story.</li>
-          <li><a href="/">Neft Teacher Home / Curriculum Hub</a></li>
+      <!-- ============ PROCESS ============ -->
+      <section class="wq-card" aria-labelledby="h-proc">
+        <h2 id="h-proc">
+          <span class="wq-step-num" aria-hidden="true">2</span>The Process
+        </h2>
+        <p class="wq-lead">
+          Work the four orders in order. Each one builds one row of your
+          Stocking Sheet, and each has a self-check button so you know you got
+          it right before moving on.
+        </p>
+
+        <!-- STEP 1: whole ÷ unit fraction -->
+        <div class="wq-recipe">
+          <h3>Order 1 — Bagging the Pretzels (whole &divide; fraction)</h3>
+          <p>
+            A tub holds <strong>3 cups</strong> of pretzels. Each snack bag gets
+            <strong
+              ><span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span>
+              cup</strong
+            >. How many full bags can you fill?
+          </p>
+          <svg
+            class="wq-fig"
+            width="400"
+            height="60"
+            viewBox="0 0 400 60"
+            role="img"
+            aria-label="Three cups, each split into four quarter-cup bags, for twelve bags total"
+          >
+            <rect
+              x="4"
+              y="14"
+              width="392"
+              height="28"
+              rx="4"
+              fill="#fff"
+              stroke="#5b6b80"
+            />
+            <g stroke="#16a34a" stroke-width="1">
+              <line x1="36" y1="14" x2="36" y2="42" />
+              <line x1="68" y1="14" x2="68" y2="42" />
+              <line x1="100" y1="14" x2="100" y2="42" />
+              <line
+                x1="132"
+                y1="14"
+                x2="132"
+                y2="42"
+                stroke="#c0392b"
+                stroke-width="2"
+              />
+              <line x1="164" y1="14" x2="164" y2="42" />
+              <line x1="196" y1="14" x2="196" y2="42" />
+              <line x1="228" y1="14" x2="228" y2="42" />
+              <line
+                x1="260"
+                y1="14"
+                x2="260"
+                y2="42"
+                stroke="#c0392b"
+                stroke-width="2"
+              />
+              <line x1="292" y1="14" x2="292" y2="42" />
+              <line x1="324" y1="14" x2="324" y2="42" />
+              <line x1="356" y1="14" x2="356" y2="42" />
+            </g>
+            <text
+              x="68"
+              y="55"
+              text-anchor="middle"
+              font-size="10"
+              fill="#c0392b"
+            >
+              Cup 1
+            </text>
+            <text
+              x="196"
+              y="55"
+              text-anchor="middle"
+              font-size="10"
+              fill="#c0392b"
+            >
+              Cup 2
+            </text>
+            <text
+              x="324"
+              y="55"
+              text-anchor="middle"
+              font-size="10"
+              fill="#c0392b"
+            >
+              Cup 3
+            </text>
+          </svg>
+          <div class="wq-fig-cap">
+            Each cup splits into four 1/4-cup bags. Count the green sections.
+          </div>
+          <p>
+            <span class="wq-setup"
+              >3 &divide;
+              <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span> = 3
+              &times; <span class="fr"><sup>4</sup>&frasl;<sub>1</sub></span> =
+              ?</span
+            >
+          </p>
+          <button class="wq-reveal-btn" type="button" data-reveal="hint1">
+            Show a hint
+          </button>
+          <div class="wq-hint" id="hint1" hidden>
+            Keep–Change–Flip: 3 &divide;
+            <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span> becomes 3
+            &times; 4. Twelve sections means twelve bags.
+          </div>
+        </div>
+
+        <!-- STEP 2: fraction ÷ fraction -->
+        <div class="wq-recipe">
+          <h3>
+            Order 2 — The Last of the Cranberries (fraction &divide; fraction)
+          </h3>
+          <p>
+            Only
+            <strong
+              ><span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span>
+              cup</strong
+            >
+            of dried cranberries is left. The deluxe mix needs
+            <strong
+              ><span class="fr"><sup>1</sup>&frasl;<sub>8</sub></span>
+              cup</strong
+            >
+            of cranberries per batch. How many deluxe batches can you still
+            make?
+          </p>
+          <p>
+            <span class="wq-setup"
+              ><span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> &divide;
+              <span class="fr"><sup>1</sup>&frasl;<sub>8</sub></span> =
+              <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> &times;
+              <span class="fr"><sup>8</sup>&frasl;<sub>1</sub></span> = ?</span
+            >
+          </p>
+          <div class="wq-diff wq-l1">
+            <span class="wq-tag">Level 1 · Support</span>
+            Give both fractions the same denominator first:
+            <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> =
+            <span class="fr"><sup>6</sup>&frasl;<sub>8</sub></span
+            >. Now ask: &ldquo;How many
+            <span class="fr"><sup>1</sup>&frasl;<sub>8</sub></span> fit inside
+            <span class="fr"><sup>6</sup>&frasl;<sub>8</sub></span
+            >?&rdquo; Just count the eighths.
+            <span class="wq-es"
+              >En español: Convierte
+              <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> a octavos
+              (<span class="fr"><sup>6</sup>&frasl;<sub>8</sub></span
+              >). Luego cuenta cuántos
+              <span class="fr"><sup>1</sup>&frasl;<sub>8</sub></span>
+              caben.</span
+            >
+          </div>
+          <button class="wq-reveal-btn" type="button" data-reveal="hint2">
+            Show a hint
+          </button>
+          <div class="wq-hint" id="hint2" hidden>
+            <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> &times; 8 =
+            <span class="fr"><sup>24</sup>&frasl;<sub>4</sub></span> = 6. Six
+            1/8-cup scoops fit in
+            <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> cup.
+          </div>
+        </div>
+
+        <!-- STEP 3: fraction ÷ whole (sharing) -->
+        <div class="wq-recipe">
+          <h3>
+            Order 3 — Splitting the Honey Drizzle (fraction &divide; whole
+            number)
+          </h3>
+          <p>
+            You have
+            <strong
+              ><span class="fr"><sup>2</sup>&frasl;<sub>3</sub></span>
+              cup</strong
+            >
+            of honey and must spread it <strong>equally over 4 trays</strong>.
+            How much honey goes on each tray?
+          </p>
+          <svg
+            class="wq-fig"
+            width="300"
+            height="66"
+            viewBox="0 0 300 66"
+            role="img"
+            aria-label="Two-thirds cup of honey split equally across four trays"
+          >
+            <rect
+              x="6"
+              y="18"
+              width="180"
+              height="26"
+              rx="4"
+              fill="#fff"
+              stroke="#f5a524"
+            />
+            <rect
+              x="6"
+              y="18"
+              width="120"
+              height="26"
+              fill="rgba(245,165,36,0.4)"
+            />
+            <line x1="66" y1="18" x2="66" y2="44" stroke="#5b6b80" />
+            <line x1="126" y1="18" x2="126" y2="44" stroke="#5b6b80" />
+            <text
+              x="96"
+              y="60"
+              text-anchor="middle"
+              font-size="10"
+              fill="#9a6212"
+            >
+              2/3 cup of honey
+            </text>
+            <text x="210" y="28" font-size="11" fill="#5b6b80">split over</text>
+            <text
+              x="210"
+              y="44"
+              font-size="14"
+              font-weight="700"
+              fill="#c0392b"
+            >
+              4 trays
+            </text>
+          </svg>
+          <p>
+            <span class="wq-setup"
+              ><span class="fr"><sup>2</sup>&frasl;<sub>3</sub></span> &divide;
+              4 =
+              <span class="fr"><sup>2</sup>&frasl;<sub>3</sub></span> &times;
+              <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span> = ?</span
+            >
+            <span style="color: var(--nt-muted, #5b6b80)"
+              >(write your answer as a fraction, like 1/6)</span
+            >
+          </p>
+          <button class="wq-reveal-btn" type="button" data-reveal="hint3">
+            Show a hint
+          </button>
+          <div class="wq-hint" id="hint3" hidden>
+            Dividing by 4 is the same as multiplying by
+            <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span
+            >: <span class="fr"><sup>2</sup>&frasl;<sub>3</sub></span> &times;
+            <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span> =
+            <span class="fr"><sup>2</sup>&frasl;<sub>12</sub></span> =
+            <span class="fr"><sup>1</sup>&frasl;<sub>6</sub></span
+            >.
+          </div>
+        </div>
+
+        <!-- STEP 4: mixed-number division with remainder interpretation -->
+        <div class="wq-recipe">
+          <h3>Order 4 — The Closing Count (mixed number &divide; fraction)</h3>
+          <p>
+            At closing you weigh out
+            <strong
+              >2<span class="fr"><sup>1</sup>&frasl;<sub>2</sub></span>
+              cups</strong
+            >
+            of leftover trail mix. You scoop it into
+            <strong
+              ><span class="fr"><sup>1</sup>&frasl;<sub>3</sub></span
+              >-cup</strong
+            >
+            sample cups for tomorrow. How many <em>full</em> sample cups can you
+            fill?
+          </p>
+          <p>
+            <span class="wq-setup"
+              >2<span class="fr"><sup>1</sup>&frasl;<sub>2</sub></span> =
+              <span class="fr"><sup>5</sup>&frasl;<sub>2</sub></span
+              >, so
+              <span class="fr"><sup>5</sup>&frasl;<sub>2</sub></span> &divide;
+              <span class="fr"><sup>1</sup>&frasl;<sub>3</sub></span> =
+              <span class="fr"><sup>5</sup>&frasl;<sub>2</sub></span> &times; 3
+              = ?</span
+            >
+          </p>
+          <div class="wq-diff wq-l2">
+            <span class="wq-tag">Level 2 · Enrichment</span>
+            <span class="fr"><sup>5</sup>&frasl;<sub>2</sub></span> &times; 3 =
+            <span class="fr"><sup>15</sup>&frasl;<sub>2</sub></span> = 7<span
+              class="fr"
+              ><sup>1</sup>&frasl;<sub>2</sub></span
+            >. You can fill <strong>7 full cups</strong>, with
+            <span class="fr"><sup>1</sup>&frasl;<sub>2</sub></span> of a scoop
+            left over. On your sheet, explain why the answer 7<span class="fr"
+              ><sup>1</sup>&frasl;<sub>2</sub></span
+            >
+            does <em>not</em> mean &ldquo;seven and a half full cups.&rdquo;
+            What does the
+            <span class="fr"><sup>1</sup>&frasl;<sub>2</sub></span> really
+            represent?
+          </div>
+          <button class="wq-reveal-btn" type="button" data-reveal="hint4">
+            Show a hint
+          </button>
+          <div class="wq-hint" id="hint4" hidden>
+            <span class="fr"><sup>5</sup>&frasl;<sub>2</sub></span> &divide;
+            <span class="fr"><sup>1</sup>&frasl;<sub>3</sub></span> =
+            <span class="fr"><sup>15</sup>&frasl;<sub>2</sub></span> = 7<span
+              class="fr"
+              ><sup>1</sup>&frasl;<sub>2</sub></span
+            >. The whole number 7 is the count of full cups; the
+            <span class="fr"><sup>1</sup>&frasl;<sub>2</sub></span> is a
+            half-full leftover cup, not a whole one.
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ RESOURCES ============ -->
+      <section class="wq-card" aria-labelledby="h-res">
+        <h2 id="h-res">
+          <span class="wq-step-num" aria-hidden="true">3</span>Resources
+        </h2>
+        <p>
+          Use these Neft Teacher tools as you work. They open in the same window
+          — use your back button to return.
+        </p>
+        <div class="wq-res">
+          <a href="/games/3d/unit-2/">
+            <span class="wq-ricon" aria-hidden="true">🎮</span>
+            <span
+              ><span class="wq-rtitle">Unit 2 · 3D Fraction Kitchen</span
+              ><span class="wq-rdesc"
+                >Scoop bulk ingredients into fractional portions and fill
+                orders.</span
+              ></span
+            >
+          </a>
+          <a href="/activities/architect/unit-2/">
+            <span class="wq-ricon" aria-hidden="true">➗</span>
+            <span
+              ><span class="wq-rtitle">Unit 2 Math Activity</span
+              ><span class="wq-rdesc"
+                >Practice Keep–Change–Flip with step-by-step problems.</span
+              ></span
+            >
+          </a>
+          <a href="/graphic-novels/unit2/graphic-novel-1.html">
+            <span class="wq-ricon" aria-hidden="true">📖</span>
+            <span
+              ><span class="wq-rtitle">Unit 2 Graphic Novel</span
+              ><span class="wq-rdesc"
+                >The fraction-division story in pictures.</span
+              ></span
+            >
+          </a>
+          <a href="/esol-reading-writing/math-writing-help/">
+            <span class="wq-ricon" aria-hidden="true">🗣️</span>
+            <span
+              ><span class="wq-rtitle">Math Writing Help · EN/ES</span
+              ><span class="wq-rdesc"
+                >Sentence frames and bilingual vocabulary support.</span
+              ></span
+            >
+          </a>
+        </div>
+
+        <h3>Keep–Change–Flip reference</h3>
+        <p
+          style="
+            font-size: 1.1rem;
+            text-align: center;
+            background: rgba(192, 57, 43, 0.08);
+            border-radius: 10px;
+            padding: 12px;
+          "
+        >
+          <strong
+            ><span class="fr"><sup>a</sup>&frasl;<sub>b</sub></span> &divide;
+            <span class="fr"><sup>c</sup>&frasl;<sub>d</sub></span> =
+            <span class="fr"><sup>a</sup>&frasl;<sub>b</sub></span> &times;
+            <span class="fr"><sup>d</sup>&frasl;<sub>c</sub></span></strong
+          >
+        </p>
+        <ul>
+          <li>Turn whole numbers into fractions over 1 (4 = 4/1).</li>
+          <li>Turn mixed numbers into improper fractions (2&frac12; = 5/2).</li>
+          <li>
+            Dividing by a whole number = multiply by its reciprocal (&divide;4 =
+            &times; 1/4).
+          </li>
         </ul>
+
+        <h3>Key vocabulary · Vocabulario clave</h3>
+        <table class="wq-vocab">
+          <thead>
+            <tr>
+              <th>English</th>
+              <th>Español</th>
+              <th>Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>reciprocal</td>
+              <td>recíproco</td>
+              <td>
+                the &ldquo;flip&rdquo; of a fraction (<span class="fr"
+                  ><sup>2</sup>&frasl;<sub>3</sub></span
+                >
+                &rarr;
+                <span class="fr"><sup>3</sup>&frasl;<sub>2</sub></span
+                >)
+              </td>
+            </tr>
+            <tr>
+              <td>quotient</td>
+              <td>cociente</td>
+              <td>the answer to a division problem</td>
+            </tr>
+            <tr>
+              <td>portion / serving</td>
+              <td>porción</td>
+              <td>one fractional piece, like a 1/4-cup bag</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="wq-diff wq-l2" style="margin-top: 14px">
+          <span class="wq-tag">Level 2 · Enrichment</span>
+          Stretch order: a recipe uses
+          <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> cup of nuts
+          per batch. If you have 4<span class="fr"
+            ><sup>1</sup>&frasl;<sub>2</sub></span
+          >
+          cups of nuts <em>and</em> 5 cups of raisins (each batch also needs
+          <span class="fr"><sup>5</sup>&frasl;<sub>8</sub></span> cup raisins),
+          which ingredient runs out first — and after how many full batches?
+        </div>
       </section>
 
-      <!-- ══════════════════════════════════════════ -->
-      <!-- 5. EVALUATION (RUBRIC)                     -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card">
-        <h2>5. Evaluation (Rubric)</h2>
-        <div class="table-wrap">
-          <table class="rubric">
-            <caption class="muted" style="text-align:left;padding:6px 0;font-size:16px;">How your work is graded.</caption>
+      <!-- ============ EVALUATION / RUBRIC ============ -->
+      <section class="wq-card" aria-labelledby="h-rub">
+        <h2 id="h-rub">
+          <span class="wq-step-num" aria-hidden="true">4</span>Evaluation
+        </h2>
+        <p>Your Stocking Sheet and self-check are scored on this rubric.</p>
+        <div class="wq-table-scroll">
+          <table class="wq-rubric">
             <thead>
               <tr>
-                <th scope="col">Skill</th>
-                <th scope="col">4 — Expert</th>
-                <th scope="col">3 — Proficient</th>
-                <th scope="col">2 — Developing</th>
-                <th scope="col">1 — Beginning</th>
+                <th>Criteria</th>
+                <th>4 · Head Chef</th>
+                <th>3 · Line Cook</th>
+                <th>2 · Apprentice</th>
+                <th>1 · Getting started</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Divide fractions</strong> (6.NS.A.1)</td>
-                <td>All answers correct; can explain each step clearly.</td>
-                <td>Most answers correct; minor arithmetic error.</td>
-                <td>Some answers correct; needs a hint for at least one step.</td>
-                <td>Most answers not correct; keep–change–flip not applied.</td>
+                <td>Set-up</td>
+                <td>
+                  All four expressions written correctly with Keep–Change–Flip.
+                </td>
+                <td>3 of 4 expressions correct.</td>
+                <td>1–2 expressions correct.</td>
+                <td>Expressions missing or mixed up.</td>
               </tr>
               <tr>
-                <td><strong>Reciprocal (flip)</strong></td>
-                <td>Finds reciprocal correctly every time; explains what it means.</td>
-                <td>Finds reciprocal correctly most of the time.</td>
-                <td>Finds reciprocal with a reminder or model.</td>
-                <td>Does not yet find the reciprocal correctly.</td>
+                <td>Answers</td>
+                <td>All four self-checks green; fractions simplified.</td>
+                <td>Most self-checks green.</td>
+                <td>About half correct.</td>
+                <td>Few or no self-checks green.</td>
               </tr>
               <tr>
-                <td><strong>Keep–Change–Flip strategy</strong></td>
-                <td>Uses rule correctly every time; applies to word problems.</td>
-                <td>Uses rule correctly; small error in one step.</td>
-                <td>Uses rule sometimes; needs prompting.</td>
-                <td>Did not use the rule or applied it incorrectly.</td>
+                <td>Meaning</td>
+                <td>
+                  Every answer explained in bags/batches/cups, including the
+                  Order 4 leftover.
+                </td>
+                <td>Most answers explained.</td>
+                <td>Some answers explained.</td>
+                <td>No real-world explanation.</td>
               </tr>
               <tr>
-                <td><strong>Self-check score</strong></td>
-                <td>90–100 % (4–5 correct)</td>
-                <td>75–89 % (4 correct)</td>
-                <td>50–74 % (2–3 correct)</td>
-                <td>Below 50 % (0–1 correct)</td>
+                <td>Units &amp; labels</td>
+                <td>Every answer labeled (bags, cups, batches).</td>
+                <td>Most answers labeled.</td>
+                <td>Some labels missing.</td>
+                <td>No units shown.</td>
               </tr>
               <tr>
-                <td><strong>Deliverable</strong></td>
+                <td>Deliverable</td>
                 <td>Saved PDF/DOC with name and all answers visible.</td>
-                <td>Saved PDF/DOC with name; all answers visible.</td>
-                <td>Saved PDF/DOC, missing name or some answers.</td>
-                <td>Did not save or submit a deliverable.</td>
+                <td>Saved PDF/DOC with name.</td>
+                <td>Saved, missing name or answers.</td>
+                <td>Did not save a deliverable.</td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      <!-- ══════════════════════════════════════════ -->
-      <!-- 6. INTERACTIVE SELF-CHECK                  -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card">
-        <h2>6. Interactive Self-Check</h2>
-        <p class="muted">Try each question, then click <strong>Check</strong> to see instant feedback. Write fractions like <strong>3/4</strong>. Complete all 5, then click <em>Grade my answers</em> at the bottom to record your score.</p>
-
-        <!-- SC Q1 -->
-        <div class="self-check-item" id="sc1">
-          <label class="sc-prompt" for="sc-a1">
-            1. What is 1/2 ÷ 1/4? (How many 1/4-cups fit in 1/2 cup?)
-          </label>
-          <span class="sc-hint">Use keep–change–flip: 1/2 × 4/1 = ?</span>
-          <input type="text" class="sc-input" id="sc-a1" autocomplete="off" aria-describedby="sc-fb1" placeholder="e.g. 2" />
-          <br />
-          <button type="button" class="sc-btn" onclick="checkSC(1)">Check</button>
-          <div class="sc-feedback" id="sc-fb1" role="alert" aria-live="polite"></div>
+      <!-- ============ CHECK YOUR UNDERSTANDING ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <p style="margin: 4px 0 0">
+            <strong>Trail Mix Lab · Stocking Sheet</strong> — pairs with the
+            Evaluation rubric above.
+          </p>
+          <h3>Sample Answers — Stocking Sheet</h3>
+          <ul>
+            <li>
+              <strong>Whole ÷ fraction:</strong> 3 ÷ 1/4 = 3 × 4 =
+              <strong>12 full bags</strong> (Keep–Change–Flip).
+            </li>
+            <li>
+              <strong>Fraction ÷ fraction:</strong> 3/4 ÷ 1/8 = 3/4 × 8/1 =
+              <strong>6 deluxe batches</strong>.
+            </li>
+            <li>
+              <strong>Fraction ÷ whole number:</strong> 2/3 ÷ 4 = 2/3 × 1/4 =
+              2/12 = <strong>1/6 cup of honey per tray</strong> (the SHARING
+              meaning).
+            </li>
+            <li>
+              <strong>Mixed number ÷ fraction:</strong> 2½ ÷ 1/3 = 5/2 × 3 =
+              15/2 = 7½, so <strong>7 full samples</strong> with a half-sample
+              left over.
+            </li>
+          </ul>
+          <h3>Facilitation</h3>
+          <ul>
+            <li>
+              Require the division <em>expression</em> before the answer, plus
+              one sentence interpreting it in context.
+            </li>
+            <li>
+              Stress interpreting the remainder: 7½ means 7
+              <em>full</em> samples — round DOWN for "how many complete."
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.NS.A.1</strong>.</p>
         </div>
+      </details>
 
-        <!-- SC Q2 -->
-        <div class="self-check-item" id="sc2">
-          <label class="sc-prompt" for="sc-a2">
-            2. What is the reciprocal (flip) of 2/3?
-          </label>
-          <span class="sc-hint">Turn the fraction upside down.</span>
-          <input type="text" class="sc-input" id="sc-a2" autocomplete="off" aria-describedby="sc-fb2" placeholder="e.g. 5/3" />
-          <br />
-          <button type="button" class="sc-btn" onclick="checkSC(2)">Check</button>
-          <div class="sc-feedback" id="sc-fb2" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC Q3 — multiple choice -->
-        <div class="self-check-item" id="sc3">
-          <span class="sc-prompt">3. To divide fractions, what do you do first?</span>
-          <div class="sc-choices">
-            <label><input type="radio" name="sc-a3" value="A" /> A. Add the two fractions</label>
-            <label><input type="radio" name="sc-a3" value="B" /> B. Keep the first, change ÷ to ×, and flip the second</label>
-            <label><input type="radio" name="sc-a3" value="C" /> C. Flip the first fraction only</label>
-            <label><input type="radio" name="sc-a3" value="D" /> D. Multiply the numerators and add the denominators</label>
-          </div>
-          <button type="button" class="sc-btn" onclick="checkSC(3)">Check</button>
-          <div class="sc-feedback" id="sc-fb3" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC Q4 -->
-        <div class="self-check-item" id="sc4">
-          <label class="sc-prompt" for="sc-a4">
-            4. A baker has 3/4 cup of jam. Each tart needs 1/8 cup. How many tarts can the baker fill? (Solve: 3/4 ÷ 1/8)
-          </label>
-          <span class="sc-hint">Keep 3/4, change to ×, flip 1/8 to 8/1: 3/4 × 8/1 = 24/4 = ?</span>
-          <input type="text" class="sc-input" id="sc-a4" inputmode="numeric" autocomplete="off" aria-describedby="sc-fb4" placeholder="number of tarts" />
-          <br />
-          <button type="button" class="sc-btn" onclick="checkSC(4)">Check</button>
-          <div class="sc-feedback" id="sc-fb4" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC Q5 -->
-        <div class="self-check-item" id="sc5">
-          <label class="sc-prompt" for="sc-a5">
-            5. What is 2/3 ÷ 1/6? Use keep–change–flip.
-          </label>
-          <span class="sc-hint">2/3 × 6/1 = 12/3 = ?</span>
-          <input type="text" class="sc-input" id="sc-a5" inputmode="numeric" autocomplete="off" aria-describedby="sc-fb5" placeholder="e.g. 4" />
-          <br />
-          <button type="button" class="sc-btn" onclick="checkSC(5)">Check</button>
-          <div class="sc-feedback" id="sc-fb5" role="alert" aria-live="polite"></div>
-        </div>
-
-        <hr style="margin:20px 0;border:0;border-top:2px solid var(--nt-border);" />
-
-        <p class="muted" style="margin-bottom:10px;">When you have tried all 5 questions above, click below to record your official score and save your work.</p>
-        <button type="button" id="check">Grade my answers ✅</button>
-        <p class="muted" style="margin-top:14px;">Your score and a ✓/✗ for each question will appear in the panel at the top. Then use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to turn it in.</p>
-
-        <!-- Teacher Answer Key (hidden in details) -->
-        <details class="answer-key">
-          <summary>🔑 Teacher Answer Key (click to expand)</summary>
-          <ol>
-            <li><strong>Q1 — 1/2 ÷ 1/4:</strong> 1/2 × 4/1 = 4/2 = <strong>2</strong>. (Two 1/4-cups fit in 1/2 cup.)</li>
-            <li><strong>Q2 — Reciprocal of 2/3:</strong> Flip numerator and denominator → <strong>3/2</strong>. (Also acceptable: 1½ or 1.5, but fraction form preferred.)</li>
-            <li><strong>Q3 — First step to divide fractions:</strong> <strong>B</strong>. Keep the first fraction, change ÷ to ×, and flip (take the reciprocal of) the second fraction.</li>
-            <li><strong>Q4 — 3/4 ÷ 1/8 (tarts):</strong> 3/4 × 8/1 = 24/4 = <strong>6</strong> tarts.</li>
-            <li><strong>Q5 — 2/3 ÷ 1/6:</strong> 2/3 × 6/1 = 12/3 = <strong>4</strong>.</li>
-          </ol>
-          <p style="margin-top:12px;font-size:16px;color:var(--nt-muted);">Sample student reflection: "Dividing fractions is the same as multiplying by the reciprocal. I used keep–change–flip every time and it made the problems easier because I already know how to multiply fractions."</p>
-        </details>
-      </section>
-
-      <!-- ══════════════════════════════════════════ -->
-      <!-- 7. CONCLUSION                              -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card">
-        <h2>7. Conclusion</h2>
+      <section class="wq-card" aria-labelledby="h-cyu">
+        <h2 id="h-cyu">
+          <span class="wq-step-num" aria-hidden="true">5</span>Check Your
+          Understanding
+        </h2>
         <p>
-          Great work, baker! You learned to divide fractions with <strong>keep–change–flip</strong>.
-          Now you can share dough, jam, and batter into equal parts in any real kitchen.
-          Save your results and turn them in.
+          Type your name in the bar at the top. Answer all five, then click
+          <strong>Check My Answers</strong>. Write fractions like
+          <strong>1/6</strong>. These match the orders on your Stocking Sheet.
+        </p>
+
+        <!-- Q1: Order 1, whole ÷ unit fraction -->
+        <div
+          class="wq-q"
+          data-q="1"
+          data-type="num"
+          data-answer="12"
+          data-tol="0.001"
+          data-skill="Whole ÷ fraction"
+          data-prompt="3 ÷ 1/4 = (full pretzel bags)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">1.</span
+            ><span
+              >Order 1: a tub holds 3 cups of pretzels; each bag gets
+              <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span> cup. How
+              many full bags can you fill?</span
+            >
+          </div>
+          <label for="q1in" class="sr-only">Number of full pretzel bags</label>
+          <input
+            id="q1in"
+            class="wq-text"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="bags"
+          />
+          <div class="wq-hinttext">
+            Hint / Pista: 3 &times; 4 = ? (Keep–Change–Flip)
+          </div>
+          <div class="wq-fb" id="fb1" role="status"></div>
+        </div>
+
+        <!-- Q2: Order 2, fraction ÷ fraction -->
+        <div
+          class="wq-q"
+          data-q="2"
+          data-type="num"
+          data-answer="6"
+          data-tol="0.001"
+          data-skill="Fraction ÷ fraction"
+          data-prompt="3/4 ÷ 1/8 = (deluxe batches)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">2.</span
+            ><span
+              >Order 2:
+              <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> cup of
+              cranberries is left; each deluxe batch needs
+              <span class="fr"><sup>1</sup>&frasl;<sub>8</sub></span> cup. How
+              many batches can you make?</span
+            >
+          </div>
+          <label for="q2in" class="sr-only">Number of deluxe batches</label>
+          <input
+            id="q2in"
+            class="wq-text"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="batches"
+          />
+          <div class="wq-hinttext">
+            Hint / Pista:
+            <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> &times; 8 =
+            ?
+          </div>
+          <div class="wq-fb" id="fb2" role="status"></div>
+        </div>
+
+        <!-- Q3: Order 3, fraction ÷ whole, answer is a fraction -->
+        <div
+          class="wq-q"
+          data-q="3"
+          data-type="frac"
+          data-answer="1/6"
+          data-skill="Fraction ÷ whole number"
+          data-prompt="2/3 ÷ 4 = (cup of honey per tray)"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">3.</span
+            ><span
+              >Order 3:
+              <span class="fr"><sup>2</sup>&frasl;<sub>3</sub></span> cup of
+              honey is shared equally over 4 trays. How much honey goes on each
+              tray? (Write a fraction.)</span
+            >
+          </div>
+          <label for="q3in" class="sr-only">Cup of honey per tray</label>
+          <input
+            id="q3in"
+            class="wq-text"
+            type="text"
+            autocomplete="off"
+            placeholder="e.g. 1/6"
+          />
+          <div class="wq-hinttext">
+            Hint / Pista:
+            <span class="fr"><sup>2</sup>&frasl;<sub>3</sub></span> &times;
+            <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span> =
+            <span class="fr"><sup>2</sup>&frasl;<sub>12</sub></span
+            >, simplified.
+          </div>
+          <div class="wq-fb" id="fb3" role="status"></div>
+        </div>
+
+        <!-- Q4: Order 4, full cups (remainder interpretation) -->
+        <div
+          class="wq-q"
+          data-q="4"
+          data-type="num"
+          data-answer="7"
+          data-tol="0.001"
+          data-skill="Mixed number ÷ fraction (full count)"
+          data-prompt="Full 1/3-cup samples from 2 1/2 cups"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">4.</span
+            ><span
+              >Order 4: 2<span class="fr"><sup>1</sup>&frasl;<sub>2</sub></span>
+              cups of leftover mix is scooped into
+              <span class="fr"><sup>1</sup>&frasl;<sub>3</sub></span
+              >-cup samples. How many <em>full</em> sample cups can you
+              fill?</span
+            >
+          </div>
+          <label for="q4in" class="sr-only">Number of full sample cups</label>
+          <input
+            id="q4in"
+            class="wq-text"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="full cups"
+          />
+          <div class="wq-hinttext">
+            Hint / Pista:
+            <span class="fr"><sup>5</sup>&frasl;<sub>2</sub></span> &times; 3 =
+            7<span class="fr"><sup>1</sup>&frasl;<sub>2</sub></span
+            >. Only count the <em>full</em> cups.
+          </div>
+          <div class="wq-fb" id="fb4" role="status"></div>
+        </div>
+
+        <!-- Q5: concept / reasoning (radio) -->
+        <div
+          class="wq-q"
+          data-q="5"
+          data-type="radio"
+          data-answer="b"
+          data-skill="Reasoning about dividing by a fraction"
+          data-prompt="Why does dividing by a fraction < 1 give a larger answer?"
+        >
+          <div class="wq-qhead">
+            <span class="wq-qn">5.</span
+            ><span
+              >When you divide a number by a fraction <em>smaller than 1</em>,
+              the answer is&hellip; why?</span
+            >
+          </div>
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="a" /> smaller, because
+            dividing always makes numbers smaller.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="b" /> larger, because many
+            small portions fit inside a bigger amount.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="c" /> always exactly 1.</label
+          >
+          <label class="wq-opt"
+            ><input type="radio" name="q5" value="d" /> impossible to
+            predict.</label
+          >
+          <div class="wq-fb" id="fb5" role="status"></div>
+        </div>
+
+        <div class="wq-actions">
+          <button class="wq-btn" id="wq-check" type="button">
+            Check My Answers
+          </button>
+          <button class="wq-btn secondary" id="wq-reset" type="button">
+            Clear
+          </button>
+        </div>
+        <div id="wq-score" role="status" aria-live="polite"></div>
+        <p class="wq-hinttext" style="margin-top: 14px">
+          Your score and a check for each question appear in the panel at the
+          top. Then use <strong>Save as PDF</strong> or
+          <strong>Save as DOC</strong> to turn it in.
         </p>
       </section>
 
-      <!-- ══════════════════════════════════════════ -->
-      <!-- 8. REFLECTION                              -->
-      <!-- ══════════════════════════════════════════ -->
-      <section class="card">
-        <h2>8. Reflection</h2>
-        <p>Answer this in 2–3 sentences in the box below:</p>
-        <p><strong>Where in real life might you need to divide a fraction by a fraction? Describe a situation and explain what the answer (quotient) would mean.</strong></p>
-        <label for="reflection" class="muted" style="font-size:16px;">Type your reflection here (it will be included when you save as PDF):</label>
-        <textarea class="reflection-area" id="reflection" rows="4" placeholder="Example: I could use this when cooking — if a recipe needs 1/4 cup of butter per serving, I can divide the total butter I have by 1/4 to find out how many servings I can make..."></textarea>
+      <!-- ============ CONCLUSION ============ -->
+      <section class="wq-card" aria-labelledby="h-conc">
+        <h2 id="h-conc">
+          <span class="wq-step-num" aria-hidden="true">6</span>Conclusion
+        </h2>
+        <p class="wq-lead">
+          You just ran a whole shift on one big idea:
+          <strong
+            >dividing by a fraction tells you how many small portions fit inside
+            a larger amount.</strong
+          >
+          That is why
+          <span class="fr"><sup>3</sup>&frasl;<sub>4</sub></span> &divide;
+          <span class="fr"><sup>1</sup>&frasl;<sub>8</sub></span> gave you
+          <em>more</em> than 1 — small scoops add up fast.
+        </p>
+        <div class="wq-conc-cta">
+          <div>
+            <h4>Take it further · Level 2</h4>
+            <p>
+              Rewrite Order 4 with a
+              <span class="fr"><sup>1</sup>&frasl;<sub>4</sub></span
+              >-cup sample instead of
+              <span class="fr"><sup>1</sup>&frasl;<sub>3</sub></span
+              >. How many full cups now — and how big is the leftover?
+            </p>
+          </div>
+          <div>
+            <h4>Reflect · Reflexiona</h4>
+            <p>
+              Describe one moment outside math class where you already used
+              fraction division. What was the &ldquo;tub&rdquo; and what was the
+              &ldquo;portion&rdquo;? ¿Cuál era el &ldquo;recipiente&rdquo; y
+              cuál la &ldquo;porción&rdquo;?
+            </p>
+          </div>
+          <div>
+            <h4>Real careers · Carreras reales</h4>
+            <p>
+              Bakers, pharmacists, carpenters, and tailors all divide by
+              fractions to portion ingredients, doses, boards, and fabric —
+              exactly the skill you just used.
+            </p>
+          </div>
+        </div>
+        <div class="wq-reflect" style="margin-top: 16px">
+          <label for="reflection"
+            ><strong
+              >Your reflection (it is included when you save as PDF):</strong
+            ></label
+          >
+          <textarea
+            id="reflection"
+            placeholder="Example: When I pour a big bottle of juice into small cups, I am dividing by a fraction. The bottle is the tub and each cup is the portion..."
+          ></textarea>
+        </div>
       </section>
+    </main>
 
-    </div><!-- /wrap -->
-
+    <!-- Shared Neft theme + activity kit -->
+    <script src="/assets/neft-theme.js"></script>
+    <script src="/assets/nt-activity-kit.js"></script>
     <script>
-      NTKit.mount("#ntkit");
+      (function () {
+        "use strict";
 
-      /* ─────────────────────────────────────────────────────────
-         Answer normaliser — makes grading tolerant of common
-         formatting variations without changing any correct answer.
-         ───────────────────────────────────────────────────────── */
-      function normalise(raw) {
-        var s = String(raw).trim().toLowerCase();
-        // Collapse / strip whitespace
-        s = s.replace(/\s+/g, "");
-        // Strip leading dollar sign
-        s = s.replace(/^\$/, "");
-        // Strip trailing percent sign
-        s = s.replace(/%$/, "");
-        // Strip commas in numbers (1,000 → 1000)
-        s = s.replace(/,(\d{3})/g, "$1");
-        // Strip common trailing unit words (only at the end, whole-word)
-        s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|tarts?|cups?|hours?|minutes?)$/, "");
-        return s;
-      }
+        // Mount the shared student-name / Save PDF-DOC bar if the kit is present.
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function")
+            NTKit.mount("#ntkit");
+        } catch (e) {}
 
-      /* Numeric equality with small epsilon (handles 3 vs 3.0 vs 3.00) */
-      function numericMatch(a, b) {
-        var na = parseFloat(a);
-        var nb = parseFloat(b);
-        if (isNaN(na) || isNaN(nb)) { return false; }
-        return Math.abs(na - nb) < 1e-9;
-      }
+        var ACTIVITY_ID = "webquest-unit-2-trailmix";
+        var ACTIVITY_TITLE = "WebQuest · Unit 2 · The Trail Mix Lab";
+        var STANDARD = "6.NS.1";
 
-      /* Ratio / fraction equivalence: "3/2" ↔ "3:2" (same numeric fraction) */
-      function ratioMatch(a, b) {
-        function toDecimal(s) {
-          var colonForm = s.match(/^(\d+):(\d+)$/);
-          if (colonForm) { return parseFloat(colonForm[1]) / parseFloat(colonForm[2]); }
-          var slashForm = s.match(/^(\d+)\/(\d+)$/);
-          if (slashForm) { return parseFloat(slashForm[1]) / parseFloat(slashForm[2]); }
-          return NaN;
-        }
-        var da = toDecimal(a);
-        var db = toDecimal(b);
-        if (isNaN(da) || isNaN(db)) { return false; }
-        return Math.abs(da - db) < 1e-9;
-      }
-
-      function answersMatch(studentRaw, correctRaw, questionType) {
-        var s = normalise(studentRaw);
-        var c = normalise(correctRaw);
-        if (s === c) { return true; }
-        // Numeric questions: tolerate 2 vs 2.0 vs 2.00
-        if (questionType === "numeric") {
-          return numericMatch(s, c);
-        }
-        // Fraction/ratio questions: tolerate slash ↔ colon and equivalent fractions
-        if (questionType === "fraction") {
-          return ratioMatch(s, c);
-        }
-        return false;
-      }
-
-      /* ── Self-check configuration ── */
-      var SC = {
-        1: {
-          type: "text",
-          subtype: "numeric",
-          inputId: "sc-a1",
-          correct: "2",
-          explanation: "1/2 ÷ 1/4 = 1/2 × 4/1 = 4/2 = 2. Two quarter-cups fit inside a half-cup."
-        },
-        2: {
-          type: "text",
-          subtype: "fraction",
-          inputId: "sc-a2",
-          correct: "3/2",
-          explanation: "To find the reciprocal, flip numerator and denominator: 2/3 becomes 3/2."
-        },
-        3: {
-          type: "radio",
-          name: "sc-a3",
-          correct: "B",
-          explanation: "Keep the first fraction, change ÷ to ×, and flip the second fraction (take its reciprocal). This is the keep-change-flip rule."
-        },
-        4: {
-          type: "text",
-          subtype: "numeric",
-          inputId: "sc-a4",
-          correct: "6",
-          explanation: "3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6. Six tarts can be filled."
-        },
-        5: {
-          type: "text",
-          subtype: "numeric",
-          inputId: "sc-a5",
-          correct: "4",
-          explanation: "2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4."
-        }
-      };
-
-      function checkSC(num) {
-        var cfg = SC[num];
-        var studentAnswer = "";
-        if (cfg.type === "text") {
-          var el = document.getElementById(cfg.inputId);
-          studentAnswer = el ? el.value : "";
-        } else if (cfg.type === "radio") {
-          var checked = document.querySelector('input[name="' + cfg.name + '"]:checked');
-          studentAnswer = checked ? checked.value : "";
-        }
-        var fb = document.getElementById("sc-fb" + num);
-        if (!fb) { return; }
-        var trimmed = studentAnswer.trim();
-        var isCorrect = (cfg.type === "radio")
-          ? (normalise(trimmed) === normalise(cfg.correct))
-          : answersMatch(trimmed, cfg.correct, cfg.subtype || "text");
-        fb.className = "sc-feedback " + (isCorrect ? "correct" : "incorrect");
-        fb.style.display = "block";
-        if (trimmed === "") {
-          fb.textContent = "⚠ Please enter or select an answer first.";
-          fb.className = "sc-feedback incorrect";
-        } else if (isCorrect) {
-          fb.textContent = "✔ Correct! " + cfg.explanation;
-        } else {
-          fb.textContent = "✘ Not quite. " + cfg.explanation;
-        }
-      }
-
-      function val(id) {
-        var el = document.getElementById(id);
-        return el ? el.value.trim() : "";
-      }
-      function radio(name) {
-        var el = document.querySelector('input[name="' + name + '"]:checked');
-        return el ? el.value : "";
-      }
-
-      document.getElementById("check").addEventListener("click", function () {
-        NTKit.grade({
-          activityId: "webquest-unit-2",
-          activityTitle: "Unit 2 · Dividing Fractions — WebQuest Check",
-          standard: "6.NS.A.1",
-          items: [
-            {
-              prompt: "1/2 ÷ 1/4 =",
-              studentAnswer: val("sc-a1"),
-              correctAnswer: "2",
-              points: 1,
-              skill: "Divide fractions"
-            },
-            {
-              prompt: "Reciprocal of 2/3 =",
-              studentAnswer: val("sc-a2"),
-              correctAnswer: "3/2",
-              points: 1,
-              skill: "Reciprocal"
-            },
-            {
-              prompt: "First step to divide fractions",
-              studentAnswer: radio("sc-a3"),
-              correctAnswer: "B",
-              points: 1,
-              skill: "Keep-Change-Flip"
-            },
-            {
-              prompt: "3/4 ÷ 1/8 = (number of tarts)",
-              studentAnswer: val("sc-a4"),
-              correctAnswer: "6",
-              points: 1,
-              skill: "Divide fractions (word problem)"
-            },
-            {
-              prompt: "2/3 ÷ 1/6 =",
-              studentAnswer: val("sc-a5"),
-              correctAnswer: "4",
-              points: 1,
-              skill: "Divide fractions"
+        // ----- Hint reveal buttons -----
+        var revealBtns = document.querySelectorAll("[data-reveal]");
+        Array.prototype.forEach.call(revealBtns, function (btn) {
+          btn.addEventListener("click", function () {
+            var hint = document.getElementById(btn.getAttribute("data-reveal"));
+            if (!hint) return;
+            var nowHidden = hint.hasAttribute("hidden");
+            if (nowHidden) {
+              hint.removeAttribute("hidden");
+              btn.textContent = "Hide hint";
+            } else {
+              hint.setAttribute("hidden", "");
+              btn.textContent = "Show a hint";
             }
-          ]
+          });
         });
-        var panel = document.getElementById("ntkit");
-        if (panel && panel.scrollIntoView) {
-          panel.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        // ----- Self-check -----
+        var qs = Array.prototype.slice.call(document.querySelectorAll(".wq-q"));
+
+        function fracToDecimal(s) {
+          s = String(s).trim();
+          var m = s.match(/^(-?\d+)\s*\/\s*(\d+)$/);
+          if (m) {
+            var d = parseFloat(m[2]);
+            if (d === 0) return NaN;
+            return parseFloat(m[1]) / d;
+          }
+          return parseFloat(s);
         }
-      });
+
+        function readResponse(card) {
+          var type = card.getAttribute("data-type");
+          if (type === "radio") {
+            var sel = card.querySelector("input[type=radio]:checked");
+            return sel ? sel.value : null;
+          }
+          var input = card.querySelector("input.wq-text");
+          if (!input || input.value.trim() === "") return null;
+          return input.value.trim();
+        }
+
+        function isCorrect(card, resp) {
+          if (resp === null) return false;
+          var type = card.getAttribute("data-type");
+          var ans = card.getAttribute("data-answer");
+          if (type === "radio") {
+            return resp.toLowerCase() === ans.toLowerCase();
+          }
+          if (type === "frac") {
+            var rv = fracToDecimal(resp);
+            var av = fracToDecimal(ans);
+            if (isNaN(rv) || isNaN(av)) return false;
+            return Math.abs(rv - av) < 1e-9;
+          }
+          // numeric
+          var val = parseFloat(resp);
+          var target = parseFloat(ans);
+          var tol = parseFloat(card.getAttribute("data-tol") || "0.001");
+          if (isNaN(val)) return false;
+          return Math.abs(val - target) <= tol;
+        }
+
+        function showFeedback(card, ok, answered) {
+          var fb = card.querySelector(".wq-fb");
+          if (!fb) return;
+          if (!answered) {
+            fb.className = "wq-fb no";
+            fb.textContent = "⚠ Please enter an answer first.";
+            return;
+          }
+          fb.className = "wq-fb " + (ok ? "ok" : "no");
+          fb.textContent = ok
+            ? "✓ Correct! ¡Correcto!"
+            : "✗ Not yet — recheck Keep–Change–Flip and try again. Inténtalo de nuevo.";
+        }
+
+        function buildItems() {
+          return qs.map(function (card) {
+            var resp = readResponse(card);
+            return {
+              prompt: card.getAttribute("data-prompt") || "Question",
+              studentAnswer: resp === null ? "(blank)" : resp,
+              correctAnswer: card.getAttribute("data-answer"),
+              points: 1,
+              skill: card.getAttribute("data-skill") || "Dividing fractions",
+            };
+          });
+        }
+
+        var checkBtn = document.getElementById("wq-check");
+        if (checkBtn) {
+          checkBtn.addEventListener("click", function () {
+            var correctCount = 0;
+            qs.forEach(function (card) {
+              var resp = readResponse(card);
+              var answered = resp !== null;
+              var ok = isCorrect(card, resp);
+              if (ok) correctCount++;
+              showFeedback(card, ok, answered);
+            });
+            var total = qs.length;
+            var pct = Math.round((correctCount / total) * 100);
+
+            // Prefer the shared kit grader so results save to the dashboard.
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: ACTIVITY_ID,
+                  activityTitle: ACTIVITY_TITLE,
+                  standard: STANDARD,
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {}
+
+            var box = document.getElementById("wq-score");
+            box.className = "show";
+            box.textContent =
+              "You scored " +
+              correctCount +
+              " / " +
+              total +
+              " (" +
+              pct +
+              "%). " +
+              (correctCount === total
+                ? "Stocking Sheet approved — you ran a perfect shift! ¡Felicidades!"
+                : "Review the orders marked ✗ and check again.");
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+        }
+
+        var resetBtn = document.getElementById("wq-reset");
+        if (resetBtn) {
+          resetBtn.addEventListener("click", function () {
+            qs.forEach(function (card) {
+              var input = card.querySelector("input.wq-text");
+              if (input) input.value = "";
+              Array.prototype.forEach.call(
+                card.querySelectorAll("input[type=radio]"),
+                function (r) {
+                  r.checked = false;
+                },
+              );
+              var fb = card.querySelector(".wq-fb");
+              if (fb) {
+                fb.className = "wq-fb";
+                fb.textContent = "";
+              }
+            });
+            var box = document.getElementById("wq-score");
+            box.className = "";
+            box.textContent = "";
+          });
+        }
+      })();
     </script>
   </body>
 </html>

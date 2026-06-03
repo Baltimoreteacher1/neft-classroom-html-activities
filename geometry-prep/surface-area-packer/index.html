@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Surface Area Cyber-Packer: An interactive cyberpunk geometry sandbox. Adjust dimensions, unfold 3D net structures, and calculate surface areas dynamically.">
+  <title>Surface Area Cyber-Packer | Neft Studio</title>
+
+  <!-- Google Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/shared.css">
+
+  <style>
+    /* ── Cyberpunk Neon Design Tokens ── */
+    :root {
+      --bg-base: #050510;
+      --bg-surface: #0a0b22;
+      --bg-card: rgba(15, 17, 45, 0.6);
+      --bg-glow: rgba(168, 85, 247, 0.08); /* Purple glow */
+      
+      --primary: #a855f7; /* Electric Purple */
+      --primary-glow: rgba(168, 85, 247, 0.4);
+      --secondary: #06b6d4; /* Neon Cyan */
+      --secondary-glow: rgba(6, 182, 212, 0.4);
+      --accent: #f43f5e; /* Neon Rose */
+      --accent-glow: rgba(244, 63, 94, 0.4);
+      --warning: #eab308; /* Amber */
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dark: #475569;
+      
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+      
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --shadow-gaze: 0 0 20px rgba(168, 85, 247, 0.2);
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Breadcrumb & Navigation ── */
+    .breadcrumb {
+      margin: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .breadcrumb a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .breadcrumb a:hover {
+      text-shadow: 0 0 8px var(--primary);
+    }
+    .breadcrumb span {
+      color: var(--text-muted);
+    }
+
+    /* ── Hero Cyber banner ── */
+    .hero {
+      background: linear-gradient(135deg, #130f35 0%, #050615 100%);
+      border: 1px solid rgba(168, 85, 247, 0.15);
+      border-left: 6px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin: 20px 24px;
+      box-shadow: var(--shadow-gaze);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.4), transparent);
+    }
+    .hero-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #fff, #d8b4fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 0 16px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+    }
+    .hero-chip {
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hero-chip.accent {
+      background: rgba(6, 182, 212, 0.1);
+      border-color: rgba(6, 182, 212, 0.2);
+      color: var(--secondary);
+    }
+
+    /* ── Main Layout grid ── */
+    .studio-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar-wrapper {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .brand-block h2 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-block p {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    /* ── Quest List Cards ── */
+    .quest-catalog {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .quest-card {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .quest-card:hover {
+      border-color: var(--primary);
+      background: rgba(168, 85, 247, 0.05);
+      transform: translateY(-1px);
+    }
+    .quest-card.active {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.15);
+    }
+    .quest-card .quest-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .quest-card .quest-status {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+    .quest-card.active .quest-status {
+      color: var(--primary);
+    }
+    .quest-card.completed {
+      border-color: var(--secondary);
+      background: rgba(6, 182, 212, 0.05);
+    }
+    .quest-card.completed .quest-status {
+      color: var(--secondary);
+    }
+
+    /* ── Main Workspace ── */
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .glass-panel {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .panel-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+    .panel-meta h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Slider Controllers panel */
+    .net-controllers {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .control-slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .slider-header span.val-label {
+      color: var(--secondary);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #141738;
+      border-radius: 4px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--primary);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--primary-glow);
+      transition: var(--transition);
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      background: #fff;
+      transform: scale(1.15);
+    }
+
+    /* ── SVG Plot Viewport ── */
+    .model-viewport {
+      background: #020308;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-md);
+      min-height: 380px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .model-viewport svg {
+      width: 100%;
+      height: 380px;
+      display: block;
+    }
+
+    /* SVG net styles */
+    .face-rect {
+      transition: fill 0.3s, stroke 0.3s;
+      stroke-width: 2.5;
+    }
+    .face-text {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      fill: #fff;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    .face-lbl {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      fill: var(--text-muted);
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    /* ── Case Objective HUD ── */
+    .objective-hud {
+      background: rgba(168, 85, 247, 0.03);
+      border: 1px solid rgba(168, 85, 247, 0.15);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .hud-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hud-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .hud-item.done {
+      border-color: var(--secondary);
+      background: rgba(6, 182, 212, 0.08);
+      color: var(--secondary);
+    }
+    .hud-item .item-icon {
+      font-size: 1.1rem;
+    }
+
+    /* ── ESOL Bilingual Glossary ── */
+    .glossary-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .glossary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .glossary-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .glossary-lang-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .lang-tab {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lang-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .glossary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .vocab-chip {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: help;
+      position: relative;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vocab-chip:hover {
+      border-color: var(--primary);
+      background: rgba(168, 85, 247, 0.08);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .vocab-chip .tooltip-bubble {
+      visibility: hidden;
+      width: 240px;
+      background: #090b1e;
+      color: var(--text-main);
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px 12px;
+      position: absolute;
+      z-index: 100;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      pointer-events: none;
+      font-weight: 500;
+    }
+    .vocab-chip:hover .tooltip-bubble {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* ── TWR Writing Reporter ── */
+    .writing-reporter {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .writing-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .writing-header h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .writing-header p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .twr-lanes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .twr-lane {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lane-label {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+    .twr-lane:nth-child(2) .lane-label { color: var(--warning); }
+    .twr-lane:nth-child(3) .lane-label { color: var(--secondary); }
+    .lane-kernel {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.4;
+    }
+    .twr-textarea {
+      width: 100%;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      resize: none;
+      outline: none;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+    .twr-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
+    }
+    .twr-conjunctions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .conj-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .conj-chip:hover {
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .report-pad-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 16px;
+    }
+    .report-pad-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .report-pad-area {
+      width: 100%;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .report-pad-area:focus {
+      border-color: var(--secondary);
+    }
+    .report-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* ── Cyber Buttons ── */
+    .cyber-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, #7e22ce 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.3);
+    }
+    .cyber-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.45);
+    }
+    .cyber-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .cyber-btn.sec {
+      background: linear-gradient(135deg, var(--secondary) 0%, #0891b2 100%);
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+    }
+    .cyber-btn.sec:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+    }
+    .cyber-btn.outline {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+    .cyber-btn.outline:hover {
+      border-color: var(--primary);
+      background: rgba(168, 85, 247, 0.05);
+    }
+
+    /* ── Diagnostics console overlay ── */
+    .diag-overlay {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 420px;
+      background: #05070f;
+      color: #00ff66;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      border: 1px solid #14294a;
+      padding: 16px;
+      display: none;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+    .diag-head {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      border-bottom: 1px dashed #14294a;
+      padding-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+    .diag-stream {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .diag-line {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    .diag-close {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1080px) {
+      .studio-shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-wrapper {
+        position: static;
+        max-height: none;
+      }
+      .net-controllers {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a href="/geometry-prep/">Geometry</a>
+    <span>/</span>
+    <span>Surface Area Cyber-Packer</span>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-row">
+      <div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px">
+          <span class="hero-chip">Unit 10 · Geometry</span>
+          <span class="hero-chip accent" id="langIndicator">English Mode</span>
+        </div>
+        <h1 id="heroTitle">Surface Area Cyber-Packer</h1>
+        <p id="heroCopy">
+          Analyze 3D coordinate packaging limits. Adjust width, height, and depth sliders to fold/unfold 
+          prisms in real-time, compute individual net faces, and override total surface areas.
+        </p>
+        <div class="hero-stats">
+          <button class="cyber-btn outline" onclick="toggleLanguage()" id="btnLangToggle">
+            🌍 Translate to Spanish
+          </button>
+          <button class="cyber-btn outline" onclick="toggleDiagnostics()">
+            📊 Run System Checks
+          </button>
+          <button class="cyber-btn outline" id="btnSelfTest" onclick="triggerSelfTest()">
+            ⚙️ Run Self-Test
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="studio-shell">
+    <!-- Sidebar: Mystery Quests -->
+    <aside class="sidebar-wrapper" aria-label="Mystery Cases">
+      <div class="brand-block">
+        <h2 id="sidebarTitle">📐 Active Quests</h2>
+        <p id="sidebarSubtitle">Calibrate package coordinates</p>
+      </div>
+
+      <div class="quest-catalog" id="questCatalog" role="radiogroup" aria-label="Select Case">
+        <!-- Dynamically populated quest cards -->
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <div class="canvas-layout">
+      <!-- SVG Box Plot Sandbox -->
+      <section class="glass-panel" aria-labelledby="canvasHeading">
+        <div class="panel-meta">
+          <h3 id="canvasHeading">📦 Prism Folder & 3D Net Blueprint</h3>
+          <button class="cyber-btn" onclick="resetActiveSliders()" id="btnResetData">
+            🔄 Reset Blueprint
+          </button>
+        </div>
+
+        <!-- Slider Controllers -->
+        <div class="net-controllers">
+          <div class="control-slider-group">
+            <div class="slider-header">
+              <span id="labelWidth">Width (w)</span>
+              <span class="val-label" id="valWidth">4 cm</span>
+            </div>
+            <input type="range" id="sliderWidth" min="1" max="8" value="4" step="1" oninput="updateDimensions()">
+          </div>
+
+          <div class="control-slider-group">
+            <div class="slider-header">
+              <span id="labelHeight">Height (h)</span>
+              <span class="val-label" id="valHeight">4 cm</span>
+            </div>
+            <input type="range" id="sliderHeight" min="1" max="8" value="4" step="1" oninput="updateDimensions()">
+          </div>
+
+          <div class="control-slider-group">
+            <div class="slider-header">
+              <span id="labelDepth">Depth (d)</span>
+              <span class="val-label" id="valDepth">4 cm</span>
+            </div>
+            <input type="range" id="sliderDepth" min="1" max="8" value="4" step="1" oninput="updateDimensions()">
+          </div>
+        </div>
+
+        <div class="model-viewport" id="viewport">
+          <svg id="canvasSvg" viewBox="0 0 800 380">
+            <!-- Background grids/axes can go here -->
+            <rect width="800" height="380" fill="none" />
+            
+            <!-- Separator line between Net and 3D view -->
+            <line x1="450" y1="20" x2="450" y2="360" stroke="rgba(255,255,255,0.06)" stroke-dasharray="4" />
+            
+            <!-- Labels -->
+            <text x="225" y="30" fill="#64748b" font-size="11" font-family="'Space Grotesk'" text-anchor="middle" letter-spacing="1" id="lblNetView">2D UNFOLDED NET BLUEPRINT</text>
+            <text x="625" y="30" fill="#64748b" font-size="11" font-family="'Space Grotesk'" text-anchor="middle" letter-spacing="1" id="lbl3dView">3D ISO-PROJECTION VIEW</text>
+
+            <!-- Net elements group -->
+            <g id="netGroup"></g>
+            
+            <!-- 3D projection elements group -->
+            <g id="projectionGroup"></g>
+          </svg>
+        </div>
+
+        <!-- Case Objective HUD -->
+        <div class="objective-hud">
+          <div class="hud-title" id="hudTitle">📌 Case Goals Checklist</div>
+          <div class="hud-checklist" id="hudChecklist">
+            <!-- Injected active quest items -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ESOL Bilingual Glossary -->
+      <section class="glossary-card" aria-labelledby="glossaryHeading">
+        <div class="glossary-header">
+          <h4 id="glossaryHeading">📖 Interactive Math Dictionary</h4>
+          <div class="glossary-lang-tabs" id="glossaryLangTabs" role="tablist" aria-label="Glossary Language">
+            <button class="lang-tab active" role="tab" aria-selected="true" onclick="setGlossaryLanguage('en')" id="tabEn">English</button>
+            <button class="lang-tab" role="tab" aria-selected="false" onclick="setGlossaryLanguage('es')" id="tabEs">Español</button>
+            <button class="lang-tab" role="tab" aria-selected="false" onclick="setGlossaryLanguage('ar')" id="tabAr">العربية</button>
+            <button class="lang-tab" role="tab" aria-selected="false" onclick="setGlossaryLanguage('vi')" id="tabVi">Tiếng Việt</button>
+          </div>
+        </div>
+        <div class="glossary-grid" id="glossaryGrid">
+          <!-- Injected bilingual vocab cards -->
+        </div>
+      </section>
+
+      <!-- TWR Writing Pad -->
+      <section class="writing-reporter" aria-labelledby="reporterHeading">
+        <div class="writing-header">
+          <h4 id="reporterHeading">✍️ The Writing Revolution (TWR) Detective Report</h4>
+          <p id="reporterSub">Expand your kernels using transition connectors to synthesize your analytical case report.</p>
+        </div>
+        
+        <div class="twr-lanes">
+          <div class="twr-lane">
+            <span class="lane-label">Because</span>
+            <span class="lane-kernel" id="kernelBecause">The surface area is 96 because...</span>
+            <textarea class="twr-textarea" id="textareaBecause" placeholder="Type reason..."></textarea>
+            <div class="twr-conjunctions">
+              <span class="conj-chip" onclick="injectConjunction('textareaBecause', 'equal faces')">equal faces</span>
+              <span class="conj-chip" onclick="injectConjunction('textareaBecause', 'formula calculations')">formula calculations</span>
+            </div>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">But</span>
+            <span class="lane-kernel" id="kernelBut">The prism is long, but...</span>
+            <textarea class="twr-textarea" id="textareaBut" placeholder="Type contrast..."></textarea>
+            <div class="twr-conjunctions">
+              <span class="conj-chip" onclick="injectConjunction('textareaBut', 'height is small')">height is small</span>
+              <span class="conj-chip" onclick="injectConjunction('textareaBut', 'constant volume')">constant volume</span>
+            </div>
+          </div>
+          <div class="twr-lane">
+            <span class="lane-label">So</span>
+            <span class="lane-kernel" id="kernelSo">The flat layout folds up, so...</span>
+            <textarea class="twr-textarea" id="textareaSo" placeholder="Type result..."></textarea>
+            <div class="twr-conjunctions">
+              <span class="conj-chip" onclick="injectConjunction('textareaSo', 'it wraps shape')">it wraps shape</span>
+              <span class="conj-chip" onclick="injectConjunction('textareaSo', 'dimensions balance')">dimensions balance</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-pad-section">
+          <span class="report-pad-title" id="padTitle">📜 Compiled Detective Report Pad</span>
+          <textarea class="report-pad-area" id="finalReportPad" readonly placeholder="Your structured report will compose here as you type in the lanes above..."></textarea>
+          <div class="report-actions">
+            <button class="cyber-btn sec" onclick="triggerReportSubmission()" id="btnSubmitReport">
+              🚀 Submit Case File
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Diagnostics overlay console -->
+  <div class="diag-overlay" id="diagConsole" aria-live="polite">
+    <div class="diag-head">
+      <span>SYSTEM DIAGNOSTICS CONTROL</span>
+      <button class="diag-close" onclick="toggleDiagnostics()">[CLOSE]</button>
+    </div>
+    <div class="diag-stream" id="diagStream">
+      <p class="diag-line" style="color: #66ff66;">&gt; Cybernetic geometry core initialized.</p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <span>Mr. Neft's Classroom Static Studio</span>
+    <span>&copy; SY 2025-26 · Pure Client-Side Static HTML5</span>
+  </footer>
+
+  <script src="/assets/app.js" defer></script>
+
+  <script>
+    // ── Educational Publishing Layer Architecture ──
+
+    // 1. CONFIG Preset Database
+    const CONFIG = {
+      lang: "en",
+      glossaryLang: "en",
+      activeCaseIdx: 0,
+      scaleFactor: 16, // px per cm for net drawing
+      audioMaxGain: 0.08,
+      quests: [
+        {
+          titleEn: "Case 1: The Cubical Matrix",
+          titleEs: "Caso 1: La Matriz Cúbica",
+          descEn: "Form a perfect cubical package. Adjust width, height, and depth sliders to make a cube where the total Surface Area is exactly 96 cm².",
+          descEs: "Forma un paquete cúbico perfecto. Ajusta el ancho, alto y profundidad para hacer un cubo donde el área total sea exactamente 96 cm².",
+          objectives: [
+            { id: "is_cube", textEn: "All dimensions are equal (Width = Height = Depth)", textEs: "Todas las dimensiones son iguales" },
+            { id: "sa_96", textEn: "Total Surface Area is exactly 96 cm²", textEs: "El área de superficie total es exactamente 96 cm²" }
+          ]
+        },
+        {
+          titleEn: "Case 2: The Flat Signal Transmitter",
+          titleEs: "Caso 2: El Transmisor de Señal Plana",
+          descEn: "Design a thin rectangular prism with a large front/back face but tiny depth. Make Width = 6, Height = 4, and Depth = 1. Verify SA is exactly 68 cm².",
+          descEs: "Diseña un prisma rectangular delgado con cara frontal/posterior grande pero poca profundidad. Haz que el Ancho = 6, Alto = 4, y Profundidad = 1. Verifica que el área sea exactamente 68 cm².",
+          objectives: [
+            { id: "dim_6_4_1", textEn: "Width is 6, Height is 4, Depth is 1", textEs: "Ancho es 6, Alto es 4, Profundidad es 1" },
+            { id: "sa_68", textEn: "Total Surface Area is exactly 68 cm²", textEs: "El área total es exactamente 68 cm²" }
+          ]
+        },
+        {
+          titleEn: "Case 3: The Column Node Node",
+          titleEs: "Caso 3: El Nodo de Columna Alto",
+          descEn: "Construct a tall narrow column where Height is exactly three times the Width (Height = 3 * Width). Achieve a total Surface Area of exactly 112 cm².",
+          descEs: "Construye una columna alta y estrecha donde el Alto sea exactamente tres veces el Ancho (Alto = 3 * Ancho). Logra un área total de exactamente 112 cm².",
+          objectives: [
+            { id: "height_3x_width", textEn: "Height is exactly 3 times Width", textEs: "El Alto es exactamente 3 veces el Ancho" },
+            { id: "sa_112", textEn: "Total Surface Area is exactly 112 cm²", textEs: "El área total es exactamente 112 cm²" }
+          ]
+        }
+      ],
+      dictionary: {
+        surfaceArea: {
+          en: { word: "Surface Area", syllables: "sur·face ar·e·a", trans: "Área de superficie", def: "The total 2D area of all the faces of a 3D solid figure. Sum of Front, Back, Top, Bottom, Left, and Right faces." },
+          es: { word: "Área de superficie", syllables: "á·rea de su·per·fi·cie", trans: "Surface Area", def: "El área total en 2D de todas las caras de una figura sólida en 3D." },
+          ar: { word: "مساحة السطح", syllables: "mi-sa-hat al-sa-tih", trans: "Surface Area", def: "مجموع مساحات الأشكال ثنائية الأبعاد التي تغطي مجسمًا ثلاثي الأبعاد." },
+          vi: { word: "Diện tích bề mặt", syllables: "diện tích bề mặt", trans: "Surface Area", def: "Tổng diện tích của tất cả các mặt bên ngoài của một hình khối ba chiều." }
+        },
+        net: {
+          en: { word: "Net", syllables: "net", trans: "Plantilla / Red", def: "A 2D flat layout pattern that can be folded to make a 3D solid figure." },
+          es: { word: "Plantilla", syllables: "plan·ti·lla", trans: "Net", def: "Un patrón plano de 2D que se cómplice o dobla para formar una figura sólida de 3D." },
+          ar: { word: "شبكة المجسم", syllables: "sha-ba-kat al-mu-ja-sam", trans: "Net", def: "مخطط ثنائي الأبعاد يمكن طيه لتكوين مجسم ثلاثي الأبعاد." },
+          vi: { word: "Hình khai triển", syllables: "hình khai triển", trans: "Net", def: "Một hình phẳng hai chiều có thể gấp lại để tạo thành một hình khối ba chiều." }
+        },
+        prism: {
+          en: { word: "Prism", syllables: "prism", trans: "Prisma", def: "A 3D solid figure with two parallel congruent bases. A rectangular prism has six rectangular faces." },
+          es: { word: "Prisma", syllables: "pris·ma", trans: "Prism", def: "Una figura sólida de 3D con dos bases congruentes y paralelas." },
+          ar: { word: "المنشور", syllables: "al-man-shour", trans: "Prism", def: "مجسم له قاعدتان متوازيتان ومتطابقتان وأوجه جانبية مستطيلة." },
+          vi: { word: "Hình lăng trụ", syllables: "lăng trụ", trans: "Prism", def: "Một hình khối ba chiều có hai mặt đáy song song và bằng nhau." }
+        },
+        dimension: {
+          en: { word: "Dimensions", syllables: "di·men·sion", trans: "Dimensiones", def: "Measurements of size in specified directions: Width (w), Height (h), and Depth (d)." },
+          es: { word: "Dimensiones", syllables: "di·men·sio·nes", trans: "Dimensions", def: "Las medidas del tamaño en direcciones específicas: Ancho, Alto y Profundidad." },
+          ar: { word: "الأبعاد", syllables: "al-a'a-bad", trans: "Dimensions", def: "قياسات الحجم في اتجاهات معينة: الطول والعرض والارتفاع." },
+          vi: { word: "Kích thước", syllables: "kích thước", trans: "Dimensions", def: "Các số đo chiều dài, chiều rộng, chiều cao để chỉ kích cỡ của một vật thể." }
+        }
+      }
+    };
+
+    // 2. STATE Layer (Single Source of Truth)
+    let STATE = {
+      lang: "en",
+      activeCaseIdx: 0,
+      w: 4,
+      h: 4,
+      d: 4,
+      sa: 96,
+      objectiveStatus: {}, // Map of objectiveId: boolean
+      reportBecause: "",
+      reportBut: "",
+      reportSo: "",
+      questCompleted: false
+    };
+
+    // Speech Synthesis helper
+    const synth = window.speechSynthesis;
+
+    // Web Audio Sound Synth Service
+    let audioCtx = null;
+    let masterGain = null;
+
+    function initAudio() {
+      if (audioCtx) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(CONFIG.audioMaxGain, audioCtx.currentTime);
+        masterGain.connect(audioCtx.destination);
+        logDiag("Audio Engine scheduled successfully.");
+      } catch (err) {
+        logDiag("Audio initialization error: " + err.message);
+      }
+    }
+
+    function playTone(freq, duration, type = "sine") {
+      initAudio();
+      if (!audioCtx || audioCtx.state === "suspended") return;
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      
+      gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      
+      osc.connect(gainNode);
+      gainNode.connect(masterGain);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playSuccessSiren() {
+      initAudio();
+      if (!audioCtx || audioCtx.state === "suspended") return;
+      
+      const now = audioCtx.currentTime;
+      const notes = [523, 659, 784, 1047]; // C major chord sweeps
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+        
+        gainNode.gain.setValueAtTime(0.08, now + idx * 0.12);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.5);
+        
+        osc.connect(gainNode);
+        gainNode.connect(masterGain);
+        
+        osc.start(now + idx * 0.12);
+        osc.stop(now + idx * 0.12 + 0.5);
+      });
+    }
+
+    // 3. SERVICE Layer (Geometrical Compilations)
+    const GEOMETRIC_SERVICE = {
+      calculateSurfaceArea(w, h, d) {
+        return 2 * (w * d + w * h + d * h);
+      },
+      calculateFaceAreas(w, h, d) {
+        return {
+          front: w * h,
+          back: w * h,
+          top: w * d,
+          bottom: w * d,
+          left: d * h,
+          right: d * h
+        };
+      }
+    };
+
+    // Helper for validation schema
+    function validateConfig() {
+      if (!CONFIG.quests || CONFIG.quests.length === 0) {
+        throw new Error("Validation Error: System quests presets must be populated.");
+      }
+      CONFIG.quests.forEach((q, idx) => {
+        if (!q.objectives || q.objectives.length === 0) {
+          throw new Error(`Validation Error: Quest ${idx} is missing objectives.`);
+        }
+      });
+      logDiag("System Config validation status: PASSED.");
+    }
+
+    // 4. CONTROLLER & UI VIEW Layer
+
+    // Initialize layout
+    document.addEventListener("DOMContentLoaded", () => {
+      validateConfig();
+      // Setup default active quest
+      setQuest(0);
+      setGlossaryLanguage("en");
+      
+      // Hook text areas
+      document.getElementById("textareaBecause").addEventListener("input", (e) => {
+        STATE.reportBecause = e.target.value;
+        composeFinalReport();
+      });
+      document.getElementById("textareaBut").addEventListener("input", (e) => {
+        STATE.reportBut = e.target.value;
+        composeFinalReport();
+      });
+      document.getElementById("textareaSo").addEventListener("input", (e) => {
+        STATE.reportSo = e.target.value;
+        composeFinalReport();
+      });
+    });
+
+    function logDiag(message) {
+      const stream = document.getElementById("diagStream");
+      if (stream) {
+        const line = document.createElement("p");
+        line.className = "diag-line";
+        line.textContent = `> ${message}`;
+        stream.appendChild(line);
+        stream.scrollTop = stream.scrollHeight;
+      }
+      console.log(message);
+    }
+
+    function toggleDiagnostics() {
+      const overlay = document.getElementById("diagConsole");
+      overlay.style.display = overlay.style.display === "flex" ? "none" : "flex";
+      playTone(600, 0.08);
+    }
+
+    function toggleLanguage() {
+      STATE.lang = STATE.lang === "en" ? "es" : "en";
+      playTone(500, 0.08);
+      
+      // Update UI labels
+      const langInd = document.getElementById("langIndicator");
+      const btnLang = document.getElementById("btnLangToggle");
+      const heroTitle = document.getElementById("heroTitle");
+      const heroCopy = document.getElementById("heroCopy");
+      const sidebarTitle = document.getElementById("sidebarTitle");
+      const sidebarSubtitle = document.getElementById("sidebarSubtitle");
+      const canvasHeading = document.getElementById("canvasHeading");
+      const btnReset = document.getElementById("btnResetData");
+      const hudTitle = document.getElementById("hudTitle");
+      const glossaryHeading = document.getElementById("glossaryHeading");
+      const reporterHeading = document.getElementById("reporterHeading");
+      const reporterSub = document.getElementById("reporterSub");
+      const padTitle = document.getElementById("padTitle");
+      const btnSubmit = document.getElementById("btnSubmitReport");
+      const labelW = document.getElementById("labelWidth");
+      const labelH = document.getElementById("labelHeight");
+      const labelD = document.getElementById("labelDepth");
+      const lblNet = document.getElementById("lblNetView");
+      const lbl3d = document.getElementById("lbl3dView");
+
+      if (STATE.lang === "es") {
+        langInd.textContent = "Modo Español";
+        btnLang.textContent = "🌍 Traducir a Inglés";
+        heroTitle.textContent = "Área de Superficie Cyber-Packer";
+        heroCopy.textContent = "Analiza límites de empaquetado de 3D. Ajusta los controles de Ancho, Alto y Profundidad para doblar/desdoblar prismas en tiempo real, calcular redes y anular áreas de superficie.";
+        sidebarTitle.textContent = "📐 Misiones Activas";
+        sidebarSubtitle.textContent = "Calibrar coordenadas";
+        canvasHeading.textContent = "📦 Modelado de Prismas & Nets en 3D";
+        btnReset.textContent = "🔄 Restablecer Control";
+        hudTitle.textContent = "📌 Objetivos de la Misión";
+        glossaryHeading.textContent = "📖 Diccionario Matemático Interactivo";
+        reporterHeading.textContent = "✍️ Reporte de Investigación de TWR";
+        reporterSub.textContent = "Amplía tus ideas utilizando conectores de transición para componer el reporte oficial de tu caso.";
+        padTitle.textContent = "📜 Historial de Expedientes Compilados";
+        btnSubmit.textContent = "🚀 Enviar Expediente de Caso";
+        labelW.textContent = "Ancho (w)";
+        labelH.textContent = "Alto (h)";
+        labelD.textContent = "Profundidad (d)";
+        lblNet.textContent = "BLUEPRINT PLANO NET EN 2D";
+        lbl3d.textContent = "VISTA DE ISO-PROYECCIÓN EN 3D";
+      } else {
+        langInd.textContent = "English Mode";
+        btnLang.textContent = "🌍 Translate to Spanish";
+        heroTitle.textContent = "Surface Area Cyber-Packer";
+        heroCopy.textContent = "Analyze 3D coordinate packaging limits. Adjust width, height, and depth sliders to fold/unfold prisms in real-time, compute net faces, and override surface areas.";
+        sidebarTitle.textContent = "📐 Active Quests";
+        sidebarSubtitle.textContent = "Calibrate package coordinates";
+        canvasHeading.textContent = "📦 Prism Folder & 3D Net Blueprint";
+        btnReset.textContent = "🔄 Reset Blueprint";
+        hudTitle.textContent = "📌 Case Goals Checklist";
+        glossaryHeading.textContent = "📖 Interactive Math Dictionary";
+        reporterHeading.textContent = "✍️ The Writing Revolution (TWR) Detective Report";
+        reporterSub.textContent = "Expand your kernels using transition connectors to synthesize your analytical case report.";
+        padTitle.textContent = "📜 Compiled Detective Report Pad";
+        btnSubmit.textContent = "🚀 Submit Case File";
+        labelW.textContent = "Width (w)";
+        labelH.textContent = "Height (h)";
+        labelD.textContent = "Depth (d)";
+        lblNet.textContent = "2D UNFOLDED NET BLUEPRINT";
+        lbl3d.textContent = "3D ISO-PROJECTION VIEW";
+      }
+
+      // Re-populate elements
+      populateQuestCatalog();
+      populateObjectiveHUD();
+      composeFinalReport();
+    }
+
+    function setQuest(idx) {
+      STATE.activeCaseIdx = idx;
+      STATE.questCompleted = false;
+      
+      // Clear TWR areas
+      document.getElementById("textareaBecause").value = "";
+      document.getElementById("textareaBut").value = "";
+      document.getElementById("textareaSo").value = "";
+      STATE.reportBecause = "";
+      STATE.reportBut = "";
+      STATE.reportSo = "";
+      
+      // Reset sliders to default 4
+      resetActiveSliders();
+      
+      playTone(400, 0.15);
+      logDiag(`Loading Quest: ${CONFIG.quests[idx].titleEn}`);
+      
+      populateQuestCatalog();
+      populateObjectiveHUD();
+      composeFinalReport();
+    }
+
+    function populateQuestCatalog() {
+      const container = document.getElementById("questCatalog");
+      container.innerHTML = "";
+      
+      CONFIG.quests.forEach((q, idx) => {
+        const isActive = STATE.activeCaseIdx === idx;
+        const card = document.createElement("button");
+        card.className = `quest-card ${isActive ? 'active' : ''}`;
+        card.setAttribute("role", "radio");
+        card.setAttribute("aria-checked", isActive ? "true" : "false");
+        
+        const title = STATE.lang === "en" ? q.titleEn : q.titleEs;
+        const desc = STATE.lang === "en" ? q.descEn : q.descEs;
+        
+        card.onclick = () => setQuest(idx);
+        card.innerHTML = `
+          <span class="quest-title">${title}</span>
+          <span class="quest-status" style="font-size:0.75rem; margin-top:4px;">${desc}</span>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function resetActiveSliders() {
+      document.getElementById("sliderWidth").value = 4;
+      document.getElementById("sliderHeight").value = 4;
+      document.getElementById("sliderDepth").value = 4;
+      updateDimensions();
+      logDiag("Sliders reset to baseline 4x4x4 block.");
+    }
+
+    function updateDimensions() {
+      STATE.w = parseInt(document.getElementById("sliderWidth").value);
+      STATE.h = parseInt(document.getElementById("sliderHeight").value);
+      STATE.d = parseInt(document.getElementById("sliderDepth").value);
+      
+      document.getElementById("valWidth").textContent = `${STATE.w} cm`;
+      document.getElementById("valHeight").textContent = `${STATE.h} cm`;
+      document.getElementById("valDepth").textContent = `${STATE.d} cm`;
+      
+      STATE.sa = GEOMETRIC_SERVICE.calculateSurfaceArea(STATE.w, STATE.h, STATE.d);
+      
+      // Pitch sweeps proportional to dimensions
+      playTone(200 + (STATE.w + STATE.h + STATE.d) * 30, 0.05, "sine");
+      
+      recomputeBlueprint();
+    }
+
+    function recomputeBlueprint() {
+      const netGroup = document.getElementById("netGroup");
+      const projectionGroup = document.getElementById("projectionGroup");
+      
+      netGroup.innerHTML = "";
+      projectionGroup.innerHTML = "";
+      
+      const s = CONFIG.scaleFactor;
+      const X_c = 220; // 2D Net center coordinate
+      const Y_c = 190;
+      
+      // Calculate face areas
+      const faces = GEOMETRIC_SERVICE.calculateFaceAreas(STATE.w, STATE.h, STATE.d);
+      
+      // 1. Draw 2D Net shapes
+      // Center Column: Top -> Front -> Bottom -> Back
+      // Front face
+      const wPx = STATE.w * s;
+      const hPx = STATE.h * s;
+      const dPx = STATE.d * s;
+      
+      const frontX = X_c - wPx / 2;
+      const frontY = Y_c - hPx / 2;
+      drawFaceRect(frontX, frontY, wPx, hPx, "#06b6d4", `Front: ${faces.front} cm²`, "Front", netGroup);
+      
+      // Top face (above Front)
+      const topY = frontY - dPx;
+      drawFaceRect(frontX, topY, wPx, dPx, "#a855f7", `Top: ${faces.top} cm²`, "Top", netGroup);
+      
+      // Bottom face (below Front)
+      const bottomY = frontY + hPx;
+      drawFaceRect(frontX, bottomY, wPx, dPx, "#a855f7", `Bottom: ${faces.bottom} cm²`, "Bottom", netGroup);
+      
+      // Back face (below Bottom)
+      const backY = bottomY + dPx;
+      drawFaceRect(frontX, backY, wPx, hPx, "#06b6d4", `Back: ${faces.back} cm²`, "Back", netGroup);
+      
+      // Left wing (left of Front)
+      const leftX = frontX - dPx;
+      drawFaceRect(leftX, frontY, dPx, hPx, "#f43f5e", `Left: ${faces.left} cm²`, "Left", netGroup);
+      
+      // Right wing (right of Front)
+      const rightX = frontX + wPx;
+      drawFaceRect(rightX, frontY, dPx, hPx, "#f43f5e", `Right: ${faces.right} cm²`, "Right", netGroup);
+      
+      // 2. Draw 3D Isometric View
+      const isoX = 620;
+      const isoY = 220;
+      const isoScale = 14;
+      
+      // Isometric projection points
+      const cos30 = Math.cos(Math.PI / 6);
+      const sin30 = Math.sin(Math.PI / 6);
+      
+      const p0 = { x: isoX, y: isoY }; // Front bottom center
+      const p1 = { x: p0.x - STATE.w * isoScale * cos30, y: p0.y + STATE.w * isoScale * sin30 }; // Front bottom left
+      const p2 = { x: p0.x + STATE.d * isoScale * cos30, y: p0.y + STATE.d * isoScale * sin30 }; // Back bottom right / center right
+      const p3 = { x: p0.x, y: p0.y - STATE.h * isoScale * 1.2 }; // Front top center
+      const p4 = { x: p1.x, y: p1.y - STATE.h * isoScale * 1.2 }; // Front top left
+      const p5 = { x: p2.x, y: p2.y - STATE.h * isoScale * 1.2 }; // Front top right
+      const p6 = { x: p4.x + STATE.d * isoScale * cos30, y: p4.y + STATE.d * isoScale * sin30 }; // Back top center
+      
+      // Draw 3D Visible Faces
+      // Front (cyan)
+      draw3dFace(`${p0.x},${p0.y} ${p1.x},${p1.y} ${p4.x},${p4.y} ${p3.x},${p3.y}`, "rgba(6, 182, 212, 0.12)", "#06b6d4", projectionGroup);
+      // Right (rose)
+      draw3dFace(`${p0.x},${p0.y} ${p2.x},${p2.y} ${p5.x},${p5.y} ${p3.x},${p3.y}`, "rgba(244, 63, 94, 0.12)", "#f43f5e", projectionGroup);
+      // Top (purple)
+      draw3dFace(`${p3.x},${p3.y} ${p4.x},${p4.y} ${p6.x},${p6.y} ${p5.x},${p5.y}`, "rgba(168, 85, 247, 0.12)", "#a855f7", projectionGroup);
+      
+      // Draw Isometric Labels
+      draw3dText((p0.x + p1.x) / 2 - 16, (p0.y + p1.y) / 2 + 16, `w=${STATE.w}`, "#06b6d4", projectionGroup);
+      draw3dText((p0.x + p2.x) / 2 + 16, (p0.y + p2.y) / 2 + 16, `d=${STATE.d}`, "#f43f5e", projectionGroup);
+      draw3dText(p3.x - 24, (p0.y + p3.y) / 2, `h=${STATE.h}`, "#a855f7", projectionGroup);
+      
+      // Display total SA banner
+      const bannerBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bannerBg.setAttribute("x", 500);
+      bannerBg.setAttribute("y", 305);
+      bannerBg.setAttribute("width", 250);
+      bannerBg.setAttribute("height", 45);
+      bannerBg.setAttribute("rx", "6");
+      bannerBg.setAttribute("fill", "rgba(168, 85, 247, 0.08)");
+      bannerBg.setAttribute("stroke", "var(--primary)");
+      bannerBg.setAttribute("stroke-width", "1.5");
+      projectionGroup.appendChild(bannerBg);
+      
+      const bannerText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      bannerText.setAttribute("x", 625);
+      bannerText.setAttribute("y", 332);
+      bannerText.setAttribute("fill", "#fff");
+      bannerText.setAttribute("font-size", "13");
+      bannerText.setAttribute("font-weight", "900");
+      bannerText.setAttribute("font-family", "Space Grotesk");
+      bannerText.setAttribute("text-anchor", "middle");
+      bannerText.textContent = `Total SA = ${STATE.sa} cm²`;
+      projectionGroup.appendChild(bannerText);
+
+      evaluateQuestObjectives();
+    }
+
+    function drawFaceRect(x, y, w, h, strokeColor, hoverText, label, parent) {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", x);
+      rect.setAttribute("y", y);
+      rect.setAttribute("width", w);
+      rect.setAttribute("height", h);
+      rect.setAttribute("fill", "rgba(255, 255, 255, 0.01)");
+      rect.setAttribute("stroke", strokeColor);
+      rect.setAttribute("class", "face-rect");
+      rect.style.cursor = "help";
+      
+      // Setup title tooltip
+      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = hoverText;
+      rect.appendChild(title);
+      g.appendChild(rect);
+      
+      // Add label text inside rect if space permits
+      if (w >= 30 && h >= 25) {
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x + w / 2);
+        text.setAttribute("y", y + h / 2 - 2);
+        text.setAttribute("class", "face-lbl");
+        text.textContent = label;
+        g.appendChild(text);
+        
+        const area = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        area.setAttribute("x", x + w / 2);
+        area.setAttribute("y", y + h / 2 + 10);
+        area.setAttribute("class", "face-text");
+        area.textContent = `${Math.round(w / CONFIG.scaleFactor * h / CONFIG.scaleFactor)} cm²`;
+        g.appendChild(area);
+      }
+      
+      parent.appendChild(g);
+    }
+
+    function draw3dFace(pointsStr, fill, stroke, parent) {
+      const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      poly.setAttribute("points", pointsStr);
+      poly.setAttribute("fill", fill);
+      poly.setAttribute("stroke", stroke);
+      poly.setAttribute("stroke-width", "2.5");
+      poly.setAttribute("stroke-linejoin", "round");
+      parent.appendChild(poly);
+    }
+
+    function draw3dText(x, y, text, color, parent) {
+      const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      t.setAttribute("x", x);
+      t.setAttribute("y", y);
+      t.setAttribute("fill", color);
+      t.setAttribute("font-size", "11");
+      t.setAttribute("font-family", "Share Tech Mono");
+      t.setAttribute("font-weight", "900");
+      t.setAttribute("text-anchor", "middle");
+      t.textContent = text;
+      parent.appendChild(t);
+    }
+
+    // 5. EVALUATION Engine
+    function evaluateQuestObjectives() {
+      const q = CONFIG.quests[STATE.activeCaseIdx];
+      let allDone = true;
+      const status = {};
+      
+      q.objectives.forEach(obj => {
+        let isMet = false;
+        
+        if (obj.id === "is_cube") {
+          isMet = STATE.w === STATE.h && STATE.h === STATE.d;
+        } else if (obj.id === "sa_96") {
+          isMet = STATE.sa === 96;
+        } else if (obj.id === "dim_6_4_1") {
+          isMet = STATE.w === 6 && STATE.h === 4 && STATE.d === 1;
+        } else if (obj.id === "sa_68") {
+          isMet = STATE.sa === 68;
+        } else if (obj.id === "height_3x_width") {
+          isMet = STATE.h === 3 * STATE.w;
+        } else if (obj.id === "sa_112") {
+          isMet = STATE.sa === 112;
+        }
+        
+        status[obj.id] = isMet;
+        if (!isMet) allDone = false;
+      });
+      
+      STATE.objectiveStatus = status;
+      populateObjectiveHUD();
+      
+      if (allDone && !STATE.questCompleted) {
+        STATE.questCompleted = true;
+        playSuccessSiren();
+        logDiag(`QUEST SUCCESS: ${q.titleEn} calibrated!`);
+        triggerQuestCelebration();
+      }
+    }
+
+    function populateObjectiveHUD() {
+      const container = document.getElementById("hudChecklist");
+      container.innerHTML = "";
+      
+      const q = CONFIG.quests[STATE.activeCaseIdx];
+      q.objectives.forEach(obj => {
+        const isMet = STATE.objectiveStatus[obj.id] === true;
+        const item = document.createElement("div");
+        item.className = `hud-item ${isMet ? 'done' : ''}`;
+        
+        const txt = STATE.lang === "en" ? obj.textEn : obj.textEs;
+        item.innerHTML = `
+          <span class="item-icon">${isMet ? '✅' : '🔴'}</span>
+          <span>${txt}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function triggerQuestCelebration() {
+      const svg = document.getElementById("canvasSvg");
+      
+      for (let i = 0; i < 20; i++) {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        const x = 500 + Math.random() * 250;
+        const y = 100 + Math.random() * 100;
+        
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", 2 + Math.random() * 5);
+        circle.setAttribute("fill", i % 2 === 0 ? "#06b6d4" : "#a855f7");
+        circle.setAttribute("opacity", "1");
+        
+        const animate = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+        animate.setAttribute("attributeName", "cy");
+        animate.setAttribute("from", y);
+        animate.setAttribute("to", y - 60 - Math.random() * 40);
+        animate.setAttribute("dur", "1s");
+        animate.setAttribute("fill", "freeze");
+        circle.appendChild(animate);
+        
+        const animFade = document.createElementNS("http://www.w3.org/2000/svg", "opacity");
+        animFade.setAttribute("attributeName", "opacity");
+        animFade.setAttribute("from", "1");
+        animFade.setAttribute("to", "0");
+        animFade.setAttribute("dur", "1s");
+        animFade.setAttribute("fill", "freeze");
+        circle.appendChild(animFade);
+
+        svg.appendChild(circle);
+      }
+      
+      setTimeout(() => {
+        populateQuestCatalog();
+      }, 100);
+    }
+
+    // 6. ESOL Interactive Dictionary Views
+    function setGlossaryLanguage(lang) {
+      CONFIG.glossaryLang = lang;
+      
+      document.getElementById("tabEn").className = `lang-tab ${lang === 'en' ? 'active' : ''}`;
+      document.getElementById("tabEs").className = `lang-tab ${lang === 'es' ? 'active' : ''}`;
+      document.getElementById("tabAr").className = `lang-tab ${lang === 'ar' ? 'active' : ''}`;
+      document.getElementById("tabVi").className = `lang-tab ${lang === 'vi' ? 'active' : ''}`;
+      
+      const grid = document.getElementById("glossaryGrid");
+      grid.innerHTML = "";
+      
+      Object.keys(CONFIG.dictionary).forEach(key => {
+        const item = CONFIG.dictionary[key][lang] || CONFIG.dictionary[key]["en"];
+        const chip = document.createElement("div");
+        chip.className = "vocab-chip";
+        chip.onclick = () => readAloudWord(item.word);
+        
+        chip.innerHTML = `
+          <span>${item.word}</span>
+          <span style="font-size:0.7rem; color:var(--text-muted);">🔊</span>
+          <div class="tooltip-bubble">
+            <strong>${item.word}</strong> <span style="color:var(--primary); font-size:0.7rem;">(${item.syllables})</span><br>
+            <span style="color:var(--warning); font-size:0.72rem;">Trans: ${item.trans}</span><br>
+            <span style="color:var(--text-muted); font-size:0.72rem; line-height:1.35; display:block; margin-top:4px;">${item.def}</span>
+          </div>
+        `;
+        grid.appendChild(chip);
+      });
+    }
+
+    function readAloudWord(word) {
+      if (!synth) return;
+      if (synth.speaking) synth.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.rate = 0.75;
+      utterance.lang = CONFIG.glossaryLang === "es" ? "es-ES" : "en-US";
+      synth.speak(utterance);
+    }
+
+    // 7. TWR REPORT Composition Engine
+    function injectConjunction(targetId, phrase) {
+      const tx = document.getElementById(targetId);
+      tx.value = phrase + " ";
+      tx.focus();
+      
+      if (targetId === "textareaBecause") STATE.reportBecause = phrase;
+      if (targetId === "textareaBut") STATE.reportBut = phrase;
+      if (targetId === "textareaSo") STATE.reportSo = phrase;
+      
+      composeFinalReport();
+      playTone(450, 0.08);
+    }
+
+    function composeFinalReport() {
+      const because = document.getElementById("textareaBecause").value.trim();
+      const but = document.getElementById("textareaBut").value.trim();
+      const so = document.getElementById("textareaSo").value.trim();
+      const pad = document.getElementById("finalReportPad");
+      
+      if (!because && !but && !so) {
+        pad.value = STATE.lang === "en" 
+          ? "Analytical report details will compile automatically as you complete sentences..."
+          : "Los detalles del reporte de investigación se compilarán automáticamente a medida que completes las ideas...";
+        return;
+      }
+      
+      const sentence = `The prism surface area matches objectives BECAUSE ${because || '_______'}, BUT the dimension proportions changed ${but || '_______'}, SO the cybernet network is fully secure ${so || '_______'}.`;
+      pad.value = sentence;
+    }
+
+    function triggerReportSubmission() {
+      const pad = document.getElementById("finalReportPad");
+      const val = pad.value;
+      
+      if (val.includes("_______") || val.length < 30) {
+        playTone(220, 0.15, "square");
+        alert(STATE.lang === "en" ? "Error: Please complete all report details before submitting." : "Error: Por favor, completa todos los detalles del reporte antes de enviarlo.");
+        return;
+      }
+      
+      playSuccessSiren();
+      alert(STATE.lang === "en" ? "Report submitted successfully! Spark XP unlocked!" : "¡Reporte enviado con éxito! ¡Experiencia Spark desbloqueada!");
+      logDiag("Case File submitted successfully.");
+    }
+
+    // 8. Automated Verification selfTest()
+    function triggerSelfTest() {
+      logDiag("Initializing Automated Self-Test Suit...");
+      const results = [];
+      
+      try {
+        // Assert 1: Config presets integrity
+        if (CONFIG.quests.length === 3) {
+          results.push("PASS: Config Quests presetted successfully.");
+        } else {
+          throw new Error("FAIL: Presets count does not match 3.");
+        }
+        
+        // Assert 2: Surface Area formula check
+        const mockSA = GEOMETRIC_SERVICE.calculateSurfaceArea(4, 5, 6);
+        // SA = 2 * (4*6 + 4*5 + 6*5) = 2 * (24 + 20 + 30) = 2 * 74 = 148
+        if (mockSA === 148) {
+          results.push("PASS: Surface Area calculation compiler verified.");
+        } else {
+          throw new Error(`FAIL: Calculations error. expected 148, got ${mockSA}`);
+        }
+        
+        // Assert 3: Face areas split check
+        const faces = GEOMETRIC_SERVICE.calculateFaceAreas(3, 4, 5);
+        if (faces.front === 12 && faces.top === 15 && faces.left === 20) {
+          results.push("PASS: Net individual face area compiler verified.");
+        } else {
+          throw new Error("FAIL: Face areas calculations mismatch.");
+        }
+
+        // Assert 4: Translation maps exist
+        if (CONFIG.dictionary.surfaceArea.es.word === "Área de superficie") {
+          results.push("PASS: Translation mappings exist.");
+        } else {
+          throw new Error("FAIL: Translation map missing.");
+        }
+
+        // Assert 5: Decibel cap validation
+        if (CONFIG.audioMaxGain <= 0.12) {
+          results.push("PASS: Safe Audio Gain ceiling logic check.");
+        } else {
+          throw new Error("FAIL: Audio safety decibel limit violated.");
+        }
+
+        logDiag("=== SELF-TEST RESULTS ===");
+        results.forEach(msg => logDiag(msg));
+        logDiag("System Verification: 100% COMPLETE & PASS.");
+        playSuccessSiren();
+        alert("Diagnostics Verification: 5/5 ASSERTS PASSED! System fully secure.");
+      } catch (err) {
+        logDiag(`CRITICAL FAILURE in selfTest(): ${err.message}`);
+        playTone(220, 0.4, "sawtooth");
+        alert(`Diagnostics Failed: ${err.message}`);
+      }
+    }
+  </script>
+</body>
+</html>

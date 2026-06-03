@@ -1,4 +1,5 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
 // Unit 1 — Smoothie Stand  ·  Ratios & Unit Rates (6.RP.A.1–3)
@@ -146,6 +147,11 @@ export default {
 
     const cfg = makeLevel(level);
     const reduced = feel.reducedMotion;
+
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
 
     // ---- Disposable registry (geometries/materials/textures) ----
     const disposables = [];
@@ -380,6 +386,11 @@ export default {
     let roundIndex = 0;
     let solved = false;
     let rateGuess = 0;
+    // Forgiving stakes: a pool of attempts; a wrong Serve costs one. Run out and
+    // the shift ends (lose screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
 
     const timers = [];
     const later = (fn, ms) => {
@@ -480,29 +491,63 @@ export default {
     }
 
     function updateRatioLive() {
-      hud.setObjective(
-        `Make ${round.a} red : ${round.b} yellow. You have ${ratioText()}. Then tap Serve.`,
-      );
+      const [ba, bb] = simplify(round.a, round.b);
+      // Ratio-table framing: show the recipe and the order's yellow count, but
+      // NOT the red answer — the student works it out from the ratio and builds.
+      const text = `Recipe ${ba} red : ${bb} yellow.  Fill the order — ? red : ${round.b} yellow (keep the same ratio).  You have ${ratioText()}.`;
+      hud.setObjective(text);
+      if (clarity) clarity.setObjective(text);
+    }
+
+    // Returns true if the wrong answer ended the game (out of lives).
+    function loseLife() {
+      lives = Math.max(0, lives - 1);
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      if (lives <= 0) {
+        loseGame();
+        return true;
+      }
+      return false;
+    }
+
+    function loseGame() {
+      gameOver = true;
+      feel.sfx("wrong");
+      const msg = `Out of tries! You served ${roundIndex} of ${cfg.rounds.length} orders.`;
+      hud.setObjective(msg);
+      announce(`Shift over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Out of tries!",
+          badge: "🥤",
+          stats: `${msg} Tip: simplify the recipe ratio first, then scale it up to the order.`,
+        });
+      }
     }
 
     function ratioMatches() {
-      const { strawberry: s, banana: b } = counts;
-      if (s === 0 && b === 0) return false;
-      return s * round.b === b * round.a;
+      // The order fixes the yellow count; the student must work out the red
+      // count from the recipe ratio, so the exact batch is required (no giveaway
+      // from accepting any equivalent ratio).
+      return counts.strawberry === round.a && counts.banana === round.b;
     }
 
     function serveRatio() {
-      if (solved) return;
+      if (solved || gameOver) return;
       if (!ratioMatches()) {
-        const [ta, tb] = simplify(round.a, round.b);
-        hud.message(`Not a match yet. Make it like ${ta} : ${tb}.`, {
-          tone: "warn",
-          duration: 2400,
-        });
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.16);
+        if (loseLife()) return;
+        const [ta, tb] = simplify(round.a, round.b);
+        hud.message(
+          `Not yet — use the recipe ${ta} : ${tb} to find how many red go with ${round.b} yellow. ${lives} ${
+            lives === 1 ? "try" : "tries"
+          } left.`,
+          { tone: "warn", duration: 2800 },
+        );
         announce(
-          `Not a match yet. Add or remove scoops to make ${ta} red to ${tb} yellow.`,
+          `Not a match yet. Keep the recipe ${ta} red to ${tb} yellow, and fill ${round.b} yellow.`,
         );
         return;
       }
@@ -511,9 +556,9 @@ export default {
 
     // ---- Unit-rate rounds ---------------------------------------------------
     function rateObjective() {
-      hud.setObjective(
-        `Find ${round.total} ÷ ${round.count}. Use + and −, then tap Serve. Now: ${round.unit}${rateGuess}`,
-      );
+      const text = `Find ${round.total} ÷ ${round.count}. Use + and −, then tap Serve. Now: ${round.unit}${rateGuess}`;
+      hud.setObjective(text);
+      if (clarity) clarity.setObjective(text);
     }
     function buildRate() {
       rateGuess = 0;
@@ -537,14 +582,20 @@ export default {
       announce(`Answer ${round.unit}${rateGuess}.`);
     }
     function serveRate() {
-      if (solved) return;
+      if (solved || gameOver) return;
       if (rateGuess !== round.answer) {
-        hud.message(`Not yet. Try ${round.total} ÷ ${round.count}.`, {
-          tone: "warn",
-          duration: 2400,
-        });
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.16);
+        if (loseLife()) return;
+        hud.message(
+          `Not yet. Try ${round.total} ÷ ${round.count}. ${lives} ${
+            lives === 1 ? "try" : "tries"
+          } left.`,
+          {
+            tone: "warn",
+            duration: 2400,
+          },
+        );
         announce(`Not yet. Find ${round.total} divided by ${round.count}.`);
         return;
       }
@@ -632,6 +683,14 @@ export default {
         );
       }
       announce("All orders complete. Great work at the Smoothie Stand.");
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.win({
+          titleEn: "All orders served!",
+          badge: "🥤",
+          stats: `You finished all ${cfg.rounds.length} orders. Score saved.`,
+        });
+      }
     }
 
     function startRound() {
@@ -641,30 +700,36 @@ export default {
         hud.setProgress(roundIndex, cfg.rounds.length);
       renderControls();
       feel.sfx("pop");
+      if (clarity)
+        clarity.setObjective(`Round ${roundIndex + 1} of ${cfg.rounds.length}`);
       if (round.kind === "rate") {
+        if (clarity) clarity.setTarget(round.prompt);
         buildRate();
         return;
       }
-      const targetTxt =
-        round.baseLabel != null
-          ? `${round.a} : ${round.b}  (${round.baseLabel})`
-          : `${round.a} : ${round.b}`;
-      setCard(["Order — red : yellow", targetTxt], "#1fa6a2");
+      const [ba, bb] = simplify(round.a, round.b);
+      const recipeTxt = `${ba} : ${bb}`;
+      if (clarity)
+        clarity.setTarget(
+          `recipe ${ba} red : ${bb} yellow · order needs ${round.b} yellow`,
+        );
+      // The 3D card shows the RECIPE rule, not the order's answer.
+      setCard(["Recipe  red : yellow", recipeTxt], "#1fa6a2");
       updateRatioLive();
       announce(
-        `New order: ${round.a} red to ${round.b} yellow. ` +
-          `Add scoops to match, then tap Serve.`,
+        `New order. The recipe is ${ba} red to ${bb} yellow. ` +
+          `Fill the order to use ${round.b} yellow — keep the same ratio, then tap Serve.`,
       );
       if (cfg.hints)
-        hud.message(`Order: ${targetTxt}. Add scoops to match.`, {
-          tone: "info",
-          duration: 3000,
-        });
+        hud.message(
+          `Recipe ${recipeTxt}. Build ${round.b} yellow and the matching red.`,
+          { tone: "info", duration: 3400 },
+        );
     }
 
     // ---- Input --------------------------------------------------------------
     function onPress(name) {
-      if (!round) return;
+      if (!round || gameOver) return;
       if (round.kind === "rate") {
         if (name === "up" || name === "right") adjustRate(1);
         else if (name === "down" || name === "left") adjustRate(-1);
@@ -678,7 +743,7 @@ export default {
     }
 
     function onTapWorld() {
-      if (solved || !round) return;
+      if (solved || !round || gameOver) return;
       if (round.kind === "rate") {
         adjustRate(input.state.ndc.x >= 0 ? 1 : -1);
         return;
@@ -789,12 +854,7 @@ export default {
         injectControlStyles();
         controlHost.appendChild(controlBar);
 
-        startRound();
-
-        unbindPress = input.onPress(onPress);
-        unbindTap = input.onTap(onTapWorld);
-
-        // Idle motion (gated on reduced motion).
+        // Idle motion (gated on reduced motion). Safe to run behind overlay.
         if (!reduced) {
           unbindFrame = onFrame((dt, t) => {
             blenderGroup.rotation.y = Math.sin(t * 0.4) * 0.06;
@@ -802,9 +862,75 @@ export default {
             if (card) card.position.y = 5.6 + Math.sin(t * 1.4) * 0.06;
           });
         }
+
+        // Begin the actual round loop only after the student presses Start in
+        // the clarity overlay. This is the single entry point both for first
+        // play and for Play Again.
+        function beginGameplay() {
+          roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
+          unbindPress = input.onPress(onPress);
+          unbindTap = input.onTap(onTapWorld);
+          startRound();
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Smoothie Stand — Match the Ratio",
+          objectiveEn:
+            "Read each order, then add red and yellow scoops to match the ratio and Serve.",
+          objectiveEs:
+            "Lee cada orden y agrega bolas rojas y amarillas para igualar la razón.",
+          standard: "6.RP.A.1–3 · Ratios & Unit Rates",
+          controls: [
+            {
+              key: "🍓 / 🍌",
+              actionEn:
+                "Tap a fruit bin (or the on-screen + buttons) to add a scoop",
+              actionEs: "Toca una fruta o los botones + para agregar una bola",
+            },
+            {
+              key: "← / ↑",
+              actionEn: "Add a red (strawberry) scoop",
+              actionEs: "Agrega una bola roja (fresa)",
+            },
+            {
+              key: "→ / ↓",
+              actionEn: "Add a yellow (banana) scoop",
+              actionEs: "Agrega una bola amarilla (plátano)",
+            },
+            {
+              key: "Enter",
+              actionEn: "Remove the last scoop (the − buttons also remove)",
+              actionEs: "Quita la última bola (los botones − también quitan)",
+            },
+            {
+              key: "Space",
+              actionEn: "Serve — check if your scoops match the order",
+              actionEs: "Sirve — revisa si tus bolas igualan la orden",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Match every order's ratio (or find the unit rate) and Serve. Clear all orders to win. Equivalent ratios like 2:3 and 4:6 both count!",
+          howToWinEs:
+            "Iguala la razón de cada orden y sirve. Completa todas para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();

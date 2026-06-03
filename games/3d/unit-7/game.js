@@ -1,5 +1,6 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
 // Unit 7 — Submarine: Dive the Number Line
@@ -132,6 +133,11 @@ export default {
     const RANGE_MIN = cfg.min;
     const RANGE_MAX = cfg.max;
     const reduced = feel.reducedMotion;
+
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
 
     const yFor = (n) => n * UNIT;
 
@@ -386,6 +392,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of dives. A wrong dock costs one. Run out and the
+    // mission fails (lose screen) — but Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let unbindFrame = null;
     let unbindPress = null;
     let unbindTap = null;
@@ -426,16 +437,21 @@ export default {
       if (!round) return "Pilot the submarine";
       switch (round.kind) {
         case "move":
+          // "move" rounds literally name the depth to reach — that's the task,
+          // not a derived answer, so showing the target here is fine.
           return `Dive the sub to ${round.target}`;
         case "opposite":
-          return `Go to the opposite of ${round.value}. (Answer: ${-round.value})`;
+          return `Dive to the opposite of ${round.value}`;
         case "absolute":
+          // Context describes a real position (e.g. "3 m below sea level").
+          // Student must turn it into an integer and dive there.
+          return `${round.context} Dive to that integer`;
         case "absDist":
-          return `Go to ${targetInt}`;
+          return `${round.context} Dive to that integer`;
         case "compare":
-          return `Go to the ${round.pick} one: ${round.a} or ${round.b}`;
+          return `Dive to the ${round.pick} one: ${round.a} or ${round.b}`;
         case "order":
-          return `Go to the ${round.pick}: ${round.values.join(", ")}`;
+          return `Dive to the ${round.pick}: ${round.values.join(", ")}`;
         default:
           return "Move the sub";
       }
@@ -447,14 +463,14 @@ export default {
         case "move":
           return `Dive to ${round.target}. Press Space.`;
         case "opposite":
-          return `Go to ${-round.value} (opposite of ${round.value}). Press Space.`;
+          return `Dive to the opposite of ${round.value}. Press Space.`;
         case "absolute":
         case "absDist":
-          return `Go to ${targetInt}. Press Space.`;
+          return `Work out the depth, dive there, then press Space.`;
         case "compare":
-          return `Go to the ${round.pick}: ${round.a} or ${round.b}. Press Space.`;
+          return `Dive to the ${round.pick}: ${round.a} or ${round.b}. Press Space.`;
         case "order":
-          return `Go to the ${round.pick}: ${round.values.join(", ")}. Press Space.`;
+          return `Dive to the ${round.pick}: ${round.values.join(", ")}. Press Space.`;
         default:
           return "Move the sub.";
       }
@@ -482,7 +498,9 @@ export default {
     }
 
     function updateHud() {
-      hud.setObjective(`${roundObjective()} (You are at ${pos}.)`);
+      const text = `${roundObjective()} (You are at ${pos}.)`;
+      hud.setObjective(text);
+      if (clarity) clarity.setObjective(text);
     }
 
     function startRound() {
@@ -510,10 +528,19 @@ export default {
         });
       }
 
+      // Only "move" rounds name a literal depth, so only those show the target
+      // marker. Derived rounds (opposite / absolute / compare / order) hide it
+      // so the student must work the destination out instead of seeing it.
+      const showMarker = round.kind === "move";
       marker.position.set(0, yFor(targetInt), 0);
       markerMat.color.setHex(COLORS.target);
       markerMat.emissive.setHex(COLORS.target);
-      marker.visible = true;
+      marker.visible = showMarker;
+
+      if (clarity) {
+        clarity.setObjective(`Round ${roundIndex + 1} of ${cfg.rounds.length}`);
+        clarity.setTarget(showMarker ? `Dive to ${round.target}` : cardText());
+      }
 
       if (typeof hud.setProgress === "function")
         hud.setProgress(roundIndex, cfg.rounds.length);
@@ -524,11 +551,11 @@ export default {
           intro = `Dive the sub to ${round.target}.`;
           break;
         case "opposite":
-          intro = `Go to the opposite of ${round.value}. The answer is ${-round.value}.`;
+          intro = `Find the opposite of ${round.value} and dive there.`;
           break;
         case "absolute":
         case "absDist":
-          intro = `${round.context} Go to ${targetInt}.`;
+          intro = `${round.context} Work out the integer and dive to it.`;
           break;
         case "compare":
           intro = `Which is ${round.pick}, ${round.a} or ${round.b}? Go to it. Higher is greater.`;
@@ -551,7 +578,7 @@ export default {
     }
 
     function move(dir) {
-      if (solved || !started) return;
+      if (solved || !started || gameOver) return;
       const next = Math.max(RANGE_MIN, Math.min(RANGE_MAX, pos + dir));
       if (next === pos) {
         feel.sfx("wrong");
@@ -587,7 +614,7 @@ export default {
     }
 
     function confirmArrival() {
-      if (solved || !started) return;
+      if (solved || !started || gameOver) return;
       if (pos !== targetInt) {
         feel.sfx("wrong");
         feel.shake(0.16, 0.3);
@@ -597,10 +624,21 @@ export default {
           markerMat.color.setHex(COLORS.target);
           markerMat.emissive.setHex(COLORS.target);
         }, 500);
-        const hint = ` Go to ${targetInt}.`;
-        const msg = `Not yet. You are at ${pos}.${cfg.hints ? hint : ""}`;
         streak = 0;
         if (typeof hud.setStreak === "function") hud.setStreak(0);
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        if (lives <= 0) {
+          loseGame();
+          return;
+        }
+        // Forgiving Level-1 hint nudges direction without naming the answer.
+        const dir =
+          targetInt > pos ? "Rise toward 0 / go higher" : "Dive lower";
+        const hint = ` ${dir}.`;
+        const msg = `Not yet. You are at ${pos}.${cfg.hints ? hint : ""} ${
+          lives
+        } ${lives === 1 ? "dive" : "dives"} left.`;
         if (typeof hud.feedback === "function") hud.feedback(false, msg);
         else hud.message(msg, { tone: "warn", duration: 2400 });
         announce(msg);
@@ -673,6 +711,23 @@ export default {
       }, 2600);
     }
 
+    function loseGame() {
+      gameOver = true;
+      marker.visible = false;
+      feel.sfx("wrong");
+      const msg = `Out of dives! You reached ${solvedCount} of ${cfg.rounds.length} depths.`;
+      hud.setObjective(msg);
+      announce(`Mission over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Out of dives!",
+          badge: "🌊",
+          stats: `${msg} Tip: read each round carefully and use the depth read-out (Enter) before you dock.`,
+        });
+      }
+    }
+
     function finish() {
       marker.visible = false;
       updateLabel(cardLabel, "All depths reached!");
@@ -697,6 +752,14 @@ export default {
             ms,
           ),
         );
+      }
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "All depths reached!",
+          badge: "🤿",
+          stats: `You reached ${solvedCount} of ${cfg.rounds.length} depths. Best streak: ${bestStreak}. Score saved.`,
+        });
       }
     }
 
@@ -729,43 +792,56 @@ export default {
       });
     }
 
+    // Begin the actual round loop + input binding only after the student
+    // presses Start in the clarity overlay. Single entry point for first play
+    // and (via page reload) for Play Again. The camera intro + spawn-pop and
+    // idle animation run immediately behind the overlay; only the interactive
+    // round loop and input wait for Start.
+    function beginGameplay() {
+      started = true;
+      lives = START_LIVES;
+      gameOver = false;
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      // Spawn-pop the submarine in.
+      if (!reduced) {
+        feel.tween({
+          from: 0,
+          to: 1,
+          duration: 0.4,
+          onUpdate: (t) => subGroup.scale.setScalar(t),
+          onComplete: () => subGroup.scale.setScalar(1),
+        });
+      } else {
+        subGroup.scale.setScalar(1);
+      }
+      feel.sfx("pop");
+
+      unbindPress = input.onPress((name) => {
+        if (name === "up") move(1);
+        else if (name === "down") move(-1);
+        else if (name === "action") confirmArrival();
+        else if (name === "confirm") readOut();
+      });
+
+      unbindTap = input.onTap(() => {
+        if (solved || !started) return;
+        const hits = input.raycast(camera, [marker, subGroup], true);
+        if (hits.length) {
+          confirmArrival();
+          return;
+        }
+        const ny = input.state.ndc ? input.state.ndc.y : 0;
+        move(ny >= 0 ? 1 : -1);
+      });
+
+      roundIndex = 0;
+      startRound();
+    }
+
     return {
       start() {
-        cameraIntro(() => {
-          started = true;
-          // Spawn-pop the submarine in.
-          if (!reduced) {
-            feel.tween({
-              from: 0,
-              to: 1,
-              duration: 0.4,
-              onUpdate: (t) => subGroup.scale.setScalar(t),
-              onComplete: () => subGroup.scale.setScalar(1),
-            });
-          } else {
-            subGroup.scale.setScalar(1);
-          }
-          feel.sfx("pop");
-          startRound();
-        });
-
-        unbindPress = input.onPress((name) => {
-          if (name === "up") move(1);
-          else if (name === "down") move(-1);
-          else if (name === "action") confirmArrival();
-          else if (name === "confirm") readOut();
-        });
-
-        unbindTap = input.onTap(() => {
-          if (solved || !started) return;
-          const hits = input.raycast(camera, [marker, subGroup], true);
-          if (hits.length) {
-            confirmArrival();
-            return;
-          }
-          const ny = input.state.ndc ? input.state.ndc.y : 0;
-          move(ny >= 0 ? 1 : -1);
-        });
+        // Camera intro runs immediately, behind the start overlay.
+        cameraIntro(() => {});
 
         if (!reduced) {
           unbindFrame = onFrame((dt, t) => {
@@ -782,9 +858,67 @@ export default {
             portMat.emissiveIntensity = 0.7 + Math.sin(t * 2.5) * 0.3;
           });
         }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Submarine — Dive the Number Line",
+          objectiveEn:
+            "Pilot the submarine up and down the number line to the integer each round asks for, then dock with Space.",
+          objectiveEs:
+            "Pilotea el submarino por la recta numérica hasta el número entero de cada ronda y atraca con Espacio.",
+          standard: "6.NS.C.5–7 · Integers, Opposites & Absolute Value",
+          controls: [
+            {
+              key: "↑ / W",
+              actionEn:
+                "Rise — move the sub up the number line (toward positives)",
+              actionEs: "Sube — mueve el submarino hacia los positivos",
+            },
+            {
+              key: "↓ / S",
+              actionEn:
+                "Dive — move the sub down the number line (toward negatives)",
+              actionEs: "Baja — mueve el submarino hacia los negativos",
+            },
+            {
+              key: "Space",
+              actionEn: "Dock — check if you reached the target integer",
+              actionEs: "Atraca — revisa si llegaste al número correcto",
+            },
+            {
+              key: "Enter",
+              actionEn:
+                "Read out your depth and its distance from 0 (absolute value)",
+              actionEs:
+                "Di tu profundidad y su distancia desde 0 (valor absoluto)",
+            },
+            {
+              key: "Tap",
+              actionEn:
+                "Tap the green target band to dock, or tap above/below the sub to move it",
+              actionEs:
+                "Toca la banda verde para atracar, o toca arriba/abajo para mover el submarino",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Each round names a target — a number to dive to, an opposite, an absolute value, or the greater/least of a set. Move to that integer and press Space to dock. Dock all rounds to win. A 3+ streak earns bonus points!",
+          howToWinEs:
+            "Llega al número entero de cada ronda y atraca con Espacio. Completa todas las rondas para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();

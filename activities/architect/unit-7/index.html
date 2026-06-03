@@ -4,15 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Unit 7 — Submarine Architect | Integers &amp; the Number Line (6.NS.C.5–7)
+      Unit 7 — Rover Mission Control | Equations &amp; Inequalities (6.EE)
     </title>
+
+    <!-- Shared theme -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
     <style>
-      *,
-      *::before,
-      *::after {
+      * {
         box-sizing: border-box;
       }
       body {
@@ -29,1105 +32,2366 @@
         font-size: 18px;
       }
       .wrap {
-        max-width: 880px;
+        max-width: 980px;
         margin: 0 auto;
-        padding: 20px 18px 64px;
+        padding: 20px 16px 72px;
       }
 
-      /* ---- Hero header ---- */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 20px 22px 16px;
-        margin-bottom: 4px;
-      }
-      .badge {
-        display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-weight: 700;
-        font-size: 14px;
-        padding: 4px 12px;
-        border-radius: 999px;
-        letter-spacing: 0.3px;
-      }
-      header.hero h1 {
-        font-size: 1.9rem;
-        margin: 10px 0 6px;
-      }
-      .lead {
-        font-size: 1.1rem;
-        margin: 0 0 12px;
-        border-left: 5px solid var(--nt-accent);
-        padding-left: 12px;
-      }
-
-      /* ---- Learning Target box ---- */
+      /* ── Learning target ── */
       .learning-target {
         background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin: 14px 0;
+        border: 2px solid var(--nt-accent);
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
       }
       .learning-target h2 {
-        font-size: 1rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--nt-accent);
         margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
       }
       .learning-target ul {
         margin: 0 0 12px;
         padding-left: 1.4em;
       }
-      .learning-target ul li {
+      .learning-target li {
         margin-bottom: 4px;
       }
       .lt-meta {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        font-size: 0.88rem;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
         color: var(--nt-muted);
       }
       .lt-meta span {
         background: var(--nt-bg);
         border: 1px solid var(--nt-border);
-        border-radius: 6px;
-        padding: 2px 10px;
-      }
-
-      /* ---- Teacher notes (collapsible) ---- */
-      details.teacher-notes {
-        background: var(--nt-surface);
-        border: 2px dashed var(--nt-border);
-        border-radius: 14px;
-        padding: 0;
-        margin: 14px 0;
-      }
-      details.teacher-notes summary {
-        cursor: pointer;
+        border-radius: 8px;
+        padding: 4px 10px;
         font-weight: 700;
-        font-size: 1rem;
-        padding: 12px 16px;
-        list-style: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--nt-text);
-        border-radius: 14px;
-      }
-      details.teacher-notes summary::-webkit-details-marker {
-        display: none;
-      }
-      details.teacher-notes summary::before {
-        content: "▶";
-        font-size: 0.75rem;
-        transition: transform 0.2s;
-        color: var(--nt-accent);
-      }
-      details.teacher-notes[open] summary::before {
-        transform: rotate(90deg);
-      }
-      details.teacher-notes summary:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-        border-radius: 12px;
-      }
-      .teacher-notes-body {
-        padding: 0 16px 16px;
-        font-size: 0.95rem;
-      }
-      .teacher-notes-body h3 {
-        font-size: 0.95rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        color: var(--nt-accent);
-        margin: 14px 0 4px;
-      }
-      .teacher-notes-body p,
-      .teacher-notes-body ul {
-        margin: 0 0 8px;
-      }
-      .teacher-notes-body ul {
-        padding-left: 1.4em;
       }
 
-      /* ---- Vocab bar ---- */
-      .vocab {
-        margin: 14px 0 0;
-        padding: 12px 16px;
-        border: 1px dashed var(--nt-border);
-        border-radius: 10px;
-        background: var(--nt-surface);
-        font-size: 1rem;
-      }
-      .vocab b {
-        color: var(--nt-accent);
-      }
-
-      /* ---- Progress ---- */
-      .progress-wrap {
-        margin: 18px 0 6px;
-      }
-      .progress-label {
-        font-weight: 700;
-        font-size: 0.95rem;
-        margin-bottom: 6px;
-      }
-      .progress-track {
-        height: 16px;
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 999px;
+      /* ── Hero ── */
+      header.hero {
+        position: relative;
         overflow: hidden;
+        border-radius: 18px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+        color: #ffe9d6;
+        background:
+          radial-gradient(
+            1100px 300px at 80% -50%,
+            rgba(255, 138, 76, 0.5),
+            transparent 60%
+          ),
+          radial-gradient(
+            600px 260px at 12% 120%,
+            rgba(120, 92, 255, 0.35),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #3a1206, #160a18);
+        border: 1px solid rgba(255, 138, 76, 0.4);
       }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: var(--nt-accent);
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #ffb487;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 4vw, 34px);
+        line-height: 1.1;
+        color: #fff;
+      }
+      header.hero .lede {
+        margin: 0;
+        max-width: 64ch;
+        color: #ffd7bd;
+        font-size: 16px;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .badge {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        padding: 6px 10px;
         border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #ffeede;
+      }
+
+      /* ── Mission-cycle ribbon ── */
+      .cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 140px;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #ffe1cc;
+        background: rgba(255, 138, 76, 0.08);
+      }
+      .cycle b {
+        display: block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #ffb487;
+        margin-bottom: 3px;
+      }
+
+      /* ── Progress ── */
+      .progress {
+        margin-top: 16px;
+        font-weight: 700;
+        color: #fff3ea;
+      }
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #ffb44c, #ff6a3d);
         transition: width 0.3s ease;
       }
 
-      /* ---- Question cards ---- */
+      /* ── Cards / tasks ── */
       .card {
         background: var(--nt-surface);
         border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 18px 18px 20px;
-        margin: 18px 0;
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
       }
-      .qhead {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
+      .card h2 {
         margin: 0 0 4px;
-      }
-      .qnum {
-        flex: none;
-        font-weight: 800;
-        color: var(--nt-bg);
-        background: var(--nt-accent);
-        width: 32px;
-        height: 32px;
-        border-radius: 999px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-      }
-      .qtitle {
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin: 0;
-      }
-      .directions {
-        margin: 6px 0 14px;
-        color: var(--nt-muted);
-        font-size: 1.02rem;
-      }
-      .answer-row {
+        font-size: 22px;
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
         gap: 10px;
-      }
-      label.ans-label {
-        font-weight: 700;
-      }
-      input[type="number"] {
-        font-size: 1.2rem;
-        padding: 8px 12px;
-        width: 130px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-      }
-      input[type="text"] {
-        font-size: 1.2rem;
-        padding: 8px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-      }
-      input[type="number"]:focus-visible,
-      input[type="text"]:focus-visible,
-      select:focus-visible,
-      textarea:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-        border-color: var(--nt-accent);
-      }
-      .unit {
-        color: var(--nt-muted);
-        font-weight: 700;
-      }
-
-      /* ---- Submarine number line ---- */
-      .sub-build {
-        display: flex;
         flex-wrap: wrap;
-        gap: 24px;
-        align-items: flex-start;
       }
-      .nline {
-        position: relative;
-        width: 120px;
-        height: 460px;
+      .card h3 {
+        margin: 16px 0 6px;
+        font-size: 16px;
+      }
+      .tag-shape {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        padding: 4px 9px;
+        border-radius: 999px;
         background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 12px;
-        touch-action: none;
-        user-select: none;
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
       }
-      .nline .axis {
-        position: absolute;
-        left: 50%;
-        top: 12px;
-        bottom: 12px;
-        width: 3px;
-        transform: translateX(-50%);
-        background: var(--nt-border);
-      }
-      .tick {
-        position: absolute;
-        left: 0;
-        width: 100%;
-        height: 0;
-        border-top: 1px solid var(--nt-border);
-        display: flex;
-        align-items: center;
-      }
-      .tick.zero {
-        border-top: 3px solid var(--nt-accent);
-      }
-      .tick .tlabel {
-        position: absolute;
-        left: 8px;
-        transform: translateY(-50%);
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--nt-text);
-      }
-      .sub-icon {
-        position: absolute;
-        left: 50%;
-        width: 40px;
-        height: 26px;
-        transform: translate(-50%, -50%);
-        cursor: grab;
-        font-size: 26px;
-        line-height: 26px;
-        text-align: center;
-      }
-      .sub-icon:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 4px;
-        border-radius: 6px;
-      }
-      .depth-readout {
-        font-size: 1.05rem;
-      }
-      .depth-readout b {
-        font-size: 1.5rem;
+      .scale {
+        font:
+          700 13px ui-monospace,
+          monospace;
         color: var(--nt-accent);
       }
-      .controls {
-        margin-top: 12px;
+      .muted {
+        color: var(--nt-muted);
+      }
+
+      .grid2 {
+        display: grid;
+        gap: 18px;
+      }
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid3 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+      }
+
+      /* ── Console / blueprint panels ── */
+      .bp {
+        background: #0c1226;
+        border: 1px solid rgba(255, 138, 76, 0.4);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .bp svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .bp-cap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: #ffb487;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      /* ── Formula / model figures ── */
+      .fig {
+        text-align: center;
+      }
+      .fig svg {
+        width: 100%;
+        max-width: 230px;
+        height: auto;
+      }
+      .fig figcaption {
+        font-weight: 700;
+        margin-top: 4px;
+        font-size: 15px;
+      }
+      .fcode {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+        display: block;
+        margin-top: 2px;
+      }
+
+      /* ── Question blocks ── */
+      .q {
+        margin: 14px 0;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
+      }
+      .q .lbl {
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+      .q .row {
         display: flex;
         gap: 10px;
+        align-items: center;
         flex-wrap: wrap;
       }
-      button.btn {
-        font-size: 1rem;
-        font-weight: 700;
-        padding: 10px 16px;
-        border: 2px solid var(--nt-accent);
-        border-radius: 999px;
-        cursor: pointer;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
+      .q input[type="text"] {
+        width: 130px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
       }
-      button.btn.ghost {
+      .q .eqtag {
+        font:
+          700 15px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 6px 10px;
+      }
+      .q .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 8px 0 0;
+      }
+      .q .fb.ok {
+        color: #0f9d6b;
+      }
+      .q .fb.bad {
+        color: #d23f54;
+      }
+      .q input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      .q input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+      .q select {
+        font:
+          700 16px ui-monospace,
+          monospace;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .q select.ok {
+        border-color: #33d6a6;
+      }
+      .q select.bad {
+        border-color: #ff6b81;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
         background: transparent;
         color: var(--nt-accent);
       }
-      button.btn:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
+      .btn:hover {
+        filter: brightness(1.05);
       }
-      .feedback-live {
-        font-size: 0.95rem;
-        min-height: 1.4em;
+      #submitBtn {
+        font-size: 1.2rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+
+      /* ── Differentiation callouts ── */
+      .lvl {
+        border-radius: 12px;
+        padding: 13px 15px;
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .lvl1 {
+        background: rgba(51, 214, 166, 0.12);
+        border: 1px solid rgba(51, 214, 166, 0.45);
+      }
+      .lvl1 .pill {
+        background: #0f9d6b;
+      }
+      .lvl2 {
+        background: rgba(155, 108, 255, 0.12);
+        border: 1px solid rgba(155, 108, 255, 0.45);
+      }
+      .lvl2 .pill {
+        background: #7b4fd0;
+      }
+      .lvl3 {
+        background: rgba(255, 180, 76, 0.16);
+        border: 1px solid rgba(255, 180, 76, 0.5);
+      }
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
         color: var(--nt-muted);
+      }
+
+      /* ── Command-block chooser (Task 1 model builder) ── */
+      .matgrid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, 1fr);
         margin-top: 6px;
       }
-
-      /* ---- Horizontal number line figure ---- */
-      svg.fig {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        margin: 4px 0 14px;
+      @media (max-width: 560px) {
+        .matgrid {
+          grid-template-columns: 1fr;
+        }
       }
-      .nl-axis {
-        stroke: var(--nt-text);
-        stroke-width: 2.5;
-      }
-      .nl-tick {
-        stroke: var(--nt-text);
-        stroke-width: 2;
-      }
-      .nl-dot {
-        fill: var(--nt-accent);
-        stroke: var(--nt-text);
-        stroke-width: 2;
-      }
-      text.lbl {
-        fill: var(--nt-text);
-        font-size: 15px;
-        font-weight: 700;
-      }
-      select {
-        font-size: 1.15rem;
-        padding: 8px 12px;
+      .matcard {
+        font: inherit;
+        cursor: pointer;
+        text-align: left;
         border: 2px solid var(--nt-border);
-        border-radius: 8px;
+        border-radius: 12px;
+        padding: 12px;
         background: var(--nt-bg);
         color: var(--nt-text);
       }
-
-      #submitBtn {
-        font-size: 1.25rem;
-        padding: 14px 28px;
-        margin: 8px 0 18px;
+      .matcard[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        box-shadow: 0 0 0 3px rgba(255, 138, 76, 0.22);
       }
-      #ntkit {
-        margin-top: 8px;
-      }
-
-      /* ---- Rubric ---- */
-      .rubric-section {
-        margin: 24px 0;
-      }
-      .rubric-section h2 {
-        font-size: 1.1rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        color: var(--nt-accent);
-        margin: 0 0 10px;
-      }
-      .rubric-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.95rem;
-      }
-      .rubric-table th,
-      .rubric-table td {
-        border: 1px solid var(--nt-border);
-        padding: 8px 12px;
-        vertical-align: top;
-        text-align: left;
-        background: var(--nt-surface);
-      }
-      .rubric-table th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-weight: 700;
-        white-space: nowrap;
-      }
-      .rubric-table tr:nth-child(even) td {
-        background: var(--nt-bg);
-      }
-
-      /* ---- Answer key (collapsible teacher) ---- */
-      details.answer-key {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 0;
-        margin: 14px 0;
-      }
-      details.answer-key summary {
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 1rem;
-        padding: 12px 16px;
-        list-style: none;
+      .matcard .op {
+        height: 40px;
+        border-radius: 8px;
+        margin-bottom: 8px;
         display: flex;
         align-items: center;
+        justify-content: center;
+        font:
+          800 22px ui-monospace,
+          monospace;
+        color: #fff;
+      }
+      .matcard b {
+        font-size: 15px;
+      }
+      .matcard small {
+        color: var(--nt-muted);
+      }
+
+      /* ── Readout ── */
+      .readout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        border: 1px solid var(--nt-border);
+      }
+      .readout .k {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        letter-spacing: 0.06em;
+      }
+      .readout .v {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      .readout .v.big {
+        font-size: 26px;
+      }
+
+      /* ── Number-line grapher ── */
+      .nl-wrap {
+        background: #0c1226;
+        border: 1px solid rgba(120, 92, 255, 0.45);
+        border-radius: 14px;
+        padding: 14px 12px 10px;
+      }
+      .nl-wrap svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .nl-controls {
+        display: flex;
         gap: 8px;
-        color: var(--nt-text);
+        flex-wrap: wrap;
+        margin-top: 12px;
+        align-items: center;
       }
-      details.answer-key summary::-webkit-details-marker {
-        display: none;
+      .nl-controls label {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        color: var(--nt-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
-      details.answer-key summary::before {
-        content: "▶";
-        font-size: 0.75rem;
-        transition: transform 0.2s;
+      .nl-readout {
+        font:
+          800 18px ui-monospace,
+          monospace;
         color: var(--nt-accent);
       }
-      details.answer-key[open] summary::before {
-        transform: rotate(90deg);
+
+      /* ── Tables ── */
+      table.bt {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
       }
-      details.answer-key summary:focus-visible {
+      table.bt th,
+      table.bt td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--nt-border);
+        text-align: left;
+        font-size: 15px;
+      }
+      table.bt thead th {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
+      }
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
+      }
+      .details-body {
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .details-body h3 {
+        font-size: 16px;
+        margin: 14px 0 6px;
+        color: var(--nt-accent);
+      }
+      .details-body ul,
+      .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
+      /* ── Rubric ── */
+      .rubric-wrap {
+        margin-top: 6px;
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        min-width: 480px;
+      }
+      table.rubric th,
+      table.rubric td {
+        border: 1px solid var(--nt-border);
+        padding: 9px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.rubric thead th {
+        background: var(--nt-bg);
+        font-weight: 800;
+        color: var(--nt-accent);
+      }
+
+      #ntkit {
+        margin-top: 18px;
+      }
+      #a11y-feedback {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
         outline: 3px solid var(--nt-focus);
         outline-offset: 2px;
-        border-radius: 12px;
-      }
-      .answer-key-body {
-        padding: 0 16px 16px;
-        font-size: 0.95rem;
-      }
-      .answer-key-body ol {
-        margin: 0;
-        padding-left: 1.6em;
-      }
-      .answer-key-body ol li {
-        margin-bottom: 6px;
-      }
-      .answer-key-body strong {
-        color: var(--nt-accent);
       }
 
-      /* ---- Reflection / Deliverable ---- */
-      .reflection-section {
-        margin: 24px 0;
-      }
-      .reflection-section h2 {
-        font-size: 1.1rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        color: var(--nt-accent);
-        margin: 0 0 8px;
-      }
-      .deliverable {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 12px 16px;
-        font-size: 0.97rem;
-        margin-bottom: 14px;
-      }
-      .reflection-section label {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-      textarea.reflection-input {
-        width: 100%;
-        min-height: 100px;
-        font-size: 1rem;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        resize: vertical;
-        font-family: inherit;
-      }
-
-      /* ---- Print styles ---- */
       @media print {
-        details.teacher-notes,
-        details.answer-key {
+        details.teacher-only,
+        .actions,
+        #submitBtn,
+        .btn {
           display: none !important;
         }
-        button.btn,
-        #submitBtn {
-          display: none !important;
+        .wrap {
+          padding-bottom: 0;
         }
-        .progress-wrap {
-          display: none !important;
+        .card {
+          break-inside: avoid;
         }
       }
-    </style>
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
   </head>
+
   <body class="nt-theme-aware">
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
     <div class="wrap">
-
-      <!-- ============ HERO HEADER ============ -->
-      <header class="hero">
-        <span class="badge">CCSS 6.NS.C.5–7</span>
-        <h1>Submarine Architect — Integers &amp; the Number Line</h1>
-        <p class="lead">
-          <strong>What to do:</strong> Dive the submarine, place points, and
-          compare integers. Type or pick each answer. Then press
-          <strong>Check My Work</strong> at the bottom.
-        </p>
-      </header>
-
-      <!-- ============ LEARNING TARGET ============ -->
-      <section class="learning-target" aria-labelledby="lt-heading">
-        <h2 id="lt-heading">Learning Targets</h2>
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
         <ul>
-          <li>I can place positive and negative integers on a number line.</li>
-          <li>I can find the opposite and absolute value of an integer.</li>
-          <li>I can compare and order integers using &lt; and &gt;.</li>
-          <li>I can use integers to represent real-world situations (above/below sea level).</li>
+          <li>
+            I can write a one-step equation to model a real situation (x + p = q
+            or px = q).
+          </li>
+          <li>
+            I can solve a one-step equation using inverse operations and check
+            my solution.
+          </li>
+          <li>
+            I can write an inequality (&gt;, &lt;, ≥, ≤) to describe a
+            real-world constraint or safety limit.
+          </li>
+          <li>
+            I can graph the solutions of an inequality on a number line and read
+            which values are safe.
+          </li>
         </ul>
         <div class="lt-meta">
-          <span>Standard: 6.NS.C.5, 6.NS.C.6, 6.NS.C.7</span>
-          <span>Time: ~35–45 min</span>
-          <span>Materials: This activity, pencil</span>
+          <span>Standard: CCSS 6.EE.B.5–B.8</span>
+          <span>Time: ~45 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
         </div>
       </section>
 
-      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
-      <details class="teacher-notes" aria-label="Teacher Notes">
-        <summary>Teacher Notes (collapse for students)</summary>
-        <div class="teacher-notes-body">
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
           <h3>Pacing</h3>
-          <p>Plan 5 minutes for the vocabulary warm-up, 20–25 minutes for questions 1–7, and 5–10 minutes for the reflection. The submarine drag is the hook — give students a moment to explore before moving on.</p>
-
-          <h3>Grouping</h3>
-          <p>Works well individually or in pairs. Pairs are effective for Q5–Q6 (comparing/ordering) so students verbalize reasoning.</p>
-
-          <h3>Differentiation — Support</h3>
           <ul>
-            <li>Provide a printed integer number line (−10 to 10) as a visual scaffold.</li>
-            <li>For Q6 (ordering), allow students to write each number on a sticky note and physically arrange them.</li>
-            <li>Chunking: assign Q1–Q4 first, debrief, then Q5–Q7.</li>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Mission" together.
+              Frame the big idea: an <em>equation</em> finds one exact unknown
+              (how much fuel, how far); an <em>inequality</em> describes a whole
+              <em>range</em> of safe values (battery, temperature, payload).
+            </li>
+            <li>
+              <strong>Flight planning (30 min):</strong> Students complete Tasks
+              1 → 4 in order. Task 1 builds &amp; solves equations; Task 2 reads
+              a constraint and writes/solves an inequality; Task 3 uses the live
+              number-line grapher to mark a safe zone; Task 4 is the integrated
+              go/no-go launch check.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Contrast = vs. ≤. Why does a
+              real safety limit need ≥/≤ instead of just =? Discuss open vs.
+              closed circles on the number line.
+            </li>
           </ul>
-
-          <h3>Differentiation — Challenge</h3>
+          <h3>Differentiation</h3>
           <ul>
-            <li>Ask: "What integer represents a gain of $15 and a loss of $8? What is the net result?"</li>
-            <li>Extension: Order six integers including fractions like −2.5 and discuss where they belong.</li>
+            <li>
+              <strong>Level 1 (support):</strong> Use the green callouts and
+              bilingual (EN/ES) prompts. Provide the inverse-operation card. Let
+              students drag the number-line dot before writing the inequality.
+            </li>
+            <li>
+              <strong>Level 2 (enrichment):</strong> Have students justify each
+              solve with the inverse operation, explain open vs. closed circles,
+              and solve the launch inequality 2b − 14 ≥ 40 for the minimum
+              starting battery in Task 4.
+            </li>
           </ul>
-
-          <h3>ESOL / Language Supports</h3>
+          <h3>STEM Connection</h3>
           <ul>
-            <li>Review the vocabulary box (integer, opposite, absolute value) in the student's home language if possible.</li>
-            <li>Use the submarine visual to anchor "above/below sea level" as a concrete model for positive/negative.</li>
-            <li>Accept equivalent expressions (e.g., "negative 7" written as "−7") and discuss notation.</li>
+            <li>
+              This is authentic systems engineering. Real mission control uses
+              <strong>equations</strong> to compute exact quantities (fuel burn,
+              travel time) and <strong>inequalities</strong> to define safe
+              operating envelopes (battery ≥ reserve, temperature within range,
+              payload ≤ limit). A launch is a "go" only when every inequality is
+              satisfied — exactly the go/no-go poll in Task 4.
+            </li>
+          </ul>
+          <h3>Answer Key</h3>
+          <ul>
+            <li>Q1.1 build: x + 6 = 20 · Q1.2 solve: x = 14 (km)</li>
+            <li>Q1.3 build: 8m = 96 · Q1.4 solve: m = 12 (hr)</li>
+            <li>
+              Q2.1 symbol: ≤ · Q2.2 solve: w ≤ 27 kg (18 + 27 = 45 ≤ 45 ✓)
+            </li>
+            <li>
+              Q3.1 inequality: t ≥ 35 · Q3.2 graph: boundary 35, closed ●, shade
+              right
+            </li>
+            <li>Q4 launch: b ≥ 27 · check: 2(27) − 14 = 40 ≥ 40 → GO</li>
           </ul>
         </div>
       </details>
 
-      <!-- ============ VOCAB ============ -->
-      <div class="vocab" role="note" aria-label="Key vocabulary">
-        <b>Integer</b> = a whole number that can be positive, negative, or 0
-        (like −3, 0, 5). &nbsp; <b>Opposite</b> = same distance from 0, other
-        side (opposite of 4 is −4). &nbsp; <b>Absolute value |n|</b> = distance
-        from 0, always 0 or more (|−7| = 7). &nbsp; On a number line, numbers
-        get <b>bigger</b> as you go up / right.
-      </div>
-
-      <!-- ============ PROGRESS ============ -->
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Progress: <span id="progTxt" role="status" aria-live="polite">0 of 7 answered</span>
-        </div>
-        <div class="progress-track" aria-hidden="true">
-          <div class="progress-fill" id="progFill"></div>
-        </div>
-      </div>
-
-      <!-- ============ Q1: Drive submarine to −4 ============ -->
-      <section class="card" aria-labelledby="q1t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">1</span>
-          <h2 class="qtitle" id="q1t">Dive the submarine to −4</h2>
-        </div>
-        <p class="directions">
-          0 is sea level. Drag the submarine, or click it and press the
-          <strong>Up</strong> / <strong>Down</strong> arrow keys. Stop at
-          <strong>−4</strong>. The readout shows your depth.
-        </p>
-        <div class="sub-build">
-          <div
-            class="nline"
-            id="nline"
-            aria-label="Vertical number line from 6 at the top to negative 6 at the bottom"
-          >
-            <div class="axis"></div>
-            <div
-              class="sub-icon"
-              id="sub"
-              role="slider"
-              tabindex="0"
-              aria-label="Submarine depth slider"
-              aria-valuemin="-6"
-              aria-valuemax="6"
-              aria-valuenow="0"
-              aria-valuetext="0, sea level"
-            >
-              🛥️
-            </div>
-          </div>
-          <div class="depth-readout">
-            Submarine depth: <b id="depthVal">0</b>
-            <div class="controls">
-              <button type="button" class="btn ghost" id="upBtn" aria-label="Move submarine up one unit">▲ Up</button>
-              <button type="button" class="btn ghost" id="downBtn" aria-label="Move submarine down one unit">▼ Down</button>
-            </div>
-            <div class="feedback-live" id="q1feedback" aria-live="polite"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ Q2: Opposite ============ -->
-      <section class="card" aria-labelledby="q2t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">2</span>
-          <h2 class="qtitle" id="q2t">What is the opposite of 7?</h2>
-        </div>
-        <p class="directions">
-          The opposite is the same distance from 0, on the other side. Type the
-          number.
-        </p>
-        <div class="answer-row">
-          <label class="ans-label" for="a2">Opposite of 7 =</label>
-          <input
-            type="number"
-            id="a2"
-            inputmode="numeric"
-            aria-label="Opposite of 7"
-            aria-describedby="a2hint"
-          />
-        </div>
-        <div id="a2hint" class="feedback-live" aria-live="polite"></div>
-      </section>
-
-      <!-- ============ Q3: Absolute value ============ -->
-      <section class="card" aria-labelledby="q3t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">3</span>
-          <h2 class="qtitle" id="q3t">Find the absolute value |−9|</h2>
-        </div>
-        <p class="directions">
-          Absolute value is the distance from 0. Distance is never negative.
-        </p>
-        <div class="answer-row">
-          <label class="ans-label" for="a3">|−9| =</label>
-          <input
-            type="number"
-            id="a3"
-            inputmode="numeric"
-            aria-label="Absolute value of negative 9"
-            aria-describedby="a3hint"
-          />
-        </div>
-        <div id="a3hint" class="feedback-live" aria-live="polite"></div>
-      </section>
-
-      <!-- ============ Q4: Plot / read a point ============ -->
-      <section class="card" aria-labelledby="q4t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">4</span>
-          <h2 class="qtitle" id="q4t">What integer is the dot on?</h2>
-        </div>
-        <p class="directions">
-          Read the number line. The dot is on one mark. Type that integer.
-        </p>
-        <svg
-          class="fig"
-          width="520"
-          height="90"
-          viewBox="0 0 520 90"
-          role="img"
-          aria-label="Horizontal number line from negative 5 to 5, with a dot on negative 3"
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag"
+          >Unit 7 · Math Architect · Equations &amp; Inequalities (6.EE)</span
         >
-          <line class="nl-axis" x1="30" y1="45" x2="490" y2="45" />
-          <!-- ticks at x = 30 + (n+5)*46, n from -5..5 -->
-          <g id="nlTicks"></g>
-          <circle class="nl-dot" cx="122" cy="45" r="9" />
-        </svg>
-        <div class="answer-row">
-          <label class="ans-label" for="a4">The dot is on =</label>
-          <input
-            type="number"
-            id="a4"
-            inputmode="numeric"
-            aria-label="Integer the dot is on"
-            aria-describedby="a4hint"
-          />
-        </div>
-        <div id="a4hint" class="feedback-live" aria-live="polite"></div>
-      </section>
-
-      <!-- ============ Q5: Compare two integers ============ -->
-      <section class="card" aria-labelledby="q5t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">5</span>
-          <h2 class="qtitle" id="q5t">Compare: −2 ___ −8</h2>
-        </div>
-        <p class="directions">
-          Pick the right sign. On a number line, the number farther right (or
-          up) is bigger.
+        <h1>Mission Control: Program the Mars Rover "Halcyon"</h1>
+        <p class="lede">
+          You are the flight engineer for the <strong>Halcyon</strong> rover on
+          Mars. Mission control needs exact numbers <em>and</em> safe limits.
+          Use <strong>one-step equations</strong> to compute unknowns and
+          <strong>inequalities</strong> to define the rover's safe operating
+          envelope — then run the final go/no-go launch check.
         </p>
-        <div class="answer-row">
-          <span class="ans-label">−2</span>
-          <label class="ans-label" for="a5" style="position:absolute;left:-9999px">Compare negative 2 and negative 8</label>
-          <select id="a5" aria-label="Compare negative 2 and negative 8">
-            <option value="">choose…</option>
-            <option value=">">&gt; (greater than)</option>
-            <option value="<">&lt; (less than)</option>
-            <option value="=">= (equal)</option>
-          </select>
-          <span class="ans-label">−8</span>
+        <div class="badges">
+          <span class="badge">Standard 6.EE.B.5–B.8</span>
+          <span class="badge">One-Step Equations</span>
+          <span class="badge">Write &amp; Graph Inequalities</span>
+          <span class="badge">STEM Design Cycle</span>
+          <span class="badge">Systems Engineering</span>
         </div>
-        <div class="feedback-live" id="a5hint" aria-live="polite"></div>
-      </section>
+        <div class="cycle">
+          <div><b>1 · Model</b>Turn each situation into an equation.</div>
+          <div><b>2 · Solve</b>Use inverse operations to find the unknown.</div>
+          <div><b>3 · Limit</b>Write the safety inequality.</div>
+          <div><b>4 · Graph</b>Mark the safe zone on the number line.</div>
+          <div><b>5 · Launch</b>Check every limit — go or no-go.</div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Systems cleared: <span id="pcount">0</span> / 7
+          <div
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="7"
+            aria-label="Systems cleared"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
 
-      <!-- ============ Q6: Order integers ============ -->
-      <section class="card" aria-labelledby="q6t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">6</span>
-          <h2 class="qtitle" id="q6t">Order from least to greatest</h2>
-        </div>
-        <p class="directions">
-          Put these integers in order, smallest first:
-          <strong>3, −5, 0, −1</strong>. Type them with commas, like:
-          <em>−5, −1, 0, 3</em>.
+      <!-- ══ THE MISSION ══ -->
+      <section class="card" aria-label="The mission">
+        <h2>The Mission Brief</h2>
+        <p>
+          The Halcyon rover has landed in Jezero Crater. Before it drives,
+          mission control must lock in exact values <em>and</em> safe operating
+          ranges. Two math tools do the job:
         </p>
-        <div class="answer-row">
-          <label class="ans-label" for="a6">Least → greatest:</label>
-          <input
-            type="text"
-            id="a6"
-            style="width:220px"
-            aria-label="Order the integers from least to greatest, separated by commas"
-            aria-describedby="a6hint"
-            placeholder="−5, −1, 0, 3"
-          />
+        <div class="grid2">
+          <div
+            style="
+              background: rgba(255, 138, 76, 0.08);
+              border: 1px solid rgba(255, 138, 76, 0.4);
+              border-radius: 14px;
+              padding: 16px 18px;
+            "
+          >
+            <p
+              style="
+                font:
+                  700 11px ui-monospace,
+                  monospace;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: #ffb487;
+                margin: 0 0 8px;
+              "
+            >
+              Tool A · Equation
+            </p>
+            <p style="margin: 0">
+              An <strong>equation</strong> uses <span class="scale">=</span>. It
+              finds <strong>one exact answer</strong> — like the exact distance
+              remaining. Solve by doing the <em>inverse</em> (opposite)
+              operation to <em>both</em> sides.<br />
+              Example: <span class="scale">x + 6 = 20</span> → subtract 6 from
+              both sides → <span class="scale">x = 14</span>
+            </p>
+          </div>
+          <div
+            style="
+              background: rgba(120, 92, 255, 0.1);
+              border: 1px solid rgba(155, 108, 255, 0.45);
+              border-radius: 14px;
+              padding: 16px 18px;
+            "
+          >
+            <p
+              style="
+                font:
+                  700 11px ui-monospace,
+                  monospace;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: #b79cff;
+                margin: 0 0 8px;
+              "
+            >
+              Tool B · Inequality
+            </p>
+            <p style="margin: 0">
+              An <strong>inequality</strong> uses
+              <span class="scale">&gt;</span>, <span class="scale">&lt;</span>,
+              <span class="scale">≥</span>, or <span class="scale">≤</span>. It
+              describes a <strong>whole range</strong> of safe values — like
+              "battery must stay <strong>at or above</strong> 40 units." Its
+              solutions fill a region on the number line.
+            </p>
+          </div>
         </div>
-        <div id="a6hint" class="feedback-live" aria-live="polite"></div>
+        <div class="lvl lvl1" style="margin-top: 14px">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            <strong>Symbol legend:</strong>
+            <span class="scale">&gt;</span> greater than ·
+            <span class="scale">&lt;</span> less than ·
+            <span class="scale">≥</span> at least (includes the boundary) ·
+            <span class="scale">≤</span> at most (includes the boundary).<br />
+            Number line: <strong>closed circle ●</strong> for ≥ or ≤ (boundary
+            counts) · <strong>open circle ○</strong> for &gt; or &lt; (boundary
+            does not count).
+          </p>
+          <span class="es"
+            >Español: <strong>≥</strong> significa "al menos" (incluye el
+            límite). <strong>≤</strong> significa "como máximo" (incluye el
+            límite). Círculo lleno ● = el límite cuenta.</span
+          >
+        </div>
       </section>
 
-      <!-- ============ Q7: Real-world meaning ============ -->
-      <section class="card" aria-labelledby="q7t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">7</span>
-          <h2 class="qtitle" id="q7t">Use an integer for the depth</h2>
+      <!-- ══ ENGINEER'S TOOLKIT ══ -->
+      <section class="card" aria-label="Engineer's toolkit">
+        <h2>Engineer's Equation Toolkit</h2>
+        <div class="grid2">
+          <figure class="fig">
+            <svg
+              viewBox="0 0 230 120"
+              role="img"
+              aria-label="Balance scale model: x plus 6 equals 20. Subtract 6 from both sides to keep the scale level, leaving x equals 14."
+            >
+              <!-- balance beam -->
+              <line
+                x1="20"
+                y1="40"
+                x2="210"
+                y2="40"
+                stroke="#ffb487"
+                stroke-width="3"
+              />
+              <polygon points="115,40 105,72 125,72" fill="#ffb487" />
+              <rect
+                x="108"
+                y="72"
+                width="14"
+                height="22"
+                rx="2"
+                fill="#ffb487"
+              />
+              <!-- left pan -->
+              <line
+                x1="55"
+                y1="40"
+                x2="55"
+                y2="58"
+                stroke="#9fc0ff"
+                stroke-width="2"
+              />
+              <rect
+                x="28"
+                y="58"
+                width="54"
+                height="26"
+                rx="6"
+                fill="rgba(255,138,76,.18)"
+                stroke="#ff8a4c"
+                stroke-width="2"
+              />
+              <text
+                x="55"
+                y="76"
+                text-anchor="middle"
+                fill="#ffd7bd"
+                font="700 14px ui-monospace, monospace"
+              >
+                x + 6
+              </text>
+              <!-- right pan -->
+              <line
+                x1="175"
+                y1="40"
+                x2="175"
+                y2="58"
+                stroke="#9fc0ff"
+                stroke-width="2"
+              />
+              <rect
+                x="148"
+                y="58"
+                width="54"
+                height="26"
+                rx="6"
+                fill="rgba(120,92,255,.2)"
+                stroke="#9b6cff"
+                stroke-width="2"
+              />
+              <text
+                x="175"
+                y="76"
+                text-anchor="middle"
+                fill="#e0d6ff"
+                font="700 14px ui-monospace, monospace"
+              >
+                20
+              </text>
+              <text
+                x="115"
+                y="16"
+                text-anchor="middle"
+                fill="#ffb487"
+                font="700 12px ui-monospace, monospace"
+              >
+                keep it balanced
+              </text>
+            </svg>
+            <figcaption>
+              Add / subtract<span class="fcode">x + p = q → x = q − p</span>
+            </figcaption>
+          </figure>
+          <figure class="fig">
+            <svg
+              viewBox="0 0 230 120"
+              role="img"
+              aria-label="Equal groups model: 8 times m equals 96. Divide both sides by 8 to find m equals 12."
+            >
+              <!-- equal groups -->
+              <g fill="rgba(51,214,166,.22)" stroke="#33d6a6" stroke-width="2">
+                <rect x="16" y="46" width="26" height="40" rx="4" />
+                <rect x="48" y="46" width="26" height="40" rx="4" />
+                <rect x="80" y="46" width="26" height="40" rx="4" />
+              </g>
+              <text
+                x="120"
+                y="72"
+                text-anchor="middle"
+                fill="#ffd7bd"
+                font="800 20px ui-monospace, monospace"
+              >
+                …
+              </text>
+              <text
+                x="65"
+                y="36"
+                text-anchor="middle"
+                fill="#33d6a6"
+                font="700 12px ui-monospace, monospace"
+              >
+                8 groups of m
+              </text>
+              <text
+                x="170"
+                y="60"
+                text-anchor="middle"
+                fill="#e0d6ff"
+                font="700 16px ui-monospace, monospace"
+              >
+                = 96
+              </text>
+              <text
+                x="170"
+                y="86"
+                text-anchor="middle"
+                fill="#ffb487"
+                font="700 13px ui-monospace, monospace"
+              >
+                ÷ 8 each
+              </text>
+            </svg>
+            <figcaption>
+              Multiply / divide<span class="fcode">p·x = q → x = q ÷ p</span>
+            </figcaption>
+          </figure>
         </div>
-        <p class="directions">
-          A diver is <strong>30 meters below</strong> sea level. Below sea level
-          is negative. Type the integer for this depth.
+        <p class="muted" style="margin-bottom: 0">
+          <strong>Golden rule.</strong> Whatever you do to one side of the
+          equals sign, do to the other — like keeping a balance scale level. To
+          <em>undo</em> an operation, use its <em>inverse</em>: + ↔ − and × ↔ ÷.
         </p>
-        <div class="answer-row">
-          <label class="ans-label" for="a7">Depth =</label>
-          <input
-            type="number"
-            id="a7"
-            inputmode="numeric"
-            aria-label="Integer for 30 meters below sea level"
-            aria-describedby="a7hint"
-          />
-          <span class="unit">meters</span>
-        </div>
-        <div id="a7hint" class="feedback-live" aria-live="polite"></div>
       </section>
 
-      <!-- ============ SUBMIT ============ -->
-      <button type="button" class="btn" id="submitBtn" aria-label="Check my work and see score">Check My Work</button>
+      <!-- ══ TASK 1 · DRIVE PLAN (build + solve equations) ══ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">
+          Task 1 · The Drive Plan
+          <span class="tag-shape">One-step equations</span>
+        </h2>
+        <p>
+          Halcyon must reach the river-delta rocks. Build a one-step equation
+          from each readout on the navigation console, then solve it.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 230"
+              role="img"
+              aria-label="Navigation console. Total distance to the delta is 20 kilometers. The rover has already driven 6 kilometers. An unknown distance x remains. A second readout: the rover drives 8 kilometers each Martian hour and the trip takes m hours to cover 96 kilometers."
+            >
+              <rect
+                x="8"
+                y="8"
+                width="344"
+                height="214"
+                rx="12"
+                fill="#0c1226"
+                stroke="rgba(255,138,76,.4)"
+              />
+              <text
+                x="20"
+                y="32"
+                fill="#ffb487"
+                font="700 12px ui-monospace, monospace"
+              >
+                NAV CONSOLE · HALCYON
+              </text>
 
-      <div id="ntkit"></div>
+              <!-- route bar -->
+              <line
+                x1="28"
+                y1="70"
+                x2="332"
+                y2="70"
+                stroke="#3a4566"
+                stroke-width="8"
+                stroke-linecap="round"
+              />
+              <line
+                x1="28"
+                y1="70"
+                x2="120"
+                y2="70"
+                stroke="#33d6a6"
+                stroke-width="8"
+                stroke-linecap="round"
+              />
+              <circle cx="28" cy="70" r="7" fill="#9fc0ff" />
+              <circle cx="332" cy="70" r="9" fill="#ff6a3d" />
+              <text
+                x="28"
+                y="56"
+                fill="#9fc0ff"
+                font="700 11px ui-monospace, monospace"
+              >
+                START
+              </text>
+              <text
+                x="332"
+                y="56"
+                text-anchor="end"
+                fill="#ff8a4c"
+                font="700 11px ui-monospace, monospace"
+              >
+                DELTA
+              </text>
+              <text
+                x="74"
+                y="92"
+                text-anchor="middle"
+                fill="#33d6a6"
+                font="700 12px ui-monospace, monospace"
+              >
+                driven 6 km
+              </text>
+              <text
+                x="226"
+                y="92"
+                text-anchor="middle"
+                fill="#ffd7bd"
+                font="700 12px ui-monospace, monospace"
+              >
+                remaining x km
+              </text>
+              <text
+                x="180"
+                y="116"
+                text-anchor="middle"
+                fill="#ffb487"
+                font="800 14px ui-monospace, monospace"
+              >
+                total = 20 km
+              </text>
 
-      <!-- ============ RUBRIC ============ -->
-      <section class="rubric-section" aria-labelledby="rubric-heading">
-        <h2 id="rubric-heading">Scoring Rubric</h2>
-        <div style="overflow-x:auto">
-          <table class="rubric-table" role="table">
+              <!-- speed readout -->
+              <line
+                x1="20"
+                y1="140"
+                x2="340"
+                y2="140"
+                stroke="#2a3354"
+                stroke-width="1"
+              />
+              <text
+                x="20"
+                y="166"
+                fill="#7fd9f5"
+                font="700 12px ui-monospace, monospace"
+              >
+                SPEED LOG
+              </text>
+              <text
+                x="20"
+                y="190"
+                fill="#cfe6ff"
+                font="700 13px ui-monospace, monospace"
+              >
+                8 km each hour · trip = 96 km total
+              </text>
+              <text
+                x="20"
+                y="210"
+                fill="#ffd7bd"
+                font="700 13px ui-monospace, monospace"
+              >
+                drive time = m hours (unknown)
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Console readout · live telemetry</span
+              ><span>units: km · hours</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="eq1-build">
+              <p class="lbl">
+                Q1.1 — Build the equation for the remaining distance
+                <em>x</em> (driven + remaining = total).
+              </p>
+              <div class="row">
+                <select
+                  id="q-eq1-build"
+                  data-ans="A"
+                  aria-label="Choose the equation for remaining distance"
+                >
+                  <option value="">choose…</option>
+                  <option value="A">x + 6 = 20</option>
+                  <option value="B">x − 6 = 20</option>
+                  <option value="C">6x = 20</option>
+                  <option value="D">x + 20 = 6</option>
+                </select>
+                <button type="button" class="btn" data-check="eq1-build">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="eq1-build">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-eq1-build"></p>
+            </div>
+            <div class="q" data-q="eq1-solve">
+              <p class="lbl">Q1.2 — Solve it: how many km remain?</p>
+              <div class="row">
+                <span class="eqtag">x =</span>
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-eq1-solve"
+                  data-ans="14"
+                  data-tol="0.001"
+                  data-why="x + 6 = 20 → subtract 6 from both sides → x = 14 km"
+                  aria-label="Remaining distance in km"
+                />
+                <span class="unit">km</span>
+                <button type="button" class="btn" data-check="eq1-solve">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="eq1-solve">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-eq1-solve"></p>
+            </div>
+            <div class="q" data-q="eq1-time-build">
+              <p class="lbl">
+                Q1.3 — Build the equation for drive time
+                <em>m</em> (speed × time = distance).
+              </p>
+              <div class="row">
+                <select
+                  id="q-eq1-time-build"
+                  data-ans="A"
+                  aria-label="Choose the equation for drive time"
+                >
+                  <option value="">choose…</option>
+                  <option value="A">8m = 96</option>
+                  <option value="B">m + 8 = 96</option>
+                  <option value="C">96m = 8</option>
+                  <option value="D">m − 8 = 96</option>
+                </select>
+                <button type="button" class="btn" data-check="eq1-time-build">
+                  Check
+                </button>
+                <button
+                  type="button"
+                  class="btn ghost"
+                  data-hint="eq1-time-build"
+                >
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-eq1-time-build"></p>
+            </div>
+            <div class="q" data-q="eq1-time-solve">
+              <p class="lbl">Q1.4 — Solve it: how many hours is the drive?</p>
+              <div class="row">
+                <span class="eqtag">m =</span>
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-eq1-time-solve"
+                  data-ans="12"
+                  data-tol="0.001"
+                  data-why="8m = 96 → divide both sides by 8 → m = 12 hours"
+                  aria-label="Drive time in hours"
+                />
+                <span class="unit">hr</span>
+                <button type="button" class="btn" data-check="eq1-time-solve">
+                  Check
+                </button>
+                <button
+                  type="button"
+                  class="btn ghost"
+                  data-hint="eq1-time-solve"
+                >
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-eq1-time-solve"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                To solve, do the <strong>inverse</strong> to both sides.
+                <em>Plus 6</em> is undone by <em>minus 6</em>.
+                <em>Times 8</em> is undone by <em>divide by 8</em>. Always
+                check: put your answer back in and see if both sides match.
+              </p>
+              <span class="es"
+                >Español: Para resolver, usa la operación inversa en ambos
+                lados. Suma ↔ resta, multiplicación ↔ división. Comprueba tu
+                respuesta.</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 2 · PAYLOAD LIMIT (write + solve inequality) ══ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">
+          Task 2 · The Payload Limit
+          <span class="tag-shape">Write an inequality</span>
+        </h2>
+        <p>
+          Halcyon's robotic arm can lift rock samples, but the deck has a
+          <strong>maximum</strong> payload. The arm already carries fixed gear.
+          Write the inequality, then find the heaviest sample mass it can add.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 220"
+              role="img"
+              aria-label="Payload deck schematic. The sample deck holds at most 45 kilograms. Fixed instruments weigh 18 kilograms. The sample mass w must satisfy 18 plus w is less than or equal to 45."
+            >
+              <rect
+                x="8"
+                y="8"
+                width="344"
+                height="204"
+                rx="12"
+                fill="#0c1226"
+                stroke="rgba(120,92,255,.45)"
+              />
+              <text
+                x="20"
+                y="32"
+                fill="#b79cff"
+                font="700 12px ui-monospace, monospace"
+              >
+                PAYLOAD DECK · LOAD CELL
+              </text>
+
+              <!-- deck -->
+              <rect
+                x="40"
+                y="150"
+                width="280"
+                height="16"
+                rx="4"
+                fill="#3a4566"
+              />
+              <line
+                x1="180"
+                y1="166"
+                x2="180"
+                y2="196"
+                stroke="#7fd9f5"
+                stroke-width="3"
+              />
+              <rect
+                x="150"
+                y="196"
+                width="60"
+                height="10"
+                rx="3"
+                fill="#7fd9f5"
+              />
+
+              <!-- fixed gear box -->
+              <rect
+                x="70"
+                y="108"
+                width="90"
+                height="42"
+                rx="5"
+                fill="rgba(120,92,255,.22)"
+                stroke="#9b6cff"
+                stroke-width="2"
+              />
+              <text
+                x="115"
+                y="126"
+                text-anchor="middle"
+                fill="#e0d6ff"
+                font="700 12px ui-monospace, monospace"
+              >
+                instruments
+              </text>
+              <text
+                x="115"
+                y="142"
+                text-anchor="middle"
+                fill="#e0d6ff"
+                font="800 13px ui-monospace, monospace"
+              >
+                18 kg (fixed)
+              </text>
+
+              <!-- sample box -->
+              <rect
+                x="200"
+                y="100"
+                width="90"
+                height="50"
+                rx="5"
+                fill="rgba(255,138,76,.2)"
+                stroke="#ff8a4c"
+                stroke-width="2"
+                stroke-dasharray="6 4"
+              />
+              <text
+                x="245"
+                y="120"
+                text-anchor="middle"
+                fill="#ffd7bd"
+                font="700 12px ui-monospace, monospace"
+              >
+                rock sample
+              </text>
+              <text
+                x="245"
+                y="138"
+                text-anchor="middle"
+                fill="#ffd7bd"
+                font="800 14px ui-monospace, monospace"
+              >
+                w kg (add)
+              </text>
+
+              <!-- limit gauge -->
+              <text
+                x="180"
+                y="62"
+                text-anchor="middle"
+                fill="#ff6a3d"
+                font="800 16px ui-monospace, monospace"
+              >
+                MAX DECK LOAD = 45 kg
+              </text>
+              <line
+                x1="40"
+                y1="74"
+                x2="320"
+                y2="74"
+                stroke="#ff6a3d"
+                stroke-width="2"
+                stroke-dasharray="8 5"
+              />
+            </svg>
+            <div class="bp-cap">
+              <span>Load cell · deck schematic</span><span>units: kg</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="ineq2-write">
+              <p class="lbl">
+                Q2.1 — The total load (18 + w) must be
+                <strong>at most</strong> 45 kg. Pick the symbol:
+              </p>
+              <div class="row">
+                <span class="eqtag">18 + w</span>
+                <select
+                  id="q-ineq2-write"
+                  data-ans="LE"
+                  aria-label="Choose the inequality symbol"
+                >
+                  <option value="">?</option>
+                  <option value="GT">&gt;</option>
+                  <option value="LT">&lt;</option>
+                  <option value="GE">≥</option>
+                  <option value="LE">≤</option>
+                </select>
+                <span class="eqtag">45</span>
+                <button type="button" class="btn" data-check="ineq2-write">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="ineq2-write">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-ineq2-write"></p>
+            </div>
+            <div class="q" data-q="ineq2-solve">
+              <p class="lbl">
+                Q2.2 — Solve 18 + w ≤ 45. The sample mass <em>w</em> can be
+                <strong>at most</strong> how many kg?
+              </p>
+              <div class="row">
+                <span class="eqtag">w ≤</span>
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-ineq2-solve"
+                  data-ans="27"
+                  data-tol="0.001"
+                  data-why="18 + w ≤ 45 → subtract 18 from both sides → w ≤ 27 kg"
+                  aria-label="Maximum sample mass in kg"
+                />
+                <span class="unit">kg</span>
+                <button type="button" class="btn" data-check="ineq2-solve">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="ineq2-solve">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-ineq2-solve"></p>
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Is <em>w</em> = 27 allowed? Yes — "at most" means the boundary
+                <strong>is</strong> included, so we use ≤ (a closed circle on
+                the number line). If the rule said "less than 45" (strictly),
+                would 27 + 18 = 45 still be allowed? Explain the difference
+                between ≤ and &lt;.
+              </p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                "At most" = the largest allowed, including that number → use
+                <strong>≤</strong>. Solve the inequality the same way you solve
+                an equation: subtract 18 from both sides.
+              </p>
+              <span class="es"
+                >Español: "Como máximo" incluye ese número → usa ≤. Resuelve
+                igual que una ecuación: resta 18 en ambos lados.</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 3 · THERMAL SAFE ZONE (interactive grapher) ══ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">
+          Task 3 · The Thermal Safe Zone
+          <span class="tag-shape">Graph an inequality</span>
+        </h2>
+        <p>
+          Halcyon's battery needs the internal heater to reach a minimum level
+          before the rover can drive. The safe operating rule is
+          <span class="scale">t ≥ 35</span> (heater level must be
+          <strong>at least 35 units</strong>). Use the interactive grapher below
+          to plot the safe zone on the number line.
+        </p>
+        <div class="grid2">
+          <div>
+            <div class="q" data-q="ineq3-symbol">
+              <p class="lbl">
+                Q3.1 — "Heater level must be <strong>at least</strong> 35."
+                Which inequality is correct?
+              </p>
+              <div class="row">
+                <select
+                  id="q-ineq3-symbol"
+                  data-ans="GE"
+                  aria-label="Choose the temperature inequality"
+                >
+                  <option value="">choose…</option>
+                  <option value="GT">t &gt; 35</option>
+                  <option value="LT">t &lt; 35</option>
+                  <option value="GE">t ≥ 35</option>
+                  <option value="LE">t ≤ 35</option>
+                </select>
+                <button type="button" class="btn" data-check="ineq3-symbol">
+                  Check
+                </button>
+                <button
+                  type="button"
+                  class="btn ghost"
+                  data-hint="ineq3-symbol"
+                >
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-ineq3-symbol"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                "At least 35" means 35 is OK <em>and</em> anything bigger. That
+                is <strong>≥</strong> (closed circle ●), and you shade to the
+                <strong>right</strong> (toward bigger numbers).
+              </p>
+              <span class="es"
+                >Español: "Al menos 35" incluye 35 y más → ≥ (círculo lleno ●),
+                sombrea a la derecha.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Your graph defines the rover's <em>safe operating envelope</em>.
+                Name one temperature value that is on the boundary, and one that
+                is unsafe. Why does the engineer choose a closed circle here
+                instead of open?
+              </p>
+            </div>
+          </div>
+          <div>
+            <div class="nl-wrap">
+              <svg
+                id="nlSvg"
+                viewBox="0 0 360 150"
+                role="img"
+                aria-label="Interactive number line from 25 to 45. A draggable boundary dot marks the inequality, with shading showing the safe zone."
+              >
+                <!-- axis -->
+                <line
+                  id="nlAxis"
+                  x1="20"
+                  y1="80"
+                  x2="340"
+                  y2="80"
+                  stroke="#7fd9f5"
+                  stroke-width="3"
+                />
+                <!-- ticks + labels generated by JS into this group -->
+                <g id="nlTicks"></g>
+                <!-- shading -->
+                <rect
+                  id="nlShade"
+                  x="0"
+                  y="64"
+                  width="0"
+                  height="32"
+                  fill="rgba(51,214,166,.28)"
+                />
+                <!-- arrow for shading direction -->
+                <polygon id="nlArrow" points="0,0 0,0 0,0" fill="#33d6a6" />
+                <!-- boundary dot -->
+                <circle
+                  id="nlDot"
+                  cx="180"
+                  cy="80"
+                  r="11"
+                  fill="#0c1226"
+                  stroke="#33d6a6"
+                  stroke-width="4"
+                />
+                <text
+                  id="nlDotLabel"
+                  x="180"
+                  y="118"
+                  text-anchor="middle"
+                  fill="#ffd7bd"
+                  font="800 14px ui-monospace, monospace"
+                >
+                  35
+                </text>
+              </svg>
+              <div class="nl-controls">
+                <label for="nlValue">Boundary</label>
+                <input
+                  type="range"
+                  id="nlValue"
+                  min="25"
+                  max="45"
+                  step="1"
+                  value="35"
+                  aria-label="Boundary value on the number line"
+                />
+                <span class="nl-readout" id="nlReadout">t ≥ 35</span>
+              </div>
+              <div class="nl-controls">
+                <label for="nlCircle">Circle</label>
+                <select id="nlCircle" aria-label="Open or closed circle">
+                  <option value="closed">● closed (≥ or ≤)</option>
+                  <option value="open">○ open (&gt; or &lt;)</option>
+                </select>
+                <label for="nlDir">Shade</label>
+                <select id="nlDir" aria-label="Shade left or right">
+                  <option value="right">right ▶ (bigger)</option>
+                  <option value="left">◀ left (smaller)</option>
+                </select>
+              </div>
+            </div>
+            <div class="q" data-q="ineq3-graph" style="margin-top: 14px">
+              <p class="lbl">
+                Q3.2 — Set the boundary to <strong>35</strong>, a
+                <strong>closed</strong> circle, shaded <strong>right</strong> to
+                match <span class="scale">t ≥ 35</span>. Then check.
+              </p>
+              <div class="row">
+                <button type="button" class="btn" data-check="ineq3-graph">
+                  Check my graph
+                </button>
+                <button type="button" class="btn ghost" data-hint="ineq3-graph">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-ineq3-graph"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 4 · LAUNCH GO/NO-GO ══ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">
+          Task 4 · Launch Go / No-Go Poll
+          <span class="tag-shape">Equation + inequality</span>
+        </h2>
+        <p>
+          Final check before Halcyon moves out. The solar panels will
+          <strong>double</strong> the rover's stored charge, then the
+          instruments burn <strong>14 units</strong>. The flight rule says the
+          charge remaining after that must be
+          <strong>at least 40 units</strong>. Enter a starting battery, run the
+          model, and see if it is a GO.
+        </p>
+        <div class="grid2">
+          <div>
+            <p class="muted" style="margin-top: 0">
+              Charge model: <span class="scale">final = 2b − 14</span>, where
+              <em>b</em> = starting battery. Flight rule:
+              <span class="scale">2b − 14 ≥ 40</span>.
+            </p>
+            <table class="bt">
+              <tbody>
+                <tr>
+                  <td>Starting battery <em>b</em> (units)</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="battIn"
+                      placeholder="?"
+                      aria-label="Starting battery units"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Final charge = 2b − 14</td>
+                  <td><span class="scale" id="finalOut">—</span></td>
+                </tr>
+                <tr>
+                  <td>Flight rule: final ≥ 40</td>
+                  <td><span class="scale" id="ruleOut">—</span></td>
+                </tr>
+              </tbody>
+            </table>
+            <button
+              type="button"
+              class="btn"
+              id="pollBtn"
+              style="margin-top: 10px"
+            >
+              Run go / no-go poll
+            </button>
+            <p
+              class="fb"
+              id="verdict"
+              style="margin-top: 12px; font-size: 15px"
+            ></p>
+          </div>
+          <div>
+            <div class="q" data-q="launch-min">
+              <p class="lbl">
+                Q4 — Solve the flight rule
+                <span class="scale">2b − 14 ≥ 40</span> for the
+                <strong>minimum</strong> starting battery <em>b</em> that still
+                launches.
+              </p>
+              <div class="row">
+                <span class="eqtag">b ≥</span>
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-launch-min"
+                  data-ans="27"
+                  data-tol="0.001"
+                  data-why="2b − 14 ≥ 40 → add 14 → 2b ≥ 54 → divide by 2 → b ≥ 27 units"
+                  aria-label="Minimum starting battery"
+                />
+                <span class="unit">units</span>
+                <button type="button" class="btn" data-check="launch-min">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="launch-min">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-launch-min"></p>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Flight rule</span><br /><span class="v"
+                  >final ≥ 40</span
+                >
+              </div>
+              <div>
+                <span class="k">Status</span><br /><span
+                  class="v big"
+                  id="goStatus"
+                  >—</span
+                >
+              </div>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Use the simulator — type a number for <em>b</em> and press "Run
+                go / no-go poll." Try <em>b</em> = 27: final = 2(27) − 14 = 40,
+                and 40 ≥ 40 → <strong>GO</strong>. Try <em>b</em> = 26: final =
+                38, and 38 ≥ 40 → <strong>NO-GO</strong>. The rule 2b − 14 ≥ 40
+                is solved by adding 14 first, then dividing by 2.
+              </p>
+              <span class="es"
+                >Español: Prueba números en el simulador. b = 27 → final = 40 →
+                SÍ va. b = 26 → final = 38 → NO va. Suma 14, luego divide entre
+                2.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                This is a <em>two-step</em> inequality (add 14, then divide by
+                2) — a preview of Grade 7. Notice 27 is the
+                <strong>boundary</strong>: b = 27 gives exactly 40, which passes
+                because of ≥ (closed circle). What is the largest whole-number
+                battery that is a no-go? Explain using the number line.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SIGN-OFF ══ -->
+      <section class="card" aria-label="Flight engineer sign-off">
+        <h2>Flight Engineer's Sign-off</h2>
+        <p class="muted" style="margin-top: 0">
+          When every system checks out, submit your flight plan to mission
+          control. Enter your name in the field below, then press
+          <strong>Submit plan &amp; grade</strong> to save your score as a PDF
+          or DOC.
+        </p>
+        <button type="button" class="btn" id="submitBtn">
+          Submit plan &amp; grade
+        </button>
+        <div id="ntkit"></div>
+      </section>
+
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>Performance Rubric — Equations &amp; Inequalities (6.EE)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
             <thead>
               <tr>
-                <th scope="col">Score (out of 7)</th>
-                <th scope="col">Level</th>
-                <th scope="col">Description</th>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>6–7</td>
-                <td><strong>Exceeding</strong></td>
-                <td>Correctly places integers on the number line, finds opposites and absolute values, compares and orders integers, and interprets negative integers in context with no significant errors.</td>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>7 / 7</td>
+                <td>
+                  Models every situation as a correct one-step equation or
+                  inequality, solves with inverse operations, and graphs the
+                  safe zone accurately. Explains ≤ vs. &lt;, open vs. closed
+                  circles, and solves the two-step launch rule.
+                </td>
               </tr>
               <tr>
-                <td>4–5</td>
-                <td><strong>Meeting</strong></td>
-                <td>Demonstrates understanding of positive and negative integers; may have one error in comparison or ordering. Connects integers to real-world context.</td>
+                <td><strong>3 — Meets</strong></td>
+                <td>5–6 / 7</td>
+                <td>
+                  Writes and solves the equations and inequality correctly with
+                  at most one slip. Graphs the inequality and reaches a valid
+                  launch decision.
+                </td>
               </tr>
               <tr>
-                <td>2–3</td>
-                <td><strong>Approaching</strong></td>
-                <td>Understands what integers are but makes consistent errors in direction (e.g., confuses "farther left = greater") or with absolute value sign. Needs guided practice.</td>
+                <td><strong>2 — Approaching</strong></td>
+                <td>3–4 / 7</td>
+                <td>
+                  Solves simple equations but confuses inequality symbols (≥ vs.
+                  ≤) or open vs. closed circles, or mis-shades the number line.
+                  Partial launch check.
+                </td>
               </tr>
               <tr>
-                <td>0–1</td>
-                <td><strong>Beginning</strong></td>
-                <td>Difficulty placing integers on a number line or interpreting negative values. Requires direct instruction with concrete number-line tools.</td>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–2 / 7</td>
+                <td>
+                  Few correct models. Confuses inverse operations or cannot read
+                  a constraint as an inequality. Needs reteaching on solving and
+                  graphing.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
+    </div>
 
-      <!-- ============ ANSWER KEY (teacher only, hidden in print) ============ -->
-      <details class="answer-key" aria-label="Answer Key">
-        <summary>Answer Key (Teacher Use Only)</summary>
-        <div class="answer-key-body">
-          <ol>
-            <li><strong>Q1 — Submarine depth:</strong> −4. Students must drag or click the submarine to position −4 on the vertical number line.</li>
-            <li><strong>Q2 — Opposite of 7:</strong> −7. Reflection across 0 on the number line; same distance, opposite direction.</li>
-            <li><strong>Q3 — Absolute value |−9|:</strong> 9. Distance from 0 is always non-negative; |−9| = 9.</li>
-            <li><strong>Q4 — Read the dot:</strong> −3. The dot is placed at x = 122 px. Tick formula: x = 30 + (n+5)×46, so n = (122−30)/46 − 5 = 2 − 5 = −3.</li>
-            <li><strong>Q5 — Compare −2 ___ −8:</strong> &gt; (greater than). On the number line −2 is to the right of −8, so −2 &gt; −8.</li>
-            <li><strong>Q6 — Order 3, −5, 0, −1:</strong> −5, −1, 0, 3. Ascending order from left to right on a number line.</li>
-            <li><strong>Q7 — 30 meters below sea level:</strong> −30. Below sea level is negative; "30 meters below" → −30.</li>
-          </ol>
-        </div>
-      </details>
-
-      <!-- ============ REFLECTION ============ -->
-      <section class="reflection-section" aria-labelledby="reflection-heading">
-        <h2 id="reflection-heading">Reflection</h2>
-        <div class="deliverable">
-          <strong>Deliverable:</strong> Complete all 7 questions and the reflection below. Press <em>Check My Work</em> to save your score. Your teacher will collect your score and this reflection.
-        </div>
-        <label for="reflectionInput">
-          In your own words: explain what a negative integer means and give ONE real-world example (other than the submarine). Write at least 2 sentences.
-        </label>
-        <textarea
-          id="reflectionInput"
-          class="reflection-input"
-          aria-label="Reflection: explain what a negative integer means in your own words"
-          placeholder="A negative integer means… For example…"
-        ></textarea>
-      </section>
-
-    </div><!-- /.wrap -->
-
-    <script src="/assets/nt-activity-kit.js"></script>
     <script>
       (function () {
         "use strict";
 
-        // ---- Q4 number line ticks (-5..5) ----
-        var ticks = document.getElementById("nlTicks");
-        for (var n = -5; n <= 5; n++) {
-          var x = 30 + (n + 5) * 46;
-          var ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          ln.setAttribute("class", "nl-tick");
-          ln.setAttribute("x1", x);
-          ln.setAttribute("y1", 38);
-          ln.setAttribute("x2", x);
-          ln.setAttribute("y2", 52);
-          ticks.appendChild(ln);
-          var tx = document.createElementNS("http://www.w3.org/2000/svg", "text");
-          tx.setAttribute("class", "lbl");
-          tx.setAttribute("x", x);
-          tx.setAttribute("y", 72);
-          tx.setAttribute("text-anchor", "middle");
-          tx.textContent = n < 0 ? "−" + Math.abs(n) : String(n);
-          ticks.appendChild(tx);
+        function num(s) {
+          return parseFloat(String(s == null ? "" : s).replace(/[$,\s]/g, ""));
+        }
+        function live(msg) {
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) fb.textContent = msg;
         }
 
-        // ---- Q1 submarine vertical number line ----
-        var MIN = -6, MAX = 6;
-        var nline = document.getElementById("nline");
-        var sub = document.getElementById("sub");
-        var depthVal = document.getElementById("depthVal");
-        var q1feedback = document.getElementById("q1feedback");
-        var depth = 0;
-        var PAD = 24;
+        /* ── Auto-graded problems (7 systems) ── */
+        var problems = [
+          {
+            id: "eq1-build",
+            type: "select",
+            ans: "A",
+            skill: "Write a one-step equation",
+            prompt: "Drive plan: build x + 6 = 20",
+          },
+          {
+            id: "eq1-solve",
+            type: "num",
+            ans: "14",
+            skill: "Solve x + p = q",
+            prompt: "Solve x + 6 = 20",
+          },
+          {
+            id: "eq1-time-build",
+            type: "select",
+            ans: "A",
+            skill: "Write a one-step equation",
+            prompt: "Drive time: build 8m = 96",
+          },
+          {
+            id: "eq1-time-solve",
+            type: "num",
+            ans: "12",
+            skill: "Solve px = q",
+            prompt: "Solve 8m = 96",
+          },
+          {
+            id: "ineq2-write",
+            type: "select",
+            ans: "LE",
+            skill: "Write an inequality",
+            prompt: "Payload: 18 + w ≤ 45",
+          },
+          {
+            id: "ineq2-solve",
+            type: "num",
+            ans: "27",
+            skill: "Solve an inequality",
+            prompt: "Solve 18 + w ≤ 45 → w ≤ 27",
+          },
+          {
+            id: "ineq3-symbol",
+            type: "select",
+            ans: "GE",
+            skill: "Write an inequality",
+            prompt: "Thermal: t ≥ 35",
+          },
+          {
+            id: "ineq3-graph",
+            type: "graph",
+            ans: "graph",
+            skill: "Graph an inequality",
+            prompt: "Graph t ≥ 35: boundary 35, closed, shade right",
+          },
+          {
+            id: "launch-min",
+            type: "num",
+            ans: "27",
+            skill: "Solve a launch inequality",
+            prompt: "Solve 2b − 14 ≥ 40 → b ≥ 27",
+          },
+        ];
+        /* NOTE: 9 graded items but progress is keyed to 7 "systems" below. */
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {};
 
-        // build tick labels
-        for (var v = MAX; v >= MIN; v--) {
-          var t = document.createElement("div");
-          t.className = "tick" + (v === 0 ? " zero" : "");
-          t.style.top = valueToTop(v) + "px";
-          var lab = document.createElement("span");
-          lab.className = "tlabel";
-          lab.textContent = v < 0 ? "−" + Math.abs(v) : String(v);
-          t.appendChild(lab);
-          nline.appendChild(t);
+        /* The 7 mission "systems" shown in the progress bar. A system clears
+           when its key check(s) are correct. */
+        var systems = [
+          ["eq1-build", "eq1-solve"],
+          ["eq1-time-build", "eq1-time-solve"],
+          ["ineq2-write"],
+          ["ineq2-solve"],
+          ["ineq3-symbol"],
+          ["ineq3-graph"],
+          ["launch-min"],
+        ];
+
+        function inputFor(id) {
+          return document.getElementById("q-" + id);
         }
 
-        function trackHeight() {
-          return nline.clientHeight - PAD * 2;
+        function isCorrect(id) {
+          var p = pById[id];
+          if (!p) return false;
+          if (p.type === "graph") return graphCorrect();
+          var el = inputFor(id);
+          if (!el) return false;
+          if (p.type === "select") {
+            return el.value === p.ans;
+          }
+          var got = num(el.value);
+          var want = num(p.ans);
+          var tol = num(el.getAttribute("data-tol")) || 0.001;
+          return !isNaN(got) && Math.abs(got - want) <= tol;
         }
-        function valueToTop(val) {
-          var frac = (MAX - val) / (MAX - MIN);
-          return PAD + frac * trackHeight();
+
+        function paint() {
+          var cleared = 0;
+          systems.forEach(function (sys) {
+            if (
+              sys.every(function (id) {
+                return correct[id];
+              })
+            )
+              cleared++;
+          });
+          document.getElementById("pcount").textContent = cleared;
+          document.getElementById("pbar").style.width =
+            (cleared / systems.length) * 100 + "%";
+          document
+            .getElementById("progBar")
+            .setAttribute("aria-valuenow", cleared);
         }
-        function setDepth(val) {
-          val = Math.max(MIN, Math.min(MAX, Math.round(val)));
-          depth = val;
-          sub.style.top = valueToTop(val) + "px";
-          depthVal.textContent = val;
-          sub.setAttribute("aria-valuenow", String(val));
-          sub.setAttribute(
-            "aria-valuetext",
-            val === 0
-              ? "0, sea level"
-              : val > 0
-                ? val + ", above sea level"
-                : Math.abs(val) + " below sea level"
-          );
-          // live feedback
-          if (val === -4) {
-            q1feedback.textContent = "Target reached! The submarine is at −4.";
-          } else if (val !== 0) {
-            q1feedback.textContent = "Current depth: " + val + ". Target is −4.";
+
+        function check(id) {
+          var p = pById[id];
+          if (!p) return;
+          var el = inputFor(id);
+          var fb = document.getElementById("fb-" + id);
+          var ok = isCorrect(id);
+          if (el && p.type !== "graph") {
+            el.classList.toggle("ok", ok);
+            el.classList.toggle("bad", !ok);
+          }
+          if (fb) {
+            fb.className = "fb " + (ok ? "ok" : "bad");
+            var why = el ? el.getAttribute("data-why") : "";
+            if (p.type === "graph")
+              why = "Boundary 35, closed circle ●, shaded right → t ≥ 35.";
+            fb.textContent = ok
+              ? "✓ Cleared — " + (why || "")
+              : "✗ Not yet. Re-read the console, model it, then solve step by step.";
+          }
+          correct[id] = ok;
+          live(ok ? "System cleared." : "Not correct yet, try again.");
+          paint();
+        }
+
+        /* Hint text per problem */
+        var hints = {
+          "eq1-build":
+            "driven + remaining = total, so 6 + x = 20, i.e. x + 6 = 20.",
+          "eq1-solve": "x + 6 = 20 → undo +6 by subtracting 6 from both sides.",
+          "eq1-time-build": "speed × time = distance, so 8 × m = 96.",
+          "eq1-time-solve": "8m = 96 → undo ×8 by dividing both sides by 8.",
+          "ineq2-write": "'At most 45' includes 45, so use ≤.",
+          "ineq2-solve": "18 + w ≤ 45 → subtract 18 from both sides.",
+          "ineq3-symbol": "'At least 35' includes 35 and bigger → ≥.",
+          "ineq3-graph": "Set boundary 35, choose closed ●, shade right.",
+          "launch-min": "2b − 14 ≥ 40 → add 14 → 2b ≥ 54 → divide by 2.",
+        };
+
+        /* Event delegation for Check / Hint buttons */
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var c = e.target.closest("[data-check]");
+          if (c) {
+            check(c.getAttribute("data-check"));
+            return;
+          }
+          var h = e.target.closest("[data-hint]");
+          if (h) {
+            var id = h.getAttribute("data-hint");
+            var fb = document.getElementById("fb-" + id);
+            if (fb) {
+              fb.className = "fb";
+              fb.textContent = "Hint: " + (hints[id] || "");
+            }
+          }
+        });
+        /* Enter key on text inputs */
+        problems.forEach(function (p) {
+          if (p.type === "num") {
+            var inp = inputFor(p.id);
+            if (inp)
+              inp.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  check(p.id);
+                }
+              });
+          }
+        });
+
+        /* ── Task 3: interactive number-line grapher ── */
+        var NL = { min: 25, max: 45, x0: 28, x1: 332, y: 80 };
+        function xFor(v) {
+          return NL.x0 + ((v - NL.min) / (NL.max - NL.min)) * (NL.x1 - NL.x0);
+        }
+        var nlValue = document.getElementById("nlValue");
+        var nlCircle = document.getElementById("nlCircle");
+        var nlDir = document.getElementById("nlDir");
+        var nlDot = document.getElementById("nlDot");
+        var nlDotLabel = document.getElementById("nlDotLabel");
+        var nlShade = document.getElementById("nlShade");
+        var nlArrow = document.getElementById("nlArrow");
+        var nlReadout = document.getElementById("nlReadout");
+        var nlTicks = document.getElementById("nlTicks");
+
+        /* Build ticks every 5 units */
+        (function buildTicks() {
+          var svgns = "http://www.w3.org/2000/svg";
+          for (var v = NL.min; v <= NL.max; v += 5) {
+            var x = xFor(v);
+            var tick = document.createElementNS(svgns, "line");
+            tick.setAttribute("x1", x);
+            tick.setAttribute("x2", x);
+            tick.setAttribute("y1", NL.y - 8);
+            tick.setAttribute("y2", NL.y + 8);
+            tick.setAttribute("stroke", "#5b6788");
+            tick.setAttribute("stroke-width", "2");
+            nlTicks.appendChild(tick);
+            var lbl = document.createElementNS(svgns, "text");
+            lbl.setAttribute("x", x);
+            lbl.setAttribute("y", NL.y + 28);
+            lbl.setAttribute("text-anchor", "middle");
+            lbl.setAttribute("fill", "#9fb3d8");
+            lbl.setAttribute("font", "700 12px ui-monospace, monospace");
+            lbl.textContent = v;
+            nlTicks.appendChild(lbl);
+          }
+        })();
+
+        function symbolFor() {
+          var closed = nlCircle.value === "closed";
+          var right = nlDir.value === "right";
+          if (right) return closed ? "≥" : ">";
+          return closed ? "≤" : "<";
+        }
+
+        function renderNL() {
+          var v = parseInt(nlValue.value, 10);
+          var x = xFor(v);
+          nlDot.setAttribute("cx", x);
+          nlDotLabel.setAttribute("x", x);
+          nlDotLabel.textContent = v;
+          var closed = nlCircle.value === "closed";
+          nlDot.setAttribute("fill", closed ? "#33d6a6" : "#0c1226");
+          var right = nlDir.value === "right";
+          if (right) {
+            nlShade.setAttribute("x", x);
+            nlShade.setAttribute("width", Math.max(0, NL.x1 + 6 - x));
+            nlArrow.setAttribute(
+              "points",
+              NL.x1 +
+                6 +
+                "," +
+                (NL.y - 9) +
+                " " +
+                (NL.x1 + 18) +
+                "," +
+                NL.y +
+                " " +
+                (NL.x1 + 6) +
+                "," +
+                (NL.y + 9),
+            );
           } else {
-            q1feedback.textContent = "";
+            nlShade.setAttribute("x", NL.x0 - 6);
+            nlShade.setAttribute("width", Math.max(0, x - (NL.x0 - 6)));
+            nlArrow.setAttribute(
+              "points",
+              NL.x0 -
+                6 +
+                "," +
+                (NL.y - 9) +
+                " " +
+                (NL.x0 - 18) +
+                "," +
+                NL.y +
+                " " +
+                (NL.x0 - 6) +
+                "," +
+                (NL.y + 9),
+            );
           }
-          updateProgress();
-        }
-        function topToValue(topPx) {
-          var frac = (topPx - PAD) / trackHeight();
-          return MAX - frac * (MAX - MIN);
+          nlReadout.textContent = "t " + symbolFor() + " " + v;
         }
 
-        function placeSub() { setDepth(depth); }
-        if (document.readyState === "complete") placeSub();
-        else window.addEventListener("load", placeSub);
-        window.addEventListener("resize", placeSub);
+        function graphCorrect() {
+          return (
+            parseInt(nlValue.value, 10) === 35 &&
+            nlCircle.value === "closed" &&
+            nlDir.value === "right"
+          );
+        }
 
-        // drag
+        [nlValue, nlCircle, nlDir].forEach(function (el) {
+          el.addEventListener("input", renderNL);
+          el.addEventListener("change", renderNL);
+        });
+
+        /* Drag the boundary dot directly */
         var dragging = false;
-        function pointerToDepth(e) {
-          var rect = nline.getBoundingClientRect();
-          var topPx = e.clientY - rect.top;
-          setDepth(topToValue(topPx));
+        var svg = document.getElementById("nlSvg");
+        function svgXToValue(clientX) {
+          var rect = svg.getBoundingClientRect();
+          var px =
+            ((clientX - rect.left) / rect.width) * 360; /* viewBox width */
+          var v = NL.min + ((px - NL.x0) / (NL.x1 - NL.x0)) * (NL.max - NL.min);
+          v = Math.round(v);
+          return Math.max(NL.min, Math.min(NL.max, v));
         }
-        sub.addEventListener("pointerdown", function (e) {
-          e.preventDefault();
+        function startDrag(e) {
           dragging = true;
-          if (sub.setPointerCapture) sub.setPointerCapture(e.pointerId);
-        });
-        nline.addEventListener("pointermove", function (e) {
-          if (dragging) pointerToDepth(e);
-        });
-        nline.addEventListener("pointerdown", function (e) {
-          if (e.target === sub) return;
-          pointerToDepth(e);
-        });
-        window.addEventListener("pointerup", function () { dragging = false; });
+          e.preventDefault();
+        }
+        function moveDrag(e) {
+          if (!dragging) return;
+          var cx = e.touches ? e.touches[0].clientX : e.clientX;
+          nlValue.value = svgXToValue(cx);
+          renderNL();
+        }
+        function endDrag() {
+          dragging = false;
+        }
+        nlDot.addEventListener("mousedown", startDrag);
+        nlDot.addEventListener("touchstart", startDrag, { passive: false });
+        window.addEventListener("mousemove", moveDrag);
+        window.addEventListener("touchmove", moveDrag, { passive: false });
+        window.addEventListener("mouseup", endDrag);
+        window.addEventListener("touchend", endDrag);
+        renderNL();
 
-        // keyboard
-        sub.addEventListener("keydown", function (e) {
-          if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") {
-            e.preventDefault(); setDepth(depth + 1);
-          } else if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") {
-            e.preventDefault(); setDepth(depth - 1);
-          } else if (e.key === "Home") {
-            e.preventDefault(); setDepth(MAX);
-          } else if (e.key === "End") {
-            e.preventDefault(); setDepth(MIN);
+        /* ── Task 4: launch go/no-go ── */
+        var battIn = document.getElementById("battIn");
+        var finalOut = document.getElementById("finalOut");
+        var ruleOut = document.getElementById("ruleOut");
+        var goStatus = document.getElementById("goStatus");
+        var verdict = document.getElementById("verdict");
+
+        function poll() {
+          var b = num(battIn.value);
+          if (isNaN(b)) {
+            finalOut.textContent = "—";
+            ruleOut.textContent = "—";
+            goStatus.textContent = "—";
+            goStatus.style.color = "";
+            verdict.className = "fb";
+            verdict.textContent =
+              "Enter a starting battery, then run the poll.";
+            return;
           }
-        });
-        document.getElementById("upBtn").addEventListener("click", function () { setDepth(depth + 1); });
-        document.getElementById("downBtn").addEventListener("click", function () { setDepth(depth - 1); });
+          var fin = 2 * b - 14;
+          finalOut.textContent = "2(" + b + ") − 14 = " + fin;
+          var go = fin >= 40;
+          ruleOut.textContent = fin + " ≥ 40 is " + (go ? "TRUE" : "FALSE");
+          goStatus.textContent = go ? "GO" : "NO-GO";
+          goStatus.style.color = go ? "#0f9d6b" : "#d23f54";
+          verdict.className = "fb " + (go ? "ok" : "bad");
+          verdict.textContent = go
+            ? "✓ GO for launch — final charge " +
+              fin +
+              " meets the ≥ 40 flight rule."
+            : "✗ NO-GO — final charge " +
+              fin +
+              " is below 40. Increase starting battery to at least 27.";
+          live(go ? "Go for launch." : "No-go, below the flight rule.");
+        }
+        battIn.addEventListener("input", poll);
+        document.getElementById("pollBtn").addEventListener("click", poll);
 
-        // ---- Progress ----
-        var fields = ["a2", "a3", "a4", "a5", "a6", "a7"];
-        function filledCount() {
-          var n = depth !== 0 ? 1 : 0;
-          fields.forEach(function (id) {
-            var el = document.getElementById(id);
-            if (el && String(el.value).trim() !== "") n++;
-          });
-          return n;
-        }
-        function updateProgress() {
-          var n = filledCount();
-          document.getElementById("progTxt").textContent = n + " of 7 answered";
-          document.getElementById("progFill").style.width = (n / 7) * 100 + "%";
-        }
-        fields.forEach(function (id) {
-          var el = document.getElementById(id);
-          if (el) {
-            el.addEventListener("input", updateProgress);
-            el.addEventListener("change", updateProgress);
+        /* ── Mount NTKit + grade on submit ── */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+
+        function studentAnswerFor(p) {
+          if (p.type === "graph") {
+            return (
+              "boundary " +
+              nlValue.value +
+              ", " +
+              nlCircle.value +
+              ", shade " +
+              nlDir.value
+            );
           }
-        });
-        updateProgress();
-
-        // ---- Order answer normalizer (Q6) ----
-        function normOrder(str) {
-          return String(str || "")
-            .replace(/−/g, "-")
-            .replace(/[^\d,\-\s]/g, "")
-            .split(/[\s,]+/)
-            .filter(function (s) { return s !== ""; })
-            .join(",");
+          var el = inputFor(p.id);
+          if (!el) return "";
+          if (p.type === "select") {
+            var opt = el.options[el.selectedIndex];
+            return opt ? opt.text : el.value;
+          }
+          var n = num(el.value);
+          return isNaN(n) ? "" : String(n);
+        }
+        function correctAnswerLabel(p) {
+          if (p.type === "graph") return "boundary 35, closed, shade right";
+          if (p.type === "select") {
+            var el = inputFor(p.id);
+            if (el) {
+              for (var i = 0; i < el.options.length; i++) {
+                if (el.options[i].value === p.ans) return el.options[i].text;
+              }
+            }
+            return p.ans;
+          }
+          return p.ans;
         }
 
-        // ---- Grade ----
-        NTKit.mount("#ntkit");
-        document.getElementById("submitBtn").addEventListener("click", function () {
-          var orderStudent = normOrder(document.getElementById("a6").value);
-          NTKit.grade({
-            activityId: "architect-unit-7",
-            activityTitle: "Unit 7 · Submarine Architect — Integers & the Number Line",
-            standard: "6.NS.C.5-7",
-            items: [
-              {
-                prompt: "Dive the submarine to depth −4",
-                studentAnswer: String(depth),
-                correctAnswer: "-4",
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", function () {
+            var items = problems.map(function (p) {
+              return {
+                prompt: p.prompt,
+                studentAnswer: studentAnswerFor(p),
+                correctAnswer: correctAnswerLabel(p),
                 points: 1,
-                skill: "Number line position",
-              },
-              {
-                prompt: "Opposite of 7",
-                studentAnswer: document.getElementById("a2").value,
-                correctAnswer: "-7",
-                points: 1,
-                skill: "Opposites",
-              },
-              {
-                prompt: "Absolute value |−9|",
-                studentAnswer: document.getElementById("a3").value,
-                correctAnswer: "9",
-                points: 1,
-                skill: "Absolute value",
-              },
-              {
-                prompt: "Read the point on the number line",
-                studentAnswer: document.getElementById("a4").value,
-                correctAnswer: "-3",
-                points: 1,
-                skill: "Reading the number line",
-              },
-              {
-                prompt: "Compare −2 ___ −8",
-                studentAnswer: document.getElementById("a5").value,
-                correctAnswer: ">",
-                points: 1,
-                skill: "Comparing integers",
-              },
-              {
-                prompt: "Order 3, −5, 0, −1 from least to greatest",
-                studentAnswer: orderStudent,
-                correctAnswer: "-5,-1,0,3",
-                points: 1,
-                skill: "Ordering integers",
-              },
-              {
-                prompt: "Integer for 30 meters below sea level",
-                studentAnswer: document.getElementById("a7").value,
-                correctAnswer: "-30",
-                points: 1,
-                skill: "Integers in context",
-              },
-            ],
+                skill: p.skill,
+              };
+            });
+            if (window.NTKit && NTKit.grade) {
+              NTKit.grade({
+                activityId: "architect-unit-7",
+                activityTitle:
+                  "Unit 7 · Math Architect — Rover Mission Control (Equations & Inequalities)",
+                standard: "6.EE.B.5-B.8",
+                items: items,
+              });
+              var panel = document.getElementById("ntkit");
+              if (panel && panel.scrollIntoView)
+                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              var n = items.filter(function (x) {
+                return (
+                  String(x.studentAnswer).trim() ===
+                  String(x.correctAnswer).trim()
+                );
+              }).length;
+              alert(
+                "Plan submitted: " +
+                  n +
+                  " of " +
+                  items.length +
+                  " systems correct.",
+              );
+            }
           });
-          document.getElementById("ntkit").scrollIntoView({ behavior: "smooth", block: "start" });
-        });
+
+        paint();
+        poll();
       })();
     </script>
   </body>

@@ -3,993 +3,1611 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unit 10 HyperDoc — Volume of Prisms (6.G.A.2) | Neft Teacher</title>
-    <link rel="icon" href="/assets/favicon.svg" />
+    <title>Unit 10 HyperDoc — Volume &amp; Surface Area | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Grade 6 interactive HyperDoc for Unit 10: volume of right rectangular prisms with fractional edges, nets, and surface area of prisms and pyramids (6.G.A.2 and 6.G.A.4)."
+    />
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/neft-theme.js" defer></script>
-    <script src="/assets/nt-activity-kit.js"></script>
+    <script defer src="/assets/neft-theme.js"></script>
+    <script defer src="/assets/nt-activity-kit.js"></script>
     <style>
-      /* ── Base ── */
-      body {
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        margin: 0;
-        line-height: 1.6;
-        font-size: 19px;
-      }
-      .wrap {
-        max-width: 860px;
+      /* ---- Unit 10 HyperDoc: scoped styles layered on the shared Neft theme ---- */
+      .u10-wrap {
+        max-width: 920px;
         margin: 0 auto;
-        padding: 24px 20px 80px;
+        padding: 0 18px 64px;
       }
 
-      /* ── Hero ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 24px 26px;
-        margin-bottom: 22px;
+      .u10-hero {
+        position: relative;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background:
+          radial-gradient(
+            900px 240px at 12% -10%,
+            rgba(124, 58, 237, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            700px 220px at 95% 0%,
+            rgba(14, 165, 233, 0.16),
+            transparent 55%
+          ),
+          var(--nt-surface, #fff);
+        border-radius: 22px;
+        padding: 26px 26px 22px;
+        margin: 18px 0 22px;
+        overflow: hidden;
       }
-      .badge {
-        display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
+      .u10-hero h1 {
+        margin: 6px 0 4px;
+        font-size: clamp(1.5rem, 1.1rem + 2vw, 2.2rem);
+        line-height: 1.15;
+      }
+      .u10-hero .u10-sub {
+        color: var(--nt-muted, #5b6472);
+        margin: 0 0 12px;
+        font-size: 1.02rem;
+      }
+      .u10-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         font-weight: 700;
-        padding: 4px 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        color: var(--nt-accent, #2563eb);
+        background: color-mix(
+          in srgb,
+          var(--nt-accent, #2563eb) 12%,
+          transparent
+        );
         border-radius: 999px;
-        font-size: 15px;
-        letter-spacing: 0.3px;
+        padding: 5px 12px;
       }
-      h1 {
-        font-size: 34px;
-        margin: 12px 0 6px;
-        line-height: 1.2;
-        color: var(--nt-text);
+      .u10-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
       }
-      h2 {
-        font-size: 26px;
-        margin: 0 0 10px;
-        color: var(--nt-text);
+      .u10-chip {
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--nt-bg, #f4f6fb);
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 4px 11px;
       }
-      h3 {
-        font-size: 21px;
-        margin: 18px 0 6px;
-        color: var(--nt-text);
-      }
-      .lead {
-        color: var(--nt-muted);
-        font-size: 20px;
-        margin: 6px 0 0;
-      }
-      p { margin: 10px 0; }
 
-      /* ── Learning Target ── */
-      .learning-target {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 0 0 20px;
+      .u10-toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 8px;
       }
-      .learning-target h2 {
-        font-size: 20px;
-        margin: 0 0 10px;
-        color: var(--nt-accent);
+      .u10-toc a {
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 999px;
+        padding: 6px 13px;
+        background: var(--nt-surface, #fff);
       }
-      .lt-grid {
+      .u10-toc a:hover {
+        border-color: var(--nt-accent, #2563eb);
+        color: var(--nt-accent, #2563eb);
+      }
+      .u10-toc a:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 2px;
+      }
+
+      .u10-step {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        border-radius: 18px;
+        padding: 22px 22px 20px;
+        margin: 16px 0;
+      }
+      .u10-step > h2 {
+        margin: 0 0 4px;
+        font-size: 1.28rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .u10-badge {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: inline-grid;
+        place-items: center;
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .b1 {
+        background: #7c3aed;
+      }
+      .b2 {
+        background: #0ea5e9;
+      }
+      .b3 {
+        background: #0d9488;
+      }
+      .b4 {
+        background: #2563eb;
+      }
+      .b5 {
+        background: #db2777;
+      }
+      .u10-step .u10-phase {
+        color: var(--nt-muted, #5b6472);
+        font-weight: 700;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 10px 40px;
+      }
+
+      .u10-card {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin: 12px 0;
+        background: var(--nt-bg, #f7f9fc);
+      }
+      .u10-card h3 {
+        margin: 0 0 6px;
+        font-size: 1.02rem;
+      }
+
+      .u10-grid2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px 18px;
-        margin-top: 10px;
-        font-size: 17px;
+        gap: 14px;
       }
-      .lt-grid div { display: flex; gap: 6px; }
-      @media (max-width: 540px) { .lt-grid { grid-template-columns: 1fr; } }
-
-      /* ── Cards ── */
-      section.card {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 22px 24px;
-        margin-bottom: 24px;
-      }
-      .step-tag {
-        display: inline-block;
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        color: var(--nt-accent);
-        font-weight: 800;
-        font-size: 15px;
-        padding: 3px 12px;
-        border-radius: 999px;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .step-label {
-        display: inline-block;
-        font-size: 14px;
-        font-weight: 800;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        color: var(--nt-accent);
-        margin: 0 0 4px;
+      @media (max-width: 640px) {
+        .u10-grid2 {
+          grid-template-columns: 1fr;
+        }
       }
 
-      /* ── Teacher Notes ── */
-      details.teacher-notes {
-        border: 2px dashed var(--nt-border);
-        border-radius: 14px;
-        margin: 0 0 20px;
-        background: var(--nt-surface);
-      }
-      details.teacher-notes summary {
-        cursor: pointer;
-        font-weight: 800;
-        font-size: 15px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--nt-accent);
-        padding: 14px 18px;
-        list-style: none;
-        user-select: none;
-      }
-      details.teacher-notes summary::-webkit-details-marker { display: none; }
-      details.teacher-notes summary::before { content: "▶ "; }
-      details.teacher-notes[open] summary::before { content: "▼ "; }
-      .tn-body {
-        padding: 4px 18px 18px;
-        font-size: 17px;
-        border-top: 2px dashed var(--nt-border);
-      }
-      .tn-body h3 { font-size: 17px; margin: 14px 0 4px; color: var(--nt-accent); }
-      .tn-body ul { margin: 4px 0 0 18px; }
-      .tn-body li { margin-bottom: 4px; }
-
-      /* ── Do This ── */
-      .do-this {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 8px;
-        padding: 10px 16px;
-        margin: 14px 0;
-        font-weight: 600;
-      }
-
-      /* ── Link buttons ── */
-      a.link-btn {
-        display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        text-decoration: none;
-        font-weight: 700;
-        padding: 12px 18px;
-        border-radius: 10px;
-        margin: 6px 8px 6px 0;
-        border: 2px solid var(--nt-accent);
-      }
-      a.link-btn:hover { filter: brightness(1.08); }
-      a.link-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
-      a { color: var(--nt-accent); }
-
-      /* ── Formula / Table ── */
-      .formula {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 12px;
-        padding: 16px;
-        text-align: center;
-        font-size: 24px;
-        font-weight: 800;
-        margin: 14px 0;
-      }
-      .vocab {
-        list-style: none;
-        padding: 0;
-        margin: 8px 0;
-      }
-      .vocab li {
-        background: var(--nt-bg);
-        border: 1px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 10px 14px;
-        margin-bottom: 8px;
-      }
-      .vocab b { color: var(--nt-accent); }
-      table.ex {
-        border-collapse: collapse;
-        margin: 12px 0;
-        width: 100%;
-      }
-      table.ex td {
-        border: 2px solid var(--nt-border);
-        padding: 8px 16px;
-        font-size: 19px;
-      }
-
-      /* ── Fraction display ── */
-      .frac {
-        display: inline-flex;
+      .u10-fig {
+        display: flex;
         flex-direction: column;
         align-items: center;
-        vertical-align: middle;
-        font-size: 0.9em;
-        line-height: 1.1;
+        gap: 6px;
       }
-      .frac span { border-top: 2px solid var(--nt-text); padding-top: 2px; }
+      .u10-fig svg {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      .u10-cap {
+        font-size: 0.82rem;
+        color: var(--nt-muted, #5b6472);
+        text-align: center;
+      }
 
-      /* ── Self-check ── */
-      .selfcheck-item {
-        margin: 0 0 18px;
-        padding: 14px 16px;
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
+      .u10-formula {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        background: var(--nt-text, #1c2330);
+        color: var(--nt-surface, #fff);
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: inline-block;
+        font-size: 1rem;
+      }
+
+      details.u10-level {
+        border: 1px dashed var(--nt-border, #c3cad6);
         border-radius: 12px;
+        padding: 4px 14px;
+        margin: 12px 0;
+        background: var(--nt-surface, #fff);
       }
-      .selfcheck-item p { margin: 0 0 10px; font-weight: 600; }
-      .sc-choices { list-style: none; padding: 0; margin: 0 0 10px; }
-      .sc-choices li { margin: 4px 0; }
-      .sc-choices label { display: flex; gap: 8px; align-items: center; cursor: pointer; font-weight: 500; }
-      .sc-btn {
-        font-size: 17px;
-        font-weight: 700;
+      details.u10-level > summary {
         cursor: pointer;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 9px 20px;
+        font-weight: 700;
+        padding: 8px 0;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-      .sc-btn:hover { filter: brightness(1.06); }
-      .sc-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
-      .sc-feedback {
-        margin-top: 10px;
-        padding: 10px 14px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 17px;
+      details.u10-level > summary::-webkit-details-marker {
         display: none;
       }
-      .sc-feedback.correct {
-        background: #d4edda;
-        color: #1a5e2b;
-        border: 2px solid #68c083;
-        display: block;
+      details.u10-level > summary::before {
+        content: "▸";
+        transition: transform 0.15s;
+        color: var(--nt-accent, #2563eb);
       }
-      .sc-feedback.wrong {
-        background: #fde8e8;
-        color: #7a1a1a;
-        border: 2px solid #e07b7b;
-        display: block;
+      details.u10-level[open] > summary::before {
+        transform: rotate(90deg);
+      }
+      .u10-tag {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        color: #fff;
+      }
+      .u10-tag.l1 {
+        background: #0d9488;
+      }
+      .u10-tag.l2 {
+        background: #7c3aed;
+      }
+      .u10-es {
+        color: var(--nt-muted, #5b6472);
+        font-style: italic;
       }
 
-      /* ── Apply questions ── */
-      .q {
-        margin: 22px 0;
+      .u10-q {
+        margin: 14px 0;
       }
-      .q label {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 20px;
+      .u10-q p.u10-prompt {
+        font-weight: 600;
+        margin: 0 0 8px;
       }
-      .q .hint {
-        font-weight: 400;
-        color: var(--nt-muted);
-        font-size: 17px;
-      }
-      input[type="text"],
-      textarea {
-        width: 100%;
-        box-sizing: border-box;
-        font-size: 19px;
-        padding: 12px 14px;
-        border: 2px solid var(--nt-border);
+      .u10-q input[type="text"],
+      .u10-q input[type="number"] {
+        font: inherit;
+        padding: 9px 11px;
         border-radius: 10px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
+        width: 160px;
+        max-width: 100%;
       }
-      input[type="text"]:focus-visible,
-      textarea:focus-visible {
-        outline: 3px solid var(--nt-focus);
+      .u10-q input:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
+      }
+      .u10-opts {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .u10-opts li label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 11px;
+        padding: 10px 13px;
+        background: var(--nt-surface, #fff);
+      }
+      .u10-opts li label:hover {
+        border-color: var(--nt-accent, #2563eb);
+      }
+      .u10-unit {
+        color: var(--nt-muted, #5b6472);
+        margin-left: 6px;
+      }
+      .u10-fb {
+        margin-top: 7px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        min-height: 1.1em;
+      }
+      .u10-fb.ok {
+        color: #0d9488;
+      }
+      .u10-fb.no {
+        color: #db2777;
+      }
+
+      .u10-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
+      }
+      .u10-btn {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--nt-accent, #2563eb);
+        background: var(--nt-accent, #2563eb);
+        color: #fff;
+        border-radius: 11px;
+        padding: 11px 18px;
+      }
+      .u10-btn.ghost {
+        background: transparent;
+        color: var(--nt-accent, #2563eb);
+      }
+      .u10-btn:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
         outline-offset: 2px;
-        border-color: var(--nt-accent);
       }
-      textarea {
-        min-height: 80px;
+      .u10-score {
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+
+      .u10-explore {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .u10-explore a.u10-link {
+        text-decoration: none;
+        color: var(--nt-text, #1c2330);
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--nt-surface, #fff);
+        display: block;
+      }
+      .u10-explore a.u10-link:hover {
+        border-color: var(--nt-accent, #2563eb);
+        transform: translateY(-1px);
+      }
+      .u10-explore .u10-link strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 3px;
+      }
+      .u10-explore .u10-link span {
+        font-size: 0.85rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      .u10-reflect textarea {
+        width: 100%;
+        min-height: 96px;
+        font: inherit;
+        padding: 11px 13px;
+        border-radius: 12px;
+        border: 1px solid var(--nt-border, #d7dbe3);
+        background: var(--nt-surface, #fff);
+        color: var(--nt-text, #1c2330);
         resize: vertical;
       }
-      .check-btn {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        font-size: 20px;
-        font-weight: 800;
-        padding: 14px 28px;
-        border-radius: 12px;
-        cursor: pointer;
-        margin-top: 8px;
+      .u10-reflect textarea:focus-visible {
+        outline: 3px solid var(--nt-focus, #93c5fd);
+        outline-offset: 1px;
       }
-      .check-btn:hover { filter: brightness(1.08); }
-      .check-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
 
-      /* ── Answer Key ── */
-      details.answer-key {
-        border: 2px dashed var(--nt-border);
-        border-radius: 14px;
-        margin: 20px 0 0;
-        background: var(--nt-surface);
+      .u10-vocab {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
       }
-      details.answer-key summary {
+      .u10-vocab dt {
+        font-weight: 800;
+      }
+      .u10-vocab dd {
+        margin: 2px 0 0;
+        font-size: 0.9rem;
+        color: var(--nt-muted, #5b6472);
+      }
+
+      .u10-data {
+        border: 1px solid var(--nt-border, #d7dbe3);
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 12px 0;
+      }
+      .u10-data table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      .u10-data th,
+      .u10-data td {
+        padding: 9px 12px;
+        text-align: center;
+        border-bottom: 1px solid var(--nt-border, #d7dbe3);
+      }
+      .u10-data th {
+        background: var(--nt-bg, #f4f6fb);
+        font-weight: 800;
+      }
+      .u10-data tr:last-child td {
+        border-bottom: none;
+      }
+
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only > summary {
         cursor: pointer;
         font-weight: 800;
-        font-size: 15px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--nt-accent);
+        font-size: 1rem;
         padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
         list-style: none;
         user-select: none;
       }
-      details.answer-key summary::-webkit-details-marker { display: none; }
-      details.answer-key summary::before { content: "▶ "; }
-      details.answer-key[open] summary::before { content: "▼ "; }
-      .ak-body {
-        padding: 4px 18px 18px;
-        font-size: 17px;
-        border-top: 2px dashed var(--nt-border);
+      details.teacher-only > summary::-webkit-details-marker {
+        display: none;
       }
-      .ak-body ol { margin: 10px 0 0 18px; }
-      .ak-body li { margin-bottom: 8px; }
-
-      /* ── Rubric ── */
-      .rubric-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 14px 0;
-        font-size: 17px;
+      details.teacher-only > summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
       }
-      .rubric-table th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        padding: 10px 12px;
-        text-align: left;
-        font-weight: 800;
+      details.teacher-only[open] > summary::before {
+        content: "\25BC ";
       }
-      .rubric-table td {
-        border: 2px solid var(--nt-border);
-        padding: 9px 12px;
-        vertical-align: top;
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
       }
-      .rubric-table tr:nth-child(even) td { background: var(--nt-bg); }
-
-      /* ── Reflect deliverable ── */
-      .deliverable-box {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 12px 16px;
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
         margin: 14px 0 6px;
-        font-size: 17px;
-        font-weight: 600;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
       }
 
-      /* ── Accessibility ── */
-      .skip {
-        position: absolute;
-        left: -9999px;
-      }
-      .skip:focus {
-        position: static;
-        display: inline-block;
-        padding: 8px;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-      }
-      .hint { color: var(--nt-muted); font-size: 16px; }
-
-      /* ── Print ── */
       @media print {
-        body { font-size: 14px; background: #fff; color: #000; }
-        .wrap { max-width: 100%; padding: 0; }
-        section.card, header.hero, .learning-target {
-          border: 1px solid #999;
-          border-radius: 0;
-          margin-bottom: 14px;
+        details.teacher-only,
+        .u10-toc,
+        .u10-actions,
+        .u10-explore a.u10-link::after {
+          display: none !important;
+        }
+        .u10-step {
           break-inside: avoid;
         }
-        details.teacher-notes, details.answer-key { display: block; }
-        details.teacher-notes summary::before, details.answer-key summary::before { content: ""; }
-        .tn-body, .ak-body { display: block !important; }
-        .check-btn, .sc-btn { display: none; }
-        input[type="text"], textarea { border: 1px solid #999; }
-        a { color: #000; text-decoration: underline; }
-        a.link-btn { background: #fff; color: #000; border: 1px solid #000; }
       }
-
-      /* ── Responsive ── */
-      @media (max-width: 600px) {
-        h1 { font-size: 26px; }
-        h2 { font-size: 21px; }
-        .check-btn { width: 100%; }
-        .rubric-table { font-size: 15px; }
-        table.ex td { padding: 6px 10px; font-size: 17px; }
-      }
-    </style>
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
   </head>
   <body class="nt-theme-aware">
-    <p style="font:14px system-ui;padding:10px 16px;"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
-    <a href="#engage" class="skip">Skip to start</a>
-    <div class="wrap">
+    <div id="ntkit"></div>
 
-      <!-- ═══ HERO ═══ -->
-      <header class="hero">
-        <span class="badge">Unit 10 · CCSS 6.G.A.2</span>
-        <h1>Volume Vault: Volume of Prisms</h1>
-        <p class="lead">
-          Find how much space fits inside a box. You will pack unit cubes, use a
-          formula, and solve real problems — including prisms with fractional edge lengths.
+    <main class="u10-wrap">
+      <header class="u10-hero">
+        <span class="u10-kicker">Grade 6 • Unit 10 HyperDoc</span>
+        <h1>The Packing Plant: Volume, Nets &amp; Surface Area</h1>
+        <p class="u10-sub">
+          Welcome to the <strong>Bayview Snack Co. packing plant</strong>. Your
+          shift has two jobs: figure out how much snack
+          <em>fits inside</em> each box (volume) and how much cardboard it takes
+          to <em>build the box</em> (surface area). Both come from the same flat
+          piece of cardboard — a net.
+          <span class="u10-es"
+            >Bienvenido a la planta empacadora. Tu turno tiene dos trabajos:
+            volumen y área total.</span
+          >
         </p>
+        <div class="u10-meta">
+          <span class="u10-chip">Standards: 6.G.A.2 &amp; 6.G.A.4</span>
+          <span class="u10-chip">Topic: Volume, Nets &amp; Surface Area</span>
+          <span class="u10-chip">MCAP-aligned</span>
+          <span class="u10-chip">Work time: ~50 min</span>
+        </div>
       </header>
 
-      <!-- ═══ LEARNING TARGET ═══ -->
-      <div class="learning-target" role="region" aria-label="Learning Target">
-        <h2>Learning Target</h2>
-        <ul style="margin:0 0 8px 18px;">
-          <li><strong>I can</strong> find the volume of a right rectangular prism using V = l × w × h.</li>
-          <li><strong>I can</strong> use unit cubes to understand volume and show that V = B × h.</li>
-          <li><strong>I can</strong> solve volume problems when the edge lengths are fractions or mixed numbers.</li>
-          <li><strong>I can</strong> apply volume to real-world situations and explain my reasoning.</li>
-        </ul>
-        <div class="lt-grid">
-          <div><span>📋</span><span><strong>Standard:</strong> CCSS 6.G.A.2</span></div>
-          <div><span>⏱</span><span><strong>Estimated time:</strong> 50 – 60 minutes</span></div>
-          <div><span>📦</span><span><strong>Materials:</strong> This page, calculator (optional)</span></div>
-          <div><span>🎯</span><span><strong>Unit:</strong> Geometry — Unit 10</span></div>
-        </div>
-      </div>
+      <nav class="u10-toc" aria-label="HyperDoc sections">
+        <a href="#engage">1 · Engage</a>
+        <a href="#explore">2 · Explore</a>
+        <a href="#explain">3 · Explain</a>
+        <a href="#apply">4 · Apply</a>
+        <a href="#reflect">5 · Reflect</a>
+        <a href="#extend">6 · Extend</a>
+      </nav>
 
-      <!-- ═══ TEACHER NOTES ═══ -->
-      <details class="teacher-notes">
-        <summary>Teacher Notes — Pacing, Grouping &amp; Differentiation</summary>
-        <div class="tn-body">
-          <h3>Pacing Guide</h3>
-          <ul>
-            <li><strong>Engage (5 min)</strong> — Think-Pair-Share: "How many unit cubes fill the box?" No writing yet.</li>
-            <li><strong>Explore (10–15 min)</strong> — Students open the 3D Volume Vault game in a new tab; circulate and prompt: "What happens to volume when you double the height?"</li>
-            <li><strong>Explain (10 min)</strong> — Class reads vocab and formula together; teacher models the fractional-edge worked example on a whiteboard.</li>
-            <li><strong>Apply (15–20 min)</strong> — Self-check items first (individual), then NTKit graded set; encourage showing arithmetic work on scratch paper.</li>
-            <li><strong>Reflect (5–8 min)</strong> — Individual typed responses; collect PDF or DOC.</li>
-          </ul>
-          <h3>Grouping Suggestions</h3>
-          <ul>
-            <li>Self-Check: individual, then compare answers with a partner after all three are done.</li>
-            <li>NTKit graded questions: individual work; discuss after submission.</li>
-            <li>Reflect: individual only.</li>
-          </ul>
-          <h3>Differentiation — Support</h3>
-          <ul>
-            <li>Provide physical or virtual unit cube manipulatives for Q1 and Q3.</li>
-            <li>Allow calculators for all fractional-edge questions.</li>
-            <li>Offer a formula reference card: V = l × w × h and V = B × h.</li>
-            <li>Reduce Apply to Q1–Q4 and offer Q5–Q6 (fractional edges) as challenge.</li>
-          </ul>
-          <h3>Differentiation — Challenge</h3>
-          <ul>
-            <li>Ask: "A prism has volume 60 cm³ and base area 12 cm². What is the height? Write an equation."</li>
-            <li>Extend: "Design a box with volume exactly 1/2 ft³ using fractional dimensions. Show your work."</li>
-          </ul>
-          <h3>ESOL / Language Supports</h3>
-          <ul>
-            <li>Display anchor chart with labeled 3D prism diagram showing l, w, h in the student's home language.</li>
-            <li>Sentence frame: "The volume is ___ cm³ because I multiplied ___ × ___ × ___."</li>
-            <li>Pair newcomers with bilingual partners during Explore game.</li>
-            <li>Allow labeled diagrams as evidence in the Reflect instead of prose.</li>
-          </ul>
-        </div>
-      </details>
+      <!-- ============ 1. ENGAGE ============ -->
+      <section class="u10-step" id="engage">
+        <h2><span class="u10-badge b1">1</span> Engage</h2>
+        <p class="u10-phase">Hook &amp; essential question</p>
 
-      <!-- ═══ NTKit identity bar ═══ -->
-      <section class="card">
-        <p class="step-label">Your Name</p>
-        <h2>Sign in to save your work</h2>
-        <p class="hint">Type your name first. You need it to save your work.</p>
-        <div id="ntkit"></div>
-      </section>
-
-      <!-- ═══ ENGAGE ═══ -->
-      <section class="card" id="engage">
-        <span class="step-tag">Engage</span>
-        <h2>How much fits inside?</h2>
         <p>
-          Imagine a treasure box shaped like a rectangle (a rectangular prism).
-          You want to know how many small cubes fill it all the way up.
-        </p>
-        <p>
-          <strong>Think:</strong> If the box is 4 cubes long, 3 cubes wide, and 2 cubes
-          tall, how many cubes fit inside? That number is the <strong>volume</strong>.
-        </p>
-        <div class="do-this">
-          Discuss with a partner: Would a box that is 2 × 6 × 2 hold more, less, or the same amount as the 4 × 3 × 2 box? Why?
-        </div>
-      </section>
-
-      <!-- ═══ EXPLORE ═══ -->
-      <section class="card">
-        <span class="step-tag">Explore</span>
-        <h2>Play and explore</h2>
-        <p>Open these to see volume in action. Come back here after.</p>
-        <a class="link-btn" href="/games/3d/unit-10/" target="_blank" rel="noopener">Play: Volume Vault (3D game)</a>
-        <a class="link-btn" href="/math/" target="_blank" rel="noopener">Math Hub</a>
-        <a class="link-btn" href="/graphic-novels/" target="_blank" rel="noopener">Math Graphic Novels</a>
-        <div class="do-this">
-          Do this: In the game, pack the prism with unit cubes. Watch the cubes add up to the volume. Try a prism with a fractional side length — what changes?
-        </div>
-      </section>
-
-      <!-- ═══ EXPLAIN ═══ -->
-      <section class="card">
-        <span class="step-tag">Explain</span>
-        <h2>What is volume?</h2>
-        <p>
-          <strong>Volume</strong> is the amount of space inside a 3D solid. We measure it
-          in <strong>cubic units</strong> (like cm³ or in³). Each unit is one small cube.
+          The plant just got a new cracker box. Before the machines start, you
+          have to answer two questions about it: how many
+          <strong>1&nbsp;cm unit cubes</strong> of cracker mix pack inside, and
+          how much <strong>cardboard</strong> wraps the outside. Look at the box
+          below.
         </p>
 
-        <h3>Key words</h3>
-        <ul class="vocab">
-          <li><b>Prism</b> — a solid with two flat, matching ends (a box is a rectangular prism).</li>
-          <li><b>Volume</b> — how much space fits inside. Counted in cubes.</li>
-          <li><b>Unit cube</b> — one cube that is 1 unit long on every side (1 × 1 × 1 = 1 cubic unit).</li>
-          <li><b>Cubic unit</b> — the label for volume, like cm³ (say "cubic centimeters").</li>
-          <li><b>Length (l), Width (w), Height (h)</b> — the three edge lengths you multiply.</li>
-          <li><b>Base area (B)</b> — the area of one flat end: B = l × w.</li>
-        </ul>
-
-        <h3>The formula</h3>
-        <div class="formula">
-          Volume = length × width × height<br />V = l × w × h
-        </div>
-        <p>
-          You can also write it as <strong>V = B × h</strong>, where <strong>B</strong> is the area
-          of the base (B = l × w).
-        </p>
-
-        <h3>Worked example — whole numbers</h3>
-        <p>A box is <strong>5 cm</strong> long, <strong>3 cm</strong> wide, and <strong>2 cm</strong> tall. Find the volume.</p>
-        <table class="ex">
-          <tr>
-            <td>Step 1: Multiply length × width</td>
-            <td>5 × 3 = 15</td>
-          </tr>
-          <tr>
-            <td>Step 2: Multiply by height</td>
-            <td>15 × 2 = 30</td>
-          </tr>
-          <tr>
-            <td>Answer</td>
-            <td><strong>30 cm³</strong></td>
-          </tr>
-        </table>
-
-        <h3>Worked example — fractional edge lengths (6.G.A.2)</h3>
-        <p>
-          A box is <strong>1½ ft</strong> long, <strong>⅔ ft</strong> wide, and <strong>2 ft</strong> tall.
-          Find the volume. (Convert mixed numbers to fractions first.)
-        </p>
-        <table class="ex">
-          <tr>
-            <td>Convert 1½ to fraction</td>
-            <td>1½ = 3/2</td>
-          </tr>
-          <tr>
-            <td>Multiply l × w</td>
-            <td>3/2 × 2/3 = 6/6 = 1</td>
-          </tr>
-          <tr>
-            <td>Multiply by height</td>
-            <td>1 × 2 = 2</td>
-          </tr>
-          <tr>
-            <td>Answer</td>
-            <td><strong>2 ft³</strong></td>
-          </tr>
-        </table>
-        <p>
-          <strong>Key idea:</strong> The formula V = l × w × h still works when edges are fractions.
-          Multiply the fractions just like any fraction multiplication.
-        </p>
-      </section>
-
-      <!-- ═══ APPLY ═══ -->
-      <section class="card" id="apply">
-        <span class="step-tag">Apply</span>
-        <h2>Your turn — solve the problems</h2>
-
-        <!-- ── Self-Check ── -->
-        <h3 style="margin-top:0;">Quick Self-Check — try these first!</h3>
-        <p class="hint">Choose an answer, then press Check to see instant feedback.</p>
-
-        <!-- SC 1 -->
-        <div class="selfcheck-item">
-          <p><strong>SC 1.</strong> A box is 3 m long, 4 m wide, and 5 m tall. What is its volume?</p>
-          <ul class="sc-choices" role="radiogroup" aria-label="SC 1 choices">
-            <li><label><input type="radio" name="sc1" value="12" /> 12 m³</label></li>
-            <li><label><input type="radio" name="sc1" value="60" /> 60 m³</label></li>
-            <li><label><input type="radio" name="sc1" value="35" /> 35 m³</label></li>
-            <li><label><input type="radio" name="sc1" value="47" /> 47 m³</label></li>
-          </ul>
-          <button type="button" class="sc-btn" data-sc="sc1" data-correct="60">Check</button>
-          <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC 2 -->
-        <div class="selfcheck-item">
-          <p><strong>SC 2.</strong> The base area of a prism is 8 cm² and the height is 6 cm. What is the volume?</p>
-          <ul class="sc-choices" role="radiogroup" aria-label="SC 2 choices">
-            <li><label><input type="radio" name="sc2" value="14" /> 14 cm³</label></li>
-            <li><label><input type="radio" name="sc2" value="48" /> 48 cm³</label></li>
-            <li><label><input type="radio" name="sc2" value="28" /> 28 cm³</label></li>
-            <li><label><input type="radio" name="sc2" value="36" /> 36 cm³</label></li>
-          </ul>
-          <button type="button" class="sc-btn" data-sc="sc2" data-correct="48">Check</button>
-          <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- SC 3 — fractional edges -->
-        <div class="selfcheck-item">
-          <p>
-            <strong>SC 3.</strong> A prism has edges ½ in × ½ in × 4 in.
-            What is its volume?
-          </p>
-          <ul class="sc-choices" role="radiogroup" aria-label="SC 3 choices">
-            <li><label><input type="radio" name="sc3" value="1" /> 1 in³</label></li>
-            <li><label><input type="radio" name="sc3" value="2" /> 2 in³</label></li>
-            <li><label><input type="radio" name="sc3" value="5" /> 5 in³</label></li>
-            <li><label><input type="radio" name="sc3" value="4" /> 4 in³</label></li>
-          </ul>
-          <button type="button" class="sc-btn" data-sc="sc3" data-correct="1">Check</button>
-          <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
-        </div>
-
-        <!-- ── NTKit graded ── -->
-        <h3>Graded Practice — submit with NTKit</h3>
-        <p class="hint">
-          Type each answer. Write only the number (no units). Then press Check My Work.
-        </p>
-
-        <div class="q">
-          <label for="q1">
-            1. A box is 2 cm long, 3 cm wide, and 4 cm tall. What is the volume?
-            <span class="hint">Use V = l × w × h. Type the number of cubic cm.</span>
-          </label>
-          <input type="text" id="q1" inputmode="numeric" autocomplete="off" aria-label="Question 1 answer" />
-        </div>
-
-        <div class="q">
-          <label for="q2">
-            2. A cube has all sides 5 in long. What is the volume?
-            <span class="hint">5 × 5 × 5. Type the number of cubic inches.</span>
-          </label>
-          <input type="text" id="q2" inputmode="numeric" autocomplete="off" aria-label="Question 2 answer" />
-        </div>
-
-        <div class="q">
-          <label for="q3">
-            3. A prism is packed with unit cubes: 6 long, 2 wide, 3 tall. How many cubes fit?
-            <span class="hint">Multiply all three numbers.</span>
-          </label>
-          <input type="text" id="q3" inputmode="numeric" autocomplete="off" aria-label="Question 3 answer" />
-        </div>
-
-        <div class="q">
-          <label for="q4">
-            4. A fish tank is 10 cm long, 4 cm wide, and 5 cm tall. What is the volume?
-            <span class="hint">Type the number of cubic cm.</span>
-          </label>
-          <input type="text" id="q4" inputmode="numeric" autocomplete="off" aria-label="Question 4 answer" />
-        </div>
-
-        <div class="q">
-          <label for="q5">
-            5. The base area of a box is 12 cm². The height is 3 cm. What is the volume?
-            <span class="hint">Use V = B × h. Type the number of cubic cm.</span>
-          </label>
-          <input type="text" id="q5" inputmode="numeric" autocomplete="off" aria-label="Question 5 answer" />
-        </div>
-
-        <div class="q">
-          <label for="q6">
-            6. A prism is ¾ ft long, ¾ ft wide, and 4 ft tall. What is the volume?
-            <span class="hint">¾ × ¾ × 4. Write the decimal: 2.25</span>
-          </label>
-          <input type="text" id="q6" inputmode="decimal" autocomplete="off" aria-label="Question 6 answer" />
-        </div>
-
-        <button type="button" class="check-btn" id="checkBtn">Check My Work</button>
-
-        <!-- ── Answer Key ── -->
-        <details class="answer-key">
-          <summary>Teacher Answer Key</summary>
-          <div class="ak-body">
-            <p><strong>Self-Check answers:</strong></p>
-            <ol>
-              <li><strong>SC 1:</strong> 60 m³ — V = 3 × 4 × 5 = 60. Multiplying all three edges gives volume.</li>
-              <li><strong>SC 2:</strong> 48 cm³ — V = B × h = 8 × 6 = 48. Base area replaces l × w.</li>
-              <li><strong>SC 3:</strong> 1 in³ — V = ½ × ½ × 4 = ¼ × 4 = 1. Fractional edges multiply normally.</li>
-            </ol>
-            <p><strong>Graded practice answers:</strong></p>
-            <ol>
-              <li><strong>Q1:</strong> 24 — 2 × 3 × 4 = 24 cm³</li>
-              <li><strong>Q2:</strong> 125 — 5 × 5 × 5 = 125 in³</li>
-              <li><strong>Q3:</strong> 36 — 6 × 2 × 3 = 36 unit cubes</li>
-              <li><strong>Q4:</strong> 200 — 10 × 4 × 5 = 200 cm³</li>
-              <li><strong>Q5:</strong> 36 — B × h = 12 × 3 = 36 cm³</li>
-              <li><strong>Q6:</strong> 2.25 — ¾ × ¾ × 4 = 9/16 × 4 = 36/16 = 9/4 = 2.25 ft³</li>
-            </ol>
-            <p><em>Note on Q6: Accept "9/4" or "2.25" or "2 1/4".</em></p>
+        <div class="u10-card">
+          <div class="u10-fig">
+            <svg
+              viewBox="0 0 260 190"
+              width="320"
+              role="img"
+              aria-label="A rectangular box drawn in 3D, 5 cm long, 3 cm wide, and 4 cm tall."
+            >
+              <polygon
+                points="70,40 210,40 240,20 100,20"
+                fill="#c9b3f0"
+                stroke="#5b3ea8"
+                stroke-width="2"
+              />
+              <polygon
+                points="210,40 210,150 240,130 240,20"
+                fill="#a98ee0"
+                stroke="#5b3ea8"
+                stroke-width="2"
+              />
+              <rect
+                x="70"
+                y="40"
+                width="140"
+                height="110"
+                fill="#e3d6fa"
+                stroke="#5b3ea8"
+                stroke-width="2"
+              />
+              <text
+                x="140"
+                y="170"
+                font-size="13"
+                text-anchor="middle"
+                fill="#1c2330"
+              >
+                length = 5 cm
+              </text>
+              <text
+                x="50"
+                y="100"
+                font-size="13"
+                text-anchor="middle"
+                fill="#5b3ea8"
+                transform="rotate(-90 50 100)"
+              >
+                height = 4 cm
+              </text>
+              <text
+                x="232"
+                y="80"
+                font-size="12"
+                text-anchor="middle"
+                fill="#5b3ea8"
+                transform="rotate(-34 232 80)"
+              >
+                width = 3 cm
+              </text>
+            </svg>
+            <p class="u10-cap">
+              New cracker box: 5 cm long, 3 cm wide, 4 cm tall.
+            </p>
           </div>
+          <p>
+            <strong>Quick think (no calculator):</strong> Make a first guess for
+            each. About how many cubes fit inside — closer to <em>20</em>,
+            <em>60</em>, or <em>120</em>? And which job needs <em>more</em>
+            arithmetic, the inside or the outside? Jot your guesses in your
+            notebook. You will check them in the Apply section.
+          </p>
+        </div>
+
+        <p style="margin-top: 14px">
+          <strong>Essential question:</strong>
+          <em
+            >How can one flat net help me measure both the space <u>inside</u> a
+            solid and the material <u>around</u> it?</em
+          >
+        </p>
+      </section>
+
+      <!-- ============ 2. EXPLORE ============ -->
+      <section class="u10-step" id="explore">
+        <h2><span class="u10-badge b2">2</span> Explore</h2>
+        <p class="u10-phase">Investigate before the lesson</p>
+
+        <p>
+          Explore each tool below for a few minutes. As you go, hunt for
+          <strong>one big idea</strong>: a 3D box and its flat net hold exactly
+          the same faces — so the net is where surface area comes from.
+        </p>
+
+        <div class="u10-explore">
+          <a
+            class="u10-link"
+            href="/games/3d/unit-10/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🎮 Volume Vault (3D Game)</strong>
+            <span
+              >Pack prisms with unit cubes and unfold them into nets to see
+              every face.</span
+            >
+          </a>
+          <a
+            class="u10-link"
+            href="/math/unit-10/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>📦 Unit 10 Math Hub</strong>
+            <span
+              >Worked examples for volume with fractional edges, nets, and
+              surface area.</span
+            >
+          </a>
+          <a
+            class="u10-link"
+            href="/webquests/unit-10/"
+            target="_blank"
+            rel="noopener"
+          >
+            <strong>🧭 Packaging Designer WebQuest</strong>
+            <span
+              >Design a real box and defend its volume and material cost.</span
+            >
+          </a>
+        </div>
+
+        <div class="u10-card" style="margin-top: 14px">
+          <h3>Unfold experiment</h3>
+          <p>
+            Drag your eyes from the box on the left to the unfolded
+            <strong>net</strong> on the right. The closed box has
+            <strong>6 rectangular faces</strong>; the net lays all 6 of them
+            flat. Nothing is added or lost — you can fold the net right back
+            into the box.
+          </p>
+          <div class="u10-grid2">
+            <div class="u10-fig">
+              <svg
+                viewBox="0 0 200 150"
+                width="100%"
+                role="img"
+                aria-label="A closed rectangular box drawn in 3D."
+              >
+                <polygon
+                  points="50,55 150,55 175,35 75,35"
+                  fill="#bfe3ff"
+                  stroke="#1d4ed8"
+                  stroke-width="2"
+                />
+                <polygon
+                  points="150,55 150,120 175,100 175,35"
+                  fill="#9cc9fb"
+                  stroke="#1d4ed8"
+                  stroke-width="2"
+                />
+                <rect
+                  x="50"
+                  y="55"
+                  width="100"
+                  height="65"
+                  fill="#dcefff"
+                  stroke="#1d4ed8"
+                  stroke-width="2"
+                />
+              </svg>
+              <p class="u10-cap">Closed box (3D)</p>
+            </div>
+            <div class="u10-fig">
+              <svg
+                viewBox="0 0 220 180"
+                width="100%"
+                role="img"
+                aria-label="A net of a rectangular box: a plus-shaped arrangement of six rectangles laid flat, labeled top, side, front, side, bottom, and back."
+              >
+                <rect
+                  x="80"
+                  y="10"
+                  width="60"
+                  height="40"
+                  fill="#c9f4e6"
+                  stroke="#0d9488"
+                  stroke-width="2"
+                />
+                <rect
+                  x="20"
+                  y="50"
+                  width="60"
+                  height="60"
+                  fill="#dcefff"
+                  stroke="#0d9488"
+                  stroke-width="2"
+                />
+                <rect
+                  x="80"
+                  y="50"
+                  width="60"
+                  height="60"
+                  fill="#dcefff"
+                  stroke="#0d9488"
+                  stroke-width="2"
+                />
+                <rect
+                  x="140"
+                  y="50"
+                  width="60"
+                  height="60"
+                  fill="#dcefff"
+                  stroke="#0d9488"
+                  stroke-width="2"
+                />
+                <rect
+                  x="80"
+                  y="110"
+                  width="60"
+                  height="60"
+                  fill="#dcefff"
+                  stroke="#0d9488"
+                  stroke-width="2"
+                />
+                <text x="110" y="34" font-size="10" text-anchor="middle">
+                  top
+                </text>
+                <text x="50" y="84" font-size="10" text-anchor="middle">
+                  side
+                </text>
+                <text x="110" y="84" font-size="10" text-anchor="middle">
+                  front
+                </text>
+                <text x="170" y="84" font-size="10" text-anchor="middle">
+                  side
+                </text>
+                <text x="110" y="144" font-size="10" text-anchor="middle">
+                  bottom
+                </text>
+              </svg>
+              <p class="u10-cap">Same box, unfolded into a net (6 faces)</p>
+            </div>
+          </div>
+          <p>
+            <strong>Notice:</strong> Counting the cubes inside is
+            <em>volume</em>. Adding up the area of all 6 flat faces is
+            <em>surface area</em>. Same box — two different questions.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ 3. EXPLAIN ============ -->
+      <section class="u10-step" id="explain">
+        <h2><span class="u10-badge b3">3</span> Explain</h2>
+        <p class="u10-phase">The math, in plain language</p>
+
+        <p>
+          <strong>Volume</strong> counts the unit cubes that fill a solid; we
+          measure it in <strong>cubic units</strong> (cm³, in³). Surface area
+          counts the flat <strong>square units</strong> on the outside (cm²,
+          in²). Watch the little 3 and 2 — they tell you which question you are
+          answering.
+        </p>
+
+        <dl class="u10-vocab u10-card">
+          <div>
+            <dt>volume (V)</dt>
+            <dd>
+              space inside, in cubic units
+              <span class="u10-es">· el volumen</span>
+            </dd>
+          </div>
+          <div>
+            <dt>base area (B)</dt>
+            <dd>
+              area of one base face
+              <span class="u10-es">· el área de la base</span>
+            </dd>
+          </div>
+          <div>
+            <dt>net</dt>
+            <dd>
+              a solid unfolded flat
+              <span class="u10-es">· la plantilla / red</span>
+            </dd>
+          </div>
+          <div>
+            <dt>surface area (SA)</dt>
+            <dd>
+              all faces added up, in square units
+              <span class="u10-es">· el área total</span>
+            </dd>
+          </div>
+          <div>
+            <dt>prism</dt>
+            <dd>
+              solid with two matching bases
+              <span class="u10-es">· el prisma</span>
+            </dd>
+          </div>
+          <div>
+            <dt>pyramid</dt>
+            <dd>
+              one base, triangular sides meeting at a point
+              <span class="u10-es">· la pirámide</span>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="u10-grid2">
+          <div class="u10-card">
+            <h3>Volume of a prism</h3>
+            <p class="u10-formula">V = l × w × h</p>
+            <p class="u10-formula" style="margin-top: 6px">or V = B × h</p>
+            <p>
+              Fill the bottom layer with cubes (that is the base area
+              <strong>B</strong>), then stack the layers up the height.
+            </p>
+          </div>
+          <div class="u10-card">
+            <h3>Fractional edges</h3>
+            <p class="u10-formula">½ × ¾ × 2</p>
+            <p>
+              Same formula — just multiply the fractions. Tiny cubes (like ¼-cm
+              cubes) still pack the box; the formula counts them.
+            </p>
+          </div>
+          <div class="u10-card">
+            <h3>Surface area from a net</h3>
+            <p class="u10-formula">SA = sum of all face areas</p>
+            <p>
+              Unfold the solid, find the area of each face, then add them. A box
+              has 3 matching pairs of faces.
+            </p>
+          </div>
+          <div class="u10-card">
+            <h3>Pyramid surface area</h3>
+            <p class="u10-formula">SA = base + triangle faces</p>
+            <p>
+              A pyramid's net is one base plus triangles. Find each area and add
+              — the triangles use A = ½ × b × h.
+            </p>
+          </div>
+        </div>
+
+        <div class="u10-card">
+          <h3>Worked example A — volume of the cracker box</h3>
+          <p>Back to the Engage box: l = 5 cm, w = 3 cm, h = 4 cm.</p>
+          <p>
+            V = l × w × h = 5 × 3 × 4 = 15 × 4 = <strong>60 cm³</strong>. So 60
+            unit cubes of cracker mix fit inside. (How close was your guess?)
+          </p>
+        </div>
+
+        <div class="u10-card">
+          <h3>Worked example B — fractional edges</h3>
+          <p>A snack-sample box is ½ cm by ¾ cm by 2 cm.</p>
+          <p>
+            V = ½ × ¾ × 2 = (½ × ¾) × 2 = ⅜ × 2 =
+            <strong>¾ cm³ (0.75 cm³)</strong>. Multiply the fractions just like
+            whole numbers.
+          </p>
+        </div>
+
+        <div class="u10-card">
+          <h3>Worked example C — surface area from the net</h3>
+          <p>
+            The cracker box (5 × 3 × 4) has 3 pairs of matching faces. Find one
+            of each, double it, and add:
+          </p>
+          <div class="u10-data">
+            <table>
+              <thead>
+                <tr>
+                  <th>Face pair</th>
+                  <th>One face</th>
+                  <th>Two faces</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>front &amp; back (5 × 4)</td>
+                  <td>20 cm²</td>
+                  <td>40 cm²</td>
+                </tr>
+                <tr>
+                  <td>left &amp; right (3 × 4)</td>
+                  <td>12 cm²</td>
+                  <td>24 cm²</td>
+                </tr>
+                <tr>
+                  <td>top &amp; bottom (5 × 3)</td>
+                  <td>15 cm²</td>
+                  <td>30 cm²</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>SA = 40 + 24 + 30 = <strong>94 cm²</strong> of cardboard.</p>
+        </div>
+
+        <details class="u10-level">
+          <summary>
+            <span class="u10-tag l1">Level 1 · support</span> Step-by-step
+            helper / Ayuda paso a paso
+          </summary>
+          <ol>
+            <li>
+              Ask first: inside or outside?
+              <strong>Inside = volume</strong> (cubic units, ³).
+              <strong>Outside = surface area</strong> (square units, ²).
+            </li>
+            <li>For volume, multiply all three numbers: l × w × h.</li>
+            <li>
+              For surface area, find the area of each face on the net, then add
+              every face.
+            </li>
+            <li>
+              Always end with the right unit:
+              <strong>cm³ for volume, cm² for surface area</strong>.
+              <span class="u10-es"
+                >Volumen termina en unidades cúbicas (³); área total en unidades
+                cuadradas (²).</span
+              >
+            </li>
+          </ol>
+        </details>
+
+        <details class="u10-level">
+          <summary>
+            <span class="u10-tag l2">Level 2 · enrichment</span> Push your
+            thinking
+          </summary>
+          <p>
+            Two boxes have the <em>same volume</em> of 24 cm³ but different
+            shapes: one is 2 × 3 × 4 and one is 1 × 2 × 12. Predict which one
+            uses <strong>more cardboard</strong> (surface area), then check. Why
+            does a long, thin box waste more material than a chunky one?
+          </p>
         </details>
       </section>
 
-      <!-- ═══ RUBRIC ═══ -->
-      <section class="card" aria-label="Scoring Rubric">
-        <p class="step-label">Rubric</p>
-        <h2>How your work is scored</h2>
-        <table class="rubric-table">
-          <thead>
-            <tr>
-              <th scope="col">Level</th>
-              <th scope="col">Score</th>
-              <th scope="col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Mastery</strong></td>
-              <td>5 – 6 / 6</td>
-              <td>All or nearly all graded questions correct, including the fractional-edge problem (Q6). Self-check completed. Reflect responses explain V = l × w × h in own words and connect to a real context.</td>
-            </tr>
-            <tr>
-              <td><strong>Proficient</strong></td>
-              <td>4 / 6</td>
-              <td>Most whole-number volume questions correct. Minor errors in Q5 (V = B × h) or Q6 (fractional edges). Reflect addresses both prompts with volume vocabulary (volume, cubic unit, prism).</td>
-            </tr>
-            <tr>
-              <td><strong>Developing</strong></td>
-              <td>2 – 3 / 6</td>
-              <td>Frequently adds instead of multiplies, or multiplies only two of three dimensions. Reflect responses are short or missing key terms. Needs targeted reteach with unit-cube models.</td>
-            </tr>
-            <tr>
-              <td><strong>Beginning</strong></td>
-              <td>0 – 1 / 6</td>
-              <td>Most questions blank or incorrect. Cannot apply V = l × w × h independently. Reflect not attempted. Requires one-on-one re-teaching of the volume formula before independent work.</td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- ============ 4. APPLY ============ -->
+      <section class="u10-step" id="apply">
+        <h2><span class="u10-badge b4">4</span> Apply</h2>
+        <p class="u10-phase">Show what you can do — auto-checked</p>
+
+        <form id="u10-quiz" novalidate>
+          <div
+            class="u10-q"
+            data-type="text"
+            data-answer="60"
+            data-tol="0"
+            id="q1"
+          >
+            <p class="u10-prompt">
+              1. The cracker box is 5 cm by 3 cm by 4 cm. What is its volume?
+              (number only)
+            </p>
+            <label
+              >Volume =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Volume in cubic centimeters"
+              />
+              <span class="u10-unit">cm³</span></label
+            >
+            <p class="u10-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u10-q"
+            data-type="text"
+            data-answer="94"
+            data-tol="0"
+            id="q2"
+          >
+            <p class="u10-prompt">
+              2. Using the net table, how many cm² of cardboard wrap that same 5
+              × 3 × 4 box? (Add all six faces.)
+            </p>
+            <label
+              >Surface area =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Surface area in square centimeters"
+              />
+              <span class="u10-unit">cm²</span></label
+            >
+            <p class="u10-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u10-q" data-type="mc" data-answer="c" id="q3">
+            <p class="u10-prompt">
+              3. A sample box is ½ cm by ¾ cm by 2 cm. Which is its volume?
+            </p>
+            <ul class="u10-opts">
+              <li>
+                <label><input type="radio" name="q3" value="a" /> 3¼ cm³</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q3" value="b" /> 1½ cm³</label>
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="c" /> ¾ cm³ (0.75
+                  cm³)</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q3" value="d" /> ¾ cm² (square, not
+                  cubic)</label
+                >
+              </li>
+            </ul>
+            <p class="u10-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u10-q" data-type="mc" data-answer="b" id="q4">
+            <p class="u10-prompt">
+              4. Which net folds into a closed rectangular box (a right
+              rectangular prism)?
+            </p>
+            <div class="u10-fig" style="margin: 6px 0">
+              <svg
+                viewBox="0 0 360 130"
+                width="100%"
+                role="img"
+                aria-label="Three candidate nets labeled A with three faces, B with six faces in a cross, and C with four faces in an L."
+              >
+                <g>
+                  <rect
+                    x="20"
+                    y="40"
+                    width="30"
+                    height="30"
+                    fill="#fde2e2"
+                    stroke="#b91c1c"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="50"
+                    y="40"
+                    width="30"
+                    height="30"
+                    fill="#fde2e2"
+                    stroke="#b91c1c"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="50"
+                    y="70"
+                    width="30"
+                    height="30"
+                    fill="#fde2e2"
+                    stroke="#b91c1c"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="50"
+                    y="120"
+                    font-size="13"
+                    text-anchor="middle"
+                    font-weight="700"
+                  >
+                    A
+                  </text>
+                </g>
+                <g>
+                  <rect
+                    x="160"
+                    y="20"
+                    width="28"
+                    height="28"
+                    fill="#dcefff"
+                    stroke="#1d4ed8"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="132"
+                    y="48"
+                    width="28"
+                    height="28"
+                    fill="#dcefff"
+                    stroke="#1d4ed8"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="160"
+                    y="48"
+                    width="28"
+                    height="28"
+                    fill="#dcefff"
+                    stroke="#1d4ed8"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="188"
+                    y="48"
+                    width="28"
+                    height="28"
+                    fill="#dcefff"
+                    stroke="#1d4ed8"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="160"
+                    y="76"
+                    width="28"
+                    height="28"
+                    fill="#dcefff"
+                    stroke="#1d4ed8"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="216"
+                    y="48"
+                    width="28"
+                    height="28"
+                    fill="#dcefff"
+                    stroke="#1d4ed8"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="188"
+                    y="120"
+                    font-size="13"
+                    text-anchor="middle"
+                    font-weight="700"
+                  >
+                    B
+                  </text>
+                </g>
+                <g>
+                  <rect
+                    x="290"
+                    y="35"
+                    width="26"
+                    height="26"
+                    fill="#fef3c7"
+                    stroke="#b45309"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="290"
+                    y="61"
+                    width="26"
+                    height="26"
+                    fill="#fef3c7"
+                    stroke="#b45309"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="316"
+                    y="61"
+                    width="26"
+                    height="26"
+                    fill="#fef3c7"
+                    stroke="#b45309"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="290"
+                    y="87"
+                    width="26"
+                    height="26"
+                    fill="#fef3c7"
+                    stroke="#b45309"
+                    stroke-width="1.5"
+                  />
+                  <text
+                    x="316"
+                    y="120"
+                    font-size="13"
+                    text-anchor="middle"
+                    font-weight="700"
+                  >
+                    C
+                  </text>
+                </g>
+              </svg>
+            </div>
+            <ul class="u10-opts">
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="a" /> Net A (only 3
+                  faces)</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="b" /> Net B (6 faces in
+                  a cross)</label
+                >
+              </li>
+              <li>
+                <label
+                  ><input type="radio" name="q4" value="c" /> Net C (4 faces in
+                  an L)</label
+                >
+              </li>
+            </ul>
+            <p class="u10-fb" aria-live="polite"></p>
+          </div>
+
+          <div
+            class="u10-q"
+            data-type="text"
+            data-answer="52"
+            data-tol="0"
+            id="q5"
+          >
+            <p class="u10-prompt">
+              5. A square-pyramid candy topper has a 4 cm by 4 cm base and four
+              triangular sides. Each triangle has base 4 cm and slant height 4.5
+              cm. Find the total surface area. SA = base + 4 triangles, where
+              each triangle = ½ × 4 × 4.5.
+            </p>
+            <div class="u10-fig" style="margin: 6px 0">
+              <svg
+                viewBox="0 0 220 160"
+                width="240"
+                role="img"
+                aria-label="A net of a square pyramid: a center 4 by 4 square base with a triangle on each side."
+              >
+                <rect
+                  x="85"
+                  y="55"
+                  width="50"
+                  height="50"
+                  fill="#ffe7c2"
+                  stroke="#b45309"
+                  stroke-width="2"
+                />
+                <polygon
+                  points="85,55 135,55 110,15"
+                  fill="#ffd49a"
+                  stroke="#b45309"
+                  stroke-width="2"
+                />
+                <polygon
+                  points="85,105 135,105 110,145"
+                  fill="#ffd49a"
+                  stroke="#b45309"
+                  stroke-width="2"
+                />
+                <polygon
+                  points="85,55 85,105 45,80"
+                  fill="#ffd49a"
+                  stroke="#b45309"
+                  stroke-width="2"
+                />
+                <polygon
+                  points="135,55 135,105 175,80"
+                  fill="#ffd49a"
+                  stroke="#b45309"
+                  stroke-width="2"
+                />
+                <text x="110" y="84" font-size="11" text-anchor="middle">
+                  base 4×4
+                </text>
+              </svg>
+            </div>
+            <label
+              >Surface area =
+              <input
+                type="number"
+                inputmode="decimal"
+                aria-label="Pyramid surface area in square centimeters"
+              />
+              <span class="u10-unit">cm²</span></label
+            >
+            <p class="u10-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u10-q" data-type="mc" data-answer="c" id="q6">
+            <p class="u10-prompt">
+              6. A box has volume 48 cm³ and a base area of 8 cm². What is its
+              height? (Use V = B × h.)
+            </p>
+            <ul class="u10-opts">
+              <li>
+                <label><input type="radio" name="q6" value="a" /> 40 cm</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q6" value="b" /> 384 cm</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q6" value="c" /> 6 cm</label>
+              </li>
+              <li>
+                <label><input type="radio" name="q6" value="d" /> 6 cm³</label>
+              </li>
+            </ul>
+            <p class="u10-fb" aria-live="polite"></p>
+          </div>
+
+          <div class="u10-actions">
+            <button type="button" class="u10-btn" id="u10-check">
+              Check my answers
+            </button>
+            <button type="button" class="u10-btn ghost" id="u10-reset">
+              Clear
+            </button>
+            <span class="u10-score" id="u10-scoreout" aria-live="polite"></span>
+          </div>
+        </form>
+
+        <details class="u10-level" style="margin-top: 14px">
+          <summary>
+            <span class="u10-tag l1">Level 1 · support</span> Sentence starters
+            for explaining
+          </summary>
+          <p>
+            "This question asks about the ____ (inside / outside), so I used
+            ____ units. I multiplied ____ × ____ × ____ (or added the faces ____
+            + ____ + ____). My answer is ____ cm³ or cm²."
+          </p>
+          <p class="u10-es">
+            "Esta pregunta es sobre el ____ (interior / exterior), así que usé
+            unidades ____. Multipliqué ____ × ____ × ____ (o sumé las caras). Mi
+            respuesta es ____ cm³ o cm²."
+          </p>
+        </details>
+
+        <details class="u10-level">
+          <summary>
+            <span class="u10-tag l2">Level 2 · enrichment</span> Reverse it
+          </summary>
+          <p>
+            A prism has volume 90 cm³ and a height of 5 cm. Work backwards to
+            find the base area B. Then name two different whole-number length ×
+            width rectangles that could be that base.
+          </p>
+        </details>
       </section>
 
-      <!-- ═══ REFLECT ═══ -->
-      <section class="card">
-        <span class="step-tag">Reflect</span>
-        <h2>Think about your learning</h2>
-        <p>
-          Use complete sentences. Try to use at least one math word from the
-          Explain section (volume, cubic unit, prism, base area, formula).
+      <!-- ============ 5. REFLECT ============ -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>
+            Stage-by-Stage Notes (Engage → Explore → Explain → Apply → Reflect)
+          </h3>
+          <ul>
+            <li>
+              <strong>Engage:</strong> estimate how much cardboard wraps a box
+              (surface area vs volume).
+            </li>
+            <li>
+              <strong>Explore:</strong> count unit cubes and unfold prisms into
+              nets.
+            </li>
+            <li>
+              <strong>Explain:</strong> V = l·w·h; surface area = sum of all
+              face areas from the net.
+            </li>
+            <li><strong>Apply:</strong> answer key below.</li>
+            <li>
+              <strong>Reflect:</strong> students distinguish ft³ (volume) from
+              ft²/cm² (surface area).
+            </li>
+          </ul>
+          <h3>Apply — Answer Key</h3>
+          <ul>
+            <li>
+              <strong>Q1 — Volume 5×3×4:</strong> <strong>60 cm³</strong>.
+            </li>
+            <li>
+              <strong>Q2 — Surface area of that box:</strong> 2(15)+2(20)+2(12)
+              = 30+40+24 = <strong>94 cm²</strong>.
+            </li>
+            <li>
+              <strong>Q3 — Fractional-edge volume (MC):</strong> answer
+              <strong>c</strong>.
+            </li>
+            <li>
+              <strong>Q4 — Net of a closed box (MC):</strong> answer
+              <strong>b</strong>.
+            </li>
+            <li>
+              <strong
+                >Q5 — Pyramid surface area (4×4 base + 4 triangles):</strong
+              >
+              <strong>52 cm²</strong>.
+            </li>
+            <li>
+              <strong>Q6 — Height = V ÷ base area = 48 ÷ 8 (MC):</strong> answer
+              <strong>c</strong> (6 cm).
+            </li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.G.A.2 & A.4</strong>.</p>
+        </div>
+      </details>
+
+      <section class="u10-step u10-reflect" id="reflect">
+        <h2><span class="u10-badge b5">5</span> Reflect</h2>
+        <p class="u10-phase">Think about your thinking</p>
+
+        <div class="u10-q">
+          <p class="u10-prompt">
+            A. Volume and surface area both describe the same box. In your own
+            words, what is the difference, and how do the units (³ vs ²) help
+            you keep them straight?
+          </p>
+          <textarea aria-label="Reflection A"></textarea>
+        </div>
+        <div class="u10-q">
+          <p class="u10-prompt">
+            B. How does unfolding a solid into a net make surface area easier to
+            find? Use the word "net" in your answer.
+          </p>
+          <textarea aria-label="Reflection B"></textarea>
+        </div>
+        <div class="u10-q">
+          <p class="u10-prompt">
+            C. One thing that is now clear to me / Una cosa que ahora entiendo
+            bien:
+          </p>
+          <textarea aria-label="Reflection C"></textarea>
+        </div>
+        <p class="u10-cap">
+          Your reflections save with this HyperDoc when you use Save as PDF or
+          Save as DOC above.
         </p>
-        <div class="deliverable-box">
-          <strong>Deliverable:</strong> Type your responses below, then save your finished HyperDoc as a
-          <strong>PDF or DOC</strong> using the Save buttons at the top. Submit the saved file to your
-          teacher's Google Drive folder or as directed by your teacher.
-        </div>
-        <div class="q">
-          <label for="r1">A) In your own words, how do you find the volume of a box? Explain each step.</label>
-          <textarea id="r1" aria-label="Reflection A" aria-required="true" placeholder="Write 2–3 sentences explaining the steps..."></textarea>
-        </div>
-        <div class="q">
-          <label for="r2">B) Where in real life would you need to find volume? Give one specific example and explain why volume matters there.</label>
-          <textarea id="r2" aria-label="Reflection B" aria-required="true" placeholder="Write 2–3 sentences with a real example..."></textarea>
-        </div>
       </section>
 
-    </div><!-- /.wrap -->
+      <!-- ============ 6. EXTEND ============ -->
+      <section class="u10-step" id="extend">
+        <h2>
+          <span class="u10-badge b3" style="background: #475569">6</span> Extend
+        </h2>
+        <p class="u10-phase">Optional challenge project</p>
+        <div class="u10-card">
+          <h3>Design a snack box for Bayview Snack Co.</h3>
+          <p>
+            On grid paper, design a new rectangular snack box and draw its
+            <strong>net</strong>. Pick dimensions where at least one edge is a
+            fraction or mixed number. Then:
+          </p>
+          <ol>
+            <li>
+              Label the length, width, and height on both the box and the net.
+            </li>
+            <li>
+              Find the <strong>volume</strong> (how much snack fits inside).
+            </li>
+            <li>Find the <strong>surface area</strong> from your net.</li>
+            <li>
+              If cardboard costs $0.02 per cm², find the material cost for one
+              box.
+            </li>
+          </ol>
+          <p class="u10-es">
+            Diseña una caja de snack, dibuja su plantilla (net), y calcula el
+            volumen, el área total y el costo del cartón.
+          </p>
+        </div>
+      </section>
+    </main>
 
     <script>
       (function () {
-        function ready(fn) {
-          if (document.readyState !== "loading") {
-            fn();
+        "use strict";
+
+        // ---- Mount the shared Neft Activity Kit (name bar + Save as PDF/DOC + results) ----
+        function mountKit() {
+          if (window.NTKit && typeof NTKit.mount === "function") {
+            try {
+              NTKit.mount("#ntkit");
+            } catch (e) {
+              /* kit optional */
+            }
+          }
+        }
+        if (document.readyState !== "loading") mountKit();
+        else document.addEventListener("DOMContentLoaded", mountKit);
+
+        var form = document.getElementById("u10-quiz");
+
+        function checkOne(q) {
+          var type = q.getAttribute("data-type");
+          var fb = q.querySelector(".u10-fb");
+          var correct = false,
+            answered = true;
+
+          if (type === "mc") {
+            var sel = q.querySelector('input[type="radio"]:checked');
+            answered = !!sel;
+            correct = answered && sel.value === q.getAttribute("data-answer");
           } else {
-            document.addEventListener("DOMContentLoaded", fn);
+            // text/number
+            var input = q.querySelector(
+              'input[type="number"], input[type="text"]',
+            );
+            var raw = (input.value || "").trim();
+            answered = raw !== "";
+            var ans = parseFloat(q.getAttribute("data-answer"));
+            var tol = parseFloat(q.getAttribute("data-tol") || "0");
+            var val = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+            correct = answered && !isNaN(val) && Math.abs(val - ans) <= tol;
+          }
+
+          if (fb) {
+            if (!answered) {
+              fb.textContent = "";
+              fb.className = "u10-fb";
+            } else if (correct) {
+              fb.textContent = "✓ Correct";
+              fb.className = "u10-fb ok";
+            } else {
+              fb.textContent =
+                "✗ Not yet — check inside vs. outside, your arithmetic, and your units (³ or ²).";
+              fb.className = "u10-fb no";
+            }
+          }
+          return { correct: correct, answered: answered };
+        }
+
+        function checkAll() {
+          var qs = form.querySelectorAll(".u10-q[data-type]");
+          var score = 0,
+            total = qs.length;
+          var items = [];
+          qs.forEach(function (q, i) {
+            var r = checkOne(q);
+            if (r.correct) score++;
+            var promptEl = q.querySelector(".u10-prompt");
+            items.push({
+              id: q.id || "q" + (i + 1),
+              prompt: promptEl
+                ? promptEl.textContent.trim()
+                : "Question " + (i + 1),
+              correct: r.correct,
+            });
+          });
+
+          var out = document.getElementById("u10-scoreout");
+          var pct = Math.round((score / total) * 100);
+          out.textContent =
+            "Score: " + score + " / " + total + " (" + pct + "%)";
+
+          // Hand results to the shared kit if its grade() API is available.
+          if (window.NTKit && typeof NTKit.grade === "function") {
+            try {
+              NTKit.grade({
+                activityId: "hyperdoc-unit-10-volume-surface-area",
+                activityTitle: "Unit 10 HyperDoc — Volume, Nets & Surface Area",
+                standard: "6.G.A.2, 6.G.A.4",
+                score: score,
+                total: total,
+                items: items,
+              });
+            } catch (e) {
+              /* fallback score already shown */
+            }
           }
         }
 
-        ready(function () {
-          /* ── NTKit ── */
-          if (window.NTKit) {
-            NTKit.mount("#ntkit");
-          } else {
-            console.error("NTKit not loaded");
-          }
-
-          /* ── Self-check feedback ── */
-          var SC_EXPLANATIONS = {
-            sc1: {
-              correct: "Correct! V = 3 × 4 × 5 = 60 m³. Multiply all three edge lengths together.",
-              wrong: "Not quite. Use V = l × w × h: 3 × 4 × 5 = 60 m³. Multiply all three numbers — don't just add them."
-            },
-            sc2: {
-              correct: "Correct! V = B × h = 8 × 6 = 48 cm³. Base area replaces l × w in the formula.",
-              wrong: "Not quite. Use V = B × h: 8 × 6 = 48 cm³. Multiply the base area by the height."
-            },
-            sc3: {
-              correct: "Correct! V = ½ × ½ × 4 = ¼ × 4 = 1 in³. Fractions multiply just like whole numbers.",
-              wrong: "Not quite. V = ½ × ½ × 4. First: ½ × ½ = ¼. Then: ¼ × 4 = 1 in³."
-            }
-          };
-
-          var scButtons = document.querySelectorAll(".sc-btn");
-          for (var i = 0; i < scButtons.length; i++) {
-            scButtons[i].addEventListener("click", function (e) {
-              var btn = e.currentTarget;
-              var scName = btn.getAttribute("data-sc");
-              var correctVal = btn.getAttribute("data-correct");
-              var radios = document.querySelectorAll('input[name="' + scName + '"]');
-              var chosen = "";
-              for (var j = 0; j < radios.length; j++) {
-                if (radios[j].checked) { chosen = radios[j].value; break; }
-              }
-              var fb = document.getElementById(scName + "-fb");
-              if (!fb) return;
-              var exp = SC_EXPLANATIONS[scName] || {};
-              if (chosen === "") {
-                fb.className = "sc-feedback wrong";
-                fb.textContent = "Please choose an answer first.";
-              } else if (chosen === correctVal) {
-                fb.className = "sc-feedback correct";
-                fb.textContent = "✓ " + (exp.correct || "Correct!");
-              } else {
-                fb.className = "sc-feedback wrong";
-                fb.textContent = "✗ " + (exp.wrong || "Try again.");
-              }
+        document
+          .getElementById("u10-check")
+          .addEventListener("click", checkAll);
+        document
+          .getElementById("u10-reset")
+          .addEventListener("click", function () {
+            form.reset();
+            form.querySelectorAll(".u10-fb").forEach(function (f) {
+              f.textContent = "";
+              f.className = "u10-fb";
             });
-          }
-
-          /* ── NTKit graded ── */
-          function val(id) {
-            var e = document.getElementById(id);
-            return e ? e.value.trim() : "";
-          }
-
-          /* ─────────────────────────────────────────────────────────
-             Tolerant answer normaliser
-             - trim, lowercase, collapse whitespace
-             - strip leading "$", trailing "%"
-             - strip commas used as thousands separators
-             - strip trailing unit words (units, cubic, cm, cm3, cm³, etc.)
-             - numeric answers compared by value (epsilon)
-             ───────────────────────────────────────────────────────── */
-          function norm(raw) {
-            var s = String(raw == null ? "" : raw).trim().toLowerCase();
-            s = s.replace(/\s+/g, " ");
-            s = s.replace(/^\$/, "");
-            s = s.replace(/%$/, "");
-            s = s.replace(/,(\d{3})/g, "$1");
-            s = s.replace(/\b(units?|cubic|cm3|cm³|cm|m2|m²|mph|km|ft|in|degrees?)\s*$/g, "");
-            s = s.trim();
-            return s;
-          }
-
-          /* Numeric equality with epsilon */
-          function numEq(a, b) {
-            var na = parseFloat(a);
-            var nb = parseFloat(b);
-            if (isNaN(na) || isNaN(nb)) return false;
-            return Math.abs(na - nb) < 1e-9;
-          }
-
-          /*
-           * normVol — normalise a volume answer to a canonical decimal string.
-           * Accepts: whole numbers, decimals, simple fractions (9/4),
-           * mixed numbers (2 1/4), and strips trailing unit words.
-           * Used for Q6 (fractional edge answer 9/4 = 2.25).
-           */
-          function normVol(s) {
-            var v = norm(s);
-            /* mixed number: "2 1/4" */
-            var mixedMatch = v.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
-            if (mixedMatch) {
-              var whole = parseFloat(mixedMatch[1]);
-              var num   = parseFloat(mixedMatch[2]);
-              var den   = parseFloat(mixedMatch[3]);
-              var val2  = whole + num / den;
-              return String(Math.round(val2 * 10000) / 10000);
-            }
-            /* simple fraction: "9/4" */
-            var fracMatch = v.match(/^(-?\d+)\/(\d+)$/);
-            if (fracMatch) {
-              var val3 = parseFloat(fracMatch[1]) / parseFloat(fracMatch[2]);
-              return String(Math.round(val3 * 10000) / 10000);
-            }
-            /* plain number */
-            var n = parseFloat(v);
-            if (!isNaN(n)) return String(Math.round(n * 10000) / 10000);
-            return v;
-          }
-
-          var checkBtn = document.getElementById("checkBtn");
-          if (checkBtn) {
-            checkBtn.addEventListener("click", function () {
-              if (!window.NTKit) return;
-              NTKit.grade({
-                activityId: "hyperdoc-unit-10",
-                activityTitle: "Unit 10 · Volume of Prisms — HyperDoc",
-                standard: "6.G.A.2",
-                items: [
-                  {
-                    prompt: "Box 2×3×4 cm. Volume?",
-                    studentAnswer: norm(val("q1")),
-                    correctAnswer: "24",
-                    points: 1,
-                    skill: "Volume of a prism (l×w×h)"
-                  },
-                  {
-                    prompt: "Cube with side 5 in. Volume?",
-                    studentAnswer: norm(val("q2")),
-                    correctAnswer: "125",
-                    points: 1,
-                    skill: "Volume of a cube"
-                  },
-                  {
-                    prompt: "Unit cubes packed 6×2×3. How many?",
-                    studentAnswer: norm(val("q3")),
-                    correctAnswer: "36",
-                    points: 1,
-                    skill: "Packing unit cubes"
-                  },
-                  {
-                    prompt: "Tank 10×4×5 cm. Volume?",
-                    studentAnswer: norm(val("q4")),
-                    correctAnswer: "200",
-                    points: 1,
-                    skill: "Volume of a prism (l×w×h)"
-                  },
-                  {
-                    prompt: "Base area 12 cm², height 3 cm. Volume?",
-                    studentAnswer: norm(val("q5")),
-                    correctAnswer: "36",
-                    points: 1,
-                    skill: "Volume using V = B×h"
-                  },
-                  {
-                    prompt: "¾ ft × ¾ ft × 4 ft. Volume?",
-                    studentAnswer: normVol(val("q6")),
-                    correctAnswer: "2.25",
-                    points: 1,
-                    skill: "Volume with fractional edge lengths (6.G.A.2)"
-                  }
-                ],
-                reflections: [
-                  {
-                    prompt: "How do you find the volume of a box?",
-                    response: val("r1")
-                  },
-                  {
-                    prompt: "Where in real life would you need volume?",
-                    response: val("r2")
-                  }
-                ]
-              });
-              var panel = document.getElementById("ntkit-results");
-              if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
-            });
-          }
-        });
+            document.getElementById("u10-scoreout").textContent = "";
+          });
       })();
     </script>
-  </body>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+</body>
 </html>

@@ -1,5 +1,6 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
 // Unit 3 — RATIO RALLY  (CCSS 6.RP.A.3 / 6.RP.A.2)
@@ -49,7 +50,7 @@ function makeLevel(level) {
             ["miles", "hours"],
             ["12", "3"],
           ],
-          help: "12 ÷ 3 = 4. The answer is 4 mph.",
+          help: "For one hour, divide the miles by the hours: 12 ÷ 3 = ?",
           answer: 4,
           unit: "mph",
           min: 0,
@@ -63,7 +64,7 @@ function makeLevel(level) {
             ["dollars", "cars"],
             ["10", "2"],
           ],
-          help: "10 ÷ 2 = 5. The answer is $5.",
+          help: "Price for one car = dollars ÷ cars: 10 ÷ 2 = ?",
           answer: 5,
           unit: "$/car",
           min: 0,
@@ -78,7 +79,7 @@ function makeLevel(level) {
             ["4", "1"],
             ["?", "5"],
           ],
-          help: "4 × 5 = 20. The answer is 20 miles.",
+          help: "Same speed each hour. Multiply the miles by the hours: 4 × 5 = ?",
           answer: 20,
           unit: "miles",
           min: 0,
@@ -93,7 +94,7 @@ function makeLevel(level) {
             ["3", "2"],
             ["?", "6"],
           ],
-          help: "6 ÷ 2 = 3, then 3 × 3 = 9. The answer is 9 liters.",
+          help: "How many groups of 2 laps are in 6? Multiply the liters by that many groups.",
           answer: 9,
           unit: "L",
           min: 0,
@@ -108,7 +109,7 @@ function makeLevel(level) {
             ["1", "60"],
             ["2", "?"],
           ],
-          help: "1 minute = 60 seconds. 2 × 60 = 120. The answer is 120.",
+          help: "1 minute = 60 seconds. Multiply the minutes by 60: 2 × 60 = ?",
           answer: 120,
           unit: "sec",
           min: 60,
@@ -137,7 +138,7 @@ function makeLevel(level) {
       {
         type: "multistep",
         prompt: "150 miles in 3 hours. How far in 4 hours? Set miles.",
-        help: "150 ÷ 3 = 50 mph. Then 50 × 4 = 200. The answer is 200.",
+        help: "First find the speed: 150 ÷ 3. Then multiply that by 4 hours.",
         answer: 200,
         unit: "miles",
         min: 120,
@@ -148,7 +149,7 @@ function makeLevel(level) {
       {
         type: "percent",
         prompt: "What is 20% of 40 mph? Set the boost.",
-        help: "20% of 40 = 0.20 × 40 = 8. The answer is 8 mph.",
+        help: "20% = 0.20. Multiply 0.20 × 40 to find the boost.",
         answer: 8,
         unit: "mph",
         min: 0,
@@ -158,7 +159,7 @@ function makeLevel(level) {
       {
         type: "percent",
         prompt: "What is 15% of 80 liters? Set liters.",
-        help: "15% of 80 = 0.15 × 80 = 12. The answer is 12 liters.",
+        help: "15% = 0.15. Multiply 0.15 × 80 to find the liters.",
         answer: 12,
         unit: "L",
         min: 0,
@@ -169,7 +170,7 @@ function makeLevel(level) {
       {
         type: "multistep",
         prompt: "7 miles every 2 hours. How far in 10 hours? Set miles.",
-        help: "10 ÷ 2 = 5, then 7 × 5 = 35. The answer is 35 miles.",
+        help: "How many groups of 2 hours are in 10? Multiply 7 by that many groups.",
         answer: 35,
         unit: "miles",
         min: 0,
@@ -180,7 +181,7 @@ function makeLevel(level) {
       {
         type: "conversion",
         prompt: "3 min 30 s is how many seconds? Set seconds.",
-        help: "3 × 60 = 180, plus 30 = 210. The answer is 210.",
+        help: "1 minute = 60 seconds. Multiply the minutes by 60, then add the extra 30 seconds.",
         answer: 210,
         unit: "sec",
         min: 120,
@@ -202,7 +203,7 @@ function makeLevel(level) {
       {
         type: "percent",
         prompt: "What is 30% of $50? Set the savings.",
-        help: "30% of 50 = 0.30 × 50 = 15. You save $15.",
+        help: "30% = 0.30. Multiply 0.30 × 50 to find the savings.",
         answer: 15,
         unit: "$",
         min: 0,
@@ -265,6 +266,11 @@ export default {
     const cfg = makeLevel(level);
     const reduced = feel.reducedMotion;
     const carColor = level === 2 ? COLORS.carEnrich : COLORS.car;
+
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount element is the same positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
 
     // ---- Scene root ---------------------------------------------------------
     const group = new THREE.Group();
@@ -479,6 +485,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong commit costs one. Run out
+    // and the race ends (lose screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let raceAnim = null; // car launch tween
     let popAnim = null; // dial scale-pop
     const total = cfg.problems.length;
@@ -517,10 +528,15 @@ export default {
             problem.table.map((r) => r.join(":")).join("  ") +
             ")"
           : "";
-      if (isCompare()) {
-        hud.setObjective(`${problem.prompt} ▶ ${readout()}`);
-      } else {
-        hud.setObjective(`${problem.prompt} ▶ You: ${readout()}${tableHint}`);
+      const objText = isCompare()
+        ? `${problem.prompt} ▶ ${readout()}`
+        : `${problem.prompt} ▶ You: ${readout()}${tableHint}`;
+      hud.setObjective(objText);
+      if (clarity) {
+        clarity.setObjective(objText);
+        clarity.setTarget(
+          isCompare() ? `Pick the lowest $/L` : `Set: ${readout()}`,
+        );
       }
       // Mirror onto the 3D dial sprite + scale-pop.
       updateLabel(dialSprite, isCompare() ? readout() : readout());
@@ -674,11 +690,35 @@ export default {
     function rejectRound(msg) {
       streak = 0;
       if (typeof hud.setStreak === "function") hud.setStreak(0);
-      if (typeof hud.feedback === "function") hud.feedback(false, msg);
-      else hud.message(msg, { tone: "warn", duration: 2200 });
       feel.sfx("wrong");
       if (!reduced) feel.shake(0.16);
-      announce(msg);
+      lives = Math.max(0, lives - 1);
+      if (typeof hud.setLives === "function") hud.setLives(lives);
+      if (lives <= 0) {
+        loseGame();
+        return;
+      }
+      const full = `${msg} ${lives} ${lives === 1 ? "try" : "tries"} left.`;
+      if (typeof hud.feedback === "function") hud.feedback(false, full);
+      else hud.message(full, { tone: "warn", duration: 2200 });
+      announce(full);
+    }
+
+    function loseGame() {
+      gameOver = true;
+      locked = true;
+      feel.sfx("wrong");
+      const msg = `Out of tries! You solved ${solvedCount} of ${total}.`;
+      hud.setObjective(msg);
+      announce(`Race over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Out of tries!",
+          badge: "🏁",
+          stats: `${msg} Tip: find the unit rate (price per liter, miles per hour) before you commit.`,
+        });
+      }
     }
 
     function win(detail) {
@@ -750,6 +790,14 @@ export default {
       announce(
         `All rounds complete. You solved ${solvedCount} with a best streak of ${bestStreak}. Great tuning, racer.`,
       );
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "Race complete!",
+          badge: "🏁",
+          stats: `You solved ${solvedCount} of ${total} rounds. Best streak: ${bestStreak}. Score saved.`,
+        });
+      }
     }
 
     // ---- Tap: pick a lane (compare) or lock in (numeric) --------------------
@@ -797,31 +845,93 @@ export default {
           });
         }
 
-        startRound();
+        // Begin the actual round loop only after the student presses Start in
+        // the clarity overlay. This is the single entry point both for first
+        // play and for Play Again.
+        function beginGameplay() {
+          problemIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
+          startRound();
 
-        unbindPress = input.onPress((name) => {
-          if (locked) return;
-          if (isCompare()) {
-            if (name === "left") changeLane(-1);
-            else if (name === "right") changeLane(1);
-            else if (name === "action") commit();
-          } else {
-            if (name === "up") changeDial(stepSize(false));
-            else if (name === "down") changeDial(-stepSize(false));
-            else if (name === "right") changeDial(stepSize(true));
-            else if (name === "left") changeDial(-stepSize(true));
-            else if (name === "action") commit();
-          }
-          if (name === "confirm") {
-            const h = problem.help || "Set the number, then press Space.";
-            caption(h);
-            announce(h);
-            feel.sfx("pop");
-            later(() => caption(""), 2600);
-          }
+          unbindPress = input.onPress((name) => {
+            if (locked) return;
+            if (isCompare()) {
+              if (name === "left") changeLane(-1);
+              else if (name === "right") changeLane(1);
+              else if (name === "action") commit();
+            } else {
+              if (name === "up") changeDial(stepSize(false));
+              else if (name === "down") changeDial(-stepSize(false));
+              else if (name === "right") changeDial(stepSize(true));
+              else if (name === "left") changeDial(-stepSize(true));
+              else if (name === "action") commit();
+            }
+            if (name === "confirm") {
+              const h = problem.help || "Set the number, then press Space.";
+              caption(h);
+              announce(h);
+              feel.sfx("pop");
+              later(() => caption(""), 2600);
+            }
+          });
+
+          unbindTap = input.onTap(handleTap);
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and end screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Ratio Rally — Tune the Rates to Win",
+          objectiveEn:
+            "Read each problem, set the right number with Up/Down (or pick the cheapest lane), then press Space to launch your car.",
+          objectiveEs:
+            "Lee cada problema, ajusta el número con Arriba/Abajo (o elige el carril más barato) y presiona Espacio para lanzar tu carro.",
+          standard: "6.RP.A.2–3 · Rates, Unit Rates & Percent",
+          controls: [
+            {
+              key: "↑ / ↓",
+              actionEn: "Raise or lower your number by 1",
+              actionEs: "Sube o baja tu número de 1 en 1",
+            },
+            {
+              key: "→ / ←",
+              actionEn:
+                "Jump by bigger steps (and pick a lane on 'cheapest fuel' rounds)",
+              actionEs:
+                "Salta de a pasos grandes (y elige carril en rondas de comparar)",
+            },
+            {
+              key: "Space",
+              actionEn: "Launch / lock in — check your answer",
+              actionEs: "Lanza / confirma — revisa tu respuesta",
+            },
+            {
+              key: "Enter",
+              actionEn: "Show a hint for this problem",
+              actionEs: "Muestra una pista para este problema",
+            },
+            {
+              key: "Tap / Click",
+              actionEn: "Lock in your number, or tap a lane to pick it",
+              actionEs: "Confirma tu número, o toca un carril para elegirlo",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Match the exact answer (or pick the lowest price per liter) and press Space to launch. Clear all rounds to finish the race.",
+          howToWinEs:
+            "Acierta la respuesta exacta (o el menor precio por litro) y presiona Espacio. Completa todas las rondas para terminar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
         });
-
-        unbindTap = input.onTap(handleTap);
 
         unbindFrame = ctx.onFrame((dt, t) => {
           // Car launch tween.
@@ -855,6 +965,7 @@ export default {
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();

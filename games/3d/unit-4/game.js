@@ -1,5 +1,6 @@
 import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /* =============================================================================
  * Unit 4 — Factory Line: Package the Order
@@ -216,6 +217,13 @@ export default {
     const cfg = makeLevel(level);
     const reduced = feel.reducedMotion;
 
+    // ---- Clarity / onboarding kit (shared overlay over the canvas) ----------
+    // Mount is the same positioned container that hosts the canvas. Drives
+    // nothing in the 3D scene — purely the start overlay, how-to-play, persistent
+    // help button, mini-HUD, and win screen.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
+
     // ---- Scene root ---------------------------------------------------------
     const group = new THREE.Group();
     scene.add(group);
@@ -394,9 +402,15 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong confirm costs one. Run out
+    // and the shift ends (lose screen). Level 1 gets more cushion than Level 2.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let unbindFrame = null;
     let unbindPress = null;
     let unbindTap = null;
+    const dragUnbinders = []; // pointerup + per-frame drag updater
     const timers = [];
     const later = (fn, ms) => {
       const id = setTimeout(fn, ms);
@@ -420,6 +434,23 @@ export default {
           );
         default:
           return "Up/Down sets the dial. Space ships it.";
+      }
+    }
+
+    // Short "current target" chip text for the clarity mini-HUD.
+    function targetChip(r) {
+      switch (r.kind) {
+        case "gcf":
+          return `GCF of ${r.a} and ${r.b}`;
+        case "lcm":
+          return `LCM of ${r.a} and ${r.b}`;
+        case "decimal-sum":
+        case "decimal-prod":
+          return `${fmt(r.a)} ${r.op} ${fmt(r.b)} = ?`;
+        case "distributive":
+          return `GCF of ${r.a} and ${r.b}`;
+        default:
+          return null;
       }
     }
 
@@ -478,9 +509,21 @@ export default {
     function startRound() {
       locked = true;
       clearCrates();
+      clearBayCrates();
       round = cfg.rounds[roundIndex];
       spec = roundSpec(round);
       value = spec.min;
+
+      // Whole-number rounds → drag crates into the bay. Decimal rounds → slide
+      // the dial. Show only the relevant manipulables.
+      const whole = spec.step >= 1;
+      supplyCrate.visible = whole;
+      supplyLabel.visible = whole;
+      bay.visible = whole;
+      dial.visible = !whole;
+      dial.position.set(0, 1.6, 0);
+      // Seed bay crates to match the starting value (spec.min) for whole rounds.
+      if (whole) syncBayCrates();
 
       setLevelLabel();
       hud.setProgress(roundIndex, cfg.rounds.length);
@@ -489,6 +532,10 @@ export default {
       );
       caption(round.prompt);
       hud.setObjective(round.prompt);
+      if (clarity) {
+        clarity.setObjective(round.prompt);
+        clarity.setTarget(targetChip(round));
+      }
 
       if (cfg.hints)
         hud.message(hintFor(round), { tone: "info", duration: 3400 });
@@ -513,15 +560,278 @@ export default {
       feel.sfx("select");
     }
 
-    function adjust(dir) {
+    function adjust(dir, coarse) {
       if (locked) return;
-      const next = round2(value + dir * spec.step);
+      // Two-tier stepping so big targets are reachable fast:
+      //   fine  (Up/Down)  = one dial step (1 for whole numbers, 0.05/0.1 for decimals)
+      //   coarse(Left/Right) = a big jump (10 for whole numbers, 1.0 for decimals)
+      // Without this, decimal answers like 5.75 took 100+ key presses.
+      const coarseStep = spec.step >= 1 ? 10 : 1;
+      const amt = coarse ? coarseStep : spec.step;
+      const next = round2(value + dir * amt);
       const clamped = Math.max(spec.min, Math.min(spec.max, next));
       if (clamped === value) return;
       value = clamped;
       refresh();
+      if (spec.step >= 1) syncBayCrates();
       feel.sfx(dir > 0 ? "add" : "remove");
       announce(`Dial set to ${readoutText().replace("Dial: ", "")}.`);
+    }
+
+    // ---- Drag-to-build: physically construct the answer --------------------
+    // Genuine 3D manipulation (like unit-5/unit-10) instead of dial-and-confirm.
+    //   Whole-number rounds (GCF / LCM / distributive): the student DRAGS unit
+    //     crates from the supply pallet into the glowing loading bay. The number
+    //     of crates in the bay IS `value`. Dragging a crate back to the pallet
+    //     lowers it. The math (`value`, `spec`, `confirm`) is unchanged.
+    //   Decimal rounds: the student physically SLIDES the glowing dial block up
+    //     and down its track to set `value` (no fine-grained crate-dragging).
+    // Keyboard up/down/left/right still adjust `value` as a fallback for all.
+
+    // Invisible ground plane for pointer→world raycasting while dragging.
+    const dragPlaneGeo = track(new THREE.PlaneGeometry(80, 80));
+    const dragPlaneMat = track(new THREE.MeshBasicMaterial({ visible: false }));
+    const dragPlane = new THREE.Mesh(dragPlaneGeo, dragPlaneMat);
+    dragPlane.rotation.x = -Math.PI / 2;
+    dragPlane.position.y = 0.4;
+    group.add(dragPlane);
+
+    // Vertical pick plane (faces camera-ish) for the decimal dial slide.
+    const slidePlaneGeo = track(new THREE.PlaneGeometry(40, 40));
+    const slidePlaneMat = track(
+      new THREE.MeshBasicMaterial({ visible: false }),
+    );
+    const slidePlane = new THREE.Mesh(slidePlaneGeo, slidePlaneMat);
+    slidePlane.position.set(0, 1.6, 0);
+    group.add(slidePlane);
+
+    // Supply pallet: a small stack the student grabs crates from (whole rounds).
+    const palletX = -5.2;
+    const supplyGeo = track(new RoundedBoxGeometry(0.62, 0.62, 0.62, 4, 0.12));
+    const supplyMat = track(
+      new THREE.MeshStandardMaterial({
+        color: PALETTE.crate[1],
+        roughness: 0.5,
+        metalness: 0.12,
+        emissive: new THREE.Color(PALETTE.crate[1]),
+        emissiveIntensity: 0.25,
+      }),
+    );
+    const supplyCrate = new THREE.Mesh(supplyGeo, supplyMat);
+    supplyCrate.position.set(palletX, 0.3, 1.4);
+    supplyCrate.castShadow = true;
+    supplyCrate.userData.role = "supply";
+    group.add(supplyCrate);
+    const supplyLabel = makeLabel("Drag a crate →", {
+      scale: 0.8,
+      fontSize: 52,
+      background: "rgba(15,34,56,0.92)",
+    });
+    supplyLabel.position.set(palletX, 1.3, 1.4);
+    group.add(supplyLabel);
+
+    // Glowing loading bay: drop zone where built crates land. Bay count = value.
+    const bayCenter = { x: 0, z: 1.4 };
+    const bayMat = track(
+      new THREE.MeshBasicMaterial({
+        color: PALETTE.ok,
+        transparent: true,
+        opacity: 0.18,
+        side: THREE.DoubleSide,
+      }),
+    );
+    const bayGeo = track(new THREE.RingGeometry(2.0, 3.4, 40));
+    const bay = new THREE.Mesh(bayGeo, bayMat);
+    bay.rotation.x = -Math.PI / 2;
+    bay.position.set(bayCenter.x, 0.02, bayCenter.z);
+    group.add(bay);
+    const BAY_RADIUS = 3.4;
+
+    // Crates the student has loaded into the bay (whole-number rounds).
+    const bayCrates = [];
+    const bayCrateMats = [];
+    function clearBayCrates() {
+      bayCrates.forEach((c) => {
+        crateGroup.remove(c);
+        group.remove(c);
+      });
+      bayCrates.length = 0;
+      bayCrateMats.forEach((m) => m.dispose());
+      bayCrateMats.length = 0;
+    }
+    function layoutBayCrate(mesh, idx) {
+      const perRow = 5;
+      const col = idx % perRow;
+      const row = Math.floor(idx / perRow);
+      mesh.position.set(
+        bayCenter.x - 1.4 + col * 0.72,
+        0.3 + row * 0.0,
+        bayCenter.z - 0.7 + row * 0.7,
+      );
+    }
+    function spawnBayCrate() {
+      const color = PALETTE.crate[bayCrates.length % PALETTE.crate.length];
+      const mat = new THREE.MeshStandardMaterial({
+        color,
+        roughness: 0.5,
+        metalness: 0.12,
+        emissive: new THREE.Color(color),
+        emissiveIntensity: 0.2,
+      });
+      bayCrateMats.push(mat);
+      const c = new THREE.Mesh(crateGeo, mat);
+      c.castShadow = true;
+      c.userData.role = "bay";
+      layoutBayCrate(c, bayCrates.length);
+      group.add(c);
+      bayCrates.push(c);
+      if (!reduced) {
+        c.scale.setScalar(0.01);
+        feel.tween({
+          from: 0.01,
+          to: 1,
+          duration: 0.24,
+          onUpdate: (v) => c.scale.setScalar(v),
+        });
+      }
+      return c;
+    }
+    function removeBayCrate() {
+      const c = bayCrates.pop();
+      if (!c) return;
+      group.remove(c);
+      const m = bayCrateMats.pop();
+      if (m) m.dispose();
+    }
+    // Sync the visible bay crates to a target count (used after value changes).
+    function syncBayCrates() {
+      const target = Math.round(value);
+      while (bayCrates.length < target && bayCrates.length < 60)
+        spawnBayCrate();
+      while (bayCrates.length > target) removeBayCrate();
+    }
+
+    function planePoint(plane) {
+      const hits = input.raycast(camera, [plane], false);
+      return hits.length ? hits[0].point : null;
+    }
+    function overBay(p) {
+      if (!p) return false;
+      return Math.hypot(p.x - bayCenter.x, p.z - bayCenter.z) <= BAY_RADIUS;
+    }
+
+    // Set value directly (clamped to spec), refresh visuals + audio.
+    function setValue(v, silent) {
+      const clamped = round2(Math.max(spec.min, Math.min(spec.max, v)));
+      if (clamped === value) return false;
+      const up = clamped > value;
+      value = clamped;
+      refresh();
+      if (!silent) {
+        feel.sfx(up ? "add" : "remove");
+        announce(`Dial set to ${readoutText().replace("Dial: ", "")}.`);
+      }
+      return true;
+    }
+
+    // --- drag state ---
+    const drag = {
+      active: false,
+      mode: null, // "load" (whole) | "slide" (decimal)
+      ghost: null,
+    };
+
+    function beginCrateDrag() {
+      if (locked || gameOver) return;
+      drag.active = true;
+      drag.mode = "load";
+      // A carried ghost crate that follows the pointer.
+      const color = PALETTE.crate[bayCrates.length % PALETTE.crate.length];
+      const mat = new THREE.MeshStandardMaterial({
+        color,
+        roughness: 0.5,
+        metalness: 0.12,
+        emissive: new THREE.Color(color),
+        emissiveIntensity: 0.6,
+      });
+      bayCrateMats.push(mat); // disposed on clear
+      const g = new THREE.Mesh(crateGeo, mat);
+      g.castShadow = true;
+      group.add(g);
+      drag.ghost = g;
+      feel.sfx("select");
+      announce("Picked up a crate. Drag it into the glowing bay.");
+    }
+
+    function beginDialSlide() {
+      if (locked || gameOver) return;
+      drag.active = true;
+      drag.mode = "slide";
+      if (!reduced) dial.scale.setScalar(1.15);
+      feel.sfx("select");
+      announce("Sliding the dial. Move up to raise, down to lower.");
+    }
+
+    function updateDrag() {
+      if (!drag.active) return;
+      if (drag.mode === "load" && drag.ghost) {
+        const p = planePoint(dragPlane);
+        if (p) {
+          drag.ghost.position.set(p.x, 0.7, p.z);
+          bay.material.opacity = overBay(p) ? 0.5 : 0.18;
+        }
+      } else if (drag.mode === "slide") {
+        // Map pointer height on the slide plane to the value range.
+        const p = planePoint(slidePlane);
+        if (p) {
+          const lo = 0.3,
+            hi = 3.4; // world-y travel of the dial
+          const t = Math.max(0, Math.min(1, (p.y - lo) / (hi - lo)));
+          const v = spec.min + t * (spec.max - spec.min);
+          // Snap to the round's step.
+          const snapped = Math.round(v / spec.step) * spec.step;
+          if (setValue(snapped, false)) {
+            dial.position.y = 1.0 + t * 1.6;
+          }
+        }
+      }
+    }
+
+    function endDrag() {
+      if (!drag.active) {
+        bay.material.opacity = 0.18;
+        return;
+      }
+      if (drag.mode === "load") {
+        const p = planePoint(dragPlane);
+        const dropped = overBay(p);
+        if (drag.ghost) {
+          group.remove(drag.ghost);
+          // its material stays in bayCrateMats for disposal
+          drag.ghost = null;
+        }
+        bay.material.opacity = 0.18;
+        if (dropped) {
+          // Build: one more crate = +1 to the answer.
+          if (setValue(value + 1, true)) {
+            spawnBayCrate();
+            feel.sfx("add");
+            feel.burst(
+              { x: bayCenter.x, y: 1.0, z: bayCenter.z },
+              { color: PALETTE.ok, count: 12 },
+            );
+            announce(`Loaded crate ${Math.round(value)} into the bay.`);
+          } else {
+            feel.sfx("wrong");
+          }
+        } else {
+          feel.sfx("remove");
+        }
+      } else if (drag.mode === "slide") {
+        if (!reduced) dial.scale.setScalar(1);
+      }
+      drag.active = false;
+      drag.mode = null;
     }
 
     function isCorrect() {
@@ -535,24 +845,48 @@ export default {
     }
 
     function confirm() {
-      if (locked) return;
+      if (locked || gameOver) return;
       if (!isCorrect()) {
-        const tip =
+        streak = 0;
+        hud.setStreak(0);
+        feel.sfx("wrong");
+        if (!reduced) feel.shake(0.16);
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        if (lives <= 0) {
+          loseGame();
+          return;
+        }
+        const base =
           round.kind === "distributive" &&
           value > 0 &&
           round.a % value === 0 &&
           round.b % value === 0
             ? "Close! Find a bigger factor that fits both."
             : "Not yet. Move the dial and try again.";
-        streak = 0;
-        hud.setStreak(0);
+        const tip = `${base} ${lives} ${lives === 1 ? "try" : "tries"} left.`;
         hud.feedback(false, tip);
-        feel.sfx("wrong");
-        if (!reduced) feel.shake(0.16);
         announce(tip);
         return;
       }
       win();
+    }
+
+    function loseGame() {
+      gameOver = true;
+      locked = true;
+      feel.sfx("wrong");
+      const msg = `Out of tries! You packed ${solvedCount} of ${cfg.rounds.length}.`;
+      hud.setObjective(msg);
+      announce(`Shift over. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Out of tries!",
+          badge: "📦",
+          stats: `${msg} Tip: list the factors of each number and pick the one that fits.`,
+        });
+      }
     }
 
     function win() {
@@ -580,8 +914,10 @@ export default {
       hud.feedback(true, msg);
       announce(`Correct! ${equationText()}. +${pts} points.`);
 
-      // Ship the crates off down the belt.
+      // Ship the crates off down the belt — both the diagram crates and the
+      // crates the student loaded into the bay.
       if (!reduced) {
+        const bayHomes = bayCrates.map((c) => c.position.x);
         feel.tween({
           from: 0,
           to: 1,
@@ -589,6 +925,9 @@ export default {
           onUpdate: (p) => {
             crateGroup.position.x = p * 9;
             crateGroup.children.forEach((c) => (c.material.opacity = 1 - p));
+            bayCrates.forEach((c, i) => {
+              c.position.x = bayHomes[i] + p * 9;
+            });
           },
         });
       }
@@ -596,6 +935,7 @@ export default {
       later(
         () => {
           crateGroup.position.x = 0;
+          clearBayCrates();
           if (roundIndex < cfg.rounds.length - 1) {
             roundIndex += 1;
             startRound();
@@ -624,6 +964,14 @@ export default {
       announce(
         `Done. You packed ${solvedCount} orders. Best streak ${bestStreak}.`,
       );
+      if (clarity) {
+        clarity.setTarget(null);
+        clarity.win({
+          titleEn: "Shift complete!",
+          badge: "🏭",
+          stats: `You packed all ${cfg.rounds.length} orders. Best streak: ${bestStreak}. Score saved.`,
+        });
+      }
     }
 
     return {
@@ -654,48 +1002,158 @@ export default {
           feel.syncCamera();
         }
 
-        startRound();
-
-        unbindPress = input.onPress((name) => {
-          if (name === "up" || name === "right") adjust(1);
-          else if (name === "down" || name === "left") adjust(-1);
-          else if (name === "action" || name === "confirm") confirm();
-        });
-
-        // Touch: tap the dial/upper area raises, lower area lowers; tap the
-        // floating answer card confirms.
-        unbindTap = input.onTap(() => {
-          if (locked) return;
-          const hits = input.raycast(camera, [cardLabel, dial], false);
-          if (hits.length && hits[0].object === cardLabel) {
-            confirm();
-            return;
-          }
-          const ndcY = input.state.ndc ? input.state.ndc.y : 0;
-          adjust(ndcY >= 0 ? 1 : -1);
-        });
-
-        // Idle motion (gated behind reduced-motion).
+        // Idle motion (gated behind reduced-motion). Safe to run behind the
+        // start overlay; it touches only decorative meshes.
         if (!reduced) {
           unbindFrame = onFrame((dt, t) => {
             for (const r of rollers) r.rotation.y = t * 1.6;
-            dial.rotation.y = t * 0.6;
-            dial.position.y = 1.6 + Math.sin(t * 2) * 0.06;
+            // Don't bob the dial while the student is sliding it.
+            if (!(drag.active && drag.mode === "slide")) {
+              dial.rotation.y = t * 0.6;
+              if (dial.visible) dial.position.y = 1.6 + Math.sin(t * 2) * 0.06;
+            }
             cardLabel.position.y = 4.1 + Math.sin(t * 1.6) * 0.07;
           });
         }
+
+        // Begin the actual round loop + bind input only after the student
+        // presses Start in the clarity overlay. Single entry point for first
+        // play and for Play Again.
+        function beginGameplay() {
+          roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
+          startRound();
+
+          unbindPress = input.onPress((name) => {
+            if (name === "up")
+              adjust(1, false); // fine +
+            else if (name === "down")
+              adjust(-1, false); // fine −
+            else if (name === "right")
+              adjust(1, true); // coarse + (big jump)
+            else if (name === "left")
+              adjust(-1, true); // coarse − (big jump)
+            else if (name === "action" || name === "confirm") confirm();
+          });
+
+          // Pointer down: grab a supply crate (whole rounds) or the dial
+          // (decimal rounds) to start a DRAG. Tapping the floating answer card
+          // ships. Tapping the bay/empty area also confirms as a fallback.
+          unbindTap = input.onTap(() => {
+            if (locked || gameOver) return;
+            const targets = [cardLabel, supplyCrate, dial].filter(
+              (o) => o.visible !== false,
+            );
+            const hits = input.raycast(camera, targets, false);
+            if (hits.length) {
+              const obj = hits[0].object;
+              if (obj === cardLabel) {
+                confirm();
+                return;
+              }
+              if (obj === supplyCrate) {
+                beginCrateDrag();
+                return;
+              }
+              if (obj === dial) {
+                beginDialSlide();
+                return;
+              }
+            }
+          });
+
+          // Pointer up ends an active drag (input.js fires pointerup on window
+          // but exposes no callback, so attach our own tracked listener).
+          const onUp = () => {
+            if (drag.active) endDrag();
+          };
+          window.addEventListener("pointerup", onUp);
+          dragUnbinders.push(() =>
+            window.removeEventListener("pointerup", onUp),
+          );
+
+          // Drive the held piece every frame (covers reduced-motion, where the
+          // idle frame loop is not bound).
+          dragUnbinders.push(
+            onFrame(() => {
+              if (drag.active) updateDrag();
+            }),
+          );
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Factory Line — Package the Order",
+          objectiveEn:
+            "Build each order's answer: drag crates into the loading bay until the count is right (GCF, LCM, factor), or slide the dial for decimals — then ship it.",
+          objectiveEs:
+            "Construye la respuesta: arrastra cajas a la bahía hasta tener el número correcto, o desliza el dial para decimales, y envía.",
+          standard: "6.NS.B.2–4 · GCF, LCM, Distributive & Decimal Operations",
+          controls: [
+            {
+              key: "Drag a crate",
+              actionEn:
+                "Drag crates from the pallet into the glowing bay — the number of crates is your answer (GCF / LCM / factor rounds)",
+              actionEs:
+                "Arrastra cajas del palé a la bahía brillante — el número de cajas es tu respuesta",
+            },
+            {
+              key: "Drag the dial",
+              actionEn:
+                "On decimal rounds, slide the glowing dial up or down to set the answer",
+              actionEs:
+                "En rondas decimales, desliza el dial para fijar la respuesta",
+            },
+            {
+              key: "↑ ↓ / → ←",
+              actionEn:
+                "Fine / coarse adjust the answer with the keyboard (fallback)",
+              actionEs: "Ajusta la respuesta con el teclado (alternativa)",
+            },
+            {
+              key: "Space / Enter",
+              actionEn: "Ship the order — check if your answer is correct",
+              actionEs: "Envía la orden — revisa si tu respuesta es correcta",
+            },
+            {
+              key: "Tap the problem card",
+              actionEn: "Ship the order (same as Space)",
+              actionEs: "Envía la orden (igual que Espacio)",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "Build the correct answer for each order — load the right number of crates into the bay, or slide the dial for decimals — then ship it. Pack all the orders to finish your shift!",
+          howToWinEs:
+            "Construye la respuesta correcta — carga las cajas o desliza el dial — y envía. Completa todas las órdenes para terminar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (unbindFrame) unbindFrame();
+        dragUnbinders.forEach((u) => u && u());
+        dragUnbinders.length = 0;
         timers.forEach(clearTimeout);
         timers.length = 0;
         clearCrates();
+        clearBayCrates();
         scene.remove(group);
         // Dispose label textures.
-        [cardLabel, readoutLabel].forEach((s) => {
+        [cardLabel, readoutLabel, supplyLabel].forEach((s) => {
           if (s.material) {
             if (s.material.map) s.material.map.dispose();
             s.material.dispose();

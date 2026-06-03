@@ -1,4 +1,5 @@
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ─── Data Lab: Build the Plot, Read the Measures ─────────────────────────────
 // CCSS 6.SP.A & 6.SP.B — statistical variability + summarizing distributions
@@ -297,6 +298,11 @@ export default {
     } = ctx;
     void renderer; // available from ctx; not directly needed here
 
+    // ── Clarity / onboarding kit (shared overlay over the canvas) ────────────
+    // Mount is the positioned container that hosts the canvas.
+    const clarityMount = renderer.domElement.parentElement || document.body;
+    let clarity = null;
+
     const cfg = makeLevel(level);
     const VALUES = [];
     for (let v = cfg.min; v <= cfg.max; v++) VALUES.push(v);
@@ -492,6 +498,11 @@ export default {
     let streak = 0;
     let bestStreak = 0;
     let solvedCount = 0;
+    // Forgiving stakes: a pool of attempts; a wrong answer pad costs one. Run
+    // out and the data lab closes (lose screen). Level 1 gets more cushion.
+    const START_LIVES = level === 2 ? 4 : 6;
+    let lives = START_LIVES;
+    let gameOver = false;
     let idleUnbind = null;
     const timers = [];
     const later = (fn, ms) => {
@@ -589,15 +600,21 @@ export default {
     function updateObjective() {
       if (phase === "build") {
         const need = round.target.length;
-        hud.setObjective(
-          `Stack blocks to make: ${round.prompt.replace(/^Make:\s*/, "")} (${data.length} of ${need} done)`,
-        );
-        drawCard(
-          `Build it: ${data.length}/${need}`,
-          `${round.prompt.replace(/^Make:\s*/, "")}`,
-        );
+        const nums = round.prompt.replace(/^Make:\s*/, "");
+        const text = `Stack blocks to make: ${nums} (${data.length} of ${need} done)`;
+        hud.setObjective(text);
+        if (clarity) {
+          clarity.setObjective(text);
+          clarity.setTarget(`Build: ${nums}`);
+        }
+        drawCard(`Build it: ${data.length}/${need}`, `${nums}`);
       } else if (phase === "answer") {
-        hud.setObjective(`${question.q} Tap a pad.`);
+        const text = `${question.q} Tap a pad.`;
+        hud.setObjective(text);
+        if (clarity) {
+          clarity.setObjective(text);
+          clarity.setTarget(question.q);
+        }
         drawCard(`${question.q}`, liveLine());
       }
     }
@@ -721,6 +738,23 @@ export default {
       announce(`Block on ${v}. ${liveLine()}`);
       updateObjective();
       if (buildMatches()) finishBuild();
+    }
+
+    function loseGame() {
+      gameOver = true;
+      phase = "done";
+      feel.sfx("wrong");
+      const msg = `Lab closed! You finished ${solvedCount} of ${cfg.rounds.length} rounds.`;
+      hud.setObjective(msg);
+      announce(`Out of tries. ${msg} Press Play Again to retry.`);
+      if (clarity) {
+        if (clarity.setTarget) clarity.setTarget(null);
+        clarity.lose({
+          titleEn: "Lab closed!",
+          badge: "📊",
+          stats: `${msg} Tip: read the plot carefully — find the center and spread before you pick.`,
+        });
+      }
     }
 
     function finishBuild() {
@@ -848,7 +882,7 @@ export default {
     }
 
     function chooseAnswer() {
-      if (phase !== "answer" || solvedRound) return;
+      if (phase !== "answer" || solvedRound || gameOver) return;
       const picked = question.choices[answerIndex];
       const ok = question.labels
         ? picked === question.correct
@@ -858,7 +892,16 @@ export default {
         feel.shake(0.2);
         streak = 0;
         hud.setStreak(0);
-        hud.feedback(false, "Not quite. Try again.");
+        lives = Math.max(0, lives - 1);
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        if (lives <= 0) {
+          loseGame();
+          return;
+        }
+        const msg = `Not quite. ${lives} ${
+          lives === 1 ? "try" : "tries"
+        } left.`;
+        hud.feedback(false, msg);
         announce("Not quite. Try another pad.");
         return;
       }
@@ -927,6 +970,14 @@ export default {
         announce(
           `All rounds complete. You answered ${solvedCount} correctly with a best streak of ${bestStreak}. Great data work, Statistician.`,
         );
+        if (clarity) {
+          clarity.setTarget(null);
+          clarity.win({
+            titleEn: "Data Lab complete!",
+            badge: "📊",
+            stats: `${solvedCount} of ${cfg.rounds.length} correct · Best streak ${bestStreak}. Score saved.`,
+          });
+        }
       }
     }
 
@@ -989,30 +1040,8 @@ export default {
           });
         }
 
-        unbindPress = input.onPress((name) => {
-          if (phase === "answer") {
-            if (name === "left") moveAnswer(-1);
-            else if (name === "right") moveAnswer(1);
-            else if (name === "action" || name === "confirm") chooseAnswer();
-            return;
-          }
-          if (phase !== "build") return;
-          if (name === "left") moveCursor(-1);
-          else if (name === "right") moveCursor(1);
-          else if (name === "up" || name === "action" || name === "confirm")
-            dropAction();
-          else if (name === "down") {
-            if (removeBlock(valueOfCol(cursorCol))) {
-              moveCursor(0);
-              announce(`Removed a block from ${valueOfCol(cursorCol)}.`);
-              updateObjective();
-            }
-          }
-        });
-
-        unbindTap = input.onTap(handleTap);
-
         // Gentle idle motion on the cursor + problem card (gated on reduced).
+        // Safe to run behind the start overlay.
         if (!reduced) {
           idleUnbind = onFrame((dt, t) => {
             cursorMesh.position.y += Math.sin(t * 4) * 0.0045;
@@ -1021,10 +1050,92 @@ export default {
           });
         }
 
-        startRound();
+        // Begin the actual round loop + input only after Start is pressed.
+        // Single entry point for first play and for Play Again.
+        function beginGameplay() {
+          roundIndex = 0;
+          lives = START_LIVES;
+          gameOver = false;
+          if (typeof hud.setLives === "function") hud.setLives(lives);
+          unbindPress = input.onPress((name) => {
+            if (phase === "answer") {
+              if (name === "left") moveAnswer(-1);
+              else if (name === "right") moveAnswer(1);
+              else if (name === "action" || name === "confirm") chooseAnswer();
+              return;
+            }
+            if (phase !== "build") return;
+            if (name === "left") moveCursor(-1);
+            else if (name === "right") moveCursor(1);
+            else if (name === "up" || name === "action" || name === "confirm")
+              dropAction();
+            else if (name === "down") {
+              if (removeBlock(valueOfCol(cursorCol))) {
+                moveCursor(0);
+                announce(`Removed a block from ${valueOfCol(cursorCol)}.`);
+                updateObjective();
+              }
+            }
+          });
+
+          unbindTap = input.onTap(handleTap);
+
+          startRound();
+        }
+
+        // Clarity / onboarding kit: start overlay, how-to-play, persistent help
+        // button, mini-HUD, and win screen. Drives nothing in the 3D scene.
+        clarity = initClarity({
+          mount: clarityMount,
+          announce,
+          title: "Data Lab — Build the Plot, Read the Measures",
+          objectiveEn:
+            "Stack blocks to build each data set, then pick the right measure — mean, median, mode, range, or MAD.",
+          objectiveEs:
+            "Apila bloques para armar cada conjunto de datos y elige la medida correcta: media, mediana, moda o rango.",
+          standard: "6.SP.A–B · Statistics: Center & Spread",
+          controls: [
+            {
+              key: "← / →",
+              actionEn:
+                "Move the cursor between number columns (and answer pads)",
+              actionEs:
+                "Mueve el cursor entre columnas (y los botones de respuesta)",
+            },
+            {
+              key: "Space / Enter / ↑",
+              actionEn:
+                "Drop a block on the column (and choose the answer pad)",
+              actionEs: "Coloca un bloque en la columna (y elige la respuesta)",
+            },
+            {
+              key: "↓",
+              actionEn: "Remove the top block from the current column",
+              actionEs: "Quita el bloque de arriba de la columna actual",
+            },
+            {
+              key: "Tap",
+              actionEn: "Tap a column to drop a block, or tap a pad to answer",
+              actionEs:
+                "Toca una columna para soltar un bloque o un botón para responder",
+            },
+            {
+              key: "?",
+              actionEn: "Open this help panel any time (Esc closes it)",
+              actionEs: "Abre esta ayuda cuando quieras (Esc la cierra)",
+            },
+          ],
+          howToWinEn:
+            "First build the exact data set with blocks. Then read the dot plot and tap the pad with the correct measure. Finish every round to win.",
+          howToWinEs:
+            "Primero arma el conjunto de datos con bloques. Luego lee la gráfica y toca la medida correcta. Completa todas las rondas para ganar.",
+          onStart: beginGameplay,
+          onPlayAgain: () => location.reload(),
+        });
       },
 
       dispose() {
+        if (clarity) clarity.dispose();
         if (unbindPress) unbindPress();
         if (unbindTap) unbindTap();
         if (idleUnbind) idleUnbind();

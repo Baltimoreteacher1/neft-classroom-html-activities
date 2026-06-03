@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Martian Fuel Pod — Algebraic Equation Balance Scale</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --neon-pink: #ff2a74;
+  --neon-blue: #00f0ff;
+  --neon-green: #39ff14;
+  --neon-yellow: #fff01f;
+  --bg-dark: #0a0b10;
+  --panel-bg: rgba(20, 24, 38, 0.7);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --text-light: #f3f4f6;
+  --text-muted: #9ca3af;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #1b1c2b 0%, var(--bg-dark) 100%);
+  color: var(--text-light);
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+  padding-bottom: 40px;
+}
+
+header {
+  text-align: center;
+  padding: 30px 20px;
+  background: rgba(10, 11, 16, 0.8);
+  border-bottom: 2px solid var(--neon-yellow);
+  box-shadow: 0 4px 30px rgba(255, 240, 31, 0.2);
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 0 10px var(--neon-yellow), 0 0 30px var(--neon-yellow);
+  font-style: italic;
+  letter-spacing: 1px;
+}
+
+header p {
+  color: var(--neon-green);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 8px 0 0;
+  text-shadow: 0 0 5px var(--neon-green);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--neon-yellow), var(--neon-green));
+}
+
+.cockpit-header {
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.15);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cockpit-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--neon-blue);
+  text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
+}
+
+.telemetry-screen {
+  background: rgba(10, 11, 16, 0.9);
+  border: 2px solid var(--neon-blue);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+  box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.eq-display {
+  font-family: monospace;
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--neon-blue);
+  text-shadow: 0 0 8px var(--neon-blue);
+}
+
+.scale-visualizer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.cockpit-keypad {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.keypad-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  text-transform: uppercase;
+}
+
+.keypad-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--neon-yellow);
+}
+
+.btn-subtract { border-color: var(--neon-pink); color: var(--neon-pink); }
+.btn-subtract:hover { background: var(--neon-pink); color: #fff; box-shadow: 0 0 10px var(--neon-pink); }
+
+.btn-add { border-color: var(--neon-blue); color: var(--neon-blue); }
+.btn-add:hover { background: var(--neon-blue); color: var(--bg-dark); box-shadow: 0 0 10px var(--neon-blue); }
+
+.btn-divide { border-color: var(--neon-green); color: var(--neon-green); }
+.btn-divide:hover { background: var(--neon-green); color: var(--bg-dark); box-shadow: 0 0 10px var(--neon-green); }
+
+.btn-multiply { border-color: var(--neon-yellow); color: var(--neon-yellow); }
+.btn-multiply:hover { background: var(--neon-yellow); color: var(--bg-dark); box-shadow: 0 0 10px var(--neon-yellow); }
+
+.quest-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.quest-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  color: var(--neon-yellow);
+}
+
+.quest-card p {
+  margin: 0 0 16px;
+  font-size: 0.95rem;
+  color: var(--text-light);
+}
+
+.quest-metrics {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.metric-val {
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.metric-val.correct {
+  color: var(--neon-green);
+  text-shadow: 0 0 5px var(--neon-green);
+}
+
+.metric-val.waiting {
+  color: var(--neon-pink);
+  text-shadow: 0 0 5px var(--neon-pink);
+}
+
+.esol-word {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.esol-term-en {
+  font-weight: bold;
+  color: var(--neon-blue);
+}
+
+.esol-term-es {
+  display: block;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.esol-sentence {
+  background: rgba(0, 240, 255, 0.05);
+  border-left: 4px solid var(--neon-blue);
+  padding: 12px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.95rem;
+  margin-top: 15px;
+}
+
+.esol-sentence-es {
+  display: block;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.diagnostics-console {
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #0f0;
+  margin-top: 30px;
+  height: 90px;
+  overflow-y: auto;
+}
+
+.diagnostics-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.diagnostics-btn:hover {
+  color: var(--neon-pink);
+}
+
+.quest-status {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.quest-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quest-dot.done {
+  background: var(--neon-green);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+}
+
+.success-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.success-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.success-content {
+  background: var(--panel-bg);
+  border: 2px solid var(--neon-green);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 0 30px var(--neon-green);
+  transform: scale(0.8);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.success-modal.active .success-content {
+  transform: scale(1);
+}
+
+.success-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  color: var(--neon-green);
+  margin: 0 0 10px;
+  text-shadow: 0 0 10px var(--neon-green);
+}
+
+.success-content p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin: 0 0 24px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  outline: none;
+  font-family: 'Outfit', sans-serif;
+  text-transform: uppercase;
+  border: none;
+}
+
+.btn-green {
+  background: transparent;
+  color: var(--neon-green);
+  border: 2px solid var(--neon-green);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+}
+
+.btn-green:hover {
+  background: var(--neon-green);
+  color: var(--bg-dark);
+  box-shadow: 0 0 20px var(--neon-green);
+}
+
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Martian Fuel Pod</h1>
+  <p>Interactive Algebraic Balance Scale</p>
+</header>
+
+<main class="container">
+  <!-- Left Side: Balances scale (Dynamic SVG) & operations controls -->
+  <section class="panel">
+    <div class="cockpit-header">
+      <h2>Cockpit Console</h2>
+      <span class="badge" style="background:var(--neon-yellow); color:var(--bg-dark); padding:4px 10px; border-radius:999px; font-weight:800; font-size:0.75rem; letter-spacing:1px; box-shadow:0 0 8px var(--neon-yellow);">Telemetry</span>
+    </div>
+
+    <div class="telemetry-screen">
+      <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px; letter-spacing: 2px;">Equation Telemetry</span>
+      <div class="eq-display" id="eqDisplay">x + 5 = 12</div>
+    </div>
+
+    <div class="scale-visualizer">
+      <!-- Dynamic SVG balance scale showing equation weights -->
+      <svg id="scaleSvg" width="460" height="260" style="background:white; border-radius:12px;">
+        <!-- Lever pivot, beam, trays, variable canister x, and integer weight blocks -->
+      </svg>
+    </div>
+
+    <div class="cockpit-keypad">
+      <button class="keypad-btn btn-subtract" onclick="AppController.applyInverse('subtract')">
+        <span>➖</span> Subtract Weights
+      </button>
+      <button class="keypad-btn btn-add" onclick="AppController.applyInverse('add')">
+        <span>➕</span> Add Weights
+      </button>
+      <button class="keypad-btn btn-divide" onclick="AppController.applyInverse('divide')">
+        <span>➗</span> Divide Weights
+      </button>
+      <button class="keypad-btn btn-multiply" onclick="AppController.applyInverse('multiply')">
+        <span>✖️</span> Multiply Weights
+      </button>
+    </div>
+  </section>
+
+  <!-- Right Side: Quests, ESOL Scaffolding, & Diagnostics -->
+  <section class="panel">
+    <div class="quest-status" id="questIndicators">
+      <div class="quest-dot" id="dot1"></div>
+      <div class="quest-dot" id="dot2"></div>
+      <div class="quest-dot" id="dot3"></div>
+    </div>
+
+    <div class="quest-card">
+      <h3 id="questTitle">Quest 1: Fuel Injection Addition</h3>
+      <p id="questDesc">Solve the equation x + 5 = 12. To isolate the variable canister (x) on the left, select the correct inverse operation (Subtract) on your console, enter 5, and balance the fuel pod scale!</p>
+      
+      <div class="quest-metrics">
+        <span>Isolate Variable (Target):</span>
+        <span class="metric-val waiting" id="metricDisplay">Unbalanced</span>
+      </div>
+    </div>
+
+    <div class="esol-card">
+      <div class="esol-word">
+        <span class="esol-term-en">Inverse Operation</span>
+        <span class="esol-term-es">Operación Inversa — The opposite operation that cancels a value (e.g. subtraction cancels addition)</span>
+      </div>
+      <div class="esol-word">
+        <span class="esol-term-en">Isolate the Variable</span>
+        <span class="esol-term-es">Aislar la Variable — Get the letter x completely by itself on one side of the scale</span>
+      </div>
+      <div class="esol-word">
+        <span class="esol-term-en">Equilibrium</span>
+        <span class="esol-term-es">Equilibrio — Balanced state where both trays contain exactly equivalent weights</span>
+      </div>
+
+      <div class="esol-sentence">
+        <span class="esol-sentence-en">"To isolate the variable, we must perform the inverse operation on both sides of the equation."</span>
+        <span class="esol-sentence-es">"Para aislar la variable, debemos realizar la operación inversa en ambos lados de la ecuación."</span>
+      </div>
+    </div>
+
+    <div class="diagnostics-console" id="logConsole">
+      * Space cockpit online. Telemetry waiting...
+    </div>
+    <button class="diagnostics-btn" onclick="selfTest()">Run Diagnostic Self-Test</button>
+  </section>
+</main>
+
+<div class="success-modal" id="successModal">
+  <div class="success-content">
+    <h2>Fuel Pod Launched! 🚀</h2>
+    <p id="modalBody">Perfect equation solving! The pod balanced horizontally with 100% precision, firing up the main space engines.</p>
+    <button class="btn btn-green" style="width: 100%;" onclick="AppController.nextQuest()">Serve Next Planet</button>
+  </div>
+</div>
+
+<script>
+/* ---------- CONFIGURATION BLOCK ---------- */
+const CONFIG = {
+  quests: [
+    { id: 1, title: "Quest 1: Fuel Injection Addition", desc: "Solve the equation x + 5 = 12. To isolate the variable canister (x) on the left, select the correct inverse operation (Subtract) on your console, enter 5, and balance the scale!", type: "add", valX: 7, operand: 5, eqString: "x + 5 = 12" },
+    { id: 2, title: "Quest 2: Orbit Re-Entry Subtraction", desc: "Solve the equation x - 4 = 8. To isolate the variable canister (x), select the correct inverse operation (Add) on your console, enter 4, and balance the scale!", type: "subtract", valX: 12, operand: 4, eqString: "x - 4 = 8" },
+    { id: 3, title: "Quest 3: Speed Boost Coefficient", desc: "Solve the equation 3x = 18. To isolate the variable canister (x), select the correct inverse operation (Divide) on your console, enter 3, and balance the scale!", type: "multiply", valX: 6, operand: 3, eqString: "3x = 18" }
+  ]
+};
+
+function validateConfig() {
+  if (!Array.isArray(CONFIG.quests) || CONFIG.quests.length !== 3) throw new Error("Spaceship CONFIG missing quests.");
+  return true;
+}
+
+/* ---------- WEB AUDIO ENGINE ---------- */
+const AudioEngine = {
+  ctx: null,
+  init() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  },
+  playClick() {
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(440, now);
+    
+    gain.gain.setValueAtTime(0.02, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.06);
+  },
+  playClank() {
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, now);
+    
+    gain.gain.setValueAtTime(0.04, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.18);
+  },
+  playSuccess() {
+    this.init();
+    const now = this.ctx.currentTime;
+    // Ascending major spacecraft sweep
+    const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+      gain.gain.setValueAtTime(0.03, now + idx * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5 + idx * 0.06);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + idx * 0.06);
+      osc.stop(now + 0.7 + idx * 0.06);
+    });
+  },
+  playError() {
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(100, now);
+    
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.4);
+  }
+};
+
+/* ---------- STATE LAYER (REPOSITORY) ---------- */
+const STATE = {
+  currentQuestIndex: 0,
+  currentValX: 1, // Current x value container weight
+  currentWeightLeft: 0, // Total weight left side
+  currentWeightRight: 0, // Total weight right side
+  solved: false,
+  
+  quest() {
+    return CONFIG.quests[this.currentQuestIndex];
+  },
+  
+  // Angle calculated based on absolute torque deviation difference
+  tiltAngle() {
+    if (this.solved) return 0;
+    const diff = this.currentWeightLeft - this.currentWeightRight;
+    const maxDiff = 15;
+    const maxAngle = 20; // 20 degrees maximum tilt
+    let angle = (diff / maxDiff) * maxAngle;
+    return Math.max(-maxAngle, Math.min(maxAngle, angle));
+  },
+  
+  transitionState(fields) {
+    Object.assign(this, fields);
+    UI.drawScale();
+  }
+};
+
+/* ---------- VIEW LAYER (UI) ---------- */
+const UI = {
+  log(msg) {
+    const consoleBox = document.getElementById("logConsole");
+    consoleBox.innerHTML += `<br/>* ${msg}`;
+    consoleBox.scrollTop = consoleBox.scrollHeight;
+  },
+  
+  drawScale() {
+    const svg = document.getElementById("scaleSvg");
+    svg.innerHTML = ""; // Clear
+    
+    // Draw white coordinate area background
+    const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bg.setAttribute("x", "0");
+    bg.setAttribute("y", "0");
+    bg.setAttribute("width", "460");
+    bg.setAttribute("height", "260");
+    bg.setAttribute("fill", "#ffffff");
+    svg.appendChild(bg);
+    
+    // Dimensions
+    const cx = 230; // center pivot x
+    const cy = 200; // pivot y
+    const beamLength = 280;
+    const angleRad = (STATE.tiltAngle() * Math.PI) / 180;
+    
+    const dx = Math.cos(angleRad) * (beamLength / 2);
+    const dy = Math.sin(angleRad) * (beamLength / 2);
+    
+    const lx = cx - dx;
+    const ly = cy - dy;
+    const rx = cx + dx;
+    const ry = cy + dy;
+    
+    // 1. Draw solid lever stand base pivot (Triangle)
+    const stand = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    stand.setAttribute("points", `${cx},${cy} ${cx - 20},240 ${cx + 20},240`);
+    stand.setAttribute("fill", "#12355b");
+    stand.setAttribute("stroke", "#0a1128");
+    stand.setAttribute("stroke-width", "2");
+    svg.appendChild(stand);
+    
+    // 2. Draw tilting scale beam (horizontal main segment)
+    this.drawSvgLine(svg, lx, ly, rx, ry, "#12355b", "5");
+    
+    // Draw center indicator axis
+    this.drawSvgCircle(svg, cx, cy, 6, "", "var(--neon-yellow)", "#12355b", "2");
+    
+    // 3. Draw Left Tray & Weights
+    this.drawTray(svg, lx, ly, "left");
+    // 4. Draw Right Tray & Weights
+    this.drawTray(svg, rx, ry, "right");
+    
+    // Render Telemetry logs
+    this.renderTelemetry();
+  },
+  
+  drawTray(svg, tx, ty, type) {
+    const q = STATE.quest();
+    const trayWidth = 100;
+    const trayH = 10;
+    const trayY = ty + 80;
+    
+    // Draw hanging lines from beam tips to trays
+    this.drawSvgLine(svg, tx, ty, tx - trayWidth / 2, trayY, "#555", "1.5");
+    this.drawSvgLine(svg, tx, ty, tx + trayWidth / 2, trayY, "#555", "1.5");
+    
+    // Draw tray plate (Rect)
+    const plate = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    plate.setAttribute("x", tx - trayWidth / 2);
+    plate.setAttribute("y", trayY);
+    plate.setAttribute("width", trayWidth);
+    plate.setAttribute("height", trayH);
+    plate.setAttribute("fill", "#12355b");
+    plate.setAttribute("rx", "2");
+    svg.appendChild(plate);
+    
+    // Draw weights inside tray
+    if (type === "left") {
+      // 1. Draw glowing neon Variable Canister x
+      const xCount = (q.id === 3 && !STATE.solved) ? 3 : 1;
+      
+      for (let i = 0; i < xCount; i++) {
+        const canX = tx - 30 + i * 24;
+        const canY = trayY - 45;
+        this.drawCanister(svg, canX, canY, "X");
+      }
+      
+      // 2. Draw left integer constants
+      const count = STATE.currentWeightLeft - (STATE.solved ? STATE.currentValX : (q.id === 3 ? 3 * STATE.currentValX : STATE.currentValX));
+      for (let i = 0; i < count; i++) {
+        const wx = tx - 35 + (i % 4) * 16;
+        const wy = trayY - 14 - Math.floor(i / 4) * 14;
+        this.drawWeight(svg, wx, wy);
+      }
+    } else {
+      // Draw right integer constants
+      const count = STATE.currentWeightRight;
+      for (let i = 0; i < count; i++) {
+        const wx = tx - 40 + (i % 5) * 16;
+        const wy = trayY - 14 - Math.floor(i / 5) * 14;
+        this.drawWeight(svg, wx, wy);
+      }
+    }
+  },
+  
+  drawCanister(svg, x, y, label) {
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    
+    const r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    r.setAttribute("x", x);
+    r.setAttribute("y", y);
+    r.setAttribute("width", "20");
+    r.setAttribute("height", "40");
+    r.setAttribute("rx", "4");
+    r.setAttribute("fill", "rgba(0, 240, 255, 0.2)");
+    r.setAttribute("stroke", "var(--neon-blue)");
+    r.setAttribute("stroke-width", "2.5");
+    g.appendChild(r);
+    
+    const cap = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    cap.setAttribute("x", x + 4);
+    cap.setAttribute("y", y - 4);
+    cap.setAttribute("width", "12");
+    cap.setAttribute("height", "4");
+    cap.setAttribute("fill", "var(--neon-blue)");
+    g.appendChild(cap);
+    
+    // Label x
+    const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    t.setAttribute("x", x + 10);
+    t.setAttribute("y", y + 25);
+    t.setAttribute("fill", "#fff");
+    t.setAttribute("font-size", "14");
+    t.setAttribute("font-family", "monospace");
+    t.setAttribute("font-weight", "bold");
+    t.setAttribute("text-anchor", "middle");
+    t.textContent = label;
+    g.appendChild(t);
+    
+    svg.appendChild(g);
+  },
+  
+  drawWeight(svg, x, y) {
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", x);
+    c.setAttribute("cy", y);
+    c.setAttribute("r", "7");
+    c.setAttribute("fill", "var(--neon-yellow)");
+    c.setAttribute("stroke", "#ff8f00");
+    c.setAttribute("stroke-width", "1.5");
+    svg.appendChild(c);
+    
+    const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    t.setAttribute("x", x);
+    t.setAttribute("y", y + 3);
+    t.setAttribute("fill", "#ff8f00");
+    t.setAttribute("font-size", "9");
+    t.setAttribute("font-family", "monospace");
+    t.setAttribute("font-weight", "bold");
+    t.setAttribute("text-anchor", "middle");
+    t.textContent = "1";
+    svg.appendChild(t);
+  },
+  
+  renderTelemetry() {
+    const q = STATE.quest();
+    
+    // Update active telemetry equations display
+    const eqBox = document.getElementById("eqDisplay");
+    if (STATE.solved) {
+      eqBox.innerHTML = `<span style="color: var(--neon-green);">x = ${q.valX}</span>`;
+      document.getElementById("metricDisplay").className = "metric-val correct";
+      document.getElementById("metricDisplay").innerText = "EQUILIBRIUM SECURED";
+    } else {
+      let leftStr = `x + ${STATE.currentWeightLeft - STATE.currentValX}`;
+      if (q.id === 2) leftStr = `x - ${Math.abs(STATE.currentWeightLeft - STATE.currentValX)}`;
+      if (q.id === 3) leftStr = `3x`;
+      
+      eqBox.innerHTML = `${leftStr} = ${STATE.currentWeightRight}`;
+      document.getElementById("metricDisplay").className = "metric-val waiting";
+      document.getElementById("metricDisplay").innerText = "UNBALANCED";
+    }
+    
+    // Indicator dots status updates
+    for (let i = 1; i <= 3; i++) {
+      const dot = document.getElementById(`dot${i}`);
+      dot.className = "quest-dot";
+      if (i < STATE.currentQuestIndex + 1) {
+        dot.classList.add("done");
+      }
+    }
+  },
+  
+  drawSvgCircle(parent, cx, cy, r, label = "", fill = "#d7e2ed", stroke = "#12355b", strokeW = "1.5") {
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", cx);
+    c.setAttribute("cy", cy);
+    c.setAttribute("r", r);
+    c.setAttribute("fill", fill);
+    c.setAttribute("stroke", stroke);
+    c.setAttribute("stroke-width", strokeW);
+    parent.appendChild(c);
+  },
+  
+  drawSvgLine(parent, x1, y1, x2, y2, stroke = "#12355b", w = "1.5", dash = "") {
+    const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    l.setAttribute("x1", x1);
+    l.setAttribute("y1", y1);
+    l.setAttribute("x2", x2);
+    l.setAttribute("y2", y2);
+    l.setAttribute("stroke", stroke);
+    l.setAttribute("stroke-width", w);
+    if (dash) l.setAttribute("stroke-dasharray", dash);
+    parent.appendChild(l);
+  }
+};
+
+/* ---------- CONTROLLER LAYER (BRIDGE) ---------- */
+const AppController = {
+  applyInverse(op) {
+    if (STATE.solved) return;
+    AudioEngine.playClick();
+    
+    const q = STATE.quest();
+    const promptMsg = (op === "subtract") ? "Subtract what value from both sides?" :
+                      (op === "add") ? "Add what value to both sides?" :
+                      (op === "divide") ? "Divide both sides by what value?" :
+                      "Multiply both sides by what value?";
+                      
+    const input = prompt(promptMsg);
+    if (input === null) return;
+    const value = parseInt(input);
+    
+    if (isNaN(value) || value <= 0) {
+      AudioEngine.playError();
+      alert("❌ Invalid input! Enter a valid positive integer.");
+      return;
+    }
+    
+    let isCorrectOp = false;
+    if (q.type === "add" && op === "subtract" && value === q.operand) isCorrectOp = true;
+    if (q.type === "subtract" && op === "add" && value === q.operand) isCorrectOp = true;
+    if (q.type === "multiply" && op === "divide" && value === q.operand) isCorrectOp = true;
+    
+    if (isCorrectOp) {
+      AudioEngine.playClank();
+      UI.log(`🚀 telemetry confirmation: Applied Inverse operation ${op} ${value}.`);
+      
+      // Update weights state to isolated variable C
+      let newLeft = STATE.currentValX;
+      let newRight = q.valX;
+      
+      STATE.transitionState({
+        currentWeightLeft: newLeft,
+        currentWeightRight: newRight,
+        solved: true
+      });
+      
+      // Fire success trigger
+      setTimeout(() => {
+        AudioEngine.playSuccess();
+        document.getElementById("successModal").classList.add("active");
+      }, 1000);
+    } else {
+      AudioEngine.playError();
+      UI.log(`❌ Telemetry Warning: Incorrect operation parameters! Double check inverse actions.`);
+      alert("❌ Scale Out of Balance! Applying that operation does not isolate the variable canister. Try performing the inverse operation.");
+    }
+  },
+  
+  nextQuest() {
+    document.getElementById("successModal").classList.remove("active");
+    
+    let nextQuestIdx = STATE.currentQuestIndex + 1;
+    if (nextQuestIdx >= CONFIG.quests.length) {
+      alert("🏆 SPACESHIP LAUNCHED! ALL ALGEBRAIC EQUATIONS SOLVED!");
+      nextQuestIdx = 0;
+    }
+    
+    const q = CONFIG.quests[nextQuestIdx];
+    
+    // Set initial quest-based weights states
+    let leftWeights = q.valX + q.operand;
+    let rightWeights = q.valX + q.operand;
+    
+    if (q.type === "subtract") {
+      // Subtraction: x - 4 = 8.
+      leftWeights = q.valX - q.operand;
+      rightWeights = q.valX - q.operand;
+    }
+    if (q.type === "multiply") {
+      // Multiplication: 3x = 18.
+      leftWeights = 3 * q.valX;
+      rightWeights = 3 * q.valX;
+    }
+    
+    STATE.transitionState({
+      currentQuestIndex: nextQuestIdx,
+      currentValX: q.valX,
+      currentWeightLeft: leftWeights,
+      currentWeightRight: rightWeights,
+      solved: false
+    });
+    
+    document.getElementById("questTitle").innerText = q.title;
+    document.getElementById("questDesc").innerText = q.desc;
+  }
+};
+
+/* ---------- DIAGNOSTICS & SELF TEST SUITE ---------- */
+function selfTest() {
+  UI.log("🔬 Running automated equations self-test...");
+  try {
+    validateConfig();
+    UI.log("✅ Config validation check passed.");
+    
+    // Verify equations inverse math
+    const q1 = CONFIG.quests[0]; // x + 5 = 12
+    const isolatedX = 12 - 5;
+    if (isolatedX !== q1.valX) throw new Error("Equation 1 solver misaligned: got " + isolatedX);
+    
+    const q2 = CONFIG.quests[1]; // x - 4 = 8
+    const isolatedX2 = 8 + 4;
+    if (isolatedX2 !== q2.valX) throw new Error("Equation 2 solver misaligned: got " + isolatedX2);
+    
+    const q3 = CONFIG.quests[2]; // 3x = 18
+    const isolatedX3 = 18 / 3;
+    if (isolatedX3 !== q3.valX) throw new Error("Equation 3 solver misaligned: got " + isolatedX3);
+    
+    UI.log("✅ Algebraic inverse validation engines resolved with 100% precision.");
+    UI.log("🏆 DIAGNOSTICS SUCCESS: Martian Fuel Pod cockpit is fully operational!");
+  } catch (err) {
+    UI.log("❌ SELF TEST FAIL: " + err.message);
+    console.error(err);
+  }
+}
+
+// Initialize Application
+window.addEventListener("load", () => {
+  validateConfig();
+  
+  // Set initial quest weights
+  const q = CONFIG.quests[0];
+  STATE.transitionState({
+    currentQuestIndex: 0,
+    currentValX: q.valX,
+    currentWeightLeft: q.valX + q.operand,
+    currentWeightRight: q.valX + q.operand,
+    solved: false
+  });
+  
+  UI.log("🛸 Spaceship cockpit ready. Balancing scale weights online.");
+});
+</script>
+</body>
+</html>

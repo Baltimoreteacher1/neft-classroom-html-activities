@@ -4,741 +4,1374 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Unit 4 HyperDoc — GCF, LCM, Decimals &amp; the Distributive Property (6.NS.B.2–4) | Neft Teacher
+      Unit 4 HyperDoc — Rates, Percents &amp; Measurement Conversion | Neft
+      Teacher
     </title>
-    <link rel="stylesheet" href="/assets/neft-theme.css" />
-    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
-    <script src="/assets/neft-theme.js" defer></script>
+    <meta
+      name="description"
+      content="Grade 6 interactive HyperDoc for Unit 4: rates, unit rates, percents, and measurement conversion (6.RP.3). Engage, Explore, Explain, Apply, Reflect."
+    />
+
+    <!-- Shared design system -->
+    <link rel="stylesheet" href="../../assets/neft-theme.css" />
+    <link rel="stylesheet" href="../../assets/nt-activity-kit.css" />
+
     <style>
-      /* ── Base ── */
-      *, *::before, *::after { box-sizing: border-box; }
-      body {
+      /* ---------- Unit 4 HyperDoc — original layer on top of the shared theme ---------- */
+      :root {
+        --u4-rate: #2563eb; /* blue   — rates / unit rates  */
+        --u4-pct: #7c3aed; /* purple — percents            */
+        --u4-meas: #0d9488; /* teal   — measurement convert */
+        --u4-sun: #f59e0b; /* amber  — highlights          */
+        --u4-good: #16a34a;
+        --u4-bad: #dc2626;
+      }
+
+      .u4-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 0 18px 80px;
+      }
+
+      /* ---- Hero ---- */
+      .u4-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 30px 28px;
+        margin: 18px 0 26px;
+        color: #fff;
+        background:
+          radial-gradient(
+            120% 140% at 8% 0%,
+            rgba(255, 255, 255, 0.18),
+            transparent 45%
+          ),
+          linear-gradient(
+            125deg,
+            var(--u4-rate),
+            var(--u4-pct) 55%,
+            var(--u4-meas)
+          );
+        box-shadow: 0 18px 40px -22px rgba(37, 99, 235, 0.8);
+      }
+      .u4-hero h1 {
+        margin: 6px 0 6px;
+        font-size: clamp(1.55rem, 3.4vw, 2.3rem);
+        line-height: 1.12;
+        letter-spacing: -0.01em;
+      }
+      .u4-hero p {
         margin: 0;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        font-size: 19px;
-        line-height: 1.6;
-        background: var(--nt-bg);
-        color: var(--nt-text);
+        max-width: 60ch;
+        font-size: 1.04rem;
+        opacity: 0.96;
       }
-      .wrap { max-width: 880px; margin: 0 auto; padding: 24px 18px 80px; }
-
-      /* ── Skip link ── */
-      .skip {
-        position: absolute; left: -999px; top: 0;
-        background: var(--nt-accent); color: var(--nt-bg);
-        padding: 10px 14px; border-radius: 8px; font-weight: 700;
-        text-decoration: none;
-      }
-      .skip:focus { left: 8px; top: 8px; z-index: 50; }
-
-      /* ── Top nav ── */
-      .top-nav { font-size: 14px; padding: 10px 16px; }
-      .top-nav a { color: var(--nt-accent); }
-
-      /* ── Hero ── */
-      header.hero {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 26px 24px;
-        margin-bottom: 20px;
-      }
-      header.hero h1 { margin: 0 0 6px; font-size: 30px; line-height: 1.2; color: var(--nt-text); }
-      header.hero p.sub { margin: 0; color: var(--nt-muted); font-size: 17px; }
-
-      /* ── Badge / pill ── */
-      .pill {
-        display: inline-block;
-        background: var(--nt-accent); color: var(--nt-bg);
-        font-weight: 700; padding: 4px 12px;
-        border-radius: 999px; font-size: 15px; margin-bottom: 10px;
-      }
-
-      /* ── Cards ── */
-      section.card, div.card {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 16px;
-        padding: 22px;
-        margin-bottom: 22px;
-      }
-      section.card h2, div.card h2 {
-        margin: 0 0 12px;
-        font-size: 23px;
-        color: var(--nt-text);
-      }
-
-      /* ── Step label ── */
-      .step-label {
-        display: inline-block;
-        color: var(--nt-accent);
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        font-size: 13px;
-        margin-bottom: 6px;
-      }
-
-      /* ── Learning Target box ── */
-      .learning-target {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin-bottom: 22px;
-      }
-      .learning-target h2 {
-        margin: 0 0 10px;
-        font-size: 18px;
-        color: var(--nt-accent);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      .learning-target ul { margin: 0 0 10px 0; padding-left: 20px; }
-      .learning-target li { margin: 4px 0; font-size: 17px; }
-      .lt-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 15px; color: var(--nt-muted); margin-top: 10px; }
-      .lt-meta span::before { content: "• "; }
-
-      /* ── Teacher Notes (collapsible) ── */
-      .teacher-notes {
-        background: #fff8e1;
-        border: 2px solid #f9a825;
-        border-radius: 12px;
-        margin-bottom: 22px;
-      }
-      .teacher-notes summary {
-        padding: 14px 18px;
-        cursor: pointer;
+      .u4-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         font-weight: 700;
-        font-size: 17px;
-        color: #5d4037;
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(255, 255, 255, 0.18);
+        padding: 6px 12px;
+        border-radius: 999px;
+      }
+      .u4-standards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .u4-chip {
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.32);
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+
+      /* ---- Progress / journey ---- */
+      .u4-journey {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin: 0 0 26px;
         list-style: none;
-        display: flex; align-items: center; gap: 8px;
+        padding: 0;
       }
-      .teacher-notes summary::-webkit-details-marker { display: none; }
-      .teacher-notes summary::before { content: "▶"; font-size: 13px; transition: transform 0.2s; }
-      .teacher-notes[open] summary::before { transform: rotate(90deg); }
-      .teacher-notes-body { padding: 0 18px 16px; }
-      .teacher-notes-body h3 { margin: 12px 0 4px; font-size: 16px; color: #5d4037; }
-      .teacher-notes-body p, .teacher-notes-body ul { font-size: 16px; margin: 4px 0; color: #4a3728; }
-      .teacher-notes-body ul { padding-left: 20px; }
-      .teacher-notes-body li { margin: 3px 0; }
-
-      /* ── Do-it callout ── */
-      .do-it {
-        background: var(--nt-bg);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 8px;
-        padding: 10px 14px;
-        margin: 12px 0;
-        font-weight: 600;
-      }
-
-      /* ── Explore links ── */
-      .links a {
-        display: block;
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        margin: 10px 0;
-        color: var(--nt-text);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .links a:hover, .links a:focus { border-color: var(--nt-accent); outline: none; }
-      .links a:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 2px; }
-      .links .sub { display: block; color: var(--nt-muted); font-weight: 400; font-size: 16px; }
-
-      /* ── Vocab list ── */
-      .vocab { list-style: none; padding: 0; margin: 12px 0 0; }
-      .vocab li { margin: 8px 0; font-size: 17px; }
-      .vocab b { color: var(--nt-accent); }
-
-      /* ── Worked examples ── */
-      .worked {
-        background: var(--nt-bg);
-        border: 2px dashed var(--nt-border);
-        border-radius: 10px;
-        padding: 14px 16px;
-        margin: 12px 0;
-      }
-      .worked code { font-size: 18px; font-weight: 700; }
-
-      /* ── Questions ── */
-      .q { margin: 18px 0; }
-      .q label { display: block; font-weight: 700; margin-bottom: 8px; }
-      .q .hint { color: var(--nt-muted); font-weight: 400; font-size: 16px; }
-
-      /* ── Inputs ── */
-      input[type="text"], textarea {
-        width: 100%;
-        font-size: 18px; padding: 11px 13px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-bg); color: var(--nt-text);
-        font-family: inherit;
-      }
-      input[type="text"]:focus, textarea:focus {
-        outline: 3px solid var(--nt-focus); outline-offset: 1px;
-        border-color: var(--nt-accent);
-      }
-      textarea { min-height: 90px; resize: vertical; }
-
-      /* ── Self-check items ── */
-      .sc-item {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-border);
+      .u4-journey li {
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--nt-muted, #64748b);
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #e2e8f0);
         border-radius: 12px;
+        padding: 10px 4px;
+      }
+      .u4-journey li b {
+        display: block;
+        font-size: 1.2rem;
+        color: var(--u4-rate);
+      }
+      @media (max-width: 640px) {
+        .u4-journey {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      /* ---- Step card ---- */
+      .step {
+        background: var(--nt-surface, #fff);
+        border: 1px solid var(--nt-border, #e2e8f0);
+        border-radius: 18px;
+        padding: 24px 24px 26px;
+        margin: 0 0 22px;
+        box-shadow: 0 10px 30px -24px rgba(15, 23, 42, 0.55);
+      }
+      .step > h2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 4px;
+        font-size: 1.35rem;
+        letter-spacing: -0.01em;
+      }
+      .step-badge {
+        flex: none;
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        color: #fff;
+        font-size: 1.2rem;
+        box-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.6);
+      }
+      .step .lead {
+        margin: 0 0 16px;
+        color: var(--nt-muted, #475569);
+        font-size: 1rem;
+      }
+      .b-engage {
+        background: var(--u4-sun);
+      }
+      .b-explore {
+        background: var(--u4-rate);
+      }
+      .b-explain {
+        background: var(--u4-pct);
+      }
+      .b-apply {
+        background: var(--u4-meas);
+      }
+      .b-reflect {
+        background: #db2777;
+      }
+
+      /* ---- Explore cards ---- */
+      .u4-explore-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+      }
+      .u4-explore-card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--nt-border, #e2e8f0);
+        border-radius: 14px;
+        padding: 16px;
+        background: var(--nt-bg, #f8fafc);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease,
+          border-color 0.12s ease;
+      }
+      .u4-explore-card:hover,
+      .u4-explore-card:focus-visible {
+        transform: translateY(-3px);
+        border-color: var(--u4-rate);
+        box-shadow: 0 14px 28px -20px rgba(37, 99, 235, 0.9);
+        outline: none;
+      }
+      .u4-explore-card .ico {
+        font-size: 1.6rem;
+      }
+      .u4-explore-card b {
+        font-size: 1.02rem;
+      }
+      .u4-explore-card span {
+        font-size: 0.88rem;
+        color: var(--nt-muted, #64748b);
+      }
+      .u4-explore-card .tag {
+        margin-top: 4px;
+        align-self: flex-start;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--u4-rate);
+        background: rgba(37, 99, 235, 0.1);
+        padding: 3px 8px;
+        border-radius: 999px;
+      }
+
+      /* ---- Explain: worked examples & visuals ---- */
+      .u4-callout {
+        border-left: 5px solid var(--u4-rate);
+        background: rgba(37, 99, 235, 0.06);
         padding: 14px 16px;
+        border-radius: 0 12px 12px 0;
         margin: 14px 0;
       }
-      .sc-item p.sc-q { margin: 0 0 10px; font-weight: 700; font-size: 17px; }
-      .sc-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-      .sc-options label {
-        display: flex; align-items: center; gap: 6px;
-        background: var(--nt-surface); border: 2px solid var(--nt-border);
-        border-radius: 8px; padding: 8px 12px; cursor: pointer;
-        font-size: 16px; font-weight: 400;
+      .u4-callout.pct {
+        border-color: var(--u4-pct);
+        background: rgba(124, 58, 237, 0.06);
       }
-      .sc-options input[type="radio"] { width: auto; margin: 0; }
-      .sc-options label:has(input:checked) { border-color: var(--nt-accent); background: var(--nt-bg); }
-      .sc-feedback {
-        display: none; margin-top: 6px; padding: 8px 12px;
-        border-radius: 8px; font-size: 16px; font-weight: 600;
+      .u4-callout.meas {
+        border-color: var(--u4-meas);
+        background: rgba(13, 148, 136, 0.06);
       }
-      .sc-feedback.correct { background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
-      .sc-feedback.wrong   { background: #fce4ec; color: #b71c1c; border: 2px solid #ef9a9a; }
-      .sc-check-btn {
-        background: var(--nt-accent); color: var(--nt-bg);
-        border: none; border-radius: 8px;
-        padding: 8px 18px; font-size: 16px; font-weight: 700;
+      .u4-callout h3 {
+        margin: 0 0 6px;
+        font-size: 1.05rem;
+      }
+
+      .u4-example {
+        background: var(--nt-bg, #f8fafc);
+        border: 1px dashed var(--nt-border, #cbd5e1);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin: 12px 0;
+      }
+      .u4-example .work {
+        font-variant-numeric: tabular-nums;
+        line-height: 1.9;
+      }
+      .u4-example .work .op {
+        color: var(--u4-pct);
+        font-weight: 700;
+      }
+      .u4-example .ans {
+        display: inline-block;
+        margin-top: 6px;
+        font-weight: 800;
+        color: var(--u4-good);
+        background: rgba(22, 163, 74, 0.12);
+        padding: 2px 10px;
+        border-radius: 8px;
+      }
+
+      table.u4-ratio {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-variant-numeric: tabular-nums;
+      }
+      table.u4-ratio caption {
+        text-align: left;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      table.u4-ratio th,
+      table.u4-ratio td {
+        border: 1px solid var(--nt-border, #e2e8f0);
+        padding: 8px 10px;
+        text-align: center;
+      }
+      table.u4-ratio thead th {
+        background: var(--u4-rate);
+        color: #fff;
+      }
+      table.u4-ratio tbody th {
+        background: var(--nt-bg, #f1f5f9);
+        text-align: left;
+      }
+      table.u4-ratio td.hi {
+        background: rgba(245, 158, 11, 0.18);
+        font-weight: 800;
+      }
+
+      /* ---- Level chips ---- */
+      .u4-levels {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 16px 0 4px;
+      }
+      .u4-level {
+        flex: 1 1 280px;
+        border-radius: 14px;
+        padding: 14px 16px;
+        border: 1px solid var(--nt-border, #e2e8f0);
+      }
+      .u4-level.l1 {
+        background: rgba(13, 148, 136, 0.07);
+        border-color: rgba(13, 148, 136, 0.4);
+      }
+      .u4-level.l2 {
+        background: rgba(124, 58, 237, 0.07);
+        border-color: rgba(124, 58, 237, 0.4);
+      }
+      .u4-level h4 {
+        margin: 0 0 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.98rem;
+      }
+      .u4-level .pill {
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 999px;
+      }
+      .u4-level.l1 .pill {
+        background: var(--u4-meas);
+      }
+      .u4-level.l2 .pill {
+        background: var(--u4-pct);
+      }
+      .u4-level .es {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.86rem;
+        font-style: italic;
+        color: var(--nt-muted, #64748b);
+      }
+
+      /* ---- Interactive percent bar ---- */
+      .u4-lab {
+        background: var(--nt-bg, #f8fafc);
+        border: 1px solid var(--nt-border, #e2e8f0);
+        border-radius: 14px;
+        padding: 18px;
+        margin: 14px 0;
+      }
+      .u4-lab label {
+        font-weight: 700;
+        display: block;
+        margin-bottom: 8px;
+      }
+      .u4-lab input[type="range"] {
+        width: 100%;
+        accent-color: var(--u4-pct);
+      }
+      .u4-bar-track {
+        position: relative;
+        height: 46px;
+        border-radius: 10px;
+        background: repeating-linear-gradient(
+          90deg,
+          #e2e8f0 0,
+          #e2e8f0 9.9%,
+          #cbd5e1 9.9%,
+          #cbd5e1 10%
+        );
+        overflow: hidden;
+        border: 1px solid var(--nt-border, #cbd5e1);
+        margin: 10px 0;
+      }
+      .u4-bar-fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 25%;
+        background: linear-gradient(90deg, var(--u4-pct), var(--u4-rate));
+        transition: width 0.15s ease;
+      }
+      .u4-lab .readout {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      .u4-lab .readout b {
+        color: var(--u4-pct);
+      }
+
+      /* ---- Apply form ---- */
+      .u4-q {
+        border: 1px solid var(--nt-border, #e2e8f0);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        background: var(--nt-surface, #fff);
+      }
+      .u4-q .qhead {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+      .u4-q .qnum {
+        flex: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--u4-meas);
+        color: #fff;
+        font-weight: 800;
+        display: grid;
+        place-items: center;
+        font-size: 0.9rem;
+      }
+      .u4-q .qbody {
+        font-size: 1.02rem;
+      }
+      .u4-q .scn {
+        font-size: 0.9rem;
+        color: var(--nt-muted, #64748b);
+      }
+      .u4-options {
+        display: grid;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .u4-options label {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid var(--nt-border, #e2e8f0);
+        border-radius: 10px;
+        padding: 9px 12px;
         cursor: pointer;
       }
-      .sc-check-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
-
-      /* ── Main check button ── */
-      .check-btn {
-        background: var(--nt-accent); color: var(--nt-bg);
-        border: none; border-radius: 10px;
-        padding: 14px 26px; font-size: 19px; font-weight: 800;
-        cursor: pointer; margin-top: 8px;
+      .u4-options label:hover {
+        border-color: var(--u4-meas);
       }
-      .check-btn:focus-visible { outline: 3px solid var(--nt-focus); outline-offset: 3px; }
-      .check-btn:hover { filter: brightness(1.08); }
-
-      /* ── Rubric ── */
-      table.rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 16px; }
-      table.rubric th, table.rubric td {
-        border: 1px solid var(--nt-border); padding: 10px 12px; text-align: left; vertical-align: top;
-      }
-      table.rubric th { background: var(--nt-accent); color: var(--nt-bg); font-weight: 700; }
-      table.rubric tr:nth-child(even) td { background: var(--nt-bg); }
-
-      /* ── Answer key ── */
-      .answer-key {
-        background: #f3e5f5;
-        border: 2px solid #ab47bc;
-        border-radius: 12px;
-        margin-top: 22px;
-      }
-      .answer-key summary {
-        padding: 14px 18px; cursor: pointer;
-        font-weight: 700; font-size: 17px; color: #6a1b9a;
-        list-style: none; display: flex; align-items: center; gap: 8px;
-      }
-      .answer-key summary::-webkit-details-marker { display: none; }
-      .answer-key summary::before { content: "▶"; font-size: 13px; transition: transform 0.2s; }
-      .answer-key[open] summary::before { transform: rotate(90deg); }
-      .answer-key-body { padding: 0 18px 16px; font-size: 16px; color: #4a148c; }
-      .answer-key-body ol { padding-left: 20px; margin: 8px 0; }
-      .answer-key-body li { margin: 6px 0; }
-
-      /* ── Reflect deliverable ── */
-      .reflect-deliverable {
-        background: var(--nt-bg);
-        border: 2px solid var(--nt-accent);
+      .u4-q input[type="text"],
+      .u4-q input[type="number"] {
+        font-size: 1rem;
+        padding: 9px 12px;
+        border: 1px solid var(--nt-border, #cbd5e1);
         border-radius: 10px;
-        padding: 12px 16px;
+        width: 160px;
+        max-width: 100%;
+      }
+      .u4-q .unit {
+        margin-left: 6px;
+        color: var(--nt-muted, #64748b);
+        font-weight: 600;
+      }
+      .u4-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .u4-btn {
+        font: inherit;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        cursor: pointer;
+        color: #fff;
+        background: var(--u4-meas);
+      }
+      .u4-btn.alt {
+        background: var(--nt-surface, #fff);
+        color: var(--u4-rate);
+        border: 1px solid var(--u4-rate);
+      }
+      .u4-btn:focus-visible,
+      .u4-explore-card:focus-visible {
+        outline: 3px solid var(--nt-focus, #2563eb);
+        outline-offset: 2px;
+      }
+      .u4-fb {
+        margin-top: 10px;
+        font-weight: 700;
+        display: none;
+      }
+      .u4-q.correct {
+        border-color: var(--u4-good);
+        background: rgba(22, 163, 74, 0.05);
+      }
+      .u4-q.correct .u4-fb {
+        display: block;
+        color: var(--u4-good);
+      }
+      .u4-q.wrong {
+        border-color: var(--u4-bad);
+        background: rgba(220, 38, 38, 0.05);
+      }
+      .u4-q.wrong .u4-fb {
+        display: block;
+        color: var(--u4-bad);
+      }
+      .u4-score {
+        display: none;
         margin-top: 14px;
-        font-size: 17px;
+        padding: 16px;
+        border-radius: 14px;
+        background: linear-gradient(
+          120deg,
+          rgba(13, 148, 136, 0.12),
+          rgba(37, 99, 235, 0.12)
+        );
+        border: 1px solid var(--nt-border, #e2e8f0);
+        font-size: 1.1rem;
+        font-weight: 700;
       }
-      .reflect-deliverable strong { color: var(--nt-accent); }
 
-      /* ── NTKit area ── */
-      #ntkit { margin-top: 8px; }
+      /* ---- Reflect ---- */
+      .u4-reflect textarea {
+        width: 100%;
+        min-height: 92px;
+        font: inherit;
+        padding: 12px 14px;
+        border: 1px solid var(--nt-border, #cbd5e1);
+        border-radius: 12px;
+        resize: vertical;
+      }
+      .u4-reflect .rprompt {
+        font-weight: 700;
+        margin: 12px 0 6px;
+      }
+      .u4-sent {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 6px 0 12px;
+      }
+      .u4-sent button {
+        font: inherit;
+        font-size: 0.86rem;
+        border: 1px dashed var(--u4-rate);
+        color: var(--u4-rate);
+        background: rgba(37, 99, 235, 0.06);
+        border-radius: 999px;
+        padding: 5px 12px;
+        cursor: pointer;
+      }
 
-      /* ── Print ── */
+      .u4-foot {
+        text-align: center;
+        color: var(--nt-muted, #64748b);
+        font-size: 0.85rem;
+        margin-top: 30px;
+      }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      /* ---------- Teacher notes / answer key (hidden in print) ---------- */
+      details.teacher-only {
+        background: var(--nt-surface, #f4f7fb);
+        border: 1px dashed var(--nt-border, #cdd8e6);
+        border-radius: 14px;
+        margin: 0 0 22px;
+      }
+      details.teacher-only > summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 14px 18px;
+        color: var(--nt-accent, #245ea8);
+        list-style: none;
+        user-select: none;
+      }
+      details.teacher-only > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.teacher-only > summary::before {
+        content: "\25B6 ";
+        font-size: 0.8rem;
+      }
+      details.teacher-only[open] > summary::before {
+        content: "\25BC ";
+      }
+      details.teacher-only .details-body {
+        padding: 0 18px 18px;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      details.teacher-only .details-body h3 {
+        font-size: 1rem;
+        margin: 14px 0 6px;
+        color: var(--nt-accent, #245ea8);
+      }
+      details.teacher-only .details-body ul,
+      details.teacher-only .details-body ol {
+        margin: 4px 0 8px;
+        padding-left: 1.4em;
+      }
+
       @media print {
-        .top-nav, .teacher-notes, .answer-key { display: none !important; }
-        .skip { display: none; }
-        body { font-size: 14px; background: #fff; color: #000; }
-        .wrap { padding: 0; max-width: 100%; }
-        section.card, div.card, .learning-target {
-          border: 1px solid #ccc; border-radius: 6px;
-          break-inside: avoid; page-break-inside: avoid;
+        details.teacher-only,
+        .u4-toc,
+        .u4-actions,
+        .u4-btn {
+          display: none !important;
         }
-        .links a { border: 1px solid #999; }
-        .check-btn, .sc-check-btn { display: none; }
-        input[type="text"], textarea { border: 1px solid #999; }
-        @page { margin: 1.5cm; }
+        .step {
+          break-inside: avoid;
+        }
       }
-
-      /* ── Mobile ── */
-      @media (max-width: 600px) {
-        body { font-size: 17px; }
-        header.hero h1 { font-size: 24px; }
-        .sc-options { flex-direction: column; }
-        .lt-meta { flex-direction: column; gap: 4px; }
-        table.rubric { font-size: 14px; }
-        table.rubric th, table.rubric td { padding: 7px 8px; }
-      }
-    </style>
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
   </head>
-  <body class="nt-theme-aware">
-    <p class="top-nav"><a href="/hyperdocs/">← All HyperDocs</a> · <a href="/math/">Math Hub</a></p>
-    <a class="skip" href="#engage">Skip to content</a>
 
-    <div class="wrap">
-      <!-- HERO -->
-      <header class="hero">
-        <span class="pill">Unit 4 · 6.NS.B.2–4</span>
-        <h1>Factory Line: GCF, LCM, Decimals &amp; the Distributive Property</h1>
-        <p class="sub">Work on the Factory Line. Package the order by finding factors, multiples, and clean decimal answers.</p>
+  <body class="nt-theme-aware">
+    <div id="ntkit"></div>
+
+    <main class="u4-wrap">
+      <!-- =================== HERO =================== -->
+      <header class="u4-hero">
+        <span class="u4-eyebrow"
+          >📐 Neft Teacher · Grade 6 · Unit 4 HyperDoc</span
+        >
+        <h1>Rates, Percents &amp; Measurement Conversion</h1>
+        <p>
+          A rate is a comparison that hides inside almost everything you buy,
+          build, and travel. In this HyperDoc you will turn messy real-world
+          numbers into clean unit rates, find percents the way smart shoppers
+          do, and convert measurements like an engineer.
+        </p>
+        <div class="u4-standards" aria-label="Standards covered">
+          <span class="u4-chip">6.RP.3 · Ratio &amp; rate reasoning</span>
+          <span class="u4-chip">6.RP.3b · Unit rate</span>
+          <span class="u4-chip">6.RP.3c · Percent of a quantity</span>
+          <span class="u4-chip">6.RP.3d · Measurement conversion</span>
+        </div>
       </header>
 
-      <!-- NTKit bar -->
-      <div id="ntkit"></div>
+      <ol class="u4-journey" aria-label="Your learning journey">
+        <li><b>1</b> Engage</li>
+        <li><b>2</b> Explore</li>
+        <li><b>3</b> Explain</li>
+        <li><b>4</b> Apply</li>
+        <li><b>5</b> Reflect</li>
+      </ol>
 
-      <!-- LEARNING TARGET -->
-      <div class="learning-target" role="region" aria-label="Learning Target">
-        <h2>Learning Target</h2>
-        <ul>
-          <li>I can find the <strong>Greatest Common Factor (GCF)</strong> of two whole numbers.</li>
-          <li>I can find the <strong>Least Common Multiple (LCM)</strong> of two whole numbers.</li>
-          <li>I can add, subtract, and multiply <strong>decimals</strong> with accuracy.</li>
-          <li>I can use the <strong>Distributive Property</strong> to rewrite and solve multiplication expressions.</li>
-        </ul>
-        <div class="lt-meta">
-          <span><strong>Standard:</strong> CCSS 6.NS.B.2–4</span>
-          <span><strong>Estimated time:</strong> 45–55 minutes</span>
-          <span><strong>Materials:</strong> This page, pencil or scratch paper, calculator (optional for check)</span>
-          <span><strong>Branding:</strong> Neft Teacher</span>
-        </div>
-      </div>
-
-      <!-- TEACHER NOTES -->
-      <details class="teacher-notes" aria-label="Teacher Notes — not for students">
-        <summary>🍎 Teacher Notes (click to open)</summary>
-        <div class="teacher-notes-body">
-          <h3>Pacing</h3>
-          <p>Suggested flow: Engage 5 min → Explore 10 min (game/hub) → Explain 12 min → Apply 15 min → Reflect 5 min. Total ≈ 47–55 min.</p>
-          <h3>Grouping</h3>
-          <ul>
-            <li><strong>Whole class:</strong> Engage — pose the factory problem, take quick guesses before revealing GCF.</li>
-            <li><strong>Pairs or small groups:</strong> Explore links; students can compare what they noticed in the 3D game.</li>
-            <li><strong>Individual:</strong> Explain reading, Apply self-check and graded practice, Reflect writing.</li>
-          </ul>
-          <h3>Differentiation — Support</h3>
-          <ul>
-            <li>Provide a factor rainbow or T-chart graphic organizer for listing factors (GCF).</li>
-            <li>Allow a hundreds chart for students who struggle with skip-counting (LCM).</li>
-            <li>For decimal operations, use graph paper to help students line up place values.</li>
-            <li>Pair during the Self-Check; encourage think-aloud before selecting an answer.</li>
-          </ul>
-          <h3>Differentiation — Challenge</h3>
-          <ul>
-            <li>Ask students to find GCF and LCM for three numbers simultaneously (e.g., 12, 18, 24).</li>
-            <li>Extension: use the Distributive Property to multiply a two-digit decimal (e.g., 3 × 4.7).</li>
-            <li>Have students write a real-world problem that requires LCM (e.g., scheduling repeating events).</li>
-          </ul>
-          <h3>ESOL / Language Supports</h3>
-          <ul>
-            <li>Vocabulary list (Explain section) uses plain language — reference it explicitly during whole-class instruction.</li>
-            <li>GCF vs. LCM: use a memory anchor — "G is for Greatest, so we find the BIG shared factor; L is for Least, so we find the SMALL shared multiple."</li>
-            <li>Sentence frames for Reflect: "I use GCF when ___ because ___." / "The hardest part was ___, and it helped me to ___."</li>
-            <li>Allow bilingual dictionaries; translate key terms (factor, multiple, decimal) as needed.</li>
-          </ul>
-        </div>
-      </details>
-
-      <!-- ENGAGE -->
-      <section class="card" id="engage" aria-labelledby="engage-h">
-        <span class="step-label">1 · Engage</span>
-        <h2 id="engage-h">A real factory problem</h2>
-        <p>
-          A factory packs <strong>24 red parts</strong> and <strong>36 blue parts</strong>. The boss
-          wants <strong>equal boxes</strong> with no parts left over. Each box must have the same number
-          of red and the same number of blue.
+      <!-- =================== ENGAGE =================== -->
+      <section class="step" id="engage" aria-labelledby="engage-h">
+        <h2 id="engage-h">
+          <span class="step-badge b-engage" aria-hidden="true">⚡</span> Engage
+        </h2>
+        <p class="lead">
+          Two stores, one juice. Which is the better deal — and how do you
+          <em>prove</em> it?
         </p>
-        <div class="do-it">
-          Think: What is the largest number of boxes you can make? You will
-          solve this kind of problem in this unit.
-        </div>
-      </section>
 
-      <!-- EXPLORE -->
-      <section class="card" id="explore" aria-labelledby="explore-h">
-        <span class="step-label">2 · Explore</span>
-        <h2 id="explore-h">Open the tools, then come back</h2>
-        <p>Click each link. Play, read, then return to this page to learn and practice.</p>
-        <nav class="links" aria-label="Unit 4 resources">
-          <a href="/games/3d/unit-4/" target="_blank" rel="noopener noreferrer">Unit 4 3D Game — Factory Line: Package the Order
-            <span class="sub">Practice factors, multiples, and decimals while you pack boxes.</span>
-          </a>
-          <a href="/math/" target="_blank" rel="noopener noreferrer">Math Hub
-            <span class="sub">All units, tools, and lessons in one place.</span>
-          </a>
-          <a href="/graphic-novels/" target="_blank" rel="noopener noreferrer">Math Graphic Novels
-            <span class="sub">Read the story that matches this unit.</span>
-          </a>
-        </nav>
-      </section>
-
-      <!-- EXPLAIN -->
-      <section class="card" id="explain" aria-labelledby="explain-h">
-        <span class="step-label">3 · Explain</span>
-        <h2 id="explain-h">Words you need + worked examples</h2>
-        <ul class="vocab" aria-label="Vocabulary">
-          <li><b>Factor</b> — a number that divides another with no remainder. (1, 2, 3, 4, 6, 12 are factors of 12.)</li>
-          <li><b>GCF (Greatest Common Factor)</b> — the largest factor two numbers share.</li>
-          <li><b>Multiple</b> — what you get when you skip-count a number. (5, 10, 15, 20 are multiples of 5.)</li>
-          <li><b>LCM (Least Common Multiple)</b> — the smallest multiple two numbers share.</li>
-          <li><b>Distributive Property</b> — split one factor, then add: a(b + c) = ab + ac.</li>
-        </ul>
-
-        <div class="worked" role="note" aria-label="Worked example: GCF">
-          <p><strong>GCF of 24 and 36</strong></p>
+        <div class="u4-callout">
+          <h3>The 30-second deal-off</h3>
           <p>
-            Factors of 24: 1, 2, 3, 4, 6, 8, <strong>12</strong>, 24<br />
-            Factors of 36: 1, 2, 3, 4, 6, 9, <strong>12</strong>, 18, 36<br />
-            Biggest shared factor → <code>GCF = 12</code>. So the boss can make 12 equal boxes.
+            Mega-Mart sells a <strong>6-pack of mango juice for $9.00</strong>.
+            The corner store sells a <strong>4-pack for $5.60</strong>. Your job
+            is not to guess — it is to compare them <em>fairly</em>. The only
+            fair comparison is the price for <strong>one</strong> bottle.
           </p>
         </div>
 
-        <div class="worked" role="note" aria-label="Worked example: LCM">
-          <p><strong>LCM of 4 and 6</strong></p>
-          <p>
-            Multiples of 4: 4, 8, <strong>12</strong>, 16…<br />
-            Multiples of 6: 6, <strong>12</strong>, 18…<br />
-            Smallest shared multiple → <code>LCM = 12</code>.
-          </p>
-        </div>
+        <!-- SVG: side-by-side price visual -->
+        <svg
+          viewBox="0 0 600 170"
+          role="img"
+          aria-label="Two juice deals: a 6-pack for nine dollars and a 4-pack for five dollars sixty cents"
+          style="
+            width: 100%;
+            height: auto;
+            max-width: 600px;
+            display: block;
+            margin: 6px auto;
+          "
+        >
+          <rect
+            x="10"
+            y="20"
+            width="270"
+            height="130"
+            rx="14"
+            fill="#eff6ff"
+            stroke="#2563eb"
+            stroke-width="2"
+          />
+          <text
+            x="145"
+            y="46"
+            text-anchor="middle"
+            font-size="16"
+            font-weight="700"
+            fill="#1e3a8a"
+          >
+            Mega-Mart
+          </text>
+          <g fill="#2563eb">
+            <rect x="40" y="60" width="22" height="46" rx="4" />
+            <rect x="72" y="60" width="22" height="46" rx="4" />
+            <rect x="104" y="60" width="22" height="46" rx="4" />
+            <rect x="136" y="60" width="22" height="46" rx="4" />
+            <rect x="168" y="60" width="22" height="46" rx="4" />
+            <rect x="200" y="60" width="22" height="46" rx="4" />
+          </g>
+          <text
+            x="145"
+            y="134"
+            text-anchor="middle"
+            font-size="15"
+            font-weight="700"
+            fill="#1e293b"
+          >
+            6 bottles · $9.00
+          </text>
 
-        <div class="worked" role="note" aria-label="Worked example: Decimals and Distributive Property">
-          <p><strong>Decimals + Distributive Property</strong></p>
-          <p>
-            Add: line up the dots → <code>1.40 + 0.75 = 2.15</code><br />
-            Multiply: <code>0.4 × 0.3 = 0.12</code> (count 2 decimal places)<br />
-            Distribute: <code>6 × 47 = 6(40 + 7) = 240 + 42 = 282</code>
-          </p>
+          <rect
+            x="320"
+            y="20"
+            width="270"
+            height="130"
+            rx="14"
+            fill="#f5f3ff"
+            stroke="#7c3aed"
+            stroke-width="2"
+          />
+          <text
+            x="455"
+            y="46"
+            text-anchor="middle"
+            font-size="16"
+            font-weight="700"
+            fill="#5b21b6"
+          >
+            Corner Store
+          </text>
+          <g fill="#7c3aed">
+            <rect x="372" y="60" width="22" height="46" rx="4" />
+            <rect x="404" y="60" width="22" height="46" rx="4" />
+            <rect x="436" y="60" width="22" height="46" rx="4" />
+            <rect x="468" y="60" width="22" height="46" rx="4" />
+          </g>
+          <text
+            x="455"
+            y="134"
+            text-anchor="middle"
+            font-size="15"
+            font-weight="700"
+            fill="#1e293b"
+          >
+            4 bottles · $5.60
+          </text>
+        </svg>
+
+        <p>
+          <strong>Predict first (no calculator needed yet):</strong> Which one
+          do you <em>think</em>
+          is cheaper per bottle? Jot your guess — you will check it for real in
+          the Apply section.
+        </p>
+      </section>
+
+      <!-- =================== EXPLORE =================== -->
+      <section class="step" id="explore" aria-labelledby="explore-h">
+        <h2 id="explore-h">
+          <span class="step-badge b-explore" aria-hidden="true">🧭</span>
+          Explore
+        </h2>
+        <p class="lead">
+          Pick up the tools. Each link builds one piece of Unit 4 — open them in
+          a new tab and come back.
+        </p>
+
+        <div class="u4-explore-grid">
+          <a
+            class="u4-explore-card"
+            href="../../games/3d/unit-4/index.html"
+            target="_blank"
+            rel="noopener"
+          >
+            <span class="ico" aria-hidden="true">🎮</span>
+            <b>Rate Racer 3D</b>
+            <span
+              >Drive the unit-rate track: keep your speed steady to beat the
+              clock.</span
+            >
+            <span class="tag">3D Game</span>
+          </a>
+          <a
+            class="u4-explore-card"
+            href="../../math/unit-4/index.html"
+            target="_blank"
+            rel="noopener"
+          >
+            <span class="ico" aria-hidden="true">📚</span>
+            <b>Unit 4 Math Hub</b>
+            <span
+              >Step-by-step lessons on unit rate, percent, and converting
+              units.</span
+            >
+            <span class="tag">Lessons</span>
+          </a>
+          <a
+            class="u4-explore-card"
+            href="../../graphic-novels/unit4/graphic-novel-1.html"
+            target="_blank"
+            rel="noopener"
+          >
+            <span class="ico" aria-hidden="true">📖</span>
+            <b>Graphic Novel: The Deal Detectives</b>
+            <span
+              >Follow two friends who use unit rates to crack a shopping
+              mystery.</span
+            >
+            <span class="tag">Story</span>
+          </a>
+          <a
+            class="u4-explore-card"
+            href="../../activities/architect/unit-4/index.html"
+            target="_blank"
+            rel="noopener"
+          >
+            <span class="ico" aria-hidden="true">🛠️</span>
+            <b>Rate &amp; Percent Architect</b>
+            <span
+              >Build and test your own rate problems with instant
+              feedback.</span
+            >
+            <span class="tag">Build It</span>
+          </a>
         </div>
       </section>
 
-      <!-- APPLY -->
-      <section class="card" id="apply" aria-labelledby="apply-h">
-        <span class="step-label">4 · Apply</span>
-        <h2 id="apply-h">Practice — type your answers, then check</h2>
+      <!-- =================== EXPLAIN =================== -->
+      <section class="step" id="explain" aria-labelledby="explain-h">
+        <h2 id="explain-h">
+          <span class="step-badge b-explain" aria-hidden="true">💡</span>
+          Explain
+        </h2>
+        <p class="lead">
+          Three big ideas in Unit 4 — each one is just a ratio wearing a
+          different hat.
+        </p>
 
-        <!-- ── Self-check (instant feedback) ── -->
-        <div style="margin-bottom:20px;" aria-label="Self-check questions">
-          <p style="font-weight:700;font-size:18px;margin:0 0 6px;">Quick Self-Check — pick the best answer, then press Check.</p>
-          <p style="color:var(--nt-muted);font-size:16px;margin:0 0 14px;">You will get instant feedback for each question.</p>
+        <!-- Idea 1: unit rate -->
+        <div class="u4-callout">
+          <h3>1 · Unit rate = the "per one" price</h3>
+          <p>
+            A <strong>rate</strong> compares two different units (dollars and
+            bottles). A <strong>unit rate</strong> shrinks that comparison down
+            to <em>one</em> of something. To find it, divide the top number by
+            the bottom number.
+          </p>
+        </div>
+        <div class="u4-example">
+          <p class="work">
+            Mega-Mart: $9.00 <span class="op">÷</span> 6 bottles =
+            <span class="ans">$1.50 per bottle</span><br />
+            Corner Store: $5.60 <span class="op">÷</span> 4 bottles =
+            <span class="ans">$1.40 per bottle</span>
+          </p>
+          <p>
+            The corner store wins by 10¢ a bottle. Same juice — you only see it
+            once you reach the "per one" price.
+          </p>
+        </div>
 
-          <!-- SC Q1 -->
-          <div class="sc-item" id="sc1">
-            <p class="sc-q">SC-1. What is the GCF of 18 and 24?</p>
-            <div class="sc-options" role="radiogroup" aria-label="SC-1 options">
-              <label><input type="radio" name="sc1" value="a" /> A) 3</label>
-              <label><input type="radio" name="sc1" value="b" /> B) 6</label>
-              <label><input type="radio" name="sc1" value="c" /> C) 9</label>
-              <label><input type="radio" name="sc1" value="d" /> D) 12</label>
-            </div>
-            <button class="sc-check-btn" type="button" onclick="checkSC('sc1','b','Correct! Factors of 18: 1,2,3,6,9,18. Factors of 24: 1,2,3,4,6,8,12,24. The biggest shared factor is 6.','Not quite. List all factors of each number, then find the largest one they share. Factors of 18 and 24 both include 6 — that is the GCF.')">Check</button>
-            <div class="sc-feedback" id="sc1-fb" role="alert" aria-live="polite"></div>
+        <!-- Idea 2: percent -->
+        <div class="u4-callout pct">
+          <h3>2 · Percent = a rate out of 100</h3>
+          <p>
+            <strong>Percent</strong> means "per 100." To find a percent
+            <em>of</em> a number, turn the percent into a decimal (move the dot
+            two places left) and multiply.
+          </p>
+        </div>
+        <div class="u4-example">
+          <p class="work">
+            Find 25% of $48 sneakers.<br />
+            25% <span class="op">=</span> 0.25 &nbsp;→&nbsp; 0.25
+            <span class="op">×</span> 48 =
+            <span class="ans">$12 off</span> &nbsp;→&nbsp; you pay $36.
+          </p>
+        </div>
+
+        <!-- Interactive percent lab -->
+        <div class="u4-lab" aria-label="Interactive percent bar">
+          <label for="u4-pct-slider"
+            >Slide to see any percent of a $48 price</label
+          >
+          <input
+            type="range"
+            id="u4-pct-slider"
+            min="0"
+            max="100"
+            step="5"
+            value="25"
+          />
+          <div class="u4-bar-track">
+            <div class="u4-bar-fill" id="u4-bar-fill"></div>
           </div>
-
-          <!-- SC Q2 -->
-          <div class="sc-item" id="sc2">
-            <p class="sc-q">SC-2. What is the LCM of 3 and 5?</p>
-            <div class="sc-options" role="radiogroup" aria-label="SC-2 options">
-              <label><input type="radio" name="sc2" value="a" /> A) 8</label>
-              <label><input type="radio" name="sc2" value="b" /> B) 15</label>
-              <label><input type="radio" name="sc2" value="c" /> C) 3</label>
-              <label><input type="radio" name="sc2" value="d" /> D) 30</label>
-            </div>
-            <button class="sc-check-btn" type="button" onclick="checkSC('sc2','b','Correct! Multiples of 3: 3,6,9,12,15… Multiples of 5: 5,10,15… The smallest shared multiple is 15.','Not quite. List multiples of each number until you find a match. Multiples of 3 and 5 first meet at 15 — that is the LCM.')">Check</button>
-            <div class="sc-feedback" id="sc2-fb" role="alert" aria-live="polite"></div>
-          </div>
-
-          <!-- SC Q3 -->
-          <div class="sc-item" id="sc3">
-            <p class="sc-q">SC-3. Subtract: 5.30 − 2.85 = ?</p>
-            <div class="sc-options" role="radiogroup" aria-label="SC-3 options">
-              <label><input type="radio" name="sc3" value="a" /> A) 3.55</label>
-              <label><input type="radio" name="sc3" value="b" /> B) 2.45</label>
-              <label><input type="radio" name="sc3" value="c" /> C) 2.55</label>
-              <label><input type="radio" name="sc3" value="d" /> D) 3.45</label>
-            </div>
-            <button class="sc-check-btn" type="button" onclick="checkSC('sc3','b','Correct! 5.30 − 2.85 = 2.45. Line up the decimal points and subtract carefully, regrouping as needed.','Not quite. Line up the decimals: 5.30 − 2.85. Regroup: 10 − 5 = 5 (hundredths), 2 − 8 needs regrouping → 2.45.')">Check</button>
-            <div class="sc-feedback" id="sc3-fb" role="alert" aria-live="polite"></div>
-          </div>
-
-          <!-- SC Q4 -->
-          <div class="sc-item" id="sc4">
-            <p class="sc-q">SC-4. Use the Distributive Property: 4 × 53 = 4 × (50 + 3). What is the answer?</p>
-            <div class="sc-options" role="radiogroup" aria-label="SC-4 options">
-              <label><input type="radio" name="sc4" value="a" /> A) 200</label>
-              <label><input type="radio" name="sc4" value="b" /> B) 53</label>
-              <label><input type="radio" name="sc4" value="c" /> C) 212</label>
-              <label><input type="radio" name="sc4" value="d" /> D) 57</label>
-            </div>
-            <button class="sc-check-btn" type="button" onclick="checkSC('sc4','c','Correct! 4×50 = 200 and 4×3 = 12. Then 200 + 12 = 212.','Not quite. Multiply each part: 4×50 = 200 and 4×3 = 12. Then add the results: 200 + 12 = 212.')">Check</button>
-            <div class="sc-feedback" id="sc4-fb" role="alert" aria-live="polite"></div>
+          <div class="readout">
+            <span>Percent: <b id="u4-pct-out">25%</b></span>
+            <span>As a decimal: <b id="u4-dec-out">0.25</b></span>
+            <span>Discount on $48: <b id="u4-amt-out">$12.00</b></span>
           </div>
         </div>
 
-        <!-- ── NTKit graded questions ── -->
-        <p style="font-weight:700;font-size:18px;margin:14px 0 6px;">Graded Practice — type a number for each one, then press Check.</p>
-        <p style="color:var(--nt-muted);font-size:16px;margin:0 0 14px;">These questions are scored and saved to your report.</p>
-
-        <div class="q">
-          <label for="q1">1. Find the <strong>GCF</strong> of 24 and 36.
-            <span class="hint">Largest factor they share.</span></label>
-          <input type="text" id="q1" inputmode="numeric" autocomplete="off" />
+        <!-- Idea 3: measurement conversion -->
+        <div class="u4-callout meas">
+          <h3>3 · Converting units = multiply by a clever "1"</h3>
+          <p>
+            Any conversion fact (like 1 ft = 12 in) can be written as a fraction
+            equal to 1. Multiply so the unit you don't want <em>cancels</em>,
+            leaving the unit you do want. A ratio table keeps it organized.
+          </p>
         </div>
-        <div class="q">
-          <label for="q2">2. Find the <strong>LCM</strong> of 4 and 6.
-            <span class="hint">Smallest multiple they share.</span></label>
-          <input type="text" id="q2" inputmode="numeric" autocomplete="off" />
-        </div>
-        <div class="q">
-          <label for="q3">3. Add the decimals: <strong>1.4 + 0.75</strong>.
-            <span class="hint">Line up the dots first.</span></label>
-          <input type="text" id="q3" inputmode="decimal" autocomplete="off" />
-        </div>
-        <div class="q">
-          <label for="q4">4. Multiply the decimals: <strong>0.4 × 0.3</strong>.
-            <span class="hint">Count the decimal places.</span></label>
-          <input type="text" id="q4" inputmode="decimal" autocomplete="off" />
-        </div>
-        <div class="q">
-          <label for="q5">5. Use the <strong>Distributive Property</strong>: <strong>6 × 47 = 6(40 + 7)</strong>. What is the answer?
-            <span class="hint">Multiply each part, then add.</span></label>
-          <input type="text" id="q5" inputmode="numeric" autocomplete="off" />
-        </div>
-
-        <button type="button" class="check-btn" id="checkBtn">Check my answers</button>
-      </section>
-
-      <!-- RUBRIC -->
-      <section class="card" id="rubric" aria-labelledby="rubric-h">
-        <h2 id="rubric-h" style="display:flex;align-items:center;gap:10px;"><span class="step-label" style="font-size:13px;margin:0;">Rubric</span> How Your Work Is Scored</h2>
-        <table class="rubric" aria-label="Scoring rubric">
+        <table class="u4-ratio">
+          <caption>
+            Feet → inches (×12 each step)
+          </caption>
           <thead>
             <tr>
-              <th scope="col">Level</th>
-              <th scope="col">Score</th>
-              <th scope="col">What it looks like</th>
+              <th>Feet</th>
+              <th>1</th>
+              <th>2</th>
+              <th>3</th>
+              <th>4</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>4 — Expert</strong></td>
-              <td>5 / 5 graded + clear reflection</td>
-              <td>All answers correct with accurate GCF, LCM, decimals, and Distributive Property work; reflection clearly explains the difference between GCF and LCM with a specific example.</td>
-            </tr>
-            <tr>
-              <td><strong>3 — Proficient</strong></td>
-              <td>4 / 5 graded + adequate reflection</td>
-              <td>Most answers correct; minor computational error; reflection shows understanding of when to use GCF vs. LCM.</td>
-            </tr>
-            <tr>
-              <td><strong>2 — Developing</strong></td>
-              <td>2–3 / 5 graded + partial reflection</td>
-              <td>Some correct answers; confuses GCF and LCM or makes repeated decimal errors; reflection is brief.</td>
-            </tr>
-            <tr>
-              <td><strong>1 — Beginning</strong></td>
-              <td>0–1 / 5 graded</td>
-              <td>Answers mostly missing or incorrect; little evidence of understanding factors, multiples, or decimal computation.</td>
+              <th>Inches</th>
+              <td>12</td>
+              <td>24</td>
+              <td class="hi">36</td>
+              <td>48</td>
             </tr>
           </tbody>
         </table>
-      </section>
-
-      <!-- REFLECT -->
-      <section class="card" id="reflect" aria-labelledby="reflect-h">
-        <span class="step-label">5 · Reflect</span>
-        <h2 id="reflect-h">Write your thinking</h2>
-        <p style="font-size:17px;margin:0 0 12px;">
-          Think carefully before you write. Use math vocabulary from the Explain section.
-          Write in complete sentences.
+        <p>
+          So <strong>3 ft = 36 in</strong>. The same trick converts cups↔fluid
+          ounces, km↔m, and grams↔kilograms.
         </p>
-        <div class="q">
-          <label for="r1">A. How do you know when to use <strong>GCF</strong> instead of <strong>LCM</strong>?
-            Use your own words.
-            <span class="hint">(Sentence starter: "I use GCF when ___ because ___. I use LCM when ___ because ___.")</span>
-          </label>
-          <textarea id="r1" aria-required="true"></textarea>
-        </div>
-        <div class="q">
-          <label for="r2">B. Which part was hardest for you — GCF, LCM, decimals, or the Distributive Property?
-            What helped you understand it?
-            <span class="hint">(Sentence starter: "The hardest part was ___, and what helped me was ___.")</span>
-          </label>
-          <textarea id="r2" aria-required="true"></textarea>
-        </div>
-        <div class="reflect-deliverable" role="note">
-          <strong>Deliverable:</strong> When both text boxes are filled in, press
-          <strong>Save as PDF</strong> or <strong>Save as DOC</strong> at the top to submit
-          your completed HyperDoc. Your teacher will see your answers, your score, and
-          your reflection.
+
+        <div class="u4-levels">
+          <div class="u4-level l1">
+            <h4><span class="pill">Level 1</span> Extra support</h4>
+            <p>
+              Always label your numbers with their units before you divide.
+              Reading "<strong>$9 for 6</strong>" out loud helps you set up
+              <strong>9 ÷ 6</strong>, not 6 ÷ 9.
+            </p>
+            <span class="es"
+              >Apoyo: escribe siempre la unidad (dólares, botellas) junto a cada
+              número. "Tasa unitaria" = precio por <em>una</em> cosa.</span
+            >
+          </div>
+          <div class="u4-level l2">
+            <h4><span class="pill">Level 2</span> Stretch your thinking</h4>
+            <p>
+              If 25% off $48 is $12, what single decimal could you multiply $48
+              by <em>once</em> to get the final price of $36 directly? Explain
+              why it works.
+            </p>
+          </div>
         </div>
       </section>
 
-      <!-- ANSWER KEY (teacher-only) -->
-      <details class="answer-key" aria-label="Teacher Answer Key">
-        <summary>🔑 Answer Key — Teacher Only</summary>
-        <div class="answer-key-body">
-          <p><strong>Graded Practice:</strong></p>
-          <ol>
-            <li>GCF of 24 and 36 = <strong>12</strong> (shared factors: 1,2,3,4,6,12)</li>
-            <li>LCM of 4 and 6 = <strong>12</strong> (4,8,12… and 6,12…)</li>
-            <li>1.4 + 0.75 = <strong>2.15</strong> (align: 1.40 + 0.75)</li>
-            <li>0.4 × 0.3 = <strong>0.12</strong> (4×3=12; 2 decimal places → 0.12)</li>
-            <li>6 × 47 = 6(40+7) = 240+42 = <strong>282</strong></li>
-          </ol>
-          <p><strong>Self-Check:</strong> SC-1 = B (6) · SC-2 = B (15) · SC-3 = B (2.45) · SC-4 = C (212)</p>
-          <p><strong>Reflect sample answers:</strong></p>
+      <!-- =================== APPLY =================== -->
+      <section class="step" id="apply" aria-labelledby="apply-h">
+        <h2 id="apply-h">
+          <span class="step-badge b-apply" aria-hidden="true">✏️</span> Apply
+        </h2>
+        <p class="lead">
+          Six problems, increasing challenge. Type or choose, then press
+          <strong>Check my work</strong>. You can fix and recheck.
+        </p>
+
+        <form id="u4-apply" novalidate>
+          <!-- Q1 unit rate (the prediction payoff) -->
+          <div class="u4-q" data-answer="1.40" data-type="num" data-tol="0.01">
+            <div class="qhead">
+              <span class="qnum">1</span>
+              <span class="qbody">
+                Back to the juice from Engage. What is the corner store's
+                <strong>unit rate</strong>
+                ($5.60 for a 4-pack), in dollars per bottle?
+                <span class="scn">Type the number only, like 1.25</span>
+              </span>
+            </div>
+            <input
+              type="text"
+              inputmode="decimal"
+              aria-label="Question 1 answer in dollars per bottle"
+            />
+            <span class="unit">$ per bottle</span>
+            <p class="u4-fb"></p>
+          </div>
+
+          <!-- Q2 better buy MC -->
+          <div class="u4-q" data-answer="b" data-type="mc">
+            <div class="qhead">
+              <span class="qnum">2</span>
+              <span class="qbody"
+                >Using both unit rates ($1.50 vs $1.40), which is the better buy
+                and why?</span
+              >
+            </div>
+            <div class="u4-options">
+              <label
+                ><input type="radio" name="q2" value="a" /> Mega-Mart, because
+                it has more bottles.</label
+              >
+              <label
+                ><input type="radio" name="q2" value="b" /> Corner store,
+                because each bottle costs less.</label
+              >
+              <label
+                ><input type="radio" name="q2" value="c" /> They cost the same
+                per bottle.</label
+              >
+            </div>
+            <p class="u4-fb"></p>
+          </div>
+
+          <!-- Q3 unit rate speed -->
+          <div class="u4-q" data-answer="55" data-type="num" data-tol="0.5">
+            <div class="qhead">
+              <span class="qnum">3</span>
+              <span class="qbody">
+                A train travels <strong>165 miles in 3 hours</strong> at a
+                steady speed. What is its speed in miles per hour?
+              </span>
+            </div>
+            <input
+              type="text"
+              inputmode="decimal"
+              aria-label="Question 3 answer in miles per hour"
+            />
+            <span class="unit">mph</span>
+            <p class="u4-fb"></p>
+          </div>
+
+          <!-- Q4 percent of a quantity -->
+          <div class="u4-q" data-answer="15" data-type="num" data-tol="0.01">
+            <div class="qhead">
+              <span class="qnum">4</span>
+              <span class="qbody">
+                A $60 jacket is marked <strong>25% off</strong>. How many
+                dollars do you <strong>save</strong>?
+              </span>
+            </div>
+            <input
+              type="text"
+              inputmode="decimal"
+              aria-label="Question 4 answer in dollars saved"
+            />
+            <span class="unit">$ saved</span>
+            <p class="u4-fb"></p>
+          </div>
+
+          <!-- Q5 measurement conversion -->
+          <div class="u4-q" data-answer="2.5" data-type="num" data-tol="0.01">
+            <div class="qhead">
+              <span class="qnum">5</span>
+              <span class="qbody">
+                A recipe needs <strong>40 fluid ounces</strong> of milk. There
+                are 16 fl oz in 1 pint. How many <strong>pints</strong> is that?
+              </span>
+            </div>
+            <input
+              type="text"
+              inputmode="decimal"
+              aria-label="Question 5 answer in pints"
+            />
+            <span class="unit">pints</span>
+            <p class="u4-fb"></p>
+          </div>
+
+          <!-- Q6 multi-step (Level 2 stretch) MC -->
+          <div class="u4-q" data-answer="c" data-type="mc">
+            <div class="qhead">
+              <span class="qnum">6</span>
+              <span class="qbody">
+                <strong>Stretch:</strong> A car uses 4 gallons to drive 120
+                miles. At the same rate, how far can it drive on a full
+                <strong>12-gallon</strong> tank?
+              </span>
+            </div>
+            <div class="u4-options">
+              <label
+                ><input type="radio" name="q6" value="a" /> 30 miles (because
+                120 ÷ 4)</label
+              >
+              <label
+                ><input type="radio" name="q6" value="b" /> 240 miles</label
+              >
+              <label
+                ><input type="radio" name="q6" value="c" /> 360 miles (30 mpg ×
+                12 gal)</label
+              >
+            </div>
+            <p class="u4-fb"></p>
+          </div>
+
+          <div class="u4-actions">
+            <button type="button" class="u4-btn" id="u4-check">
+              Check my work
+            </button>
+            <button type="button" class="u4-btn alt" id="u4-reset">
+              Clear &amp; try again
+            </button>
+          </div>
+          <div
+            class="u4-score"
+            id="u4-score"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </form>
+      </section>
+
+      <!-- =================== REFLECT =================== -->
+      <!-- ============ TEACHER NOTES (hidden in print) ============ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes &amp; Answer Key (not printed)</summary>
+        <div class="details-body">
+          <h3>Stage-by-Stage Notes (Engage → Explore → Explain → Apply → Reflect)</h3>
           <ul>
-            <li>A. "I use GCF when I need to split things into the largest equal groups. I use LCM when I need to find when two things will line up at the same time."</li>
-            <li>B. "The hardest part was decimals. It helped me to always line up the decimal points before adding."</li>
+            <li><strong>Engage:</strong> which bottle pack is the better buy? Sets up unit-rate comparison.</li>
+            <li><strong>Explore:</strong> interactive converters for $/bottle, mph, and percent off.</li>
+            <li><strong>Explain:</strong> define unit rate, percent of a number, and conversion via ratio reasoning.</li>
+            <li><strong>Apply:</strong> answer key below.</li>
+            <li><strong>Reflect:</strong> students explain why a true "per 1" rate makes comparison fair.</li>
           </ul>
+          <h3>Apply — Answer Key</h3>
+          <ul>
+            <li><strong>Q1 — Unit price:</strong> $5.60 ÷ 4 = <strong>$1.40 per bottle</strong>.</li>
+            <li><strong>Q2 — Better buy (MC):</strong> $1.40 &lt; $1.50 → answer <strong>b</strong> (each bottle costs less).</li>
+            <li><strong>Q3 — Speed:</strong> 165 mi ÷ 3 h = <strong>55 mph</strong>.</li>
+            <li><strong>Q4 — Percent off:</strong> 25% of $60 = 0.25 × 60 = <strong>$15 saved</strong>.</li>
+            <li><strong>Q5 — Rate/convert:</strong> <strong>2.5</strong>.</li>
+            <li><strong>Q6 (MC):</strong> answer <strong>c</strong>.</li>
+          </ul>
+          <h3>Standard</h3>
+          <p>CCSS <strong>6.RP.A.3b–d</strong>.</p>
         </div>
       </details>
-    </div>
 
-    <script src="/assets/nt-activity-kit.js"></script>
+      <section class="step u4-reflect" id="reflect" aria-labelledby="reflect-h">
+        <h2 id="reflect-h">
+          <span class="step-badge b-reflect" aria-hidden="true">🧠</span>
+          Reflect
+        </h2>
+        <p class="lead">
+          Your thinking is part of the grade. Write in full sentences — these
+          save with your name when you download.
+        </p>
+
+        <p class="rprompt">
+          1. Why does finding the "per one" price make two deals fair to
+          compare?
+        </p>
+        <div class="u4-sent" aria-label="Sentence starters">
+          <button type="button" class="u4-starter">
+            Comparing the unit rate is fair because…
+          </button>
+          <button type="button" class="u4-starter">
+            If I only looked at the total price, I might…
+          </button>
+        </div>
+        <textarea id="u4-r1" aria-label="Reflection question 1"></textarea>
+
+        <p class="rprompt">
+          2. Describe one place outside of class where YOU could use a unit
+          rate, percent, or conversion this week.
+        </p>
+        <textarea id="u4-r2" aria-label="Reflection question 2"></textarea>
+
+        <p class="rprompt">
+          3. What is one thing in Unit 4 that felt tricky, and what helped it
+          click?
+        </p>
+        <textarea id="u4-r3" aria-label="Reflection question 3"></textarea>
+      </section>
+
+      <p class="u4-foot">
+        Neft Teacher · Grade 6 Reveal Math · Unit 4 — Rates, Percents &amp;
+        Measurement Conversion (6.RP.3). Enter your name at the top, finish
+        every section, then save your HyperDoc to turn it in.
+      </p>
+    </main>
+
+    <!-- Shared design system scripts -->
+    <script src="../../assets/neft-theme.js"></script>
+    <script src="../../assets/nt-activity-kit.js"></script>
+
     <script>
       (function () {
+        "use strict";
 
-        /* ─────────────────────────────────────────────────────────
-           Answer normaliser — tolerant of common formatting
-           variations without changing any correct answer.
-           ───────────────────────────────────────────────────────── */
-        function normalise(raw) {
-          var s = String(raw).trim().toLowerCase();
-          s = s.replace(/\s+/g, '');
-          s = s.replace(/^\$/, '');
-          s = s.replace(/%$/, '');
-          s = s.replace(/,(\d{3})/g, '$1');
-          s = s.replace(/(cm2|cm²|cm|m2|m²|mph|km|units?|dollars?|sq)$/, '');
-          return s;
-        }
-
-        function numericMatch(a, b) {
-          var na = parseFloat(a);
-          var nb = parseFloat(b);
-          if (isNaN(na) || isNaN(nb)) { return false; }
-          return Math.abs(na - nb) < 1e-9;
-        }
-
-        function answersMatch(studentRaw, correctRaw) {
-          var s = normalise(studentRaw);
-          var c = normalise(correctRaw);
-          if (s === c) { return true; }
-          return numericMatch(s, c);
-        }
-
-        /* ── Self-check helper (radio buttons only — compare letter values) ── */
-        function checkSC(itemId, correctVal, correctMsg, wrongMsg) {
-          var radios = document.querySelectorAll('input[name="' + itemId + '"]');
-          var selected = null;
-          for (var i = 0; i < radios.length; i++) {
-            if (radios[i].checked) { selected = radios[i].value; break; }
+        /* ---- Mount the shared kit (student name bar + save as PDF/DOC + results) ---- */
+        try {
+          if (window.NTKit && typeof NTKit.mount === "function") {
+            NTKit.mount("#ntkit");
           }
-          var fb = document.getElementById(itemId + '-fb');
-          if (!fb) return;
-          if (!selected) {
-            fb.textContent = 'Please choose an answer first.';
-            fb.className = 'sc-feedback wrong';
-            fb.style.display = 'block';
-            return;
-          }
-          if (selected === correctVal) {
-            fb.textContent = '✓ ' + correctMsg;
-            fb.className = 'sc-feedback correct';
-          } else {
-            fb.textContent = '✗ ' + wrongMsg;
-            fb.className = 'sc-feedback wrong';
-          }
-          fb.style.display = 'block';
-        }
-        window.checkSC = checkSC;
-
-        /* ── NTKit graded section ── */
-        if (typeof NTKit === 'undefined') return;
-        NTKit.mount('#ntkit');
-
-        function val(id) {
-          var n = document.getElementById(id);
-          return n ? n.value.trim() : '';
+        } catch (e) {
+          /* kit optional in offline preview */
         }
 
-        /* Normalise a student answer for NTKit submission so tolerant
-           matching works regardless of trailing units or decimal format. */
-        function norm(id) {
-          return normalise(val(id));
+        /* ---- Interactive percent lab ---- */
+        var slider = document.getElementById("u4-pct-slider");
+        if (slider) {
+          var fill = document.getElementById("u4-bar-fill");
+          var pctOut = document.getElementById("u4-pct-out");
+          var decOut = document.getElementById("u4-dec-out");
+          var amtOut = document.getElementById("u4-amt-out");
+          var sync = function () {
+            var p = Number(slider.value);
+            fill.style.width = p + "%";
+            pctOut.textContent = p + "%";
+            decOut.textContent = (p / 100).toFixed(2);
+            amtOut.textContent = "$" + ((p / 100) * 48).toFixed(2);
+          };
+          slider.addEventListener("input", sync);
+          sync();
         }
 
-        document.getElementById('checkBtn').addEventListener('click', function () {
-          NTKit.grade({
-            activityId: 'hyperdoc-unit-4',
-            activityTitle: 'Unit 4 · Factory Line — GCF, LCM, Decimals & Distributive Property',
-            standard: '6.NS.B.2-4',
-            items: [
-              {
-                prompt: 'GCF of 24 and 36',
-                studentAnswer: norm('q1'),
-                correctAnswer: '12',
-                points: 1,
-                skill: 'GCF'
-              },
-              {
-                prompt: 'LCM of 4 and 6',
-                studentAnswer: norm('q2'),
-                correctAnswer: '12',
-                points: 1,
-                skill: 'LCM'
-              },
-              {
-                prompt: '1.4 + 0.75',
-                studentAnswer: norm('q3'),
-                correctAnswer: '2.15',
-                points: 1,
-                skill: 'Decimal addition'
-              },
-              {
-                prompt: '0.4 × 0.3',
-                studentAnswer: norm('q4'),
-                correctAnswer: '0.12',
-                points: 1,
-                skill: 'Decimal multiplication'
-              },
-              {
-                prompt: '6 × 47 using the Distributive Property',
-                studentAnswer: norm('q5'),
-                correctAnswer: '282',
-                points: 1,
-                skill: 'Distributive Property'
-              }
-            ]
+        /* ---- Reflect sentence starters ---- */
+        var r1 = document.getElementById("u4-r1");
+        document.querySelectorAll(".u4-starter").forEach(function (b) {
+          b.addEventListener("click", function () {
+            if (!r1) return;
+            var t = b.textContent.replace(/…$/, " ");
+            r1.value = r1.value ? r1.value.replace(/\s*$/, " ") + t : t;
+            r1.focus();
           });
-          var res = document.getElementById('ntkit-results');
-          if (res && res.scrollIntoView) res.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
-      }());
+
+        /* ---- Apply auto-grading ---- */
+        var form = document.getElementById("u4-apply");
+        var scoreEl = document.getElementById("u4-score");
+        var checkBtn = document.getElementById("u4-check");
+        var resetBtn = document.getElementById("u4-reset");
+
+        function gradeQ(q) {
+          var type = q.getAttribute("data-type");
+          var correct = q.getAttribute("data-answer");
+          var ok = false;
+          var fb = q.querySelector(".u4-fb");
+
+          if (type === "num") {
+            var inp = q.querySelector('input[type="text"]');
+            var raw = ((inp && inp.value) || "").replace(/[$,\s]/g, "");
+            var val = parseFloat(raw);
+            var tol = parseFloat(q.getAttribute("data-tol") || "0.01");
+            ok = !isNaN(val) && Math.abs(val - parseFloat(correct)) <= tol;
+            fb.textContent = ok
+              ? "Correct! " + buildWhy(q)
+              : "Not yet — check your setup. " + buildWhy(q);
+          } else if (type === "mc") {
+            var sel = q.querySelector("input[type=radio]:checked");
+            ok = sel && sel.value === correct;
+            fb.textContent = ok
+              ? "Correct! " + buildWhy(q)
+              : "Not yet — re-read the choices. " + buildWhy(q);
+          }
+          q.classList.toggle("correct", ok);
+          q.classList.toggle("wrong", !ok);
+          return ok;
+        }
+
+        function buildWhy(q) {
+          var n = q.querySelector(".qnum").textContent;
+          var why = {
+            1: "$5.60 ÷ 4 = $1.40 per bottle.",
+            2: "$1.40 < $1.50, so the corner store is cheaper per bottle.",
+            3: "165 ÷ 3 = 55 mph.",
+            4: "0.25 × $60 = $15 saved.",
+            5: "40 ÷ 16 = 2.5 pints.",
+            6: "120 ÷ 4 = 30 mpg, then 30 × 12 = 360 miles.",
+          };
+          return why[n] || "";
+        }
+
+        function buildItems() {
+          var items = [];
+          document.querySelectorAll("#u4-apply .u4-q").forEach(function (q, i) {
+            items.push({
+              id: "u4-q" + (i + 1),
+              correct: q.classList.contains("correct"),
+              skill:
+                i < 3
+                  ? "Unit rate (6.RP.3b)"
+                  : i < 5
+                    ? "Percent / conversion (6.RP.3c-d)"
+                    : "Multi-step rate (6.RP.3)",
+            });
+          });
+          return items;
+        }
+
+        if (checkBtn) {
+          checkBtn.addEventListener("click", function () {
+            var qs = document.querySelectorAll("#u4-apply .u4-q");
+            var correct = 0;
+            qs.forEach(function (q) {
+              if (gradeQ(q)) correct++;
+            });
+            var total = qs.length;
+            scoreEl.style.display = "block";
+            scoreEl.textContent =
+              "You got " +
+              correct +
+              " of " +
+              total +
+              " correct (" +
+              Math.round((correct / total) * 100) +
+              "%). " +
+              (correct === total
+                ? "Outstanding — every rate, percent, and conversion checks out!"
+                : "Fix the red ones and check again — you've got this.");
+            scoreEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+            /* Report to the shared kit for the results/grading record, if available */
+            try {
+              if (window.NTKit && typeof NTKit.grade === "function") {
+                NTKit.grade({
+                  activityId: "hyperdoc-unit-4",
+                  activityTitle:
+                    "Unit 4 HyperDoc — Rates, Percents & Measurement Conversion",
+                  standard: "6.RP.3",
+                  items: buildItems(),
+                });
+              }
+            } catch (e) {
+              /* offline preview — local score panel still works */
+            }
+          });
+        }
+
+        if (resetBtn) {
+          resetBtn.addEventListener("click", function () {
+            form.reset();
+            document.querySelectorAll("#u4-apply .u4-q").forEach(function (q) {
+              q.classList.remove("correct", "wrong");
+              var fb = q.querySelector(".u4-fb");
+              if (fb) fb.textContent = "";
+            });
+            scoreEl.style.display = "none";
+          });
+        }
+      })();
     </script>
-  </body>
+  <script>document.querySelectorAll('a[target="_blank"]').forEach(function(a){if(a.dataset.extCued)return;a.dataset.extCued='1';var n=document.createElement('span');n.textContent=' (opens in new tab)';n.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';a.appendChild(n);});</script>
+</body>
 </html>

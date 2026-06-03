@@ -3,14 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unit 5 — Area Architect | Area of Polygons (6.G.A.1)</title>
+    <title>
+      Unit 5 — Riverside Pavilion Park | Area Design Challenge (6.G.A.1)
+    </title>
+
+    <!-- Shared theme -->
     <link rel="stylesheet" href="/assets/neft-theme.css" />
     <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
     <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
     <style>
-      *,
-      *::before,
-      *::after {
+      * {
         box-sizing: border-box;
       }
       body {
@@ -27,61 +32,25 @@
         font-size: 18px;
       }
       .wrap {
-        max-width: 880px;
+        max-width: 980px;
         margin: 0 auto;
-        padding: 20px 18px 64px;
-      }
-      header.page {
-        margin: 8px 0 18px;
-      }
-      h1 {
-        font-size: 1.9rem;
-        margin: 0 0 6px;
-      }
-      h2 {
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin: 0;
-      }
-      h3 {
-        font-size: 1.05rem;
-        font-weight: 700;
-        margin: 0 0 6px;
-      }
-      .standard {
-        display: inline-block;
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: var(--nt-bg);
-        background: var(--nt-accent);
-        padding: 3px 12px;
-        border-radius: 999px;
-      }
-      .lead {
-        margin: 12px 0 0;
-        font-size: 1.1rem;
-        color: var(--nt-text);
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 12px 16px;
+        padding: 20px 16px 72px;
       }
 
-      /* ---- Learning Target ---- */
+      /* ── Learning target ── */
       .learning-target {
         background: var(--nt-surface);
         border: 2px solid var(--nt-accent);
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin: 16px 0;
+        border-radius: 16px;
+        padding: 20px 22px 18px;
+        margin-bottom: 18px;
       }
       .learning-target h2 {
-        font-size: 1.05rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--nt-accent);
         margin: 0 0 10px;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--nt-accent);
       }
       .learning-target ul {
         margin: 0 0 12px;
@@ -93,100 +62,556 @@
       .lt-meta {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
-        font-size: 0.92rem;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 15px;
         color: var(--nt-muted);
-        border-top: 1px solid var(--nt-border);
-        padding-top: 10px;
-        margin-top: 8px;
       }
       .lt-meta span {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
       }
 
-      /* ---- Teacher Notes / Answer Key collapsibles ---- */
-      details.teacher-notes,
-      details.answer-key {
-        background: var(--nt-surface);
-        border: 1px dashed var(--nt-border);
-        border-radius: 12px;
-        padding: 0;
-        margin: 14px 0;
+      /* ── Hero ── */
+      header.hero {
+        position: relative;
         overflow: hidden;
+        border-radius: 18px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+        color: #eef1ff;
+        background:
+          radial-gradient(
+            1100px 280px at 82% -40%,
+            rgba(108, 140, 255, 0.45),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #1a2350, #0b1230);
+        border: 1px solid rgba(108, 140, 255, 0.35);
       }
-      details.teacher-notes > summary,
-      details.answer-key > summary {
-        cursor: pointer;
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #9fc0ff;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 4vw, 34px);
+        line-height: 1.1;
+        color: #fff;
+      }
+      header.hero .lede {
+        margin: 0;
+        max-width: 64ch;
+        color: #c9d2ff;
+        font-size: 16px;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .badge {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #e9ecff;
+      }
+
+      /* ── Design-cycle ribbon ── */
+      .cycle {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 140px;
+        border: 1px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #d7defc;
+        background: rgba(108, 140, 255, 0.08);
+      }
+      .cycle b {
+        display: block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #9fc0ff;
+        margin-bottom: 3px;
+      }
+
+      /* ── Progress ── */
+      .progress {
+        margin-top: 16px;
         font-weight: 700;
-        font-size: 1rem;
-        padding: 12px 16px;
-        list-style: none;
+        color: #eef1ff;
+      }
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #33d6a6, #6c8cff);
+        transition: width 0.3s ease;
+      }
+
+      /* ── Cards / tasks ── */
+      .card {
+        background: var(--nt-surface);
+        border: 1px solid var(--nt-border);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 22px;
         display: flex;
         align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .card h3 {
+        margin: 16px 0 6px;
+        font-size: 16px;
+      }
+      .tag-shape {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: var(--nt-bg);
+        color: var(--nt-accent);
+        border: 1px solid var(--nt-border);
+      }
+      .scale {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+
+      .grid2 {
+        display: grid;
+        gap: 18px;
+      }
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid3 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+      }
+
+      /* ── Blueprint ── */
+      .bp {
+        background: #0b1230;
+        border: 1px solid rgba(108, 140, 255, 0.4);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .bp svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .bp-grid {
+        stroke: rgba(108, 140, 255, 0.22);
+      }
+      .bp-edge {
+        fill: none;
+        stroke: #9fc0ff;
+        stroke-width: 2;
+      }
+      .bp-dim {
+        stroke: #ffcc66;
+        stroke-width: 1.2;
+      }
+      .bp-dimtext {
+        fill: #ffcc66;
+        font:
+          700 12px ui-monospace,
+          monospace;
+      }
+      .bp-fa {
+        fill: rgba(51, 214, 166, 0.2);
+        stroke: #33d6a6;
+        stroke-width: 2;
+      }
+      .bp-fb {
+        fill: rgba(108, 140, 255, 0.2);
+        stroke: #6c8cff;
+        stroke-width: 2;
+      }
+      .bp-fc {
+        fill: rgba(155, 108, 255, 0.2);
+        stroke: #9b6cff;
+        stroke-width: 2;
+      }
+      .bp-label {
+        fill: #eef1ff;
+        font:
+          700 14px system-ui,
+          sans-serif;
+      }
+      .bp-sub {
+        fill: #b9c4ee;
+        font:
+          600 11px system-ui,
+          sans-serif;
+      }
+      .bp-cap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font:
+          600 12px ui-monospace,
+          monospace;
+        color: #9fc0ff;
+        flex-wrap: wrap;
         gap: 8px;
-        background: var(--nt-surface);
+      }
+
+      /* ── Formula figures ── */
+      .fig {
+        text-align: center;
+      }
+      .fig svg {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+      }
+      .fig figcaption {
+        font-weight: 700;
+        margin-top: 4px;
+        font-size: 15px;
+      }
+      .fcode {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        color: var(--nt-accent);
+        display: block;
+        margin-top: 2px;
+      }
+
+      /* ── Question blocks ── */
+      .q {
+        margin: 14px 0;
+        padding: 14px;
         border-radius: 12px;
+        border: 1px solid var(--nt-border);
+        background: var(--nt-bg);
+      }
+      .q .lbl {
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+      .q .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q input[type="text"] {
+        width: 130px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      .q .unit {
+        color: var(--nt-muted);
+        font-weight: 700;
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 8px 0 0;
+      }
+      .q .fb.ok {
+        color: #0f9d6b;
+      }
+      .q .fb.bad {
+        color: #d23f54;
+      }
+      .q input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      .q input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      #submitBtn {
+        font-size: 1.2rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+
+      /* ── Differentiation callouts ── */
+      .lvl {
+        border-radius: 12px;
+        padding: 13px 15px;
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 999px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .lvl1 {
+        background: rgba(51, 214, 166, 0.12);
+        border: 1px solid rgba(51, 214, 166, 0.45);
+      }
+      .lvl1 .pill {
+        background: #0f9d6b;
+      }
+      .lvl2 {
+        background: rgba(155, 108, 255, 0.12);
+        border: 1px solid rgba(155, 108, 255, 0.45);
+      }
+      .lvl2 .pill {
+        background: #7b4fd0;
+      }
+      .lvl3 {
+        background: rgba(255, 204, 102, 0.14);
+        border: 1px solid rgba(255, 204, 102, 0.5);
+      }
+      .es {
+        display: block;
+        margin-top: 6px;
+        font-style: italic;
+        color: var(--nt-muted);
+      }
+
+      /* ── Material chooser ── */
+      .matgrid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 6px;
+      }
+      @media (max-width: 560px) {
+        .matgrid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .matcard {
+        font: inherit;
+        cursor: pointer;
+        text-align: left;
+        border: 2px solid var(--nt-border);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+      }
+      .matcard[aria-pressed="true"] {
+        border-color: var(--nt-accent);
+        box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.2);
+      }
+      .matcard .sw {
+        height: 46px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+      }
+      .matcard b {
+        font-size: 15px;
+      }
+      .matcard small {
+        color: var(--nt-muted);
+      }
+
+      /* ── Readout + table ── */
+      .readout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--nt-bg);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        border: 1px solid var(--nt-border);
+      }
+      .readout .k {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+        letter-spacing: 0.06em;
+      }
+      .readout .v {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      .readout .v.big {
+        font-size: 26px;
+      }
+      table.bt {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+      }
+      table.bt th,
+      table.bt td {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--nt-border);
+        text-align: left;
+        font-size: 15px;
+      }
+      table.bt thead th {
+        font:
+          700 12px ui-monospace,
+          monospace;
+        text-transform: uppercase;
+        color: var(--nt-muted);
+      }
+      table.bt tfoot th {
+        font-size: 17px;
+      }
+      table.bt input {
+        font: inherit;
+        width: 120px;
+        font-weight: 700;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 2px solid var(--nt-border);
+        background: var(--nt-surface);
+        color: var(--nt-text);
+      }
+      table.bt input.ok {
+        border-color: #33d6a6;
+        box-shadow: 0 0 0 3px rgba(51, 214, 166, 0.18);
+      }
+      table.bt input.bad {
+        border-color: #ff6b81;
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.16);
+      }
+
+      /* ── Teacher / answer key (hidden in print) ── */
+      details.teacher-only {
+        background: var(--nt-surface);
+        border: 1px dashed var(--nt-border);
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      details.teacher-only summary {
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 16px;
+        padding: 14px 18px;
+        color: var(--nt-accent);
+        list-style: none;
         user-select: none;
       }
-      details.teacher-notes > summary::-webkit-details-marker,
-      details.answer-key > summary::-webkit-details-marker {
-        display: none;
+      details.teacher-only summary::before {
+        content: "▶ ";
+        font-size: 13px;
       }
-      details.teacher-notes > summary::before,
-      details.answer-key > summary::before {
-        content: "▶";
-        font-size: 0.75rem;
-        transition: transform 0.2s;
-        display: inline-block;
-      }
-      details[open] > summary::before {
-        transform: rotate(90deg);
-      }
-      details.teacher-notes > summary:focus-visible,
-      details.answer-key > summary:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
+      details.teacher-only[open] summary::before {
+        content: "▼ ";
       }
       .details-body {
-        padding: 4px 18px 16px;
-        border-top: 1px solid var(--nt-border);
+        padding: 0 18px 18px;
+        font-size: 16px;
+        line-height: 1.6;
       }
       .details-body h3 {
-        margin-top: 12px;
+        font-size: 16px;
+        margin: 14px 0 6px;
         color: var(--nt-accent);
       }
       .details-body ul,
       .details-body ol {
-        margin: 6px 0 8px;
+        margin: 4px 0 8px;
         padding-left: 1.4em;
       }
-      .details-body li {
-        margin-bottom: 3px;
-      }
-      .teacher-tag {
-        display: inline-block;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-size: 0.78rem;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 999px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
 
-      /* ---- Rubric ---- */
+      /* ── Rubric ── */
       .rubric-wrap {
-        margin: 14px 0;
+        margin-top: 6px;
         overflow-x: auto;
       }
       table.rubric {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.94rem;
-        min-width: 500px;
+        font-size: 15px;
+        min-width: 480px;
       }
       table.rubric th,
       table.rubric td {
@@ -196,250 +621,14 @@
         vertical-align: top;
       }
       table.rubric thead th {
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-        font-weight: 700;
-        font-size: 0.9rem;
-      }
-      table.rubric tbody tr:nth-child(odd) {
-        background: var(--nt-surface);
-      }
-      table.rubric tbody tr:nth-child(even) {
         background: var(--nt-bg);
-      }
-
-      /* ---- Reflection ---- */
-      .reflection-block {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-left: 6px solid var(--nt-accent);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin: 18px 0;
-      }
-      .reflection-block label {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 1.05rem;
-      }
-      textarea#reflection {
-        width: 100%;
-        min-height: 90px;
-        font-size: 1rem;
-        padding: 10px 12px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-        font-family: inherit;
-        resize: vertical;
-      }
-      textarea#reflection:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-        border-color: var(--nt-accent);
-      }
-      .deliverable {
-        background: var(--nt-surface);
-        border: 2px solid var(--nt-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        margin: 14px 0;
-        font-size: 1rem;
-      }
-      .deliverable strong {
-        color: var(--nt-accent);
-      }
-
-      /* ---- Existing activity styles ---- */
-      .progress-wrap {
-        margin: 18px 0 6px;
-      }
-      .progress-label {
-        font-weight: 700;
-        font-size: 0.95rem;
-        margin-bottom: 6px;
-      }
-      .progress-track {
-        height: 16px;
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 999px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: var(--nt-accent);
-        border-radius: 999px;
-        transition: width 0.3s ease;
-      }
-      .card {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
-        border-radius: 14px;
-        padding: 18px 18px 20px;
-        margin: 18px 0;
-      }
-      .qhead {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
-        margin: 0 0 4px;
-      }
-      .qnum {
-        flex: none;
         font-weight: 800;
-        color: var(--nt-bg);
-        background: var(--nt-accent);
-        width: 32px;
-        height: 32px;
-        border-radius: 999px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-      }
-      .qtitle {
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin: 0;
-      }
-      .directions {
-        margin: 6px 0 14px;
-        color: var(--nt-muted);
-        font-size: 1.02rem;
-      }
-      svg.fig {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        margin: 4px 0 14px;
-      }
-      .fig-poly {
-        fill: var(--nt-accent);
-        fill-opacity: 0.18;
-        stroke: var(--nt-accent);
-        stroke-width: 2.5;
-      }
-      .grid-line {
-        stroke: var(--nt-border);
-        stroke-width: 1;
-      }
-      .dim-line {
-        stroke: var(--nt-text);
-        stroke-width: 2;
-      }
-      .dim-tick {
-        stroke: var(--nt-text);
-        stroke-width: 2;
-      }
-      text.lbl {
-        fill: var(--nt-text);
-        font-size: 16px;
-        font-weight: 700;
-      }
-      .answer-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 10px;
-      }
-      label.ans-label {
-        font-weight: 700;
-      }
-      input[type="number"] {
-        font-size: 1.2rem;
-        padding: 8px 12px;
-        width: 120px;
-        border: 2px solid var(--nt-border);
-        border-radius: 8px;
-        background: var(--nt-bg);
-        color: var(--nt-text);
-      }
-      input[type="number"]:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      .unit {
-        color: var(--nt-muted);
-        font-weight: 700;
-      }
-      .builder {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        align-items: flex-start;
-      }
-      .build-grid {
-        display: grid;
-        gap: 2px;
-        background: var(--nt-border);
-        border: 2px solid var(--nt-accent);
-        border-radius: 6px;
-        padding: 2px;
-        touch-action: none;
-        user-select: none;
-      }
-      .cell {
-        width: 30px;
-        height: 30px;
-        background: var(--nt-bg);
-        cursor: pointer;
-      }
-      .cell.on {
-        background: var(--nt-accent);
-      }
-      .build-info {
-        font-size: 1.05rem;
-      }
-      .build-info b {
-        font-size: 1.3rem;
-      }
-      .controls {
-        margin-top: 10px;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      button.btn {
-        font-size: 1rem;
-        font-weight: 700;
-        padding: 10px 16px;
-        border: 2px solid var(--nt-accent);
-        border-radius: 999px;
-        cursor: pointer;
-        background: var(--nt-accent);
-        color: var(--nt-bg);
-      }
-      button.btn.ghost {
-        background: transparent;
         color: var(--nt-accent);
       }
-      button.btn:focus-visible {
-        outline: 3px solid var(--nt-focus);
-        outline-offset: 2px;
-      }
-      #submitBtn {
-        font-size: 1.25rem;
-        padding: 14px 28px;
-        margin: 8px 0 18px;
-      }
-      .vocab {
-        margin: 6px 0 18px;
-        padding: 12px 16px;
-        border: 1px dashed var(--nt-border);
-        border-radius: 10px;
-        background: var(--nt-surface);
-      }
-      .vocab b {
-        color: var(--nt-accent);
-      }
+
       #ntkit {
-        margin-top: 8px;
+        margin-top: 18px;
       }
-      /* aria-live feedback region */
       #a11y-feedback {
         position: absolute;
         width: 1px;
@@ -449,598 +638,1213 @@
         white-space: nowrap;
       }
 
-      /* ---- Print polish ---- */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 3px solid var(--nt-focus);
+        outline-offset: 2px;
+      }
+
       @media print {
-        details.teacher-notes,
-        details.answer-key {
-          display: none !important;
-        }
+        details.teacher-only,
+        .actions,
         #submitBtn,
-        button.btn,
-        .controls {
+        .btn {
           display: none !important;
         }
         .wrap {
-          padding: 8px;
-        }
-        body {
-          font-size: 13px;
-        }
-        h1 {
-          font-size: 1.4rem;
+          padding-bottom: 0;
         }
         .card {
           break-inside: avoid;
         }
-        .rubric-wrap {
-          break-inside: avoid;
-        }
       }
-    </style>
+    
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
   </head>
+
   <body class="nt-theme-aware">
-    <!-- Accessible live region for screen reader feedback -->
-    <div id="a11y-feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div
+      id="a11y-feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
     <div class="wrap">
-      <header class="page">
-        <span class="standard">CCSS 6.G.A.1</span>
-        <h1>Area Architect — Area of Polygons</h1>
-        <p class="lead">
-          <strong>What to do:</strong> Build a shape and find areas of polygons.
-          Type each answer in the box. Then press
-          <strong>Check My Work</strong> at the bottom.
-        </p>
-      </header>
-
-      <!-- ===== LEARNING TARGET ===== -->
-      <section class="learning-target" aria-labelledby="lt-heading">
-        <h2 id="lt-heading">Learning Target</h2>
+      <!-- ══ LEARNING TARGET ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
         <ul>
-          <li>I can find the area of rectangles and parallelograms using the formula base × height.</li>
-          <li>I can find the area of triangles using the formula ½ × base × height.</li>
-          <li>I can find the area of trapezoids using the formula ½ × (base₁ + base₂) × height.</li>
-          <li>I can find the area of composite (combined) figures by splitting them into simpler shapes.</li>
+          <li>I can find the area of triangles using ½ × base × height.</li>
+          <li>
+            I can find the area of composite figures by decomposing them into
+            rectangles and triangles.
+          </li>
+          <li>
+            I can find the area of a trapezoid using ½ × (base₁ + base₂) ×
+            height.
+          </li>
+          <li>
+            I can read dimensions from a scale drawing and use area to estimate
+            material cost and stay within a budget.
+          </li>
         </ul>
         <div class="lt-meta">
-          <span><strong>Standard:</strong> CCSS 6.G.A.1</span>
-          <span><strong>Estimated time:</strong> 30–40 min</span>
-          <span><strong>Materials:</strong> This activity, pencil/scratch paper</span>
+          <span>Standard: CCSS 6.G.A.1</span>
+          <span>Time: ~40 min</span>
+          <span
+            >Materials: This activity (device or printed), scratch paper</span
+          >
+          <span>Grade 6</span>
         </div>
       </section>
 
-      <!-- ===== TEACHER NOTES (hidden in print) ===== -->
-      <details class="teacher-notes" aria-label="Teacher notes — hidden in print">
-        <summary><span class="teacher-tag">Teacher</span> Notes &amp; Pacing</summary>
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
         <div class="details-body">
           <h3>Pacing</h3>
           <ul>
-            <li><strong>Whole class (5 min):</strong> Review the vocab box and the four area formulas together. Model Q2 (rectangle) as a think-aloud.</li>
-            <li><strong>Partner or independent work (20–25 min):</strong> Students complete Q1–Q6. Circulate and prompt with "Which formula matches this shape?"</li>
-            <li><strong>Debrief (5–10 min):</strong> Share Q5 (trapezoid) and Q6 (composite) strategies. Discuss why the height must be perpendicular.</li>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Brief" together. Anchor
+              the scale: "1 grid square = 1 meter." Model reading the roof's
+              base and height off the blueprint.
+            </li>
+            <li>
+              <strong>Design work (25–30 min):</strong> Students complete Task 1
+              → 4 in order. Task 4 (Budget Board) requires Tasks 1–3 results, so
+              encourage them to check each surface as they go.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Discuss the Level 2 budget
+              inequality and the decompose-vs-compose strategies for the
+              L-shaped plaza.
+            </li>
           </ul>
-          <h3>Grouping</h3>
+          <h3>Differentiation</h3>
           <ul>
-            <li>Works well as partner activity for Q1 (build a rectangle together, then each student answers Q2–Q6 independently).</li>
-            <li>For whole-class: display the build grid on a projector; call on students to click squares.</li>
+            <li>
+              <strong>Level 1 (support):</strong> Use the green callouts and
+              bilingual (EN/ES) prompts. Provide a printed formula card. Let
+              students draw the decomposition lines on the L-shape before
+              computing.
+            </li>
+            <li>
+              <strong>Level 2 (enrichment):</strong> Have students prove the
+              plaza area two ways (decompose vs. compose) and solve the budget
+              inequality 38000 + 2376 + 5040 + 135p ≤ 60000 for the affordable
+              material price p.
+            </li>
           </ul>
-          <h3>Differentiation — Support</h3>
+          <h3>STEM Connection</h3>
           <ul>
-            <li>Provide a printed formula reference card (b×h, ½bh, ½(b1+b2)h).</li>
-            <li>Allow students to draw the split lines on Q6 before calculating.</li>
-            <li>Pre-fill the first step: for Q4 ask "8 × 5 = ?" then "now take half."</li>
-          </ul>
-          <h3>Differentiation — Challenge</h3>
-          <ul>
-            <li>Ask students to create their own composite figure with a given total area (e.g., 48 units²).</li>
-            <li>Have students verify Q1 by proving the filled area is rectangular (equal rows &amp; columns).</li>
-            <li>Extend Q6: "What if you removed a 2×2 square from a corner — what is the new area?"</li>
-          </ul>
-          <h3>ESOL / Language Supports</h3>
-          <ul>
-            <li>Key vocabulary is defined in the vocab box; point to it explicitly.</li>
-            <li>"Perpendicular height" — demonstrate with a right-angle corner; avoid "straight-up" if confusing.</li>
-            <li>Allow students to label diagrams in their home language before writing the numeric answer.</li>
-            <li>Pair sentence frames: "The base is ___ and the height is ___, so I multiply ___ × ___ = ___."</li>
+            <li>
+              This is a true engineering design task: Define → Measure →
+              Calculate → Estimate → Decide. Students apply area math the way an
+              architect or civil engineer does — scale plans, material
+              take-offs, and budget constraints.
+            </li>
           </ul>
         </div>
       </details>
 
-      <!-- ===== VOCAB BOX ===== -->
-      <div class="vocab" role="note" aria-label="Key vocabulary">
-        <b>Area</b> = number of square units inside a shape (units²). &nbsp;
-        <b>Rectangle / Parallelogram:</b> base × height. &nbsp;
-        <b>Triangle:</b> ½ × base × height. &nbsp;
-        <b>Trapezoid:</b> ½ × (base₁ + base₂) × height.
-      </div>
-
-      <!-- ===== PROGRESS BAR ===== -->
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Progress: <span id="progTxt">0 of 6 answered</span>
-        </div>
-        <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6" aria-label="Activity progress" id="progBar">
-          <div class="progress-fill" id="progFill"></div>
-        </div>
-      </div>
-
-      <!-- ===== Q1: Build a rectangle ===== -->
-      <section class="card" aria-labelledby="q1t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">1</span>
-          <h2 class="qtitle" id="q1t">
-            Build a rectangle with area 24 square units
-          </h2>
-        </div>
-        <p class="directions">
-          Click squares to fill them. Build a <strong>rectangle</strong> that
-          has exactly <strong>24</strong> filled squares. The counter shows your
-          area.
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag">Unit 5 · Math Architect · Area (6.G.A.1)</span>
+        <h1>Design Challenge: The Riverside Pavilion Park</h1>
+        <p class="lede">
+          You are the lead architect for <strong>Bayside Parks</strong>. The
+          city wants a riverfront park built around a triangular shade pavilion.
+          Use scale drawings and area math to plan every surface, choose
+          materials, estimate the cost, and bring the build in
+          <strong>under $60,000</strong>.
         </p>
-        <div class="builder">
+        <div class="badges">
+          <span class="badge">Standard 6.G.A.1</span>
+          <span class="badge">Composite Area</span>
+          <span class="badge">Scale Drawings</span>
+          <span class="badge">STEM Design Cycle</span>
+          <span class="badge">Budget Engineering</span>
+        </div>
+        <div class="cycle">
+          <div>
+            <b>1 · Define</b>Read the brief &amp; constraints (budget, scale).
+          </div>
+          <div><b>2 · Measure</b>Read dimensions off each scale blueprint.</div>
+          <div>
+            <b>3 · Calculate</b>Find composite areas with area formulas.
+          </div>
+          <div><b>4 · Estimate</b>Turn area into material cost.</div>
+          <div><b>5 · Decide</b>Adjust materials to meet the budget.</div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Surfaces approved: <span id="pcount">0</span> / 6
           <div
-            class="build-grid"
-            id="grid"
-            role="grid"
-            aria-label="Build grid, 8 columns by 6 rows"
-          ></div>
-          <div class="build-info">
-            Filled squares (your area): <b id="cellCount">0</b>
-            <span class="unit">units²</span>
-            <div class="controls">
-              <button type="button" class="btn ghost" id="clearGrid">
-                Clear grid
-              </button>
+            class="bar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="6"
+            aria-label="Surfaces approved"
+            id="progBar"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ BRIEF ══ -->
+      <section class="card" aria-label="The brief">
+        <h2>The Brief</h2>
+        <p>
+          The city handed you a scaled site plan. Every blueprint on this page
+          uses the <strong>same scale</strong>:
+        </p>
+        <p class="scale">
+          SCALE&nbsp; 1 grid square = 1 meter &nbsp;·&nbsp; site plan drawn to
+          scale
+        </p>
+        <div class="grid3">
+          <div class="lvl lvl1" style="margin-top: 0">
+            <b>Deliverable 1</b><br />Compute the area of each surface from its
+            scale drawing.
+          </div>
+          <div class="lvl lvl2" style="margin-top: 0">
+            <b>Deliverable 2</b><br />Choose materials &amp; compute cost per
+            surface.
+          </div>
+          <div class="lvl lvl3" style="margin-top: 0">
+            <b>Deliverable 3</b><br />Keep the total build under
+            <strong>$60,000</strong>.
+          </div>
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            <strong>Area</strong> is how much flat surface a shape covers,
+            measured in square meters (m²). For a tricky shape, cut it into
+            rectangles and triangles you know, find each area, then add them up.
+          </p>
+          <span class="es"
+            >Español: El <strong>área</strong> es la superficie plana que cubre
+            una figura, medida en metros cuadrados (m²). Para una figura
+            difícil, córtala en rectángulos y triángulos, halla cada área y
+            súmalas.</span
+          >
+        </div>
+      </section>
+
+      <!-- ══ FORMULA TOOLKIT ══ -->
+      <section class="card" aria-label="Formula toolkit">
+        <h2>Architect's Formula Toolkit</h2>
+        <div class="grid3">
+          <figure class="fig">
+            <svg
+              viewBox="0 0 200 120"
+              role="img"
+              aria-label="Rectangle: area equals base times height"
+            >
+              <rect x="30" y="28" width="140" height="62" class="bp-fb" />
+              <text
+                x="100"
+                y="108"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="currentColor"
+              >
+                b (base)
+              </text>
+              <text
+                x="16"
+                y="60"
+                class="bp-sub"
+                fill="currentColor"
+                transform="rotate(-90 16 60)"
+              >
+                h (height)
+              </text>
+            </svg>
+            <figcaption>
+              Rectangle<span class="fcode">A = b × h</span>
+            </figcaption>
+          </figure>
+          <figure class="fig">
+            <svg
+              viewBox="0 0 200 120"
+              role="img"
+              aria-label="Triangle: area equals one half base times height"
+            >
+              <polygon points="30,90 170,90 90,28" class="bp-fa" />
+              <line
+                x1="90"
+                y1="28"
+                x2="90"
+                y2="90"
+                stroke="#33d6a6"
+                stroke-dasharray="4 3"
+                stroke-width="1.4"
+              />
+              <text
+                x="100"
+                y="108"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="currentColor"
+              >
+                b (base)
+              </text>
+              <text x="96" y="64" class="bp-sub" fill="currentColor">h</text>
+            </svg>
+            <figcaption>
+              Triangle<span class="fcode">A = ½ × b × h</span>
+            </figcaption>
+          </figure>
+          <figure class="fig">
+            <svg
+              viewBox="0 0 200 120"
+              role="img"
+              aria-label="Trapezoid: area equals one half times the sum of the two bases times height"
+            >
+              <polygon points="50,90 150,90 125,32 75,32" class="bp-fc" />
+              <text
+                x="100"
+                y="26"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="currentColor"
+              >
+                b₁ top
+              </text>
+              <text
+                x="100"
+                y="108"
+                text-anchor="middle"
+                class="bp-sub"
+                fill="currentColor"
+              >
+                b₂ bottom
+              </text>
+            </svg>
+            <figcaption>
+              Trapezoid<span class="fcode">A = ½(b₁+b₂)×h</span>
+            </figcaption>
+          </figure>
+        </div>
+        <p class="muted" style="margin-bottom: 0">
+          Composite strategy — <strong>Decompose</strong> (cut the shape into
+          pieces) or <strong>Compose</strong> (frame a big rectangle, then
+          subtract the missing corner). Both give the same area; pick the one
+          with fewer steps.
+        </p>
+      </section>
+
+      <!-- ══ TASK 1 · TRIANGLE ROOF ══ -->
+      <section class="card" aria-labelledby="t1h">
+        <h2 id="t1h">
+          Task 1 · The Shade Pavilion Roof
+          <span class="tag-shape">Triangle</span>
+        </h2>
+        <p>
+          The signature pavilion has a triangular fabric roof. Read its
+          dimensions off the scale blueprint, then size and price the shade
+          fabric.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 260"
+              role="img"
+              aria-label="Scale blueprint of a triangular roof with base 18 meters and height 12 meters. One grid square equals one meter."
+            >
+              <defs>
+                <!-- 15 px per grid cell: 18 cols × 15 = 270 px, 12 rows × 15 = 180 px -->
+                <pattern
+                  id="g15"
+                  width="15"
+                  height="15"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M15 0H0V15"
+                    fill="none"
+                    class="bp-grid"
+                    stroke-width="1"
+                  />
+                </pattern>
+              </defs>
+              <!-- grid: 18 m wide × 12 m tall -->
+              <rect x="28" y="20" width="270" height="180" fill="url(#g15)" />
+              <!-- triangle: base from (28,200) to (298,200), apex at midpoint (163,20) -->
+              <polygon points="28,200 298,200 163,20" class="bp-fa" />
+              <!-- height marker (dashed) -->
+              <line
+                x1="163"
+                y1="20"
+                x2="163"
+                y2="200"
+                class="bp-dim"
+                stroke-dasharray="5 4"
+              />
+              <!-- base dimension line -->
+              <line x1="28" y1="214" x2="298" y2="214" class="bp-dim" />
+              <text x="163" y="232" text-anchor="middle" class="bp-dimtext">
+                base = 18 m
+              </text>
+              <text x="170" y="118" class="bp-dimtext">h = 12 m</text>
+              <text x="163" y="178" text-anchor="middle" class="bp-label">
+                Fabric Roof
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Plan view · Pavilion roof</span><span>1 square = 1 m</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="roof-area">
+              <p class="lbl">Q1.1 — Area of the triangular roof</p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-roof-area"
+                  data-ans="108"
+                  data-tol="0.5"
+                  data-why="A = ½ × 18 × 12 = ½ × 216 = 108 m²"
+                  aria-label="Roof area in square meters"
+                />
+                <span class="unit">m²</span>
+                <button type="button" class="btn" data-check="roof-area">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="roof-area">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-roof-area"></p>
+            </div>
+            <div class="q" data-q="roof-cost">
+              <p class="lbl">
+                Q1.2 — Shade fabric costs $22 / m². What is the fabric cost?
+              </p>
+              <div class="row">
+                <span class="unit">$</span>
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-roof-cost"
+                  data-ans="2376"
+                  data-tol="1"
+                  data-why="108 m² × $22 = $2,376"
+                  aria-label="Fabric cost in dollars"
+                />
+                <button type="button" class="btn" data-check="roof-cost">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="roof-cost">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-roof-cost"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Triangle area = <strong>½ × base × height</strong>. Multiply the
+                two numbers, then take half.
+                <em>Cost = area × price per m².</em>
+              </p>
+              <span class="es"
+                >Español: Área del triángulo = ½ × base × altura. Costo = área ×
+                precio por m².</span
+              >
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ===== Q2: Rectangle area ===== -->
-      <section class="card" aria-labelledby="q2t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">2</span>
-          <h2 class="qtitle" id="q2t">Find the area of the rectangle</h2>
-        </div>
-        <p class="directions">
-          Multiply base × height. Each grid square is 1 unit.
+      <!-- ══ TASK 2 · COMPOSITE L-PLAZA ══ -->
+      <section class="card" aria-labelledby="t2h">
+        <h2 id="t2h">
+          Task 2 · The Entry Plaza
+          <span class="tag-shape">Composite figure</span>
+        </h2>
+        <p>
+          The paved entry plaza is an <strong>L-shape</strong>. Decompose it
+          into two rectangles, find each area, then add. The colored regions on
+          the blueprint show the cuts.
         </p>
-        <svg
-          class="fig"
-          width="320"
-          height="180"
-          viewBox="0 0 320 180"
-          role="img"
-          aria-label="Rectangle, base 9 units, height 4 units"
-        >
-          <rect class="fig-poly" x="40" y="40" width="180" height="100" />
-          <line class="dim-line" x1="40" y1="160" x2="220" y2="160" />
-          <text class="lbl" x="130" y="178" text-anchor="middle">base = 9</text>
-          <line class="dim-line" x1="24" y1="40" x2="24" y2="140" />
-          <text class="lbl" x="20" y="95" text-anchor="end">height = 4</text>
-        </svg>
-        <div class="answer-row">
-          <label class="ans-label" for="a2">Area =</label>
-          <input
-            type="number"
-            id="a2"
-            inputmode="numeric"
-            aria-label="Area of rectangle in square units"
-          />
-          <span class="unit">units²</span>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 280"
+              role="img"
+              aria-label="Scale blueprint of an L-shaped plaza. Overall width 16 meters and height 12 meters, with a notch cut from the top right that is 8 meters wide and 6 meters tall. Region A upper-left is 8 by 6 meters; Region B is the bottom strip 16 by 6 meters."
+            >
+              <defs>
+                <pattern
+                  id="g20"
+                  width="18"
+                  height="18"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M18 0H0V18"
+                    fill="none"
+                    class="bp-grid"
+                    stroke-width="1"
+                  />
+                </pattern>
+              </defs>
+              <rect x="20" y="20" width="324" height="240" fill="url(#g20)" />
+              <polygon
+                points="30,24 318,24 318,132 174,132 174,240 30,240"
+                class="bp-edge"
+                fill="rgba(108,140,255,.08)"
+              />
+              <rect x="30" y="132" width="288" height="108" class="bp-fb" />
+              <rect x="30" y="24" width="144" height="108" class="bp-fc" />
+              <line x1="30" y1="252" x2="318" y2="252" class="bp-dim" />
+              <text x="174" y="266" text-anchor="middle" class="bp-dimtext">
+                16 m
+              </text>
+              <line x1="12" y1="24" x2="12" y2="240" class="bp-dim" />
+              <text
+                x="14"
+                y="135"
+                class="bp-dimtext"
+                transform="rotate(-90 14 135)"
+              >
+                12 m
+              </text>
+              <line x1="174" y1="14" x2="318" y2="14" class="bp-dim" />
+              <text x="246" y="12" text-anchor="middle" class="bp-dimtext">
+                notch 8 m
+              </text>
+              <text x="100" y="84" text-anchor="middle" class="bp-label">
+                A
+              </text>
+              <text x="174" y="190" text-anchor="middle" class="bp-label">
+                B
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Region A = 8 × 6 · Region B = 16 × 6</span
+              ><span>1 square = 1 m</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="plaza-a">
+              <p class="lbl">Q2.1 — Area of Region A (upper-left, 8 m × 6 m)</p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-plaza-a"
+                  data-ans="48"
+                  data-tol="0.5"
+                  data-why="Region A = 8 × 6 = 48 m²"
+                  aria-label="Region A area"
+                />
+                <span class="unit">m²</span>
+                <button type="button" class="btn" data-check="plaza-a">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="plaza-a">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-plaza-a"></p>
+            </div>
+            <div class="q" data-q="plaza-b">
+              <p class="lbl">
+                Q2.2 — Area of Region B (bottom strip, 16 m × 6 m)
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-plaza-b"
+                  data-ans="96"
+                  data-tol="0.5"
+                  data-why="Region B = 16 × 6 = 96 m²"
+                  aria-label="Region B area"
+                />
+                <span class="unit">m²</span>
+                <button type="button" class="btn" data-check="plaza-b">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="plaza-b">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-plaza-b"></p>
+            </div>
+            <div class="q" data-q="plaza-total">
+              <p class="lbl">Q2.3 — Total plaza area (A + B)</p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-plaza-total"
+                  data-ans="144"
+                  data-tol="0.5"
+                  data-why="48 + 96 = 144 m². Compose-check: whole 16×12 = 192, minus notch 8×6 = 48 → 144 m². Same answer!"
+                  aria-label="Total plaza area"
+                />
+                <span class="unit">m²</span>
+                <button type="button" class="btn" data-check="plaza-total">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="plaza-total">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-plaza-total"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                An L-shape splits cleanly into two rectangles. Area of a
+                rectangle = length × width. Add the two rectangle areas for the
+                total.
+              </p>
+              <span class="es"
+                >Español: Una forma de L se divide en dos rectángulos. Área =
+                largo × ancho. Suma las dos áreas para el total.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Prove it two ways. <strong>Decompose:</strong> region A + region
+                B. Now <strong>compose:</strong> frame the whole 16 × 12
+                rectangle and subtract the missing corner. Do you get the same
+                answer? Which method used fewer steps here, and why?
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- ===== Q3: Parallelogram ===== -->
-      <section class="card" aria-labelledby="q3t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">3</span>
-          <h2 class="qtitle" id="q3t">Find the area of the parallelogram</h2>
-        </div>
-        <p class="directions">
-          Area = base × height. Use the straight-up height, not the slanted
-          side.
+      <!-- ══ TASK 3 · TRAPEZOID GARDEN + MATERIAL CHOOSER ══ -->
+      <section class="card" aria-labelledby="t3h">
+        <h2 id="t3h">
+          Task 3 · The Riverbank Garden <span class="tag-shape">Trapezoid</span>
+        </h2>
+        <p>
+          The garden follows the curve of the river, so it is shaped like a
+          <strong>trapezoid</strong>. Find its area, choose a ground cover, and
+          watch the live cost update.
         </p>
-        <svg
-          class="fig"
-          width="340"
-          height="180"
-          viewBox="0 0 340 180"
-          role="img"
-          aria-label="Parallelogram, base 10 units, height 6 units"
-        >
-          <polygon class="fig-poly" points="60,140 250,140 290,40 100,40" />
-          <line class="dim-line" x1="60" y1="158" x2="250" y2="158" />
-          <text class="lbl" x="155" y="176" text-anchor="middle">
-            base = 10
-          </text>
-          <line
-            class="dim-line"
-            x1="270"
-            y1="40"
-            x2="270"
-            y2="140"
-            stroke-dasharray="5 4"
-          />
-          <text class="lbl" x="278" y="95" text-anchor="start">height = 6</text>
-        </svg>
-        <div class="answer-row">
-          <label class="ans-label" for="a3">Area =</label>
-          <input
-            type="number"
-            id="a3"
-            inputmode="numeric"
-            aria-label="Area of parallelogram in square units"
-          />
-          <span class="unit">units²</span>
+        <div class="grid2">
+          <div class="bp">
+            <svg
+              viewBox="0 0 360 240"
+              role="img"
+              aria-label="Scale blueprint of a trapezoidal garden. Top side 10 meters, bottom side 20 meters, height 9 meters."
+            >
+              <defs>
+                <!-- 14 px per grid cell: 20 cols × 14 = 280 px, 9 rows × 14 = 126 px -->
+                <pattern
+                  id="g14"
+                  width="14"
+                  height="14"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M14 0H0V14"
+                    fill="none"
+                    class="bp-grid"
+                    stroke-width="1"
+                  />
+                </pattern>
+              </defs>
+              <!-- grid: 20 m wide × 9 m tall -->
+              <rect x="40" y="30" width="280" height="126" fill="url(#g14)" />
+              <!-- trapezoid: bottom (40,156) to (320,156); top (110,30) to (250,30) -->
+              <!-- b2 = 20 m × 14 = 280 px, b1 = 10 m × 14 = 140 px centered, h = 9 × 14 = 126 px -->
+              <polygon points="110,30 250,30 320,156 40,156" class="bp-fc" />
+              <!-- top dimension -->
+              <line x1="110" y1="20" x2="250" y2="20" class="bp-dim" />
+              <text x="180" y="16" text-anchor="middle" class="bp-dimtext">
+                top b₁ = 10 m
+              </text>
+              <!-- bottom dimension -->
+              <line x1="40" y1="168" x2="320" y2="168" class="bp-dim" />
+              <text x="180" y="182" text-anchor="middle" class="bp-dimtext">
+                bottom b₂ = 20 m
+              </text>
+              <!-- height marker (dashed) -->
+              <line
+                x1="180"
+                y1="30"
+                x2="180"
+                y2="156"
+                class="bp-dim"
+                stroke-dasharray="5 4"
+              />
+              <text x="188" y="100" class="bp-dimtext">h = 9 m</text>
+              <text x="180" y="105" text-anchor="middle" class="bp-label">
+                Garden
+              </text>
+            </svg>
+            <div class="bp-cap">
+              <span>Plan view · Riverbank garden</span
+              ><span>1 square = 1 m</span>
+            </div>
+          </div>
+          <div>
+            <div class="q" data-q="garden-area">
+              <p class="lbl">Q3.1 — Area of the trapezoidal garden</p>
+              <div class="row">
+                <input
+                  type="text"
+                  inputmode="decimal"
+                  id="q-garden-area"
+                  data-ans="135"
+                  data-tol="0.5"
+                  data-why="A = ½(b₁+b₂)×h = ½(10+20)×9 = 15×9 = 135 m²"
+                  aria-label="Garden area"
+                />
+                <span class="unit">m²</span>
+                <button type="button" class="btn" data-check="garden-area">
+                  Check
+                </button>
+                <button type="button" class="btn ghost" data-hint="garden-area">
+                  Hint
+                </button>
+              </div>
+              <p class="fb" id="fb-garden-area"></p>
+            </div>
+
+            <h3>Choose a ground cover</h3>
+            <div
+              class="matgrid"
+              id="matChooser"
+              role="group"
+              aria-label="Ground cover material options"
+            >
+              <button
+                type="button"
+                class="matcard"
+                data-mat="Lawn turf"
+                data-price="8"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #2f8f5b, #33d6a6)"
+                ></div>
+                <b>Lawn turf</b><br /><small>$8 / m²</small>
+              </button>
+              <button
+                type="button"
+                class="matcard"
+                data-mat="Wildflower mix"
+                data-price="14"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #9b6cff, #6c8cff)"
+                ></div>
+                <b>Wildflower mix</b><br /><small>$14 / m²</small>
+              </button>
+              <button
+                type="button"
+                class="matcard"
+                data-mat="River-stone bed"
+                data-price="20"
+                aria-pressed="false"
+              >
+                <div
+                  class="sw"
+                  style="background: linear-gradient(135deg, #7b8095, #c3c9d8)"
+                ></div>
+                <b>River-stone bed</b><br /><small>$20 / m²</small>
+              </button>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Selected</span><br /><span
+                  class="v"
+                  id="matName"
+                  >—</span
+                >
+              </div>
+              <div>
+                <span class="k">Area</span><br /><span class="v">135 m²</span>
+              </div>
+              <div>
+                <span class="k">Garden cost</span><br /><span
+                  class="v"
+                  id="matCost"
+                  >$0</span
+                >
+              </div>
+            </div>
+            <p class="muted" style="margin-bottom: 0">
+              Live cost = <span class="scale">135 m² × price/m²</span>. This
+              feeds straight into your Budget Board in Task 4.
+            </p>
+          </div>
         </div>
       </section>
 
-      <!-- ===== Q4: Triangle ===== -->
-      <section class="card" aria-labelledby="q4t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">4</span>
-          <h2 class="qtitle" id="q4t">Find the area of the triangle</h2>
-        </div>
-        <p class="directions">
-          Area = ½ × base × height. Multiply, then take half.
+      <!-- ══ TASK 4 · BUDGET BOARD ══ -->
+      <section class="card" aria-labelledby="t4h">
+        <h2 id="t4h">
+          Task 4 · Final Budget Board
+          <span class="tag-shape">Estimate &amp; decide</span>
+        </h2>
+        <p>
+          Bring it together. Enter the roof and plaza costs you computed; the
+          garden cost auto-fills from your material choice. Then tally the build
+          against the <strong>$60,000</strong> budget.
         </p>
-        <svg
-          class="fig"
-          width="320"
-          height="180"
-          viewBox="0 0 320 180"
-          role="img"
-          aria-label="Triangle, base 8 units, height 5 units"
-        >
-          <polygon class="fig-poly" points="50,140 210,140 110,40" />
-          <line class="dim-line" x1="50" y1="158" x2="210" y2="158" />
-          <text class="lbl" x="130" y="176" text-anchor="middle">base = 8</text>
-          <line
-            class="dim-line"
-            x1="110"
-            y1="40"
-            x2="110"
-            y2="140"
-            stroke-dasharray="5 4"
-          />
-          <text class="lbl" x="120" y="95" text-anchor="start">height = 5</text>
-        </svg>
-        <div class="answer-row">
-          <label class="ans-label" for="a4">Area =</label>
-          <input
-            type="number"
-            id="a4"
-            inputmode="decimal"
-            aria-label="Area of triangle in square units"
-          />
-          <span class="unit">units²</span>
+        <div class="grid2">
+          <div>
+            <table class="bt">
+              <thead>
+                <tr>
+                  <th>Surface</th>
+                  <th>Area (m²)</th>
+                  <th>Your cost ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Pavilion roof — fabric @ $22/m²</td>
+                  <td>108</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="cRoof"
+                      placeholder="?"
+                      aria-label="Roof cost"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Entry plaza — paving @ $35/m²</td>
+                  <td>144</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="cPlaza"
+                      placeholder="?"
+                      aria-label="Plaza cost"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Riverbank garden — your material</td>
+                  <td>135</td>
+                  <td>
+                    <input
+                      type="text"
+                      id="cGarden"
+                      aria-label="Garden cost (auto)"
+                      readonly
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Site labor — fixed</td>
+                  <td>—</td>
+                  <td>
+                    <input type="text" id="cLabor" value="38000" readonly />
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Total estimate</th>
+                  <th></th>
+                  <th><span id="grandTotal">$0</span></th>
+                </tr>
+              </tfoot>
+            </table>
+            <p class="muted">
+              Plaza paving cost = 144 m² × $35. Compute it and enter it to
+              confirm you can turn area into money.
+            </p>
+          </div>
+          <div>
+            <div class="readout">
+              <div>
+                <span class="k">Budget</span><br /><span class="v big"
+                  >$60,000</span
+                >
+              </div>
+              <div>
+                <span class="k">Remaining</span><br /><span
+                  class="v big"
+                  id="remaining"
+                  >—</span
+                >
+              </div>
+            </div>
+            <p
+              class="fb"
+              id="verdict"
+              style="margin-top: 12px; font-size: 15px"
+            ></p>
+            <button type="button" class="btn" id="tallyBtn">
+              Tally the build
+            </button>
+
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Total = roof + plaza + garden + labor. Remaining = budget −
+                total. Positive remaining = under budget (good). Negative = pick
+                a cheaper material.
+              </p>
+              <span class="es"
+                >Español: Total = techo + plaza + jardín + mano de obra.
+                Restante = presupuesto − total. Si el restante es positivo,
+                estás dentro del presupuesto.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                If river-stone ($20/m²) pushes you over budget, what is the
+                highest garden material price <em>p</em> you can still afford?
+                Using your computed roof cost, plaza cost, garden area, and the
+                $38,000 labor, write and solve:
+              </p>
+              <p class="scale" style="margin: 8px 0 0">
+                labor + roof cost + plaza cost + 135·p ≤ 60,000
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- ===== Q5: Trapezoid ===== -->
-      <section class="card" aria-labelledby="q5t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">5</span>
-          <h2 class="qtitle" id="q5t">Find the area of the trapezoid</h2>
-        </div>
-        <p class="directions">
-          Area = ½ × (base₁ + base₂) × height. Add the two bases first.
+      <!-- ══ SIGN-OFF ══ -->
+      <section class="card" aria-label="Architect sign-off">
+        <h2>Architect's Sign-off</h2>
+        <p class="muted" style="margin-top: 0">
+          When every surface checks out and your plan is under budget, submit it
+          to the city council. Enter your name in the field below, then press
+          <strong>Submit plan &amp; grade</strong> to save your score as a PDF
+          or DOC.
         </p>
-        <svg
-          class="fig"
-          width="340"
-          height="180"
-          viewBox="0 0 340 180"
-          role="img"
-          aria-label="Trapezoid, top base 6 units, bottom base 10 units, height 4 units"
-        >
-          <polygon class="fig-poly" points="60,140 280,140 230,50 110,50" />
-          <line class="dim-line" x1="110" y1="36" x2="230" y2="36" />
-          <text class="lbl" x="170" y="30" text-anchor="middle">base₁ = 6</text>
-          <line class="dim-line" x1="60" y1="158" x2="280" y2="158" />
-          <text class="lbl" x="170" y="176" text-anchor="middle">
-            base₂ = 10
-          </text>
-          <line
-            class="dim-line"
-            x1="296"
-            y1="50"
-            x2="296"
-            y2="140"
-            stroke-dasharray="5 4"
-          />
-          <text class="lbl" x="304" y="100" text-anchor="start">
-            height = 4
-          </text>
-        </svg>
-        <div class="answer-row">
-          <label class="ans-label" for="a5">Area =</label>
-          <input
-            type="number"
-            id="a5"
-            inputmode="numeric"
-            aria-label="Area of trapezoid in square units"
-          />
-          <span class="unit">units²</span>
-        </div>
+        <button type="button" class="btn" id="submitBtn">
+          Submit plan &amp; grade
+        </button>
+        <div id="ntkit"></div>
       </section>
 
-      <!-- ===== Q6: Composite ===== -->
-      <section class="card" aria-labelledby="q6t">
-        <div class="qhead">
-          <span class="qnum" aria-hidden="true">6</span>
-          <h2 class="qtitle" id="q6t">Find the area of the L-shaped floor</h2>
-        </div>
-        <p class="directions">
-          Break the L into 2 rectangles. Find each area, then add them. Each
-          square is 1 unit.
-        </p>
-        <svg
-          class="fig"
-          width="320"
-          height="200"
-          viewBox="0 0 320 200"
-          role="img"
-          aria-label="L-shaped figure: top rectangle 8 wide by 3 tall; bottom-left rectangle 4 wide by 3 tall"
-        >
-          <polygon
-            class="fig-poly"
-            points="40,40 220,40 220,100 120,100 120,160 40,160"
-          />
-          <line class="dim-line" x1="40" y1="28" x2="220" y2="28" />
-          <text class="lbl" x="130" y="22" text-anchor="middle">8</text>
-          <line class="dim-line" x1="28" y1="40" x2="28" y2="100" />
-          <text class="lbl" x="22" y="74" text-anchor="end">3</text>
-          <line class="dim-line" x1="28" y1="100" x2="28" y2="160" />
-          <text class="lbl" x="22" y="134" text-anchor="end">3</text>
-          <line class="dim-line" x1="120" y1="172" x2="40" y2="172" />
-          <text class="lbl" x="80" y="190" text-anchor="middle">4</text>
-        </svg>
-        <p class="directions">
-          Top rectangle is 8 × 3. Bottom-left rectangle is 4 × 3. Add the two
-          areas.
-        </p>
-        <div class="answer-row">
-          <label class="ans-label" for="a6">Total area =</label>
-          <input
-            type="number"
-            id="a6"
-            inputmode="numeric"
-            aria-label="Total area of L shape in square units"
-          />
-          <span class="unit">units²</span>
-        </div>
-      </section>
-
-      <!-- ===== RUBRIC ===== -->
-      <section aria-labelledby="rubric-heading">
-        <h2 id="rubric-heading" style="font-size:1.1rem; margin: 18px 0 8px;">Performance Rubric — Area of Polygons (6.G.A.1)</h2>
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>Performance Rubric — Area Design Challenge (6.G.A.1)</h2>
         <div class="rubric-wrap">
           <table class="rubric">
             <thead>
               <tr>
-                <th scope="col">Score</th>
-                <th scope="col">Level</th>
-                <th scope="col">Descriptor</th>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><strong>4 — Exceeds</strong></td>
-                <td>Expert</td>
-                <td>Correctly applies all four area formulas (rectangle/parallelogram, triangle, trapezoid) and accurately decomposes the composite figure. Can explain the strategy used in Q6 and justify why the height must be perpendicular.</td>
+                <td>6 / 6</td>
+                <td>
+                  Reads every scale drawing accurately and applies triangle,
+                  composite, and trapezoid area formulas correctly. Brings the
+                  build under budget and can explain the decompose/compose
+                  strategies and the budget inequality.
+                </td>
               </tr>
               <tr>
                 <td><strong>3 — Meets</strong></td>
-                <td>Proficient</td>
-                <td>Correctly answers 5–6 of 6 problems. Applies the correct formula for each shape with at most one arithmetic error. Reflection shows understanding of the "break-apart" strategy for composite figures.</td>
+                <td>5 / 6</td>
+                <td>
+                  Correctly computes most surface areas and costs with at most
+                  one arithmetic slip. Completes the budget board and reaches a
+                  valid under-budget plan.
+                </td>
               </tr>
               <tr>
                 <td><strong>2 — Approaching</strong></td>
-                <td>Developing</td>
-                <td>Correctly answers 3–4 of 6 problems. May confuse base × height with ½ × base × height, or incorrectly add the bases on the trapezoid. Q1 rectangle may not be a true rectangle (random cells filled).</td>
+                <td>3–4 / 6</td>
+                <td>
+                  Computes simple areas but struggles with the composite figure
+                  or trapezoid (e.g., forgets to halve, or does not add both
+                  bases). Partial cost/budget work.
+                </td>
               </tr>
               <tr>
                 <td><strong>1 — Beginning</strong></td>
-                <td>Emerging</td>
-                <td>Answers 0–2 problems correctly. May not apply the correct formula, or may measure the slanted side instead of the perpendicular height. Needs direct instruction on area formulas and grid models.</td>
+                <td>0–2 / 6</td>
+                <td>
+                  Few correct areas. Confuses formulas or misreads the scale.
+                  Needs reteaching on area formulas and reading scale drawings.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
-
-      <!-- ===== ANSWER KEY (teacher only, hidden in print) ===== -->
-      <details class="answer-key" aria-label="Answer key — hidden in print">
-        <summary><span class="teacher-tag">Teacher</span> Answer Key</summary>
-        <div class="details-body">
-          <h3>Correct Answers</h3>
-          <ol>
-            <li><strong>Q1 — Build rectangle:</strong> Any true rectangle with exactly 24 filled cells. Accepted arrangements: 4×6, 6×4, 3×8, 8×3. Cells must form a solid rectangle (no gaps, no extra cells).</li>
-            <li><strong>Q2 — Rectangle:</strong> 9 × 4 = <strong>36 units²</strong></li>
-            <li><strong>Q3 — Parallelogram:</strong> 10 × 6 = <strong>60 units²</strong> (use perpendicular height 6, not the slant side)</li>
-            <li><strong>Q4 — Triangle:</strong> ½ × 8 × 5 = ½ × 40 = <strong>20 units²</strong></li>
-            <li><strong>Q5 — Trapezoid:</strong> ½ × (6 + 10) × 4 = ½ × 16 × 4 = ½ × 64 = <strong>32 units²</strong></li>
-            <li><strong>Q6 — L-shape (composite):</strong> Top rectangle: 8 × 3 = 24. Bottom-left rectangle: 4 × 3 = 12. Total: 24 + 12 = <strong>36 units²</strong></li>
-          </ol>
-          <h3>Common Errors to Watch For</h3>
-          <ul>
-            <li>Q3: Students may multiply 10 × slant side. Ask them which measurement goes straight up.</li>
-            <li>Q4: Students may forget to take half (answer 40). Remind them ½ means divide by 2.</li>
-            <li>Q5: Students may forget to add the two bases before multiplying (e.g., ½ × 6 × 4 + 10 = 22). Emphasize the parentheses: add first.</li>
-            <li>Q6: Students may multiply the full bounding box 8×6=48 without subtracting the missing corner (48 − 12 = 36 also gives correct answer via subtraction method).</li>
-          </ul>
-        </div>
-      </details>
-
-      <!-- ===== REFLECTION ===== -->
-      <div class="reflection-block">
-        <label for="reflection">Reflection: In your own words, explain how you find the area of a trapezoid. Why do you add the two bases before multiplying?</label>
-        <textarea id="reflection" aria-label="Reflection — explain trapezoid area in your own words" placeholder="Write your thinking here…"></textarea>
-      </div>
-
-      <!-- ===== DELIVERABLE ===== -->
-      <div class="deliverable">
-        <strong>Deliverable:</strong> Complete all 6 problems and the reflection above, then press <strong>Check My Work</strong>. When your results appear, use <strong>Save as PDF</strong> or <strong>Save as DOC</strong> to submit your completed activity to your teacher.
-      </div>
-
-      <button type="button" class="btn" id="submitBtn">Check My Work</button>
-
-      <div id="ntkit"></div>
     </div>
 
-    <script src="/assets/nt-activity-kit.js"></script>
     <script>
       (function () {
         "use strict";
 
-        // ---- Build grid (8 cols x 6 rows) ----
-        var COLS = 8, ROWS = 6;
-        var grid = document.getElementById("grid");
-        grid.style.gridTemplateColumns = "repeat(" + COLS + ", 30px)";
-        var painting = false, paintVal = true;
-        for (var i = 0; i < COLS * ROWS; i++) {
-          var c = document.createElement("div");
-          c.className = "cell";
-          c.setAttribute("role", "gridcell");
-          c.setAttribute("tabindex", "0");
-          c.setAttribute("aria-label", "square " + (i + 1) + ", empty");
-          grid.appendChild(c);
+        function num(s) {
+          return parseFloat(String(s == null ? "" : s).replace(/[$,\s]/g, ""));
         }
-        var cells = Array.prototype.slice.call(grid.children);
-
-        function setCell(c, on) {
-          c.classList.toggle("on", on);
-          var n = cells.indexOf(c) + 1;
-          c.setAttribute("aria-label", "square " + n + (on ? ", filled" : ", empty"));
-          updateCount();
+        function money(n) {
+          return "$" + Number(n || 0).toLocaleString("en-US");
         }
-        function toggleCell(c) {
-          setCell(c, !c.classList.contains("on"));
-        }
-        function updateCount() {
-          var count = cells.filter(function (c) {
-            return c.classList.contains("on");
-          }).length;
-          document.getElementById("cellCount").textContent = count;
+        function live(msg) {
           var fb = document.getElementById("a11y-feedback");
-          if (fb) {
-            fb.textContent = count + " squares filled";
-          }
-          updateProgress();
+          if (fb) fb.textContent = msg;
         }
-        cells.forEach(function (c) {
-          c.addEventListener("pointerdown", function (e) {
-            e.preventDefault();
-            painting = true;
-            paintVal = !c.classList.contains("on");
-            setCell(c, paintVal);
+
+        var GARDEN_AREA = 135;
+        var BUDGET = 60000;
+
+        /* Auto-graded problems (string-compared by NTKit) */
+        var problems = [
+          {
+            id: "roof-area",
+            ans: "108",
+            skill: "Area of a triangle",
+            prompt: "Area of triangular roof: ½ × 18 × 12",
+          },
+          {
+            id: "roof-cost",
+            ans: "2376",
+            skill: "Area to material cost",
+            prompt: "Fabric cost: 108 m² × $22/m²",
+          },
+          {
+            id: "plaza-a",
+            ans: "48",
+            skill: "Decompose composite figures",
+            prompt: "Plaza Region A: 8 × 6",
+          },
+          {
+            id: "plaza-b",
+            ans: "96",
+            skill: "Decompose composite figures",
+            prompt: "Plaza Region B: 16 × 6",
+          },
+          {
+            id: "plaza-total",
+            ans: "144",
+            skill: "Area of composite figures",
+            prompt: "Total plaza area: 48 + 96",
+          },
+          {
+            id: "garden-area",
+            ans: "135",
+            skill: "Area of a trapezoid",
+            prompt: "Trapezoid garden: ½(10+20)×9",
+          },
+        ];
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {};
+
+        function inputFor(id) {
+          return document.getElementById("q-" + id);
+        }
+        function isCorrect(id) {
+          var inp = inputFor(id);
+          if (!inp) return false;
+          var got = num(inp.value);
+          var want = num(inp.getAttribute("data-ans"));
+          var tol = num(inp.getAttribute("data-tol")) || 0.5;
+          return !isNaN(got) && Math.abs(got - want) <= tol;
+        }
+
+        function paint() {
+          var n = 0;
+          problems.forEach(function (p) {
+            if (correct[p.id]) n++;
           });
-          c.addEventListener("pointerenter", function () {
-            if (painting) setCell(c, paintVal);
+          document.getElementById("pcount").textContent = n;
+          document.getElementById("pbar").style.width =
+            (n / problems.length) * 100 + "%";
+          document.getElementById("progBar").setAttribute("aria-valuenow", n);
+        }
+
+        function check(id) {
+          var p = pById[id];
+          if (!p) return;
+          var inp = inputFor(id);
+          var fb = document.getElementById("fb-" + id);
+          var ok = isCorrect(id);
+          if (inp) {
+            inp.classList.toggle("ok", ok);
+            inp.classList.toggle("bad", !ok);
+          }
+          if (fb) {
+            fb.className = "fb " + (ok ? "ok" : "bad");
+            fb.textContent = ok
+              ? "✓ Approved — " + inp.getAttribute("data-why")
+              : "✗ Not yet. Re-read the scale plan, set up the formula, then substitute.";
+          }
+          correct[id] = ok;
+          live(ok ? "Surface approved." : "Not correct yet, try again.");
+          paint();
+        }
+
+        /* Event delegation for Check / Hint buttons + Enter key */
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var c = e.target.closest("[data-check]");
+          if (c) {
+            check(c.getAttribute("data-check"));
+            return;
+          }
+          var h = e.target.closest("[data-hint]");
+          if (h) {
+            var id = h.getAttribute("data-hint");
+            var p = pById[id];
+            var inp = inputFor(id);
+            var fb = document.getElementById("fb-" + id);
+            if (p && fb && inp) {
+              fb.className = "fb";
+              fb.textContent =
+                "Hint: " +
+                inp.getAttribute("data-why").split("=")[0].trim() +
+                " = …  Set up the formula first, then plug in the numbers from the blueprint.";
+            }
+          }
+        });
+        problems.forEach(function (p) {
+          var inp = inputFor(p.id);
+          if (inp)
+            inp.addEventListener("keydown", function (e) {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                check(p.id);
+              }
+            });
+        });
+
+        /* Task 3: material chooser → live garden cost → Task 4 */
+        var matName = document.getElementById("matName");
+        var matCost = document.getElementById("matCost");
+        var cGarden = document.getElementById("cGarden");
+
+        document
+          .querySelectorAll("#matChooser .matcard")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              document
+                .querySelectorAll("#matChooser .matcard")
+                .forEach(function (b) {
+                  b.setAttribute("aria-pressed", "false");
+                });
+              btn.setAttribute("aria-pressed", "true");
+              var price = num(btn.getAttribute("data-price"));
+              var cost = GARDEN_AREA * price;
+              if (matName) matName.textContent = btn.getAttribute("data-mat");
+              if (matCost) matCost.textContent = money(cost);
+              if (cGarden) cGarden.value = cost;
+              tally();
+            });
           });
-          c.addEventListener("keydown", function (e) {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              toggleCell(c);
+
+        /* Task 4: budget board */
+        function tally() {
+          var roof = num((document.getElementById("cRoof") || {}).value) || 0;
+          var plaza = num((document.getElementById("cPlaza") || {}).value) || 0;
+          var garden =
+            num((document.getElementById("cGarden") || {}).value) || 0;
+          var labor = num((document.getElementById("cLabor") || {}).value) || 0;
+          var total = roof + plaza + garden + labor;
+          document.getElementById("grandTotal").textContent = money(total);
+          var remaining = BUDGET - total;
+          var rem = document.getElementById("remaining");
+          rem.textContent = money(remaining);
+          rem.style.color = remaining < 0 ? "#d23f54" : "#0f9d6b";
+          var v = document.getElementById("verdict");
+          if (total === labor) {
+            v.className = "fb";
+            v.textContent = "Enter your surface costs to tally the build.";
+            return;
+          }
+          if (remaining < 0) {
+            v.className = "fb bad";
+            v.textContent =
+              "✗ Over budget by " +
+              money(Math.abs(remaining)) +
+              ". Choose a cheaper ground cover.";
+          } else {
+            v.className = "fb ok";
+            v.textContent =
+              "✓ Plan approved! " +
+              money(remaining) +
+              " under budget. Submit to the council.";
+          }
+        }
+        ["cRoof", "cPlaza"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.addEventListener("input", tally);
+        });
+        document.getElementById("tallyBtn").addEventListener("click", tally);
+
+        /* Mount NTKit + grade on submit */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", function () {
+            var items = problems.map(function (p) {
+              var inp = inputFor(p.id);
+              return {
+                prompt: p.prompt,
+                studentAnswer: inp ? String(num(inp.value)) : "",
+                correctAnswer: p.ans,
+                points: 1,
+                skill: p.skill,
+              };
+            });
+            if (window.NTKit && NTKit.grade) {
+              NTKit.grade({
+                activityId: "architect-unit-5",
+                activityTitle:
+                  "Unit 5 · Math Architect — Riverside Pavilion Park (Area Design Challenge)",
+                standard: "6.G.A.1",
+                items: items,
+              });
+              var panel = document.getElementById("ntkit");
+              if (panel && panel.scrollIntoView)
+                panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              var n = items.filter(function (x) {
+                return num(x.studentAnswer) === num(x.correctAnswer);
+              }).length;
+              alert(
+                "Plan submitted: " +
+                  n +
+                  " of " +
+                  items.length +
+                  " surfaces correct.",
+              );
             }
           });
-        });
-        window.addEventListener("pointerup", function () {
-          painting = false;
-        });
-        document.getElementById("clearGrid").addEventListener("click", function () {
-          cells.forEach(function (c) {
-            c.classList.remove("on");
-          });
-          cells.forEach(function (c, idx) {
-            c.setAttribute("aria-label", "square " + (idx + 1) + ", empty");
-          });
-          updateCount();
-        });
 
-        // ---- Progress ----
-        var inputs = ["a2", "a3", "a4", "a5", "a6"].map(function (id) {
-          return document.getElementById(id);
-        });
-        function filledCount() {
-          var n = 0;
-          if (cells.some(function (c) { return c.classList.contains("on"); })) n++;
-          inputs.forEach(function (inp) {
-            if (inp.value.trim() !== "") n++;
-          });
-          return n;
-        }
-        function updateProgress() {
-          var n = filledCount();
-          document.getElementById("progTxt").textContent = n + " of 6 answered";
-          document.getElementById("progFill").style.width = (n / 6) * 100 + "%";
-          var bar = document.getElementById("progBar");
-          if (bar) bar.setAttribute("aria-valuenow", n);
-        }
-        inputs.forEach(function (inp) {
-          inp.addEventListener("input", updateProgress);
-        });
-        updateProgress();
-
-        // ---- Grade ----
-        NTKit.mount("#ntkit");
-        document.getElementById("submitBtn").addEventListener("click", function () {
-          var builtArea = cells.filter(function (c) {
-            return c.classList.contains("on");
-          }).length;
-          NTKit.grade({
-            activityId: "architect-unit-5",
-            activityTitle: "Unit 5 · Area Architect — Area of Polygons",
-            standard: "6.G.A.1",
-            items: [
-              {
-                prompt: "Build a rectangle with area 24 square units (filled squares)",
-                studentAnswer: String(builtArea),
-                correctAnswer: "24",
-                points: 1,
-                skill: "Build area",
-              },
-              {
-                prompt: "Area of rectangle: base 9 × height 4",
-                studentAnswer: document.getElementById("a2").value,
-                correctAnswer: "36",
-                points: 1,
-                skill: "Rectangle area",
-              },
-              {
-                prompt: "Area of parallelogram: base 10 × height 6",
-                studentAnswer: document.getElementById("a3").value,
-                correctAnswer: "60",
-                points: 1,
-                skill: "Parallelogram area",
-              },
-              {
-                prompt: "Area of triangle: ½ × base 8 × height 5",
-                studentAnswer: document.getElementById("a4").value,
-                correctAnswer: "20",
-                points: 1,
-                skill: "Triangle area",
-              },
-              {
-                prompt: "Area of trapezoid: ½ × (6 + 10) × height 4",
-                studentAnswer: document.getElementById("a5").value,
-                correctAnswer: "32",
-                points: 1,
-                skill: "Trapezoid area",
-              },
-              {
-                prompt: "Area of L-shape: (8×3) + (4×3)",
-                studentAnswer: document.getElementById("a6").value,
-                correctAnswer: "36",
-                points: 1,
-                skill: "Composite area",
-              },
-            ],
-          });
-          document.getElementById("ntkit").scrollIntoView({ behavior: "smooth", block: "start" });
-        });
+        paint();
+        tally();
       })();
     </script>
   </body>

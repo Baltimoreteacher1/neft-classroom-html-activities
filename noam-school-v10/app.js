@@ -134,6 +134,17 @@
   // ---------------------------------------------------------------------------
   // State model
   // ---------------------------------------------------------------------------
+  // Accent themes — [id, label, primary hex, deep/navy hex]. Used both to set a
+  // --accent CSS var and to tint the hero. Kid-friendly, all AA on white text.
+  const ACCENTS = [
+    ["teal", "Teal", "#0d9488", "#1e293b"],
+    ["blue", "Ocean", "#2563eb", "#172554"],
+    ["purple", "Grape", "#7c3aed", "#2e1065"],
+    ["green", "Forest", "#15803d", "#14302a"],
+    ["rose", "Berry", "#be185d", "#3f0d22"],
+    ["orange", "Sunset", "#c2410c", "#3a1505"],
+  ];
+
   const CARDS = [
     ["glance", "Today at a glance"],
     ["calendar", "Calendar"],
@@ -257,6 +268,7 @@
         studentName: "Noam",
         gmail: "",
         theme: "light",
+        accent: "teal",
         readable: false,
         motion: "on",
         fontScale: 1,
@@ -265,7 +277,16 @@
         breakMin: 5,
         homeOrder: CARDS.map((x) => x[0]),
         hiddenCards: [],
+        // Reminder times (24h "HH:MM") for the local notification scheduler.
+        morningBriefingTime: "07:15",
+        leaveByTime: "",
         sync: { enabled: false, code: "", lastAt: "" },
+        // Google Calendar (read-only, client-side OAuth). Only the Web Client ID
+        // is persisted — the access token lives in memory and is never stored.
+        googleClientId: "",
+        // Selected Google calendar IDs to include (read-only). Only the ID
+        // strings are persisted — never tokens. Empty = default to "primary".
+        gcalCalendars: [],
       },
       classes: [
         c("Math", "#147c78"),
@@ -274,14 +295,26 @@
         c("Social Studies", "#d99028"),
       ],
       assignments: [],
-      reminders: [], // [{ id, text, date, time, done, createdAt }] simple reminders
+      // [{ id, text, date, time, done, createdAt, repeat, lastShown, lastDone }]
+      // repeat: "none"|"daily"|"weekdays"|"weekly"; recurring "done" = done-for-today.
+      reminders: [],
       todos: [], // [{ id, text, done, date, createdAt }] quick daily to-dos
+      // Cached Google Calendar events (read-only).
+      // { events:[...], fetchedAt, calendars:[{id,name,color,primary}] }
+      gcal: { events: [], fetchedAt: "", calendars: [] },
+      // Cached Gmail messages (read-only). { messages:[...], fetchedAt }
+      gmail: { messages: [], fetchedAt: "" },
+      // Quick morning check-in: { dateKey: { mood, priority } }
+      checkins: {},
       routines: DEFAULT_ROUTINES(),
       routineLog: {}, // { dateKey: { routineId: [doneItemIds] } }
       activity: {}, // { dateKey: { tasks, focusMin, routines } }
       wins: [],
       points: 0,
       daily: { goal: "", goalDate: "" },
+      // { dateKey: true } — marks days the "did you write everything down?"
+      // capture prompt was answered, so it only nudges once per day.
+      captureLog: {},
       updatedAt: Date.now(),
     };
   }
@@ -302,6 +335,16 @@
     s.hiddenCards = Array.isArray(s.hiddenCards) ? s.hiddenCards : [];
     s.fontScale = clamp(Number(s.fontScale) || 1, 0.9, 1.5);
     s.defaultFocusMin = clamp(Number(s.defaultFocusMin) || 15, 5, 60);
+    s.accent = ACCENTS.some((a) => a[0] === s.accent) ? s.accent : "teal";
+    s.morningBriefingTime = TIME_RE.test(s.morningBriefingTime)
+      ? s.morningBriefingTime
+      : "07:15";
+    s.leaveByTime = TIME_RE.test(s.leaveByTime) ? s.leaveByTime : "";
+    s.googleClientId = String(s.googleClientId || "").slice(0, 200);
+    // Selected Google calendar IDs — keep only non-empty strings, capped.
+    s.gcalCalendars = (Array.isArray(s.gcalCalendars) ? s.gcalCalendars : [])
+      .filter((id) => typeof id === "string" && id.trim())
+      .slice(0, 50);
     return {
       ...base,
       ...x,
@@ -327,6 +370,23 @@
       wins: Array.isArray(x.wins) ? x.wins : [],
       points: Number(x.points) || 0,
       daily: { ...base.daily, ...(x.daily || {}) },
+      captureLog:
+        x.captureLog && typeof x.captureLog === "object" ? x.captureLog : {},
+      gcal:
+        x.gcal && Array.isArray(x.gcal.events)
+          ? {
+              events: x.gcal.events,
+              fetchedAt: x.gcal.fetchedAt || "",
+              calendars: Array.isArray(x.gcal.calendars)
+                ? x.gcal.calendars
+                : [],
+            }
+          : { events: [], fetchedAt: "", calendars: [] },
+      gmail:
+        x.gmail && Array.isArray(x.gmail.messages)
+          ? { messages: x.gmail.messages, fetchedAt: x.gmail.fetchedAt || "" }
+          : { messages: [], fetchedAt: "" },
+      checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
     };
   }
 
@@ -355,6 +415,7 @@
     };
   }
 
+  const REPEATS = ["none", "daily", "weekdays", "weekly"];
   function normalizeReminder(r) {
     r = r || {};
     return {
@@ -364,6 +425,10 @@
       time: TIME_RE.test(r.time) ? r.time : "",
       done: !!r.done,
       createdAt: r.createdAt || Date.now(),
+      // Recurrence + notification bookkeeping.
+      repeat: REPEATS.includes(r.repeat) ? r.repeat : "none",
+      lastShown: DATE_RE.test(r.lastShown) ? r.lastShown : "", // last notify date
+      lastDone: DATE_RE.test(r.lastDone) ? r.lastDone : "", // last done-for-today date
     };
   }
 
@@ -433,6 +498,10 @@
     const write = () => {
       idb.set(STATE_KEY, state);
       if (state.settings.sync.enabled && !suppressPush) cloud.push();
+      // Re-arm the local notification scheduler whenever data changes (added,
+      // edited, or completed reminders all shift what's due today). Defined later;
+      // guarded so early saves during init don't throw.
+      if (typeof scheduleReminders === "function") scheduleReminders();
     };
     clearTimeout(saveTimer);
     if (immediate) return write();
@@ -448,26 +517,77 @@
       color: "#147c78",
     };
   const openTasks = () => state.assignments.filter((a) => a.status !== "done");
+
+  // ---- Reminder recurrence helpers --------------------------------------------
+  const isWeekday = (iso) => {
+    const d = parseLocal(iso).getDay(); // 0=Sun..6=Sat
+    return d >= 1 && d <= 5;
+  };
+  // Does a recurring reminder's schedule include the given ISO day?
+  function recurOccursOn(r, iso) {
+    if (r.repeat === "daily") return true;
+    if (r.repeat === "weekdays") return isWeekday(iso);
+    if (r.repeat === "weekly") {
+      // Weekly anchored on the reminder's date (or its creation day).
+      const anchor = r.date || new Date(r.createdAt).toISOString().slice(0, 10);
+      if (!DATE_RE.test(anchor)) return true;
+      return parseLocal(iso).getDay() === parseLocal(anchor).getDay();
+    }
+    return false;
+  }
+  // Next ISO day (today onward, within ~1 year) this recurring reminder happens.
+  function nextRecurDate(r, fromIso = todayKey()) {
+    const from = parseLocal(fromIso);
+    for (let i = 0; i < 366; i++) {
+      const d = new Date(from);
+      d.setDate(d.getDate() + i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      if (recurOccursOn(r, iso)) return iso;
+    }
+    return fromIso;
+  }
+  const isRecurring = (r) => r.repeat && r.repeat !== "none";
+  // "Done for display": one-time uses .done; recurring = done-for-today only.
+  const reminderDoneToday = (r) =>
+    isRecurring(r) ? r.lastDone === todayKey() : !!r.done;
+  // The date a reminder effectively shows on (recurring = next occurrence).
+  const reminderShownDate = (r) => (isRecurring(r) ? nextRecurDate(r) : r.date);
+  const REPEAT_LABEL = {
+    none: "",
+    daily: "Every day",
+    weekdays: "Weekdays",
+    weekly: "Weekly",
+  };
+
   // Reminders sorted: open first, then by date/time (undated last), newest-created last.
-  const reminderSortKey = (r) =>
-    r.date ? r.date + (r.time || "99:99") : "9999-99-99";
+  const reminderSortKey = (r) => {
+    const d = reminderShownDate(r);
+    return d ? d + (r.time || "99:99") : "9999-99-99";
+  };
   function sortedReminders() {
-    return [...state.reminders].sort((a, b) =>
-      a.done !== b.done
-        ? a.done
+    return [...state.reminders].sort((a, b) => {
+      const ad = reminderDoneToday(a),
+        bd = reminderDoneToday(b);
+      return ad !== bd
+        ? ad
           ? 1
           : -1
         : reminderSortKey(a) === reminderSortKey(b)
           ? a.createdAt - b.createdAt
           : reminderSortKey(a) < reminderSortKey(b)
             ? -1
-            : 1,
-    );
+            : 1;
+    });
   }
-  // Today's (or overdue, undated) open reminders for the home screen.
+  // Today's (or overdue, undated) reminders not yet done-for-today — home screen.
+  // Recurring reminders surface on the days their schedule includes today.
   const todaysReminders = () => {
     const t = todayKey();
-    return sortedReminders().filter((r) => !r.done && (!r.date || r.date <= t));
+    return sortedReminders().filter((r) => {
+      if (reminderDoneToday(r)) return false;
+      if (isRecurring(r)) return recurOccursOn(r, t);
+      return !r.date || r.date <= t;
+    });
   };
   // Today's to-dos = those dated today plus any still-open from earlier days.
   const todaysTodos = () => {
@@ -574,7 +694,22 @@
     root.dataset.theme = s.theme;
     root.dataset.readable = s.readable ? "on" : "off";
     root.dataset.motion = s.motion;
+    root.dataset.accent = s.accent;
     root.style.setProperty("--font-scale", s.fontScale);
+    // Light theme only: re-tint the teal accent. Dark/contrast keep their tuned
+    // palettes so contrast stays AA.
+    const acc = ACCENTS.find((a) => a[0] === s.accent);
+    if (acc && s.theme === "light") {
+      root.style.setProperty("--teal", acc[2]);
+      root.style.setProperty("--teal-bright", acc[2]);
+      root.style.setProperty("--navy", acc[3]);
+      root.style.setProperty("--navy-deep", acc[3]);
+    } else {
+      root.style.removeProperty("--teal");
+      root.style.removeProperty("--teal-bright");
+      root.style.removeProperty("--navy");
+      root.style.removeProperty("--navy-deep");
+    }
     const meta = $('meta[name="theme-color"]');
     if (meta)
       meta.content =
@@ -622,7 +757,7 @@
         <h2>You're all caught up 🎉</h2>
         <p style="color:rgba(255,255,255,.82);max-width:46ch">Nothing is waiting for you right now. Add your next assignment, or paste your work from Google Classroom.</p>
         <div class="now-actions">
-          <button class="btn go" data-act="open-task">＋ Add an assignment</button>
+          <button class="btn go big" data-act="quick-add">＋ Add an assignment</button>
           <button class="btn" data-act="nav" data-arg="more">📋 Paste Classroom</button>
         </div>`;
       return;
@@ -630,8 +765,19 @@
     const c = cls(t.classId);
     const pct = stepPct(t);
     const overdueB = daysUntil(t.due) < 0;
+    const firstStep = t.steps.find((s) => !s.done);
+    // ONE clear next move. If the task is broken into steps, the headline shows
+    // the very next step so there's never a "what do I do?" gap.
+    const cue = firstStep
+      ? `Next small step: <b>${esc(firstStep.text)}</b>`
+      : t.steps.length
+        ? "All steps done — finish and turn it in."
+        : "Tap “Break it down” to make a tiny first step.";
     hero.innerHTML = `
-      <span class="eyebrow">🎯 Right now — just this one thing</span>
+      <div class="now-head">
+        <span class="eyebrow">🎯 Right now — just this one thing</span>
+        <button class="btn sm now-quickadd" data-act="quick-add" aria-label="Add an assignment">＋ Add</button>
+      </div>
       <div class="now-task">
         <div class="now-title">${esc(t.title)}</div>
         <div class="now-meta">
@@ -640,18 +786,26 @@
           ${t.estimateMin ? `<span class="tag">~${t.estimateMin} min</span>` : ""}
           ${t.steps.length ? `<span class="tag">${pct}% done</span>` : ""}
         </div>
+        <p class="now-cue">${cue}</p>
       </div>
       <div class="now-actions">
-        <button class="btn go" data-act="focus-start" data-id="${t.id}">▶ Start focus</button>
-        <button class="btn" data-act="breakdown" data-id="${t.id}">🧩 Break it down</button>
-        <button class="btn" data-act="complete" data-id="${t.id}">✓ Done</button>
+        <button class="btn go big" data-act="focus-start" data-id="${t.id}">▶ Start this now</button>
+        ${t.steps.length ? `<button class="btn" data-act="complete" data-id="${t.id}">✓ Done</button>` : `<button class="btn" data-act="breakdown" data-id="${t.id}">🧩 Break it down</button>`}
       </div>
-      <div class="progress-strip">
-        <div class="statbox"><b>${overdue.length}</b><small>Overdue</small></div>
-        <div class="statbox"><b>${today.length}</b><small>Due today</small></div>
-        <div class="statbox"><b>${open.length}</b><small>Open total</small></div>
-        <div class="statbox"><b>${streak()}🔥</b><small>Day streak</small></div>
-      </div>`;
+      <details class="now-rest">
+        <summary>The rest can wait — tap to peek (${Math.max(open.length - 1, 0)} more)</summary>
+        <div class="progress-strip" style="margin-top:12px">
+          <div class="statbox"><b>${overdue.length}</b><small>Overdue</small></div>
+          <div class="statbox"><b>${today.length}</b><small>Due today</small></div>
+          <div class="statbox"><b>${open.length}</b><small>Open total</small></div>
+          <div class="statbox"><b>${streak()}🔥</b><small>Day streak</small></div>
+        </div>
+        <div class="now-rest-actions">
+          ${t.steps.length ? `<button class="btn sm" data-act="breakdown" data-id="${t.id}">🧩 Edit steps</button>` : `<button class="btn sm" data-act="complete" data-id="${t.id}">✓ Mark done</button>`}
+          <button class="btn sm" data-act="nav" data-arg="today">📅 See today's plan</button>
+          <button class="btn sm" data-act="nav" data-arg="tasks">✅ All tasks</button>
+        </div>
+      </details>`;
   }
 
   // ---------------------------------------------------------------------------
@@ -715,6 +869,7 @@
         <div class="row" style="margin-top:10px">
           <button class="btn primary sm" data-act="focus-start" data-id="${a.id}">▶ Start focus</button>
           <button class="btn sm" data-act="breakdown" data-id="${a.id}">🧩 Steps</button>
+          <button class="btn sm" data-act="ask-help" data-id="${a.id}">🙋 Ask for help</button>
           <button class="btn sm" data-act="open-task" data-id="${a.id}">✏️ Edit</button>
           ${a.status === "done" ? `<button class="btn sm" data-act="reopen" data-id="${a.id}">↩ Reopen</button>` : `<button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button>`}
           <button class="btn danger sm" data-act="delete-task" data-id="${a.id}">Delete</button>
@@ -730,6 +885,20 @@
   }
   function emptyState(emoji, text) {
     return `<div class="empty"><div class="big-emoji" aria-hidden="true">${emoji}</div><p>${esc(text)}</p></div>`;
+  }
+
+  // Daily "did you write everything down?" capture nudge. Shows once per day,
+  // from late morning on (after classes have handed out work), until answered.
+  function captureBanner() {
+    if (state.captureLog[todayKey()]) return "";
+    if (new Date().getHours() < 11) return "";
+    return `<div class="capture-banner" role="region" aria-label="Daily check-in">
+      <div class="capture-text"><b>📋 Did you write everything down?</b><small>Check your bag, planner, and Google Classroom for any new homework.</small></div>
+      <div class="capture-actions">
+        <button class="btn primary sm" data-act="capture-add">＋ Add one</button>
+        <button class="btn sm" data-act="capture-done">✓ All in</button>
+      </div>
+    </div>`;
   }
 
   // ---------------------------------------------------------------------------
@@ -794,6 +963,7 @@
     const dayItems = state.assignments.filter(
       (a) => a.status !== "done" && a.due === sel,
     );
+    const dayGcal = gcalEventsForDay(sel);
     const detail = `
       <div class="cal-detail">
         <div class="section-title" style="margin-top:14px">${esc(niceDate(sel))}</div>
@@ -805,8 +975,11 @@
                   return `<div class="item"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button></div></div></div>`;
                 })
                 .join("")
-            : `<p class="muted" style="font-size:.84rem;margin:4px">Nothing due this day.</p>`
+            : dayGcal.length
+              ? ""
+              : `<p class="muted" style="font-size:.84rem;margin:4px">Nothing due this day.</p>`
         }
+        ${dayGcal.map(gcalRow).join("")}
       </div>`;
 
     const body =
@@ -851,10 +1024,13 @@
     const total = todaysReminders().length;
     const rows = list.length
       ? `<ul class="steps">${list
-          .map(
-            (r) =>
-              `<li><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${r.done ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span class="steptext ${r.done ? "done" : ""}">${esc(r.text)}${r.time ? ` <small class="muted">· ${esc(r.time)}</small>` : ""}</span></li>`,
-          )
+          .map((r) => {
+            const dn = reminderDoneToday(r);
+            const rep = isRecurring(r)
+              ? ` <small class="muted">· 🔁 ${esc(REPEAT_LABEL[r.repeat])}</small>`
+              : "";
+            return `<li><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${dn ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span class="steptext ${dn ? "done" : ""}">${esc(r.text)}${r.time ? ` <small class="muted">· ${esc(r.time)}</small>` : ""}${rep}</span></li>`;
+          })
           .join(
             "",
           )}${total > list.length ? `<li><button class="btn sm" data-act="nav" data-arg="reminders">See all ${total} →</button></li>` : ""}</ul>`
@@ -897,10 +1073,77 @@
         : "Upcoming and overdue.",
       `${rows}
        <div class="row" style="margin-top:10px">
-         <button class="btn primary" data-act="open-task">＋ Add assignment</button>
+         <button class="btn primary" data-act="quick-add">＋ Add assignment</button>
          <button class="btn sm" data-act="nav" data-arg="tasks">See all →</button>
        </div>`,
     );
+  }
+
+  // "Today at a glance" — one strip merging local due items + today's reminders
+  // + today's Google events, so everything happening today is in one place.
+  function glanceCard() {
+    const open = openTasks();
+    const due = sortByUrgency(
+      open.filter((a) => daysUntil(a.due) !== null && daysUntil(a.due) <= 0),
+    ).slice(0, 4);
+    const rem = todaysReminders().slice(0, 4);
+    const gev = gcalToday();
+    const remRow = (r) =>
+      `<div class="item"><div class="head"><div><h4>🔔 ${esc(r.text)}</h4><p class="meta">${r.time ? "⏰ " + esc(r.time) : "Reminder"}${isRecurring(r) ? " · 🔁 " + esc(REPEAT_LABEL[r.repeat]) : ""}</p></div><div class="row"><button class="btn primary sm" data-act="reminder-done" data-id="${r.id}" aria-label="Mark done: ${esc(r.text)}">✓</button></div></div></div>`;
+    const body =
+      due.length || rem.length || gev.length
+        ? due.map((a) => taskItem(a)).join("") +
+          rem.map(remRow).join("") +
+          gev.map(gcalRow).join("")
+        : emptyState("🌤", "Nothing on the calendar today. Nice.");
+    const parts = [];
+    if (due.length) parts.push(`${due.length} due`);
+    if (rem.length)
+      parts.push(`${rem.length} reminder${rem.length === 1 ? "" : "s"}`);
+    if (gev.length) parts.push(`${gev.length} Google`);
+    return card(
+      "glance",
+      "Today at a glance",
+      parts.length ? parts.join(" · ") : "",
+      body,
+    );
+  }
+
+  // Quick morning check-in (mood + one priority), surfaced at the top of home.
+  const MOODS = [
+    ["great", "😃", "Great"],
+    ["ok", "🙂", "OK"],
+    ["meh", "😕", "Meh"],
+    ["rough", "😣", "Rough"],
+  ];
+  function checkinBanner() {
+    const today = state.checkins[todayKey()];
+    if (today) {
+      const m = MOODS.find((x) => x[0] === today.mood);
+      return `<div class="capture-banner" role="region" aria-label="Today's check-in">
+        <div class="capture-text"><b>${m ? m[1] + " " : ""}Today's focus</b><small>${today.priority ? esc(today.priority) : "No single priority set — that's OK."}</small></div>
+        <div class="capture-actions"><button class="btn sm" data-act="checkin-open">Edit</button></div>
+      </div>`;
+    }
+    // Only nudge in the morning so it feels like a fresh-start ritual, not nagging.
+    if (new Date().getHours() >= 14) return "";
+    return `<div class="capture-banner" role="region" aria-label="Morning check-in">
+      <div class="capture-text"><b>👋 Quick morning check-in</b><small>How are you feeling, and what's your one priority today?</small></div>
+      <div class="capture-actions"><button class="btn primary sm" data-act="checkin-open">Check in</button></div>
+    </div>`;
+  }
+  function checkinForm() {
+    const c = state.checkins[todayKey()] || { mood: "", priority: "" };
+    return `
+      <p class="sub">A 10-second start to the day. Both are optional.</p>
+      <div class="field"><label>How are you feeling?</label>
+        <div class="seg" id="ciMood" role="group" aria-label="Mood">${MOODS.map(
+          (m) =>
+            `<button type="button" data-act="checkin-mood" data-arg="${m[0]}" aria-pressed="${c.mood === m[0]}">${m[1]} ${m[2]}</button>`,
+        ).join("")}</div>
+      </div>
+      <div class="field"><label>My one priority today</label><input id="ciPriority" value="${esc(c.priority || "")}" placeholder="Finish my math worksheet"></div>
+      <button class="btn primary block" data-act="save-checkin">Save check-in</button>`;
   }
 
   // ---------------------------------------------------------------------------
@@ -909,22 +1152,12 @@
   const VIEWS = {
     home() {
       const open = openTasks();
-      const today = sortByUrgency(
-        open.filter((a) => daysUntil(a.due) !== null && daysUntil(a.due) <= 0),
-      ).slice(0, 4);
       const next = sortByUrgency(
         open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7),
       ).slice(0, 3);
       const routine = pickRoutineForNow();
       const map = {
-        glance: card(
-          "glance",
-          "Today at a glance",
-          today.length ? "Most important first." : "",
-          today.length
-            ? today.map((a) => taskItem(a)).join("")
-            : emptyState("🌤", "Nothing is due today. Nice."),
-        ),
+        glance: glanceCard(),
         calendar: calendarCard(),
         todos: todoCard(),
         reminders: remindersCard(),
@@ -943,13 +1176,14 @@
       const order = state.settings.homeOrder.filter(
         (k) => !state.settings.hiddenCards.includes(k),
       );
-      return `<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
+      return `${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
     },
 
     calendar() {
       const upcoming = upcomingItems(20);
       return `
         ${calendarCard({ full: true })}
+        ${gcalPanel()}
         <div class="section-title">Upcoming (${upcoming.length})</div>
         ${
           upcoming.length
@@ -1024,7 +1258,7 @@
       return `
         <div class="view-head">
           <h2 class="view-title">All tasks</h2>
-          <button class="btn primary" data-act="open-task">＋ Add assignment</button>
+          <button class="btn primary" data-act="quick-add">＋ Add assignment</button>
         </div>
         ${open.length === 0 ? emptyState("🎉", "No open tasks. Add one or paste from Classroom (More tab).") : ""}
         ${buckets
@@ -1068,6 +1302,7 @@
                  )
                  .join("")}</ul>
                <div class="row" style="margin-top:8px">
+                 <button class="btn primary sm" data-act="guide-start" data-id="${r.id}">▶ Walk me through it</button>
                  <button class="btn sm" data-act="reset-routine" data-id="${r.id}">Reset for today</button>
                  <button class="btn sm" data-act="edit-routine" data-id="${r.id}">Edit</button>
                </div>`,
@@ -1100,6 +1335,12 @@
             ic: "🔔",
             title: "Reminders",
             sub: "Things to remember",
+          },
+          {
+            act: "view-mail",
+            ic: "📨",
+            title: "School Mail",
+            sub: "Read recent Gmail, make tasks",
           },
           {
             act: "view-email",
@@ -1180,23 +1421,29 @@
 
     reminders() {
       const list = sortedReminders();
-      const open = list.filter((r) => !r.done);
-      const done = list.filter((r) => r.done);
+      const open = list.filter((r) => !reminderDoneToday(r));
+      const done = list.filter((r) => reminderDoneToday(r));
       const row = (r) => {
-        const when = r.date
-          ? dueLabel(r.date, r.time)
+        const dn = reminderDoneToday(r);
+        // Recurring reminders always show their NEXT occurrence.
+        const shownDate = reminderShownDate(r);
+        const when = shownDate
+          ? dueLabel(shownDate, r.time)
           : r.time
             ? "At " + r.time
             : "";
-        const n = r.date ? daysUntil(r.date) : null;
-        return `<div class="item ${!r.done && n !== null && n < 0 ? "overdue" : ""}"><div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap"><label class="row" style="align-items:flex-start;gap:10px;flex:1;min-width:0;cursor:pointer"><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${r.done ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span style="min-width:0"><span class="steptext ${r.done ? "done" : ""}" style="font-weight:800;display:block">${esc(r.text)}</span>${when ? `<span class="meta" style="display:block;margin-top:2px">${r.date ? dueIcon(n) + " " : "⏰ "}${esc(when)}</span>` : ""}</span></label><span class="row" style="gap:6px"><button class="btn sm" data-act="edit-reminder" data-id="${r.id}">Edit</button><button class="btn danger sm" data-act="del-reminder" data-id="${r.id}" aria-label="Delete reminder: ${esc(r.text)}">✕</button></span></div></div>`;
+        const n = shownDate ? daysUntil(shownDate) : null;
+        const rep = isRecurring(r)
+          ? ` · 🔁 ${esc(REPEAT_LABEL[r.repeat])}`
+          : "";
+        return `<div class="item ${!dn && n !== null && n < 0 ? "overdue" : ""}"><div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap"><label class="row" style="align-items:flex-start;gap:10px;flex:1;min-width:0;cursor:pointer"><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${dn ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span style="min-width:0"><span class="steptext ${dn ? "done" : ""}" style="font-weight:800;display:block">${esc(r.text)}</span>${when || rep ? `<span class="meta" style="display:block;margin-top:2px">${shownDate ? dueIcon(n) + " " : r.time ? "⏰ " : ""}${esc(when)}${rep}</span>` : ""}</span></label><span class="row" style="gap:6px">${dn ? "" : `<button class="btn sm" data-act="snooze-reminder" data-id="${r.id}" data-arg="10" title="Snooze 10 minutes">😴 10m</button><button class="btn sm" data-act="snooze-reminder" data-id="${r.id}" data-arg="tonight" title="Snooze until tonight">🌙</button>`}<button class="btn sm" data-act="edit-reminder" data-id="${r.id}">Edit</button><button class="btn danger sm" data-act="del-reminder" data-id="${r.id}" aria-label="Delete reminder: ${esc(r.text)}">✕</button></span></div></div>`;
       };
       return (
         backHeader("Reminders", "more") +
         `<div class="view-head"><h2 class="view-title" style="font-size:1rem">Reminders</h2><button class="btn primary" data-act="add-reminder">＋ Add reminder</button></div>
         <p class="view-intro">Quick nudges for things to remember — bring something, ask a teacher, sign a form.</p>
         ${open.length ? `<div class="section-title">To remember (${open.length})</div>${open.map(row).join("")}` : emptyState("🔔", "No reminders yet. Add one above.")}
-        ${done.length ? `<div class="section-title">✓ Done (${done.length})</div>${done.map(row).join("")}<button class="btn sm" data-act="clear-done-reminders" style="margin-top:8px">Clear done</button>` : ""}`
+        ${done.length ? `<div class="section-title">✓ Done for today (${done.length})</div>${done.map(row).join("")}<button class="btn sm" data-act="clear-done-reminders" style="margin-top:8px">Clear finished</button>` : ""}`
       );
     },
 
@@ -1215,6 +1462,14 @@ ${esc(state.settings.studentName)}</textarea></div>
           <div class="row"><button class="btn navy" data-act="compose-email">Open in Gmail</button><a class="btn" target="_blank" rel="noopener" href="${gmailInbox()}">Open inbox</a></div>
         </section>
         <section class="card"><h3>What to say</h3><div class="note">Tell the teacher: <b>1)</b> the class, <b>2)</b> the assignment, <b>3)</b> what's confusing, and <b>4)</b> what help you need. Short is fine!</div></section></div>`
+      );
+    },
+
+    mail() {
+      return (
+        backHeader("School Mail", "more") +
+        `<p class="view-intro">Your recent Gmail, read-only. Turn a message into a task or reminder with one tap — the mailbox is never changed.</p>
+        ${gmailPanel()}`
       );
     },
 
@@ -1262,6 +1517,10 @@ Due May 31"></textarea>
           "Set it up the way that's easiest for you.",
           `
           <div class="field"><label>Color theme</label><div class="seg">${themeBtn("light", "☀️ Light")}${themeBtn("dark", "🌙 Dark")}${themeBtn("contrast", "⬛ High contrast")}</div></div>
+          <div class="field"><label>Accent color${s.theme === "light" ? "" : " (Light theme only)"}</label><div class="accent-row" role="group" aria-label="Accent color">${ACCENTS.map(
+            (a) =>
+              `<button class="accent-swatch" data-act="set-accent" data-arg="${a[0]}" aria-pressed="${s.accent === a[0]}" aria-label="${a[1]}" title="${a[1]}" style="background:${a[2]}"></button>`,
+          ).join("")}</div></div>
           <div class="field"><label>Text size — ${Math.round(s.fontScale * 100)}%</label><input type="range" min="0.9" max="1.5" step="0.05" value="${s.fontScale}" data-bind="fontScale"></div>
           <div class="toggle-row"><div class="label"><b>Readable font & spacing</b><small>Easier-to-read letters with more space</small></div><label class="seg"><button data-act="toggle" data-arg="readable" aria-pressed="${s.readable}">${s.readable ? "On" : "Off"}</button></label></div>
           <div class="toggle-row"><div class="label"><b>Reduce motion</b><small>Turn off animations</small></div><label class="seg"><button data-act="toggle" data-arg="motion" aria-pressed="${s.motion === "off"}">${s.motion === "off" ? "On" : "Off"}</button></label></div>
@@ -1278,11 +1537,47 @@ Due May 31"></textarea>
         ) +
         card(
           "notify",
-          "Reminders",
-          "Get a nudge when something is due soon.",
+          "Reminders & briefing",
+          "Gentle nudges so the app gets opened.",
           `
-          <div class="toggle-row"><div class="label"><b>Due-soon reminders</b><small>${notifSupport() ? "Shows a notification while the app is open" : "Not supported on this device"}</small></div>
+          <div class="toggle-row"><div class="label"><b>Reminders &amp; morning briefing</b><small>${notifSupport() ? (s.notifications ? "On — reminders pop up at their set times, plus due-soon nudges" : "Turn on to get pop-up reminders at their set times") : "Not supported on this device"}</small></div>
           <label class="seg"><button data-act="toggle-notify" aria-pressed="${s.notifications}" ${notifSupport() ? "" : "disabled"}>${s.notifications ? "On" : "Off"}</button></label></div>
+          <div class="field"><label>Morning briefing time</label><input type="time" id="setBriefTime" value="${esc(s.morningBriefingTime)}"></div>
+          <div class="field"><label>“Leave by” time (optional, shown in guided routine)</label><input type="time" id="setLeaveBy" value="${esc(s.leaveByTime)}"></div>
+          <button class="btn primary" data-act="save-reminder-times">Save times</button>
+          <div class="note" style="margin-top:12px"><b>Good to know:</b> reminders pop up while the app is open or installed and running in the background. They can’t wake your computer when the app is <b>fully closed</b> — that needs a push server, which this private offline app doesn’t use. For the most reliable nudges, install the app (More → Install) and keep it open or pinned.</div>
+        `,
+        ) +
+        card(
+          "gcal",
+          "📅 Google Calendar",
+          "Show your Google events in the app (read-only).",
+          `
+          <div class="field"><label>Google OAuth Web Client ID</label><input id="gClientId" value="${esc(s.googleClientId)}" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off"></div>
+          <button class="btn primary" data-act="save-google-id">Save Client ID</button>
+          ${s.googleClientId.trim() ? `<button class="btn navy" data-act="gcal-connect" style="margin-left:8px">Connect now</button><button class="btn" data-act="gcal-choose" style="margin-left:8px">📋 Choose calendars</button><button class="btn" data-act="view-mail" style="margin-left:8px">Open School Mail</button>` : ""}
+          <div class="note" style="margin-top:12px"><b>One-time setup</b> (an adult does this once):
+            <ol style="margin:6px 0 0;padding-left:18px;line-height:1.6">
+              <li>Go to <b>Google Cloud Console</b> → APIs &amp; Services.</li>
+              <li><b>Enable</b> the <b>Google Calendar API</b> and the <b>Gmail API</b>.</li>
+              <li>Create an <b>OAuth client ID</b> of type <b>Web application</b>.</li>
+              <li>Under <b>Authorized JavaScript origins</b> add: <code>https://neft-classroom-html-activities.pages.dev</code></li>
+              <li>On the <b>OAuth consent screen</b>, add the scope <code>gmail.readonly</code> (a sensitive scope — fine for the owner's own / test-user account; full public verification is a later step).</li>
+              <li>Copy the Client ID (ends in <code>.apps.googleusercontent.com</code>) and paste it above.</li>
+            </ol>
+            The same Client ID powers Calendar and <b>School Mail</b>. Only this Client ID and your chosen calendar list are saved — never tokens. After connecting, tap <b>Choose calendars</b> to pick which of your Google calendars to show; their events are merged into one list and color-coded by calendar. Google sign-in gives temporary access tokens that stay in memory and are never stored. Scopes used: <code>calendar.readonly</code> and <code>gmail.readonly</code> (Gmail is requested separately when you connect School Mail).
+          </div>
+        `,
+        ) +
+        card(
+          "family",
+          "Family setup",
+          "Set up classes, teachers, and routines together.",
+          `
+          <div class="grid g2">
+            <button class="btn block menu-tile" data-act="view-classes"><span class="menu-ic" aria-hidden="true">🏫</span><span><b>Classes &amp; teacher emails</b><small>Names, colors, who to email</small></span></button>
+            <button class="btn block menu-tile" data-act="nav" data-arg="routines"><span class="menu-ic" aria-hidden="true">🔁</span><span><b>Morning &amp; daily routines</b><small>Edit the step-by-step lists</small></span></button>
+          </div>
         `,
         ) +
         card(
@@ -1312,23 +1607,37 @@ Due May 31"></textarea>
 
     sync() {
       const s = state.settings.sync;
-      const status = s.enabled
+      const pill = s.enabled
         ? '<span class="pill green">● Sync is on</span>'
         : '<span class="pill">Off by default</span>';
+      // When sync is ON, show the linking code + status. When OFF, show the
+      // one-tap "Turn on sync" plus an "Enter a code" path for the 2nd device.
+      const onBody = `
+          <p class="sub" style="margin-top:0">Sync is on. Your data keeps itself up to date across every device that uses this code — automatically.</p>
+          ${syncStatusHTML()}
+          <div class="field"><label>Your sync code</label>
+            <input id="syncCode" value="${esc(s.code)}" readonly onclick="this.select()"></div>
+          <div class="row">
+            <button class="btn primary" data-act="copy-code">📋 Copy code</button>
+            <button class="btn" data-act="copy-link">🔗 Copy link</button>
+            <button class="btn navy" data-act="sync-now">🔄 Sync now</button>
+            <button class="btn danger" data-act="toggle-sync">Turn off sync</button>
+          </div>
+          <p class="sub" style="margin-top:10px"><b>Link another device:</b> paste this code there (Backup &amp; sync → “Enter a code”), or send yourself the <b>link</b> and open it on the other device — it links automatically.</p>`;
+      const offBody = `
+          <p class="sub" style="margin-top:0">Turn this on to work on your phone and laptop and see the same tasks everywhere — no account, no email, no password to remember. ${cloud.available() ? "" : "<b>Heads up:</b> this site isn't set up for cloud sync yet, so your code is saved and ready, but data stays on this device until it is."}</p>
+          <div class="row">
+            <button class="btn primary" data-act="enable-sync">✨ Turn on sync</button>
+            <button class="btn" data-act="enter-code">⌨️ Enter a code</button>
+          </div>
+          <p class="sub" style="margin-top:10px">First device? Tap <b>Turn on sync</b> — we'll make a strong code for you. Adding a second device? Tap <b>Enter a code</b> and paste the code from your first device.</p>`;
       return (
         backHeader("Backup & sync", "more") +
         `<p class="view-intro">Your work is always saved on this device. Choose how you want to back it up or carry it to another device.</p>` +
         // Cloud sync surfaced first, highlighted, with a plain-language explanation.
         `<section class="card feature" data-card="cloud">
-          <div class="head"><div><h3>☁️ Sync across your devices</h3><p class="sub">Optional — work on your phone and laptop and see the same tasks everywhere.</p></div>${status}</div>
-          <p class="sub" style="margin-top:0">Pick one secret code and type it on every device you use. They'll keep each other up to date automatically — no account, no email, no password to remember. ${cloud.available() ? "" : "<b>Heads up:</b> this site isn't set up for cloud sync yet, so your code is saved and ready, but data stays on this device until it is."}</p>
-          <div class="field"><label>Secret sync code (12+ characters)</label><input id="syncCode" value="${esc(s.code)}" placeholder="Tap “Make a code” for a strong one"></div>
-          <div class="row">
-            <button class="btn" data-act="gen-code">🎲 Make a code</button>
-            <button class="btn ${s.enabled ? "danger" : "primary"}" data-act="toggle-sync">${s.enabled ? "Turn off sync" : "Turn on sync"}</button>
-            ${s.enabled ? `<button class="btn navy" data-act="sync-now">🔄 Sync now</button>` : ""}
-          </div>
-          ${s.lastAt ? `<p class="muted" style="font-size:.8rem;margin-top:8px">Last synced: ${esc(new Date(s.lastAt).toLocaleString())}</p>` : ""}
+          <div class="head"><div><h3>☁️ Sync across your devices</h3><p class="sub">Optional — work on your phone and laptop and see the same tasks everywhere.</p></div>${pill}</div>
+          ${s.enabled ? onBody : offBody}
         </section>` +
         card(
           "file",
@@ -1399,7 +1708,10 @@ Due May 31"></textarea>
              `<li><input class="check" type="checkbox" data-check="routine" data-id="${r.id}" data-sid="${it.id}" ${done.includes(it.id) ? "checked" : ""} aria-label="${esc(it.text)}"><span class="steptext ${done.includes(it.id) ? "done" : ""}">${esc(it.text)}</span></li>`,
          )
          .join("")}</ul>
-       <button class="btn sm" data-act="nav" data-arg="routines">All routines →</button>`,
+       <div class="row" style="margin-top:8px">
+         <button class="btn primary sm" data-act="guide-start" data-id="${r.id}">▶ Walk me through it</button>
+         <button class="btn sm" data-act="nav" data-arg="routines">All routines →</button>
+       </div>`,
     );
   }
   function pickRoutineForNow() {
@@ -1500,6 +1812,26 @@ Due May 31"></textarea>
     }
   }
 
+  // Minimal capture form: what + class + due in the fewest taps. "Due" defaults
+  // to a quick-pick row (Today / Tomorrow / Pick) so most adds are 2 taps.
+  function quickAddForm() {
+    const due = quickAddForm._due ?? "";
+    const pick = (val, label) =>
+      `<button type="button" data-act="qa-due" data-arg="${val}" aria-pressed="${due === val || (val === "custom" && due && due !== isoForOffset(0) && due !== isoForOffset(1))}">${label}</button>`;
+    return `
+      <p class="sub">Write it down before you forget. You can add details later.</p>
+      <div class="field"><label>What is it?</label><input id="qaTitle" placeholder="Math worksheet p. 42" autocomplete="off"></div>
+      <div class="field"><label>Which class?</label><select id="qaClass">${state.classes
+        .map((c) => `<option value="${c.id}">${esc(c.name)}</option>`)
+        .join("")}</select></div>
+      <div class="field"><label>When is it due?</label>
+        <div class="seg" id="qaDueSeg">${pick(isoForOffset(0), "Today")}${pick(isoForOffset(1), "Tomorrow")}${pick("custom", "Pick a date")}${pick("", "Not sure")}</div>
+        <input type="date" id="qaDate" value="${esc(due && due !== "custom" ? due : "")}" style="margin-top:8px;${due === "custom" || (due && due !== isoForOffset(0) && due !== isoForOffset(1)) ? "" : "display:none"}">
+      </div>
+      <button class="btn primary block big" data-act="save-quickadd">＋ Add it</button>
+      <button class="btn block ghost" data-act="open-task" style="margin-top:8px">More details…</button>`;
+  }
+
   function taskForm(a) {
     const editing = !!a;
     a = a || {};
@@ -1565,12 +1897,17 @@ Due May 31"></textarea>
 
   function reminderForm(r) {
     r = r || {};
+    const rep = REPEATS.includes(r.repeat) ? r.repeat : "none";
+    const opt = (v, label) =>
+      `<option value="${v}" ${rep === v ? "selected" : ""}>${label}</option>`;
     return `
       <div class="field"><label>Reminder</label><input id="rmText" value="${esc(r.text || "")}" placeholder="Bring gym clothes"></div>
       <div class="g2 grid">
         <div class="field"><label>Date (optional)</label><input type="date" id="rmDate" value="${esc(r.date || "")}"></div>
         <div class="field"><label>Time (optional)</label><input type="time" id="rmTime" value="${esc(r.time || "")}"></div>
       </div>
+      <div class="field"><label>Repeat</label><select id="rmRepeat">${opt("none", "Just once")}${opt("daily", "Every day")}${opt("weekdays", "Weekdays (Mon–Fri)")}${opt("weekly", "Weekly (same weekday)")}</select></div>
+      <p class="muted" style="font-size:.8rem;margin:-2px 0 8px">A repeating reminder comes back each day — checking it off just clears it for today.</p>
       <button class="btn primary block" data-act="save-reminder" data-id="${esc(r.id || "")}">${r.id ? "Save changes" : "Add reminder"}</button>`;
   }
 
@@ -1722,6 +2059,141 @@ Due May 31"></textarea>
   };
 
   // ---------------------------------------------------------------------------
+  // Guided routine — walk through steps ONE at a time (morning launch etc.)
+  // ---------------------------------------------------------------------------
+  function leaveByCountdown() {
+    const t = state.settings.leaveByTime;
+    if (!TIME_RE.test(t)) return null;
+    const [hh, mm] = t.split(":").map(Number);
+    const now = new Date();
+    const target = new Date();
+    target.setHours(hh, mm, 0, 0);
+    const mins = Math.round((target - now) / 60000);
+    return { mins, label: t };
+  }
+
+  const guide = {
+    routineId: null,
+    idx: 0,
+    timer: null,
+    start(routineId) {
+      const r = state.routines.find((x) => x.id === routineId);
+      if (!r || !r.items.length)
+        return toast("Add steps to this routine first.");
+      this.routineId = routineId;
+      // Resume at the first not-yet-checked step so it picks up where they left off.
+      const done = (state.routineLog[todayKey()] || {})[routineId] || [];
+      const firstOpen = r.items.findIndex((it) => !done.includes(it.id));
+      this.idx = firstOpen < 0 ? r.items.length : firstOpen;
+      this._lastFocus = document.activeElement;
+      $("#guideOverlay").classList.add("open");
+      this.render();
+      this.timer = setInterval(() => this.renderCountdown(), 30000);
+      try {
+        navigator.wakeLock
+          ?.request("screen")
+          .then((l) => (this._wake = l))
+          .catch(() => {});
+      } catch {}
+      $("#guideOverlay [data-act='guide-stop']")?.focus();
+    },
+    routine() {
+      return state.routines.find((x) => x.id === this.routineId);
+    },
+    markCurrent() {
+      const r = this.routine();
+      if (!r) return;
+      const it = r.items[this.idx];
+      if (!it) return;
+      const day = (state.routineLog[todayKey()] =
+        state.routineLog[todayKey()] || {});
+      const arr = (day[r.id] = day[r.id] || []);
+      if (!arr.includes(it.id)) arr.push(it.id);
+      // Award +5 once when fully complete, mirroring the checkbox flow.
+      const awarded = (day.__awarded = day.__awarded || []);
+      if (arr.length === r.items.length && !awarded.includes(r.id)) {
+        awarded.push(r.id);
+        state.points += 5;
+        bumpActivity("routines");
+      }
+      save();
+      this.idx++;
+      vibrate();
+      this.render();
+    },
+    back() {
+      if (this.idx > 0) this.idx--;
+      this.render();
+    },
+    renderCountdown() {
+      const el = $("#gCountdown");
+      if (!el) return;
+      const lb = leaveByCountdown();
+      if (!lb) {
+        el.textContent = "";
+        return;
+      }
+      if (lb.mins > 0) {
+        el.className = "gcountdown" + (lb.mins <= 5 ? " urgent" : "");
+        el.textContent = `🕗 Leave by ${lb.label} — ${lb.mins} min left`;
+      } else if (lb.mins === 0) {
+        el.className = "gcountdown urgent";
+        el.textContent = `🕗 Time to leave!`;
+      } else {
+        el.className = "gcountdown urgent";
+        el.textContent = `🕗 Leave time was ${lb.label}`;
+      }
+    },
+    render() {
+      const r = this.routine();
+      if (!r) return;
+      $("#gTitle").textContent = `${r.emoji || "🔁"} ${r.name}`;
+      const total = r.items.length;
+      const pct = Math.round((this.idx / total) * 100);
+      $("#gBar").style.width = pct + "%";
+      this.renderCountdown();
+      // Completion state.
+      if (this.idx >= total) {
+        $("#gSub").textContent = "";
+        $("#gCount").textContent = `${total} / ${total}`;
+        $("#gBody").innerHTML =
+          `<div class="gdone"><div class="gdone-emoji" aria-hidden="true">🎉</div><div class="gbig">All done!</div><p>You finished <b>${esc(r.name)}</b>. Nice — that's one less thing to think about.</p></div>`;
+        $("#gActions").innerHTML =
+          `<button class="btn go big" data-act="guide-stop">Done</button>`;
+        return;
+      }
+      const it = r.items[this.idx];
+      $("#gSub").textContent = `Step ${this.idx + 1} of ${total}`;
+      $("#gCount").textContent = `${this.idx} / ${total}`;
+      const nextIt = r.items[this.idx + 1];
+      $("#gBody").innerHTML = `
+        <div class="gstep">
+          <div class="gstep-num">${this.idx + 1}</div>
+          <div class="gbig">${esc(it.text)}</div>
+          ${nextIt ? `<p class="gnext">Next: ${esc(nextIt.text)}</p>` : `<p class="gnext">Last step — almost there!</p>`}
+        </div>`;
+      $("#gActions").innerHTML = `
+        ${this.idx > 0 ? `<button class="btn" data-act="guide-back">← Back</button>` : `<span></span>`}
+        <button class="btn go big" data-act="guide-next">✓ Done — next</button>`;
+    },
+    stop() {
+      clearInterval(this.timer);
+      $("#guideOverlay").classList.remove("open");
+      try {
+        this._wake?.release();
+      } catch {}
+      if (this._lastFocus) {
+        try {
+          this._lastFocus.focus();
+        } catch {}
+        this._lastFocus = null;
+      }
+      this.routineId = null;
+      render();
+    },
+  };
+
+  // ---------------------------------------------------------------------------
   // Notifications / reminders
   // ---------------------------------------------------------------------------
   const notifSupport = () => "Notification" in window;
@@ -1731,6 +2203,41 @@ Due May 31"></textarea>
     const p = await Notification.requestPermission();
     return p === "granted";
   }
+  // Show a notification through the service worker when possible (required for
+  // notifications to appear reliably in an installed PWA), else fall back to the
+  // page Notification constructor.
+  async function showNotif(title, opts) {
+    try {
+      const reg = await navigator.serviceWorker?.ready;
+      if (reg && reg.showNotification) return reg.showNotification(title, opts);
+    } catch {}
+    try {
+      new Notification(title, opts);
+    } catch {}
+  }
+  // Plain-language summary of what matters today — used for the open-app briefing
+  // and the morning notification.
+  function briefingText() {
+    const open = openTasks();
+    const overdue = open.filter((a) => daysUntil(a.due) < 0).length;
+    const today = open.filter((a) => daysUntil(a.due) === 0).length;
+    if (overdue)
+      return `${overdue} thing${overdue === 1 ? "" : "s"} to catch up on, ${today} due today.`;
+    if (today)
+      return `${today} thing${today === 1 ? "" : "s"} due today. You've got this.`;
+    return "Nothing due today — you're caught up! 🎉";
+  }
+  // One quiet briefing per app-open per day, surfaced as a toast.
+  let briefedToday = false;
+  function dailyBriefing() {
+    if (briefedToday) return;
+    briefedToday = true;
+    const t = rightNowTask();
+    setTimeout(
+      () => toast(t ? `${briefingText()} First: ${t.title}` : briefingText()),
+      900,
+    );
+  }
   function checkReminders() {
     if (
       !state.settings.notifications ||
@@ -1739,6 +2246,24 @@ Due May 31"></textarea>
     )
       return;
     const now = new Date();
+    // Morning briefing notification — fires once per day within ~30 min of the
+    // chosen time, but only if the app happens to be open then. (True scheduled
+    // background notifications aren't available offline without a push server.)
+    const mb = state.settings.morningBriefingTime;
+    if (TIME_RE.test(mb)) {
+      const [hh, mm] = mb.split(":").map(Number);
+      const target = hh * 60 + mm;
+      const cur = now.getHours() * 60 + now.getMinutes();
+      const key = "briefing:" + todayKey();
+      if (cur >= target && cur <= target + 30 && !notified.has(key)) {
+        notified.add(key);
+        showNotif("Good morning ☀️", {
+          body: briefingText(),
+          tag: key,
+          icon: "icons/icon-192.png",
+        });
+      }
+    }
     openTasks().forEach((a) => {
       const n = daysUntil(a.due);
       let key = null,
@@ -1759,14 +2284,76 @@ Due May 31"></textarea>
       }
       if (key && msg && !notified.has(key)) {
         notified.add(key);
-        try {
-          new Notification("Noam School", {
-            body: msg,
-            tag: key,
-            icon: "icons/icon-192.png",
-          });
-        } catch {}
+        showNotif("Noam School", {
+          body: msg,
+          tag: key,
+          icon: "icons/icon-192.png",
+        });
       }
+    });
+    // Reminders: fire any of today's timed reminders whose moment has passed and
+    // weren't shown yet today (covers app-open-after-the-time + the 60s loop).
+    dueRemindersForToday().forEach((r) => {
+      if (!r.time) return; // untimed reminders just live in the list
+      const [hh, mm] = r.time.split(":").map(Number);
+      const cur = now.getHours() * 60 + now.getMinutes();
+      if (hh * 60 + mm <= cur) fireReminder(r);
+    });
+  }
+
+  // Reminders that are scheduled for today (one-time dated today, or recurring
+  // whose schedule includes today) and aren't already done-for-today.
+  function dueRemindersForToday() {
+    const t = todayKey();
+    return state.reminders.filter((r) => {
+      if (reminderDoneToday(r)) return false;
+      if (isRecurring(r)) return recurOccursOn(r, t);
+      return r.date === t;
+    });
+  }
+
+  // Show a reminder notification at most once per day (guarded by lastShown).
+  function fireReminder(r) {
+    if (
+      !state.settings.notifications ||
+      !notifSupport() ||
+      Notification.permission !== "granted"
+    )
+      return;
+    if (r.lastShown === todayKey()) return;
+    r.lastShown = todayKey();
+    save({ touch: false });
+    showNotif("🔔 Reminder", {
+      body: r.text,
+      tag: "reminder:" + r.id + ":" + todayKey(),
+      icon: "icons/icon-192.png",
+    });
+  }
+
+  // setTimeout-based scheduler for today's still-upcoming reminder times. This
+  // fires precisely while the app/SW is alive. NOTE: true *background* push when
+  // the app is fully closed needs a push server and is out of scope here.
+  let reminderTimers = [];
+  function scheduleReminders() {
+    reminderTimers.forEach((id) => clearTimeout(id));
+    reminderTimers = [];
+    if (
+      !state.settings.notifications ||
+      !notifSupport() ||
+      Notification.permission !== "granted"
+    )
+      return;
+    const now = new Date();
+    const cur =
+      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    dueRemindersForToday().forEach((r) => {
+      if (!r.time || r.lastShown === todayKey()) return;
+      const [hh, mm] = r.time.split(":").map(Number);
+      const at = hh * 3600 + mm * 60;
+      if (at <= cur) return; // already passed — checkReminders handles it
+      const ms = (at - cur) * 1000;
+      // setTimeout caps near 24.8 days; our window is < 24h so this is safe.
+      reminderTimers.push(setTimeout(() => fireReminder(r), ms));
     });
   }
 
@@ -1817,19 +2404,41 @@ Due May 31"></textarea>
     },
     base: "/api/state",
     _busy: false,
+    // status: "idle" | "syncing" | "synced" | "offline" — drives the UI chip.
+    status: "idle",
+    _interval: null,
+    // Update the status and refresh just the sync status line if it's on screen,
+    // so we never need a full re-render for a status flicker.
+    _setStatus(next) {
+      this.status = next;
+      const el = document.getElementById("syncStatus");
+      if (el) el.outerHTML = syncStatusHTML();
+    },
     async push() {
       const code = state.settings.sync.code;
       if (!code || !this.available() || this._busy) return;
       this._busy = true;
+      this._setStatus("syncing");
       try {
-        await fetch(`${this.base}?code=${encodeURIComponent(code)}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ updatedAt: state.updatedAt, state }),
-        });
-        state.settings.sync.lastAt = new Date().toISOString();
+        const res = await fetch(
+          `${this.base}?code=${encodeURIComponent(code)}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ updatedAt: state.updatedAt, state }),
+          },
+        );
+        if (res && res.ok) {
+          state.settings.sync.lastAt = new Date().toISOString();
+          mirror();
+          this._setStatus("synced");
+        } else {
+          // 503 (endpoint not configured) or any error — stay local-only.
+          this._setStatus("offline");
+        }
       } catch {
         /* offline or no backend — fine, local data is the source of truth */
+        this._setStatus("offline");
       } finally {
         this._busy = false;
       }
@@ -1837,25 +2446,629 @@ Due May 31"></textarea>
     async pull() {
       const code = state.settings.sync.code;
       if (!code || !this.available()) return false;
+      this._setStatus("syncing");
       try {
         const res = await fetch(
           `${this.base}?code=${encodeURIComponent(code)}`,
         );
-        if (!res.ok) return false;
+        if (!res.ok) {
+          this._setStatus("offline");
+          return false;
+        }
         const data = await res.json();
         if (
           data &&
           data.state &&
           (data.updatedAt || 0) > (state.updatedAt || 0)
         ) {
+          // Newer cloud wins. Apply WITHOUT pushing it straight back (echo guard).
+          const prev = suppressPush;
+          suppressPush = true;
           state = normalize(data.state);
           await save({ touch: false, immediate: true });
+          suppressPush = prev;
+          state.settings.sync.lastAt = new Date().toISOString();
+          mirror();
+          this._setStatus("synced");
           return true;
         }
-      } catch {}
+        // Local is same/newer — nothing to apply, but we're in sync.
+        state.settings.sync.lastAt = new Date().toISOString();
+        mirror();
+        this._setStatus("synced");
+      } catch {
+        this._setStatus("offline");
+      }
       return false;
     },
+    // Pull + re-render if anything changed. Safe to call from any auto trigger.
+    async autoPull() {
+      if (!state.settings.sync.enabled || !this.available()) return;
+      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        this._setStatus("offline");
+        return;
+      }
+      const changed = await this.pull();
+      if (changed) render();
+    },
+    // Start/refresh the periodic pull loop while the tab is open.
+    startAuto() {
+      this.stopAuto();
+      if (!state.settings.sync.enabled) return;
+      // ~50s cadence: fresh enough to feel live, light on the KV endpoint.
+      this._interval = setInterval(() => this.autoPull(), 50000);
+    },
+    stopAuto() {
+      if (this._interval) {
+        clearInterval(this._interval);
+        this._interval = null;
+      }
+    },
   };
+
+  // Human-friendly "how long ago" for the sync status line.
+  function timeAgo(iso) {
+    if (!iso) return "";
+    const ms = Date.now() - new Date(iso).getTime();
+    if (!isFinite(ms) || ms < 0) return "just now";
+    const m = Math.round(ms / 60000);
+    if (m < 1) return "just now";
+    if (m < 60) return `${m}m ago`;
+    const h = Math.round(m / 60);
+    if (h < 24) return `${h}h ago`;
+    return new Date(iso).toLocaleDateString();
+  }
+
+  // The live status chip. Re-rendered in place by cloud._setStatus via #syncStatus.
+  function syncStatusHTML() {
+    const s = state.settings.sync;
+    // Map to existing pill variants (.blue/.green/default) — no new CSS, and
+    // each variant already has a dark-mode rule, avoiding the dark-pill gotcha.
+    let label, cls;
+    if (!cloud.available()) {
+      label = "Saved on this device — cloud not available here";
+      cls = "";
+    } else if (cloud.status === "syncing") {
+      label = "Syncing…";
+      cls = "blue";
+    } else if (cloud.status === "offline") {
+      label = "Offline — will sync later";
+      cls = "";
+    } else if (s.lastAt) {
+      label = `Synced ✓ (${timeAgo(s.lastAt)})`;
+      cls = "green";
+    } else {
+      label = "Ready to sync";
+      cls = "blue";
+    }
+    return `<p id="syncStatus" class="pill ${cls}" style="margin:4px 0 10px">${esc(label)}</p>`;
+  }
+
+  // Deep link that pre-fills the code on the other device (handled at init).
+  function linkURL(code) {
+    return `${location.origin}${location.pathname}?view=sync&sync=${encodeURIComponent(code)}`;
+  }
+
+  // Strong, url-safe, human-readable sync code (16+ chars of entropy).
+  function genSyncCode() {
+    const words = [
+      "orca",
+      "fox",
+      "hawk",
+      "puma",
+      "wolf",
+      "lynx",
+      "bear",
+      "owl",
+      "moth",
+      "kite",
+      "reef",
+      "fern",
+    ];
+    const bytes = new Uint8Array(14);
+    (crypto || {}).getRandomValues?.(bytes);
+    const alpha = "abcdefghjkmnpqrstuvwxyz23456789"; // no look-alikes
+    const rand = [...bytes].map((b) => alpha[b % alpha.length]).join("");
+    const w = words[bytes[0] % words.length];
+    return `noam-${w}-${rand}`; // e.g. noam-hawk-<14 chars> → 24+ chars total
+  }
+
+  // ---------------------------------------------------------------------------
+  // Google Calendar (client-side, read-only, no backend)
+  // ---------------------------------------------------------------------------
+  // Uses Google Identity Services (GIS) token client to get a short-lived access
+  // token IN MEMORY (never persisted), then reads upcoming events from EACH of
+  // the user's SELECTED calendars via the Calendar REST API, merging them into a
+  // single time-sorted list tagged with the source calendar's name + color.
+  // Persisted: the Web Client ID and the list of selected calendar IDs only.
+  // Never persisted: tokens.
+  const GCAL_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
+  const GIS_SRC = "https://accounts.google.com/gsi/client";
+  const gcal = {
+    token: "", // access token — memory only
+    tokenClient: null,
+    connected: false,
+    _gisLoaded: false,
+    clientId() {
+      return state.settings.googleClientId.trim();
+    },
+    // The calendar IDs to include. Defaults to ["primary"] when none chosen yet.
+    selectedIds() {
+      const ids = state.settings.gcalCalendars;
+      return Array.isArray(ids) && ids.length ? ids : ["primary"];
+    },
+    // Dynamically load the GIS script once (only external dependency allowed).
+    loadGis() {
+      if (this._gisLoaded && window.google?.accounts?.oauth2)
+        return Promise.resolve(true);
+      return new Promise((resolve) => {
+        if (window.google?.accounts?.oauth2) {
+          this._gisLoaded = true;
+          return resolve(true);
+        }
+        const existing = document.querySelector(`script[src="${GIS_SRC}"]`);
+        if (existing) {
+          existing.addEventListener("load", () => resolve(true));
+          existing.addEventListener("error", () => resolve(false));
+          return;
+        }
+        const s = document.createElement("script");
+        s.src = GIS_SRC;
+        s.async = true;
+        s.defer = true;
+        s.onload = () => {
+          this._gisLoaded = true;
+          resolve(true);
+        };
+        s.onerror = () => resolve(false);
+        document.head.appendChild(s);
+      });
+    },
+    // Connect (or refresh the token). `after` is what to do once we have a
+    // token: "events" (default) syncs events, "picker" opens the calendar
+    // chooser after refreshing the calendar list.
+    async connect(after = "events") {
+      const cid = this.clientId();
+      if (!cid) {
+        toast("Add your Google Client ID in Settings first.");
+        setView("settings");
+        return;
+      }
+      if (!navigator.onLine) return toast("Connect to the internet to sync.");
+      const ok = await this.loadGis();
+      if (!ok || !window.google?.accounts?.oauth2)
+        return toast("Couldn't load Google sign-in. Try again online.");
+      toast("Opening Google sign-in…");
+      this.tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: cid,
+        scope: GCAL_SCOPE,
+        callback: async (resp) => {
+          if (resp && resp.access_token) {
+            this.token = resp.access_token;
+            this.connected = true;
+            // Always refresh the calendar list so the picker stays current and
+            // events can be labeled with calendar names/colors.
+            await this.fetchCalendarList();
+            if (after === "picker") this.openPicker();
+            else this.fetchEvents();
+          } else {
+            toast("Google sign-in was cancelled.");
+          }
+        },
+        error_callback: () =>
+          toast("Google sign-in failed. Check your Client ID."),
+      });
+      // Empty prompt = use existing consent when possible; shows picker otherwise.
+      this.tokenClient.requestAccessToken({ prompt: "" });
+    },
+    // List the user's calendars (id, name, color, primary) for the picker. The
+    // metadata is cached so events stay labeled even offline.
+    async fetchCalendarList() {
+      if (!this.token) return [];
+      try {
+        const res = await fetch(
+          "https://www.googleapis.com/calendar/v3/users/me/calendarList?" +
+            new URLSearchParams({ minAccessRole: "reader", maxResults: "250" }),
+          { headers: { Authorization: "Bearer " + this.token } },
+        );
+        if (!res.ok) {
+          if (res.status === 401) {
+            this.token = "";
+            this.connected = false;
+          }
+          return state.gcal?.calendars || [];
+        }
+        const data = await res.json();
+        const calendars = (data.items || []).map((c) => ({
+          id: c.id,
+          name: c.summaryOverride || c.summary || c.id,
+          color: c.backgroundColor || "#4285f4",
+          primary: !!c.primary,
+        }));
+        state.gcal = {
+          ...(state.gcal || { events: [], fetchedAt: "" }),
+          calendars,
+        };
+        save();
+        return calendars;
+      } catch {
+        return state.gcal?.calendars || [];
+      }
+    },
+    // Fetch upcoming events from EVERY selected calendar, merge into one
+    // time-sorted list, and tag each event with its source calendar.
+    async fetchEvents() {
+      if (!this.token) return this.connect();
+      try {
+        const timeMin = new Date().toISOString();
+        const ids = this.selectedIds();
+        // Map known calendar metadata for labeling (name + color).
+        const meta = {};
+        (state.gcal?.calendars || []).forEach((c) => (meta[c.id] = c));
+        const params = (calId) =>
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calId)}/events?` +
+          new URLSearchParams({
+            timeMin,
+            singleEvents: "true",
+            orderBy: "startTime",
+            maxResults: "50",
+          });
+        const results = await Promise.all(
+          ids.map((calId) =>
+            fetch(params(calId), {
+              headers: { Authorization: "Bearer " + this.token },
+            })
+              .then((r) => (r.ok ? r.json().then((d) => ({ calId, d })) : null))
+              .catch(() => null),
+          ),
+        );
+        // 401 anywhere means the token expired — drop it so a reconnect prompts.
+        if (results.every((r) => r === null)) {
+          this.token = "";
+          this.connected = false;
+          toast("Couldn't load Google events.");
+          return;
+        }
+        const events = results
+          .filter(Boolean)
+          .flatMap(({ calId, d }) => {
+            const cal = meta[calId] || {};
+            const calName =
+              cal.name || (calId === "primary" ? "Primary" : calId);
+            const calColor = cal.color || "#4285f4";
+            return (d.items || []).map((e) => ({
+              id: e.id,
+              title: e.summary || "(no title)",
+              // All-day events use .date (YYYY-MM-DD); timed use .dateTime.
+              start: e.start?.dateTime || e.start?.date || "",
+              allDay: !e.start?.dateTime,
+              location: e.location || "",
+              htmlLink: e.htmlLink || "",
+              // Source-calendar tags so multiple calendars are distinguishable.
+              calId,
+              calName,
+              calColor,
+            }));
+          })
+          .filter((e) => e.start)
+          .sort((a, b) => (a.start < b.start ? -1 : 1));
+        state.gcal = {
+          ...(state.gcal || { calendars: [] }),
+          events,
+          fetchedAt: new Date().toISOString(),
+        };
+        save();
+        render();
+        toast(
+          `Google Calendar synced (${events.length}) from ${ids.length} calendar${ids.length === 1 ? "" : "s"} 📅`,
+        );
+      } catch {
+        toast("Couldn't reach Google Calendar.");
+      }
+    },
+    // Show the calendar picker (checkboxes). Requires a token + calendar list.
+    openPicker() {
+      const cals = state.gcal?.calendars || [];
+      if (!cals.length) {
+        // No cached list yet — connect first, then reopen the picker.
+        return this.connect("picker");
+      }
+      const selected = new Set(this.selectedIds());
+      const rows = cals
+        .map(
+          (c) => `<label class="gcal-pick-row">
+            <input type="checkbox" data-check="gcal-cal" data-id="${esc(c.id)}" ${selected.has(c.id) ? "checked" : ""}>
+            <span class="gcal-dot" style="background:${safeColor(c.color)}"></span>
+            <span class="steptext">${esc(c.name)}${c.primary ? ' <span class="muted">(primary)</span>' : ""}</span>
+          </label>`,
+        )
+        .join("");
+      openModal(
+        "Choose calendars",
+        `<p class="sub">Pick which Google calendars to show. Events from all checked calendars are merged into one list, color-coded by calendar.</p>
+         <div class="gcal-pick-list">${rows}</div>
+         <div class="row" style="margin-top:12px"><button class="btn primary" data-act="gcal-apply-picker">Done</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
+      );
+    },
+    disconnect() {
+      try {
+        if (this.token && window.google?.accounts?.oauth2)
+          google.accounts.oauth2.revoke(this.token, () => {});
+      } catch {}
+      this.token = "";
+      this.connected = false;
+      state.gcal = { events: [], fetchedAt: "", calendars: [] };
+      save();
+      render();
+      toast("Disconnected from Google Calendar.");
+    },
+  };
+
+  // Parse a Google event's start into a local ISO date key (YYYY-MM-DD).
+  const gcalDayKey = (e) => {
+    if (!e.start) return "";
+    if (e.allDay) return e.start.slice(0, 10);
+    const d = new Date(e.start);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+  const gcalTimeLabel = (e) => {
+    if (e.allDay) return "All day";
+    const d = new Date(e.start);
+    return d.toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
+  const gcalEventsForDay = (iso) =>
+    (state.gcal?.events || [])
+      .filter((e) => gcalDayKey(e) === iso)
+      .sort((a, b) => (a.start < b.start ? -1 : 1));
+  const gcalToday = () => gcalEventsForDay(todayKey());
+  // A compact, read-only Google event row, clearly marked as Google. When the
+  // event carries a source calendar, color the left border + badge to match and
+  // show the calendar name so multiple calendars are distinguishable.
+  const gcalRow = (e) => {
+    const color = safeColor(e.calColor || "#4285f4");
+    const calChip = e.calName
+      ? `<span class="gcal-cal-chip" style="--gc:${color}" title="From ${esc(e.calName)}">${esc(e.calName)}</span>`
+      : "";
+    return `<div class="item gcal-item" style="border-left-color:${color}"><div class="head"><div><h4><span class="gcal-badge" style="background:${color}" title="From Google Calendar${e.calName ? " · " + esc(e.calName) : ""}">G</span>${esc(e.title)}</h4><p class="meta">📅 ${esc(gcalTimeLabel(e))}${e.location ? " · " + esc(e.location) : ""}${calChip ? " · " + calChip : ""} · <span class="muted">Google · read-only</span></p></div>${e.htmlLink ? `<div class="row"><a class="btn sm" href="${esc(e.htmlLink)}" target="_blank" rel="noopener">Open</a></div>` : ""}</div></div>`;
+  };
+
+  // Google Calendar connect/refresh/disconnect panel (calendar view + settings).
+  function gcalPanel() {
+    const hasId = !!state.settings.googleClientId.trim();
+    const count = (state.gcal?.events || []).length;
+    const fetched = state.gcal?.fetchedAt
+      ? new Date(state.gcal.fetchedAt).toLocaleString()
+      : "";
+    if (!hasId) {
+      return card(
+        "gcal",
+        "📅 Google Calendar",
+        "Read-only — show your Google events here.",
+        `<p class="sub" style="margin-top:0">To connect, add a Google OAuth <b>Web Client ID</b> in Settings → Google Calendar. It's a one-time setup.</p>
+         <button class="btn primary" data-act="view-settings">Set it up in Settings</button>`,
+      );
+    }
+    const connected = gcal.connected || count > 0;
+    const status = connected
+      ? `<span class="pill green">● Connected · ${count} events</span>`
+      : `<span class="pill">Not loaded yet</span>`;
+    // Summarize which calendars are included (selected IDs → cached names).
+    const cals = state.gcal?.calendars || [];
+    const selIds = state.settings.gcalCalendars || [];
+    const nameFor = (id) =>
+      cals.find((c) => c.id === id)?.name ||
+      (id === "primary" ? "Primary" : id);
+    const colorFor = (id) =>
+      safeColor(cals.find((c) => c.id === id)?.color || "#4285f4");
+    const selChips = (selIds.length ? selIds : ["primary"])
+      .map(
+        (id) =>
+          `<span class="gcal-cal-chip" style="--gc:${colorFor(id)}">${esc(nameFor(id))}</span>`,
+      )
+      .join(" ");
+    const pickerLine = `<p class="muted" style="font-size:.8rem;margin-top:8px">Showing: ${selChips}${selIds.length ? "" : ' <span class="muted">(default)</span>'}</p>`;
+    return `<section class="card" data-card="gcal"><div class="head"><div><h3>📅 Google Calendar</h3><p class="sub">Read-only — your Google events, shown alongside school work.</p></div>${status}</div>
+      <div class="row">
+        <button class="btn ${connected ? "" : "primary"}" data-act="gcal-connect">${connected ? "🔄 Reconnect" : "Connect Google Calendar"}</button>
+        ${connected ? `<button class="btn navy" data-act="gcal-refresh">🔄 Refresh</button><button class="btn" data-act="gcal-choose">📋 Choose calendars</button><button class="btn danger" data-act="gcal-disconnect">Disconnect</button>` : ""}
+      </div>
+      ${connected ? pickerLine : ""}
+      ${fetched ? `<p class="muted" style="font-size:.8rem;margin-top:8px">Last synced: ${esc(fetched)}. Events are cached so they show even offline.</p>` : ""}
+      ${count ? `<div class="section-title" style="margin-top:12px">Upcoming Google events</div>${(state.gcal.events || []).slice(0, 12).map(gcalRow).join("")}` : ""}
+    </section>`;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Gmail (client-side, read-only, no backend)
+  // ---------------------------------------------------------------------------
+  // Same pattern as Google Calendar: GIS token client gives a short-lived access
+  // token IN MEMORY (never persisted), then reads recent messages via the Gmail
+  // REST API. Reuses the SAME Web Client ID; requests a SEPARATE token with the
+  // gmail.readonly scope. Read-only — the mailbox is never modified.
+  const GMAIL_SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
+  const gmail = {
+    token: "", // access token — memory only
+    tokenClient: null,
+    connected: false,
+    clientId() {
+      return state.settings.googleClientId.trim();
+    },
+    async connect() {
+      const cid = this.clientId();
+      if (!cid) {
+        toast("Add your Google Client ID in Settings first.");
+        setView("settings");
+        return;
+      }
+      if (!navigator.onLine) return toast("Connect to the internet to sync.");
+      // gcal owns the GIS loader; reuse it so the script loads only once.
+      const ok = await gcal.loadGis();
+      if (!ok || !window.google?.accounts?.oauth2)
+        return toast("Couldn't load Google sign-in. Try again online.");
+      toast("Opening Google sign-in…");
+      // Distinct token client call for the gmail.readonly scope.
+      this.tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: cid,
+        scope: GMAIL_SCOPE,
+        callback: (resp) => {
+          if (resp && resp.access_token) {
+            this.token = resp.access_token;
+            this.connected = true;
+            this.fetchMessages();
+          } else {
+            toast("Google sign-in was cancelled.");
+          }
+        },
+        error_callback: () =>
+          toast("Google sign-in failed. Check your Client ID."),
+      });
+      this.tokenClient.requestAccessToken({ prompt: "" });
+    },
+    async fetchMessages() {
+      if (!this.token) return this.connect();
+      try {
+        const listUrl =
+          "https://gmail.googleapis.com/gmail/v1/users/me/messages?" +
+          new URLSearchParams({ q: "newer_than:7d", maxResults: "20" });
+        const res = await fetch(listUrl, {
+          headers: { Authorization: "Bearer " + this.token },
+        });
+        if (!res.ok) {
+          if (res.status === 401) {
+            this.token = "";
+            this.connected = false;
+          }
+          toast("Couldn't load Gmail.");
+          return;
+        }
+        const data = await res.json();
+        const ids = (data.messages || []).map((m) => m.id).filter(Boolean);
+        // Fetch metadata (From/Subject/Date) + snippet for each message.
+        const metaUrl = (id) =>
+          `https://gmail.googleapis.com/gmail/v1/users/me/messages/${encodeURIComponent(id)}?` +
+          new URLSearchParams([
+            ["format", "metadata"],
+            ["metadataHeaders", "From"],
+            ["metadataHeaders", "Subject"],
+            ["metadataHeaders", "Date"],
+          ]);
+        const details = await Promise.all(
+          ids.map((id) =>
+            fetch(metaUrl(id), {
+              headers: { Authorization: "Bearer " + this.token },
+            })
+              .then((r) => (r.ok ? r.json() : null))
+              .catch(() => null),
+          ),
+        );
+        const header = (msg, name) =>
+          (msg.payload?.headers || []).find(
+            (h) => (h.name || "").toLowerCase() === name,
+          )?.value || "";
+        const messages = details
+          .filter(Boolean)
+          .map((m) => {
+            const rawFrom = header(m, "from");
+            // "Name <addr>" → prefer the display name, fall back to address.
+            const from =
+              (rawFrom.match(/^\s*"?([^"<]*?)"?\s*</)?.[1] || "").trim() ||
+              rawFrom ||
+              "(unknown sender)";
+            const dateMs =
+              Number(m.internalDate) || Date.parse(header(m, "date")) || 0;
+            return {
+              id: m.id,
+              from,
+              subject: header(m, "subject") || "(no subject)",
+              date: dateMs ? new Date(dateMs).toISOString() : "",
+              snippet: decodeHtmlEntities(m.snippet || ""),
+              unread: Array.isArray(m.labelIds)
+                ? m.labelIds.includes("UNREAD")
+                : false,
+            };
+          })
+          .sort((a, b) => (a.date < b.date ? 1 : -1)); // newest first
+        state.gmail = { messages, fetchedAt: new Date().toISOString() };
+        save();
+        render();
+        toast(`School Mail synced (${messages.length}) ✉️`);
+      } catch {
+        toast("Couldn't reach Gmail.");
+      }
+    },
+    disconnect() {
+      try {
+        if (this.token && window.google?.accounts?.oauth2)
+          google.accounts.oauth2.revoke(this.token, () => {});
+      } catch {}
+      this.token = "";
+      this.connected = false;
+      state.gmail = { messages: [], fetchedAt: "" };
+      save();
+      render();
+      toast("Disconnected from School Mail.");
+    },
+  };
+
+  // Gmail snippets come back HTML-entity encoded (&amp; &#39; …). Decode safely.
+  function decodeHtmlEntities(s) {
+    if (!s) return "";
+    const t = document.createElement("textarea");
+    t.innerHTML = s;
+    return t.value;
+  }
+  // Friendly relative date label for a message ISO timestamp.
+  const gmailDateLabel = (iso) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (isNaN(d)) return "";
+    const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+    if (days <= 0) {
+      return d.toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    }
+    if (days === 1) return "Yesterday";
+    if (days < 7) return `${days} days ago`;
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  };
+  // A read-only Gmail message row with "make a task / reminder" actions.
+  const gmailRow = (m) =>
+    `<div class="item gmail-item${m.unread ? " gmail-unread" : ""}"><div class="head"><div style="min-width:0"><h4><span class="gcal-badge gmail-badge" title="From Gmail">✉</span>${esc(m.subject)}</h4><p class="meta">${esc(m.from)} · <span class="muted">${esc(gmailDateLabel(m.date))} · Gmail · read-only</span></p>${m.snippet ? `<p class="sub" style="margin:4px 0 0">${esc(m.snippet)}</p>` : ""}</div></div>
+      <div class="row"><button class="btn sm" data-act="gmail-make-task" data-id="${esc(m.id)}">➕ Make a task</button><button class="btn sm" data-act="gmail-make-reminder" data-id="${esc(m.id)}">⏰ Make a reminder</button></div></div>`;
+
+  // Gmail connect/refresh/disconnect panel + message list (School Mail view).
+  function gmailPanel() {
+    const hasId = !!state.settings.googleClientId.trim();
+    const count = (state.gmail?.messages || []).length;
+    const fetched = state.gmail?.fetchedAt
+      ? new Date(state.gmail.fetchedAt).toLocaleString()
+      : "";
+    if (!hasId) {
+      return card(
+        "gmail",
+        "✉️ School Mail",
+        "Read-only — see your recent Gmail here.",
+        `<p class="sub" style="margin-top:0">To connect, add a Google OAuth <b>Web Client ID</b> in Settings → Google Calendar (the same one School Mail uses). It's a one-time setup.</p>
+         <button class="btn primary" data-act="view-settings">Set it up in Settings</button>`,
+      );
+    }
+    const status = count
+      ? `<span class="pill green">● Connected · ${count} messages</span>`
+      : `<span class="pill">Not loaded yet</span>`;
+    return `<section class="card" data-card="gmail"><div class="head"><div><h3>✉️ School Mail</h3><p class="sub">Read-only — your recent Gmail (last 7 days). The mailbox is never changed.</p></div>${status}</div>
+      <div class="row">
+        <button class="btn ${count ? "" : "primary"}" data-act="gmail-connect">${count ? "🔄 Reconnect" : "Connect Gmail"}</button>
+        ${count ? `<button class="btn navy" data-act="gmail-refresh">🔄 Refresh</button><button class="btn danger" data-act="gmail-disconnect">Disconnect</button>` : ""}
+      </div>
+      ${fetched ? `<p class="muted" style="font-size:.8rem;margin-top:8px">Last synced: ${esc(fetched)}. Messages are cached so they show even offline.</p>` : ""}
+      ${count ? `<div class="section-title" style="margin-top:12px">Recent mail (newest first)</div>${(state.gmail.messages || []).map(gmailRow).join("")}` : `<p class="muted" style="margin-top:10px">No messages loaded yet. Tap <b>Connect Gmail</b> to load the last 7 days.</p>`}
+    </section>`;
+  }
 
   // ---------------------------------------------------------------------------
   // Install prompt (Add to desktop)
@@ -1981,6 +3194,7 @@ Due May 31"></textarea>
     nav: (_, arg) => setView(arg),
     "view-classes": () => setView("classes"),
     "view-reminders": () => setView("reminders"),
+    "view-mail": () => setView("mail"),
     "view-email": () => setView("email"),
     "view-import": () => setView("import"),
     "view-wins": () => setView("wins"),
@@ -1988,6 +3202,37 @@ Due May 31"></textarea>
     "view-sync": () => setView("sync"),
     "view-about": () => setView("about"),
 
+    "quick-add": () => {
+      quickAddForm._due = "";
+      openModal("Quick add", quickAddForm());
+    },
+    "qa-due": (_, arg, ev) => {
+      // Toggle which quick-pick is active and show/hide the date input.
+      quickAddForm._due = arg === "custom" ? "custom" : arg;
+      $$("#qaDueSeg [data-act='qa-due']").forEach((b) =>
+        b.setAttribute("aria-pressed", b.dataset.arg === arg),
+      );
+      const dateInp = $("#qaDate");
+      if (dateInp) dateInp.style.display = arg === "custom" ? "" : "none";
+      if (arg === "custom") dateInp?.focus();
+    },
+    "save-quickadd": () => {
+      const title = $("#qaTitle").value.trim();
+      if (!title) return toast("Type what it is first.");
+      let due = quickAddForm._due || "";
+      if (due === "custom") due = $("#qaDate").value || "";
+      const obj = normalizeTask({
+        title,
+        classId: $("#qaClass").value,
+        due,
+        source: "Quick add",
+      });
+      state.assignments.push(obj);
+      save();
+      closeModal();
+      render();
+      toast("Added 📝 — it's on your list");
+    },
     "open-task": (id) =>
       openModal(
         id ? "Edit assignment" : "Add assignment",
@@ -2009,6 +3254,18 @@ Due May 31"></textarea>
       closeModal();
       render();
       toast(id ? "Saved" : "Assignment added");
+    },
+    "capture-add": () => {
+      state.captureLog[todayKey()] = true;
+      save();
+      quickAddForm._due = isoForOffset(0);
+      openModal("Quick add", quickAddForm());
+    },
+    "capture-done": () => {
+      state.captureLog[todayKey()] = true;
+      save();
+      render();
+      toast("Nice — nothing slips through 👍");
     },
     complete: (id) => completeTask(id),
     reopen: (id) => {
@@ -2079,6 +3336,11 @@ Due May 31"></textarea>
     },
     "focus-stop": () => focus.stop(),
 
+    "guide-start": (id) => guide.start(id),
+    "guide-next": () => guide.markCurrent(),
+    "guide-back": () => guide.back(),
+    "guide-stop": () => guide.stop(),
+
     "add-class": () => openModal("Add a class", classForm()),
     "edit-class": (id) =>
       openModal(
@@ -2145,15 +3407,18 @@ Due May 31"></textarea>
     "save-reminder": (id) => {
       const text = $("#rmText").value.trim();
       if (!text) return toast("Type the reminder first.");
+      const prev = id ? state.reminders.find((x) => x.id === id) : null;
       const r = normalizeReminder({
         id: id || uid("rm"),
         text,
         date: $("#rmDate").value,
         time: $("#rmTime").value,
-        done: id ? !!state.reminders.find((x) => x.id === id)?.done : false,
-        createdAt: id
-          ? state.reminders.find((x) => x.id === id)?.createdAt
-          : Date.now(),
+        repeat: $("#rmRepeat")?.value || "none",
+        done: id ? !!prev?.done : false,
+        // Preserve bookkeeping so an edit doesn't re-fire today's notification.
+        lastShown: prev?.lastShown || "",
+        lastDone: prev?.lastDone || "",
+        createdAt: id ? prev?.createdAt : Date.now(),
       });
       if (id) {
         const i = state.reminders.findIndex((x) => x.id === id);
@@ -2184,6 +3449,66 @@ Due May 31"></textarea>
       state.reminders = state.reminders.filter((r) => !r.done);
       save();
       render();
+    },
+    // Mark a reminder done (recurring = done-for-today). Used by the glance strip.
+    "reminder-done": (id) => {
+      const r = state.reminders.find((x) => x.id === id);
+      if (!r) return;
+      if (isRecurring(r)) r.lastDone = todayKey();
+      else r.done = true;
+      save();
+      render();
+      toast("Got it ✓");
+    },
+    // Snooze: bump the reminder's time so it nudges again later today.
+    "snooze-reminder": (id, arg) => {
+      const r = state.reminders.find((x) => x.id === id);
+      if (!r) return;
+      const now = new Date();
+      let target;
+      if (arg === "tonight") {
+        target = new Date();
+        target.setHours(19, 0, 0, 0);
+        if (target <= now) target = new Date(now.getTime() + 10 * 60000);
+      } else {
+        target = new Date(now.getTime() + 10 * 60000); // +10 min
+      }
+      r.date = todayKey();
+      r.time = `${String(target.getHours()).padStart(2, "0")}:${String(target.getMinutes()).padStart(2, "0")}`;
+      r.lastShown = ""; // allow it to fire again at the new time
+      if (isRecurring(r)) r.lastDone = "";
+      else r.done = false;
+      save();
+      render();
+      toast(
+        arg === "tonight" ? "Snoozed till tonight 🌙" : "Snoozed 10 min ⏰",
+      );
+    },
+
+    // ---- Daily check-in ----
+    "checkin-open": () => openModal("Morning check-in", checkinForm()),
+    "checkin-mood": (_, arg, ev) => {
+      $$("#ciMood [data-act='checkin-mood']").forEach((b) =>
+        b.setAttribute("aria-pressed", b.dataset.arg === arg),
+      );
+    },
+    "save-checkin": () => {
+      const mood =
+        $$("#ciMood [data-act='checkin-mood']").find(
+          (b) => b.getAttribute("aria-pressed") === "true",
+        )?.dataset.arg || "";
+      const priority = ($("#ciPriority")?.value || "").trim();
+      state.checkins[todayKey()] = { mood, priority };
+      // If they named a priority, mirror it into the daily goal so "Right now"
+      // and the Today view reflect it too (only if no goal set yet today).
+      if (priority && state.daily.goalDate !== todayKey()) {
+        state.daily.goal = priority;
+        state.daily.goalDate = todayKey();
+      }
+      save();
+      closeModal();
+      render();
+      toast("Check-in saved 👋");
     },
 
     "add-routine": () => openModal("New routine", routineForm()),
@@ -2290,6 +3615,21 @@ Due May 31"></textarea>
       save();
       render();
     },
+    "set-accent": (_, arg) => {
+      if (!ACCENTS.some((a) => a[0] === arg)) return;
+      state.settings.accent = arg;
+      save();
+      render();
+    },
+    "save-reminder-times": () => {
+      const mb = $("#setBriefTime")?.value;
+      const lb = $("#setLeaveBy")?.value;
+      if (TIME_RE.test(mb)) state.settings.morningBriefingTime = mb;
+      state.settings.leaveByTime = TIME_RE.test(lb) ? lb : "";
+      save();
+      render();
+      toast("Times saved 🕗");
+    },
     toggle: (_, arg) => {
       if (arg === "readable")
         state.settings.readable = !state.settings.readable;
@@ -2341,6 +3681,41 @@ Due May 31"></textarea>
       );
     },
 
+    // Ask the teacher for help on a specific assignment — prefills the teacher's
+    // email, a subject, and a clear message with the assignment context.
+    "ask-help": (id) => {
+      const a = state.assignments.find((x) => x.id === id);
+      if (!a) return;
+      const c = cls(a.classId);
+      const name = state.settings.studentName || "Noam";
+      const due = a.due ? ` (due ${niceDate(a.due)})` : "";
+      const sub = `Help with ${c.name}: ${a.title}`;
+      const body = `Hi${c.teacher ? " " + c.teacher : ""},
+
+I have a question about "${a.title}"${due} in ${c.name}.
+
+The part I'm stuck on is:
+
+What I've tried so far is:
+
+Could you help me understand what to do next? Thank you,
+${name}`;
+      if (c.email) {
+        window.open(gmailCompose(c.email, sub, body), "_blank", "noopener");
+        toast("Opening Gmail ✉️");
+      } else {
+        // No teacher email saved — guide them to add it / use the composer.
+        openModal(
+          "No teacher email yet",
+          `<p class="sub">There's no email saved for <b>${esc(c.name)}</b> yet. Add one so “Ask for help” can reach the teacher in one tap.</p>
+          <div class="row">
+            <button class="btn primary" data-act="edit-class" data-id="${c.id}">Add teacher email</button>
+            <a class="btn navy" target="_blank" rel="noopener" href="${gmailCompose("", sub, body)}">Write it anyway</a>
+          </div>`,
+        );
+      }
+    },
+
     "parse-paste": () => {
       parsedCache = parsePaste($("#pasteBox").value);
       $("#parsePreview").innerHTML = parsedCache.length
@@ -2379,53 +3754,83 @@ Due May 31"></textarea>
       render();
       toast("Backup loaded ✅");
     },
-    "gen-code": () => {
-      // High-entropy code so the (no-account) sync key isn't guessable.
-      const words = [
-        "orca",
-        "fox",
-        "hawk",
-        "puma",
-        "wolf",
-        "lynx",
-        "bear",
-        "owl",
-        "moth",
-        "kite",
-        "reef",
-        "fern",
-      ];
-      const bytes = new Uint8Array(10);
-      (crypto || {}).getRandomValues?.(bytes);
-      const rand = [...bytes]
-        .map((b) => "abcdefghjkmnpqrstuvwxyz23456789"[b % 31])
-        .join("");
-      const w = words[bytes[0] % words.length];
-      $("#syncCode").value = `noam-${w}-${rand}`;
+    // One tap: generate a strong code (if needed), turn sync on, show it.
+    "enable-sync": async () => {
+      if (!state.settings.sync.code) state.settings.sync.code = genSyncCode();
+      state.settings.sync.enabled = true;
+      save();
+      cloud.startAuto();
+      render();
+      toast(
+        cloud.available()
+          ? "Sync on 🔄 — share your code with your other device"
+          : "Saved. Cloud activates when the site supports it.",
+      );
+      // First-ever sync: pull anything already in the cloud, then push.
+      await cloud.pull();
+      await cloud.push();
+      render();
+    },
+    // Second device: paste the code from the first device to link.
+    "enter-code": () => {
+      openModal(
+        "Enter your sync code",
+        `<p class="sub">On your first device, open Backup &amp; sync and copy the code. Paste it below to link this device.</p>
+        <div class="field"><input id="linkCodeInput" placeholder="noam-..." autocomplete="off" autocapitalize="off"></div>
+        <div class="row">
+          <button class="btn primary" data-act="link-code">Link this device</button>
+          <button class="btn" data-act="close-modal">Cancel</button>
+        </div>`,
+      );
+      setTimeout(() => $("#linkCodeInput")?.focus(), 50);
+    },
+    "link-code": async () => {
+      const code = ($("#linkCodeInput")?.value || "").trim();
+      if (!code) return toast("Paste a code first.");
+      if (code.length < 12)
+        return toast("That code looks too short — copy the full code.");
+      state.settings.sync.code = code;
+      state.settings.sync.enabled = true;
+      save();
+      cloud.startAuto();
+      closeModal();
+      toast("Linking… pulling your data ⬇️");
+      // Pull first so this device adopts the existing shared data.
+      const pulled = await cloud.pull();
+      await cloud.push();
+      render();
+      toast(pulled ? "Linked — your data is here ✅" : "Linked 🔄");
+    },
+    "copy-link": async () => {
+      const url = linkURL(state.settings.sync.code);
+      try {
+        await navigator.clipboard.writeText(url);
+        toast("Link copied 🔗 — open it on your other device");
+      } catch {
+        toast("Copy failed — copy the code instead");
+      }
+    },
+    "copy-code": async () => {
+      const code = state.settings.sync.code;
+      try {
+        await navigator.clipboard.writeText(code);
+        toast("Code copied 📋");
+      } catch {
+        // Clipboard blocked — select the field so they can copy manually.
+        const el = $("#syncCode");
+        if (el) {
+          el.focus();
+          el.select();
+        }
+        toast("Press Copy / long-press to copy the code");
+      }
     },
     "toggle-sync": async () => {
-      const code = $("#syncCode")?.value.trim();
-      if (!state.settings.sync.enabled) {
-        if (!code) return toast("Enter or make a sync code first.");
-        if (code.length < 12)
-          return toast(
-            "Use a longer code (12+ characters) to keep data private. Tap 🎲.",
-          );
-        state.settings.sync.code = code;
-        state.settings.sync.enabled = true;
-        save();
-        toast(
-          cloud.available()
-            ? "Cloud sync on 🔄"
-            : "Saved. Cloud activates when the site supports it.",
-        );
-        await cloud.pull();
-        await cloud.push();
-      } else {
-        state.settings.sync.enabled = false;
-        save();
-        toast("Cloud sync off");
-      }
+      // From the ON view this only turns sync OFF (enable is its own action).
+      state.settings.sync.enabled = false;
+      cloud.stopAuto();
+      save();
+      toast("Cloud sync off");
       render();
     },
     "sync-now": async () => {
@@ -2434,6 +3839,99 @@ Due May 31"></textarea>
       await cloud.push();
       render();
       toast(pulled ? "Pulled newer data ⬇️" : "Synced 🔄");
+    },
+
+    // ---- Google Calendar ----
+    "gcal-connect": () => gcal.connect(),
+    "gcal-refresh": () => {
+      toast("Refreshing Google Calendar…");
+      gcal.token ? gcal.fetchEvents() : gcal.connect();
+    },
+    "gcal-disconnect": () => {
+      openModal(
+        "Disconnect Google Calendar?",
+        `<p class="sub">This removes the cached Google events from this app. Your Google account isn't changed.</p><div class="row"><button class="btn danger" data-act="gcal-confirm-disconnect">Disconnect</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
+      );
+    },
+    "gcal-confirm-disconnect": () => {
+      closeModal();
+      gcal.disconnect();
+    },
+    // Open the multi-calendar picker. If we have a cached calendar list, show it
+    // immediately; otherwise connect first then open the picker.
+    "gcal-choose": () => {
+      if (!navigator.onLine && !(state.gcal?.calendars || []).length)
+        return toast("Connect to the internet to choose calendars.");
+      gcal.openPicker();
+    },
+    // Persist the checked calendar IDs, then refresh events with the new set.
+    "gcal-apply-picker": () => {
+      const ids = [
+        ...document.querySelectorAll(
+          '#modalBody input[data-check="gcal-cal"]:checked',
+        ),
+      ].map((b) => b.dataset.id);
+      // Empty selection falls back to the primary calendar.
+      state.settings.gcalCalendars = ids;
+      save();
+      closeModal();
+      toast(
+        ids.length
+          ? `${ids.length} calendar${ids.length === 1 ? "" : "s"} selected`
+          : "Showing your primary calendar",
+      );
+      gcal.token ? gcal.fetchEvents() : render();
+    },
+
+    "gmail-connect": () => gmail.connect(),
+    "gmail-refresh": () => {
+      toast("Refreshing School Mail…");
+      gmail.token ? gmail.fetchMessages() : gmail.connect();
+    },
+    "gmail-disconnect": () => {
+      openModal(
+        "Disconnect School Mail?",
+        `<p class="sub">This removes the cached Gmail messages from this app. Your Google account and mailbox aren't changed.</p><div class="row"><button class="btn danger" data-act="gmail-confirm-disconnect">Disconnect</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
+      );
+    },
+    "gmail-confirm-disconnect": () => {
+      closeModal();
+      gmail.disconnect();
+    },
+    // Turn a Gmail message into a task — prefilled from its subject.
+    "gmail-make-task": (id) => {
+      const m = (state.gmail?.messages || []).find((x) => x.id === id);
+      if (!m) return;
+      const obj = normalizeTask({
+        title: ("Email: " + (m.subject || "(no subject)")).slice(0, 120),
+        source: "School Mail",
+        notes: m.from ? `From: ${m.from}` : "",
+      });
+      state.assignments.push(obj);
+      save();
+      render();
+      toast("Made a task from this email 📝");
+    },
+    // Turn a Gmail message into a reminder — prefilled from its subject.
+    "gmail-make-reminder": (id) => {
+      const m = (state.gmail?.messages || []).find((x) => x.id === id);
+      if (!m) return;
+      const r = normalizeReminder({
+        text: ("Reply / handle: " + (m.subject || "(no subject)")).slice(
+          0,
+          200,
+        ),
+      });
+      state.reminders.push(r);
+      save();
+      render();
+      toast("Made a reminder from this email ⏰");
+    },
+    "save-google-id": () => {
+      state.settings.googleClientId = ($("#gClientId")?.value || "").trim();
+      save();
+      render();
+      toast("Google Client ID saved");
     },
 
     "close-modal": () => closeModal(),
@@ -2524,7 +4022,12 @@ Due May 31"></textarea>
       } else if (kind === "reminder") {
         const r = state.reminders.find((x) => x.id === id);
         if (r) {
-          r.done = box.checked;
+          if (isRecurring(r)) {
+            // Recurring: "done" means done-for-today only — it returns tomorrow.
+            r.lastDone = box.checked ? todayKey() : "";
+          } else {
+            r.done = box.checked;
+          }
           save();
           // Re-render so the reminder moves between Open/Done groups cleanly.
           render();
@@ -2573,12 +4076,15 @@ Due May 31"></textarea>
     document.addEventListener("keydown", (ev) => {
       const modalOpen = $("#modalBack").classList.contains("open");
       const focusOpen = $("#focusOverlay").classList.contains("open");
+      const guideOpen = $("#guideOverlay").classList.contains("open");
       if (ev.key === "Escape") {
         if (modalOpen) closeModal();
         else if (focusOpen) focus.stop();
+        else if (guideOpen) guide.stop();
       } else if (ev.key === "Tab") {
         if (modalOpen) trapFocus($("#modalBack .modal"), ev);
         else if (focusOpen) trapFocus($("#focusOverlay"), ev);
+        else if (guideOpen) trapFocus($("#guideOverlay"), ev);
       }
     });
 
@@ -2666,10 +4172,19 @@ Due May 31"></textarea>
     const v = params.get("view");
     if (v && (TABS.some((t) => t[0] === v) || VIEWS[v])) view = v;
 
+    // Deep link: ?sync=<code> links this device automatically (e.g. from a QR
+    // or a shared link), so the second device doesn't have to type anything.
+    const linkCode = (params.get("sync") || "").trim();
+    if (linkCode && linkCode.length >= 12) {
+      state.settings.sync.code = linkCode;
+      state.settings.sync.enabled = true;
+      view = "sync";
+    }
+
     wire();
     render();
 
-    if (params.get("action") === "add") ACTIONS["open-task"]();
+    if (params.get("action") === "add") ACTIONS["quick-add"]();
 
     // pull cloud data if enabled, THEN re-enable pushing
     if (state.settings.sync.enabled && cloud.available()) {
@@ -2677,10 +4192,35 @@ Due May 31"></textarea>
       if (pulled) render();
     }
     suppressPush = false;
+    // Save any code adopted from a deep link now that pushing is allowed.
+    if (linkCode && linkCode.length >= 12) {
+      save();
+      await cloud.push();
+    }
 
-    // reminders loop
-    checkReminders();
+    // ---- Auto-pull triggers: keep this device live without any user action ----
+    // 1) Periodic pull while the tab is open (~50s).
+    cloud.startAuto();
+    // 2) On window focus and 3) when the tab becomes visible again — grabs the
+    //    latest the moment the user returns to the app (covers throttled timers).
+    window.addEventListener("focus", () => cloud.autoPull());
+    addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") cloud.autoPull();
+    });
+
+    // calm one-line briefing on open, plus the reminders loop
+    dailyBriefing();
+    checkReminders(); // fires anything already due (incl. passed reminder times)
+    scheduleReminders(); // arms precise setTimeouts for today's upcoming times
     setInterval(checkReminders, 60000);
+    // Re-arm timers when the tab is refocused (a backgrounded tab can throttle
+    // timers; refocusing recomputes them and catches anything missed).
+    addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        checkReminders();
+        scheduleReminders();
+      }
+    });
 
     // register service worker + let the user know when an update is ready
     if ("serviceWorker" in navigator) {

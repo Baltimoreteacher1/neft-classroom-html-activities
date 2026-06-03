@@ -6,6 +6,7 @@ import {
   vocabImageAlt,
 } from "../engine/core/vocab-images.js";
 import { deriveTWR } from "../engine/core/twr.js";
+import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -67,7 +68,7 @@ function vocabSection(vocab = []) {
   if (!vocab.length) return "";
   const cards = vocab
     .map((v) => {
-      const imgSrc = resolveVocabImage(v.term);
+      const imgSrc = resolveVocabImage(v.term, v.image);
       const imgAlt = vocabImageAlt(v.term, v.definition);
       return `<div class="vocab-card">
   <div class="vocab-figure">
@@ -88,100 +89,336 @@ ${cards}
 </section>`;
 }
 
-function notesSection(launch = {}, explore = {}) {
-  const bullets = [];
-  if (launch.narrative) {
-    launch.narrative
-      .split(/(?<=[.!?])\s+/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .slice(0, 4)
-      .forEach((s) => bullets.push(s));
-  }
-  if (explore.instructions) bullets.push(explore.instructions.trim());
+// Key Ideas & Notes — the guided-notes block. Rebuilt as an easier, more
+// visual, scaffolded sheet: a plain-language "what we're learning" line, then
+// color-coded numbered steps (Notice → Key idea → Words I'll use) and a guided
+// "Watch → We try → You try" mini-frame with blank work lines. Everything is
+// grounded in existing config fields; no math facts are invented.
+function choiceOl(choices) {
+  if (!Array.isArray(choices) || !choices.length) return "";
+  return `<ol class="try-choices" type="A">${choices
+    .map((c) => `<li>${esc(c)}</li>`)
+    .join("")}</ol>`;
+}
 
+// Render the gradual-release worked frame (I Do → We Do → You Do) using real
+// practice problems. The I-Do is fully solved in numbered steps; We-Do/You-Do
+// give the same scaffold with blank work space. Answers live in the Answer Key.
+function workedFrame(worked) {
+  if (!worked || !worked.iDo) {
+    // No usable practice items — fall back to a generic guided frame.
+    return `<div class="notes-gradual">
+    <div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 Watch</span>
+      <p class="notes-gr-cue">Watch your teacher model one example. Jot what you see.</p>
+      ${blankLines(1)}
+    </div>
+    <div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We try</span>
+      <p class="notes-gr-cue">Solve the next one together as a class.</p>
+      ${blankLines(2)}
+    </div>
+    <div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You try</span>
+      <p class="notes-gr-cue">Now try one on your own.</p>
+      ${blankLines(2)}
+    </div>
+  </div>`;
+  }
+
+  const { iDo, weDo, youDo } = worked;
+
+  const iSteps = iDo.steps
+    .map(
+      (s, i) =>
+        `<li class="wk-step"><span class="wk-steplabel">Step ${i + 1}</span> ${esc(s)}</li>`,
+    )
+    .join("");
+  const iDoHtml = `<div class="notes-gr-step notes-gr-watch">
+      <span class="notes-gr-tag">👀 I do — watch</span>
+      <p class="notes-gr-cue">Follow each step as your teacher solves it.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(iDo.problem)}</p>
+      ${choiceOl(iDo.choices)}
+      <ol class="wk-steps">${iSteps}</ol>
+      ${iDo.answer ? `<p class="wk-answer"><span class="wk-anslabel">✅ Answer:</span> ${esc(iDo.answer)}</p>` : ""}
+    </div>`;
+
+  // We-Do: same problem-then-steps scaffold, but blank for the class to fill.
+  let weDoHtml = "";
+  if (weDo) {
+    const stepCount = Math.min(Math.max(iDo.steps.length, 2), 3);
+    const blankSteps = Array.from(
+      { length: stepCount },
+      (_, i) =>
+        `<li class="wk-step wk-step-blank"><span class="wk-steplabel">Step ${i + 1}</span><span class="writeline"></span></li>`,
+    ).join("");
+    weDoHtml = `<div class="notes-gr-step notes-gr-we">
+      <span class="notes-gr-tag">🤝 We do — together</span>
+      <p class="notes-gr-cue">Solve this one with your class using the same steps.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(weDo.problem)}</p>
+      ${choiceOl(weDo.choices)}
+      <ol class="wk-steps wk-steps-blank">${blankSteps}</ol>
+      <p class="wk-answer-blank"><span class="wk-anslabel">Answer:</span> <span class="writeline"></span></p>
+    </div>`;
+  }
+
+  // You-Do: one more problem to try independently.
+  let youDoHtml = "";
+  if (youDo) {
+    youDoHtml = `<div class="notes-gr-step notes-gr-you">
+      <span class="notes-gr-tag">✏️ You do — your turn</span>
+      <p class="notes-gr-cue">Now try one on your own. Show every step.</p>
+      <p class="wk-problem"><span class="wk-plabel">Problem:</span> ${esc(youDo.problem)}</p>
+      ${choiceOl(youDo.choices)}
+      <div class="work-space"><span class="ws-label">Show your work:</span>${blankLines(3)}</div>
+    </div>`;
+  }
+
+  return `<div class="notes-gradual">
+    <p class="notes-gr-intro">See the notes in action: watch one worked all the way through, then try the next with the same steps.</p>
+    ${iDoHtml}
+    ${weDoHtml}
+    ${youDoHtml}
+  </div>`;
+}
+
+function notesSection(cfg = {}, worked = null) {
+  const launch = cfg.launch || {};
+  const explore = cfg.explore || {};
+
+  // Plain-language "what we're learning today" — prefer the content objective,
+  // fall back to the language objective, then the lesson theme/title.
+  const learningRaw =
+    cfg.contentObjective ||
+    cfg.languageObjective ||
+    (cfg.title ? `We are learning about ${cfg.title}.` : "");
+  const learningHtml = learningRaw
+    ? `<div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">${esc(learningRaw)}</p>
+      </div>
+    </div>`
+    : "";
+
+  // 1️⃣ Notice — the first thing to look at, from the launch story / notice prompt.
+  const noticeText =
+    (launch.narrative
+      ? launch.narrative
+          .split(/(?<=[.!?])\s+/)
+          .map((s) => s.trim())
+          .filter(Boolean)[0]
+      : "") ||
+    (Array.isArray(launch.noticePrompts) ? launch.noticePrompts[0] : "") ||
+    "Look closely at the problem before you start.";
+
+  // 2️⃣ Key idea — the lesson's content objective stated as the big idea.
+  const keyIdeaText =
+    cfg.contentObjective ||
+    (explore.instructions ? explore.instructions.trim() : "") ||
+    "Write the main math idea in your own words.";
+
+  const stepCard = (num, icon, title, body) =>
+    `<div class="notes-step notes-step-${num}">
+      <div class="notes-step-head"><span class="notes-step-num" aria-hidden="true">${icon}</span>
+        <h4 class="notes-step-title">${esc(title)}</h4></div>
+      ${body}
+    </div>`;
+
+  const steps = [
+    stepCard(
+      1,
+      "1️⃣",
+      "Notice",
+      `<p class="notes-step-text">${esc(noticeText)}</p>`,
+    ),
+    stepCard(
+      2,
+      "2️⃣",
+      "Key idea",
+      `<p class="notes-step-text">${esc(keyIdeaText)}</p>`,
+    ),
+  ];
+
+  // 3️⃣ Words I'll use — chip strip of the lesson's vocabulary terms.
+  const vocabTerms = Array.isArray(cfg.vocabulary)
+    ? cfg.vocabulary.map((v) => v && v.term).filter(Boolean)
+    : [];
+  if (vocabTerms.length) {
+    const chips = vocabTerms
+      .map((t) => `<span class="notes-word-chip">${esc(t)}</span>`)
+      .join("");
+    steps.push(
+      stepCard(
+        3,
+        "3️⃣",
+        "Words I'll use",
+        `<div class="notes-word-chips">${chips}</div>`,
+      ),
+    );
+  }
+
+  const stepsHtml = `<div class="notes-steps">${steps.join("")}</div>`;
+
+  // "Think About It" prompts — kept, but presented as a friendly question strip.
   const noticeWonder = []
     .concat(launch.noticePrompts || [], launch.wonderPrompts || [])
     .slice(0, 3);
-
-  const bulletHtml = bullets.length
-    ? `<ul class="notes-bullets">${bullets.map((b) => `<li>${esc(b)}</li>`).join("")}</ul>`
-    : "";
-
   const promptHtml = noticeWonder.length
     ? `<div class="think-block">
-    <h3>Think About It</h3>
+    <h3>🤔 Think About It</h3>
     <ul class="prompt-list">${noticeWonder.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
   </div>`
     : "";
 
+  // Guided "I Do → We Do → You Do" mini-frame with real worked problems.
+  const gradualHtml = workedFrame(worked);
+
   return `<section class="section notes">
   <h2>Key Ideas &amp; Notes</h2>
-  ${bulletHtml}
+  ${learningHtml}
+  ${stepsHtml}
   ${promptHtml}
-  <div class="my-notes">
-    <h3>My Notes</h3>
-    ${blankLines(5)}
-  </div>
+  ${gradualHtml}
 </section>`;
 }
 
-// Build worked-example HTML for an MC / open-response / error-analysis item.
-function workedExample(item, n) {
-  let body = "";
-  const problem = item.stem || item.instructions || item.title || "";
+// Turn & Talk — Discussion Points. Driven by cfg.turnAndTalk[]. Renders a
+// leveled, partner-discussion section: Level 1 (support) gets a kernel,
+// bilingual sentence stems, a word bank, and a teacher "listen for" note;
+// Level 2 gets a deeper push question with stretch stems. Defensive about
+// every optional field so older configs still render.
+function ttBilingual(stem) {
+  // Accepts a string or { en, es } object; reuses the twr-frame bilingual look.
+  const en = typeof stem === "string" ? stem : stem && stem.en;
+  const es = typeof stem === "object" && stem ? stem.es : "";
+  if (!en) return "";
+  return `<p class="twr-frame"><span class="twr-en">${esc(en)}</span>${
+    es ? `<span class="twr-es">${esc(es)}</span>` : ""
+  }</p>`;
+}
 
-  if (item.type === "error-analysis") {
-    const steps = (item.workedExample || [])
-      .map(
-        (s) =>
-          `<li><span class="step-label">${esc(s.label)}:</span> ${esc(s.work)}</li>`
-      )
-      .join("");
-    body = `<p class="ex-problem">${esc(item.title || "Error Analysis")}</p>
-    <ol class="ex-steps">${steps}</ol>
-    <p class="ex-solution"><strong>Correct reasoning:</strong> ${esc(item.correctWork)}</p>`;
-  } else if (item.type === "fill-table") {
-    body = `<p class="ex-problem">${esc(problem)}</p>
-    <p class="ex-solution">${esc((item.editableCells || []).map((c) => c.answer).filter(Boolean).join("; "))}</p>`;
-  } else {
-    let answerLine = "";
-    if (Array.isArray(item.choices) && typeof item.correctIndex === "number") {
-      answerLine = `<p class="ex-answer"><strong>Answer:</strong> ${choiceLetter(item.correctIndex)}. ${esc(item.choices[item.correctIndex])}</p>`;
-    } else if (item.sampleAnswer) {
-      answerLine = `<p class="ex-answer"><strong>Sample answer:</strong> ${esc(item.sampleAnswer)}</p>`;
-    }
-    body = `<p class="ex-problem">${esc(problem)}</p>
-    <p class="ex-solution"><strong>Solution:</strong> ${esc(item.explanation || item.sampleAnswer || "")}</p>
-    ${answerLine}`;
+// Derive a SHORT strategy hint for a Turn & Talk item. Uses an explicit
+// item.hint when present; otherwise builds a non-answer-giving nudge (what to
+// look at / what to ask yourself / which word-bank term to try). NEVER uses
+// item.listenFor and NEVER states the answer.
+function deriveTtHint(item) {
+  if (item.hint) return String(item.hint).trim();
+  const parts = [];
+  const wb = Array.isArray(item.wordBank) ? item.wordBank.filter(Boolean) : [];
+  if (wb.length) {
+    const picks = wb.slice(0, 2).join('" or "');
+    parts.push(`Try starting with the word "${picks}".`);
   }
+  // Turn the question into a self-check prompt without revealing the answer.
+  if (item.question) {
+    parts.push("Re-read the question and underline what it is asking you to compare or find.");
+  } else {
+    parts.push("Ask yourself: what does the math show, and how do I know?");
+  }
+  parts.push("Use one number or word from the problem as your evidence.");
+  return parts.join(" ");
+}
 
-  return `<div class="example">
-  <h3 class="example-head">Example ${n}</h3>
-  ${body}
+function turnAndTalkCard(item) {
+  const phaseRaw = String(item.phase || "").trim();
+  const phaseLabel = phaseRaw
+    ? phaseRaw.charAt(0).toUpperCase() + phaseRaw.slice(1)
+    : "Discuss";
+  const phaseBadge = `<span class="tt-phase">${esc(phaseLabel)}</span>`;
+  const question = item.question
+    ? `<p class="tt-question">${esc(item.question)}</p>`
+    : "";
+
+  // --- Level 1 (support) block ---
+  const kernel = item.kernel
+    ? `<p class="tt-kernel"><span class="tt-kernel-label">Start here:</span> ${esc(item.kernel)}</p>`
+    : "";
+  const stems = Array.isArray(item.stems)
+    ? item.stems.map((s) => ttBilingual(s)).filter(Boolean).join("")
+    : "";
+  const stemsHtml = stems
+    ? `<div class="tt-stems">
+      <p class="tt-mini-label tt-stems-label">Sentence starters (optional)</p>
+      ${stems}
+    </div>`
+    : "";
+  // Optional collapsible strategy hint — never reveals the answer.
+  const hintText = deriveTtHint(item);
+  const hintHtml = hintText
+    ? `<details class="tt-hint-toggle">
+      <summary>💡 Need a hint?</summary>
+      <p class="tt-hint-text">${esc(hintText)}</p>
+    </details>`
+    : "";
+  const wordBank = Array.isArray(item.wordBank)
+    ? item.wordBank.filter(Boolean)
+    : [];
+  const wordBankHtml = wordBank.length
+    ? `<div class="tt-wordbank"><span class="tt-mini-label">Word bank:</span> ${wordBank
+        .map((w) => `<span class="tt-word">${esc(w)}</span>`)
+        .join("")}</div>`
+    : "";
+  const listenFor = item.listenFor
+    ? `<p class="tt-listen"><span class="tt-mini-label">Listen for:</span> ${esc(item.listenFor)}</p>`
+    : "";
+  const supportInner = [kernel, hintHtml, stemsHtml, wordBankHtml, listenFor]
+    .filter(Boolean)
+    .join("\n    ");
+  const support = supportInner
+    ? `<div class="tt-support">
+    <span class="level-tag level-1">Level 1 support</span>
+    ${supportInner}
+  </div>`
+    : "";
+
+  // --- Level 2 block ---
+  const extendQ = item.extend
+    ? `<p class="tt-extend-q">${esc(item.extend)}</p>`
+    : "";
+  const extendStems = Array.isArray(item.extendStems)
+    ? item.extendStems.filter(Boolean)
+    : [];
+  const extendStemsHtml = extendStems.length
+    ? `<ul class="tt-extend-stems">${extendStems
+        .map((s) => `<li>${esc(s)}</li>`)
+        .join("")}</ul>`
+    : "";
+  const extend =
+    extendQ || extendStemsHtml
+      ? `<div class="tt-extend">
+    <span class="level-tag level-2">Level 2</span>
+    ${[extendQ, extendStemsHtml].filter(Boolean).join("\n    ")}
+  </div>`
+      : "";
+
+  return `<div class="tt-card">
+  ${phaseBadge}
+  ${question}
+  ${support}
+  ${extend}
 </div>`;
 }
 
-function gatherPractice(practice = {}) {
-  return []
-    .concat(practice.approaching || [], practice.onLevel || [], practice.extending || []);
+function turnAndTalkSection(cfg) {
+  const items = Array.isArray(cfg.turnAndTalk) ? cfg.turnAndTalk : [];
+  if (!items.length) return "";
+  const cards = items.map((it) => turnAndTalkCard(it)).join("\n");
+  return `<section class="section turn-and-talk">
+  <h2>Turn &amp; Talk — Discussion Points <span class="level-tag level-1">Level 1 support</span> <span class="level-tag level-2">Level 2</span></h2>
+  <p class="level-note">Talk with a partner about each prompt. If you need help getting started, use the Level 1 sentence stems. Ready for more? Try the Level 2 question.</p>
+  ${cards}
+</section>`;
 }
 
-function examplesSection(practice = {}) {
-  const items = gatherPractice(practice);
-  // Prefer items that have an explanation or worked content for examples.
-  const candidates = items.filter(
-    (it) =>
-      (it.stem && it.explanation) ||
-      it.type === "error-analysis" ||
-      (it.type === "open-response" && it.sampleAnswer)
+function gatherPractice(practice = {}) {
+  return [].concat(
+    practice.approaching || [],
+    practice.onLevel || [],
+    practice.extending || [],
+    practice.optional || [],
   );
-  const chosen = candidates.slice(0, 3);
-  if (!chosen.length) return "";
-  return `<section class="section examples">
-  <h2>Guided Examples</h2>
-  ${chosen.map((it, i) => workedExample(it, i + 1)).join("\n")}
-</section>`;
 }
 
 function tryItProblem(it, i) {
@@ -198,9 +435,11 @@ function tryItProblem(it, i) {
 </div>`;
 }
 
-function tryItSection(practice = {}) {
-  const items = gatherPractice(practice).filter((it) => it.stem);
-  // Pick a couple that were not necessarily used above; take from middle/end.
+function tryItSection(practice = {}, usedStems = new Set()) {
+  const items = gatherPractice(practice).filter(
+    (it) => it.stem && !usedStems.has(it.stem),
+  );
+  // Pick a couple that were not used in the guided notes frame.
   const picks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
   if (!picks.length) return "";
   const probs = picks.map((it, i) => tryItProblem(it, i)).join("\n");
@@ -275,11 +514,30 @@ function reflectSection(reflect = {}) {
 </section>`;
 }
 
-function answerKeySection(practice = {}, reflect = {}, config = null) {
+function answerKeySection(
+  practice = {},
+  reflect = {},
+  config = null,
+  worked = null,
+  usedStems = new Set(),
+) {
   const rows = [];
   let n = 1;
-  // Try It picks mirrored from tryItSection logic.
-  const items = gatherPractice(practice).filter((it) => it.stem);
+  // Guided-notes "We Do / You Do" answers come first so teachers can check the
+  // worked frame before the independent practice.
+  if (worked && Array.isArray(worked.keyRows)) {
+    worked.keyRows.forEach((r) => {
+      rows.push(
+        `<li><strong>${esc(r.label)}:</strong> ${esc(r.answer)}${
+          r.why ? ` <span class="ak-why">— ${esc(r.why)}</span>` : ""
+        }</li>`,
+      );
+    });
+  }
+  // Try It picks mirrored from tryItSection logic (same exclusion).
+  const items = gatherPractice(practice).filter(
+    (it) => it.stem && !usedStems.has(it.stem),
+  );
   const tryPicks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
   tryPicks.forEach((it) => {
     let ans = "";
@@ -460,6 +718,55 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .notes-bullets li,.prompt-list li{margin:5px 0;}
 .think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
 .think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
 .my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
 .writeline{border-bottom:1px solid #b9c6d3;height:26px;}
 .example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
@@ -523,6 +830,30 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
 .twr-exp-lines{min-width:0;}
 .twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
 .twr-stems{margin:0 0 8px;}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
 /* Download menu */
 .dl-wrap{position:relative;display:inline-block;margin-left:10px;}
 .dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
@@ -551,6 +882,26 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
   .vocab-figure{background:#fff;border:1px solid #000;}
   .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
   header.packet{border-bottom:2px solid #000;}
   .section>h2{border-left:4px solid #000;}
   .example{border-left:3px solid #000;}
@@ -565,6 +916,14 @@ footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   .twr-model{background:#fff;border:1px solid #000;}
   .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
   .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
   footer.packet{display:none;}
 }
 </style>`;
@@ -581,6 +940,8 @@ function missionBanner(cfg) {
 }
 
 function buildPacket(id, cfg, isFlagship) {
+  const worked = deriveWorkedSteps(cfg);
+  const usedStems = new Set(worked.usedStems || []);
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
   const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
@@ -594,6 +955,8 @@ function buildPacket(id, cfg, isFlagship) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${esc(cfg.title)} — Notes Packet</title>
 ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<script>if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}</script>
 </head>
 <body>
 <div class="topbar no-print">
@@ -622,12 +985,12 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   </header>
   ${missionBanner(cfg)}
   ${vocabSection(cfg.vocabulary)}
-  ${notesSection(cfg.launch, cfg.explore)}
-  ${examplesSection(cfg.practice)}
+  ${notesSection(cfg, worked)}
+  ${turnAndTalkSection(cfg)}
   ${twrSection(cfg)}
-  ${tryItSection(cfg.practice)}
+  ${tryItSection(cfg.practice, usedStems)}
   ${reflectSection(cfg.reflect)}
-  ${answerKeySection(cfg.practice, cfg.reflect, cfg)}
+  ${answerKeySection(cfg.practice, cfg.reflect, cfg, worked, usedStems)}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}</footer>
 </main>
 </body>
