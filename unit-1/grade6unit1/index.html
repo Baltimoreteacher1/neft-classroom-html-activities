@@ -792,9 +792,20 @@
           border: 1px solid #777 !important;
         }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="page-shell">
@@ -1703,6 +1714,16 @@
 
           document.getElementById("finalGrade").textContent = `${finalScore}%`;
           document.getElementById("finalScoreCard").style.display = "block";
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: correctCount,
+                maxScore: 4,
+                problemsCorrect: correctCount,
+                problemsAttempted: 4,
+              });
+          } catch (e) {}
 
           if (finalScore === 100) {
             triggerConfetti(65);
@@ -1780,5 +1801,7 @@
       }
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

@@ -1040,9 +1040,20 @@
           font-size: 8px;
         }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
   </head>
   <body class="level-1">
     <!-- Starfield background -->
@@ -1992,6 +2003,19 @@
             '<div class="end-stat"><div class="end-stat-val">' +
             starsEarned +
             '/3</div><div class="end-stat-label">Stars</div></div>';
+
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: totalCorrect,
+                maxScore: totalQ,
+                stars: starsEarned,
+                problemsCorrect: totalCorrect,
+                problemsAttempted: totalQ,
+                standard: "6.EE.C.9",
+              });
+          } catch (e) {}
         }
 
         function launchConfetti() {
@@ -2026,6 +2050,8 @@
         }
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

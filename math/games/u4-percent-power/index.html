@@ -4,82 +4,305 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Percent Power — Lessons 4.1–4.5 Game | Neft Teacher</title>
-    <meta name="description" content="Arcade review game for Grade 6 lessons 4.1–4.5: percents of a number, sale prices, and percent-fraction-decimal equivalence (6.RP.3c)." />
+    <meta
+      name="description"
+      content="Arcade review game for Grade 6 lessons 4.1–4.5: percents of a number, sale prices, and percent-fraction-decimal equivalence (6.RP.3c)."
+    />
     <link rel="stylesheet" href="/assets/shared.css" />
     <style>
-      :root { --navy:#0f2b3c; --blue:#1a6fb5; --teal:#0e8a7d; --gold:#d4952a; --coral:#c45a3c; --green:#2d874b; --ink:#1a2633; --muted:#5e6e7e; --line:#e2e7ec; --bg:#f7f9fb; --font:"Segoe UI",system-ui,sans-serif; }
-      * { box-sizing:border-box; }
-      body { margin:0; font-family:var(--font); color:var(--ink); background:var(--bg); line-height:1.5; }
-      .wrap { max-width:680px; margin:0 auto; padding:0 18px 60px; }
-      .ghero { background:linear-gradient(135deg,#c45a3c,#d4952a); color:#fff; text-align:center; padding:30px 20px 26px; }
-      .ghero .deco { font-size:48px; }
-      .ghero h1 { margin:8px 0 6px; font-size:clamp(24px,5vw,34px); }
-      .ghero p { margin:0 auto; max-width:520px; color:rgba(255,255,255,.9); }
-      .breadcrumb { font-size:13px; padding:14px 0; color:var(--muted); }
-      .breadcrumb a { color:var(--blue); text-decoration:none; font-weight:600; }
-      .hud { display:flex; justify-content:space-between; gap:10px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin:18px 0; font-weight:800; box-shadow:0 2px 10px rgba(15,43,60,.06); }
-      .hud .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); display:block; }
-      .hud .val { font-size:22px; }
-      .hearts { color:var(--coral); letter-spacing:2px; }
-      .card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px 22px; box-shadow:0 6px 22px rgba(15,43,60,.08); text-align:center; }
-      .mode-tag { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--teal); }
-      .prompt { font-size:clamp(22px,5vw,30px); font-weight:800; margin:8px 0 4px; }
-      .sub { color:var(--muted); margin:0 0 18px; }
-      .opts { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-      @media (max-width:460px){ .opts{ grid-template-columns:1fr; } }
-      .opt { padding:16px; border:2px solid var(--line); border-radius:14px; background:#fff; font-size:20px; font-weight:800; cursor:pointer; font-family:inherit; color:var(--ink); transition:transform .06s, border-color .15s; }
-      .opt:hover { border-color:var(--blue); }
-      .opt:active { transform:scale(.97); }
-      .opt.right { border-color:var(--green); background:#e6f4eb; color:var(--green); animation:pop .3s; }
-      .opt.wrong { border-color:var(--coral); background:#fdeee9; color:var(--coral); animation:shake .3s; }
-      @keyframes pop { 50%{ transform:scale(1.06);} }
-      @keyframes shake { 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
-      .feedback { min-height:26px; margin-top:16px; font-weight:800; }
-      .feedback.ok { color:var(--green); } .feedback.no { color:var(--coral); }
-      .btn { background:var(--blue); color:#fff; border:none; border-radius:12px; padding:13px 26px; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit; margin-top:8px; }
-      .btn:hover { filter:brightness(1.08); }
-      .btn.start { background:var(--teal); font-size:18px; padding:15px 34px; }
-      .bar { height:10px; background:var(--line); border-radius:50px; overflow:hidden; margin:14px 0 2px; }
-      .bar > div { height:100%; width:100%; background:linear-gradient(90deg,var(--gold),var(--coral)); transition:width .25s linear; }
-      .hidden { display:none; }
-      .big-score { font-size:52px; font-weight:900; color:var(--blue); margin:6px 0; }
-      .legend { font-size:13px; color:var(--muted); margin-top:18px; }
-      .legend a { color:var(--blue); font-weight:700; }
-      ul.modes { text-align:left; max-width:430px; margin:14px auto; color:var(--muted); font-size:15px; }
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --teal: #0e8a7d;
+        --gold: #d4952a;
+        --coral: #c45a3c;
+        --green: #2d874b;
+        --ink: #1a2633;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --bg: #f7f9fb;
+        --font: "Segoe UI", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      .wrap {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 0 18px 60px;
+      }
+      .ghero {
+        background: linear-gradient(135deg, #c45a3c, #d4952a);
+        color: #fff;
+        text-align: center;
+        padding: 30px 20px 26px;
+      }
+      .ghero .deco {
+        font-size: 48px;
+      }
+      .ghero h1 {
+        margin: 8px 0 6px;
+        font-size: clamp(24px, 5vw, 34px);
+      }
+      .ghero p {
+        margin: 0 auto;
+        max-width: 520px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .breadcrumb {
+        font-size: 13px;
+        padding: 14px 0;
+        color: var(--muted);
+      }
+      .breadcrumb a {
+        color: var(--blue);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin: 18px 0;
+        font-weight: 800;
+        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.06);
+      }
+      .hud .lbl {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        display: block;
+      }
+      .hud .val {
+        font-size: 22px;
+      }
+      .hearts {
+        color: var(--coral);
+        letter-spacing: 2px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 26px 22px;
+        box-shadow: 0 6px 22px rgba(15, 43, 60, 0.08);
+        text-align: center;
+      }
+      .mode-tag {
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--teal);
+      }
+      .prompt {
+        font-size: clamp(22px, 5vw, 30px);
+        font-weight: 800;
+        margin: 8px 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 18px;
+      }
+      .opts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 460px) {
+        .opts {
+          grid-template-columns: 1fr;
+        }
+      }
+      .opt {
+        padding: 16px;
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        font-size: 20px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        color: var(--ink);
+        transition:
+          transform 0.06s,
+          border-color 0.15s;
+      }
+      .opt:hover {
+        border-color: var(--blue);
+      }
+      .opt:active {
+        transform: scale(0.97);
+      }
+      .opt.right {
+        border-color: var(--green);
+        background: #e6f4eb;
+        color: var(--green);
+        animation: pop 0.3s;
+      }
+      .opt.wrong {
+        border-color: var(--coral);
+        background: #fdeee9;
+        color: var(--coral);
+        animation: shake 0.3s;
+      }
+      @keyframes pop {
+        50% {
+          transform: scale(1.06);
+        }
+      }
+      @keyframes shake {
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+      .feedback {
+        min-height: 26px;
+        margin-top: 16px;
+        font-weight: 800;
+      }
+      .feedback.ok {
+        color: var(--green);
+      }
+      .feedback.no {
+        color: var(--coral);
+      }
+      .btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 26px;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 8px;
+      }
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+      .btn.start {
+        background: var(--teal);
+        font-size: 18px;
+        padding: 15px 34px;
+      }
+      .bar {
+        height: 10px;
+        background: var(--line);
+        border-radius: 50px;
+        overflow: hidden;
+        margin: 14px 0 2px;
+      }
+      .bar > div {
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(90deg, var(--gold), var(--coral));
+        transition: width 0.25s linear;
+      }
+      .hidden {
+        display: none;
+      }
+      .big-score {
+        font-size: 52px;
+        font-weight: 900;
+        color: var(--blue);
+        margin: 6px 0;
+      }
+      .legend {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 18px;
+      }
+      .legend a {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      ul.modes {
+        text-align: left;
+        max-width: 430px;
+        margin: 14px auto;
+        color: var(--muted);
+        font-size: 15px;
+      }
     </style>
   </head>
   <body>
     <header class="ghero">
       <div class="deco">💯</div>
       <h1>Percent Power</h1>
-      <p>Race the clock on percent of a number, sale prices, and percent-fraction-decimal equivalence.</p>
+      <p>
+        Race the clock on percent of a number, sale prices, and
+        percent-fraction-decimal equivalence.
+      </p>
     </header>
     <div class="wrap">
       <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> / <a href="/math/games/">Games</a> / Percent Power
+        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/math/games/">Games</a> / Percent Power
       </nav>
 
       <section class="card" id="startScreen">
         <p class="mode-tag">Lessons 4.1–4.5 · 6.RP.3c</p>
-        <h2 style="margin:6px 0;">Ready to power up?</h2>
+        <h2 style="margin: 6px 0">Ready to power up?</h2>
         <ul class="modes">
-          <li><strong>Round 1 — Percent of a Number.</strong> Find the part using friendly percents.</li>
-          <li><strong>Round 2 — Sale Price &amp; Discount.</strong> Subtract the markdown from the original price.</li>
-          <li><strong>Round 3 — Percent ↔ Decimal.</strong> Convert between percent and decimal form.</li>
+          <li>
+            <strong>Round 1 — Percent of a Number.</strong> Find the part using
+            friendly percents.
+          </li>
+          <li>
+            <strong>Round 2 — Sale Price &amp; Discount.</strong> Subtract the
+            markdown from the original price.
+          </li>
+          <li>
+            <strong>Round 3 — Percent ↔ Decimal.</strong> Convert between
+            percent and decimal form.
+          </li>
         </ul>
-        <p class="sub">You have <strong>3 ❤</strong> and a timer on each question. Build a streak for bonus points!</p>
-        <button class="btn start" id="startBtn" type="button">Start Game ▶</button>
+        <p class="sub">
+          You have <strong>3 ❤</strong> and a timer on each question. Build a
+          streak for bonus points!
+        </p>
+        <button class="btn start" id="startBtn" type="button">
+          Start Game ▶
+        </button>
       </section>
 
       <section id="playScreen" class="hidden">
         <div class="hud">
-          <div><span class="lbl">Score</span><span class="val" id="score">0</span></div>
-          <div><span class="lbl">Streak</span><span class="val" id="streak">0</span></div>
-          <div><span class="lbl">Lives</span><span class="val hearts" id="lives">❤❤❤</span></div>
-          <div><span class="lbl">Question</span><span class="val" id="qnum">1</span></div>
+          <div>
+            <span class="lbl">Score</span><span class="val" id="score">0</span>
+          </div>
+          <div>
+            <span class="lbl">Streak</span
+            ><span class="val" id="streak">0</span>
+          </div>
+          <div>
+            <span class="lbl">Lives</span
+            ><span class="val hearts" id="lives">❤❤❤</span>
+          </div>
+          <div>
+            <span class="lbl">Question</span
+            ><span class="val" id="qnum">1</span>
+          </div>
         </div>
         <div class="bar"><div id="timebar"></div></div>
-        <div class="card" style="margin-top:14px;">
+        <div class="card" style="margin-top: 14px">
           <span class="mode-tag" id="modeTag"></span>
           <div class="prompt" id="prompt"></div>
           <p class="sub" id="sub"></p>
@@ -92,203 +315,387 @@
       <section class="card hidden" id="resultScreen">
         <p class="mode-tag">Game Over</p>
         <div class="big-score" id="finalScore">0</div>
-        <p id="resultMsg" style="font-weight:700;"></p>
+        <p id="resultMsg" style="font-weight: 700"></p>
         <p class="sub" id="resultDetail"></p>
-        <button class="btn start" id="againBtn" type="button">Play Again 🔁</button>
-        <p class="legend">More review: <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> · <a href="/math/games/">All Games</a></p>
+        <button class="btn start" id="againBtn" type="button">
+          Play Again 🔁
+        </button>
+        <p class="legend">
+          More review:
+          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a> ·
+          <a href="/math/games/">All Games</a>
+        </p>
       </section>
     </div>
 
     <script>
-      function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-      function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
-      function round2(n){ return Math.round(n*100)/100; }
+      function rnd(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+      function shuffle(a) {
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = a[i];
+          a[i] = a[j];
+          a[j] = t;
+        }
+        return a;
+      }
+      function round2(n) {
+        return Math.round(n * 100) / 100;
+      }
 
-      var TOTAL=12, TIME=12;
-      var state={};
+      var TOTAL = 12,
+        TIME = 12;
+      var state = {};
 
       // Round 1 question bank: percent of a number — all give whole answers
       var R1_BANK = [
-        { pct:25, base:40, ans:10 },
-        { pct:50, base:60, ans:30 },
-        { pct:10, base:80, ans:8  },
-        { pct:20, base:50, ans:10 },
-        { pct:25, base:80, ans:20 },
-        { pct:50, base:90, ans:45 },
-        { pct:10, base:70, ans:7  },
-        { pct:20, base:60, ans:12 },
-        { pct:25, base:120, ans:30},
-        { pct:50, base:40, ans:20 },
-        { pct:20, base:80, ans:16 },
-        { pct:10, base:50, ans:5  }
+        { pct: 25, base: 40, ans: 10 },
+        { pct: 50, base: 60, ans: 30 },
+        { pct: 10, base: 80, ans: 8 },
+        { pct: 20, base: 50, ans: 10 },
+        { pct: 25, base: 80, ans: 20 },
+        { pct: 50, base: 90, ans: 45 },
+        { pct: 10, base: 70, ans: 7 },
+        { pct: 20, base: 60, ans: 12 },
+        { pct: 25, base: 120, ans: 30 },
+        { pct: 50, base: 40, ans: 20 },
+        { pct: 20, base: 80, ans: 16 },
+        { pct: 10, base: 50, ans: 5 },
       ];
 
       // Round 2 question bank: sale price after discount — all give whole answers
       var R2_BANK = [
-        { price:50,  disc:20, ans:40  },
-        { price:80,  disc:25, ans:60  },
-        { price:60,  disc:10, ans:54  },
-        { price:100, disc:50, ans:50  },
-        { price:40,  disc:25, ans:30  },
-        { price:90,  disc:10, ans:81  },
-        { price:80,  disc:50, ans:40  },
-        { price:60,  disc:20, ans:48  },
-        { price:120, disc:25, ans:90  },
-        { price:70,  disc:10, ans:63  },
-        { price:40,  disc:50, ans:20  },
-        { price:100, disc:20, ans:80  }
+        { price: 50, disc: 20, ans: 40 },
+        { price: 80, disc: 25, ans: 60 },
+        { price: 60, disc: 10, ans: 54 },
+        { price: 100, disc: 50, ans: 50 },
+        { price: 40, disc: 25, ans: 30 },
+        { price: 90, disc: 10, ans: 81 },
+        { price: 80, disc: 50, ans: 40 },
+        { price: 60, disc: 20, ans: 48 },
+        { price: 120, disc: 25, ans: 90 },
+        { price: 70, disc: 10, ans: 63 },
+        { price: 40, disc: 50, ans: 20 },
+        { price: 100, disc: 20, ans: 80 },
       ];
 
       // Round 3 question bank: percent <-> decimal equivalence
       var R3_BANK = [
-        { prompt:"50% as a decimal = ?",   correct:"0.5",  wrong:["0.05","5","1.5"]    },
-        { prompt:"25% as a decimal = ?",   correct:"0.25", wrong:["0.025","2.5","0.5"] },
-        { prompt:"10% as a decimal = ?",   correct:"0.1",  wrong:["0.01","1","0.9"]    },
-        { prompt:"75% as a decimal = ?",   correct:"0.75", wrong:["0.075","7.5","0.25"]},
-        { prompt:"20% as a decimal = ?",   correct:"0.2",  wrong:["0.02","2","0.8"]    },
-        { prompt:"1% as a decimal = ?",    correct:"0.01", wrong:["0.1","1","0.001"]   },
-        { prompt:"5% as a decimal = ?",    correct:"0.05", wrong:["0.5","5","0.005"]   },
-        { prompt:"30% as a decimal = ?",   correct:"0.3",  wrong:["0.03","3","0.7"]    },
-        { prompt:"40% as a decimal = ?",   correct:"0.4",  wrong:["0.04","4","0.6"]    },
-        { prompt:"60% as a decimal = ?",   correct:"0.6",  wrong:["0.06","6","0.4"]    },
-        { prompt:"0.5 as a percent = ?",   correct:"50%",  wrong:["5%","500%","0.5%"]  },
-        { prompt:"0.25 as a percent = ?",  correct:"25%",  wrong:["2.5%","250%","0.025%"]}
+        {
+          prompt: "50% as a decimal = ?",
+          correct: "0.5",
+          wrong: ["0.05", "5", "1.5"],
+        },
+        {
+          prompt: "25% as a decimal = ?",
+          correct: "0.25",
+          wrong: ["0.025", "2.5", "0.5"],
+        },
+        {
+          prompt: "10% as a decimal = ?",
+          correct: "0.1",
+          wrong: ["0.01", "1", "0.9"],
+        },
+        {
+          prompt: "75% as a decimal = ?",
+          correct: "0.75",
+          wrong: ["0.075", "7.5", "0.25"],
+        },
+        {
+          prompt: "20% as a decimal = ?",
+          correct: "0.2",
+          wrong: ["0.02", "2", "0.8"],
+        },
+        {
+          prompt: "1% as a decimal = ?",
+          correct: "0.01",
+          wrong: ["0.1", "1", "0.001"],
+        },
+        {
+          prompt: "5% as a decimal = ?",
+          correct: "0.05",
+          wrong: ["0.5", "5", "0.005"],
+        },
+        {
+          prompt: "30% as a decimal = ?",
+          correct: "0.3",
+          wrong: ["0.03", "3", "0.7"],
+        },
+        {
+          prompt: "40% as a decimal = ?",
+          correct: "0.4",
+          wrong: ["0.04", "4", "0.6"],
+        },
+        {
+          prompt: "60% as a decimal = ?",
+          correct: "0.6",
+          wrong: ["0.06", "6", "0.4"],
+        },
+        {
+          prompt: "0.5 as a percent = ?",
+          correct: "50%",
+          wrong: ["5%", "500%", "0.5%"],
+        },
+        {
+          prompt: "0.25 as a percent = ?",
+          correct: "25%",
+          wrong: ["2.5%", "250%", "0.025%"],
+        },
       ];
 
-
       // Shuffled indices for each round so questions vary each play
-      var r1idx=[], r2idx=[], r3idx=[];
+      var r1idx = [],
+        r2idx = [],
+        r3idx = [];
 
-      function prepBanks(){
-        r1idx = shuffle([0,1,2,3,4,5,6,7,8,9,10,11]);
-        r2idx = shuffle([0,1,2,3,4,5,6,7,8,9,10,11]);
-        r3idx = shuffle([0,1,2,3,4,5,6,7,8,9,10,11]);
+      function prepBanks() {
+        r1idx = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+        r2idx = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+        r3idx = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
       }
 
-      function buildQuestion(i){
-        var round = i<4 ? 1 : (i<8 ? 2 : 3);
+      function buildQuestion(i) {
+        var round = i < 4 ? 1 : i < 8 ? 2 : 3;
 
-        if(round===1){
+        if (round === 1) {
           var entry = R1_BANK[r1idx[i]];
           var correct = entry.ans;
           // Distractors: offset by small distinct integers, always positive, distinct from correct
-          var wrongs = [correct+5, correct-5, correct*2];
+          var wrongs = [correct + 5, correct - 5, correct * 2];
           // Ensure all positives and distinct
-          var set = {}; set[String(correct)]=true; var opts=[String(correct)];
-          for(var wi=0;wi<wrongs.length&&opts.length<4;wi++){
-            var wv=wrongs[wi];
-            if(wv>0 && !set[String(wv)]){ set[String(wv)]=true; opts.push(String(wv)); }
+          var set = {};
+          set[String(correct)] = true;
+          var opts = [String(correct)];
+          for (var wi = 0; wi < wrongs.length && opts.length < 4; wi++) {
+            var wv = wrongs[wi];
+            if (wv > 0 && !set[String(wv)]) {
+              set[String(wv)] = true;
+              opts.push(String(wv));
+            }
           }
           // Fallback if not enough
-          var extra=1;
-          while(opts.length<4){ var ev=correct+extra*3; if(ev>0&&!set[String(ev)]){set[String(ev)]=true;opts.push(String(ev));} extra++; }
+          var extra = 1;
+          while (opts.length < 4) {
+            var ev = correct + extra * 3;
+            if (ev > 0 && !set[String(ev)]) {
+              set[String(ev)] = true;
+              opts.push(String(ev));
+            }
+            extra++;
+          }
           return {
-            tag:"Percent of a Number",
-            prompt: entry.pct+"% of "+entry.base+" = ?",
-            sub:"Find the part.",
+            tag: "Percent of a Number",
+            prompt: entry.pct + "% of " + entry.base + " = ?",
+            sub: "Find the part.",
             opts: shuffle(opts),
             correct: String(correct),
-            why: entry.pct+"% of "+entry.base+" = "+correct+"."
+            why: entry.pct + "% of " + entry.base + " = " + correct + ".",
           };
         }
 
-        if(round===2){
-          var ri = i-4;
+        if (round === 2) {
+          var ri = i - 4;
           var entry2 = R2_BANK[r2idx[ri]];
           var correct2 = entry2.ans;
           var savings = entry2.price - correct2;
-          var wrongs2 = [entry2.price, savings, correct2+10];
-          var set2={}; set2[String(correct2)]=true; var opts2=[String(correct2)];
-          for(var wi2=0;wi2<wrongs2.length&&opts2.length<4;wi2++){
-            var wv2=wrongs2[wi2];
-            if(wv2>0 && !set2[String(wv2)]){ set2[String(wv2)]=true; opts2.push(String(wv2)); }
+          var wrongs2 = [entry2.price, savings, correct2 + 10];
+          var set2 = {};
+          set2[String(correct2)] = true;
+          var opts2 = [String(correct2)];
+          for (var wi2 = 0; wi2 < wrongs2.length && opts2.length < 4; wi2++) {
+            var wv2 = wrongs2[wi2];
+            if (wv2 > 0 && !set2[String(wv2)]) {
+              set2[String(wv2)] = true;
+              opts2.push(String(wv2));
+            }
           }
-          var extra2=1;
-          while(opts2.length<4){ var ev2=correct2+extra2*5; if(ev2>0&&!set2[String(ev2)]){set2[String(ev2)]=true;opts2.push(String(ev2));} extra2++; }
+          var extra2 = 1;
+          while (opts2.length < 4) {
+            var ev2 = correct2 + extra2 * 5;
+            if (ev2 > 0 && !set2[String(ev2)]) {
+              set2[String(ev2)] = true;
+              opts2.push(String(ev2));
+            }
+            extra2++;
+          }
           return {
-            tag:"Sale Price",
-            prompt: "$"+entry2.price+", "+entry2.disc+"% off → sale price $?",
-            sub:"Subtract the discount from the original price.",
+            tag: "Sale Price",
+            prompt:
+              "$" + entry2.price + ", " + entry2.disc + "% off → sale price $?",
+            sub: "Subtract the discount from the original price.",
             opts: shuffle(opts2),
             correct: String(correct2),
-            why: entry2.disc+"% of $"+entry2.price+" = $"+savings+". Sale price: $"+entry2.price+" − $"+savings+" = $"+correct2+"."
+            why:
+              entry2.disc +
+              "% of $" +
+              entry2.price +
+              " = $" +
+              savings +
+              ". Sale price: $" +
+              entry2.price +
+              " − $" +
+              savings +
+              " = $" +
+              correct2 +
+              ".",
           };
         }
 
         // Round 3
-        var ri3 = i-8;
+        var ri3 = i - 8;
         var entry3 = R3_BANK[r3idx[ri3]];
         var opts3 = shuffle([entry3.correct].concat(entry3.wrong));
         return {
-          tag:"Percent ↔ Decimal",
+          tag: "Percent ↔ Decimal",
           prompt: entry3.prompt,
-          sub:"Choose the equivalent value.",
+          sub: "Choose the equivalent value.",
           opts: opts3,
           correct: entry3.correct,
-          why: entry3.prompt.replace(" = ?","")+" = "+entry3.correct+"."
+          why: entry3.prompt.replace(" = ?", "") + " = " + entry3.correct + ".",
         };
       }
 
-      function startGame(){
+      function startGame() {
         prepBanks();
-        state={ i:0, score:0, streak:0, lives:3, locked:false };
+        state = { i: 0, score: 0, streak: 0, lives: 3, locked: false };
         document.getElementById("startScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.add("hidden");
         document.getElementById("playScreen").classList.remove("hidden");
         nextQuestion();
       }
-      function nextQuestion(){
-        if(state.lives<=0 || state.i>=TOTAL){ return endGame(); }
-        state.locked=false; state.q=buildQuestion(state.i);
-        document.getElementById("qnum").textContent=(state.i+1)+"/"+TOTAL;
-        document.getElementById("modeTag").textContent=state.q.tag;
-        document.getElementById("prompt").textContent=state.q.prompt;
-        document.getElementById("sub").textContent=state.q.sub;
-        document.getElementById("feedback").textContent=""; document.getElementById("feedback").className="feedback";
+      function nextQuestion() {
+        if (state.lives <= 0 || state.i >= TOTAL) {
+          return endGame();
+        }
+        state.locked = false;
+        state.q = buildQuestion(state.i);
+        document.getElementById("qnum").textContent = state.i + 1 + "/" + TOTAL;
+        document.getElementById("modeTag").textContent = state.q.tag;
+        document.getElementById("prompt").textContent = state.q.prompt;
+        document.getElementById("sub").textContent = state.q.sub;
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
         document.getElementById("nextBtn").classList.add("hidden");
-        var box=document.getElementById("opts"); box.innerHTML="";
-        state.q.opts.forEach(function(o){ var b=document.createElement("button"); b.type="button"; b.className="opt"; b.textContent=o; b.onclick=function(){ answer(o,b); }; box.appendChild(b); });
+        var box = document.getElementById("opts");
+        box.innerHTML = "";
+        state.q.opts.forEach(function (o) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "opt";
+          b.textContent = o;
+          b.onclick = function () {
+            answer(o, b);
+          };
+          box.appendChild(b);
+        });
         startTimer();
       }
-      function startTimer(){
-        var t=TIME, bar=document.getElementById("timebar"); bar.style.width="100%"; clearInterval(state.timer);
-        state.timer=setInterval(function(){ t-=0.1; bar.style.width=Math.max(0,(t/TIME*100))+"%"; if(t<=0){ clearInterval(state.timer); if(!state.locked){ timeUp(); } } },100);
+      function startTimer() {
+        var t = TIME,
+          bar = document.getElementById("timebar");
+        bar.style.width = "100%";
+        clearInterval(state.timer);
+        state.timer = setInterval(function () {
+          t -= 0.1;
+          bar.style.width = Math.max(0, (t / TIME) * 100) + "%";
+          if (t <= 0) {
+            clearInterval(state.timer);
+            if (!state.locked) {
+              timeUp();
+            }
+          }
+        }, 100);
       }
-      function answer(choice, btn){
-        if(state.locked) return; state.locked=true; clearInterval(state.timer);
-        var fb=document.getElementById("feedback"), correct = choice===state.q.correct;
-        Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){ if(b.textContent===state.q.correct) b.classList.add("right"); else if(b===btn) b.classList.add("wrong"); });
-        if(correct){ state.streak++; state.score += 10+Math.min(state.streak,5)*2; fb.textContent="✓ Correct! "+state.q.why+(state.streak>1?"  🔥 Streak ×"+state.streak:""); fb.className="feedback ok"; }
-        else { state.streak=0; state.lives--; fb.textContent="✗ "+state.q.why+"  (−1 ❤)"; fb.className="feedback no"; }
-        updateHud(); document.getElementById("nextBtn").classList.remove("hidden");
+      function answer(choice, btn) {
+        if (state.locked) return;
+        state.locked = true;
+        clearInterval(state.timer);
+        var fb = document.getElementById("feedback"),
+          correct = choice === state.q.correct;
+        Array.prototype.forEach.call(
+          document.querySelectorAll(".opt"),
+          function (b) {
+            if (b.textContent === state.q.correct) b.classList.add("right");
+            else if (b === btn) b.classList.add("wrong");
+          },
+        );
+        if (correct) {
+          state.streak++;
+          state.score += 10 + Math.min(state.streak, 5) * 2;
+          fb.textContent =
+            "✓ Correct! " +
+            state.q.why +
+            (state.streak > 1 ? "  🔥 Streak ×" + state.streak : "");
+          fb.className = "feedback ok";
+        } else {
+          state.streak = 0;
+          state.lives--;
+          fb.textContent = "✗ " + state.q.why + "  (−1 ❤)";
+          fb.className = "feedback no";
+        }
+        updateHud();
+        document.getElementById("nextBtn").classList.remove("hidden");
       }
-      function timeUp(){
-        state.locked=true; state.streak=0; state.lives--;
-        Array.prototype.forEach.call(document.querySelectorAll(".opt"),function(b){ if(b.textContent===state.q.correct) b.classList.add("right"); });
-        var fb=document.getElementById("feedback"); fb.textContent="⏰ Time! "+state.q.why+"  (−1 ❤)"; fb.className="feedback no";
-        updateHud(); document.getElementById("nextBtn").classList.remove("hidden");
+      function timeUp() {
+        state.locked = true;
+        state.streak = 0;
+        state.lives--;
+        Array.prototype.forEach.call(
+          document.querySelectorAll(".opt"),
+          function (b) {
+            if (b.textContent === state.q.correct) b.classList.add("right");
+          },
+        );
+        var fb = document.getElementById("feedback");
+        fb.textContent = "⏰ Time! " + state.q.why + "  (−1 ❤)";
+        fb.className = "feedback no";
+        updateHud();
+        document.getElementById("nextBtn").classList.remove("hidden");
       }
-      function updateHud(){
-        document.getElementById("score").textContent=state.score;
-        document.getElementById("streak").textContent=state.streak;
-        document.getElementById("lives").textContent= state.lives>0 ? "❤".repeat(state.lives) : "—";
+      function updateHud() {
+        document.getElementById("score").textContent = state.score;
+        document.getElementById("streak").textContent = state.streak;
+        document.getElementById("lives").textContent =
+          state.lives > 0 ? "❤".repeat(state.lives) : "—";
       }
-      function endGame(){
+      function endGame() {
         clearInterval(state.timer);
         document.getElementById("playScreen").classList.add("hidden");
         document.getElementById("resultScreen").classList.remove("hidden");
-        document.getElementById("finalScore").textContent=state.score;
+        document.getElementById("finalScore").textContent = state.score;
         var msg;
-        if(state.score>=180) msg="🏆 Percent Champion!";
-        else if(state.score>=120) msg="🌟 Powerful percent skills!";
-        else if(state.score>=60) msg="👍 Nice work — keep practicing.";
-        else msg="💪 Try again to beat your score!";
-        document.getElementById("resultMsg").textContent=msg;
-        document.getElementById("resultDetail").textContent=(state.lives<=0?"Out of lives! ":"You finished all "+TOTAL+" questions! ")+"Final score: "+state.score+".";
+        if (state.score >= 180) msg = "🏆 Percent Champion!";
+        else if (state.score >= 120) msg = "🌟 Powerful percent skills!";
+        else if (state.score >= 60) msg = "👍 Nice work — keep practicing.";
+        else msg = "💪 Try again to beat your score!";
+        document.getElementById("resultMsg").textContent = msg;
+        document.getElementById("resultDetail").textContent =
+          (state.lives <= 0
+            ? "Out of lives! "
+            : "You finished all " + TOTAL + " questions! ") +
+          "Final score: " +
+          state.score +
+          ".";
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: state.score,
+              problemsAttempted: state.i,
+              standard: "6.RP.3c",
+            });
+        } catch (e) {}
       }
-      document.getElementById("startBtn").onclick=startGame;
-      document.getElementById("againBtn").onclick=startGame;
-      document.getElementById("nextBtn").onclick=function(){ state.i++; nextQuestion(); };
+      document.getElementById("startBtn").onclick = startGame;
+      document.getElementById("againBtn").onclick = startGame;
+      document.getElementById("nextBtn").onclick = function () {
+        state.i++;
+        nextQuestion();
+      };
     </script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

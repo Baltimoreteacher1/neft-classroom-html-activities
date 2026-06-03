@@ -1132,6 +1132,17 @@
             const pct = maxScore ? Math.round((d.score / maxScore) * 100) : 0;
             const win = pct >= 60;
 
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: d.score,
+                  maxScore: maxScore,
+                  percent: pct,
+                  standard: "6.SP.B.5",
+                });
+            } catch (e) {}
+
             const g = this.add.graphics();
             g.lineStyle(1, 0x16263f, 0.7);
             for (let x = 0; x <= W; x += 48) g.lineBetween(x, 0, x, H);
@@ -1236,6 +1247,8 @@
         });
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

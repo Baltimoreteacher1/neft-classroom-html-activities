@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shai Fraction Football — Pro Shootout</title>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Sora:wght@400;600;700;800&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Sora:wght@400;600;700;800&display=swap");
       .sr-only {
         position: absolute;
         width: 1px;
@@ -29,11 +29,7 @@
         --green: #39e07b;
         --teal: #2dd4bf;
         --shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
-        font-family:
-          'Outfit',
-          'Sora',
-          Inter,
-          sans-serif;
+        font-family: "Outfit", "Sora", Inter, sans-serif;
       }
       * {
         box-sizing: border-box;
@@ -121,8 +117,11 @@
           transform: rotate(360deg);
         }
       }
-      h1, h2, h3, .score-value {
-        font-family: 'Sora', sans-serif;
+      h1,
+      h2,
+      h3,
+      .score-value {
+        font-family: "Sora", sans-serif;
       }
       h1 {
         margin: 0;
@@ -880,19 +879,21 @@
           height: 560px;
         }
       }
-      
+
       /* Premium Sketchpad Styles */
       .sketchpad-toolbar button:active {
         transform: scale(0.95);
       }
       .sketch-color-btn.active {
-        box-shadow: 0 0 0 2px white, 0 0 8px currentColor;
+        box-shadow:
+          0 0 0 2px white,
+          0 0 8px currentColor;
       }
       .sketch-tool-btn.active {
         background: rgba(46, 196, 255, 0.25) !important;
         border-color: rgba(46, 196, 255, 0.5) !important;
       }
-      
+
       /* Premium Diagnostics Styles */
       .diagnostics-overlay {
         position: fixed;
@@ -904,7 +905,7 @@
         padding: 16px;
         z-index: 10000;
         width: 320px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         display: none;
         animation: slideUp 0.3s ease;
       }
@@ -920,12 +921,29 @@
         margin: 8px 0;
       }
       @keyframes slideUp {
-        from { transform: translateY(100px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <div
@@ -1018,8 +1036,20 @@
             </p>
           </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <button class="badge" style="cursor: pointer; background: rgba(46, 196, 255, 0.15); color: #2ec4ff; border-color: rgba(46, 196, 255, 0.35); font-weight: 900;" onclick="triggerSelfTest()">⚡ Run Self-Test</button>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <button
+            class="badge"
+            style="
+              cursor: pointer;
+              background: rgba(46, 196, 255, 0.15);
+              color: #2ec4ff;
+              border-color: rgba(46, 196, 255, 0.35);
+              font-weight: 900;
+            "
+            onclick="triggerSelfTest()"
+          >
+            ⚡ Run Self-Test
+          </button>
           <div class="badge">Red #35 • All-Time Shooter</div>
         </div>
       </header>
@@ -1034,22 +1064,157 @@
           ></canvas>
           <canvas
             id="sketchpadCanvas"
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 742px; z-index: 6; pointer-events: none;"
+            style="
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 742px;
+              z-index: 6;
+              pointer-events: none;
+            "
             aria-label="Annotation sketchpad overlay"
           ></canvas>
           <!-- Premium Floating Sketchpad Toolbar -->
-          <div class="sketchpad-toolbar" style="position: absolute; top: 78px; left: 14px; z-index: 10; display: flex; gap: 8px; background: rgba(5, 13, 24, 0.85); backdrop-filter: blur(12px); padding: 8px 12px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: 0 10px 30px rgba(0,0,0,0.5); align-items: center; pointer-events: auto;">
-            <span style="color: #9fb3cb; font-size: 0.72rem; text-transform: uppercase; font-weight: 900; letter-spacing: 0.05em; margin-right: 4px;">Sketchpad:</span>
-            <button id="sketchDrawBtn" class="sketch-tool-btn" style="background: rgba(255,255,255,0.08); color: white; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: 0.15s;">
+          <div
+            class="sketchpad-toolbar"
+            style="
+              position: absolute;
+              top: 78px;
+              left: 14px;
+              z-index: 10;
+              display: flex;
+              gap: 8px;
+              background: rgba(5, 13, 24, 0.85);
+              backdrop-filter: blur(12px);
+              padding: 8px 12px;
+              border-radius: 16px;
+              border: 1px solid rgba(255, 255, 255, 0.16);
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+              align-items: center;
+              pointer-events: auto;
+            "
+          >
+            <span
+              style="
+                color: #9fb3cb;
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                font-weight: 900;
+                letter-spacing: 0.05em;
+                margin-right: 4px;
+              "
+              >Sketchpad:</span
+            >
+            <button
+              id="sketchDrawBtn"
+              class="sketch-tool-btn"
+              style="
+                background: rgba(255, 255, 255, 0.08);
+                color: white;
+                padding: 6px 10px;
+                border-radius: 8px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                font-size: 0.75rem;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                cursor: pointer;
+                transition: 0.15s;
+              "
+            >
               ✏️ Draw
             </button>
-            <button id="sketchColorTeal" class="sketch-color-btn active" style="width: 18px; height: 18px; border-radius: 50%; background: #2dd4bf; border: 2px solid white; cursor: pointer;" title="Teal"></button>
-            <button id="sketchColorBlue" class="sketch-color-btn" style="width: 18px; height: 18px; border-radius: 50%; background: #2ec4ff; border: 2px solid transparent; cursor: pointer;" title="Blue"></button>
-            <button id="sketchColorAmber" class="sketch-color-btn" style="width: 18px; height: 18px; border-radius: 50%; background: #ffd166; border: 2px solid transparent; cursor: pointer;" title="Amber"></button>
-            <button id="sketchColorEraser" class="sketch-tool-btn" style="background: transparent; border: 1px solid transparent; color: white; font-size: 0.75rem; cursor: pointer;" title="Eraser">🧹 Eraser</button>
-            <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2); margin: 0 4px;"></div>
-            <button id="sketchUndoBtn" class="sketch-tool-btn" style="background: transparent; border: none; color: white; font-size: 0.75rem; cursor: pointer;" title="Undo">↩️ Undo</button>
-            <button id="sketchClearBtn" class="sketch-tool-btn" style="background: transparent; border: none; color: white; font-size: 0.75rem; cursor: pointer;" title="Clear">🗑️ Clear</button>
+            <button
+              id="sketchColorTeal"
+              class="sketch-color-btn active"
+              style="
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background: #2dd4bf;
+                border: 2px solid white;
+                cursor: pointer;
+              "
+              title="Teal"
+            ></button>
+            <button
+              id="sketchColorBlue"
+              class="sketch-color-btn"
+              style="
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background: #2ec4ff;
+                border: 2px solid transparent;
+                cursor: pointer;
+              "
+              title="Blue"
+            ></button>
+            <button
+              id="sketchColorAmber"
+              class="sketch-color-btn"
+              style="
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background: #ffd166;
+                border: 2px solid transparent;
+                cursor: pointer;
+              "
+              title="Amber"
+            ></button>
+            <button
+              id="sketchColorEraser"
+              class="sketch-tool-btn"
+              style="
+                background: transparent;
+                border: 1px solid transparent;
+                color: white;
+                font-size: 0.75rem;
+                cursor: pointer;
+              "
+              title="Eraser"
+            >
+              🧹 Eraser
+            </button>
+            <div
+              style="
+                width: 1px;
+                height: 16px;
+                background: rgba(255, 255, 255, 0.2);
+                margin: 0 4px;
+              "
+            ></div>
+            <button
+              id="sketchUndoBtn"
+              class="sketch-tool-btn"
+              style="
+                background: transparent;
+                border: none;
+                color: white;
+                font-size: 0.75rem;
+                cursor: pointer;
+              "
+              title="Undo"
+            >
+              ↩️ Undo
+            </button>
+            <button
+              id="sketchClearBtn"
+              class="sketch-tool-btn"
+              style="
+                background: transparent;
+                border: none;
+                color: white;
+                font-size: 0.75rem;
+                cursor: pointer;
+              "
+              title="Clear"
+            >
+              🗑️ Clear
+            </button>
           </div>
           <div class="sr-only" aria-live="assertive" id="game-announce"></div>
           <div class="scoreboard" aria-label="Scoreboard" aria-live="polite">
@@ -1142,7 +1307,17 @@
               <button class="tool-btn" id="restartBtn">Restart</button>
             </div>
             <div class="tool-grid">
-              <button class="tool-btn" id="teacherBtn" style="background: rgba(16, 32, 51, 0.04); border-color: rgba(16, 32, 51, 0.16); color: #53647b;">Teacher Console</button>
+              <button
+                class="tool-btn"
+                id="teacherBtn"
+                style="
+                  background: rgba(16, 32, 51, 0.04);
+                  border-color: rgba(16, 32, 51, 0.16);
+                  color: #53647b;
+                "
+              >
+                Teacher Console
+              </button>
             </div>
             <div class="feedback" id="feedback">
               <strong>Coach:</strong> Read the target carefully first.
@@ -1158,42 +1333,232 @@
     </main>
 
     <!-- Teacher Administrative Modal -->
-    <div id="teacherModal" style="display: none; position: fixed; inset: 0; background: rgba(5, 13, 24, 0.85); z-index: 10000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px);">
-      <div style="background: white; color: #102033; padding: 28px; border-radius: 24px; max-width: 440px; width: 100%; border: 1.5px solid rgba(16,32,51,0.15); box-shadow: var(--shadow); position: relative;">
-        <h3 style="margin-top: 0; font-size: 1.5rem; letter-spacing: -0.04em; color: #102033; font-family: 'Sora', sans-serif;">Teacher Control Panel</h3>
-        <p style="color: #607086; font-size: 0.85rem; margin: 8px 0 20px;">Review or override current student performance variables or completely restart the practice sheet.</p>
-        
-        <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
+    <div
+      id="teacherModal"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 13, 24, 0.85);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(8px);
+      "
+    >
+      <div
+        style="
+          background: white;
+          color: #102033;
+          padding: 28px;
+          border-radius: 24px;
+          max-width: 440px;
+          width: 100%;
+          border: 1.5px solid rgba(16, 32, 51, 0.15);
+          box-shadow: var(--shadow);
+          position: relative;
+        "
+      >
+        <h3
+          style="
+            margin-top: 0;
+            font-size: 1.5rem;
+            letter-spacing: -0.04em;
+            color: #102033;
+            font-family: &quot;Sora&quot;, sans-serif;
+          "
+        >
+          Teacher Control Panel
+        </h3>
+        <p style="color: #607086; font-size: 0.85rem; margin: 8px 0 20px">
+          Review or override current student performance variables or completely
+          restart the practice sheet.
+        </p>
+
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 24px;
+          "
+        >
           <div>
-            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; font-weight: 900; color: #53647b; margin-bottom: 4px;">Override Score Goals</label>
-            <input type="number" id="overrideGoals" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(16,32,51,0.15); font-family: inherit; font-size: 0.9rem;" />
+            <label
+              style="
+                display: block;
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                font-weight: 900;
+                color: #53647b;
+                margin-bottom: 4px;
+              "
+              >Override Score Goals</label
+            >
+            <input
+              type="number"
+              id="overrideGoals"
+              style="
+                width: 100%;
+                padding: 10px 14px;
+                border-radius: 10px;
+                border: 1px solid rgba(16, 32, 51, 0.15);
+                font-family: inherit;
+                font-size: 0.9rem;
+              "
+            />
           </div>
           <div>
-            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; font-weight: 900; color: #53647b; margin-bottom: 4px;">Override Total Shots</label>
-            <input type="number" id="overrideShots" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(16,32,51,0.15); font-family: inherit; font-size: 0.9rem;" />
+            <label
+              style="
+                display: block;
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                font-weight: 900;
+                color: #53647b;
+                margin-bottom: 4px;
+              "
+              >Override Total Shots</label
+            >
+            <input
+              type="number"
+              id="overrideShots"
+              style="
+                width: 100%;
+                padding: 10px 14px;
+                border-radius: 10px;
+                border: 1px solid rgba(16, 32, 51, 0.15);
+                font-family: inherit;
+                font-size: 0.9rem;
+              "
+            />
           </div>
           <div>
-            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; font-weight: 900; color: #53647b; margin-bottom: 4px;">Override Round Progress</label>
-            <input type="number" id="overrideRound" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(16,32,51,0.15); font-family: inherit; font-size: 0.9rem;" />
+            <label
+              style="
+                display: block;
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                font-weight: 900;
+                color: #53647b;
+                margin-bottom: 4px;
+              "
+              >Override Round Progress</label
+            >
+            <input
+              type="number"
+              id="overrideRound"
+              style="
+                width: 100%;
+                padding: 10px 14px;
+                border-radius: 10px;
+                border: 1px solid rgba(16, 32, 51, 0.15);
+                font-family: inherit;
+                font-size: 0.9rem;
+              "
+            />
           </div>
         </div>
-        
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button id="teacherModalResetBtn" style="background: #ef233c; color: white; padding: 10px 16px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.15s; border: none;">Reset Stats</button>
-          <button id="teacherModalSaveBtn" style="background: #2dd4bf; color: #092236; padding: 10px 16px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.15s; border: none;">Save Override</button>
-          <button id="teacherModalCancelBtn" style="background: #f8fbff; border: 1px solid rgba(16,32,51,0.15); color: #102033; padding: 10px 16px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.15s;">Cancel</button>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end">
+          <button
+            id="teacherModalResetBtn"
+            style="
+              background: #ef233c;
+              color: white;
+              padding: 10px 16px;
+              border-radius: 12px;
+              font-weight: 800;
+              font-size: 0.85rem;
+              cursor: pointer;
+              transition: 0.15s;
+              border: none;
+            "
+          >
+            Reset Stats
+          </button>
+          <button
+            id="teacherModalSaveBtn"
+            style="
+              background: #2dd4bf;
+              color: #092236;
+              padding: 10px 16px;
+              border-radius: 12px;
+              font-weight: 800;
+              font-size: 0.85rem;
+              cursor: pointer;
+              transition: 0.15s;
+              border: none;
+            "
+          >
+            Save Override
+          </button>
+          <button
+            id="teacherModalCancelBtn"
+            style="
+              background: #f8fbff;
+              border: 1px solid rgba(16, 32, 51, 0.15);
+              color: #102033;
+              padding: 10px 16px;
+              border-radius: 12px;
+              font-weight: 800;
+              font-size: 0.85rem;
+              cursor: pointer;
+              transition: 0.15s;
+            "
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Diagnostics Panel Overlay -->
     <div class="diagnostics-overlay" id="diagPanel">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:4px; color: white;">
-        <strong style="font-family:'Sora',sans-serif; font-size: 0.9rem;">⚡ Diagnostics Console</strong>
-        <button onclick="document.getElementById('diagPanel').style.display='none'" style="background:none; border:none; color:#ef233c; font-weight:800; cursor:pointer; font-size: 1.1rem;">×</button>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          padding-bottom: 4px;
+          color: white;
+        "
+      >
+        <strong
+          style="font-family: &quot;Sora&quot;, sans-serif; font-size: 0.9rem"
+          >⚡ Diagnostics Console</strong
+        >
+        <button
+          onclick="document.getElementById('diagPanel').style.display = 'none'"
+          style="
+            background: none;
+            border: none;
+            color: #ef233c;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 1.1rem;
+          "
+        >
+          ×
+        </button>
       </div>
       <div class="diag-log-container" id="diagLog"></div>
-      <button class="tool-btn" style="width:100%; font-size:0.8rem; background: #2ec4ff; color: #050b16; font-weight: 900; margin-top: 8px;" onclick="document.getElementById('diagPanel').style.display='none'">Close Console</button>
+      <button
+        class="tool-btn"
+        style="
+          width: 100%;
+          font-size: 0.8rem;
+          background: #2ec4ff;
+          color: #050b16;
+          font-weight: 900;
+          margin-top: 8px;
+        "
+        onclick="document.getElementById('diagPanel').style.display = 'none'"
+      >
+        Close Console
+      </button>
     </div>
 
     <script>
@@ -1366,22 +1731,25 @@
           const delay = i * 0.15;
           const gain = 0.05 + Math.random() * 0.04;
           noise(dur, gain, delay, 600 + Math.random() * 300);
-          
+
           const baseFreq = 80 + Math.random() * 40;
           const osc = audio.ctx.createOscillator();
           const g = audio.ctx.createGain();
           osc.type = "sawtooth";
           osc.frequency.setValueAtTime(baseFreq, now + delay);
-          osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.8, now + delay + dur);
-          
+          osc.frequency.exponentialRampToValueAtTime(
+            baseFreq * 0.8,
+            now + delay + dur,
+          );
+
           const lp = audio.ctx.createBiquadFilter();
           lp.type = "lowpass";
           lp.frequency.setValueAtTime(180, now + delay);
-          
+
           g.gain.setValueAtTime(0, now + delay);
           g.gain.linearRampToValueAtTime(gain * 0.3, now + delay + 0.1);
           g.gain.exponentialRampToValueAtTime(0.0001, now + delay + dur);
-          
+
           osc.connect(lp).connect(g).connect(audio.ctx.destination);
           osc.start(now + delay);
           osc.stop(now + delay + dur + 0.1);
@@ -1396,26 +1764,26 @@
         const osc2 = audio.ctx.createOscillator();
         const g1 = audio.ctx.createGain();
         const g2 = audio.ctx.createGain();
-        
+
         osc1.type = "square";
         osc2.type = "square";
         osc1.frequency.setValueAtTime(400, now);
         osc2.frequency.setValueAtTime(600, now);
-        
+
         for (let t = 0; t < dur; t += 0.1) {
           const sweepVal1 = 400 + Math.sin(t * 15) * 150;
           const sweepVal2 = 600 + Math.cos(t * 15) * 150;
           osc1.frequency.linearRampToValueAtTime(sweepVal1, now + t);
           osc2.frequency.linearRampToValueAtTime(sweepVal2, now + t);
         }
-        
+
         g1.gain.setValueAtTime(0, now);
         g1.gain.linearRampToValueAtTime(0.02, now + 0.05);
         g1.gain.exponentialRampToValueAtTime(0.0001, now + dur);
         g2.gain.setValueAtTime(0, now);
         g2.gain.linearRampToValueAtTime(0.02, now + 0.05);
         g2.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-        
+
         osc1.connect(g1).connect(audio.ctx.destination);
         osc2.connect(g2).connect(audio.ctx.destination);
         osc1.start(now);
@@ -1429,19 +1797,19 @@
         const now = audio.ctx.currentTime;
         const osc = audio.ctx.createOscillator();
         const g = audio.ctx.createGain();
-        
+
         osc.type = "triangle";
         osc.frequency.setValueAtTime(160, now);
         osc.frequency.exponentialRampToValueAtTime(32, now + 0.12);
-        
+
         g.gain.setValueAtTime(0, now);
         g.gain.linearRampToValueAtTime(0.12, now + 0.01);
         g.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-        
+
         const lp = audio.ctx.createBiquadFilter();
         lp.type = "lowpass";
         lp.frequency.setValueAtTime(200, now);
-        
+
         osc.connect(lp).connect(g).connect(audio.ctx.destination);
         osc.start(now);
         osc.stop(now + 0.15);
@@ -2170,6 +2538,17 @@
             ? `Shai #35 delivered a strong shootout performance with clean fraction control and big finishes.`
             : `Shai #35 created chances. Replay to sharpen number-line placement, aim, and power timing.`;
         $("#resultCover").classList.add("show");
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: state.goals,
+              maxScore: state.shots,
+              problemsCorrect: state.goals,
+              problemsAttempted: state.shots,
+              percent: acc,
+            });
+        } catch (e) {}
         addGoalParticles(120);
       }
 
@@ -2936,14 +3315,14 @@
       // ========================================================
       // STATE PERSISTENCE LAYER (LOCALSTORAGE)
       // ========================================================
-      window.saveGameState = function() {
+      window.saveGameState = function () {
         try {
           const data = {
             goals: state.goals,
             shots: state.shots,
             streak: state.streak,
             bestStreak: state.bestStreak,
-            round: state.round
+            round: state.round,
           };
           localStorage.setItem("neft_soccer_state", JSON.stringify(data));
         } catch (e) {
@@ -2951,16 +3330,26 @@
         }
       };
 
-      window.loadGameState = function() {
+      window.loadGameState = function () {
         try {
           const raw = localStorage.getItem("neft_soccer_state");
           if (raw) {
             const data = JSON.parse(raw);
-            state.goals = Number.isFinite(data.goals) ? data.goals : state.goals;
-            state.shots = Number.isFinite(data.shots) ? data.shots : state.shots;
-            state.streak = Number.isFinite(data.streak) ? data.streak : state.streak;
-            state.bestStreak = Number.isFinite(data.bestStreak) ? data.bestStreak : state.bestStreak;
-            state.round = Number.isFinite(data.round) ? data.round : state.round;
+            state.goals = Number.isFinite(data.goals)
+              ? data.goals
+              : state.goals;
+            state.shots = Number.isFinite(data.shots)
+              ? data.shots
+              : state.shots;
+            state.streak = Number.isFinite(data.streak)
+              ? data.streak
+              : state.streak;
+            state.bestStreak = Number.isFinite(data.bestStreak)
+              ? data.bestStreak
+              : state.bestStreak;
+            state.round = Number.isFinite(data.round)
+              ? data.round
+              : state.round;
           }
         } catch (e) {
           console.error("Local storage load failed:", e);
@@ -2978,7 +3367,7 @@
       let sketchPaths = [];
       let currentPath = [];
 
-      window.resizeSketchpad = function() {
+      window.resizeSketchpad = function () {
         const r = sketchpad.getBoundingClientRect(),
           dpr = Math.min(window.devicePixelRatio || 1, 2);
         sketchpad.width = Math.round(r.width * dpr);
@@ -2989,9 +3378,9 @@
         window.redrawSketchpad();
       };
 
-      window.redrawSketchpad = function() {
+      window.redrawSketchpad = function () {
         sCtx.clearRect(0, 0, sketchpad._w, sketchpad._h);
-        sketchPaths.forEach(path => {
+        sketchPaths.forEach((path) => {
           if (path.points.length < 2) return;
           sCtx.beginPath();
           sCtx.strokeStyle = path.color;
@@ -3007,7 +3396,7 @@
       };
 
       // Drawing Event Listeners
-      sketchpad.addEventListener("pointerdown", e => {
+      sketchpad.addEventListener("pointerdown", (e) => {
         if (sketchpad.style.pointerEvents === "none") return;
         isDrawing = true;
         sketchpad.setPointerCapture(e.pointerId);
@@ -3018,14 +3407,14 @@
         sketchPaths.push({
           color: sketchColor,
           width: sketchBrushSize,
-          points: currentPath
+          points: currentPath,
         });
         window.redrawSketchpad();
         ensureAudio();
         tone(600, 0.02, "sine", 0.015);
       });
 
-      sketchpad.addEventListener("pointermove", e => {
+      sketchpad.addEventListener("pointermove", (e) => {
         if (!isDrawing) return;
         const r = sketchpad.getBoundingClientRect(),
           mx = e.clientX - r.left,
@@ -3034,7 +3423,7 @@
         window.redrawSketchpad();
       });
 
-      sketchpad.addEventListener("pointerup", e => {
+      sketchpad.addEventListener("pointerup", (e) => {
         if (!isDrawing) return;
         isDrawing = false;
         sketchpad.releasePointerCapture(e.pointerId);
@@ -3055,10 +3444,14 @@
           sketchpad.style.pointerEvents = "auto";
           eraserBtn.classList.remove("active");
           sketchColor = getSelectedColor();
-          setCommentary("<strong>Draw Mode active:</strong> Sketch fractions or reference marks directly over the pitch!");
+          setCommentary(
+            "<strong>Draw Mode active:</strong> Sketch fractions or reference marks directly over the pitch!",
+          );
         } else {
           sketchpad.style.pointerEvents = "none";
-          setCommentary("<strong>Aim Mode active:</strong> Drag the ball to line up Shai's shootout shot!");
+          setCommentary(
+            "<strong>Aim Mode active:</strong> Drag the ball to line up Shai's shootout shot!",
+          );
         }
       });
 
@@ -3069,14 +3462,14 @@
         sketchColor = "#06111f"; // Match field dark color as eraser
       });
 
-      colorBtns.forEach(btn => {
+      colorBtns.forEach((btn) => {
         btn.addEventListener("click", () => {
-          colorBtns.forEach(b => b.classList.remove("active"));
+          colorBtns.forEach((b) => b.classList.remove("active"));
           btn.classList.add("active");
           eraserBtn.classList.remove("active");
           drawBtn.classList.add("active");
           sketchpad.style.pointerEvents = "auto";
-          
+
           if (btn.id === "sketchColorTeal") sketchColor = "#2dd4bf";
           if (btn.id === "sketchColorBlue") sketchColor = "#2ec4ff";
           if (btn.id === "sketchColorAmber") sketchColor = "#ffd166";
@@ -3084,9 +3477,12 @@
       });
 
       function getSelectedColor() {
-        if ($("#sketchColorTeal").classList.contains("active")) return "#2dd4bf";
-        if ($("#sketchColorBlue").classList.contains("active")) return "#2ec4ff";
-        if ($("#sketchColorAmber").classList.contains("active")) return "#ffd166";
+        if ($("#sketchColorTeal").classList.contains("active"))
+          return "#2dd4bf";
+        if ($("#sketchColorBlue").classList.contains("active"))
+          return "#2ec4ff";
+        if ($("#sketchColorAmber").classList.contains("active"))
+          return "#ffd166";
         return "#2dd4bf";
       }
 
@@ -3124,14 +3520,20 @@
         const gVal = parseInt($("#overrideGoals").value, 10);
         const sVal = parseInt($("#overrideShots").value, 10);
         const rVal = parseInt($("#overrideRound").value, 10);
-        
-        if (Number.isInteger(gVal) && Number.isInteger(sVal) && Number.isInteger(rVal)) {
+
+        if (
+          Number.isInteger(gVal) &&
+          Number.isInteger(sVal) &&
+          Number.isInteger(rVal)
+        ) {
           state.goals = Math.max(0, gVal);
           state.shots = Math.max(0, sVal);
           state.round = Math.max(0, rVal);
           updateHUD();
           tModal.style.display = "none";
-          setCommentary("<strong>Teacher update:</strong> Student variables updated from Admin panel.");
+          setCommentary(
+            "<strong>Teacher update:</strong> Student variables updated from Admin panel.",
+          );
         } else {
           alert("Please input valid integer coordinates.");
         }
@@ -3147,14 +3549,16 @@
           localStorage.removeItem("neft_soccer_state");
           updateHUD();
           tModal.style.display = "none";
-          setCommentary("<strong>Teacher override:</strong> Restarted student scorecard progress.");
+          setCommentary(
+            "<strong>Teacher override:</strong> Restarted student scorecard progress.",
+          );
         }
       });
 
       // ========================================================
       // ROBUST DIAGNOSTICS & SELF-TEST LAYER
       // ========================================================
-      window.logDiag = function(msg) {
+      window.logDiag = function (msg) {
         const log = $("#diagLog");
         if (log) {
           log.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
@@ -3162,12 +3566,12 @@
         }
       };
 
-      window.triggerSelfTest = function() {
+      window.triggerSelfTest = function () {
         const panel = $("#diagPanel");
         panel.style.display = "block";
         $("#diagLog").innerHTML = "";
         window.logDiag("Starting Fractions Soccer Diagnostics Self-Test...");
-        
+
         try {
           // Test 1: Math challenge engines
           window.logDiag("Validating math challenge generators...");
@@ -3187,7 +3591,7 @@
           const testGoals = state.goals;
           state.goals = 99;
           window.saveGameState();
-          
+
           state.goals = 0;
           window.loadGameState();
           if (state.goals !== 99) {
@@ -3201,9 +3605,13 @@
           window.logDiag("Validating audio synthesizers...");
           ensureAudio();
           if (!audio.ctx) {
-            window.logDiag("⚠️ AudioContext not ready (requires first user gesture).");
+            window.logDiag(
+              "⚠️ AudioContext not ready (requires first user gesture).",
+            );
           } else {
-            window.logDiag(`✓ Audio Context active. Sample rate: ${audio.ctx.sampleRate}Hz`);
+            window.logDiag(
+              `✓ Audio Context active. Sample rate: ${audio.ctx.sampleRate}Hz`,
+            );
           }
 
           // Test 4: Sketchpad scaling assertions
@@ -3211,9 +3619,13 @@
           if (!sketchpad || !sCtx) {
             throw new Error("Sketchpad overlay canvas missing.");
           }
-          window.logDiag(`✓ Sketchpad dimensions: ${sketchpad.width}x${sketchpad.height}`);
-          
-          window.logDiag("🎉 SHAI SOCCER ALL CORE SELF-TESTS COMPLETED SUCCESSFULLY!");
+          window.logDiag(
+            `✓ Sketchpad dimensions: ${sketchpad.width}x${sketchpad.height}`,
+          );
+
+          window.logDiag(
+            "🎉 SHAI SOCCER ALL CORE SELF-TESTS COMPLETED SUCCESSFULLY!",
+          );
         } catch (err) {
           window.logDiag(`❌ DIAGNOSTIC CRITICAL FAIL: ${err.message}`);
           console.error(err);
@@ -3235,11 +3647,13 @@
       window.loadGameState();
       window.resizeSketchpad();
       window.addEventListener("resize", window.resizeSketchpad);
-      
+
       runSmokeTests();
       updateHUD();
       requestAnimationFrame(loop);
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

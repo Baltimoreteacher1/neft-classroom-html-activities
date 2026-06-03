@@ -1160,6 +1160,19 @@
             bg.fillGradientStyle(0x14213d, 0x14213d, 0x0c1529, 0x0c1529, 1);
             bg.fillRect(0, 0, W, H);
             const pct = Math.round((d.correct / d.total) * 100);
+
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: d.correct,
+                  maxScore: d.total,
+                  problemsCorrect: d.correct,
+                  problemsAttempted: d.total,
+                  standard: "6.SP.A.1",
+                });
+            } catch (e) {}
+
             if (pct >= 70)
               this.add.particles(W / 2, -10, "dot", {
                 x: { min: -W / 2, max: W / 2 },
@@ -1321,6 +1334,8 @@
         });
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>
