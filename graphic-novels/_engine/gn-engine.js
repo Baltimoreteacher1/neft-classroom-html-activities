@@ -198,6 +198,43 @@
     return SKILLS[k] || "Reading";
   }
 
+  /* ---------- Reading + Math notebook (auto-collected, printable) ----------
+     A FEATURE that records each solved step (skill, question, sentence-frame)
+     and renders a printable log on the complete screen. No PII collected. */
+  var NOTEBOOK = { entries: [] };
+  FEATURES.push({
+    onSolve: function (step) {
+      NOTEBOOK.entries.push({
+        kind: isComprehension(step) ? "reading" : "math",
+        skill: step.skill ? SKILL_LABEL(step.skill) : "Math",
+        q: stripTags((step.ask && step.ask.en) || ""),
+        frame: step.frame ? stripTags(step.frame.en) : "",
+      });
+    },
+  });
+  function renderNotebook() {
+    var host = $("nt-notebook");
+    if (!host) return;
+    host.innerHTML =
+      "<h3>My Reading + Math Log</h3>" +
+      NOTEBOOK.entries
+        .map(function (e) {
+          return (
+            '<div class="nb-row"><b>' +
+            e.skill +
+            ":</b> " +
+            e.q +
+            (e.frame
+              ? '<div class="nb-frame">' +
+                e.frame +
+                ' <span class="nb-blank"></span></div>'
+              : "") +
+            "</div>"
+          );
+        })
+        .join("");
+  }
+
   /* Per-unit signature colors so each world looks distinct (the comic shell is
      shared, but the accent/ink differ by unit; version 2 gets a deeper accent). */
   var UNIT_ACCENT = {
@@ -649,6 +686,8 @@
         '<div class="feedback" id="fbComplete"></div></div>';
     }
     html +=
+      '<div id="nt-notebook" class="notebook"></div>' +
+      '<button class="restart" id="print-nb" type="button">&#128424;&#65039; Print my log</button>' +
       '<button class="restart" id="restart-btn">Play again &#8635;</button>';
     s.innerHTML = html;
     return s;
@@ -754,6 +793,14 @@
     var c = $("scene-complete");
     c.classList.add("active", "show");
     wireMaster();
+    renderNotebook();
+    var pnb = $("print-nb");
+    if (pnb && !pnb.dataset.wired) {
+      pnb.dataset.wired = "1";
+      pnb.addEventListener("click", function () {
+        window.print();
+      });
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -880,6 +927,7 @@
     function playChallenge(step) {
       renderCard(step, false);
       var onSolve = function () {
+        fire("onSolve", step);
         if (step.solveArt) setArt(step.solveArt, step.solveAlt);
         if (step.solveBeat) {
           speechEl.innerHTML = "";
@@ -906,6 +954,7 @@
     function playOptional(step) {
       renderCard(step, true);
       var onSolve = function () {
+        fire("onSolve", step);
         if (step.solveBeat) {
           speechEl.innerHTML = "";
           speechEl.appendChild(bubble(step.solveBeat));
