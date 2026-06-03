@@ -36,6 +36,258 @@
     return v == null ? "" : v;
   }
 
+  /* ===========================================================================
+     ENGAGEMENT LAYER (v2): sound, score stars, confetti, POW bursts, scratch
+     pad, resume. Additive only — never touches the results-tracking contract
+     (.choices / .choice.correct / #choicesComplete / #scene-complete).
+     =========================================================================== */
+  var RM =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var PKEY =
+    "ntgn:" + String(location.pathname || "").replace(/\/+$/, "").toLowerCase();
+
+  function lsGet(k) {
+    try {
+      return localStorage.getItem(k);
+    } catch (e) {
+      return null;
+    }
+  }
+  function lsSet(k, v) {
+    try {
+      localStorage.setItem(k, v);
+    } catch (e) {}
+  }
+
+  /* ---- score model: a "star" = a challenge solved on the FIRST try ---- */
+  var SCORE = { total: 0, stars: 0, solved: {} };
+  (S.acts || []).forEach(function (a) {
+    (a.steps || []).forEach(function (st) {
+      if (st.choices) SCORE.total++;
+    });
+  });
+  var RESUMED = false;
+
+  function updateHUD(bump) {
+    var pill = $("gn-stars");
+    if (!pill) return;
+    pill.innerHTML = "⭐ " + SCORE.stars + "/" + SCORE.total;
+    if (bump && !RM) {
+      pill.classList.remove("bump");
+      void pill.offsetWidth;
+      pill.classList.add("bump");
+    }
+  }
+
+  /* ---- synthesized sound (off by default, persisted, zero assets) ---- */
+  var SND = { on: lsGet("ntgn:sound") === "on", ctx: null };
+  function actx() {
+    if (!SND.ctx) {
+      try {
+        SND.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {}
+    }
+    return SND.ctx;
+  }
+  function tone(freq, dur, type, when, gain) {
+    var c = actx();
+    if (!c) return;
+    var t = c.currentTime + (when || 0);
+    var o = c.createOscillator(),
+      g = c.createGain();
+    o.type = type || "sine";
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain || 0.16, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g);
+    g.connect(c.destination);
+    o.start(t);
+    o.stop(t + dur + 0.03);
+  }
+  function sfx(kind) {
+    if (!SND.on) return;
+    if (kind === "click") tone(420, 0.05, "square", 0, 0.05);
+    else if (kind === "correct") {
+      tone(660, 0.12, "sine", 0, 0.16);
+      tone(990, 0.16, "sine", 0.1, 0.13);
+    } else if (kind === "wrong") tone(150, 0.22, "sawtooth", 0, 0.09);
+    else if (kind === "unlock") {
+      tone(523, 0.1, "triangle", 0, 0.14);
+      tone(784, 0.16, "triangle", 0.1, 0.14);
+    } else if (kind === "win") {
+      [523, 659, 784, 1047].forEach(function (f, i) {
+        tone(f, 0.24, "triangle", i * 0.12, 0.16);
+      });
+    }
+  }
+
+  /* ---- confetti burst (canvas; skipped under reduced-motion) ---- */
+  function confetti(power) {
+    if (RM) return;
+    var cv = $("gn-confetti");
+    if (!cv) {
+      cv = el("canvas");
+      cv.id = "gn-confetti";
+      cv.setAttribute("aria-hidden", "true");
+      document.body.appendChild(cv);
+    }
+    var ctx = cv.getContext("2d");
+    var W = (cv.width = window.innerWidth),
+      H = (cv.height = window.innerHeight);
+    var colors = [
+      "#f2b705",
+      "#1d4ed8",
+      "#b42318",
+      "#047857",
+      "#ff8a3d",
+      "#3da5ff",
+    ];
+    var parts = [];
+    for (var i = 0; i < (power || 120); i++) {
+      parts.push({
+        x: W / 2 + (Math.random() - 0.5) * W * 0.5,
+        y: H * 0.32 + (Math.random() - 0.5) * 60,
+        vx: (Math.random() - 0.5) * 9,
+        vy: Math.random() * -11 - 4,
+        g: 0.3 + Math.random() * 0.2,
+        s: 6 + Math.random() * 7,
+        r: Math.random() * 6,
+        vr: (Math.random() - 0.5) * 0.4,
+        c: colors[i % colors.length],
+      });
+    }
+    var frames = 0;
+    (function tick() {
+      frames++;
+      ctx.clearRect(0, 0, W, H);
+      var alive = false;
+      parts.forEach(function (p) {
+        p.vy += p.g;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.r += p.vr;
+        if (p.y < H + 20) alive = true;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.r);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6);
+        ctx.restore();
+      });
+      if (alive && frames < 240) requestAnimationFrame(tick);
+      else ctx.clearRect(0, 0, W, H);
+    })();
+  }
+
+  /* ---- POW! stamp on a panel for a correct answer ---- */
+  function pow(panelEl, label) {
+    if (!panelEl || RM) return;
+    var p = el("div", "pow", label || "NICE!");
+    panelEl.appendChild(p);
+    setTimeout(function () {
+      if (p.parentNode) p.parentNode.removeChild(p);
+    }, 900);
+  }
+
+  /* ---- progress persistence (per page path; survives reloads) ---- */
+  function saveProgress(extra) {
+    var done = (S.acts || [])
+      .filter(function (a) {
+        return state[a.id];
+      })
+      .map(function (a) {
+        return a.id;
+      });
+    var rec = {
+      done: done,
+      stars: SCORE.stars,
+      total: SCORE.total,
+      ts: Date.now(),
+    };
+    if (extra)
+      Object.keys(extra).forEach(function (k) {
+        rec[k] = extra[k];
+      });
+    lsSet(PKEY, JSON.stringify(rec));
+  }
+  function loadProgress() {
+    try {
+      return JSON.parse(lsGet(PKEY) || "null");
+    } catch (e) {
+      return null;
+    }
+  }
+  function nextActId() {
+    for (var i = 0; i < S.acts.length; i++) {
+      if (!state[S.acts[i].id]) return S.acts[i].id;
+    }
+    return null;
+  }
+
+  /* ---- scratch pad (canvas for showing math work) ---- */
+  function openScratch() {
+    var w = $("gn-scratch") || buildScratch();
+    w.classList.add("show");
+    var b = $("gn-scratch-btn");
+    if (b) b.setAttribute("aria-expanded", "true");
+    var cv = $("scratch-canvas");
+    cv.width = cv.clientWidth;
+    cv.height = cv.clientHeight;
+    var ctx = cv.getContext("2d");
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#1d4ed8";
+  }
+  function buildScratch() {
+    var w = el("div", "scratch-wrap");
+    w.id = "gn-scratch";
+    w.innerHTML =
+      '<div class="scratch-bar">' +
+      '<span class="scratch-title">✏️ Scratch Pad — show your work</span>' +
+      '<button class="iconbtn" id="scratch-clear">Clear</button>' +
+      '<button class="iconbtn" id="scratch-close" aria-label="Close scratch pad">×</button>' +
+      "</div>" +
+      '<canvas id="scratch-canvas"></canvas>';
+    document.body.appendChild(w);
+    var cv = w.querySelector("#scratch-canvas");
+    var ctx = cv.getContext("2d");
+    var drawing = false;
+    function pt(e) {
+      var r = cv.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    cv.addEventListener("pointerdown", function (e) {
+      drawing = true;
+      var p = pt(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      cv.setPointerCapture && cv.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    cv.addEventListener("pointermove", function (e) {
+      if (!drawing) return;
+      var p = pt(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      e.preventDefault();
+    });
+    window.addEventListener("pointerup", function () {
+      drawing = false;
+    });
+    w.querySelector("#scratch-clear").onclick = function () {
+      ctx.clearRect(0, 0, cv.width, cv.height);
+    };
+    w.querySelector("#scratch-close").onclick = function () {
+      w.classList.remove("show");
+      var b = $("gn-scratch-btn");
+      if (b) b.setAttribute("aria-expanded", "false");
+    };
+    return w;
+  }
+
   /* ---------- theme + document chrome ---------- */
   function applyTheme() {
     document.documentElement.lang = "en";
@@ -196,10 +448,62 @@
     main.appendChild(buildGloss());
     document.body.appendChild(main);
     wireTabs();
+    wireHUD();
     buildGlossList();
+    restoreProgress();
     refreshLocks();
     updateProgress();
+    updateHUD();
     showScene("cover");
+  }
+
+  /* restore previously-completed chapters so a returning student keeps unlocks */
+  function restoreProgress() {
+    var saved = loadProgress();
+    if (!saved || !saved.done || !saved.done.length) return;
+    saved.done.forEach(function (id) {
+      if (Object.prototype.hasOwnProperty.call(state, id)) state[id] = true;
+    });
+    RESUMED = true;
+    var note = $("resume-note");
+    if (note) note.style.display = "";
+    var cont = $("continue-btn");
+    if (cont) {
+      cont.style.display = "";
+      cont.addEventListener("click", function () {
+        sfx("click");
+        var nid = nextActId();
+        if (nid) showScene(nid);
+        else showComplete();
+      });
+    }
+  }
+
+  function wireHUD() {
+    var snd = $("gn-sound");
+    if (snd)
+      snd.addEventListener("click", function () {
+        SND.on = !SND.on;
+        lsSet("ntgn:sound", SND.on ? "on" : "off");
+        this.setAttribute("aria-pressed", SND.on ? "true" : "false");
+        this.innerHTML = SND.on ? "🔊" : "🔇";
+        if (SND.on) {
+          var c = actx();
+          if (c && c.state === "suspended") c.resume();
+          sfx("click");
+        }
+      });
+    var scr = $("gn-scratch-btn");
+    if (scr)
+      scr.addEventListener("click", function () {
+        var w = $("gn-scratch");
+        if (w && w.classList.contains("show")) {
+          w.classList.remove("show");
+          this.setAttribute("aria-expanded", "false");
+        } else {
+          openScratch();
+        }
+      });
   }
 
   function buildTopbar() {
@@ -218,6 +522,18 @@
       'aria-label="Mission progress" aria-valuemin="0" aria-valuemax="100" ' +
       'aria-valuenow="0"><i id="bar"></i></div>' +
       '<span class="progress-label" id="plabel">0%</span></div>' +
+      '<div class="hud">' +
+      '<span class="hud-stars" id="gn-stars" title="Stars earned by solving on the first try" aria-label="Stars earned">⭐ 0/' +
+      SCORE.total +
+      "</span>" +
+      '<button class="iconbtn" id="gn-sound" aria-pressed="' +
+      (SND.on ? "true" : "false") +
+      '" aria-label="Toggle sound" title="Sound effects">' +
+      (SND.on ? "🔊" : "🔇") +
+      "</button>" +
+      '<button class="iconbtn" id="gn-scratch-btn" aria-expanded="false" ' +
+      'aria-label="Open scratch pad" title="Scratch pad — show your work">✏️</button>' +
+      "</div>" +
       '<button class="txtsize" id="txtsize" aria-label="Change text size" ' +
       'title="Text size">A+</button>';
     bar.appendChild(inner);
@@ -286,6 +602,9 @@
       " &middot; " +
       S.meta.level +
       "</span>" +
+      (S.meta.standard
+        ? '<span class="std-chip">Aligned to ' + S.meta.standard + "</span>"
+        : "") +
       "<h2>" +
       S.meta.title +
       "</h2>" +
@@ -298,10 +617,17 @@
       '<div class="cast-row">' +
       castChips +
       "</div>" +
+      '<div class="start-row" style="display:flex;flex-wrap:wrap;gap:10px;' +
+      'justify-content:center;align-items:center">' +
       '<button class="start" id="start-btn">' +
       (cv.startLabel || "Start &#128640;") +
-      "</button>";
+      "</button>" +
+      '<button class="continue-btn" id="continue-btn" style="display:none">↩ Continue</button>' +
+      "</div>" +
+      '<p class="resume-note" id="resume-note" style="display:none" role="status">' +
+      "✓ Welcome back — your progress was saved.</p>";
     s.querySelector("#start-btn").addEventListener("click", function () {
+      sfx("click");
       showScene(S.acts[0].id);
     });
     return s;
@@ -375,6 +701,7 @@
       "<h2>" +
       (cp.titleEn || "Mission Complete!") +
       "</h2>" +
+      '<div class="result-stars" id="gn-result" aria-live="polite"></div>' +
       "<p>" +
       cp.en +
       "</p>" +
@@ -409,10 +736,53 @@
         "</div>" +
         '<div class="feedback" id="fbComplete"></div></div>';
     }
+    if (S.glossary && S.glossary.length) {
+      var chips = S.glossary
+        .slice(0, 8)
+        .map(function (g) {
+          return (
+            '<span class="recap-chip">' + (g.ico || "📘") + " " + g.en + "</span>"
+          );
+        })
+        .join("");
+      html +=
+        '<div class="recap"><span class="recap-tag">📚 Concepts you used' +
+        (S.meta.standard ? " · " + S.meta.standard : "") +
+        "</span>" +
+        '<div class="recap-chips">' +
+        chips +
+        "</div></div>";
+    }
     html +=
       '<button class="restart" id="restart-btn">Play again &#8635;</button>';
     s.innerHTML = html;
     return s;
+  }
+
+  /* ---- render the first-try star rating on the complete screen ---- */
+  function fillResult() {
+    var r = $("gn-result");
+    if (!r) return;
+    var t = SCORE.total || 1;
+    var e = SCORE.stars;
+    var ratio = e / t;
+    var rating = ratio >= 1 ? 3 : ratio >= 0.6 ? 2 : 1;
+    var stars = "";
+    for (var i = 0; i < 3; i++)
+      stars += '<span class="rs ' + (i < rating ? "on" : "") + '">★</span>';
+    r.innerHTML =
+      '<div class="rs-row">' +
+      stars +
+      "</div>" +
+      '<div class="rs-line">First-try mastery: <b>' +
+      e +
+      "/" +
+      t +
+      "</b> (" +
+      Math.round(ratio * 100) +
+      "%)</div>";
+    saveProgress({ pct: Math.round(ratio * 100), rating: rating });
+    return rating;
   }
 
   function buildGloss() {
@@ -513,7 +883,10 @@
     });
     var c = $("scene-complete");
     c.classList.add("active", "show");
+    fillResult();
     wireMaster();
+    sfx("win");
+    confetti(180);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -615,6 +988,7 @@
           : "Next &#9654;";
       }
       nextBtn.onclick = function () {
+        sfx("click");
         if (bi < step.beats.length - 1) {
           bi++;
           renderBeat();
@@ -780,6 +1154,8 @@
       state[act.id] = true;
       updateProgress();
       refreshLocks();
+      saveProgress();
+      sfx("unlock");
       var i = S.acts.indexOf(act);
       if (i < S.acts.length - 1) showScene(S.acts[i + 1].id);
       else showComplete();
@@ -801,7 +1177,10 @@
   function wireChoices(step, act, onSolve) {
     var groupId = "choices-" + act.id + "-" + step.id;
     var fbId = "fb-" + act.id + "-" + step.id;
-    var solved = false;
+    var key = act.id + "-" + step.id;
+    var panelEl = $("panel-" + act.id);
+    var solved = false,
+      missed = false;
     Array.prototype.slice
       .call($(groupId).querySelectorAll(".choice"))
       .forEach(function (btn) {
@@ -823,14 +1202,25 @@
               .forEach(function (b) {
                 b.disabled = true;
               });
+            // award a star only when solved on the first try
+            if (!missed && !SCORE.solved[key]) {
+              SCORE.solved[key] = true;
+              SCORE.stars++;
+              updateHUD(true);
+            }
+            sfx("correct");
+            pow(panelEl, missed ? "GOT IT!" : "NICE!");
+            confetti(40);
             if (onSolve) onSolve();
           } else {
+            missed = true;
             btn.classList.add("wrong");
             btn.disabled = true;
             fb.className = "feedback show bad";
             fb.innerHTML =
               step.badEn +
               (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
+            sfx("wrong");
           }
         });
       });
@@ -865,6 +1255,8 @@
               });
             var h2 = document.querySelector("#scene-complete h2");
             if (h2 && m.certifyTitle) h2.innerHTML = m.certifyTitle;
+            sfx("win");
+            confetti(160);
           } else {
             btn.classList.add("wrong");
             btn.disabled = true;
@@ -872,6 +1264,7 @@
             fb.style.display = "block";
             fb.innerHTML =
               m.badEn || "&#10060; Not quite. Review and try another option!";
+            sfx("wrong");
           }
         });
       });

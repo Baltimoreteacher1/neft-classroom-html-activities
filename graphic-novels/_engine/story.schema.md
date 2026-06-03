@@ -248,3 +248,36 @@ control → `lg`/`xl`), full keyboard nav (tab roving arrows, focus rings,
 Esc closes pop-ups), 48 px minimum targets, `aria-live` speech region, reduced-
 motion support, and functional layout down to 320 px (panel aspect ratio steps
 16:9 → 4:3 → 1:1; bubbles reflow to 94% width).
+
+## Engagement layer (v2 — zero new authoring)
+
+Every novel gains these automatically from the shared engine; no STORY field is
+required, so all 24 existing stories light up on the next `build-all.py` run:
+
+- **First-try star score.** A challenge solved with no wrong tap earns a ⭐. A
+  live HUD pill in the top bar tracks `stars / total`, and the finish screen
+  shows a 1–3 ★ rating with first-try percentage. Purely additive — the results
+  pipeline still scores by reading `.choice.correct`, untouched.
+- **Synthesized sound** (WebAudio, no asset files): soft click, correct chime,
+  wrong buzz, chapter-unlock, victory fanfare. **Off by default**, toggled with
+  the 🔊 button, persisted under `localStorage["ntgn:sound"]`.
+- **Confetti + POW! bursts** on correct answers and completion (canvas / CSS,
+  both skipped under `prefers-reduced-motion`).
+- **Cinematic panels**: slow Ken-Burns drift + comic halftone texture; speech
+  bubbles pop in.
+- **Scratch pad** (✏️ button) — a canvas overlay for showing math work.
+- **Resume.** Completed chapters are saved to `localStorage["ntgn:<pathname>"]`
+  as `{done[], stars, total, rating, pct}`; returning students keep their
+  unlocks and get a “Continue” button. The landing page (`index.html`) reads the
+  same records to show per-novel star/resume badges, an overall progress meter,
+  a standard chip per unit, and All / Not-started / Completed filters.
+- **Concept recap.** The finish screen lists the glossary terms used, tagged
+  with `meta.standard`, reinforcing the lesson connection.
+
+### Rebuilding
+
+`python3 _engine/build-all.py` re-inlines the shared engine + every
+`stories/*.story.js` into its deployed HTML (units 1–10 and the per-lesson
+novels). Each story already carries its own `meta.artBase`/`meta.home`, so no
+path flags are needed. Run `node _engine/validate.cjs` first to check story
+invariants.
