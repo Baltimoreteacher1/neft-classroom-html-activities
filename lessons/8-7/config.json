@@ -197,7 +197,33 @@
     "wonderPrompts": [
       "Why would different sports data have different shapes?",
       "Does the shape tell you which measure of center to use?"
-    ]
+    ],
+    "visual": {
+      "kind": "histogram",
+      "title": "Example: 3-pointers per game (skewed right)",
+      "xLabel": "3-pointers per game",
+      "yLabel": "Number of players",
+      "highlightIndex": 0,
+      "bars": [
+        {
+          "label": "0–1",
+          "value": 9
+        },
+        {
+          "label": "2–3",
+          "value": 6
+        },
+        {
+          "label": "4–5",
+          "value": 3
+        },
+        {
+          "label": "6–7",
+          "value": 1
+        }
+      ],
+      "caption": "Most players make few 3-pointers; a few make many — the tail stretches RIGHT (skewed right)."
+    }
   },
   "explore": {
     "type": "drag-sort",
@@ -405,30 +431,23 @@
         "explanation": "The data peaks at 0–1 goals and tails off toward 4. Most data is on the left with fewer values stretching right — this is skewed right."
       },
       {
-        "type": "fill-table",
-        "headers": [
-          "Distribution Shape",
-          "Mean vs. Median",
-          "Best Measure of Center"
-        ],
-        "rows": [
+        "type": "matching-game",
+        "label": "Match each distribution shape to how its mean and median compare.",
+        "columns": 2,
+        "pairs": [
           {
-            "shape": "Symmetric",
-            "comparison": "Mean ≈ Median",
-            "bestMeasure": "Mean (or either — they are close)"
+            "term": "Symmetric",
+            "match": "Mean ≈ Median — use either (mean is fine)"
           },
           {
-            "shape": "Skewed Right",
-            "comparison": "Mean > Median (pulled right by tail)",
-            "bestMeasure": "Median (not affected by extreme high values)"
+            "term": "Skewed Right",
+            "match": "Mean > Median — use the median (high tail pulls the mean up)"
           },
           {
-            "shape": "Skewed Left",
-            "comparison": "Mean < Median (pulled left by tail)",
-            "bestMeasure": "Median (not affected by extreme low values)"
+            "term": "Skewed Left",
+            "match": "Mean < Median — use the median (low tail pulls the mean down)"
           }
-        ],
-        "label": "Complete the table: how does distribution shape affect the relationship between mean and median?"
+        ]
       },
       {
         "type": "matching",
@@ -528,34 +547,34 @@
         "minLength": 50
       },
       {
-        "type": "fill-table",
-        "headers": [
-          "Data Set",
-          "Shape",
-          "Mean vs. Median",
-          "Real-World Explanation"
-        ],
-        "rows": [
+        "type": "drag-sort",
+        "instructions": "Drag each real-world data set under the distribution shape it would most likely form.",
+        "categories": [
           {
-            "dataSet": "Player heights across a league",
-            "shape": "Symmetric",
-            "comparison": "Mean ≈ Median",
-            "explanation": "Most players are average height, with equal numbers taller and shorter"
+            "label": "Symmetric",
+            "items": [
+              "Player heights across a league"
+            ]
           },
           {
-            "dataSet": "Career earnings of athletes",
-            "shape": "Skewed Right",
-            "comparison": "Mean > Median",
-            "explanation": "Most earn modest salaries, but a few superstars earn millions — the tail stretches right"
+            "label": "Skewed Right",
+            "items": [
+              "Career earnings of athletes"
+            ]
           },
           {
-            "dataSet": "Experienced archer's scores (out of 100)",
-            "shape": "Skewed Left",
-            "comparison": "Mean < Median",
-            "explanation": "Most scores are high (80–100), but a few bad rounds pull the tail left"
+            "label": "Skewed Left",
+            "items": [
+              "An experienced archer's scores out of 100"
+            ]
           }
         ],
-        "label": "For each data set, identify the shape, compare mean vs. median, and explain why."
+        "hints": [
+          "Symmetric: most values cluster in the middle with equal tails on both sides.",
+          "Skewed RIGHT: a few very HIGH values (e.g., superstar earnings) stretch the tail right.",
+          "Skewed LEFT: a few very LOW values (e.g., a few bad rounds) stretch the tail left."
+        ],
+        "label": "Sort each data set by its likely histogram shape."
       }
     ]
   },

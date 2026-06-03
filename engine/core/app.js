@@ -245,6 +245,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // lesson shell. Non-graded: this never touches phase state, XP, or stars —
     // the student's place in the graded flow is preserved underneath.
     openExtra(kind) {
+      if (kind === "projects") return this.openProjects();
       const id = encodeURIComponent(config.lessonId);
       const meta =
         kind === "readiness"
@@ -297,6 +298,83 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           }
         });
       }
+      el.scrollIntoView({ block: "start" });
+    },
+
+    // Projects: a non-graded "extend" tab present on every lesson. Filled in
+    // per-lesson via config.projects (added as projects get built). Each project
+    // links out to a standalone activity/game; shows a friendly empty state when
+    // a lesson has no projects yet. Never touches phase state, XP, or stars.
+    openProjects() {
+      const projects = Array.isArray(config.projects)
+        ? [...config.projects]
+        : [];
+      // Auto-append this unit's culminating project (mapped by verified subject)
+      // after any lesson-specific projects, unless it is already listed.
+      const unitHref = UNIT_CULMINATING_PROJECT[config.unit];
+      if (
+        unitHref &&
+        !projects.some(
+          (p) =>
+            p.href === unitHref ||
+            (Array.isArray(p.links) &&
+              p.links.some((l) => l.href === unitHref)),
+        )
+      ) {
+        projects.push({
+          emoji: "🏆",
+          title: "Unit Culminating Projects",
+          desc: "Multi-day projects that bring this unit's skills together.",
+          href: unitHref,
+        });
+      }
+      this.setExtraActive("projects");
+      phaseContainer.innerHTML = "";
+      const el = document.createElement("div");
+      el.className = "phase active extra-panel";
+      el.setAttribute("role", "region");
+      el.setAttribute("aria-label", "Projects");
+
+      const card = (p) => {
+        const links = Array.isArray(p.links)
+          ? p.links
+          : p.href
+            ? [{ label: p.label || "Open", href: p.href }]
+            : [];
+        return `
+          <div class="project-card" style="border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff); padding:var(--sp-4, 16px); display:flex; flex-direction:column; gap:var(--sp-2, 8px);">
+            <div style="font-size:1.8rem; line-height:1;">${escHtml(p.emoji || "🎮")}</div>
+            <div style="font-weight:800; font-size:1.1rem; color:var(--navy, #264653);">${escHtml(p.title || "Project")}</div>
+            ${p.desc ? `<div class="section-desc" style="font-size:0.9rem;">${escHtml(p.desc)}</div>` : ""}
+            <div style="display:flex; flex-wrap:wrap; gap:var(--sp-2, 8px); margin-top:auto; padding-top:var(--sp-2, 8px);">
+              ${links
+                .map(
+                  (l) =>
+                    `<a class="btn btn-secondary" href="${escHtml(l.href)}" target="_blank" rel="noopener">${escHtml(l.label || "Open")} ↗</a>`,
+                )
+                .join("")}
+            </div>
+          </div>`;
+      };
+
+      const body = projects.length
+        ? `<div class="project-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:var(--sp-3, 12px);">${projects.map(card).join("")}</div>`
+        : `<div class="project-empty" style="text-align:center; padding:var(--sp-6, 32px) var(--sp-4, 16px); border:2px dashed var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--cream, #fdf6ec);">
+            <div style="font-size:2.4rem;">🚧</div>
+            <div style="font-weight:800; font-size:1.15rem; color:var(--navy, #264653); margin-top:var(--sp-2, 8px);">Projects coming soon</div>
+            <div class="section-desc" style="max-width:46ch; margin:var(--sp-2, 8px) auto 0;">Hands-on projects and challenge games for this lesson will appear here as they are built. Check back soon!</div>
+          </div>`;
+
+      el.innerHTML = `
+        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-3, 12px);">
+          <div>
+            <div class="section-title" style="font-size:1.6rem;">🛠️ Projects</div>
+            <div class="section-desc">Hands-on projects and challenge games for this lesson — explore and have fun. Not graded.</div>
+          </div>
+        </div>
+        ${body}
+      `;
+      phaseContainer.append(el);
       el.scrollIntoView({ block: "start" });
     },
 
@@ -361,6 +439,8 @@ function buildSidebar(config, state, phaseConfigs) {
 
     <div class="phase-nav" data-bind="phases"></div>
 
+    ${projectsNavHtml(config)}
+
     <div style="margin-top:auto; opacity:0.5; font-size:0.7rem; text-align:center;">
       Neft Teacher · ${escHtml(config.standard)}
     </div>
@@ -394,6 +474,38 @@ function preLessonNavHtml(config) {
     <div class="prelesson-nav" data-bind="prelesson">
       <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Before the lesson</div>
       ${items.join("\n      ")}
+    </div>`;
+}
+
+// Each Reveal lesson unit's culminating-project page. Mapped by VERIFIED SUBJECT
+// (standard family), not raw number, because the classroom /math/unit-N folders
+// are reordered vs Reveal lesson units for 7/8/9: Reveal 7 (equations) ->
+// /math/unit-8, Reveal 9 (coordinate plane) -> /math/unit-7. Reveal unit 8
+// (statistics, 6.SP) has no classroom culminating-project page, so it is omitted.
+export const UNIT_CULMINATING_PROJECT = {
+  1: "/math/unit-1/projects/",
+  2: "/math/unit-2/projects/",
+  3: "/math/unit-3/projects/",
+  4: "/math/unit-4/projects/",
+  5: "/math/unit-5/projects/",
+  6: "/math/unit-6/projects/",
+  7: "/math/unit-8/projects/",
+  9: "/math/unit-7/projects/",
+  10: "/math/unit-10/projects/",
+};
+
+// "Extend" group: a non-graded Projects tab shown on every lesson. It opens
+// inline (see app.openProjects) and lists config.projects, or a "coming soon"
+// empty state when a lesson has none yet. Always present so projects can be
+// wired in per-lesson as they get built.
+function projectsNavHtml(_config) {
+  return `
+    <div class="projects-nav" data-bind="projects">
+      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Extend</div>
+      <button class="phase-btn extra-btn" data-extra="projects">
+        <span class="phase-num">🛠️</span>
+        <span>Projects</span>
+      </button>
     </div>`;
 }
 

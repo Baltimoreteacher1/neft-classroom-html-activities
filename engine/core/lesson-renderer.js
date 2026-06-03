@@ -1,4 +1,4 @@
-import { createApp } from "./app.js";
+import { createApp, UNIT_CULMINATING_PROJECT } from "./app.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { levelOverride, mountLevelSelector } from "./levels.js";
 import {
@@ -169,6 +169,261 @@ function histogramSVG(cfg) {
 // Render a styled "data display" for the Launch scenario so the I-notice /
 // I-wonder routine has something concrete to observe. Opt-in via
 // `launch.visual = { kind:"data-chips", title, values:[...], unit }`.
+// Dot plot: one dot per value, stacked over a simple number axis. Good for
+// small data sets where individual values matter (mean/median/MAD lessons).
+function dotPlotSVG(cfg) {
+  const values = (cfg.values || []).map(Number).filter((n) => !isNaN(n));
+  if (!values.length) return "";
+  const W = 520,
+    H = 220,
+    padL = 30,
+    padR = 20,
+    padB = 46,
+    padT = 20;
+  const min = cfg.min != null ? cfg.min : Math.min(...values);
+  const max = cfg.max != null ? cfg.max : Math.max(...values);
+  const span = Math.max(1, max - min);
+  const plotW = W - padL - padR;
+  const baseY = H - padB;
+  const xOf = (v) => padL + ((v - min) / span) * plotW;
+  const counts = {};
+  const dots = values
+    .map((v) => {
+      counts[v] = (counts[v] || 0) + 1;
+      const cy = baseY - 12 - (counts[v] - 1) * 16;
+      return `<circle cx="${xOf(v).toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="var(--teal,#2a9d8f)" stroke="#fff" stroke-width="1.5"/>`;
+    })
+    .join("");
+  // axis ticks at each integer (capped) or at the distinct values
+  const ticks = [];
+  const tickStep = span <= 20 ? 1 : Math.ceil(span / 12);
+  for (let v = min; v <= max; v += tickStep) {
+    ticks.push(
+      `<line x1="${xOf(v).toFixed(1)}" y1="${baseY}" x2="${xOf(v).toFixed(1)}" y2="${baseY + 5}" stroke="var(--ink,#333)" stroke-width="1"/>` +
+        `<text x="${xOf(v).toFixed(1)}" y="${baseY + 20}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${v}</text>`,
+    );
+  }
+  const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
+  const xLabel = cfg.xLabel
+    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+    : "";
+  return svgFigure(cfg, `${axis}${ticks.join("")}${dots}${xLabel}`, W, H, padT);
+}
+
+// Box-and-whisker plot from a five-number summary.
+function boxPlotSVG(cfg) {
+  const { min, q1, median, q3, max } = cfg;
+  if ([min, q1, median, q3, max].some((v) => v == null)) return "";
+  const W = 520,
+    H = 180,
+    padL = 30,
+    padR = 20;
+  const lo = cfg.axisMin != null ? cfg.axisMin : min;
+  const hi = cfg.axisMax != null ? cfg.axisMax : max;
+  const span = Math.max(1, hi - lo);
+  const plotW = W - padL - padR;
+  const xOf = (v) => padL + ((v - lo) / span) * plotW;
+  const midY = 80,
+    boxH = 54,
+    top = midY - boxH / 2,
+    bot = midY + boxH / 2;
+  const teal = "var(--teal,#2a9d8f)";
+  const parts = [
+    `<line x1="${xOf(min)}" y1="${midY}" x2="${xOf(q1)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>`,
+    `<line x1="${xOf(q3)}" y1="${midY}" x2="${xOf(max)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>`,
+    `<line x1="${xOf(min)}" y1="${top + 10}" x2="${xOf(min)}" y2="${bot - 10}" stroke="var(--ink,#333)" stroke-width="2"/>`,
+    `<line x1="${xOf(max)}" y1="${top + 10}" x2="${xOf(max)}" y2="${bot - 10}" stroke="var(--ink,#333)" stroke-width="2"/>`,
+    `<rect x="${xOf(q1)}" y="${top}" width="${(xOf(q3) - xOf(q1)).toFixed(1)}" height="${boxH}" fill="${teal}" fill-opacity="0.25" stroke="${teal}" stroke-width="2"/>`,
+    `<line x1="${xOf(median)}" y1="${top}" x2="${xOf(median)}" y2="${bot}" stroke="var(--coral,#d9795d)" stroke-width="3"/>`,
+  ];
+  const labels = [
+    [min, "Min"],
+    [q1, "Q1"],
+    [median, "Med"],
+    [q3, "Q3"],
+    [max, "Max"],
+  ]
+    .map(
+      ([v, t]) =>
+        `<text x="${xOf(v)}" y="${bot + 22}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
+        `<text x="${xOf(v)}" y="${top - 8}" text-anchor="middle" font-size="9" fill="var(--muted)">${t}</text>`,
+    )
+    .join("");
+  return svgFigure(cfg, `${parts.join("")}${labels}`, W, H, 10);
+}
+
+// Categorical bar chart (bars have GAPS — contrast with a histogram).
+function barChartSVG(cfg) {
+  const bars = Array.isArray(cfg.bars) ? cfg.bars : [];
+  if (!bars.length) return "";
+  const W = 520,
+    H = 260,
+    padL = 40,
+    padR = 16,
+    padT = 24,
+    padB = 50;
+  const plotW = W - padL - padR,
+    plotH = H - padT - padB;
+  const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
+  const slot = plotW / bars.length,
+    bw = slot * 0.6,
+    baseY = padT + plotH;
+  const rects = bars
+    .map((b, i) => {
+      const v = Number(b.value) || 0;
+      const h = (v / maxV) * plotH;
+      const x = padL + i * slot + (slot - bw) / 2;
+      const y = baseY - h;
+      return (
+        `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="var(--teal,#2a9d8f)"/>` +
+        `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
+        `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label ?? "")}</text>`
+      );
+    })
+    .join("");
+  const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
+  return svgFigure(cfg, `${axis}${rects}`, W, H, padT);
+}
+
+// Simple labeled number line with optional marked points.
+function numberLineSVG(cfg) {
+  const min = Number(cfg.min ?? 0),
+    max = Number(cfg.max ?? 10);
+  const step = Number(cfg.step ?? 1);
+  const W = 520,
+    H = 120,
+    padL = 24,
+    padR = 24,
+    y = 56;
+  const span = Math.max(1, max - min),
+    plotW = W - padL - padR;
+  const xOf = (v) => padL + ((v - min) / span) * plotW;
+  let ticks = "";
+  for (let v = min; v <= max + 1e-9; v += step) {
+    ticks += `<line x1="${xOf(v).toFixed(1)}" y1="${y - 6}" x2="${xOf(v).toFixed(1)}" y2="${y + 6}" stroke="var(--ink,#333)" stroke-width="1.5"/><text x="${xOf(v).toFixed(1)}" y="${y + 24}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${+v.toFixed(2)}</text>`;
+  }
+  const pts = (cfg.points || [])
+    .map(
+      (p) =>
+        `<circle cx="${xOf(Number(p.value)).toFixed(1)}" cy="${y}" r="7" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/>` +
+        (p.label
+          ? `<text x="${xOf(Number(p.value)).toFixed(1)}" y="${y - 14}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--coral,#d9795d)">${esc(p.label)}</text>`
+          : ""),
+    )
+    .join("");
+  const line = `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--ink,#333)" stroke-width="2"/>`;
+  return svgFigure(cfg, `${line}${ticks}${pts}`, W, H, 8);
+}
+
+// Shared figure wrapper: optional title + responsive SVG + optional caption.
+function svgFigure(cfg, inner, W, H, padT = 16) {
+  const title = cfg.title
+    ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
+    : "";
+  const caption = cfg.caption
+    ? `<div style="font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2); text-align:center; font-style:italic;">${esc(cfg.caption)}</div>`
+    : "";
+  return `<div class="data-figure" style="margin:var(--sp-3) 0;">${title}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(cfg.title || "Data figure")}" style="width:100%; height:auto; max-width:560px; display:block; margin:0 auto;"><g transform="translate(0,${padT - 16})">${inner}</g></svg>${caption}</div>`;
+}
+
+// Tape / bar diagram: stacked labeled segments per row. Models part–whole,
+// ratios, rates, and percents (e.g. two rows whose lengths form a ratio).
+function tapeDiagramSVG(cfg) {
+  const rows = Array.isArray(cfg.rows) ? cfg.rows : [];
+  if (!rows.length) return "";
+  const W = 520,
+    padL = 8,
+    padR = 8,
+    rowH = 46,
+    gap = 14,
+    labelW = 96;
+  const H = 8 + rows.length * (rowH + gap);
+  const palette = [
+    "var(--teal,#2a9d8f)",
+    "var(--coral,#d9795d)",
+    "var(--amber,#e9c46a)",
+    "var(--navy,#264653)",
+  ];
+  // Scale so the longest row (by total) fills the track.
+  const totals = rows.map((r) =>
+    (r.parts || []).reduce((s, p) => s + (Number(p.value) || 0), 0),
+  );
+  const maxTotal = Math.max(...totals, 1);
+  const trackW = W - padL - padR - labelW;
+  let y = 8;
+  const body = rows
+    .map((r) => {
+      let x = padL + labelW;
+      const segs = (r.parts || [])
+        .map((p, i) => {
+          const w = ((Number(p.value) || 0) / maxTotal) * trackW;
+          const fill = p.fill || palette[i % palette.length];
+          const rect = `<rect x="${x.toFixed(1)}" y="${y}" width="${Math.max(0, w - 2).toFixed(1)}" height="${rowH}" rx="4" fill="${fill}"/><text x="${(x + w / 2).toFixed(1)}" y="${y + rowH / 2 + 4}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${esc(p.label != null ? p.label : p.value)}</text>`;
+          x += w;
+          return rect;
+        })
+        .join("");
+      const rowLabel = `<text x="${padL}" y="${y + rowH / 2 + 4}" font-size="12" font-weight="700" fill="var(--navy,#264653)">${esc(r.label || "")}</text>`;
+      y += rowH + gap;
+      return rowLabel + segs;
+    })
+    .join("");
+  return svgFigure(cfg, body, W, H, 16);
+}
+
+// Static four-quadrant coordinate plane with optional plotted points.
+function coordPlaneSVG(cfg) {
+  const m = Number(cfg.max ?? 6);
+  const W = 360,
+    H = 360,
+    pad = 24;
+  const span = 2 * m;
+  const plot = W - 2 * pad;
+  const unit = plot / span;
+  const cx = pad + m * unit,
+    cy = pad + m * unit;
+  const X = (x) => pad + (x + m) * unit;
+  const Y = (y) => pad + (m - y) * unit;
+  let grid = "";
+  for (let i = -m; i <= m; i++) {
+    grid += `<line x1="${X(i)}" y1="${pad}" x2="${X(i)}" y2="${H - pad}" stroke="rgba(0,0,0,0.06)"/>`;
+    grid += `<line x1="${pad}" y1="${Y(i)}" x2="${W - pad}" y2="${Y(i)}" stroke="rgba(0,0,0,0.06)"/>`;
+  }
+  const axes = `<line x1="${pad}" y1="${cy}" x2="${W - pad}" y2="${cy}" stroke="var(--ink,#333)" stroke-width="2"/><line x1="${cx}" y1="${pad}" x2="${cx}" y2="${H - pad}" stroke="var(--ink,#333)" stroke-width="2"/>`;
+  const pts = (cfg.points || [])
+    .map((p) => {
+      const px = X(Number(p.x)),
+        py = Y(Number(p.y));
+      const lbl = p.label || `(${p.x}, ${p.y})`;
+      return `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/><text x="${(px + 8).toFixed(1)}" y="${(py - 8).toFixed(1)}" font-size="11" font-weight="700" fill="var(--navy,#264653)">${esc(lbl)}</text>`;
+    })
+    .join("");
+  return svgFigure(cfg, `${grid}${axes}${pts}`, W, H, 16);
+}
+
+// Unified visual builder → HTML string. Returns "" for unknown/empty kinds.
+function buildVisual(v) {
+  if (!v) return "";
+  switch (v.kind) {
+    case "histogram":
+      return histogramSVG(v);
+    case "dot-plot":
+      return dotPlotSVG(v);
+    case "box-plot":
+      return boxPlotSVG(v);
+    case "bar-chart":
+      return barChartSVG(v);
+    case "number-line":
+      return numberLineSVG(v);
+    case "tape-diagram":
+      return tapeDiagramSVG(v);
+    case "coordinate-plane":
+      return coordPlaneSVG(v);
+    default:
+      return "";
+  }
+}
+
 function renderLaunchVisual(host, visual) {
   if (!visual) return;
   if (visual.kind === "data-chips" && Array.isArray(visual.values)) {
@@ -190,10 +445,14 @@ function renderLaunchVisual(host, visual) {
         ? `<div style="font-size:0.8rem; color:var(--muted); margin-top:var(--sp-2);">${esc(visual.unit)}</div>`
         : "");
     host.append(card);
-  } else if (visual.kind === "histogram") {
-    const wrap = document.createElement("div");
-    wrap.innerHTML = histogramSVG(visual);
-    host.append(wrap);
+  } else {
+    const html = buildVisual(visual);
+    if (html) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = html;
+      host.append(card);
+    }
   }
 }
 
@@ -603,6 +862,16 @@ function resolveLanguageObjective(config) {
 function renderLaunchHeader(el, state, config) {
   const s = state.get();
   const homeworkHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.docx`;
+  // Projects link shown next to Homework on the launch screen so it's visible
+  // the moment a lesson opens (the sidebar Projects tab only appears once the
+  // activity starts). Points at any lesson-specific project, else this unit's
+  // culminating-project page. Omitted only when neither exists (e.g. Unit 8).
+  const projectsHref =
+    (Array.isArray(config.projects) &&
+      config.projects[0] &&
+      config.projects[0].href) ||
+    UNIT_CULMINATING_PROJECT[config.unit] ||
+    "";
 
   const block = document.createElement("div");
   block.className = "card launch-intro";
@@ -630,6 +899,12 @@ function renderLaunchHeader(el, state, config) {
       </div>
       <a class="btn btn-secondary launch-homework-link" href="${homeworkHref}"
         download>📄 Homework (Word doc)</a>
+      ${
+        projectsHref
+          ? `<a class="btn btn-secondary launch-projects-link" href="${projectsHref}"
+        target="_blank" rel="noopener">🛠️ Projects</a>`
+          : ""
+      }
     </div>
     <div class="launch-objectives grid-2">
       <div class="card card-teal launch-objective">
@@ -856,12 +1131,17 @@ function renderExplorePhase(el, state, ctx, config) {
     cfg.instructions || "Investigate the concept with an interactive tool.",
   );
 
-  // Opt-in data diagram (e.g. a histogram) shown up front so students can SEE
-  // and read the visual while they work the interaction below it.
-  if (cfg.histogram) {
+  // Opt-in data diagram shown up front so students can SEE and read the visual
+  // while they work the interaction below it. `diagram` accepts any visual kind
+  // (histogram, dot-plot, box-plot, bar-chart, number-line); `histogram` kept
+  // for back-compat.
+  const exploreDiagram = cfg.diagram || cfg.histogram;
+  if (exploreDiagram) {
     const figCard = document.createElement("div");
     figCard.className = "card";
-    figCard.innerHTML = histogramSVG(cfg.histogram);
+    figCard.innerHTML = cfg.diagram
+      ? buildVisual(cfg.diagram)
+      : histogramSVG(cfg.histogram);
     el.append(figCard);
   }
 
@@ -1060,7 +1340,8 @@ function renderConnectPhase(el, state, ctx, config) {
   const card = document.createElement("div");
   card.className = "card";
   card.innerHTML = `<div class="badge badge-amber mb-4">Math in the Wild</div><p style="font-size:1.05rem; line-height:1.6; margin:0;">${esc(cfg.scenario)}</p>`;
-  if (cfg.histogram) card.innerHTML += histogramSVG(cfg.histogram);
+  if (cfg.diagram) card.innerHTML += buildVisual(cfg.diagram);
+  else if (cfg.histogram) card.innerHTML += histogramSVG(cfg.histogram);
   el.append(card);
 
   // Turn & Talk primes the written response below. Non-graded; does not gate

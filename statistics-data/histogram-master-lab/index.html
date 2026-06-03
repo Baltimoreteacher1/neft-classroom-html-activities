@@ -722,6 +722,7 @@
             2. Guided Practice
           </button>
           <button class="nav-btn" data-jump="game">3. Full Game</button>
+          <button class="nav-btn" data-jump="bonus">4. Bonus Games</button>
         </div>
         <button class="utility-btn" id="expandAllBtn" type="button">
           Resize current page
@@ -845,6 +846,78 @@
             ></iframe>
           </div>
         </section>
+
+        <section id="bonus" class="stage" data-stage="bonus">
+          <div class="stage-head">
+            <div>
+              <div class="stage-kicker">Step 4 · Play more</div>
+              <h2 class="stage-title">Bonus Games: Histogram Arcade Pack</h2>
+              <p class="stage-copy">
+                Two more full histogram games. Pick a game, then choose
+                <strong>Level 1</strong> (more support and visuals) or
+                <strong>Level 2</strong> (the regular challenge).
+              </p>
+            </div>
+          </div>
+          <div class="embed-wrap">
+            <div class="embed-toolbar">
+              <div class="embed-note" id="bonusPickerNote">
+                Choose a game and a level to start playing.
+              </div>
+              <div class="resize-note">Best in full-screen browser mode.</div>
+            </div>
+            <div
+              class="bonus-picker"
+              role="group"
+              aria-label="Choose a bonus histogram game"
+              style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 14px 0 4px;
+              "
+            >
+              <button
+                type="button"
+                class="utility-btn bonus-btn"
+                data-game="./games/game-day-data-lab-level-1.html"
+                data-title="Game Day Data Lab — Level 1"
+              >
+                🏀 Game Day Data Lab · Level 1
+              </button>
+              <button
+                type="button"
+                class="utility-btn bonus-btn"
+                data-game="./games/game-day-data-lab-level-2.html"
+                data-title="Game Day Data Lab — Level 2"
+              >
+                🏀 Game Day Data Lab · Level 2
+              </button>
+              <button
+                type="button"
+                class="utility-btn bonus-btn"
+                data-game="./games/disease-detectives-level-1.html"
+                data-title="Histogram Disease Detectives — Level 1"
+              >
+                🔬 Disease Detectives · Level 1
+              </button>
+              <button
+                type="button"
+                class="utility-btn bonus-btn"
+                data-game="./games/disease-detectives-level-2.html"
+                data-title="Histogram Disease Detectives — Level 2"
+              >
+                🔬 Disease Detectives · Level 2
+              </button>
+            </div>
+            <iframe
+              id="frame-bonus"
+              class="activity-frame"
+              title="Bonus histogram game"
+              style="height: 90vh; min-height: 1200px"
+            ></iframe>
+          </div>
+        </section>
       </main>
 
       <footer class="bottom-panel">
@@ -897,19 +970,23 @@
         lesson: "First Lesson",
         practice: "Guided Practice",
         game: "Full Game",
+        bonus: "Bonus Games",
       };
 
+      // Bonus Games are always open (no gate) and load external files via src,
+      // so they are intentionally left out of frameMap/minimumHeights below.
       const gateRequirements = {
         lesson: [],
         practice: ["lesson"],
         game: ["lesson", "practice"],
+        bonus: [],
       };
 
       const completionKey = "histogram-master-lab-completion-v2";
       const legacyCompletionKey = "histogram-master-lab-completion-v1";
       const nameKey = "histogram-master-lab-student-name-v1";
       const loadedFrames = {};
-      const pageOrder = ["lesson", "practice", "game"];
+      const pageOrder = ["lesson", "practice", "game", "bonus"];
       const activePageKey = "histogram-master-lab-active-page-v1";
       let activePage = localStorage.getItem(activePageKey) || "lesson";
 
@@ -1189,6 +1266,55 @@
       nameInput.addEventListener("input", () => {
         localStorage.setItem(nameKey, nameInput.value.trim());
         Object.keys(frameMap).forEach(syncStudentNameToFrame);
+      });
+
+      // Bonus Games picker: load the chosen standalone game into its iframe.
+      const bonusFrame = document.getElementById("frame-bonus");
+      const bonusNote = document.getElementById("bonusPickerNote");
+      document.querySelectorAll(".bonus-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".bonus-btn")
+            .forEach((b) => b.classList.toggle("active", b === btn));
+          if (bonusFrame.getAttribute("src") !== btn.dataset.game) {
+            bonusFrame.setAttribute("src", btn.dataset.game);
+          }
+          if (bonusNote)
+            bonusNote.innerHTML = `Now playing: <strong>${escapeHtml(btn.dataset.title)}</strong>`;
+          bonusFrame.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+      bonusFrame.addEventListener("load", () => {
+        const value = (
+          document.getElementById("studentName").value || ""
+        ).trim();
+        if (!value) return;
+        try {
+          const doc =
+            bonusFrame.contentDocument || bonusFrame.contentWindow.document;
+          const input = Array.from(
+            doc.querySelectorAll(
+              'input[type="text"], input:not([type]), textarea',
+            ),
+          ).find((el) =>
+            (
+              el.getAttribute("aria-label") ||
+              el.getAttribute("placeholder") ||
+              el.id ||
+              el.name ||
+              ""
+            )
+              .toLowerCase()
+              .match(/name|student/),
+          );
+          if (input && !input.value) {
+            input.value = value;
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        } catch (error) {
+          // Embedded game may block access; keep the parent stable.
+        }
       });
 
       window.addEventListener("resize", () => setTimeout(resizeAllFrames, 150));
