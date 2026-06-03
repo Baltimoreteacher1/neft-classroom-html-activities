@@ -527,7 +527,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "detective",
-            en: "Careful, GUMSHOE. The master clue: &ldquo;When you take <b>twice</b> the number of stolen coins and <b>subtract 12</b>, you are left with <b>30</b>.&rdquo; Let <b>c</b> = stolen coins. Pick the line whose equation AND solution are both correct.",
+            en: "Careful, GUMSHOE. The master clue: &ldquo;When you take <b>twice</b> the number of stolen coins and <b>subtract 12</b>, you are left with <b>30</b>.&rdquo; Let <b>c</b> = stolen coins. Which line shows both the correct equation and the correct value of c?",
           },
           choices: [
             {

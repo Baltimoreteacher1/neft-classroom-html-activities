@@ -94,7 +94,7 @@ window.GN_STORY = {
           id: "1a",
           ask: {
             who: "coral",
-            en: "Stop me — don't round! The mangrove pool measures <b>3½ ft</b> long, <b>2 ft</b> wide, and <b>4 ft</b> deep. Certify its volume using V = l × w × h.",
+            en: "Stop me — don't round! The mangrove pool measures <b>3½ ft</b> long, <b>2 ft</b> wide, and <b>4 ft</b> deep. Using V = l × w × h, what is its exact volume?",
           },
           choices: [
             {
@@ -124,7 +124,7 @@ window.GN_STORY = {
           id: "1b",
           ask: {
             who: "architect",
-            en: "A compact display measures <b>2½ ft</b> × <b>1½ ft</b> × <b>2 ft</b>. Two edges are fractional. Find the exact volume. Volume = l × w × h. Multiply the fractions exactly — do not round.",
+            en: "A compact display measures <b>2½ ft</b> × <b>1½ ft</b> × <b>2 ft</b>. Two edges are fractional. Using Volume = l × w × h and multiplying the fractions exactly (do not round), what is the exact volume?",
           },
           choices: [
             {
@@ -323,7 +323,7 @@ window.GN_STORY = {
           id: "2a",
           ask: {
             who: "coral",
-            en: "Catch me — each face has a matching pair! Unfold the kelp-forest tank (<b>6 ft × 4 ft × 3 ft</b>) into a net and sum the six face areas to order the glass. Surface area = sum of all 6 faces = 2(lw + lh + wh).",
+            en: "Catch me — each face has a matching pair! Unfold the kelp-forest tank (<b>6 ft × 4 ft × 3 ft</b>) into a net and sum the six face areas. What is the surface area = sum of all 6 faces = 2(lw + lh + wh)?",
             vocab: [
               {
                 term: "Surface area",
@@ -359,7 +359,7 @@ window.GN_STORY = {
           id: "2b",
           ask: {
             who: "architect",
-            en: "The walk-through gallery tank is <b>8 ft × 3 ft × 2 ft</b>. Compute its surface area to finish the glass order. Surface area = 2(lw + lh + wh), in square feet (ft²).",
+            en: "The walk-through gallery tank is <b>8 ft × 3 ft × 2 ft</b>. Using Surface area = 2(lw + lh + wh), what is its surface area in square feet (ft²)?",
           },
           choices: [
             {
@@ -519,7 +519,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "architect",
-            en: "Don't swap them, CORAL. The centerpiece tank is <b>7 ft × 4 ft × 3 ft</b>. Final sign-off requires BOTH the water volume and the glass surface area on one line. Choose the fully correct certification. Volume = l × w × h (ft³). Surface area = 2(lw + lh + wh) (ft²).",
+            en: "Don't swap them, CORAL. The centerpiece tank is <b>7 ft × 4 ft × 3 ft</b>. Final sign-off requires BOTH numbers. What are the water volume and the glass surface area of this tank? Volume = l × w × h (ft³). Surface area = 2(lw + lh + wh) (ft²).",
           },
           choices: [
             {

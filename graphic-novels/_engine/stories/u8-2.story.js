@@ -454,7 +454,7 @@ window.GN_STORY = {
           bonusTag: "⭐ Analyst's Bonus — Optional",
           ask: {
             who: "gm",
-            en: "Optional duel: two players, same average. Player P: <b>8, 9, 10, 11, 12</b>. Player Q: <b>2, 6, 10, 14, 18</b>. Compute both MADs and pick the correct comparison. Skip if you'd rather lock the report.",
+            en: "Optional duel: two players, same average. Player P: <b>8, 9, 10, 11, 12</b>. Player Q: <b>2, 6, 10, 14, 18</b>. What is each player's MAD, and which player is more consistent? Skip if you'd rather lock the report.",
           },
           choices: [
             {
@@ -549,7 +549,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "analyst",
-            en: "The spread always matters, STATS. Closer candidate's last 5 clutch scores: <b>6, 8, 10, 12, 14</b>. Build the complete profile: <b>mean</b>, <b>median</b>, and <b>MAD</b>. Pick the line that is fully correct.",
+            en: "The spread always matters, STATS. Closer candidate's last 5 clutch scores: <b>6, 8, 10, 12, 14</b>. What are the <b>mean</b>, <b>median</b>, and <b>MAD</b> of these scores?",
           },
           choices: [
             {
@@ -581,7 +581,7 @@ window.GN_STORY = {
           bonusTag: "⭐ Analyst's Final Bonus — Optional",
           ask: {
             who: "gm",
-            en: "Optional tie-breaker: a rival closer has the <b>same mean (10)</b> and <b>same median (10)</b>, but clutch scores <b>1, 5, 10, 15, 19</b>. Compute their MAD and decide who to trust for one final shot. Skip anytime and still finish the mission.",
+            en: "Optional tie-breaker: a rival closer has the <b>same mean (10)</b> and <b>same median (10)</b>, but clutch scores <b>1, 5, 10, 15, 19</b>. What is this rival's MAD, and who should you trust for one final shot? Skip anytime and still finish the mission.",
           },
           choices: [
             {

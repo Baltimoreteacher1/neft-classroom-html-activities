@@ -575,8 +575,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "traveler",
-            en: "The last gate needs BOTH skills. The plane uses <b>2 bags for every 1 traveler</b>. Use the ratio table to find the bags for <b>5 travelers</b>. Pick the line that is fully correct. <br><br>Travelers: 1, 2, 3, 5 → Bags: 2, 4, 6, ?",
-            es: "2 maletas por cada 1 viajero. ¿Cuántas maletas para 5 viajeros?",
+            en: "The last gate needs BOTH skills. The plane uses <b>2 bags for every 1 traveler</b>. What is the ratio of bags to travelers, and how many bags do <b>5 travelers</b> need? Pick the line that is fully correct. <br><br>Travelers: 1, 2, 3, 5 → Bags: 2, 4, 6, ?",
+            es: "2 maletas por cada 1 viajero. ¿Cuál es la razón de maletas a viajeros, y cuántas maletas necesitan 5 viajeros?",
           },
           hint: {
             en: "The ratio is bags : travelers = 2 : 1. Multiply travelers by 2. 5 × 2 = ?",

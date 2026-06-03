@@ -192,7 +192,7 @@ window.GN_STORY = {
           id: "1b",
           ask: {
             who: "chef",
-            en: "To release the pantry, portion <b>7/8 cup</b> of glaze into <b>1/4-cup</b> brushes. Evaluate <b>7/8 ÷ 1/4</b> and report it as a mixed number.",
+            en: "To release the pantry, portion <b>7/8 cup</b> of glaze into <b>1/4-cup</b> brushes. How many brushes is that? What is <b>7/8 ÷ 1/4</b> as a mixed number?",
           },
           choices: [
             {

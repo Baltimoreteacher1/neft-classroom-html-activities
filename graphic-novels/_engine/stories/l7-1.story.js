@@ -208,8 +208,8 @@ window.GN_STORY = {
           id: "1b",
           ask: {
             who: "cadet",
-            en: "Now cross 9.6 light-units in jumps of 0.8. Compute <b>9.6 ÷ 0.8</b>.",
-            es: "Ahora cruza 9.6 unidades en saltos de 0.8. Calcula 9.6 ÷ 0.8.",
+            en: "Now cross 9.6 light-units in jumps of 0.8. What is <b>9.6 ÷ 0.8</b>?",
+            es: "Ahora cruza 9.6 unidades en saltos de 0.8. ¿Cuánto es 9.6 ÷ 0.8?",
             vocab: [
               {
                 term: "quotient",
@@ -362,8 +362,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "cadet",
-            en: "Hold on, AXIS — shift the decimal in BOTH numbers. Compute <b>7.2 ÷ 0.9</b>. Which line is correct?",
-            es: "Espera, AXIS: mueve el punto en AMBOS números. Calcula 7.2 ÷ 0.9. ¿Cuál línea es correcta?",
+            en: "Hold on, AXIS — shift the decimal in BOTH numbers. What is <b>7.2 ÷ 0.9</b>?",
+            es: "Espera, AXIS: mueve el punto en AMBOS números. ¿Cuánto es 7.2 ÷ 0.9?",
           },
           hint: {
             en: "Multiply both by 10: 7.2 ÷ 0.9 = 72 ÷ 9 = 8.",

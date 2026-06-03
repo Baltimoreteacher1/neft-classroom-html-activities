@@ -155,7 +155,7 @@ window.GN_STORY = {
           id: "1b",
           ask: {
             who: "producer",
-            en: "The lighting truss draws <b>2<sup>4</sup> × 3</b> amps. Evaluate it: handle the <b>exponent first</b>, then multiply.",
+            en: "The lighting truss draws <b>2<sup>4</sup> × 3</b> amps. Handle the <b>exponent first</b>, then multiply: what is the value of 2<sup>4</sup> × 3?",
           },
           choices: [
             {
@@ -300,7 +300,7 @@ window.GN_STORY = {
           id: "2a",
           ask: {
             who: "producer",
-            en: "Slow down, ECHO — that adds before squaring. The main-stage build cost is <b>4 + 3 × (6 − 2)<sup>2</sup></b>. Evaluate it with the order of operations: <b>grouping</b>, then <b>exponent</b>, then <b>multiply</b>, then <b>add</b>.",
+            en: "Slow down, ECHO — that adds before squaring. The main-stage build cost is <b>4 + 3 × (6 − 2)<sup>2</sup></b>. Using the order of operations (<b>grouping</b>, then <b>exponent</b>, then <b>multiply</b>, then <b>add</b>), what is the value of 4 + 3 × (6 − 2)<sup>2</sup>?",
           },
           choices: [
             {
@@ -537,7 +537,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "producer",
-            en: "Careful, ECHO — 3³ is not 3×3. The master grid demands the value of <b>3<sup>3</sup> + 2 × (8 − 3)</b>. Evaluate fully: grouping, then the power, then multiply, then add.",
+            en: "Careful, ECHO — 3³ is not 3×3. The master grid runs on <b>3<sup>3</sup> + 2 × (8 − 3)</b>. Working fully (grouping, then the power, then multiply, then add), what is the value of 3<sup>3</sup> + 2 × (8 − 3)?",
           },
           choices: [
             {

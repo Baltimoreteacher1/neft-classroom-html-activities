@@ -393,8 +393,8 @@ window.GN_STORY = {
           id: "2b",
           ask: {
             who: "cadet",
-            en: "⚡ Power Lock #2 — fine-tune the power: 1.2 × 0.05. Multiply, then place the decimal point correctly.",
-            es: "Ajuste fino: 1.2 × 0.05. Multiplica y coloca bien el punto.",
+            en: "⚡ Power Lock #2 — fine-tune the power: 1.2 × 0.05. Multiply, then place the decimal point correctly. What is the product?",
+            es: "Ajuste fino: 1.2 × 0.05. Multiplica y coloca bien el punto. ¿Cuál es el producto?",
           },
           hint: {
             en: "12 × 5 = 60. Places: 1 (in 1.2) + 2 (in 0.05) = 3. You may need to annex a zero in front.",
@@ -551,8 +551,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "cadet",
-            en: "🔒 Launch Code — compute (4.5 + 1.5) × 0.5. Add first, then multiply. Which line is fully correct?",
-            es: "Calcula (4.5 + 1.5) × 0.5. Suma primero, luego multiplica. ¿Cuál línea es correcta?",
+            en: "🔒 Launch Code — add first, then multiply. What is (4.5 + 1.5) × 0.5?",
+            es: "Suma primero, luego multiplica. ¿Cuánto es (4.5 + 1.5) × 0.5?",
           },
           hint: {
             en: "4.5 + 1.5 = 6.0. Then 6.0 × 0.5 = 3.0 (half of 6).",

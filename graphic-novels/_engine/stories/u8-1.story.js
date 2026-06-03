@@ -590,7 +590,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "analyst",
-            en: "Careful, STATS — 25 is the total, not the mean. Coach asks for the <b>most reliable</b> scorer. Maya's last 5 shots scored: <b>5, 5, 5, 7, 3</b>. Find the <b>mean</b> AND the <b>mode</b>, then pick the line that is fully correct.",
+            en: "Careful, STATS — 25 is the total, not the mean. Coach asks for the <b>most reliable</b> scorer. Maya's last 5 shots scored: <b>5, 5, 5, 7, 3</b>. What are the <b>mean</b> and the <b>mode</b> of her shots?",
             es: "Encuentra la media Y la moda. Elige la línea correcta.",
           },
           hint: {

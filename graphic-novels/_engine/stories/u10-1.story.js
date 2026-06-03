@@ -207,8 +207,8 @@ window.GN_STORY = {
           id: "1b",
           ask: {
             who: "architect",
-            en: "The seahorse tank is long but shallow. It is <b>6 ft long, 4 ft wide,</b> and only <b>½ ft tall</b>. Find the volume.",
-            es: "El tanque mide 6 × 4 × ½. Encuentra el volumen.",
+            en: "The seahorse tank is long but shallow. It is <b>6 ft long, 4 ft wide,</b> and only <b>½ ft tall</b>. What is the volume of the tank?",
+            es: "El tanque mide 6 × 4 × ½. ¿Cuál es el volumen del tanque?",
             vocab: [
               {
                 term: "shallow",
@@ -381,8 +381,8 @@ window.GN_STORY = {
           id: "2b",
           ask: {
             who: "architect",
-            en: "This tank is <b>4 ft long, 3 ft wide, 2 ft tall</b>. Each pair of faces matches. Add all six faces to get the <b>surface area</b> (how much glass).",
-            es: "Suma las 6 caras del tanque de 4 × 3 × 2 para hallar el área de superficie.",
+            en: "This tank is <b>4 ft long, 3 ft wide, 2 ft tall</b>. Each pair of faces matches. When you add all six faces, what is the <b>surface area</b> (how much glass)?",
+            es: "Al sumar las 6 caras del tanque de 4 × 3 × 2, ¿cuál es el área de superficie?",
           },
           hint: {
             en: "front & back = 4×3 = 12 each. left & right = 3×2 = 6 each. top & bottom = 4×2 = 8 each. Add: 12+12+6+6+8+8.",
@@ -521,8 +521,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "architect",
-            en: "Careful, CORAL — volume and glass are different! The big centerpiece tank is <b>6 ft long, 5 ft wide, 4 ft tall</b>. The build needs BOTH the <b>volume</b> (water) and the <b>surface area</b> (glass). Pick the line that is fully correct.",
-            es: "Elige la línea correcta: el volumen y el área de superficie de un tanque de 6 × 5 × 4.",
+            en: "Careful, CORAL — volume and glass are different! The big centerpiece tank is <b>6 ft long, 5 ft wide, 4 ft tall</b>. What are the <b>volume</b> (water) and the <b>surface area</b> (glass) of this tank?",
+            es: "¿Cuáles son el volumen y el área de superficie de un tanque de 6 × 5 × 4?",
           },
           hint: {
             en: "Volume = 6×5×4. Surface area: front/back 6×5=30 each, left/right 5×4=20 each, top/bottom 6×4=24 each. Add the six faces.",

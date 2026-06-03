@@ -562,8 +562,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "detective",
-            en: "Careful, GUMSHOE. The final clue: &ldquo;A secret number plus <b>9</b> equals <b>23</b>.&rdquo; Let the number be <b>v</b>. First write the equation, then solve it. Pick the line that is fully correct.",
-            es: "Un n&uacute;mero m&aacute;s 9 es 23. Escribe la ecuaci&oacute;n y resu&eacute;lvela.",
+            en: "Careful, GUMSHOE. The final clue: &ldquo;A secret number plus <b>9</b> equals <b>23</b>.&rdquo; Let the number be <b>v</b>. Which line shows both the correct equation and its correct solution for v?",
+            es: "Un n&uacute;mero m&aacute;s 9 es 23. &iquest;Cu&aacute;l l&iacute;nea tiene la ecuaci&oacute;n correcta y su soluci&oacute;n correcta?",
           },
           hint: {
             en: "&#128161; &ldquo;plus 9&rdquo; means <b>v + 9</b>. &ldquo;equals 23&rdquo; means <b>= 23</b>. To solve, subtract 9: 23 &minus; 9 = ?",

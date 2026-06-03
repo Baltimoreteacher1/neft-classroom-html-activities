@@ -306,8 +306,8 @@ window.GN_STORY = {
           id: "2a",
           ask: {
             who: "marlow",
-            en: "The clues are at these heights: <b>6 m</b> up, <b>−8 m</b> (below sea level), <b>0 m</b> (sea level), <b>12 m</b> up, and <b>−15 m</b> deep. Put them in order from <b>lowest to highest</b> — stop me if I'm wrong!",
-            es: "Ordena de menor a mayor: 6, −8, 0, 12, −15.",
+            en: "The clues are at these heights: <b>6 m</b> up, <b>−8 m</b> (below sea level), <b>0 m</b> (sea level), <b>12 m</b> up, and <b>−15 m</b> deep. Which list puts them in order from <b>lowest to highest</b>?",
+            es: "¿Cuál lista ordena estas alturas de menor a mayor: 6, −8, 0, 12, −15?",
           },
           hint: {
             en: "On a number line, numbers get <b>bigger</b> to the right. Negative numbers are <b>below zero</b>. The most negative (deepest) is the smallest.",
@@ -544,8 +544,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "navigator",
-            en: "Careful, MARLOW. The treasure is at point <b>(−2, −5)</b>, buried <b>5 m below</b> sea level. Pick the line that is <b>fully correct</b>: the quadrant of the point AND the distance of −5 from the surface.",
-            es: "Elige la línea correcta: el cuadrante de (−2, −5) y la distancia de −5 desde 0.",
+            en: "Careful, MARLOW. The treasure is at point <b>(−2, −5)</b>, buried <b>5 m below</b> sea level. In which quadrant is the point, and what is the distance of −5 from the surface?",
+            es: "¿En qué cuadrante está (−2, −5) y cuál es la distancia de −5 desde la superficie (0)?",
           },
           hint: {
             en: "x = −2 (left) and y = −5 (down) → bottom-left = <b>Quadrant III</b>. And |−5| = 5.",

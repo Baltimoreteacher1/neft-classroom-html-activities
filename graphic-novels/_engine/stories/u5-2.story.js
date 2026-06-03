@@ -241,7 +241,7 @@ window.GN_STORY = {
           bonusTag: "⭐ Captain's Challenge",
           ask: {
             who: "log",
-            en: "Optional &mdash; the plaza is already open. A diamond-shaped VIP court is a parallelogram that must cover <b>150 m&sup2;</b>. Its perpendicular height is fixed at <b>10 m</b>. Reverse-engineer the base it needs.",
+            en: 'Optional &mdash; the plaza is already open. A diamond-shaped VIP court is a parallelogram that must cover <b>150 m&sup2;</b>. Its perpendicular height is fixed at <b>10 m</b>. Working backward from <span class="formula">A = b &times; h</span>, what base does the court need?',
           },
           choices: [
             {

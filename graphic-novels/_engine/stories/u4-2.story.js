@@ -93,7 +93,7 @@ window.GN_STORY = {
           id: "1a",
           ask: {
             who: "helper",
-            en: "First bid is on the energy drinks. Different sizes, different prices. Pick the real best value. Two suppliers pitch the same energy drink. Vendor A: a <b>750 mL</b> bottle for <b>$4.50</b>. Vendor B: a <b>1.25 L</b> (1250 mL) bottle for <b>$6.25</b>. Stock the better value &mdash; compare the price per millilitre.",
+            en: "First bid is on the energy drinks. Two suppliers pitch the same energy drink. Vendor A: a <b>750 mL</b> bottle for <b>$4.50</b>. Vendor B: a <b>1.25 L</b> (1250 mL) bottle for <b>$6.25</b>. Comparing the price per millilitre, which vendor is the better value?",
           },
           choices: [
             {
@@ -515,7 +515,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "mogul",
-            en: "The grand-opening special: a <b>6-pack</b> of smart bulbs at <b>$48</b>, then <b>15% off</b>. Find the final price for <b>one bulb</b>.",
+            en: "The grand-opening special: a <b>6-pack</b> of smart bulbs at <b>$48</b>, then <b>15% off</b>. What is the final price for <b>one bulb</b>?",
           },
           choices: [
             {

@@ -133,8 +133,8 @@ window.GN_STORY = {
           id: "1a",
           ask: {
             who: "axis",
-            en: "Check me, Commander. Compute <b>12.6 ÷ 0.6</b> to count the legs. Make the divisor whole first.",
-            es: "Compruébame, Comandante. Calcula 12.6 ÷ 0.6 para contar los tramos. Haz el divisor entero primero.",
+            en: "Check me, Commander. Make the divisor whole first. What is <b>12.6 ÷ 0.6</b>?",
+            es: "Compruébame, Comandante. Haz el divisor entero primero. ¿Cuánto es 12.6 ÷ 0.6?",
           },
           hint: {
             en: "Multiply both by 10: 12.6 ÷ 0.6 = 126 ÷ 6 = 21.",
@@ -359,8 +359,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "cadet",
-            en: "Careful, AXIS — recount that division. Compute <b>1.25 ÷ 0.25</b>. The divisor has hundredths. Which line is correct?",
-            es: "Cuidado, AXIS: vuelve a contar esa división. Calcula 1.25 ÷ 0.25. El divisor tiene centésimas. ¿Cuál línea es correcta?",
+            en: "Careful, AXIS — recount that division. The divisor has hundredths. What is <b>1.25 ÷ 0.25</b>?",
+            es: "Cuidado, AXIS: vuelve a contar esa división. El divisor tiene centésimas. ¿Cuánto es 1.25 ÷ 0.25?",
           },
           hint: {
             en: "Multiply both by 100: 1.25 ÷ 0.25 = 125 ÷ 25 = 5.",

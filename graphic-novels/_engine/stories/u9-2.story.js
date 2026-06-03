@@ -308,7 +308,7 @@ window.GN_STORY = {
           id: "2a",
           ask: {
             who: "marlow",
-            en: "Five dive stations read: reef shelf <b>−9 m</b>, gull rock <b>+14 m</b>, surface buoy <b>0 m</b>, wreck <b>−23 m</b>, and the cliff ledge <b>+5 m</b>. List them from <b>deepest to highest</b> — correct me if my digits fooled me!",
+            en: "Five dive stations read: reef shelf <b>−9 m</b>, gull rock <b>+14 m</b>, surface buoy <b>0 m</b>, wreck <b>−23 m</b>, and the cliff ledge <b>+5 m</b>. Which list puts these depths in order from <b>deepest to highest</b>?",
           },
           choices: [
             {
@@ -561,7 +561,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "navigator",
-            en: "The cache marker is plotted at <b>(−7, −3)</b> and lies buried at <b>−12 m</b> relative to the surface. Choose the single line that is <b>entirely correct</b>: the quadrant, the reflection of the marker across the y-axis, and the burial depth as a distance.",
+            en: "The cache marker is plotted at <b>(−7, −3)</b> and lies buried at <b>−12 m</b> relative to the surface. In which quadrant is the marker, what is its reflection across the y-axis, and what is the burial depth as a distance?",
           },
           choices: [
             {

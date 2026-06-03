@@ -564,7 +564,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "traveler",
-            en: "The final gateway fuses every skill. A flight burns <b>9 liters every 2 hours</b> (a steady rate). Pick the single line that is fully correct: the unit rate, the fuel for an 8-hour leg, and a point on the graph.",
+            en: "The final gateway fuses every skill. A flight burns <b>9 liters every 2 hours</b> (a steady rate). What is the unit rate, how much fuel does an 8-hour leg need, and which point lies on the graph? Pick the single line where all three are correct.",
           },
           choices: [
             {

@@ -1045,6 +1045,194 @@ main {
   }
 }
 
+/* ============================ Literacy layer ============================ */
+.reading-tag {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.rt-skill {
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-weight: 900;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.rt-std,
+.rt-dok {
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+
+.choices.evidence {
+  gap: 8px;
+}
+.choice.ev {
+  font-style: normal;
+}
+
+.seq-list {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+.seq-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: var(--sh-sm);
+  cursor: grab;
+  font-weight: 700;
+}
+.seq-card:focus-visible {
+  outline: 4px solid var(--gold);
+  outline-offset: 2px;
+}
+.seq-card .seq-h {
+  color: var(--muted);
+  font-weight: 900;
+}
+.seq-card .seq-t {
+  flex: 1;
+}
+.seq-card .seq-t .es {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.seq-ctl {
+  display: flex;
+  gap: 4px;
+}
+.seq-up,
+.seq-down {
+  min-width: 44px;
+  min-height: 44px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+}
+.seq-up:hover,
+.seq-down:hover {
+  background: var(--gold);
+}
+.seq-list.solved .seq-card {
+  border-color: var(--green);
+  background: #ecfdf5;
+  cursor: default;
+}
+.seq-list.nudge {
+  animation: figrise 0.25s ease;
+}
+.seq-check {
+  margin-top: 10px;
+}
+
+.tts {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.tts-btn {
+  min-width: 36px;
+  min-height: 36px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+.tts-btn:hover {
+  background: var(--gold);
+}
+
+.notebook {
+  text-align: left;
+  border: 3px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  margin: 18px auto 0;
+  max-width: 640px;
+  box-shadow: var(--sh-sm);
+}
+.notebook h3 {
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+.nb-row {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+  font-weight: 600;
+}
+.nb-row:last-child {
+  border-bottom: 0;
+}
+.nb-frame {
+  margin-top: 4px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.nb-blank {
+  display: inline-block;
+  min-width: 160px;
+  border-bottom: 2px solid var(--line);
+}
+
+@media print {
+  .topbar,
+  .tabs,
+  .scene-foot,
+  .next,
+  .advance,
+  .start,
+  .restart,
+  .tts,
+  .dlg-row,
+  .chal-tools,
+  #print-nb,
+  .callout,
+  .gn-pop,
+  .gn-pop-back {
+    display: none !important;
+  }
+  .scene {
+    display: block !important;
+    page-break-after: always;
+  }
+  body {
+    background: #fff;
+  }
+  .panel {
+    box-shadow: none;
+  }
+  .speaker-fig {
+    display: none !important;
+  }
+}
+
     </style>
   </head>
   <body>
@@ -1064,6 +1252,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Court Vision: The Data Analyst",
     standard: "6.SP.1",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U8 #1: Court Vision: The Data Analyst",
     artBase: "../_art/unit8/",
     home: "../index.html",
@@ -1121,6 +1310,12 @@ window.GN_STORY = {
               es: "¡Analista! Gran partido hoy. Necesito que estudies los datos y me ayudes a decidir.",
             },
             {
+              who: "coach",
+              caption: true,
+              en: "The whole team is counting on these numbers. If we read the data wrong, we lose the game.",
+              es: "Todo el equipo cuenta con estos números. Si leemos mal los datos, perdemos el partido.",
+            },
+            {
               who: "analyst",
               en: "On it, Coach! First I need a STATISTICAL question — one with many answers I can collect as data.",
               es: "¡Voy! Primero necesito una pregunta estadística: una con muchas respuestas que pueda recolectar.",
@@ -1137,6 +1332,37 @@ window.GN_STORY = {
               misconception: true,
               en: "Easy — just ask how many points Jordan scored last night. One number, one answer. Done!",
               es: "Fácil: solo pregunta cuántos puntos anotó Jordan anoche. Un número, una respuesta. ¡Listo!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "coach",
+            en: "Why does Coach need the Analyst to study the data tonight?",
+            es: "¿Por qué necesita Coach que la Analista estudie los datos esta noche?",
+          },
+          choices: [
+            {
+              en: "To help the team make smart calls and win the big game.",
+              es: "Para ayudar al equipo a tomar buenas decisiones y ganar el gran partido.",
+              correct: true,
+            },
+            {
+              en: "To clean the holographic desk in the data room.",
+              es: "Para limpiar el escritorio holográfico de la sala de datos.",
+              correct: false,
+            },
+            {
+              en: "To teach STATS how to play basketball.",
+              es: "Para enseñarle a STATS a jugar baloncesto.",
+              correct: false,
             },
           ],
         },
@@ -1187,6 +1413,41 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c2",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "coach",
+            en: "In the story, what makes a question a <b>statistical</b> question?",
+            es: "En la historia, ¿qué hace que una pregunta sea <b>estadística</b>?",
+          },
+          hint: {
+            en: "Think about why “points each game” worked but “points last night” did not.",
+            es: "Piensa por qué “puntos cada juego” sirvió pero “puntos anoche” no.",
+          },
+          choices: [
+            {
+              en: "It has many different answers you collect as data.",
+              es: "Tiene muchas respuestas diferentes que recolectas como datos.",
+              correct: true,
+            },
+            {
+              en: "It always has exactly one correct answer.",
+              es: "Siempre tiene exactamente una respuesta correcta.",
+              correct: false,
+            },
+            {
+              en: "It is the hardest question on the data table.",
+              es: "Es la pregunta más difícil de la tabla de datos.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "1b",
           art: "data-room.png",
@@ -1230,6 +1491,37 @@ window.GN_STORY = {
             es: "Datos leídos y listos. ¡Hora de llevar estos números al Coach!",
           },
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "coach",
+            en: "Tap the line that shows STATS reaching for the <b>wrong</b> kind of question.",
+            es: "Toca la línea que muestra a STATS eligiendo el tipo de pregunta <b>equivocado</b>.",
+          },
+          choices: [
+            {
+              en: "“Just ask how many points Jordan scored last night. One number, one answer.”",
+              es: "“Solo pregunta cuántos puntos anotó Jordan anoche. Un número, una respuesta.”",
+              correct: true,
+            },
+            {
+              en: "“First I need a STATISTICAL question — one with many answers.”",
+              es: "“Primero necesito una pregunta estadística: una con muchas respuestas.”",
+              correct: false,
+            },
+            {
+              en: "“Time to bring these numbers to Coach!”",
+              es: "“¡Hora de llevar estos números al Coach!”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -1254,6 +1546,12 @@ window.GN_STORY = {
               es: "¡Buenos datos! Ahora encuentra el centro. Empieza con la media: el promedio.",
             },
             {
+              who: "coach",
+              caption: true,
+              en: "One number can sum up five games — that's what the center does. It tells us a player's typical score.",
+              es: "Un solo número puede resumir cinco juegos: eso hace el centro. Nos dice el puntaje típico de un jugador.",
+            },
+            {
               who: "analyst",
               en: "Mean, median, and mode all describe the center. I'll compute each one step by step.",
               es: "La media, la mediana y la moda describen el centro. Calcularé cada una paso a paso.",
@@ -1270,6 +1568,37 @@ window.GN_STORY = {
               misconception: true,
               en: "Why bother with median or mode? The mean is the only center anyone needs. Just average it!",
               es: "¿Para qué la mediana o la moda? La media es el único centro que se necesita. ¡Solo promédialo!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "coach",
+            en: "What is this chapter mainly about?",
+            es: "¿De qué trata principalmente este capítulo?",
+          },
+          choices: [
+            {
+              en: "Finding the center of the data using the mean, median, and mode.",
+              es: "Encontrar el centro de los datos usando la media, la mediana y la moda.",
+              correct: true,
+            },
+            {
+              en: "Choosing which player gets the newest jersey.",
+              es: "Elegir qué jugador recibe la camiseta más nueva.",
+              correct: false,
+            },
+            {
+              en: "Writing a statistical question for the first time.",
+              es: "Escribir una pregunta estadística por primera vez.",
+              correct: false,
             },
           ],
         },
@@ -1423,6 +1752,37 @@ window.GN_STORY = {
             es: "Media, mediana y moda reportadas. ¡Ahora la jugada que gana el partido!",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "coach",
+            en: "Put the steps the Analyst followed to describe the center in order.",
+            es: "Ordena los pasos que siguió la Analista para describir el centro.",
+          },
+          items: [
+            {
+              en: "Add up the scores and divide to find the mean.",
+              es: "Suma los puntajes y divide para hallar la media.",
+              order: 1,
+            },
+            {
+              en: "Put the scores in order and find the middle one — the median.",
+              es: "Ordena los puntajes y halla el del medio: la mediana.",
+              order: 2,
+            },
+            {
+              en: "Count which value appears most often — the mode.",
+              es: "Cuenta qué valor aparece más veces: la moda.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -1447,6 +1807,12 @@ window.GN_STORY = {
               es: "Es la jugada final. Necesito al anotador más confiable. ¡Usa las estadísticas!",
             },
             {
+              who: "coach",
+              caption: true,
+              en: "There's only one shot left on the clock. Pick the wrong player and the season ends right here.",
+              es: "Solo queda un tiro en el reloj. Si eliges al jugador equivocado, la temporada termina aquí.",
+            },
+            {
               who: "analyst",
               en: "I'll use the mean AND the mode together. If both point to the same number, that player is steady.",
               es: "Usaré la media Y la moda juntas. Si ambas apuntan al mismo número, ese jugador es estable.",
@@ -1464,7 +1830,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "analyst",
-            en: "Careful, STATS — 25 is the total, not the mean. Coach asks for the <b>most reliable</b> scorer. Maya's last 5 shots scored: <b>5, 5, 5, 7, 3</b>. Find the <b>mean</b> AND the <b>mode</b>, then pick the line that is fully correct.",
+            en: "Careful, STATS — 25 is the total, not the mean. Coach asks for the <b>most reliable</b> scorer. Maya's last 5 shots scored: <b>5, 5, 5, 7, 3</b>. What are the <b>mean</b> and the <b>mode</b> of her shots?",
             es: "Encuentra la media Y la moda. Elige la línea correcta.",
           },
           hint: {
@@ -1504,6 +1870,72 @@ window.GN_STORY = {
             en: "That's the call, Coach! The data says Maya — give her the ball!",
             es: "¡Esa es la jugada, Coach! Los datos dicen Maya: ¡denle el balón!",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "coach",
+            en: "STATS keeps reaching for the mean and ignoring the median and mode. What can you tell about how STATS works?",
+            es: "STATS siempre busca la media e ignora la mediana y la moda. ¿Qué puedes deducir sobre cómo trabaja STATS?",
+          },
+          hint: {
+            en: "Look back: every time, STATS jumps to the average instead of checking the other centers.",
+            es: "Mira atrás: cada vez, STATS salta al promedio en lugar de revisar los otros centros.",
+          },
+          choices: [
+            {
+              en: "STATS trusts only the mean, so it misses what the median and mode reveal.",
+              es: "STATS confía solo en la media, así que se pierde lo que muestran la mediana y la moda.",
+              correct: true,
+            },
+            {
+              en: "STATS does not know how to add numbers at all.",
+              es: "STATS no sabe sumar números en absoluto.",
+              correct: false,
+            },
+            {
+              en: "STATS wants the team to lose the game on purpose.",
+              es: "STATS quiere que el equipo pierda el partido a propósito.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "coach",
+            en: "The call is made and Maya gets the ball. What will most likely happen next?",
+            es: "La jugada está hecha y Maya recibe el balón. ¿Qué pasará probablemente después?",
+          },
+          choices: [
+            {
+              en: "Maya takes the reliable shot the data pointed to, finishing the game.",
+              es: "Maya hace el tiro confiable que indicaron los datos y termina el partido.",
+              correct: true,
+            },
+            {
+              en: "The Analyst starts the data report over from the beginning.",
+              es: "La Analista empieza el reporte de datos otra vez desde el principio.",
+              correct: false,
+            },
+            {
+              en: "Coach throws away all of tonight's statistics.",
+              es: "Coach tira a la basura todas las estadísticas de esta noche.",
+              correct: false,
+            },
+          ],
         },
       ],
     },
@@ -1640,6 +2072,205 @@ window.GN_STORY = {
   }
   function txt(v) {
     return v == null ? "" : v;
+  }
+
+  /* Read-aloud (text-to-speech) via the Web Speech API. Offline, no assets. */
+  var TTS = (function () {
+    var synth = window.speechSynthesis;
+    function speak(text, lang) {
+      if (!synth) return;
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(
+        String(text).replace(/<[^>]+>/g, ""),
+      );
+      u.lang = lang === "es" ? "es-ES" : "en-US";
+      u.rate = 0.95;
+      synth.speak(u);
+    }
+    return { available: !!synth, speak: speak };
+  })();
+
+  /* Interaction + feature extensibility seams. */
+  var INTERACTIONS = {}; // name -> { render(step, groupEl, onSolve) }  (must emit .choices/.choice.correct on solve)
+
+  INTERACTIONS["evidence"] = {
+    render: function (step, groupEl) {
+      groupEl.classList.add("evidence");
+      step.choices.forEach(function (c) {
+        var b = el(
+          "button",
+          "choice ev",
+          "&#128206; " +
+            c.en +
+            (c.es ? '<span class="es">' + c.es + "</span>" : ""),
+        );
+        b.dataset.correct = !!c.correct;
+        groupEl.appendChild(b);
+      });
+    },
+  };
+  INTERACTIONS["sequence"] = {
+    render: function (step, groupEl, onSolve) {
+      groupEl.classList.add("sequence");
+      var list = el("ol", "seq-list");
+      // present in a shuffled-but-deterministic order so the answer isn't given away
+      var order = step.items.map(function (_, i) {
+        return i;
+      });
+      order.sort(function (a, b) {
+        return (
+          ((a * 7 + 3) % step.items.length) - ((b * 7 + 3) % step.items.length)
+        );
+      });
+      order.forEach(function (idx) {
+        var li = el("li", "seq-card");
+        li.draggable = true;
+        li.dataset.idx = idx;
+        li.tabIndex = 0;
+        li.innerHTML =
+          '<span class="seq-h" aria-hidden="true">&#8942;</span>' +
+          '<span class="seq-t">' +
+          step.items[idx].en +
+          (step.items[idx].es
+            ? '<span class="es">' + step.items[idx].es + "</span>"
+            : "") +
+          "</span>" +
+          '<span class="seq-ctl">' +
+          '<button class="seq-up" type="button" aria-label="Move up">&#9650;</button>' +
+          '<button class="seq-down" type="button" aria-label="Move down">&#9660;</button>' +
+          "</span>";
+        list.appendChild(li);
+      });
+      var btn = el("button", "next seq-check", "Check order");
+      btn.type = "button";
+      groupEl.appendChild(list);
+      groupEl.appendChild(btn);
+
+      function moveUp(li) {
+        if (li.previousElementSibling)
+          list.insertBefore(li, li.previousElementSibling);
+      }
+      function moveDown(li) {
+        if (li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
+      }
+      list.addEventListener("click", function (e) {
+        var up = e.target.closest(".seq-up"),
+          dn = e.target.closest(".seq-down");
+        if (up) moveUp(up.closest("li"));
+        if (dn) moveDown(dn.closest("li"));
+      });
+      list.addEventListener("keydown", function (e) {
+        var li = e.target.closest && e.target.closest("li");
+        if (!li) return;
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          moveUp(li);
+          li.focus();
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          moveDown(li);
+          li.focus();
+        }
+      });
+      var dragged = null;
+      list.addEventListener("dragstart", function (e) {
+        dragged = e.target.closest("li");
+      });
+      list.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        var li = e.target.closest("li");
+        if (li && li !== dragged)
+          list.insertBefore(dragged, li.nextSibling || li);
+      });
+      var solved = false;
+      btn.addEventListener("click", function () {
+        if (solved) return;
+        var idxs = Array.prototype.map.call(list.children, function (li) {
+          return +li.dataset.idx;
+        });
+        var ok = true;
+        for (var i = 1; i < idxs.length; i++)
+          if (step.items[idxs[i]].order < step.items[idxs[i - 1]].order)
+            ok = false;
+        if (ok) {
+          solved = true;
+          var mark = el("button", "choice correct");
+          mark.style.display = "none";
+          mark.dataset.correct = "true";
+          groupEl.appendChild(mark);
+          btn.disabled = true;
+          list.classList.add("solved");
+          if (onSolve) onSolve();
+        } else {
+          list.classList.add("nudge");
+          setTimeout(function () {
+            list.classList.remove("nudge");
+          }, 500);
+        }
+      });
+    },
+  };
+  var FEATURES = []; // [{ onBeat(beat,ctx), onSolve(step,ctx), onComplete(ctx) }]
+  function fire(hook, a, b) {
+    FEATURES.forEach(function (f) {
+      if (f[hook])
+        try {
+          f[hook](a, b);
+        } catch (e) {}
+    });
+  }
+  function isComprehension(step) {
+    return step.type === "comprehension";
+  }
+  var SKILLS = {
+    vocab_in_context: "Vocabulary in Context",
+    main_idea: "Determine Main Idea",
+    key_details: "Key Details",
+    sequence: "Sequence / Cause & Effect",
+    inference: "Make an Inference",
+    cite_evidence: "Cite Text Evidence",
+    prediction: "Make a Prediction",
+  };
+  function SKILL_LABEL(k) {
+    return SKILLS[k] || "Reading";
+  }
+
+  /* ---------- Reading + Math notebook (auto-collected, printable) ----------
+     A FEATURE that records each solved step (skill, question, sentence-frame)
+     and renders a printable log on the complete screen. No PII collected. */
+  var NOTEBOOK = { entries: [] };
+  FEATURES.push({
+    onSolve: function (step) {
+      NOTEBOOK.entries.push({
+        kind: isComprehension(step) ? "reading" : "math",
+        skill: step.skill ? SKILL_LABEL(step.skill) : "Math",
+        q: stripTags((step.ask && step.ask.en) || ""),
+        frame: step.frame ? stripTags(step.frame.en) : "",
+      });
+    },
+  });
+  function renderNotebook() {
+    var host = $("nt-notebook");
+    if (!host) return;
+    host.innerHTML =
+      "<h3>My Reading + Math Log</h3>" +
+      NOTEBOOK.entries
+        .map(function (e) {
+          return (
+            '<div class="nb-row"><b>' +
+            e.skill +
+            ":</b> " +
+            e.q +
+            (e.frame
+              ? '<div class="nb-frame">' +
+                e.frame +
+                ' <span class="nb-blank"></span></div>'
+              : "") +
+            "</div>"
+          );
+        })
+        .join("");
   }
 
   /* Per-unit signature colors so each world looks distinct (the comic shell is
@@ -1835,6 +2466,28 @@ window.GN_STORY = {
       en +
       "</div>" +
       (beat.es ? '<div class="es">' + beat.es + "</div>" : "");
+    if (TTS.available) {
+      var ctl =
+        '<span class="tts">' +
+        '<button class="tts-btn" type="button" data-tts-en aria-label="Read aloud">&#128266;</button>' +
+        (beat.es
+          ? '<button class="tts-btn" type="button" data-tts-es aria-label="Leer en voz alta">ES</button>'
+          : "") +
+        "</span>";
+      b.insertAdjacentHTML("beforeend", ctl);
+      b.querySelector("[data-tts-en]").addEventListener("click", function (e) {
+        e.stopPropagation();
+        TTS.speak(beat.en, "en");
+      });
+      if (beat.es)
+        b.querySelector("[data-tts-es]").addEventListener(
+          "click",
+          function (e) {
+            e.stopPropagation();
+            TTS.speak(beat.es, "es");
+          },
+        );
+    }
     frag.appendChild(b);
     return frag;
   }
@@ -2071,6 +2724,8 @@ window.GN_STORY = {
         '<div class="feedback" id="fbComplete"></div></div>';
     }
     html +=
+      '<div id="nt-notebook" class="notebook"></div>' +
+      '<button class="restart" id="print-nb" type="button">&#128424;&#65039; Print my log</button>' +
       '<button class="restart" id="restart-btn">Play again &#8635;</button>';
     s.innerHTML = html;
     return s;
@@ -2142,6 +2797,7 @@ window.GN_STORY = {
   }
 
   function showScene(name) {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
     SCENE_IDS.forEach(function (s) {
       var sc = $("scene-" + s);
       if (sc) sc.classList.toggle("active", s === name);
@@ -2175,6 +2831,14 @@ window.GN_STORY = {
     var c = $("scene-complete");
     c.classList.add("active", "show");
     wireMaster();
+    renderNotebook();
+    var pnb = $("print-nb");
+    if (pnb && !pnb.dataset.wired) {
+      pnb.dataset.wired = "1";
+      pnb.addEventListener("click", function () {
+        window.print();
+      });
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -2300,7 +2964,8 @@ window.GN_STORY = {
     /* ---- challenge: gating (must solve to advance) ---- */
     function playChallenge(step) {
       renderCard(step, false);
-      wireChoices(step, act, function () {
+      var onSolve = function () {
+        fire("onSolve", step);
         if (step.solveArt) setArt(step.solveArt, step.solveAlt);
         if (step.solveBeat) {
           speechEl.innerHTML = "";
@@ -2309,19 +2974,40 @@ window.GN_STORY = {
         stepIdx++;
         // small beat so the success feedback is read before the next panel
         setTimeout(playStep, 400);
-      });
+      };
+      var grp = "choices-" + act.id + "-" + step.id;
+      if (
+        step.interaction &&
+        step.interaction !== "mc" &&
+        INTERACTIONS[step.interaction]
+      ) {
+        // render interaction FIRST so any .choice it creates exists for wireChoices
+        INTERACTIONS[step.interaction].render(step, $(grp), onSolve);
+      }
+      wireChoices(step, act, onSolve);
     }
 
     /* ---- challenge: optional bonus (does NOT gate; still scored) ----
        Renders this and any consecutive optional steps, then reveals advance. */
     function playOptional(step) {
       renderCard(step, true);
-      wireChoices(step, act, function () {
+      var onSolve = function () {
+        fire("onSolve", step);
         if (step.solveBeat) {
           speechEl.innerHTML = "";
           speechEl.appendChild(bubble(step.solveBeat));
         }
-      });
+      };
+      var grp = "choices-" + act.id + "-" + step.id;
+      if (
+        step.interaction &&
+        step.interaction !== "mc" &&
+        INTERACTIONS[step.interaction]
+      ) {
+        // render interaction FIRST so any .choice it creates exists for wireChoices
+        INTERACTIONS[step.interaction].render(step, $(grp), onSolve);
+      }
+      wireChoices(step, act, onSolve);
       stepIdx++;
       var nxt = act.steps[stepIdx];
       if (nxt && nxt.optional) playOptional(nxt);
@@ -2402,23 +3088,50 @@ window.GN_STORY = {
             : "") +
           "</div>";
       }
+      var comp = isComprehension(step);
+      var groupAttr = comp
+        ? ' data-score-group="reading" data-standard="' +
+          (step.standard || "") +
+          '"'
+        : "";
+      var label = comp
+        ? '<div class="reading-tag"><span class="rt-skill">' +
+          SKILL_LABEL(step.skill) +
+          "</span>" +
+          '<span class="rt-std">' +
+          (step.standard || "") +
+          "</span>" +
+          (step.dok ? '<span class="rt-dok">DOK ' + step.dok + "</span>" : "") +
+          "</div>"
+        : "";
       var choices =
-        '<div class="reply-label">Choose your reply</div>' +
+        label +
+        '<div class="reply-label">' +
+        (comp ? "Choose the best answer" : "Choose your reply") +
+        "</div>" +
         '<div class="choices" id="choices-' +
         act.id +
         "-" +
         step.id +
-        '">';
-      step.choices.forEach(function (c) {
-        choices +=
-          '<button class="choice" data-correct="' +
-          !!c.correct +
-          '">' +
-          c.en +
-          (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
-          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
-          "</button>";
-      });
+        '"' +
+        groupAttr +
+        ">";
+      if (
+        !step.interaction ||
+        step.interaction === "mc" ||
+        !INTERACTIONS[step.interaction]
+      ) {
+        step.choices.forEach(function (c) {
+          choices +=
+            '<button class="choice" data-correct="' +
+            !!c.correct +
+            '">' +
+            c.en +
+            (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
+            (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+            "</button>";
+        });
+      }
       choices += "</div>";
       wrap.innerHTML +=
         tools +
@@ -2475,7 +3188,7 @@ window.GN_STORY = {
             btn.classList.add("correct");
             fb.className = "feedback show good";
             fb.innerHTML =
-              step.goodEn +
+              (step.goodEn || "✓ Correct.") +
               (step.goodEs
                 ? '<span class="es">' + step.goodEs + "</span>"
                 : "");
@@ -2490,7 +3203,7 @@ window.GN_STORY = {
             btn.disabled = true;
             fb.className = "feedback show bad";
             fb.innerHTML =
-              step.badEn +
+              (step.badEn || "Not quite — look back at the panel.") +
               (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
           }
         });
@@ -2549,8 +3262,6 @@ window.GN_STORY = {
     </script>
 
   <script src="/teacher-tools/nt-results.js"></script>
-    <script src="/assets/edupulse-config.js"></script>
-    <script src="/assets/edupulse-bridge.js"></script>
   <script>
   /* Graphic-novel completion tracking -> NTResults (Neft Teacher). Unchanged. */
   (function () {
@@ -2570,13 +3281,17 @@ window.GN_STORY = {
       } catch (e) { return "Student"; }
     }
     function score() {
-      var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      var groups = Array.prototype.slice
+        .call(document.querySelectorAll(".choices"))
         .filter(function (g) { return g.id !== "choicesComplete"; });
-      var total = groups.length || 0;
-      var correct = groups.filter(function (g) {
-        return g.querySelector(".choice.correct");
-      }).length;
-      return { correct: correct, total: total };
+      function tally(list) {
+        var total = list.length;
+        var correct = list.filter(function (g) { return g.querySelector(".choice.correct"); }).length;
+        return { correct: correct, total: total };
+      }
+      var reading = groups.filter(function (g) { return g.getAttribute("data-score-group") === "reading"; });
+      var math = groups.filter(function (g) { return g.getAttribute("data-score-group") !== "reading"; });
+      return { math: tally(math), reading: tally(reading) };
     }
     function savedNote() {
       if (document.getElementById("nt-saved-note")) return;
@@ -2590,14 +3305,20 @@ window.GN_STORY = {
     function record() {
       if (FIRED) return; FIRED = true;
       var s = score();
+      var sections = [{ name: "Math", correct: s.math.correct, total: s.math.total }];
+      var readingStd = window.GN_STORY.meta.readingStandard || null;
+      if (s.reading.total > 0)
+        sections.push({ name: "Reading Comprehension", correct: s.reading.correct, total: s.reading.total, standard: readingStd });
       try {
         NTResults.finish({
           student: studentName(),
           assessment: window.GN_STORY.meta.assessment,
           standard: window.GN_STORY.meta.standard,
           level: String(window.GN_STORY.meta.version),
-          sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
-          correct: s.correct, total: s.total, download: false,
+          sections: sections,
+          correct: s.math.correct + s.reading.correct,
+          total: s.math.total + s.reading.total,
+          download: false,
         });
       } catch (e) {}
       savedNote();

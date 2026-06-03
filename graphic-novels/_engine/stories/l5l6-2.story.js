@@ -570,8 +570,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "cadet",
-            en: "🔒 Fleet Code — compute (3.25 + 0.75) × 0.5. Which line is fully correct?",
-            es: "Calcula (3.25 + 0.75) × 0.5. ¿Cuál línea es correcta?",
+            en: "🔒 Fleet Code — add first, then multiply. What is (3.25 + 0.75) × 0.5?",
+            es: "Suma primero, luego multiplica. ¿Cuánto es (3.25 + 0.75) × 0.5?",
           },
           hint: {
             en: "3.25 + 0.75 = 4.00. Then 4.00 × 0.5 = 2.0 (half of 4).",
