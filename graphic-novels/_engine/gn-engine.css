@@ -1005,3 +1005,288 @@ main {
     padding: 10px 12px;
   }
 }
+
+/* ===========================================================================
+   ENGAGEMENT LAYER (v2) — sound HUD, score stars, confetti, POW bursts,
+   scratch pad, cinematic panels, resume. All art-free and contract-safe.
+   Every motion rule below is disabled by the reduced-motion block above
+   (the universal `*{animation:none}` covers these too); canvas effects are
+   guarded in JS.
+   =========================================================================== */
+
+/* ---- topbar HUD cluster (stars + sound + scratch pad) ---- */
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hud-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 3px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-weight: 900;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  box-shadow: var(--sh-sm);
+}
+.hud-stars.bump {
+  animation: starBump 0.45s ease;
+}
+@keyframes starBump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); background: var(--gold); }
+  100% { transform: scale(1); }
+}
+.iconbtn {
+  min-height: 36px;
+  min-width: 36px;
+  border: 3px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 6px;
+  box-shadow: var(--sh-sm);
+  font-weight: 900;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0 8px;
+  font-family: var(--font);
+}
+.iconbtn:hover {
+  background: var(--gold);
+}
+.iconbtn[aria-pressed="true"],
+.iconbtn[aria-expanded="true"] {
+  background: var(--gold);
+}
+
+/* ---- cinematic panel: slow Ken-Burns drift + comic halftone texture ---- */
+.panel > img {
+  animation: kenburns 26s ease-in-out infinite alternate;
+  transform-origin: 60% 40%;
+}
+@keyframes kenburns {
+  from { transform: scale(1.02); }
+  to { transform: scale(1.09) translate(-1.5%, -1%); }
+}
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+  background-image: radial-gradient(
+    rgba(15, 23, 42, 0.55) 21%,
+    transparent 22%
+  );
+  background-size: 5px 5px;
+}
+
+/* ---- speech bubble pop-in ---- */
+.bubble {
+  animation: bubblePop 0.28s cubic-bezier(0.2, 1.3, 0.5, 1) both;
+}
+@keyframes bubblePop {
+  from { opacity: 0; transform: translateY(8px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- POW! comic burst stamped on the panel for a correct answer ---- */
+.pow {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%) rotate(-9deg);
+  background: var(--gold);
+  color: var(--line);
+  border: 4px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 18px;
+  font-weight: 900;
+  font-size: clamp(1.3rem, 5vw, 2.2rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  box-shadow: 6px 6px 0 var(--line);
+  animation: powIn 0.9s ease forwards;
+  pointer-events: none;
+  white-space: nowrap;
+}
+@keyframes powIn {
+  0% { transform: translate(-50%, -50%) rotate(-9deg) scale(0.2); opacity: 0; }
+  35% { transform: translate(-50%, -50%) rotate(-9deg) scale(1.15); opacity: 1; }
+  60% { transform: translate(-50%, -50%) rotate(-9deg) scale(1); }
+  100% { transform: translate(-50%, -54%) rotate(-9deg) scale(1.02); opacity: 0; }
+}
+
+/* ---- confetti canvas overlay ---- */
+#gn-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+}
+
+/* ---- cover: standard chip + continue button ---- */
+.std-chip {
+  display: inline-block;
+  margin: 0 0 12px 8px;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--blue);
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 12px;
+}
+.continue-btn {
+  min-height: 50px;
+  margin: 0 0 0 10px;
+  background: var(--gold);
+  color: var(--ink);
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 900;
+  font-size: 1.05rem;
+  cursor: pointer;
+  font-family: var(--font);
+  text-transform: uppercase;
+  box-shadow: var(--sh);
+}
+.continue-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--line);
+}
+.resume-note {
+  margin: 10px auto 0;
+  max-width: 520px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--green);
+}
+
+/* ---- mission-complete: star rating + concept recap ---- */
+.result-stars {
+  margin: 6px auto 4px;
+}
+.rs-row {
+  font-size: 2.6rem;
+  letter-spacing: 6px;
+  line-height: 1;
+}
+.rs {
+  color: #d8dee9;
+}
+.rs.on {
+  color: var(--gold);
+  text-shadow: 2px 2px 0 var(--line);
+  animation: rsPop 0.4s ease both;
+}
+.rs.on:nth-child(2) { animation-delay: 0.12s; }
+.rs.on:nth-child(3) { animation-delay: 0.24s; }
+@keyframes rsPop {
+  from { transform: scale(0.2) rotate(-20deg); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.rs-line {
+  margin-top: 6px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.recap {
+  margin-top: 20px;
+  text-align: left;
+  background: #eff6ff;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  box-shadow: var(--sh-sm);
+}
+.recap-tag {
+  display: inline-block;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+}
+.recap-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.recap-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* ---- scratch pad overlay ---- */
+.scratch-wrap {
+  position: fixed;
+  z-index: 70;
+  inset: auto 14px 14px auto;
+  width: min(440px, calc(100vw - 28px));
+  height: min(420px, 60vh);
+  background: #fffdf8;
+  border: 4px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 8px 8px 0 var(--line);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+.scratch-wrap.show {
+  display: flex;
+}
+.scratch-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 3px solid var(--line);
+  background: var(--paper);
+}
+.scratch-title {
+  flex: 1;
+  font-weight: 900;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+#scratch-canvas {
+  flex: 1;
+  width: 100%;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    rgba(29, 78, 216, 0.12) 28px
+  );
+  touch-action: none;
+  cursor: crosshair;
+}
+@media (max-width: 480px) {
+  .scratch-wrap {
+    inset: auto 8px 8px 8px;
+    width: auto;
+  }
+}
