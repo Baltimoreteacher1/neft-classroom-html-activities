@@ -36,6 +36,33 @@
     return v == null ? "" : v;
   }
 
+  /* Interaction + feature extensibility seams. */
+  var INTERACTIONS = {}; // name -> { render(step, groupEl, onSolve) }  (must emit .choices/.choice.correct on solve)
+  var FEATURES = []; // [{ onBeat(beat,ctx), onSolve(step,ctx), onComplete(ctx) }]
+  function fire(hook, a, b) {
+    FEATURES.forEach(function (f) {
+      if (f[hook])
+        try {
+          f[hook](a, b);
+        } catch (e) {}
+    });
+  }
+  function isComprehension(step) {
+    return step.type === "comprehension";
+  }
+  var SKILLS = {
+    vocab_in_context: "Vocabulary in Context",
+    main_idea: "Determine Main Idea",
+    key_details: "Key Details",
+    sequence: "Sequence / Cause & Effect",
+    inference: "Make an Inference",
+    cite_evidence: "Cite Text Evidence",
+    prediction: "Make a Prediction",
+  };
+  function SKILL_LABEL(k) {
+    return SKILLS[k] || "Reading";
+  }
+
   /* Per-unit signature colors so each world looks distinct (the comic shell is
      shared, but the accent/ink differ by unit; version 2 gets a deeper accent). */
   var UNIT_ACCENT = {
@@ -694,7 +721,7 @@
     /* ---- challenge: gating (must solve to advance) ---- */
     function playChallenge(step) {
       renderCard(step, false);
-      wireChoices(step, act, function () {
+      var onSolve = function () {
         if (step.solveArt) setArt(step.solveArt, step.solveAlt);
         if (step.solveBeat) {
           speechEl.innerHTML = "";
@@ -703,19 +730,39 @@
         stepIdx++;
         // small beat so the success feedback is read before the next panel
         setTimeout(playStep, 400);
-      });
+      };
+      var grp = "choices-" + act.id + "-" + step.id;
+      if (
+        step.interaction &&
+        step.interaction !== "mc" &&
+        INTERACTIONS[step.interaction]
+      ) {
+        // render interaction FIRST so any .choice it creates exists for wireChoices
+        INTERACTIONS[step.interaction].render(step, $(grp), onSolve);
+      }
+      wireChoices(step, act, onSolve);
     }
 
     /* ---- challenge: optional bonus (does NOT gate; still scored) ----
        Renders this and any consecutive optional steps, then reveals advance. */
     function playOptional(step) {
       renderCard(step, true);
-      wireChoices(step, act, function () {
+      var onSolve = function () {
         if (step.solveBeat) {
           speechEl.innerHTML = "";
           speechEl.appendChild(bubble(step.solveBeat));
         }
-      });
+      };
+      var grp = "choices-" + act.id + "-" + step.id;
+      if (
+        step.interaction &&
+        step.interaction !== "mc" &&
+        INTERACTIONS[step.interaction]
+      ) {
+        // render interaction FIRST so any .choice it creates exists for wireChoices
+        INTERACTIONS[step.interaction].render(step, $(grp), onSolve);
+      }
+      wireChoices(step, act, onSolve);
       stepIdx++;
       var nxt = act.steps[stepIdx];
       if (nxt && nxt.optional) playOptional(nxt);
@@ -796,23 +843,50 @@
             : "") +
           "</div>";
       }
+      var comp = isComprehension(step);
+      var groupAttr = comp
+        ? ' data-score-group="reading" data-standard="' +
+          (step.standard || "") +
+          '"'
+        : "";
+      var label = comp
+        ? '<div class="reading-tag"><span class="rt-skill">' +
+          SKILL_LABEL(step.skill) +
+          "</span>" +
+          '<span class="rt-std">' +
+          (step.standard || "") +
+          "</span>" +
+          (step.dok ? '<span class="rt-dok">DOK ' + step.dok + "</span>" : "") +
+          "</div>"
+        : "";
       var choices =
-        '<div class="reply-label">Choose your reply</div>' +
+        label +
+        '<div class="reply-label">' +
+        (comp ? "Choose the best answer" : "Choose your reply") +
+        "</div>" +
         '<div class="choices" id="choices-' +
         act.id +
         "-" +
         step.id +
-        '">';
-      step.choices.forEach(function (c) {
-        choices +=
-          '<button class="choice" data-correct="' +
-          !!c.correct +
-          '">' +
-          c.en +
-          (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
-          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
-          "</button>";
-      });
+        '"' +
+        groupAttr +
+        ">";
+      if (
+        !step.interaction ||
+        step.interaction === "mc" ||
+        !INTERACTIONS[step.interaction]
+      ) {
+        step.choices.forEach(function (c) {
+          choices +=
+            '<button class="choice" data-correct="' +
+            !!c.correct +
+            '">' +
+            c.en +
+            (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
+            (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+            "</button>";
+        });
+      }
       choices += "</div>";
       wrap.innerHTML +=
         tools +
@@ -869,7 +943,7 @@
             btn.classList.add("correct");
             fb.className = "feedback show good";
             fb.innerHTML =
-              step.goodEn +
+              (step.goodEn || "✓ Correct.") +
               (step.goodEs
                 ? '<span class="es">' + step.goodEs + "</span>"
                 : "");
@@ -884,7 +958,7 @@
             btn.disabled = true;
             fb.className = "feedback show bad";
             fb.innerHTML =
-              step.badEn +
+              (step.badEn || "Not quite — look back at the panel.") +
               (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
           }
         });
