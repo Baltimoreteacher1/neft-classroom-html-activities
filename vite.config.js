@@ -28,6 +28,10 @@ function copyStandaloneHtml() {
     "lessons",
     "scripts",
     "docs",
+    // edupulse-gradebook is its own Cloudflare Pages project + Worker backend;
+    // do not sweep its source (worker.js, wrangler.toml, migrations, CI) into
+    // the public activities site. The hub links point at its dedicated URL.
+    "edupulse-gradebook",
   ]);
   const ROOT_FILES = [
     "_headers",
