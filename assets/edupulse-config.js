@@ -12,11 +12,11 @@
  *     admin key protects /api/scores (GET) and /api/summary and stays a Worker
  *     secret only.
  *
- * To activate: replace PASTE_INGEST_KEY_HERE with the real ingest key.
- * Until then the bridge stays inert (records are no-ops) so activities keep
- * working normally with zero errors.
+ * The ingest key below is live. To rotate it, run
+ *   cd edupulse-gradebook && npx wrangler secret put INGEST_KEY
+ * and paste the same new value here.
  */
 window.EDUPULSE_CONFIG = {
   apiBase: "https://edupulse-gradebook-api.neftjd.workers.dev",
-  ingestKey: "PASTE_INGEST_KEY_HERE",
+  ingestKey: "ek_00cd771b2b55efc730e60ecbddaa686b99139d6337ed7350",
 };
