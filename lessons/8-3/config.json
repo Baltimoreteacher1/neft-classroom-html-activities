@@ -623,30 +623,28 @@
         "minLength": 50
       },
       {
-        "type": "fill-table",
-        "headers": [
-          "Scenario",
-          "Would you want LOW or HIGH MAD?",
-          "Why?"
-        ],
-        "rows": [
+        "type": "drag-sort",
+        "instructions": "Drag each scenario under the kind of MAD (mean absolute deviation) you would WANT for it.",
+        "categories": [
           {
-            "scenario": "A factory making bolts that must be exactly 5 cm long",
-            "preference": "LOW MAD",
-            "why": "Bolts need to be consistent — close to 5 cm every time"
+            "label": "Want LOW MAD (consistent)",
+            "items": [
+              "A factory making bolts that must be exactly 5 cm long",
+              "A bus schedule where arrival times should be reliable"
+            ]
           },
           {
-            "scenario": "A game show where contestants try to score as many different point values as possible",
-            "preference": "HIGH MAD",
-            "why": "Variety in scores is the goal — spread is good here"
-          },
-          {
-            "scenario": "A bus schedule where arrival times should be reliable",
-            "preference": "LOW MAD",
-            "why": "Passengers need buses to arrive consistently on time"
+            "label": "Want HIGH MAD (lots of spread)",
+            "items": [
+              "A game show where contestants try to score as many different point values as possible"
+            ]
           }
         ],
-        "label": "For each scenario, would you want low or high MAD? Explain."
+        "hints": [
+          "LOW MAD means values stay close to the mean — good when you need consistency.",
+          "HIGH MAD means values are spread out — good when variety/spread is the goal."
+        ],
+        "label": "Sort each scenario by whether low or high variability is desirable."
       }
     ]
   },
