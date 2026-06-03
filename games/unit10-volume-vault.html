@@ -570,6 +570,13 @@
           this.gameOver = true;
           const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
           if (this.score > hi) localStorage.setItem(LS_KEY, this.score);
+          try {
+            window.EduPulse &&
+              EduPulse.record({
+                activityTitle: document.title,
+                score: this.score,
+              });
+          } catch (e) {}
           this.scene.start("Results", { score: this.score, won });
         }
 
@@ -705,6 +712,8 @@
       };
       new Phaser.Game(config);
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

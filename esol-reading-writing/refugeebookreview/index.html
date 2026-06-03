@@ -1407,9 +1407,20 @@
       .spacer {
         flex: 1;
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- particles -->
@@ -1436,9 +1447,41 @@
         <div class="hud-divider"></div>
         <div class="hud-lives" id="lives-display">❤️❤️❤️</div>
         <div class="hud-divider"></div>
-        <button id="btn-lang" onclick="toggleLanguage()" style="background:none; border:1px solid rgba(255,255,255,0.25); color:white; border-radius:6px; font-size:11px; padding:4px 8px; cursor:pointer; font-family:inherit; font-weight:bold;">🌐 EN</button>
+        <button
+          id="btn-lang"
+          onclick="toggleLanguage()"
+          style="
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            border-radius: 6px;
+            font-size: 11px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+          "
+        >
+          🌐 EN
+        </button>
         <div class="hud-divider"></div>
-        <button id="btn-notebook" onclick="toggleNotebook()" style="background:none; border:1px solid rgba(255,255,255,0.25); color:white; border-radius:6px; font-size:11px; padding:4px 8px; cursor:pointer; font-family:inherit; font-weight:bold;">📓 Journal</button>
+        <button
+          id="btn-notebook"
+          onclick="toggleNotebook()"
+          style="
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            border-radius: 6px;
+            font-size: 11px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+          "
+        >
+          📓 Journal
+        </button>
       </div>
 
       <div id="stage-wrap">
@@ -1483,30 +1526,50 @@
                 <div class="char-badge cb-i">🌊 Isabel · Cuba 1994</div>
                 <div class="char-badge cb-m">🕊️ Mahmoud · Syria 2015</div>
               </div>
-              <div class="chapter-preview-grid" style="grid-template-columns: repeat(3, 1fr) !important; max-width:600px; margin-bottom:24px;">
-                <div class="cp-card" style="padding:10px;">
+              <div
+                class="chapter-preview-grid"
+                style="
+                  grid-template-columns: repeat(3, 1fr) !important;
+                  max-width: 600px;
+                  margin-bottom: 24px;
+                "
+              >
+                <div class="cp-card" style="padding: 10px">
                   <span class="cp-icon">👤</span>
                   <div class="cp-name">Mission 1<br />The Characters</div>
                 </div>
-                <div class="cp-card" style="padding:10px;">
+                <div class="cp-card" style="padding: 10px">
                   <span class="cp-icon">⚡</span>
                   <div class="cp-name">Mission 2<br />The Plot</div>
                 </div>
-                <div class="cp-card" style="padding:10px;">
+                <div class="cp-card" style="padding: 10px">
                   <span class="cp-icon">💡</span>
                   <div class="cp-name">Mission 3<br />Big Themes</div>
                 </div>
-                <div class="cp-card" style="padding:10px;">
+                <div class="cp-card" style="padding: 10px">
                   <span class="cp-icon">🔗</span>
                   <div class="cp-name">Mission 4<br />Connections</div>
                 </div>
-                <div class="cp-card" style="padding:10px;">
+                <div class="cp-card" style="padding: 10px">
                   <span class="cp-icon">👾</span>
                   <div class="cp-name">Final Boss<br />Full Review</div>
                 </div>
-                <div class="cp-card" onclick="openCharacterMapGame()" style="cursor:pointer; border:1.5px dashed var(--gold); padding:10px;">
+                <div
+                  class="cp-card"
+                  onclick="openCharacterMapGame()"
+                  style="
+                    cursor: pointer;
+                    border: 1.5px dashed var(--gold);
+                    padding: 10px;
+                  "
+                >
                   <span class="cp-icon">🗺️</span>
-                  <div class="cp-name" style="color:var(--gold); font-weight:bold;">Interactive<br />Character Map</div>
+                  <div
+                    class="cp-name"
+                    style="color: var(--gold); font-weight: bold"
+                  >
+                    Interactive<br />Character Map
+                  </div>
                 </div>
               </div>
               <button class="start-btn" onclick="startMission(0)">
@@ -1531,56 +1594,317 @@
           <div class="view" id="result-view"></div>
 
           <!-- INTERACTIVE CHARACTER MAP GAME VIEW -->
-          <div class="view" id="character-map-game-view" style="display:none; padding:30px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--border); padding-bottom:12px; margin-bottom:20px;">
-              <h2 style="font-family:'Bebas Neue', sans-serif; font-size:36px; color:var(--gold); margin:0;">🗺️ Draggable Character Mapping Studio</h2>
-              <button class="hint-btn" onclick="closeCharacterMapGame()">← Back to Dashboard</button>
+          <div
+            class="view"
+            id="character-map-game-view"
+            style="display: none; padding: 30px"
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid var(--border);
+                padding-bottom: 12px;
+                margin-bottom: 20px;
+              "
+            >
+              <h2
+                style="
+                  font-family: &quot;Bebas Neue&quot;, sans-serif;
+                  font-size: 36px;
+                  color: var(--gold);
+                  margin: 0;
+                "
+              >
+                🗺️ Draggable Character Mapping Studio
+              </h2>
+              <button class="hint-btn" onclick="closeCharacterMapGame()">
+                ← Back to Dashboard
+              </button>
             </div>
-            <p style="font-size:14px; color:var(--dim); margin-bottom:20px;">Drag each character and their symbolic object to their correct historical time period and country.</p>
-            
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:24px;">
+            <p style="font-size: 14px; color: var(--dim); margin-bottom: 20px">
+              Drag each character and their symbolic object to their correct
+              historical time period and country.
+            </p>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 16px;
+                margin-bottom: 24px;
+              "
+            >
               <!-- Dropzone 1 -->
-              <div class="card" style="border:1.5px dashed var(--border); text-align:center; padding:16px; min-height:180px;">
-                <strong style="color:var(--gold); font-size:16px;">1939 · Nazi Germany</strong>
-                <div class="map-dropzone" id="dz-1939-char" data-expected="josef" style="border:1px dashed rgba(255,255,255,0.1); border-radius:12px; min-height:60px; margin:12px 0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.2);">[Place Character]</div>
-                <div class="map-dropzone" id="dz-1939-item" data-expected="toy" style="border:1px dashed rgba(255,255,255,0.1); border-radius:12px; min-height:60px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.2);">[Place Object]</div>
+              <div
+                class="card"
+                style="
+                  border: 1.5px dashed var(--border);
+                  text-align: center;
+                  padding: 16px;
+                  min-height: 180px;
+                "
+              >
+                <strong style="color: var(--gold); font-size: 16px"
+                  >1939 · Nazi Germany</strong
+                >
+                <div
+                  class="map-dropzone"
+                  id="dz-1939-char"
+                  data-expected="josef"
+                  style="
+                    border: 1px dashed rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    min-height: 60px;
+                    margin: 12px 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(0, 0, 0, 0.2);
+                  "
+                >
+                  [Place Character]
+                </div>
+                <div
+                  class="map-dropzone"
+                  id="dz-1939-item"
+                  data-expected="toy"
+                  style="
+                    border: 1px dashed rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    min-height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(0, 0, 0, 0.2);
+                  "
+                >
+                  [Place Object]
+                </div>
               </div>
-              
+
               <!-- Dropzone 2 -->
-              <div class="card" style="border:1.5px dashed var(--border); text-align:center; padding:16px; min-height:180px;">
-                <strong style="color:var(--blue); font-size:16px;">1994 · Cuba Straits</strong>
-                <div class="map-dropzone" id="dz-1994-char" data-expected="isabel" style="border:1px dashed rgba(255,255,255,0.1); border-radius:12px; min-height:60px; margin:12px 0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.2);">[Place Character]</div>
-                <div class="map-dropzone" id="dz-1994-item" data-expected="trumpet" style="border:1px dashed rgba(255,255,255,0.1); border-radius:12px; min-height:60px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.2);">[Place Object]</div>
+              <div
+                class="card"
+                style="
+                  border: 1.5px dashed var(--border);
+                  text-align: center;
+                  padding: 16px;
+                  min-height: 180px;
+                "
+              >
+                <strong style="color: var(--blue); font-size: 16px"
+                  >1994 · Cuba Straits</strong
+                >
+                <div
+                  class="map-dropzone"
+                  id="dz-1994-char"
+                  data-expected="isabel"
+                  style="
+                    border: 1px dashed rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    min-height: 60px;
+                    margin: 12px 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(0, 0, 0, 0.2);
+                  "
+                >
+                  [Place Character]
+                </div>
+                <div
+                  class="map-dropzone"
+                  id="dz-1994-item"
+                  data-expected="trumpet"
+                  style="
+                    border: 1px dashed rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    min-height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(0, 0, 0, 0.2);
+                  "
+                >
+                  [Place Object]
+                </div>
               </div>
 
               <!-- Dropzone 3 -->
-              <div class="card" style="border:1.5px dashed var(--border); text-align:center; padding:16px; min-height:180px;">
-                <strong style="color:var(--green); font-size:16px;">2015 · Aleppo, Syria</strong>
-                <div class="map-dropzone" id="dz-2015-char" data-expected="mahmoud" style="border:1px dashed rgba(255,255,255,0.1); border-radius:12px; min-height:60px; margin:12px 0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.2);">[Place Character]</div>
-                <div class="map-dropzone" id="dz-2015-item" data-expected="hana" style="border:1px dashed rgba(255,255,255,0.1); border-radius:12px; min-height:60px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.2);">[Place Object]</div>
+              <div
+                class="card"
+                style="
+                  border: 1.5px dashed var(--border);
+                  text-align: center;
+                  padding: 16px;
+                  min-height: 180px;
+                "
+              >
+                <strong style="color: var(--green); font-size: 16px"
+                  >2015 · Aleppo, Syria</strong
+                >
+                <div
+                  class="map-dropzone"
+                  id="dz-2015-char"
+                  data-expected="mahmoud"
+                  style="
+                    border: 1px dashed rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    min-height: 60px;
+                    margin: 12px 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(0, 0, 0, 0.2);
+                  "
+                >
+                  [Place Character]
+                </div>
+                <div
+                  class="map-dropzone"
+                  id="dz-2015-item"
+                  data-expected="hana"
+                  style="
+                    border: 1px dashed rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    min-height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(0, 0, 0, 0.2);
+                  "
+                >
+                  [Place Object]
+                </div>
               </div>
             </div>
 
-            <div style="display:flex; gap:16px; margin-bottom:20px; align-items:center; flex-wrap:wrap;">
+            <div
+              style="
+                display: flex;
+                gap: 16px;
+                margin-bottom: 20px;
+                align-items: center;
+                flex-wrap: wrap;
+              "
+            >
               <strong>Draggables:</strong>
-              <div id="map-draggables-char" style="display:flex; gap:10px;">
-                <div class="map-drag-chip" draggable="true" data-type="josef" style="padding:10px 16px; background:#c17d11; color:white; border-radius:8px; cursor:grab; font-weight:bold;">👤 Josef</div>
-                <div class="map-drag-chip" draggable="true" data-type="isabel" style="padding:10px 16px; background:#173b8c; color:white; border-radius:8px; cursor:grab; font-weight:bold;">🌊 Isabel</div>
-                <div class="map-drag-chip" draggable="true" data-type="mahmoud" style="padding:10px 16px; background:#0f766e; color:white; border-radius:8px; cursor:grab; font-weight:bold;">🕊️ Mahmoud</div>
+              <div id="map-draggables-char" style="display: flex; gap: 10px">
+                <div
+                  class="map-drag-chip"
+                  draggable="true"
+                  data-type="josef"
+                  style="
+                    padding: 10px 16px;
+                    background: #c17d11;
+                    color: white;
+                    border-radius: 8px;
+                    cursor: grab;
+                    font-weight: bold;
+                  "
+                >
+                  👤 Josef
+                </div>
+                <div
+                  class="map-drag-chip"
+                  draggable="true"
+                  data-type="isabel"
+                  style="
+                    padding: 10px 16px;
+                    background: #173b8c;
+                    color: white;
+                    border-radius: 8px;
+                    cursor: grab;
+                    font-weight: bold;
+                  "
+                >
+                  🌊 Isabel
+                </div>
+                <div
+                  class="map-drag-chip"
+                  draggable="true"
+                  data-type="mahmoud"
+                  style="
+                    padding: 10px 16px;
+                    background: #0f766e;
+                    color: white;
+                    border-radius: 8px;
+                    cursor: grab;
+                    font-weight: bold;
+                  "
+                >
+                  🕊️ Mahmoud
+                </div>
               </div>
-              <div id="map-draggables-item" style="display:flex; gap:10px;">
-                <div class="map-drag-chip" draggable="true" data-type="toy" style="padding:10px 16px; background:#5f6b7b; color:white; border-radius:8px; cursor:grab; font-weight:bold;">🧸 Ruthie's Toy</div>
-                <div class="map-drag-chip" draggable="true" data-type="trumpet" style="padding:10px 16px; background:#5f6b7b; color:white; border-radius:8px; cursor:grab; font-weight:bold;">🎺 Trumpet</div>
-                <div class="map-drag-chip" draggable="true" data-type="hana" style="padding:10px 16px; background:#5f6b7b; color:white; border-radius:8px; cursor:grab; font-weight:bold;">👶 Baby Hana</div>
+              <div id="map-draggables-item" style="display: flex; gap: 10px">
+                <div
+                  class="map-drag-chip"
+                  draggable="true"
+                  data-type="toy"
+                  style="
+                    padding: 10px 16px;
+                    background: #5f6b7b;
+                    color: white;
+                    border-radius: 8px;
+                    cursor: grab;
+                    font-weight: bold;
+                  "
+                >
+                  🧸 Ruthie's Toy
+                </div>
+                <div
+                  class="map-drag-chip"
+                  draggable="true"
+                  data-type="trumpet"
+                  style="
+                    padding: 10px 16px;
+                    background: #5f6b7b;
+                    color: white;
+                    border-radius: 8px;
+                    cursor: grab;
+                    font-weight: bold;
+                  "
+                >
+                  🎺 Trumpet
+                </div>
+                <div
+                  class="map-drag-chip"
+                  draggable="true"
+                  data-type="hana"
+                  style="
+                    padding: 10px 16px;
+                    background: #5f6b7b;
+                    color: white;
+                    border-radius: 8px;
+                    cursor: grab;
+                    font-weight: bold;
+                  "
+                >
+                  👶 Baby Hana
+                </div>
               </div>
             </div>
 
-            <div style="display:flex; gap:10px;">
-              <button class="start-btn" onclick="checkMapPlacement()" style="padding:10px 22px; font-size:13px; font-weight:bold;">🔍 Check Alignment</button>
-              <button class="hint-btn" onclick="resetMapPlacement()">🗑️ Reset</button>
+            <div style="display: flex; gap: 10px">
+              <button
+                class="start-btn"
+                onclick="checkMapPlacement()"
+                style="padding: 10px 22px; font-size: 13px; font-weight: bold"
+              >
+                🔍 Check Alignment
+              </button>
+              <button class="hint-btn" onclick="resetMapPlacement()">
+                🗑️ Reset
+              </button>
             </div>
-            
-            <div id="map-game-fb" class="mc-feedback" style="margin-top:16px; display:none;"></div>
+
+            <div
+              id="map-game-fb"
+              class="mc-feedback"
+              style="margin-top: 16px; display: none"
+            ></div>
           </div>
         </div>
         <!-- /stage -->
@@ -1591,16 +1915,108 @@
 
     <div id="toast"></div>
 
-    <div id="notebook-panel" style="display:none; position:fixed; bottom:20px; right:20px; z-index:1000; width:320px; background:#1a2035; border:1.5px solid var(--border); border-radius:16px; padding:18px; box-shadow:0 8px 32px rgba(0,0,0,0.5); backdrop-filter:blur(8px); color:white; font-family:'Nunito', sans-serif;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <strong style="color:var(--gold); font-size:14px; font-family:'Bebas Neue', sans-serif; letter-spacing:0.05em; display:flex; align-items:center; gap:6px;">📓 Reflections Journal</strong>
-        <button onclick="toggleNotebook()" style="background:none; border:none; color:var(--red); font-weight:800; cursor:pointer;">X</button>
+    <div
+      id="notebook-panel"
+      style="
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        width: 320px;
+        background: #1a2035;
+        border: 1.5px solid var(--border);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px);
+        color: white;
+        font-family: &quot;Nunito&quot;, sans-serif;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+        "
+      >
+        <strong
+          style="
+            color: var(--gold);
+            font-size: 14px;
+            font-family: &quot;Bebas Neue&quot;, sans-serif;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          "
+          >📓 Reflections Journal</strong
+        >
+        <button
+          onclick="toggleNotebook()"
+          style="
+            background: none;
+            border: none;
+            color: var(--red);
+            font-weight: 800;
+            cursor: pointer;
+          "
+        >
+          X
+        </button>
       </div>
-      <p style="font-size:11px; color:var(--muted); margin:0 0 10px 0;">Write your thoughts, translations, or summaries here. Auto-saves locally!</p>
-      <textarea id="notes-textarea" oninput="saveRefugeeNote(this.value)" placeholder="Reflect on Josef, Isabel, and Mahmoud's journeys..." style="width:100%; height:120px; padding:10px; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:8px; color:white; font-size:12px; outline:none; resize:none; font-family:inherit;"></textarea>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-        <span id="notes-status-msg" style="font-size:10px; color:var(--green); opacity:0.85;">✨ Saved automatically</span>
-        <button onclick="window.print()" style="background:var(--gold); border:none; border-radius:100px; color:#0a0d12; font-size:10px; font-weight:700; padding:4px 10px; cursor:pointer;">🖨️ Print</button>
+      <p style="font-size: 11px; color: var(--muted); margin: 0 0 10px 0">
+        Write your thoughts, translations, or summaries here. Auto-saves
+        locally!
+      </p>
+      <textarea
+        id="notes-textarea"
+        oninput="saveRefugeeNote(this.value)"
+        placeholder="Reflect on Josef, Isabel, and Mahmoud's journeys..."
+        style="
+          width: 100%;
+          height: 120px;
+          padding: 10px;
+          background: rgba(0, 0, 0, 0.3);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          color: white;
+          font-size: 12px;
+          outline: none;
+          resize: none;
+          font-family: inherit;
+        "
+      ></textarea>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 8px;
+        "
+      >
+        <span
+          id="notes-status-msg"
+          style="font-size: 10px; color: var(--green); opacity: 0.85"
+          >✨ Saved automatically</span
+        >
+        <button
+          onclick="window.print()"
+          style="
+            background: var(--gold);
+            border: none;
+            border-radius: 100px;
+            color: #0a0d12;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            cursor: pointer;
+          "
+        >
+          🖨️ Print
+        </button>
       </div>
     </div>
 
@@ -1623,18 +2039,21 @@
       // ==========================================
       function saveRefugeeState() {
         try {
-          localStorage.setItem('refugee_review_state', JSON.stringify({
-            xp: xp,
-            streak: streak,
-            lives: lives,
-            currentMission: currentMission,
-            currentActivity: currentActivity,
-            missionScores: missionScores,
-            bossQ: bossQ,
-            bossScore: bossScore,
-            language: currentLang || 'en',
-            notes: refugeeNotes || ''
-          }));
+          localStorage.setItem(
+            "refugee_review_state",
+            JSON.stringify({
+              xp: xp,
+              streak: streak,
+              lives: lives,
+              currentMission: currentMission,
+              currentActivity: currentActivity,
+              missionScores: missionScores,
+              bossQ: bossQ,
+              bossScore: bossScore,
+              language: currentLang || "en",
+              notes: refugeeNotes || "",
+            }),
+          );
         } catch (e) {
           console.error("Error saving state to localStorage:", e);
         }
@@ -1642,29 +2061,34 @@
 
       function loadRefugeeState() {
         try {
-          const raw = localStorage.getItem('refugee_review_state');
+          const raw = localStorage.getItem("refugee_review_state");
           if (raw) {
             const data = JSON.parse(raw);
-            if (typeof data.xp === 'number') xp = data.xp;
-            if (typeof data.streak === 'number') streak = data.streak;
-            if (typeof data.lives === 'number') lives = data.lives;
-            if (typeof data.currentMission === 'number') currentMission = data.currentMission;
-            if (typeof data.currentActivity === 'number') currentActivity = data.currentActivity;
+            if (typeof data.xp === "number") xp = data.xp;
+            if (typeof data.streak === "number") streak = data.streak;
+            if (typeof data.lives === "number") lives = data.lives;
+            if (typeof data.currentMission === "number")
+              currentMission = data.currentMission;
+            if (typeof data.currentActivity === "number")
+              currentActivity = data.currentActivity;
             if (data.missionScores) missionScores = data.missionScores;
-            if (typeof data.bossQ === 'number') bossQ = data.bossQ;
-            if (typeof data.bossScore === 'number') bossScore = data.bossScore;
+            if (typeof data.bossQ === "number") bossQ = data.bossQ;
+            if (typeof data.bossScore === "number") bossScore = data.bossScore;
             if (data.language) currentLang = data.language;
             if (data.notes) refugeeNotes = data.notes;
-            
+
             // Sync HUD displays
             document.getElementById("xp-num").innerText = xp;
-            document.getElementById("xp-fill").style.width = Math.min(100, Math.round((xp / MAX_XP) * 100)) + "%";
+            document.getElementById("xp-fill").style.width =
+              Math.min(100, Math.round((xp / MAX_XP) * 100)) + "%";
             document.getElementById("streak-count").innerText = streak;
-            document.getElementById("lives-display").innerText = "❤️".repeat(lives) || "💀";
-            document.getElementById("btn-lang").innerText = currentLang === 'es' ? '🌐 ES' : '🌐 EN';
-            
+            document.getElementById("lives-display").innerText =
+              "❤️".repeat(lives) || "💀";
+            document.getElementById("btn-lang").innerText =
+              currentLang === "es" ? "🌐 ES" : "🌐 EN";
+
             const textarea = document.getElementById("notes-textarea");
-            if (textarea) textarea.value = refugeeNotes || '';
+            if (textarea) textarea.value = refugeeNotes || "";
           }
         } catch (e) {
           console.error("Error loading state from localStorage:", e);
@@ -1674,34 +2098,39 @@
       // ==========================================
       // WEB SPEECH READ-ALOUD BILINGUAL SCALER
       // ==========================================
-      let currentLang = 'en';
+      let currentLang = "en";
       function speakRefugee(text) {
-        if ('speechSynthesis' in window) {
+        if ("speechSynthesis" in window) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.rate = 0.82;
-          utterance.lang = currentLang === 'es' ? 'es-ES' : 'en-US';
+          utterance.lang = currentLang === "es" ? "es-ES" : "en-US";
           window.speechSynthesis.speak(utterance);
         }
       }
 
       function toggleLanguage() {
-        currentLang = currentLang === 'en' ? 'es' : 'en';
-        document.getElementById('btn-lang').innerText = currentLang === 'es' ? '🌐 ES' : '🌐 EN';
-        speakRefugee(currentLang === 'es' ? "Idioma cambiado a español." : "Language changed to English.");
+        currentLang = currentLang === "en" ? "es" : "en";
+        document.getElementById("btn-lang").innerText =
+          currentLang === "es" ? "🌐 ES" : "🌐 EN";
+        speakRefugee(
+          currentLang === "es"
+            ? "Idioma cambiado a español."
+            : "Language changed to English.",
+        );
         saveRefugeeState();
       }
 
       // ==========================================
       // BILINGUAL STUDENT REFLECTIONS JOURNAL
       // ==========================================
-      let refugeeNotes = '';
+      let refugeeNotes = "";
       function toggleNotebook() {
         const panel = document.getElementById("notebook-panel");
-        if (panel.style.display === 'none') {
-          panel.style.display = 'block';
+        if (panel.style.display === "none") {
+          panel.style.display = "block";
         } else {
-          panel.style.display = 'none';
+          panel.style.display = "none";
         }
       }
 
@@ -1710,10 +2139,14 @@
         saveRefugeeState();
         const status = document.getElementById("notes-status-msg");
         if (status) {
-          status.innerText = currentLang === 'es' ? '⏳ Guardando...' : '⏳ Saving...';
+          status.innerText =
+            currentLang === "es" ? "⏳ Guardando..." : "⏳ Saving...";
           if (window.saveNoteTimeout) clearTimeout(window.saveNoteTimeout);
           window.saveNoteTimeout = setTimeout(() => {
-            status.innerText = currentLang === 'es' ? '✨ Guardado automáticamente' : '✨ Saved automatically';
+            status.innerText =
+              currentLang === "es"
+                ? "✨ Guardado automáticamente"
+                : "✨ Saved automatically";
           }, 600);
         }
       }
@@ -1723,29 +2156,33 @@
       // ==========================================
       function openCharacterMapGame() {
         // Hide all stage views
-        document.querySelectorAll(".view").forEach(v => v.style.display = 'none');
-        document.getElementById("chapter-map").style.pointerEvents = 'none';
-        document.getElementById("character-map-game-view").style.display = 'block';
+        document
+          .querySelectorAll(".view")
+          .forEach((v) => (v.style.display = "none"));
+        document.getElementById("chapter-map").style.pointerEvents = "none";
+        document.getElementById("character-map-game-view").style.display =
+          "block";
         initMapDnD();
       }
 
       function closeCharacterMapGame() {
-        document.getElementById("character-map-game-view").style.display = 'none';
-        document.getElementById("intro-view").style.display = 'block';
-        document.getElementById("chapter-map").style.pointerEvents = 'auto';
+        document.getElementById("character-map-game-view").style.display =
+          "none";
+        document.getElementById("intro-view").style.display = "block";
+        document.getElementById("chapter-map").style.pointerEvents = "auto";
       }
 
       let mapDraggedItem = null;
 
       function initMapDnD() {
-        document.querySelectorAll(".map-drag-chip").forEach(chip => {
+        document.querySelectorAll(".map-drag-chip").forEach((chip) => {
           chip.addEventListener("dragstart", (e) => {
             mapDraggedItem = chip;
             e.dataTransfer.setData("text/plain", chip.dataset.type);
           });
         });
 
-        document.querySelectorAll(".map-dropzone").forEach(zone => {
+        document.querySelectorAll(".map-dropzone").forEach((zone) => {
           zone.addEventListener("dragover", (e) => e.preventDefault());
           zone.addEventListener("drop", (e) => {
             e.preventDefault();
@@ -1760,28 +2197,37 @@
 
       function checkMapPlacement() {
         const zones = [...document.querySelectorAll(".map-dropzone")];
-        const allCorrect = zones.every(z => z.dataset.filledType === z.dataset.expected);
+        const allCorrect = zones.every(
+          (z) => z.dataset.filledType === z.dataset.expected,
+        );
         const fb = document.getElementById("map-game-fb");
         fb.style.display = "block";
         if (allCorrect) {
-          fb.innerText = currentLang === 'es' ? "¡Alineación perfecta! Has emparejado correctamente los personajes y sus objetos en sus respectivos períodos históricos." : "Perfect alignment! You successfully matched all characters and objects to their correct historical periods.";
+          fb.innerText =
+            currentLang === "es"
+              ? "¡Alineación perfecta! Has emparejado correctamente los personajes y sus objetos en sus respectivos períodos históricos."
+              : "Perfect alignment! You successfully matched all characters and objects to their correct historical periods.";
           fb.className = "mc-feedback ok";
-          
+
           // Reward XP
           xp = Math.min(MAX_XP, xp + 50);
           document.getElementById("xp-num").innerText = xp;
-          document.getElementById("xp-fill").style.width = Math.min(100, Math.round((xp / MAX_XP) * 100)) + "%";
+          document.getElementById("xp-fill").style.width =
+            Math.min(100, Math.round((xp / MAX_XP) * 100)) + "%";
           saveRefugeeState();
           speakRefugee(fb.innerText);
         } else {
-          fb.innerText = currentLang === 'es' ? "Algunas colocaciones están fuera de lugar. ¡Revisa el período y vuelve a intentarlo!" : "Some placements are out of alignment. Double-check your history and try again!";
+          fb.innerText =
+            currentLang === "es"
+              ? "Algunas colocaciones están fuera de lugar. ¡Revisa el período y vuelve a intentarlo!"
+              : "Some placements are out of alignment. Double-check your history and try again!";
           fb.className = "mc-feedback bad";
           speakRefugee(fb.innerText);
         }
       }
 
       function resetMapPlacement() {
-        document.querySelectorAll(".map-dropzone").forEach(z => {
+        document.querySelectorAll(".map-dropzone").forEach((z) => {
           if (z.id.includes("char")) {
             z.innerText = "[Place Character]";
           } else {
@@ -3683,6 +4129,18 @@
         <button class="ch-start-btn" style="background:rgba(255,255,255,0.06);border:1px solid var(--border)" onclick="goHome()">🏠 Back to Missions</button>
       </div>
     </div>`;
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: bossScore,
+              maxScore: bossQuestions.length,
+              percent: pct,
+              stars: pct >= 90 ? 3 : pct >= 70 ? 2 : 1,
+              problemsCorrect: bossScore,
+              problemsAttempted: bossQuestions.length,
+            });
+        } catch (e) {}
         showView("result-view");
       }
 
@@ -3756,12 +4214,23 @@
 ════════════════════════════════════════════════ */
       function validateConfig() {
         if (!Array.isArray(missions) || missions.length === 0) {
-          throw new Error("Configuration Error: 'missions' array is invalid or empty.");
+          throw new Error(
+            "Configuration Error: 'missions' array is invalid or empty.",
+          );
         }
         missions.forEach((m, idx) => {
-          if (m.id !== idx) throw new Error(`Configuration Error: Mission ID mismatch at index ${idx}.`);
-          if (!m.title) throw new Error(`Configuration Error: Mission at index ${idx} is missing a title.`);
-          if (!Array.isArray(m.tasks)) throw new Error(`Configuration Error: Mission ${idx} must contain a tasks array.`);
+          if (m.id !== idx)
+            throw new Error(
+              `Configuration Error: Mission ID mismatch at index ${idx}.`,
+            );
+          if (!m.title)
+            throw new Error(
+              `Configuration Error: Mission at index ${idx} is missing a title.`,
+            );
+          if (!Array.isArray(m.tasks))
+            throw new Error(
+              `Configuration Error: Mission ${idx} must contain a tasks array.`,
+            );
         });
         return true;
       }
@@ -3769,11 +4238,20 @@
       function selfTest() {
         try {
           console.assert(MAX_XP === 800, "MAX_XP should be 800");
-          console.assert(Array.isArray(missionScores) && missionScores.length === 5, "missionScores should be size 5");
-          console.assert(currentLang === 'en' || currentLang === 'es', "Language should default to 'en' or 'es'");
-          localStorage.setItem('refugee_review_test', 'test_data');
-          console.assert(localStorage.getItem('refugee_review_test') === 'test_data', "LocalStorage write/read failed");
-          localStorage.removeItem('refugee_review_test');
+          console.assert(
+            Array.isArray(missionScores) && missionScores.length === 5,
+            "missionScores should be size 5",
+          );
+          console.assert(
+            currentLang === "en" || currentLang === "es",
+            "Language should default to 'en' or 'es'",
+          );
+          localStorage.setItem("refugee_review_test", "test_data");
+          console.assert(
+            localStorage.getItem("refugee_review_test") === "test_data",
+            "LocalStorage write/read failed",
+          );
+          localStorage.removeItem("refugee_review_test");
           return true;
         } catch (e) {
           console.error("SelfTest Diagnostics Failed:", e);
@@ -3786,6 +4264,8 @@
       loadRefugeeState();
       buildMap();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

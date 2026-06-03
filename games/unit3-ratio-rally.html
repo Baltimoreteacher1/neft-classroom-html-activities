@@ -1744,6 +1744,19 @@
           (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
         const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
 
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: d.totalCorrect,
+              maxScore: d.totalCorrect + d.totalWrong,
+              stars: stars,
+              problemsCorrect: d.totalCorrect,
+              problemsAttempted: d.totalCorrect + d.totalWrong,
+              percent: Math.round(pct),
+            });
+        } catch (e) {}
+
         // Check high score
         const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0");
         const isNewHighScore = d.score > prevHigh;
@@ -1975,6 +1988,8 @@
 
       new Phaser.Game(config);
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

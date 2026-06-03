@@ -40,9 +40,20 @@
         white-space: nowrap;
         border: 0;
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <div
@@ -56,32 +67,223 @@
         Play with touch, mouse, or keyboard.
       </p>
     </div>
-    
+
     <!-- Transparent canvas overlay for annotations -->
-    <canvas id="sketchpad" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:90; pointer-events:none; cursor:crosshair;"></canvas>
+    <canvas
+      id="sketchpad"
+      style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 90;
+        pointer-events: none;
+        cursor: crosshair;
+      "
+    ></canvas>
 
     <!-- Sketchpad float bar -->
-    <div id="brush-toolbar" style="position:fixed; bottom:20px; left:20px; z-index:100; display:flex; gap:8px; align-items:center; background:rgba(45,24,16,0.9); border:1px solid #c17d11; border-radius:100px; padding:6px 12px; box-shadow:0 6px 20px rgba(0,0,0,0.4); backdrop-filter:blur(8px);">
-      <button id="btn-pencil-toggle" onclick="togglePencil()" style="background:#c17d11; color:black; border:none; border-radius:100px; font-size:11px; font-weight:bold; padding:6px 12px; cursor:pointer; font-family:sans-serif; transition:0.2s;">✏️ Pencil: OFF</button>
-      <button class="brush-btn active" id="btn-brush-teal" onclick="setBrushColor('#0f766e', 'teal')" style="width:20px; height:20px; border-radius:50%; background:#0f766e; border:2px solid white; cursor:pointer; padding:0;"></button>
-      <button class="brush-btn" id="btn-brush-blue" onclick="setBrushColor('#173b8c', 'blue')" style="width:20px; height:20px; border-radius:50%; background:#173b8c; border:none; cursor:pointer; padding:0;"></button>
-      <button class="brush-btn" id="btn-brush-amber" onclick="setBrushColor('#c17d11', 'amber')" style="width:20px; height:20px; border-radius:50%; background:#c17d11; border:none; cursor:pointer; padding:0;"></button>
-      <button onclick="undoDraw()" style="background:rgba(255,255,255,0.1); color:white; border:none; border-radius:100px; font-size:10px; font-weight:bold; padding:4px 8px; cursor:pointer; font-family:sans-serif;">Undo</button>
-      <button onclick="clearSketchpad()" style="background:rgba(255,255,255,0.1); color:white; border:none; border-radius:100px; font-size:10px; font-weight:bold; padding:4px 8px; cursor:pointer; font-family:sans-serif;">Clear</button>
+    <div
+      id="brush-toolbar"
+      style="
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 100;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        background: rgba(45, 24, 16, 0.9);
+        border: 1px solid #c17d11;
+        border-radius: 100px;
+        padding: 6px 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(8px);
+      "
+    >
+      <button
+        id="btn-pencil-toggle"
+        onclick="togglePencil()"
+        style="
+          background: #c17d11;
+          color: black;
+          border: none;
+          border-radius: 100px;
+          font-size: 11px;
+          font-weight: bold;
+          padding: 6px 12px;
+          cursor: pointer;
+          font-family: sans-serif;
+          transition: 0.2s;
+        "
+      >
+        ✏️ Pencil: OFF
+      </button>
+      <button
+        class="brush-btn active"
+        id="btn-brush-teal"
+        onclick="setBrushColor('#0f766e', 'teal')"
+        style="
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #0f766e;
+          border: 2px solid white;
+          cursor: pointer;
+          padding: 0;
+        "
+      ></button>
+      <button
+        class="brush-btn"
+        id="btn-brush-blue"
+        onclick="setBrushColor('#173b8c', 'blue')"
+        style="
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #173b8c;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+        "
+      ></button>
+      <button
+        class="brush-btn"
+        id="btn-brush-amber"
+        onclick="setBrushColor('#c17d11', 'amber')"
+        style="
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #c17d11;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+        "
+      ></button>
+      <button
+        onclick="undoDraw()"
+        style="
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border: none;
+          border-radius: 100px;
+          font-size: 10px;
+          font-weight: bold;
+          padding: 4px 8px;
+          cursor: pointer;
+          font-family: sans-serif;
+        "
+      >
+        Undo
+      </button>
+      <button
+        onclick="clearSketchpad()"
+        style="
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border: none;
+          border-radius: 100px;
+          font-size: 10px;
+          font-weight: bold;
+          padding: 4px 8px;
+          cursor: pointer;
+          font-family: sans-serif;
+        "
+      >
+        Clear
+      </button>
     </div>
 
     <!-- Teacher Lock Trigger -->
-    <div style="position:fixed; top:12px; right:12px; z-index:100; display:flex; gap:10px; align-items:center;">
-      <span onclick="toggleTeacherPanel()" style="cursor:pointer; opacity:0.35; font-size:1.1rem; filter:drop-shadow(0 2px 4px black);" id="teacher-lock-trigger" title="Teacher Admin Center">🔒</span>
+    <div
+      style="
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 100;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      "
+    >
+      <span
+        onclick="toggleTeacherPanel()"
+        style="
+          cursor: pointer;
+          opacity: 0.35;
+          font-size: 1.1rem;
+          filter: drop-shadow(0 2px 4px black);
+        "
+        id="teacher-lock-trigger"
+        title="Teacher Admin Center"
+        >🔒</span
+      >
     </div>
 
     <!-- Hidden Teacher panel -->
-    <div id="teacher-panel" style="display:none; position:fixed; top:50px; right:12px; z-index:100; background:rgba(45,24,16,0.95); border:1px solid #c17d11; border-radius:12px; padding:14px; box-shadow:0 8px 24px rgba(0,0,0,0.5); color:white; font-family:sans-serif; width:260px;">
-      <strong style="color:#fbbf24; font-size:13px; display:block; margin-bottom:4px;">🔑 Teacher Control Center</strong>
-      <p style="font-size:10px; color:#a0791e; margin-bottom:10px;">Reset student scoreboards or force-complete progress.</p>
-      <div style="display:flex; gap:8px;">
-        <button onclick="teacherResetScores()" style="background:rgba(255,255,255,0.1); border:none; color:white; border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:bold;">🗑️ Reset</button>
-        <button onclick="teacherMasterAll()" style="background:#fbbf24; border:none; color:black; border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer; font-weight:bold;">🎓 Master All</button>
+    <div
+      id="teacher-panel"
+      style="
+        display: none;
+        position: fixed;
+        top: 50px;
+        right: 12px;
+        z-index: 100;
+        background: rgba(45, 24, 16, 0.95);
+        border: 1px solid #c17d11;
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        color: white;
+        font-family: sans-serif;
+        width: 260px;
+      "
+    >
+      <strong
+        style="
+          color: #fbbf24;
+          font-size: 13px;
+          display: block;
+          margin-bottom: 4px;
+        "
+        >🔑 Teacher Control Center</strong
+      >
+      <p style="font-size: 10px; color: #a0791e; margin-bottom: 10px">
+        Reset student scoreboards or force-complete progress.
+      </p>
+      <div style="display: flex; gap: 8px">
+        <button
+          onclick="teacherResetScores()"
+          style="
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+          "
+        >
+          🗑️ Reset
+        </button>
+        <button
+          onclick="teacherMasterAll()"
+          style="
+            background: #fbbf24;
+            border: none;
+            color: black;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+          "
+        >
+          🎓 Master All
+        </button>
       </div>
     </div>
 
@@ -103,1632 +305,1636 @@
       });
     </script>
     <script>
-      "use strict";
-      (() => {
-        /* ============================================================
-   COOKING SIMULATOR — 6.NS.B.3
-   Add, subtract, multiply, divide multi-digit decimals.
-   Follow recipes, measure ingredients with decimal operations.
-   ============================================================ */
-
-        // --- Audio ---
-        let audioCtx = null;
-        function getAudio() {
-          if (!audioCtx)
-            try {
-              audioCtx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
-            } catch (e) {}
-          return audioCtx;
-        }
-        function playTone(f, d, t = "sine", v = 0.05) {
-          const c = getAudio();
-          if (!c) return;
-          if (c.state === "suspended") c.resume();
-          const o = c.createOscillator(),
-            g = c.createGain();
-          o.type = t;
-          o.frequency.value = f;
-          g.gain.setValueAtTime(0.0001, c.currentTime);
-          g.gain.linearRampToValueAtTime(v, c.currentTime + 0.02);
-          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + d);
-          o.connect(g).connect(c.destination);
-          o.start();
-          o.stop(c.currentTime + d + 0.01);
-        }
-        function playSweep(startFreq, endFreq, duration, type = "sine", vol = 0.05) {
-          const c = getAudio();
-          if (!c) return;
-          if (c.state === "suspended") c.resume();
-          const o = c.createOscillator(),
-            g = c.createGain();
-          o.type = type;
-          o.frequency.setValueAtTime(startFreq, c.currentTime);
-          o.frequency.exponentialRampToValueAtTime(endFreq, c.currentTime + duration);
-          g.gain.setValueAtTime(0.0001, c.currentTime);
-          g.gain.linearRampToValueAtTime(vol, c.currentTime + 0.02);
-          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + duration);
-          o.connect(g).connect(c.destination);
-          o.start();
-          o.stop(c.currentTime + duration + 0.01);
-        }
-        function sfxCorrect() {
-          playTone(523, 0.1);
-          setTimeout(() => playTone(659, 0.1), 70);
-          setTimeout(() => playTone(784, 0.12), 140);
-        }
-        function sfxWrong() {
-          playSweep(180, 60, 0.35, "sawtooth", 0.04);
-        }
-        function sfxDing() {
-          playTone(880, 0.15, "triangle", 0.04);
-        }
-        function sfxSizzle() {
-          for (let i = 0; i < 5; i++)
-            setTimeout(
-              () =>
-                playTone(3000 + Math.random() * 2000, 0.03, "sawtooth", 0.01),
-              i * 30,
-            );
-        }
-        function sfxChop() {
-          playTone(300, 0.05, "square", 0.04);
-          setTimeout(() => playTone(250, 0.04, "square", 0.03), 40);
-        }
-        function sfxLevelUp() {
-          playSweep(200, 800, 0.5, "sine", 0.06);
-          setTimeout(() => playSweep(400, 1600, 0.5, "triangle", 0.04), 150);
-          setTimeout(() => playTone(2000, 0.25, "sine", 0.05), 500);
-        }
-        function sfxServe() {
-          playSweep(300, 1200, 0.4, "triangle", 0.06);
-          setTimeout(() => playTone(1200, 0.15, "sine", 0.05), 200);
-        }
-
-        // --- Math ---
-        function rand(a, b) {
-          return Math.floor(Math.random() * (b - a + 1)) + a;
-        }
-        function pick(a) {
-          return a[rand(0, a.length - 1)];
-        }
-        function shuffle(a) {
-          const r = [...a];
-          for (let i = r.length - 1; i > 0; i--) {
-            const j = rand(0, i);
-            [r[i], r[j]] = [r[j], r[i]];
-          }
-          return r;
-        }
-        function round2(n) {
-          return Math.round(n * 100) / 100;
-        }
-        function fmtDec(n) {
-          const r = round2(n);
-          return r === Math.floor(r) ? r.toFixed(1) : String(r);
-        }
-
-        const OPS = ["+", "-", "×", "÷"];
-        const OP_WORDS = {
-          "+": "add",
-          "-": "subtract",
-          "×": "multiply",
-          "÷": "divide",
-        };
-
-        const INGREDIENTS = [
-          "flour",
-          "sugar",
-          "butter",
-          "milk",
-          "eggs",
-          "salt",
-          "vanilla",
-          "cocoa",
-          "cream",
-          "oil",
-          "honey",
-          "cinnamon",
-          "baking powder",
-          "cheese",
-          "tomato sauce",
-          "rice",
-          "pasta",
-          "beans",
-          "pepper",
-          "garlic",
-        ];
-        const UNITS = [
-          "cups",
-          "tablespoons",
-          "teaspoons",
-          "ounces",
-          "grams",
-          "liters",
-          "milliliters",
-          "pounds",
-        ];
-        const RECIPES = [
-          { name: "Chocolate Cake", emoji: "🎂", color: 0x8b4513 },
-          { name: "Pasta Primavera", emoji: "🍝", color: 0xdaa520 },
-          { name: "Berry Smoothie", emoji: "🥤", color: 0xdc143c },
-          { name: "Veggie Stir-Fry", emoji: "🥘", color: 0x228b22 },
-          { name: "Pancake Stack", emoji: "🥞", color: 0xf4a460 },
-          { name: "Pizza Margherita", emoji: "🍕", color: 0xff6347 },
-          { name: "Fruit Salad", emoji: "🥗", color: 0x32cd32 },
-          { name: "Banana Bread", emoji: "🍞", color: 0xd2691e },
-          { name: "Lemon Bars", emoji: "🍋", color: 0xffd700 },
-          { name: "Rice Pudding", emoji: "🍚", color: 0xfffacd },
-        ];
-
-        function generateDecimalQ(level) {
-          const op = pick(
-            level <= 1
-              ? ["+", "-"]
-              : level <= 3
-                ? ["+", "-", "×"]
-                : ["+", "-", "×", "÷"],
-          );
-          let a, b, answer;
-          const ingredient = pick(INGREDIENTS);
-          const unit = pick(UNITS);
-
-          if (op === "+") {
-            if (level <= 2) {
-              a = rand(10, 99) / 10;
-              b = rand(10, 99) / 10;
-            } else {
-              a = rand(100, 999) / 100;
-              b = rand(100, 999) / 100;
-            }
-            answer = round2(a + b);
-          } else if (op === "-") {
-            if (level <= 2) {
-              a = rand(30, 99) / 10;
-              b = rand(10, Math.floor(a * 10) - 1) / 10;
-            } else {
-              a = rand(200, 999) / 100;
-              b = rand(100, Math.floor(a * 100) - 1) / 100;
-            }
-            answer = round2(a - b);
-          } else if (op === "×") {
-            if (level <= 2) {
-              a = rand(10, 50) / 10;
-              b = rand(2, 9);
-            } else if (level <= 4) {
-              a = rand(10, 99) / 10;
-              b = rand(10, 50) / 10;
-            } else {
-              a = rand(10, 99) / 10;
-              b = rand(10, 99) / 10;
-            }
-            answer = round2(a * b);
-          } else {
-            // Division
-            if (level <= 3) {
-              b = rand(2, 9);
-              answer = rand(10, 50) / 10;
-              a = round2(answer * b);
-            } else {
-              b = rand(10, 50) / 10;
-              answer = rand(10, 99) / 10;
-              a = round2(answer * b);
-            }
-          }
-
-          a = round2(a);
-          b = round2(b);
-          answer = round2(answer);
-          const stem = fmtDec(a) + " " + op + " " + fmtDec(b);
-
-          // Context sentence
-          const contexts = {
-            "+":
-              "You need " +
-              fmtDec(a) +
-              " " +
-              unit +
-              " of " +
-              ingredient +
-              " plus " +
-              fmtDec(b) +
-              " more " +
-              unit +
-              ". How much total?",
-            "-":
-              "You have " +
-              fmtDec(a) +
-              " " +
-              unit +
-              " of " +
-              ingredient +
-              ". You use " +
-              fmtDec(b) +
-              " " +
-              unit +
-              ". How much is left?",
-            "×":
-              "Each serving needs " +
-              fmtDec(a) +
-              " " +
-              unit +
-              " of " +
-              ingredient +
-              ". You make " +
-              fmtDec(b) +
-              " servings. How much total?",
-            "÷":
-              "You have " +
-              fmtDec(a) +
-              " " +
-              unit +
-              " of " +
-              ingredient +
-              ". Split into groups of " +
-              fmtDec(b) +
-              ". How many groups?",
-          };
-
-          // Wrong answers
-          const wrongs = new Set();
-          wrongs.add(fmtDec(round2(answer + 0.1)));
-          wrongs.add(fmtDec(round2(answer - 0.1)));
-          wrongs.add(fmtDec(round2(answer + 1)));
-          wrongs.add(fmtDec(round2(Math.abs(answer - 1))));
-          // Decimal place error
-          wrongs.add(fmtDec(round2(answer * 10)));
-          wrongs.add(fmtDec(round2(answer / 10)));
-          wrongs.delete(fmtDec(answer));
-
-          const wrongArr = [...wrongs]
-            .filter((w) => parseFloat(w) > 0 && w !== fmtDec(answer))
-            .slice(0, 3);
-          while (wrongArr.length < 3)
-            wrongArr.push(fmtDec(round2(answer + rand(1, 20) / 10)));
-
-          const choices = shuffle([
-            { text: fmtDec(answer), correct: true },
-            ...wrongArr.slice(0, 3).map((w) => ({ text: w, correct: false })),
-          ]);
-
-          return {
-            a,
-            b,
-            op,
-            answer,
-            stem,
-            context: contexts[op],
-            choices,
-            hint:
-              "Line up decimals. " +
-              OP_WORDS[op] +
-              " carefully: " +
-              stem +
-              " = " +
-              fmtDec(answer),
-            ingredient,
-            unit,
-          };
-        }
-
-        // --- Phaser ---
-        const W = 960,
-          H = 640;
-        const config = {
-          type: Phaser.AUTO,
-          parent: "game-container",
-          width: W,
-          height: H,
-          backgroundColor: "#1a0f05",
-          scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-          },
-          physics: {
-            default: "arcade",
-            arcade: { gravity: { y: 300 }, debug: false },
-          },
-          scene: [],
-        };
-
-        // ==================== BOOT ====================
-        class BootScene extends Phaser.Scene {
-          constructor() {
-            super("Boot");
-          }
-          create() {
-            const g = this.make.graphics({ add: false });
-
-            // Chef character
-            g.clear();
-            g.fillStyle(0xffffff);
-            g.fillRoundedRect(6, 0, 20, 14, 4); // hat
-            g.fillStyle(0xfcd9b6);
-            g.fillCircle(16, 20, 10); // face
-            g.fillStyle(0xffffff);
-            g.fillRoundedRect(6, 28, 20, 22, 4); // body
-            g.fillStyle(0x333333);
-            g.fillCircle(13, 18, 2);
-            g.fillCircle(19, 18, 2); // eyes
-            g.fillStyle(0xff6b6b);
-            g.fillEllipse(16, 23, 4, 2); // mouth
-            g.generateTexture("chef", 32, 52);
-
-            // Ingredient item
-            g.clear();
-            g.fillStyle(0xfbbf24);
-            g.fillRoundedRect(0, 0, 36, 36, 8);
-            g.fillStyle(0xffffff, 0.3);
-            g.fillRoundedRect(4, 4, 28, 12, 4);
-            g.generateTexture("ingredient", 36, 36);
-
-            // Pot
-            g.clear();
-            g.fillStyle(0x6b7280);
-            g.fillRoundedRect(0, 10, 50, 35, 6);
-            g.fillStyle(0x4b5563);
-            g.fillRect(5, 0, 40, 12);
-            g.fillStyle(0xff6347, 0.5);
-            g.fillEllipse(25, 25, 30, 15); // contents
-            g.generateTexture("pot", 50, 45);
-
-            // Cutting board
-            g.clear();
-            g.fillStyle(0xd4a574);
-            g.fillRoundedRect(0, 0, 60, 40, 6);
-            g.lineStyle(1, 0xb8956a);
-            g.strokeRoundedRect(0, 0, 60, 40, 6);
-            g.generateTexture("board", 60, 40);
-
-            // Oven
-            g.clear();
-            g.fillStyle(0x374151);
-            g.fillRoundedRect(0, 0, 70, 60, 8);
-            g.fillStyle(0x1f2937);
-            g.fillRoundedRect(5, 5, 60, 35, 4);
-            g.fillStyle(0xff6347, 0.3);
-            g.fillRoundedRect(8, 8, 54, 29, 3); // glow
-            g.fillStyle(0x9ca3af);
-            g.fillCircle(20, 50, 4);
-            g.fillCircle(35, 50, 4);
-            g.fillCircle(50, 50, 4);
-            g.generateTexture("oven", 70, 60);
-
-            // Plate
-            g.clear();
-            g.fillStyle(0xffffff, 0.9);
-            g.fillEllipse(25, 20, 50, 35);
-            g.lineStyle(2, 0xe5e7eb);
-            g.strokeEllipse(25, 20, 50, 35);
-            g.generateTexture("plate", 50, 40);
-
-            // Star
-            g.clear();
-            g.fillStyle(0xfbbf24);
-            g.fillCircle(5, 5, 5);
-            g.generateTexture("star", 10, 10);
-
-            // Particle
-            g.clear();
-            g.fillStyle(0xffffff);
-            g.fillCircle(3, 3, 3);
-            g.generateTexture("particle", 6, 6);
-
-            // Steam particle
-            g.clear();
-            g.fillStyle(0xffffff, 0.4);
-            g.fillCircle(6, 6, 6);
-            g.generateTexture("steam", 12, 12);
-
-            // Answer card
-            g.clear();
-            g.fillStyle(0x2d1810, 0.92);
-            g.fillRoundedRect(0, 0, 130, 55, 12);
-            g.lineStyle(2, 0xfbbf24, 0.4);
-            g.strokeRoundedRect(0, 0, 130, 55, 12);
-            g.generateTexture("card", 130, 55);
-
-            // Conveyor belt segment
-            g.clear();
-            g.fillStyle(0x374151);
-            g.fillRect(0, 0, 80, 20);
-            g.lineStyle(1, 0x4b5563);
-            g.lineBetween(0, 10, 80, 10);
-            g.generateTexture("belt", 80, 20);
-
-            this.scene.start("Title");
-          }
-        }
-
-        // ==================== TITLE ====================
-        class TitleScene extends Phaser.Scene {
-          constructor() {
-            super("Title");
-          }
-          create() {
-            // Kitchen background
-            const bg = this.add.graphics();
-            bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
-            bg.fillRect(0, 0, W, H);
-
-            // Tile pattern
-            for (let x = 0; x < W; x += 40) {
-              for (let y = 0; y < H; y += 40) {
-                this.add
-                  .rectangle(
-                    x + 20,
-                    y + 20,
-                    38,
-                    38,
-                    (x + y) % 80 === 0 ? 0x3d2215 : 0x2d1810,
-                    0.3,
-                  )
-                  .setStrokeStyle(1, 0x4d3220, 0.15);
-              }
-            }
-
-            // Steam effects
-            for (let i = 0; i < 10; i++) {
-              const s = this.add
-                .image(rand(100, W - 100), H + 20, "steam")
-                .setAlpha(0)
-                .setScale(1 + Math.random() * 2);
-              this.tweens.add({
-                targets: s,
-                y: -30,
-                alpha: { from: 0.3, to: 0 },
-                duration: 4000 + rand(0, 3000),
-                repeat: -1,
-                delay: rand(0, 3000),
-              });
-            }
-
-            this.add
-              .text(W / 2, 90, "COOKING\nSIMULATOR", {
-                fontSize: "52px",
-                fontStyle: "bold",
-                color: "#fbbf24",
-                align: "center",
-                lineSpacing: 6,
-                stroke: "#78350f",
-                strokeThickness: 4,
-              })
-              .setOrigin(0.5);
-
-            this.add
-              .text(W / 2, 185, "6.NS.B.3 — Decimal Operations", {
-                fontSize: "15px",
-                color: "#d4a574",
-              })
-              .setOrigin(0.5);
-
-            // Kitchen items
-            this.add.image(W / 2 - 120, 310, "pot").setScale(2);
-            this.add.image(W / 2, 300, "chef").setScale(2.5);
-            this.add.image(W / 2 + 120, 310, "oven").setScale(1.8);
-
-            // Floating ingredients
-            const emojis = ["🥚", "🧈", "🥛", "🍫", "🍯", "🧂", "🫒", "🌾"];
-            emojis.forEach((e, i) => {
-              const t = this.add
-                .text(80 + i * 115, 380, e, { fontSize: "32px" })
-                .setOrigin(0.5);
-              this.tweens.add({
-                targets: t,
-                y: 370,
-                duration: 1500 + rand(0, 800),
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.easeInOut",
-                delay: rand(0, 600),
-              });
-            });
-
-            const lines = [
-              "Run a kitchen and solve decimal math!",
-              "Add, subtract, multiply, and divide decimals.",
-              "Measure ingredients on the conveyor belt.",
-              "Pick the right answer to complete each dish.",
-              "Click / Tap answer cards or press 1-4",
-            ];
-            lines.forEach((t, i) =>
-              this.add
-                .text(W / 2, 430 + i * 22, t, {
-                  fontSize: "13px",
-                  color: "#d4a574",
-                })
-                .setOrigin(0.5),
-            );
-
-            // Start
-            const btn = this.add
-              .rectangle(W / 2, 575, 220, 50, 0xfbbf24)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2, 575, "OPEN KITCHEN", {
-                fontSize: "20px",
-                fontStyle: "bold",
-                color: "#000",
-              })
-              .setOrigin(0.5);
-            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
-            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
-            btn.on("pointerdown", () => {
-              getAudio();
-              sfxDing();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            });
-
-            this.input.keyboard.on("keydown-SPACE", () => {
-              getAudio();
-              sfxDing();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            });
-            this.input.keyboard.on("keydown-ENTER", () => {
-              getAudio();
-              sfxDing();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            });
-
-            this.cameras.main.fadeIn(400);
-          }
-        }
-
-        // ==================== GAME ====================
-        class GameScene extends Phaser.Scene {
-          constructor() {
-            super("Game");
-          }
-
-          create() {
-            this.cameras.main.fadeIn(300);
-            this.physics.world.gravity.y = 0;
-
-            // State
-            this.score = 0;
-            this.combo = 0;
-            this.bestCombo = 0;
-            this.lives = 4;
-            this.level = 1;
-            this.dishesServed = 0;
-            this.questionsCorrect = 0;
-            this.questionsTotal = 0;
-            this.currentQ = null;
-            this.answered = false;
-            this.currentRecipe = pick(RECIPES);
-            this.recipeProgress = 0;
-            this.recipesPerDish = 3;
-            this.timer = 20;
-            this.timerMax = 20;
-
-            // Load state from localStorage
-            try {
-              const raw = localStorage.getItem("neft_decimal_champion_state");
-              if (raw) {
-                const loaded = JSON.parse(raw);
-                if (loaded) {
-                  this.score = loaded.score ?? 0;
-                  this.level = loaded.level ?? 1;
-                  this.dishesServed = loaded.dishesServed ?? 0;
-                  this.bestCombo = loaded.bestCombo ?? 0;
-                  this.questionsCorrect = loaded.questionsCorrect ?? 0;
-                  this.questionsTotal = loaded.questionsTotal ?? 0;
-                  this.lives = loaded.lives ?? 4;
-                  this.recipeProgress = loaded.recipeProgress ?? 0;
-                  this.timerMax = Math.max(10, 20 - this.level * 2);
-                  if (loaded.currentRecipeName) {
-                    const found = RECIPES.find(r => r.name === loaded.currentRecipeName);
-                    if (found) this.currentRecipe = found;
-                  }
-                }
-              }
-            } catch (e) {
-              console.error("Error loading state", e);
-            }
-
-            // Kitchen background
-            const bg = this.add.graphics();
-            bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
-            bg.fillRect(0, 0, W, H);
-
-            // Wall tiles (top half)
-            for (let x = 0; x < W; x += 48) {
-              for (let y = 0; y < 280; y += 48) {
-                this.add
-                  .rectangle(x + 24, y + 24, 46, 46, 0x3d2215, 0.25)
-                  .setStrokeStyle(1, 0x4d3220, 0.12);
-              }
-            }
-
-            // Counter
-            this.add
-              .rectangle(W / 2, 285, W, 20, 0x8b6914)
-              .setStrokeStyle(2, 0xa0791e);
-
-            // Conveyor belt
-            for (let x = 0; x < W; x += 80) {
-              this.add.image(x + 40, 480, "belt").setAlpha(0.5);
-            }
-            // Belt animation dots
-            this.beltDots = [];
-            for (let i = 0; i < 15; i++) {
-              const d = this.add.circle(i * 70, 480, 3, 0x9ca3af, 0.4);
-              this.beltDots.push(d);
-            }
-
-            // Kitchen items (static decor)
-            this.add.image(80, 240, "pot").setScale(1.5).setAlpha(0.6);
-            this.add
-              .image(W - 80, 240, "oven")
-              .setScale(1.4)
-              .setAlpha(0.5);
-
-            // Steam from pot
-            this.add.particles(80, 210, "steam", {
-              lifespan: 2000,
-              speedY: { min: -20, max: -50 },
-              speedX: { min: -8, max: 8 },
-              scale: { start: 0.5, end: 1.5 },
-              alpha: { start: 0.3, end: 0 },
-              frequency: 400,
-              quantity: 1,
-            });
-
-            // Chef
-            this.chef = this.add
-              .image(W / 2, 240, "chef")
-              .setScale(2)
-              .setDepth(5);
-            this.tweens.add({
-              targets: this.chef,
-              y: 235,
-              duration: 1500,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-
-            // Plate (where food goes)
-            this.plate = this.add
-              .image(W / 2, 360, "plate")
-              .setScale(2)
-              .setDepth(4);
-            this.dishEmoji = this.add
-              .text(W / 2, 355, this.currentRecipe.emoji, { fontSize: "30px" })
-              .setOrigin(0.5)
-              .setDepth(6);
-
-            // Answer cards (interactive)
-            this.cards = [];
-            this.cardLabels = [];
-            this.cardBgs = [];
-            for (let i = 0; i < 4; i++) {
-              const x = 140 + i * 190;
-              const y = 555;
-              const bg = this.add
-                .image(x, y, "card")
-                .setScale(1.1)
-                .setDepth(10)
-                .setInteractive({ useHandCursor: true });
-              bg.on("pointerover", () => {
-                if (!this.answered) bg.setScale(1.18);
-              });
-              bg.on("pointerout", () => bg.setScale(1.1));
-              const idx = i;
-              bg.on("pointerdown", () => this.selectAnswer(idx));
-
-              const label = this.add
-                .text(x, y, "", {
-                  fontSize: "20px",
-                  fontStyle: "bold",
-                  color: "#fef3c7",
-                  align: "center",
-                })
-                .setOrigin(0.5)
-                .setDepth(11);
-              this.cards.push({ bg, label, index: i });
-              this.cardBgs.push(bg);
-              this.cardLabels.push(label);
-            }
-
-            // Keyboard
-            this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
-            this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
-            this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
-            this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
-
-            // HUD
-            this.createHUD();
-
-            // Timer event
-            this.timerEvent = this.time.addEvent({
-              delay: 1000,
-              callback: () => {
-                if (!this.answered && this.timer > 0) {
-                  this.timer--;
-                  this.updateTimerBar();
-                  if (this.timer <= 0) this.timeUp();
-                }
-              },
-              loop: true,
-            });
-
-            // First question
-            this.nextQuestion();
-          }
-
-          createHUD() {
-            const y = 22;
-            // Score
-            this.add
-              .rectangle(75, y, 130, 32, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0xfbbf24, 0.3)
-              .setDepth(100);
-            this.scoreText = this.add
-              .text(75, y, "Score: 0", {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#fbbf24",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Combo
-            this.add
-              .rectangle(205, y, 100, 32, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0xfb923c, 0.3)
-              .setDepth(100);
-            this.comboText = this.add
-              .text(205, y, "x0", {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#fb923c",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Level
-            this.add
-              .rectangle(315, y, 100, 32, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0x34d399, 0.3)
-              .setDepth(100);
-            this.levelText = this.add
-              .text(315, y, "Level: 1", {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#34d399",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Dishes
-            this.add
-              .rectangle(435, y, 120, 32, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0xa78bfa, 0.3)
-              .setDepth(100);
-            this.dishText = this.add
-              .text(435, y, "Dishes: 0", {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#a78bfa",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Lives
-            this.livesText = this.add
-              .text(W - 80, y, "", { fontSize: "22px" })
-              .setOrigin(0.5)
-              .setDepth(101);
-            this.updateLives();
-
-            // Recipe progress
-            this.add
-              .rectangle(W / 2, 300, 200, 18, 0x1a0f05, 0.8)
-              .setStrokeStyle(1, 0xfbbf24, 0.3)
-              .setDepth(100);
-            this.recipeBar = this.add
-              .rectangle(W / 2 - 95, 300, 0, 12, 0xfbbf24, 0.8)
-              .setOrigin(0, 0.5)
-              .setDepth(101);
-            this.recipeName = this.add
-              .text(
-                W / 2,
-                300,
-                this.currentRecipe.emoji + " " + this.currentRecipe.name,
-                { fontSize: "11px", fontStyle: "bold", color: "#fff" },
-              )
-              .setOrigin(0.5)
-              .setDepth(102);
-
-            // Timer bar
-            this.add
-              .rectangle(W / 2, 510, W - 80, 10, 0x1a0f05, 0.8)
-              .setStrokeStyle(1, 0x34d399, 0.2)
-              .setDepth(100);
-            this.timerBar = this.add
-              .rectangle(50, 510, 0, 6, 0x34d399, 0.9)
-              .setOrigin(0, 0.5)
-              .setDepth(101);
-            this.timerBar.width = W - 90;
-
-            // Question panel
-            this.qPanel = this.add
-              .rectangle(W / 2, 415, W - 60, 60, 0x2d1810, 0.9)
-              .setStrokeStyle(1, 0xfbbf24, 0.3)
-              .setDepth(100);
-            this.qText = this.add
-              .text(W / 2, 408, "", {
-                fontSize: "22px",
-                fontStyle: "bold",
-                color: "#fef3c7",
-              })
-              .setOrigin(0.5)
-              .setDepth(101);
-            this.qContext = this.add
-              .text(W / 2, 430, "", { fontSize: "12px", color: "#d4a574" })
-              .setOrigin(0.5)
-              .setDepth(101);
-
-            // Feedback
-            this.feedbackText = this.add
-              .text(W / 2, 350, "", {
-                fontSize: "26px",
-                fontStyle: "bold",
-                color: "#34d399",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5)
-              .setDepth(102)
-              .setAlpha(0);
-          }
-
-          saveState() {
-            try {
-              const stateData = {
-                score: this.score,
-                level: this.level,
-                dishesServed: this.dishesServed,
-                bestCombo: this.bestCombo,
-                questionsCorrect: this.questionsCorrect,
-                questionsTotal: this.questionsTotal,
-                lives: this.lives,
-                recipeProgress: this.recipeProgress,
-                currentRecipeName: this.currentRecipe.name
-              };
-              localStorage.setItem("neft_decimal_champion_state", JSON.stringify(stateData));
-            } catch (e) {
-              console.error("Error saving state", e);
-            }
-          }
-
-          nextQuestion() {
-            this.answered = false;
-            this.timer = this.timerMax;
-            this.updateTimerBar();
-
-            this.currentQ = generateDecimalQ(this.level);
-            this.qText.setText(this.currentQ.stem);
-            this.qContext.setText(this.currentQ.context);
-
-            // Reset card visuals
-            this.currentQ.choices.forEach((c, i) => {
-              if (i < this.cardLabels.length) {
-                this.cardLabels[i].setText(c.text);
-                this.cardBgs[i].setTint(0xffffff).setAlpha(1).setScale(1.1);
-                this.cardLabels[i].setColor("#fef3c7");
-              }
-            });
-
-            // Ingredient animation on conveyor
-            this.spawnIngredientOnBelt();
-          }
-
-          spawnIngredientOnBelt() {
-            const ing = this.add
-              .image(-30, 480, "ingredient")
-              .setScale(1)
-              .setDepth(8);
-            const label = this.add
-              .text(-30, 478, this.currentQ.ingredient.substring(0, 6), {
-                fontSize: "9px",
-                fontStyle: "bold",
-                color: "#000",
-              })
-              .setOrigin(0.5)
-              .setDepth(9);
-            this.tweens.add({
-              targets: [ing, label],
-              x: W + 40,
-              duration: 6000,
-              onComplete: () => {
-                ing.destroy();
-                label.destroy();
-              },
-            });
-          }
-
-          selectAnswer(idx) {
-            if (this.answered || idx >= this.currentQ.choices.length) return;
-            this.answered = true;
-
-            const choice = this.currentQ.choices[idx];
-
-            if (choice.correct) {
-              sfxCorrect();
-              this.combo++;
-              this.bestCombo = Math.max(this.bestCombo, this.combo);
-              this.questionsCorrect++;
-              this.questionsTotal++;
-
-              const pts = 100 + this.combo * 15 + this.level * 25;
-              this.score += pts;
-
-              this.cardBgs[idx].setTint(0x34d399);
-              this.cardLabels[idx].setColor("#34d399");
-
-              this.showFeedback("Delicious! +" + pts, 0x34d399);
-
-              // Particles
-              this.add
-                .particles(this.cardBgs[idx].x, this.cardBgs[idx].y, "star", {
-                  speed: { min: 50, max: 150 },
-                  lifespan: 600,
-                  scale: { start: 0.8, end: 0 },
-                  tint: [0xfbbf24, 0xfb923c, 0x34d399],
-                  quantity: 12,
-                  emitting: false,
-                })
-                .explode(12);
-
-              // Chef happy
-              this.tweens.add({
-                targets: this.chef,
-                scaleX: 2.2,
-                scaleY: 2.2,
-                duration: 100,
-                yoyo: true,
-                repeat: 1,
-              });
-
-              // Recipe progress
-              this.recipeProgress++;
-              this.recipeBar.width =
-                (this.recipeProgress / this.recipesPerDish) * 190;
-
-              if (this.recipeProgress >= this.recipesPerDish) {
-                this.serveDish();
-              }
-
-              // Level up
-              if (
-                this.questionsCorrect > 0 &&
-                this.questionsCorrect % 5 === 0 &&
-                this.level < 6
-              ) {
-                this.level++;
-                this.levelText.setText("Level: " + this.level);
-                this.timerMax = Math.max(10, 20 - this.level * 2);
-                sfxLevelUp();
-              }
-
-              this.cameras.main.flash(150, 52, 211, 153, false);
-              this.updateHUD();
-              this.saveState();
-              this.time.delayedCall(1000, () => {
-                if (this.lives > 0) this.nextQuestion();
-              });
-            } else {
-              sfxWrong();
-              this.combo = 0;
-              this.lives--;
-              this.questionsTotal++;
-
-              this.cardBgs[idx].setTint(0xef4444);
-              this.cardLabels[idx].setColor("#ef4444");
-
-              // Highlight correct
-              this.currentQ.choices.forEach((c, i) => {
-                if (c.correct) {
-                  this.cardBgs[i].setTint(0x34d399);
-                  this.cardLabels[i].setColor("#34d399");
-                }
-              });
-
-              this.showFeedback(
-                "Not right! Answer: " + fmtDec(this.currentQ.answer),
-                0xef4444,
-              );
-              this.qContext.setText(this.currentQ.hint);
-
-              this.cameras.main.shake(200, 0.008);
-
-              this.add
-                .particles(
-                  this.cardBgs[idx].x,
-                  this.cardBgs[idx].y,
-                  "particle",
-                  {
-                    speed: { min: 30, max: 80 },
-                    lifespan: 400,
-                    tint: 0xef4444,
-                    quantity: 8,
-                    emitting: false,
-                  },
-                )
-                .explode(8);
-
-              this.updateHUD();
-              this.saveState();
-              if (this.lives <= 0) {
-                this.time.delayedCall(1200, () => this.endGame());
-              } else {
-                this.time.delayedCall(1800, () => this.nextQuestion());
-              }
-            }
-          }
-
-          serveDish() {
-            sfxServe();
-            this.dishesServed++;
-            this.score += 200;
-            this.recipeProgress = 0;
-            this.recipeBar.width = 0;
-
-            // Dish served animation
-            this.showFeedback(
-              this.currentRecipe.emoji +
-                " " +
-                this.currentRecipe.name +
-                " Served! +200",
-              0xfbbf24,
-            );
-
-            // Plate animation
-            this.tweens.add({
-              targets: this.plate,
-              scaleX: 2.5,
-              scaleY: 2.5,
-              duration: 200,
-              yoyo: true,
-            });
-
-            // Pick new recipe
-            this.currentRecipe = pick(RECIPES);
-            this.recipeName.setText(
-              this.currentRecipe.emoji + " " + this.currentRecipe.name,
-            );
-            this.dishEmoji.setText(this.currentRecipe.emoji);
-
-            // Firework particles
-            for (let i = 0; i < 3; i++) {
-              const x = rand(200, W - 200),
-                y = rand(100, 300);
-              this.time.delayedCall(i * 200, () => {
-                this.add
-                  .particles(x, y, "star", {
-                    speed: { min: 60, max: 200 },
-                    lifespan: 800,
-                    scale: { start: 1, end: 0 },
-                    tint: [0xfbbf24, 0xfb923c, 0xef4444, 0x34d399],
-                    quantity: 15,
-                    emitting: false,
-                  })
-                  .explode(15);
-              });
-            }
-
-            this.updateHUD();
-            this.saveState();
-          }
-
-          timeUp() {
-            if (this.answered) return;
-            this.answered = true;
-            sfxWrong();
-            this.combo = 0;
-            this.lives--;
-            this.questionsTotal++;
-
-            // Highlight correct
-            this.currentQ.choices.forEach((c, i) => {
-              if (c.correct) {
-                this.cardBgs[i].setTint(0x34d399);
-                this.cardLabels[i].setColor("#34d399");
-              }
-            });
-
-            this.showFeedback(
-              "Time is up! Answer: " + fmtDec(this.currentQ.answer),
-              0xfb923c,
-            );
-            this.updateHUD();
-            this.saveState();
-            if (this.lives <= 0) {
-              this.time.delayedCall(1200, () => this.endGame());
-            } else {
-              this.time.delayedCall(1800, () => this.nextQuestion());
-            }
-          }
-
-          showFeedback(text, color) {
-            const hex = "#" + color.toString(16).padStart(6, "0");
-            this.feedbackText
-              .setText(text)
-              .setColor(hex)
-              .setAlpha(1)
-              .setScale(0.5);
-            this.tweens.add({
-              targets: this.feedbackText,
-              scale: 1,
-              duration: 200,
-              ease: "Back.easeOut",
-            });
-            this.tweens.add({
-              targets: this.feedbackText,
-              alpha: 0,
-              duration: 700,
-              delay: 900,
-            });
-          }
-
-          updateTimerBar() {
-            const pct = this.timer / this.timerMax;
-            this.timerBar.width = (W - 90) * pct;
-            this.timerBar.fillColor =
-              pct > 0.5 ? 0x34d399 : pct > 0.25 ? 0xfbbf24 : 0xef4444;
-          }
-
-          updateLives() {
-            let h = "";
-            for (let i = 0; i < 4; i++) h += i < this.lives ? "❤️" : "🖤";
-            this.livesText.setText(h);
-          }
-
-          updateHUD() {
-            this.scoreText.setText("Score: " + this.score);
-            this.comboText.setText(
-              "x" + this.combo + (this.combo >= 3 ? " 🔥" : ""),
-            );
-            this.levelText.setText("Level: " + this.level);
-            this.dishText.setText("Dishes: " + this.dishesServed);
-            this.updateLives();
-          }
-
-          endGame() {
-            if (this.timerEvent) this.timerEvent.destroy();
-            this.scene.start("Results", {
-              score: this.score,
-              correct: this.questionsCorrect,
-              total: this.questionsTotal,
-              level: this.level,
-              bestCombo: this.bestCombo,
-              dishes: this.dishesServed,
-            });
-          }
-
-          update(time, delta) {
-            // Belt animation
-            this.beltDots.forEach((d) => {
-              d.x += 0.5;
-              if (d.x > W + 10) d.x = -10;
-            });
-          }
-        }
-
-        // ==================== RESULTS ====================
-        class ResultsScene extends Phaser.Scene {
-          constructor() {
-            super("Results");
-          }
-          init(data) {
-            this.d = data;
-          }
-          create() {
-            const d = this.d;
-            const bg = this.add.graphics();
-            bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
-            bg.fillRect(0, 0, W, H);
-
-            const acc = d.total ? Math.round((d.correct / d.total) * 100) : 0;
-            const won = d.dishes >= 3;
-
-            this.add
-              .text(W / 2, 55, won ? "HEAD CHEF!" : "KITCHEN CLOSED", {
-                fontSize: "36px",
-                fontStyle: "bold",
-                color: won ? "#fbbf24" : "#fb923c",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 90, "6.NS.B.3 — Decimal Operations", {
-                fontSize: "14px",
-                color: "#d4a574",
-              })
-              .setOrigin(0.5);
-
-            const stats = [
-              { label: "Score", value: d.score, color: "#fbbf24" },
-              {
-                label: "Correct",
-                value: d.correct + "/" + d.total,
-                color: "#34d399",
-              },
-              { label: "Accuracy", value: acc + "%", color: "#61dafb" },
-              { label: "Level", value: d.level, color: "#a78bfa" },
-              { label: "Best Combo", value: d.bestCombo, color: "#fb923c" },
-              { label: "Dishes Served", value: d.dishes, color: "#fbbf24" },
-            ];
-            stats.forEach((s, i) => {
-              const col = i % 3,
-                row = Math.floor(i / 3);
-              const x = W / 2 - 190 + col * 190,
-                y = 150 + row * 95;
-              this.add
-                .rectangle(x, y, 165, 70, 0x2d1810, 0.85)
-                .setStrokeStyle(1, parseInt(s.color.slice(1), 16), 0.4);
-              this.add
-                .text(x, y - 14, s.label, {
-                  fontSize: "11px",
-                  color: "#d4a574",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 12, String(s.value), {
-                  fontSize: "24px",
-                  fontStyle: "bold",
-                  color: s.color,
-                })
-                .setOrigin(0.5);
-            });
-
-            const badges = [];
-            if (acc >= 90) badges.push("Master Chef");
-            if (acc >= 70) badges.push("Sous Chef");
-            if (d.bestCombo >= 5) badges.push("Combo Cook");
-            if (d.dishes >= 5) badges.push("Kitchen Hero");
-            if (d.level >= 4) badges.push("Advanced");
-            if (!badges.length) badges.push("Keep Cooking!");
-
-            this.add
-              .text(W / 2, 370, "Achievements", {
-                fontSize: "13px",
-                color: "#d4a574",
-              })
-              .setOrigin(0.5);
-            badges.forEach((b, i) => {
-              const bx = W / 2 + (i - (badges.length - 1) / 2) * 130;
-              this.add
-                .rectangle(bx, 400, 115, 28, 0x3d2215, 0.8)
-                .setStrokeStyle(1, 0xfbbf24, 0.5);
-              this.add
-                .text(bx, 400, b, {
-                  fontSize: "11px",
-                  fontStyle: "bold",
-                  color: "#fbbf24",
-                })
-                .setOrigin(0.5);
-            });
-
-            this.add
-              .text(
-                W / 2,
-                455,
-                "Tip: Line up decimal points.\nEstimate first, then compute carefully.",
-                {
-                  fontSize: "13px",
-                  color: "#d4a574",
-                  align: "center",
-                  lineSpacing: 4,
-                },
-              )
-              .setOrigin(0.5);
-
-            const btn = this.add
-              .rectangle(W / 2 - 80, 535, 160, 46, 0xfbbf24)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 - 80, 535, "COOK AGAIN", {
-                fontSize: "17px",
-                fontStyle: "bold",
-                color: "#000",
-              })
-              .setOrigin(0.5);
-            btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
-            btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
-            btn.on("pointerdown", () => {
-              sfxDing();
-              localStorage.removeItem("neft_decimal_champion_state");
-              this.scene.start("Game");
-            });
-
-            const menu = this.add
-              .rectangle(W / 2 + 100, 535, 110, 46, 0x2d1810)
-              .setStrokeStyle(1, 0xfbbf24, 0.5)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 + 100, 535, "MENU", {
-                fontSize: "15px",
-                fontStyle: "bold",
-                color: "#fbbf24",
-              })
-              .setOrigin(0.5);
-            menu.on("pointerdown", () => {
-              localStorage.removeItem("neft_decimal_champion_state");
-              this.scene.start("Title");
-            });
-
-            this.input.keyboard.on("keydown-SPACE", () => {
-              sfxDing();
-              localStorage.removeItem("neft_decimal_champion_state");
-              this.scene.start("Game");
-            });
-            this.cameras.main.fadeIn(400);
-
-            if (acc >= 70) {
-              for (let i = 0; i < 20; i++) {
-                const e = this.add.text(
-                  rand(50, W - 50),
-                  -20,
-                  pick(["🎂", "🍝", "🥤", "🥘", "🥞", "🍕"]),
-                  { fontSize: "28px" },
-                );
-                this.tweens.add({
-                  targets: e,
-                  y: H + 30,
-                  x: e.x + rand(-60, 60),
-                  angle: 360,
-                  duration: 2500 + rand(0, 1500),
-                  delay: rand(0, 1000),
-                  alpha: 0,
-                });
-              }
-            }
-          }
-        }
-
-        config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
-        
-        // Expose game instance globally
-        window.phaserGame = new Phaser.Game(config);
-
-        // --- Sketchpad Overlay Logic ---
-        const canvas = document.getElementById("sketchpad");
-        const ctx = canvas.getContext("2d");
-        let drawing = false;
-        let brushColor = "#0f766e";
-        let brushWidth = 4;
-        let drawHistory = [];
-        let currentStroke = [];
-
-        function resizeCanvas() {
-          const rect = canvas.getBoundingClientRect();
-          const dpr = window.devicePixelRatio || 1;
-          canvas.width = rect.width * dpr;
-          canvas.height = rect.height * dpr;
-          ctx.scale(dpr, dpr);
-          ctx.lineCap = "round";
-          ctx.lineJoin = "round";
-          ctx.strokeStyle = brushColor;
-          ctx.lineWidth = brushWidth;
-          redrawHistory();
-        }
-
-        function redrawHistory() {
-          ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
-          drawHistory.forEach(stroke => {
-            if (stroke.length < 1) return;
-            ctx.beginPath();
-            ctx.strokeStyle = stroke[0].color;
-            ctx.lineWidth = stroke[0].width;
-            ctx.moveTo(stroke[0].x, stroke[0].y);
-            for (let i = 1; i < stroke.length; i++) {
-              ctx.lineTo(stroke[i].x, stroke[i].y);
-            }
-            ctx.stroke();
-          });
-        }
-
-        function getCoords(e) {
-          const rect = canvas.getBoundingClientRect();
-          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-          return {
-            x: clientX - rect.left,
-            y: clientY - rect.top
-          };
-        }
-
-        function startDrawing(e) {
-          if (canvas.style.pointerEvents === "none") return;
-          drawing = true;
-          currentStroke = [];
-          const coords = getCoords(e);
-          ctx.beginPath();
-          ctx.strokeStyle = brushColor;
-          ctx.lineWidth = brushWidth;
-          ctx.moveTo(coords.x, coords.y);
-          currentStroke.push({ x: coords.x, y: coords.y, color: brushColor, width: brushWidth });
-        }
-
-        function draw(e) {
-          if (!drawing) return;
-          if (e.cancelable) e.preventDefault();
-          const coords = getCoords(e);
-          ctx.lineTo(coords.x, coords.y);
-          ctx.stroke();
-          currentStroke.push({ x: coords.x, y: coords.y, color: brushColor, width: brushWidth });
-        }
-
-        function stopDrawing() {
-          if (!drawing) return;
-          drawing = false;
-          if (currentStroke.length > 0) {
-            drawHistory.push(currentStroke);
-          }
-        }
-
-        canvas.addEventListener("mousedown", startDrawing);
-        canvas.addEventListener("mousemove", draw);
-        canvas.addEventListener("mouseup", stopDrawing);
-        canvas.addEventListener("mouseleave", stopDrawing);
-
-        canvas.addEventListener("touchstart", (e) => {
-          if (canvas.style.pointerEvents === "none") return;
-          startDrawing(e);
-        }, { passive: false });
-        canvas.addEventListener("touchmove", draw, { passive: false });
-        canvas.addEventListener("touchend", stopDrawing);
-        canvas.addEventListener("touchcancel", stopDrawing);
-
-        window.addEventListener("resize", resizeCanvas);
-        setTimeout(resizeCanvas, 200);
-
-        // Bind toolbar triggers to window so inline HTML onclick attributes can reach them
-        window.togglePencil = function() {
-          const btn = document.getElementById("btn-pencil-toggle");
-          if (canvas.style.pointerEvents === "none") {
-            canvas.style.pointerEvents = "auto";
-            btn.style.background = "#fbbf24";
-            btn.style.color = "black";
-            btn.textContent = "✏️ Pencil: ON";
-          } else {
-            canvas.style.pointerEvents = "none";
-            btn.style.background = "#c17d11";
-            btn.style.color = "black";
-            btn.textContent = "✏️ Pencil: OFF";
-          }
-        };
-
-        window.setBrushColor = function(color, name) {
-          brushColor = color;
-          ctx.strokeStyle = brushColor;
-          document.querySelectorAll(".brush-btn").forEach(btn => {
-            btn.classList.remove("active");
-            btn.style.border = "none";
-          });
-          const activeBtn = document.getElementById("btn-brush-" + name);
-          if (activeBtn) {
-            activeBtn.classList.add("active");
-            activeBtn.style.border = "2px solid white";
-          }
-        };
-
-        window.undoDraw = function() {
-          drawHistory.pop();
-          redrawHistory();
-        };
-
-        window.clearSketchpad = function() {
-          drawHistory = [];
-          redrawHistory();
-        };
-
-        // --- Teacher Admin Panel Bindings ---
-        window.toggleTeacherPanel = function() {
-          const panel = document.getElementById("teacher-panel");
-          const lock = document.getElementById("teacher-lock-trigger");
-          if (panel.style.display === "none") {
-            const pass = prompt("Enter Teacher Access Code (default is 'admin'):");
-            if (pass === "admin" || pass === "") {
-              panel.style.display = "block";
-              lock.textContent = "🔓";
-              lock.style.opacity = "1";
-            } else {
-              alert("Access Denied.");
-            }
-          } else {
-            panel.style.display = "none";
-            lock.textContent = "🔒";
-            lock.style.opacity = "0.35";
-          }
-        };
-
-        window.teacherResetScores = function() {
-          if (confirm("Are you sure you want to reset all game progress?")) {
-            localStorage.removeItem("neft_decimal_champion_state");
-            if (window.phaserGame) {
-              const activeScenes = window.phaserGame.scene.getScenes(true);
-              activeScenes.forEach(s => {
-                if (s.scene.key === "Game" || s.scene.key === "Results") {
-                  s.scene.start("Game");
-                }
-              });
-            } else {
-              window.location.reload();
-            }
-          }
-        };
-
-        window.teacherMasterAll = function() {
-          const masterData = {
-            score: 5000,
-            level: 6,
-            dishesServed: 10,
-            bestCombo: 12,
-            questionsCorrect: 50,
-            questionsTotal: 50,
-            lives: 4,
-            recipeProgress: 0
-          };
-          localStorage.setItem("neft_decimal_champion_state", JSON.stringify(masterData));
-          alert("Master state loaded! Level 6 unlocked.");
-          if (window.phaserGame) {
-            const activeScenes = window.phaserGame.scene.getScenes(true);
-            activeScenes.forEach(s => {
-              if (s.scene.key === "Game" || s.scene.key === "Results") {
-                s.scene.start("Game");
-              }
-            });
-          } else {
-            window.location.reload();
-          }
-        // --- Diagnostics & Self-Test ---
-        function validateConfig() {
-          if (!Array.isArray(RECIPES) || RECIPES.length === 0) {
-            throw new Error("Configuration Error: 'RECIPES' array is invalid or empty.");
-          }
-          if (!Array.isArray(INGREDIENTS) || INGREDIENTS.length === 0) {
-            throw new Error("Configuration Error: 'INGREDIENTS' array is invalid or empty.");
-          }
-          RECIPES.forEach((r, idx) => {
-            if (!r.name || !r.emoji || r.color === undefined) {
-              throw new Error(`Configuration Error: Missing fields in recipe at index ${idx}.`);
-            }
-          });
-          return true;
-        }
-
-        function selfTest() {
-          try {
-            console.assert(round2(1.23 + 2.34) === 3.57, "round2 arithmetic validation failed");
-            console.assert(fmtDec(1.5) === "1.5", "fmtDec simple float formatting failed");
-            console.assert(fmtDec(1.0) === "1.0", "fmtDec whole number formatting failed");
-            console.assert(fmtDec(1.25) === "1.25", "fmtDec hundredths formatting failed");
-            const mockArr = [10, 20, 30];
-            const p = pick(mockArr);
-            console.assert(mockArr.includes(p), "pick utility function failed");
-            localStorage.setItem("neft_decimal_champion_test", "test_active");
-            console.assert(localStorage.getItem("neft_decimal_champion_test") === "test_active", "Game state persistence verification failed");
-            localStorage.removeItem("neft_decimal_champion_test");
-            return true;
-          } catch (e) {
-            console.error("SelfTest Diagnostics Failed:", e);
-            return false;
-          }
-        }
-
-        validateConfig();
-        selfTest();
-      })();
+         "use strict";
+         (() => {
+           /* ============================================================
+      COOKING SIMULATOR — 6.NS.B.3
+      Add, subtract, multiply, divide multi-digit decimals.
+      Follow recipes, measure ingredients with decimal operations.
+      ============================================================ */
+
+           // --- Audio ---
+           let audioCtx = null;
+           function getAudio() {
+             if (!audioCtx)
+               try {
+                 audioCtx = new (
+                   window.AudioContext || window.webkitAudioContext
+                 )();
+               } catch (e) {}
+             return audioCtx;
+           }
+           function playTone(f, d, t = "sine", v = 0.05) {
+             const c = getAudio();
+             if (!c) return;
+             if (c.state === "suspended") c.resume();
+             const o = c.createOscillator(),
+               g = c.createGain();
+             o.type = t;
+             o.frequency.value = f;
+             g.gain.setValueAtTime(0.0001, c.currentTime);
+             g.gain.linearRampToValueAtTime(v, c.currentTime + 0.02);
+             g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + d);
+             o.connect(g).connect(c.destination);
+             o.start();
+             o.stop(c.currentTime + d + 0.01);
+           }
+           function playSweep(startFreq, endFreq, duration, type = "sine", vol = 0.05) {
+             const c = getAudio();
+             if (!c) return;
+             if (c.state === "suspended") c.resume();
+             const o = c.createOscillator(),
+               g = c.createGain();
+             o.type = type;
+             o.frequency.setValueAtTime(startFreq, c.currentTime);
+             o.frequency.exponentialRampToValueAtTime(endFreq, c.currentTime + duration);
+             g.gain.setValueAtTime(0.0001, c.currentTime);
+             g.gain.linearRampToValueAtTime(vol, c.currentTime + 0.02);
+             g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + duration);
+             o.connect(g).connect(c.destination);
+             o.start();
+             o.stop(c.currentTime + duration + 0.01);
+           }
+           function sfxCorrect() {
+             playTone(523, 0.1);
+             setTimeout(() => playTone(659, 0.1), 70);
+             setTimeout(() => playTone(784, 0.12), 140);
+           }
+           function sfxWrong() {
+             playSweep(180, 60, 0.35, "sawtooth", 0.04);
+           }
+           function sfxDing() {
+             playTone(880, 0.15, "triangle", 0.04);
+           }
+           function sfxSizzle() {
+             for (let i = 0; i < 5; i++)
+               setTimeout(
+                 () =>
+                   playTone(3000 + Math.random() * 2000, 0.03, "sawtooth", 0.01),
+                 i * 30,
+               );
+           }
+           function sfxChop() {
+             playTone(300, 0.05, "square", 0.04);
+             setTimeout(() => playTone(250, 0.04, "square", 0.03), 40);
+           }
+           function sfxLevelUp() {
+             playSweep(200, 800, 0.5, "sine", 0.06);
+             setTimeout(() => playSweep(400, 1600, 0.5, "triangle", 0.04), 150);
+             setTimeout(() => playTone(2000, 0.25, "sine", 0.05), 500);
+           }
+           function sfxServe() {
+             playSweep(300, 1200, 0.4, "triangle", 0.06);
+             setTimeout(() => playTone(1200, 0.15, "sine", 0.05), 200);
+           }
+
+           // --- Math ---
+           function rand(a, b) {
+             return Math.floor(Math.random() * (b - a + 1)) + a;
+           }
+           function pick(a) {
+             return a[rand(0, a.length - 1)];
+           }
+           function shuffle(a) {
+             const r = [...a];
+             for (let i = r.length - 1; i > 0; i--) {
+               const j = rand(0, i);
+               [r[i], r[j]] = [r[j], r[i]];
+             }
+             return r;
+           }
+           function round2(n) {
+             return Math.round(n * 100) / 100;
+           }
+           function fmtDec(n) {
+             const r = round2(n);
+             return r === Math.floor(r) ? r.toFixed(1) : String(r);
+           }
+
+           const OPS = ["+", "-", "×", "÷"];
+           const OP_WORDS = {
+             "+": "add",
+             "-": "subtract",
+             "×": "multiply",
+             "÷": "divide",
+           };
+
+           const INGREDIENTS = [
+             "flour",
+             "sugar",
+             "butter",
+             "milk",
+             "eggs",
+             "salt",
+             "vanilla",
+             "cocoa",
+             "cream",
+             "oil",
+             "honey",
+             "cinnamon",
+             "baking powder",
+             "cheese",
+             "tomato sauce",
+             "rice",
+             "pasta",
+             "beans",
+             "pepper",
+             "garlic",
+           ];
+           const UNITS = [
+             "cups",
+             "tablespoons",
+             "teaspoons",
+             "ounces",
+             "grams",
+             "liters",
+             "milliliters",
+             "pounds",
+           ];
+           const RECIPES = [
+             { name: "Chocolate Cake", emoji: "🎂", color: 0x8b4513 },
+             { name: "Pasta Primavera", emoji: "🍝", color: 0xdaa520 },
+             { name: "Berry Smoothie", emoji: "🥤", color: 0xdc143c },
+             { name: "Veggie Stir-Fry", emoji: "🥘", color: 0x228b22 },
+             { name: "Pancake Stack", emoji: "🥞", color: 0xf4a460 },
+             { name: "Pizza Margherita", emoji: "🍕", color: 0xff6347 },
+             { name: "Fruit Salad", emoji: "🥗", color: 0x32cd32 },
+             { name: "Banana Bread", emoji: "🍞", color: 0xd2691e },
+             { name: "Lemon Bars", emoji: "🍋", color: 0xffd700 },
+             { name: "Rice Pudding", emoji: "🍚", color: 0xfffacd },
+           ];
+
+           function generateDecimalQ(level) {
+             const op = pick(
+               level <= 1
+                 ? ["+", "-"]
+                 : level <= 3
+                   ? ["+", "-", "×"]
+                   : ["+", "-", "×", "÷"],
+             );
+             let a, b, answer;
+             const ingredient = pick(INGREDIENTS);
+             const unit = pick(UNITS);
+
+             if (op === "+") {
+               if (level <= 2) {
+                 a = rand(10, 99) / 10;
+                 b = rand(10, 99) / 10;
+               } else {
+                 a = rand(100, 999) / 100;
+                 b = rand(100, 999) / 100;
+               }
+               answer = round2(a + b);
+             } else if (op === "-") {
+               if (level <= 2) {
+                 a = rand(30, 99) / 10;
+                 b = rand(10, Math.floor(a * 10) - 1) / 10;
+               } else {
+                 a = rand(200, 999) / 100;
+                 b = rand(100, Math.floor(a * 100) - 1) / 100;
+               }
+               answer = round2(a - b);
+             } else if (op === "×") {
+               if (level <= 2) {
+                 a = rand(10, 50) / 10;
+                 b = rand(2, 9);
+               } else if (level <= 4) {
+                 a = rand(10, 99) / 10;
+                 b = rand(10, 50) / 10;
+               } else {
+                 a = rand(10, 99) / 10;
+                 b = rand(10, 99) / 10;
+               }
+               answer = round2(a * b);
+             } else {
+               // Division
+               if (level <= 3) {
+                 b = rand(2, 9);
+                 answer = rand(10, 50) / 10;
+                 a = round2(answer * b);
+               } else {
+                 b = rand(10, 50) / 10;
+                 answer = rand(10, 99) / 10;
+                 a = round2(answer * b);
+               }
+             }
+
+             a = round2(a);
+             b = round2(b);
+             answer = round2(answer);
+             const stem = fmtDec(a) + " " + op + " " + fmtDec(b);
+
+             // Context sentence
+             const contexts = {
+               "+":
+                 "You need " +
+                 fmtDec(a) +
+                 " " +
+                 unit +
+                 " of " +
+                 ingredient +
+                 " plus " +
+                 fmtDec(b) +
+                 " more " +
+                 unit +
+                 ". How much total?",
+               "-":
+                 "You have " +
+                 fmtDec(a) +
+                 " " +
+                 unit +
+                 " of " +
+                 ingredient +
+                 ". You use " +
+                 fmtDec(b) +
+                 " " +
+                 unit +
+                 ". How much is left?",
+               "×":
+                 "Each serving needs " +
+                 fmtDec(a) +
+                 " " +
+                 unit +
+                 " of " +
+                 ingredient +
+                 ". You make " +
+                 fmtDec(b) +
+                 " servings. How much total?",
+               "÷":
+                 "You have " +
+                 fmtDec(a) +
+                 " " +
+                 unit +
+                 " of " +
+                 ingredient +
+                 ". Split into groups of " +
+                 fmtDec(b) +
+                 ". How many groups?",
+             };
+
+             // Wrong answers
+             const wrongs = new Set();
+             wrongs.add(fmtDec(round2(answer + 0.1)));
+             wrongs.add(fmtDec(round2(answer - 0.1)));
+             wrongs.add(fmtDec(round2(answer + 1)));
+             wrongs.add(fmtDec(round2(Math.abs(answer - 1))));
+             // Decimal place error
+             wrongs.add(fmtDec(round2(answer * 10)));
+             wrongs.add(fmtDec(round2(answer / 10)));
+             wrongs.delete(fmtDec(answer));
+
+             const wrongArr = [...wrongs]
+               .filter((w) => parseFloat(w) > 0 && w !== fmtDec(answer))
+               .slice(0, 3);
+             while (wrongArr.length < 3)
+               wrongArr.push(fmtDec(round2(answer + rand(1, 20) / 10)));
+
+             const choices = shuffle([
+               { text: fmtDec(answer), correct: true },
+               ...wrongArr.slice(0, 3).map((w) => ({ text: w, correct: false })),
+             ]);
+
+             return {
+               a,
+               b,
+               op,
+               answer,
+               stem,
+               context: contexts[op],
+               choices,
+               hint:
+                 "Line up decimals. " +
+                 OP_WORDS[op] +
+                 " carefully: " +
+                 stem +
+                 " = " +
+                 fmtDec(answer),
+               ingredient,
+               unit,
+             };
+           }
+
+           // --- Phaser ---
+           const W = 960,
+             H = 640;
+           const config = {
+             type: Phaser.AUTO,
+             parent: "game-container",
+             width: W,
+             height: H,
+             backgroundColor: "#1a0f05",
+             scale: {
+               mode: Phaser.Scale.FIT,
+               autoCenter: Phaser.Scale.CENTER_BOTH,
+             },
+             physics: {
+               default: "arcade",
+               arcade: { gravity: { y: 300 }, debug: false },
+             },
+             scene: [],
+           };
+
+           // ==================== BOOT ====================
+           class BootScene extends Phaser.Scene {
+             constructor() {
+               super("Boot");
+             }
+             create() {
+               const g = this.make.graphics({ add: false });
+
+               // Chef character
+               g.clear();
+               g.fillStyle(0xffffff);
+               g.fillRoundedRect(6, 0, 20, 14, 4); // hat
+               g.fillStyle(0xfcd9b6);
+               g.fillCircle(16, 20, 10); // face
+               g.fillStyle(0xffffff);
+               g.fillRoundedRect(6, 28, 20, 22, 4); // body
+               g.fillStyle(0x333333);
+               g.fillCircle(13, 18, 2);
+               g.fillCircle(19, 18, 2); // eyes
+               g.fillStyle(0xff6b6b);
+               g.fillEllipse(16, 23, 4, 2); // mouth
+               g.generateTexture("chef", 32, 52);
+
+               // Ingredient item
+               g.clear();
+               g.fillStyle(0xfbbf24);
+               g.fillRoundedRect(0, 0, 36, 36, 8);
+               g.fillStyle(0xffffff, 0.3);
+               g.fillRoundedRect(4, 4, 28, 12, 4);
+               g.generateTexture("ingredient", 36, 36);
+
+               // Pot
+               g.clear();
+               g.fillStyle(0x6b7280);
+               g.fillRoundedRect(0, 10, 50, 35, 6);
+               g.fillStyle(0x4b5563);
+               g.fillRect(5, 0, 40, 12);
+               g.fillStyle(0xff6347, 0.5);
+               g.fillEllipse(25, 25, 30, 15); // contents
+               g.generateTexture("pot", 50, 45);
+
+               // Cutting board
+               g.clear();
+               g.fillStyle(0xd4a574);
+               g.fillRoundedRect(0, 0, 60, 40, 6);
+               g.lineStyle(1, 0xb8956a);
+               g.strokeRoundedRect(0, 0, 60, 40, 6);
+               g.generateTexture("board", 60, 40);
+
+               // Oven
+               g.clear();
+               g.fillStyle(0x374151);
+               g.fillRoundedRect(0, 0, 70, 60, 8);
+               g.fillStyle(0x1f2937);
+               g.fillRoundedRect(5, 5, 60, 35, 4);
+               g.fillStyle(0xff6347, 0.3);
+               g.fillRoundedRect(8, 8, 54, 29, 3); // glow
+               g.fillStyle(0x9ca3af);
+               g.fillCircle(20, 50, 4);
+               g.fillCircle(35, 50, 4);
+               g.fillCircle(50, 50, 4);
+               g.generateTexture("oven", 70, 60);
+
+               // Plate
+               g.clear();
+               g.fillStyle(0xffffff, 0.9);
+               g.fillEllipse(25, 20, 50, 35);
+               g.lineStyle(2, 0xe5e7eb);
+               g.strokeEllipse(25, 20, 50, 35);
+               g.generateTexture("plate", 50, 40);
+
+               // Star
+               g.clear();
+               g.fillStyle(0xfbbf24);
+               g.fillCircle(5, 5, 5);
+               g.generateTexture("star", 10, 10);
+
+               // Particle
+               g.clear();
+               g.fillStyle(0xffffff);
+               g.fillCircle(3, 3, 3);
+               g.generateTexture("particle", 6, 6);
+
+               // Steam particle
+               g.clear();
+               g.fillStyle(0xffffff, 0.4);
+               g.fillCircle(6, 6, 6);
+               g.generateTexture("steam", 12, 12);
+
+               // Answer card
+               g.clear();
+               g.fillStyle(0x2d1810, 0.92);
+               g.fillRoundedRect(0, 0, 130, 55, 12);
+               g.lineStyle(2, 0xfbbf24, 0.4);
+               g.strokeRoundedRect(0, 0, 130, 55, 12);
+               g.generateTexture("card", 130, 55);
+
+               // Conveyor belt segment
+               g.clear();
+               g.fillStyle(0x374151);
+               g.fillRect(0, 0, 80, 20);
+               g.lineStyle(1, 0x4b5563);
+               g.lineBetween(0, 10, 80, 10);
+               g.generateTexture("belt", 80, 20);
+
+               this.scene.start("Title");
+             }
+           }
+
+           // ==================== TITLE ====================
+           class TitleScene extends Phaser.Scene {
+             constructor() {
+               super("Title");
+             }
+             create() {
+               // Kitchen background
+               const bg = this.add.graphics();
+               bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
+               bg.fillRect(0, 0, W, H);
+
+               // Tile pattern
+               for (let x = 0; x < W; x += 40) {
+                 for (let y = 0; y < H; y += 40) {
+                   this.add
+                     .rectangle(
+                       x + 20,
+                       y + 20,
+                       38,
+                       38,
+                       (x + y) % 80 === 0 ? 0x3d2215 : 0x2d1810,
+                       0.3,
+                     )
+                     .setStrokeStyle(1, 0x4d3220, 0.15);
+                 }
+               }
+
+               // Steam effects
+               for (let i = 0; i < 10; i++) {
+                 const s = this.add
+                   .image(rand(100, W - 100), H + 20, "steam")
+                   .setAlpha(0)
+                   .setScale(1 + Math.random() * 2);
+                 this.tweens.add({
+                   targets: s,
+                   y: -30,
+                   alpha: { from: 0.3, to: 0 },
+                   duration: 4000 + rand(0, 3000),
+                   repeat: -1,
+                   delay: rand(0, 3000),
+                 });
+               }
+
+               this.add
+                 .text(W / 2, 90, "COOKING\nSIMULATOR", {
+                   fontSize: "52px",
+                   fontStyle: "bold",
+                   color: "#fbbf24",
+                   align: "center",
+                   lineSpacing: 6,
+                   stroke: "#78350f",
+                   strokeThickness: 4,
+                 })
+                 .setOrigin(0.5);
+
+               this.add
+                 .text(W / 2, 185, "6.NS.B.3 — Decimal Operations", {
+                   fontSize: "15px",
+                   color: "#d4a574",
+                 })
+                 .setOrigin(0.5);
+
+               // Kitchen items
+               this.add.image(W / 2 - 120, 310, "pot").setScale(2);
+               this.add.image(W / 2, 300, "chef").setScale(2.5);
+               this.add.image(W / 2 + 120, 310, "oven").setScale(1.8);
+
+               // Floating ingredients
+               const emojis = ["🥚", "🧈", "🥛", "🍫", "🍯", "🧂", "🫒", "🌾"];
+               emojis.forEach((e, i) => {
+                 const t = this.add
+                   .text(80 + i * 115, 380, e, { fontSize: "32px" })
+                   .setOrigin(0.5);
+                 this.tweens.add({
+                   targets: t,
+                   y: 370,
+                   duration: 1500 + rand(0, 800),
+                   yoyo: true,
+                   repeat: -1,
+                   ease: "Sine.easeInOut",
+                   delay: rand(0, 600),
+                 });
+               });
+
+               const lines = [
+                 "Run a kitchen and solve decimal math!",
+                 "Add, subtract, multiply, and divide decimals.",
+                 "Measure ingredients on the conveyor belt.",
+                 "Pick the right answer to complete each dish.",
+                 "Click / Tap answer cards or press 1-4",
+               ];
+               lines.forEach((t, i) =>
+                 this.add
+                   .text(W / 2, 430 + i * 22, t, {
+                     fontSize: "13px",
+                     color: "#d4a574",
+                   })
+                   .setOrigin(0.5),
+               );
+
+               // Start
+               const btn = this.add
+                 .rectangle(W / 2, 575, 220, 50, 0xfbbf24)
+                 .setInteractive({ useHandCursor: true });
+               this.add
+                 .text(W / 2, 575, "OPEN KITCHEN", {
+                   fontSize: "20px",
+                   fontStyle: "bold",
+                   color: "#000",
+                 })
+                 .setOrigin(0.5);
+               btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
+               btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+               btn.on("pointerdown", () => {
+                 getAudio();
+                 sfxDing();
+                 this.cameras.main.fadeOut(400);
+                 this.time.delayedCall(400, () => this.scene.start("Game"));
+               });
+
+               this.input.keyboard.on("keydown-SPACE", () => {
+                 getAudio();
+                 sfxDing();
+                 this.cameras.main.fadeOut(400);
+                 this.time.delayedCall(400, () => this.scene.start("Game"));
+               });
+               this.input.keyboard.on("keydown-ENTER", () => {
+                 getAudio();
+                 sfxDing();
+                 this.cameras.main.fadeOut(400);
+                 this.time.delayedCall(400, () => this.scene.start("Game"));
+               });
+
+               this.cameras.main.fadeIn(400);
+             }
+           }
+
+           // ==================== GAME ====================
+           class GameScene extends Phaser.Scene {
+             constructor() {
+               super("Game");
+             }
+
+             create() {
+               this.cameras.main.fadeIn(300);
+               this.physics.world.gravity.y = 0;
+
+               // State
+               this.score = 0;
+               this.combo = 0;
+               this.bestCombo = 0;
+               this.lives = 4;
+               this.level = 1;
+               this.dishesServed = 0;
+               this.questionsCorrect = 0;
+               this.questionsTotal = 0;
+               this.currentQ = null;
+               this.answered = false;
+               this.currentRecipe = pick(RECIPES);
+               this.recipeProgress = 0;
+               this.recipesPerDish = 3;
+               this.timer = 20;
+               this.timerMax = 20;
+
+               // Load state from localStorage
+               try {
+                 const raw = localStorage.getItem("neft_decimal_champion_state");
+                 if (raw) {
+                   const loaded = JSON.parse(raw);
+                   if (loaded) {
+                     this.score = loaded.score ?? 0;
+                     this.level = loaded.level ?? 1;
+                     this.dishesServed = loaded.dishesServed ?? 0;
+                     this.bestCombo = loaded.bestCombo ?? 0;
+                     this.questionsCorrect = loaded.questionsCorrect ?? 0;
+                     this.questionsTotal = loaded.questionsTotal ?? 0;
+                     this.lives = loaded.lives ?? 4;
+                     this.recipeProgress = loaded.recipeProgress ?? 0;
+                     this.timerMax = Math.max(10, 20 - this.level * 2);
+                     if (loaded.currentRecipeName) {
+                       const found = RECIPES.find(r => r.name === loaded.currentRecipeName);
+                       if (found) this.currentRecipe = found;
+                     }
+                   }
+                 }
+               } catch (e) {
+                 console.error("Error loading state", e);
+               }
+
+               // Kitchen background
+               const bg = this.add.graphics();
+               bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
+               bg.fillRect(0, 0, W, H);
+
+               // Wall tiles (top half)
+               for (let x = 0; x < W; x += 48) {
+                 for (let y = 0; y < 280; y += 48) {
+                   this.add
+                     .rectangle(x + 24, y + 24, 46, 46, 0x3d2215, 0.25)
+                     .setStrokeStyle(1, 0x4d3220, 0.12);
+                 }
+               }
+
+               // Counter
+               this.add
+                 .rectangle(W / 2, 285, W, 20, 0x8b6914)
+                 .setStrokeStyle(2, 0xa0791e);
+
+               // Conveyor belt
+               for (let x = 0; x < W; x += 80) {
+                 this.add.image(x + 40, 480, "belt").setAlpha(0.5);
+               }
+               // Belt animation dots
+               this.beltDots = [];
+               for (let i = 0; i < 15; i++) {
+                 const d = this.add.circle(i * 70, 480, 3, 0x9ca3af, 0.4);
+                 this.beltDots.push(d);
+               }
+
+               // Kitchen items (static decor)
+               this.add.image(80, 240, "pot").setScale(1.5).setAlpha(0.6);
+               this.add
+                 .image(W - 80, 240, "oven")
+                 .setScale(1.4)
+                 .setAlpha(0.5);
+
+               // Steam from pot
+               this.add.particles(80, 210, "steam", {
+                 lifespan: 2000,
+                 speedY: { min: -20, max: -50 },
+                 speedX: { min: -8, max: 8 },
+                 scale: { start: 0.5, end: 1.5 },
+                 alpha: { start: 0.3, end: 0 },
+                 frequency: 400,
+                 quantity: 1,
+               });
+
+               // Chef
+               this.chef = this.add
+                 .image(W / 2, 240, "chef")
+                 .setScale(2)
+                 .setDepth(5);
+               this.tweens.add({
+                 targets: this.chef,
+                 y: 235,
+                 duration: 1500,
+                 yoyo: true,
+                 repeat: -1,
+                 ease: "Sine.easeInOut",
+               });
+
+               // Plate (where food goes)
+               this.plate = this.add
+                 .image(W / 2, 360, "plate")
+                 .setScale(2)
+                 .setDepth(4);
+               this.dishEmoji = this.add
+                 .text(W / 2, 355, this.currentRecipe.emoji, { fontSize: "30px" })
+                 .setOrigin(0.5)
+                 .setDepth(6);
+
+               // Answer cards (interactive)
+               this.cards = [];
+               this.cardLabels = [];
+               this.cardBgs = [];
+               for (let i = 0; i < 4; i++) {
+                 const x = 140 + i * 190;
+                 const y = 555;
+                 const bg = this.add
+                   .image(x, y, "card")
+                   .setScale(1.1)
+                   .setDepth(10)
+                   .setInteractive({ useHandCursor: true });
+                 bg.on("pointerover", () => {
+                   if (!this.answered) bg.setScale(1.18);
+                 });
+                 bg.on("pointerout", () => bg.setScale(1.1));
+                 const idx = i;
+                 bg.on("pointerdown", () => this.selectAnswer(idx));
+
+                 const label = this.add
+                   .text(x, y, "", {
+                     fontSize: "20px",
+                     fontStyle: "bold",
+                     color: "#fef3c7",
+                     align: "center",
+                   })
+                   .setOrigin(0.5)
+                   .setDepth(11);
+                 this.cards.push({ bg, label, index: i });
+                 this.cardBgs.push(bg);
+                 this.cardLabels.push(label);
+               }
+
+               // Keyboard
+               this.input.keyboard.on("keydown-ONE", () => this.selectAnswer(0));
+               this.input.keyboard.on("keydown-TWO", () => this.selectAnswer(1));
+               this.input.keyboard.on("keydown-THREE", () => this.selectAnswer(2));
+               this.input.keyboard.on("keydown-FOUR", () => this.selectAnswer(3));
+
+               // HUD
+               this.createHUD();
+
+               // Timer event
+               this.timerEvent = this.time.addEvent({
+                 delay: 1000,
+                 callback: () => {
+                   if (!this.answered && this.timer > 0) {
+                     this.timer--;
+                     this.updateTimerBar();
+                     if (this.timer <= 0) this.timeUp();
+                   }
+                 },
+                 loop: true,
+               });
+
+               // First question
+               this.nextQuestion();
+             }
+
+             createHUD() {
+               const y = 22;
+               // Score
+               this.add
+                 .rectangle(75, y, 130, 32, 0x2d1810, 0.9)
+                 .setStrokeStyle(1, 0xfbbf24, 0.3)
+                 .setDepth(100);
+               this.scoreText = this.add
+                 .text(75, y, "Score: 0", {
+                   fontSize: "14px",
+                   fontStyle: "bold",
+                   color: "#fbbf24",
+                 })
+                 .setOrigin(0.5)
+                 .setDepth(101);
+
+               // Combo
+               this.add
+                 .rectangle(205, y, 100, 32, 0x2d1810, 0.9)
+                 .setStrokeStyle(1, 0xfb923c, 0.3)
+                 .setDepth(100);
+               this.comboText = this.add
+                 .text(205, y, "x0", {
+                   fontSize: "14px",
+                   fontStyle: "bold",
+                   color: "#fb923c",
+                 })
+                 .setOrigin(0.5)
+                 .setDepth(101);
+
+               // Level
+               this.add
+                 .rectangle(315, y, 100, 32, 0x2d1810, 0.9)
+                 .setStrokeStyle(1, 0x34d399, 0.3)
+                 .setDepth(100);
+               this.levelText = this.add
+                 .text(315, y, "Level: 1", {
+                   fontSize: "14px",
+                   fontStyle: "bold",
+                   color: "#34d399",
+                 })
+                 .setOrigin(0.5)
+                 .setDepth(101);
+
+               // Dishes
+               this.add
+                 .rectangle(435, y, 120, 32, 0x2d1810, 0.9)
+                 .setStrokeStyle(1, 0xa78bfa, 0.3)
+                 .setDepth(100);
+               this.dishText = this.add
+                 .text(435, y, "Dishes: 0", {
+                   fontSize: "14px",
+                   fontStyle: "bold",
+                   color: "#a78bfa",
+                 })
+                 .setOrigin(0.5)
+                 .setDepth(101);
+
+               // Lives
+               this.livesText = this.add
+                 .text(W - 80, y, "", { fontSize: "22px" })
+                 .setOrigin(0.5)
+                 .setDepth(101);
+               this.updateLives();
+
+               // Recipe progress
+               this.add
+                 .rectangle(W / 2, 300, 200, 18, 0x1a0f05, 0.8)
+                 .setStrokeStyle(1, 0xfbbf24, 0.3)
+                 .setDepth(100);
+               this.recipeBar = this.add
+                 .rectangle(W / 2 - 95, 300, 0, 12, 0xfbbf24, 0.8)
+                 .setOrigin(0, 0.5)
+                 .setDepth(101);
+               this.recipeName = this.add
+                 .text(
+                   W / 2,
+                   300,
+                   this.currentRecipe.emoji + " " + this.currentRecipe.name,
+                   { fontSize: "11px", fontStyle: "bold", color: "#fff" },
+                 )
+                 .setOrigin(0.5)
+                 .setDepth(102);
+
+               // Timer bar
+               this.add
+                 .rectangle(W / 2, 510, W - 80, 10, 0x1a0f05, 0.8)
+                 .setStrokeStyle(1, 0x34d399, 0.2)
+                 .setDepth(100);
+               this.timerBar = this.add
+                 .rectangle(50, 510, 0, 6, 0x34d399, 0.9)
+                 .setOrigin(0, 0.5)
+                 .setDepth(101);
+               this.timerBar.width = W - 90;
+
+               // Question panel
+               this.qPanel = this.add
+                 .rectangle(W / 2, 415, W - 60, 60, 0x2d1810, 0.9)
+                 .setStrokeStyle(1, 0xfbbf24, 0.3)
+                 .setDepth(100);
+               this.qText = this.add
+                 .text(W / 2, 408, "", {
+                   fontSize: "22px",
+                   fontStyle: "bold",
+                   color: "#fef3c7",
+                 })
+                 .setOrigin(0.5)
+                 .setDepth(101);
+               this.qContext = this.add
+                 .text(W / 2, 430, "", { fontSize: "12px", color: "#d4a574" })
+                 .setOrigin(0.5)
+                 .setDepth(101);
+
+               // Feedback
+               this.feedbackText = this.add
+                 .text(W / 2, 350, "", {
+                   fontSize: "26px",
+                   fontStyle: "bold",
+                   color: "#34d399",
+                   stroke: "#000",
+                   strokeThickness: 3,
+                 })
+                 .setOrigin(0.5)
+                 .setDepth(102)
+                 .setAlpha(0);
+             }
+
+             saveState() {
+               try {
+                 const stateData = {
+                   score: this.score,
+                   level: this.level,
+                   dishesServed: this.dishesServed,
+                   bestCombo: this.bestCombo,
+                   questionsCorrect: this.questionsCorrect,
+                   questionsTotal: this.questionsTotal,
+                   lives: this.lives,
+                   recipeProgress: this.recipeProgress,
+                   currentRecipeName: this.currentRecipe.name
+                 };
+                 localStorage.setItem("neft_decimal_champion_state", JSON.stringify(stateData));
+               } catch (e) {
+                 console.error("Error saving state", e);
+               }
+             }
+
+             nextQuestion() {
+               this.answered = false;
+               this.timer = this.timerMax;
+               this.updateTimerBar();
+
+               this.currentQ = generateDecimalQ(this.level);
+               this.qText.setText(this.currentQ.stem);
+               this.qContext.setText(this.currentQ.context);
+
+               // Reset card visuals
+               this.currentQ.choices.forEach((c, i) => {
+                 if (i < this.cardLabels.length) {
+                   this.cardLabels[i].setText(c.text);
+                   this.cardBgs[i].setTint(0xffffff).setAlpha(1).setScale(1.1);
+                   this.cardLabels[i].setColor("#fef3c7");
+                 }
+               });
+
+               // Ingredient animation on conveyor
+               this.spawnIngredientOnBelt();
+             }
+
+             spawnIngredientOnBelt() {
+               const ing = this.add
+                 .image(-30, 480, "ingredient")
+                 .setScale(1)
+                 .setDepth(8);
+               const label = this.add
+                 .text(-30, 478, this.currentQ.ingredient.substring(0, 6), {
+                   fontSize: "9px",
+                   fontStyle: "bold",
+                   color: "#000",
+                 })
+                 .setOrigin(0.5)
+                 .setDepth(9);
+               this.tweens.add({
+                 targets: [ing, label],
+                 x: W + 40,
+                 duration: 6000,
+                 onComplete: () => {
+                   ing.destroy();
+                   label.destroy();
+                 },
+               });
+             }
+
+             selectAnswer(idx) {
+               if (this.answered || idx >= this.currentQ.choices.length) return;
+               this.answered = true;
+
+               const choice = this.currentQ.choices[idx];
+
+               if (choice.correct) {
+                 sfxCorrect();
+                 this.combo++;
+                 this.bestCombo = Math.max(this.bestCombo, this.combo);
+                 this.questionsCorrect++;
+                 this.questionsTotal++;
+
+                 const pts = 100 + this.combo * 15 + this.level * 25;
+                 this.score += pts;
+
+                 this.cardBgs[idx].setTint(0x34d399);
+                 this.cardLabels[idx].setColor("#34d399");
+
+                 this.showFeedback("Delicious! +" + pts, 0x34d399);
+
+                 // Particles
+                 this.add
+                   .particles(this.cardBgs[idx].x, this.cardBgs[idx].y, "star", {
+                     speed: { min: 50, max: 150 },
+                     lifespan: 600,
+                     scale: { start: 0.8, end: 0 },
+                     tint: [0xfbbf24, 0xfb923c, 0x34d399],
+                     quantity: 12,
+                     emitting: false,
+                   })
+                   .explode(12);
+
+                 // Chef happy
+                 this.tweens.add({
+                   targets: this.chef,
+                   scaleX: 2.2,
+                   scaleY: 2.2,
+                   duration: 100,
+                   yoyo: true,
+                   repeat: 1,
+                 });
+
+                 // Recipe progress
+                 this.recipeProgress++;
+                 this.recipeBar.width =
+                   (this.recipeProgress / this.recipesPerDish) * 190;
+
+                 if (this.recipeProgress >= this.recipesPerDish) {
+                   this.serveDish();
+                 }
+
+                 // Level up
+                 if (
+                   this.questionsCorrect > 0 &&
+                   this.questionsCorrect % 5 === 0 &&
+                   this.level < 6
+                 ) {
+                   this.level++;
+                   this.levelText.setText("Level: " + this.level);
+                   this.timerMax = Math.max(10, 20 - this.level * 2);
+                   sfxLevelUp();
+                 }
+
+                 this.cameras.main.flash(150, 52, 211, 153, false);
+                 this.updateHUD();
+                 this.saveState();
+                 this.time.delayedCall(1000, () => {
+                   if (this.lives > 0) this.nextQuestion();
+                 });
+               } else {
+                 sfxWrong();
+                 this.combo = 0;
+                 this.lives--;
+                 this.questionsTotal++;
+
+                 this.cardBgs[idx].setTint(0xef4444);
+                 this.cardLabels[idx].setColor("#ef4444");
+
+                 // Highlight correct
+                 this.currentQ.choices.forEach((c, i) => {
+                   if (c.correct) {
+                     this.cardBgs[i].setTint(0x34d399);
+                     this.cardLabels[i].setColor("#34d399");
+                   }
+                 });
+
+                 this.showFeedback(
+                   "Not right! Answer: " + fmtDec(this.currentQ.answer),
+                   0xef4444,
+                 );
+                 this.qContext.setText(this.currentQ.hint);
+
+                 this.cameras.main.shake(200, 0.008);
+
+                 this.add
+                   .particles(
+                     this.cardBgs[idx].x,
+                     this.cardBgs[idx].y,
+                     "particle",
+                     {
+                       speed: { min: 30, max: 80 },
+                       lifespan: 400,
+                       tint: 0xef4444,
+                       quantity: 8,
+                       emitting: false,
+                     },
+                   )
+                   .explode(8);
+
+                 this.updateHUD();
+                 this.saveState();
+                 if (this.lives <= 0) {
+                   this.time.delayedCall(1200, () => this.endGame());
+                 } else {
+                   this.time.delayedCall(1800, () => this.nextQuestion());
+                 }
+               }
+             }
+
+             serveDish() {
+               sfxServe();
+               this.dishesServed++;
+               this.score += 200;
+               this.recipeProgress = 0;
+               this.recipeBar.width = 0;
+
+               // Dish served animation
+               this.showFeedback(
+                 this.currentRecipe.emoji +
+                   " " +
+                   this.currentRecipe.name +
+                   " Served! +200",
+                 0xfbbf24,
+               );
+
+               // Plate animation
+               this.tweens.add({
+                 targets: this.plate,
+                 scaleX: 2.5,
+                 scaleY: 2.5,
+                 duration: 200,
+                 yoyo: true,
+               });
+
+               // Pick new recipe
+               this.currentRecipe = pick(RECIPES);
+               this.recipeName.setText(
+                 this.currentRecipe.emoji + " " + this.currentRecipe.name,
+               );
+               this.dishEmoji.setText(this.currentRecipe.emoji);
+
+               // Firework particles
+               for (let i = 0; i < 3; i++) {
+                 const x = rand(200, W - 200),
+                   y = rand(100, 300);
+                 this.time.delayedCall(i * 200, () => {
+                   this.add
+                     .particles(x, y, "star", {
+                       speed: { min: 60, max: 200 },
+                       lifespan: 800,
+                       scale: { start: 1, end: 0 },
+                       tint: [0xfbbf24, 0xfb923c, 0xef4444, 0x34d399],
+                       quantity: 15,
+                       emitting: false,
+                     })
+                     .explode(15);
+                 });
+               }
+
+               this.updateHUD();
+               this.saveState();
+             }
+
+             timeUp() {
+               if (this.answered) return;
+               this.answered = true;
+               sfxWrong();
+               this.combo = 0;
+               this.lives--;
+               this.questionsTotal++;
+
+               // Highlight correct
+               this.currentQ.choices.forEach((c, i) => {
+                 if (c.correct) {
+                   this.cardBgs[i].setTint(0x34d399);
+                   this.cardLabels[i].setColor("#34d399");
+                 }
+               });
+
+               this.showFeedback(
+                 "Time is up! Answer: " + fmtDec(this.currentQ.answer),
+                 0xfb923c,
+               );
+               this.updateHUD();
+               this.saveState();
+               if (this.lives <= 0) {
+                 this.time.delayedCall(1200, () => this.endGame());
+               } else {
+                 this.time.delayedCall(1800, () => this.nextQuestion());
+               }
+             }
+
+             showFeedback(text, color) {
+               const hex = "#" + color.toString(16).padStart(6, "0");
+               this.feedbackText
+                 .setText(text)
+                 .setColor(hex)
+                 .setAlpha(1)
+                 .setScale(0.5);
+               this.tweens.add({
+                 targets: this.feedbackText,
+                 scale: 1,
+                 duration: 200,
+                 ease: "Back.easeOut",
+               });
+               this.tweens.add({
+                 targets: this.feedbackText,
+                 alpha: 0,
+                 duration: 700,
+                 delay: 900,
+               });
+             }
+
+             updateTimerBar() {
+               const pct = this.timer / this.timerMax;
+               this.timerBar.width = (W - 90) * pct;
+               this.timerBar.fillColor =
+                 pct > 0.5 ? 0x34d399 : pct > 0.25 ? 0xfbbf24 : 0xef4444;
+             }
+
+             updateLives() {
+               let h = "";
+               for (let i = 0; i < 4; i++) h += i < this.lives ? "❤️" : "🖤";
+               this.livesText.setText(h);
+             }
+
+             updateHUD() {
+               this.scoreText.setText("Score: " + this.score);
+               this.comboText.setText(
+                 "x" + this.combo + (this.combo >= 3 ? " 🔥" : ""),
+               );
+               this.levelText.setText("Level: " + this.level);
+               this.dishText.setText("Dishes: " + this.dishesServed);
+               this.updateLives();
+             }
+
+             endGame() {
+               if (this.timerEvent) this.timerEvent.destroy();
+               this.scene.start("Results", {
+                 score: this.score,
+                 correct: this.questionsCorrect,
+                 total: this.questionsTotal,
+                 level: this.level,
+                 bestCombo: this.bestCombo,
+                 dishes: this.dishesServed,
+               });
+             }
+
+             update(time, delta) {
+               // Belt animation
+               this.beltDots.forEach((d) => {
+                 d.x += 0.5;
+                 if (d.x > W + 10) d.x = -10;
+               });
+             }
+           }
+
+           // ==================== RESULTS ====================
+           class ResultsScene extends Phaser.Scene {
+             constructor() {
+               super("Results");
+             }
+             init(data) {
+               this.d = data;
+             }
+             create() {
+               const d = this.d;
+               const bg = this.add.graphics();
+               bg.fillGradientStyle(0x2d1810, 0x2d1810, 0x1a0f05, 0x1a0f05, 1);
+               bg.fillRect(0, 0, W, H);
+
+               const acc = d.total ? Math.round((d.correct / d.total) * 100) : 0;
+               const won = d.dishes >= 3;
+
+               try { window.EduPulse && EduPulse.record({ activityTitle: document.title, score: d.correct, maxScore: d.total, problemsCorrect: d.correct, problemsAttempted: d.total, standard: "6.NS.B.3" }); } catch(e) {}
+
+               this.add
+                 .text(W / 2, 55, won ? "HEAD CHEF!" : "KITCHEN CLOSED", {
+                   fontSize: "36px",
+                   fontStyle: "bold",
+                   color: won ? "#fbbf24" : "#fb923c",
+                   stroke: "#000",
+                   strokeThickness: 3,
+                 })
+                 .setOrigin(0.5);
+               this.add
+                 .text(W / 2, 90, "6.NS.B.3 — Decimal Operations", {
+                   fontSize: "14px",
+                   color: "#d4a574",
+                 })
+                 .setOrigin(0.5);
+
+               const stats = [
+                 { label: "Score", value: d.score, color: "#fbbf24" },
+                 {
+                   label: "Correct",
+                   value: d.correct + "/" + d.total,
+                   color: "#34d399",
+                 },
+                 { label: "Accuracy", value: acc + "%", color: "#61dafb" },
+                 { label: "Level", value: d.level, color: "#a78bfa" },
+                 { label: "Best Combo", value: d.bestCombo, color: "#fb923c" },
+                 { label: "Dishes Served", value: d.dishes, color: "#fbbf24" },
+               ];
+               stats.forEach((s, i) => {
+                 const col = i % 3,
+                   row = Math.floor(i / 3);
+                 const x = W / 2 - 190 + col * 190,
+                   y = 150 + row * 95;
+                 this.add
+                   .rectangle(x, y, 165, 70, 0x2d1810, 0.85)
+                   .setStrokeStyle(1, parseInt(s.color.slice(1), 16), 0.4);
+                 this.add
+                   .text(x, y - 14, s.label, {
+                     fontSize: "11px",
+                     color: "#d4a574",
+                   })
+                   .setOrigin(0.5);
+                 this.add
+                   .text(x, y + 12, String(s.value), {
+                     fontSize: "24px",
+                     fontStyle: "bold",
+                     color: s.color,
+                   })
+                   .setOrigin(0.5);
+               });
+
+               const badges = [];
+               if (acc >= 90) badges.push("Master Chef");
+               if (acc >= 70) badges.push("Sous Chef");
+               if (d.bestCombo >= 5) badges.push("Combo Cook");
+               if (d.dishes >= 5) badges.push("Kitchen Hero");
+               if (d.level >= 4) badges.push("Advanced");
+               if (!badges.length) badges.push("Keep Cooking!");
+
+               this.add
+                 .text(W / 2, 370, "Achievements", {
+                   fontSize: "13px",
+                   color: "#d4a574",
+                 })
+                 .setOrigin(0.5);
+               badges.forEach((b, i) => {
+                 const bx = W / 2 + (i - (badges.length - 1) / 2) * 130;
+                 this.add
+                   .rectangle(bx, 400, 115, 28, 0x3d2215, 0.8)
+                   .setStrokeStyle(1, 0xfbbf24, 0.5);
+                 this.add
+                   .text(bx, 400, b, {
+                     fontSize: "11px",
+                     fontStyle: "bold",
+                     color: "#fbbf24",
+                   })
+                   .setOrigin(0.5);
+               });
+
+               this.add
+                 .text(
+                   W / 2,
+                   455,
+                   "Tip: Line up decimal points.\nEstimate first, then compute carefully.",
+                   {
+                     fontSize: "13px",
+                     color: "#d4a574",
+                     align: "center",
+                     lineSpacing: 4,
+                   },
+                 )
+                 .setOrigin(0.5);
+
+               const btn = this.add
+                 .rectangle(W / 2 - 80, 535, 160, 46, 0xfbbf24)
+                 .setInteractive({ useHandCursor: true });
+               this.add
+                 .text(W / 2 - 80, 535, "COOK AGAIN", {
+                   fontSize: "17px",
+                   fontStyle: "bold",
+                   color: "#000",
+                 })
+                 .setOrigin(0.5);
+               btn.on("pointerover", () => btn.setFillStyle(0xfcd34d));
+               btn.on("pointerout", () => btn.setFillStyle(0xfbbf24));
+               btn.on("pointerdown", () => {
+                 sfxDing();
+                 localStorage.removeItem("neft_decimal_champion_state");
+                 this.scene.start("Game");
+               });
+
+               const menu = this.add
+                 .rectangle(W / 2 + 100, 535, 110, 46, 0x2d1810)
+                 .setStrokeStyle(1, 0xfbbf24, 0.5)
+                 .setInteractive({ useHandCursor: true });
+               this.add
+                 .text(W / 2 + 100, 535, "MENU", {
+                   fontSize: "15px",
+                   fontStyle: "bold",
+                   color: "#fbbf24",
+                 })
+                 .setOrigin(0.5);
+               menu.on("pointerdown", () => {
+                 localStorage.removeItem("neft_decimal_champion_state");
+                 this.scene.start("Title");
+               });
+
+               this.input.keyboard.on("keydown-SPACE", () => {
+                 sfxDing();
+                 localStorage.removeItem("neft_decimal_champion_state");
+                 this.scene.start("Game");
+               });
+               this.cameras.main.fadeIn(400);
+
+               if (acc >= 70) {
+                 for (let i = 0; i < 20; i++) {
+                   const e = this.add.text(
+                     rand(50, W - 50),
+                     -20,
+                     pick(["🎂", "🍝", "🥤", "🥘", "🥞", "🍕"]),
+                     { fontSize: "28px" },
+                   );
+                   this.tweens.add({
+                     targets: e,
+                     y: H + 30,
+                     x: e.x + rand(-60, 60),
+                     angle: 360,
+                     duration: 2500 + rand(0, 1500),
+                     delay: rand(0, 1000),
+                     alpha: 0,
+                   });
+                 }
+               }
+             }
+           }
+
+           config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
+
+           // Expose game instance globally
+           window.phaserGame = new Phaser.Game(config);
+
+           // --- Sketchpad Overlay Logic ---
+           const canvas = document.getElementById("sketchpad");
+           const ctx = canvas.getContext("2d");
+           let drawing = false;
+           let brushColor = "#0f766e";
+           let brushWidth = 4;
+           let drawHistory = [];
+           let currentStroke = [];
+
+           function resizeCanvas() {
+             const rect = canvas.getBoundingClientRect();
+             const dpr = window.devicePixelRatio || 1;
+             canvas.width = rect.width * dpr;
+             canvas.height = rect.height * dpr;
+             ctx.scale(dpr, dpr);
+             ctx.lineCap = "round";
+             ctx.lineJoin = "round";
+             ctx.strokeStyle = brushColor;
+             ctx.lineWidth = brushWidth;
+             redrawHistory();
+           }
+
+           function redrawHistory() {
+             ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+             drawHistory.forEach(stroke => {
+               if (stroke.length < 1) return;
+               ctx.beginPath();
+               ctx.strokeStyle = stroke[0].color;
+               ctx.lineWidth = stroke[0].width;
+               ctx.moveTo(stroke[0].x, stroke[0].y);
+               for (let i = 1; i < stroke.length; i++) {
+                 ctx.lineTo(stroke[i].x, stroke[i].y);
+               }
+               ctx.stroke();
+             });
+           }
+
+           function getCoords(e) {
+             const rect = canvas.getBoundingClientRect();
+             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+             return {
+               x: clientX - rect.left,
+               y: clientY - rect.top
+             };
+           }
+
+           function startDrawing(e) {
+             if (canvas.style.pointerEvents === "none") return;
+             drawing = true;
+             currentStroke = [];
+             const coords = getCoords(e);
+             ctx.beginPath();
+             ctx.strokeStyle = brushColor;
+             ctx.lineWidth = brushWidth;
+             ctx.moveTo(coords.x, coords.y);
+             currentStroke.push({ x: coords.x, y: coords.y, color: brushColor, width: brushWidth });
+           }
+
+           function draw(e) {
+             if (!drawing) return;
+             if (e.cancelable) e.preventDefault();
+             const coords = getCoords(e);
+             ctx.lineTo(coords.x, coords.y);
+             ctx.stroke();
+             currentStroke.push({ x: coords.x, y: coords.y, color: brushColor, width: brushWidth });
+           }
+
+           function stopDrawing() {
+             if (!drawing) return;
+             drawing = false;
+             if (currentStroke.length > 0) {
+               drawHistory.push(currentStroke);
+             }
+           }
+
+           canvas.addEventListener("mousedown", startDrawing);
+           canvas.addEventListener("mousemove", draw);
+           canvas.addEventListener("mouseup", stopDrawing);
+           canvas.addEventListener("mouseleave", stopDrawing);
+
+           canvas.addEventListener("touchstart", (e) => {
+             if (canvas.style.pointerEvents === "none") return;
+             startDrawing(e);
+           }, { passive: false });
+           canvas.addEventListener("touchmove", draw, { passive: false });
+           canvas.addEventListener("touchend", stopDrawing);
+           canvas.addEventListener("touchcancel", stopDrawing);
+
+           window.addEventListener("resize", resizeCanvas);
+           setTimeout(resizeCanvas, 200);
+
+           // Bind toolbar triggers to window so inline HTML onclick attributes can reach them
+           window.togglePencil = function() {
+             const btn = document.getElementById("btn-pencil-toggle");
+             if (canvas.style.pointerEvents === "none") {
+               canvas.style.pointerEvents = "auto";
+               btn.style.background = "#fbbf24";
+               btn.style.color = "black";
+               btn.textContent = "✏️ Pencil: ON";
+             } else {
+               canvas.style.pointerEvents = "none";
+               btn.style.background = "#c17d11";
+               btn.style.color = "black";
+               btn.textContent = "✏️ Pencil: OFF";
+             }
+           };
+
+           window.setBrushColor = function(color, name) {
+             brushColor = color;
+             ctx.strokeStyle = brushColor;
+             document.querySelectorAll(".brush-btn").forEach(btn => {
+               btn.classList.remove("active");
+               btn.style.border = "none";
+             });
+             const activeBtn = document.getElementById("btn-brush-" + name);
+             if (activeBtn) {
+               activeBtn.classList.add("active");
+               activeBtn.style.border = "2px solid white";
+             }
+           };
+
+           window.undoDraw = function() {
+             drawHistory.pop();
+             redrawHistory();
+           };
+
+           window.clearSketchpad = function() {
+             drawHistory = [];
+             redrawHistory();
+           };
+
+           // --- Teacher Admin Panel Bindings ---
+           window.toggleTeacherPanel = function() {
+             const panel = document.getElementById("teacher-panel");
+             const lock = document.getElementById("teacher-lock-trigger");
+             if (panel.style.display === "none") {
+               const pass = prompt("Enter Teacher Access Code (default is 'admin'):");
+               if (pass === "admin" || pass === "") {
+                 panel.style.display = "block";
+                 lock.textContent = "🔓";
+                 lock.style.opacity = "1";
+               } else {
+                 alert("Access Denied.");
+               }
+             } else {
+               panel.style.display = "none";
+               lock.textContent = "🔒";
+               lock.style.opacity = "0.35";
+             }
+           };
+
+           window.teacherResetScores = function() {
+             if (confirm("Are you sure you want to reset all game progress?")) {
+               localStorage.removeItem("neft_decimal_champion_state");
+               if (window.phaserGame) {
+                 const activeScenes = window.phaserGame.scene.getScenes(true);
+                 activeScenes.forEach(s => {
+                   if (s.scene.key === "Game" || s.scene.key === "Results") {
+                     s.scene.start("Game");
+                   }
+                 });
+               } else {
+                 window.location.reload();
+               }
+             }
+           };
+
+           window.teacherMasterAll = function() {
+             const masterData = {
+               score: 5000,
+               level: 6,
+               dishesServed: 10,
+               bestCombo: 12,
+               questionsCorrect: 50,
+               questionsTotal: 50,
+               lives: 4,
+               recipeProgress: 0
+             };
+             localStorage.setItem("neft_decimal_champion_state", JSON.stringify(masterData));
+             alert("Master state loaded! Level 6 unlocked.");
+             if (window.phaserGame) {
+               const activeScenes = window.phaserGame.scene.getScenes(true);
+               activeScenes.forEach(s => {
+                 if (s.scene.key === "Game" || s.scene.key === "Results") {
+                   s.scene.start("Game");
+                 }
+               });
+             } else {
+               window.location.reload();
+             }
+           // --- Diagnostics & Self-Test ---
+           function validateConfig() {
+             if (!Array.isArray(RECIPES) || RECIPES.length === 0) {
+               throw new Error("Configuration Error: 'RECIPES' array is invalid or empty.");
+             }
+             if (!Array.isArray(INGREDIENTS) || INGREDIENTS.length === 0) {
+               throw new Error("Configuration Error: 'INGREDIENTS' array is invalid or empty.");
+             }
+             RECIPES.forEach((r, idx) => {
+               if (!r.name || !r.emoji || r.color === undefined) {
+                 throw new Error(`Configuration Error: Missing fields in recipe at index ${idx}.`);
+               }
+             });
+             return true;
+           }
+
+           function selfTest() {
+             try {
+               console.assert(round2(1.23 + 2.34) === 3.57, "round2 arithmetic validation failed");
+               console.assert(fmtDec(1.5) === "1.5", "fmtDec simple float formatting failed");
+               console.assert(fmtDec(1.0) === "1.0", "fmtDec whole number formatting failed");
+               console.assert(fmtDec(1.25) === "1.25", "fmtDec hundredths formatting failed");
+               const mockArr = [10, 20, 30];
+               const p = pick(mockArr);
+               console.assert(mockArr.includes(p), "pick utility function failed");
+               localStorage.setItem("neft_decimal_champion_test", "test_active");
+               console.assert(localStorage.getItem("neft_decimal_champion_test") === "test_active", "Game state persistence verification failed");
+               localStorage.removeItem("neft_decimal_champion_test");
+               return true;
+             } catch (e) {
+               console.error("SelfTest Diagnostics Failed:", e);
+               return false;
+             }
+           }
+
+           validateConfig();
+           selfTest();
+         })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

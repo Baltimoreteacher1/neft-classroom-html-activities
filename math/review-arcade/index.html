@@ -667,9 +667,20 @@
           grid-template-columns: repeat(2, 1fr);
         }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- ══════════════════════════════════════
@@ -1753,6 +1764,18 @@
         document.getElementById("res-acc").textContent = acc + "%";
         document.getElementById("res-streak").textContent = state.maxStreak;
 
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: document.title,
+              score: state.correct,
+              maxScore: total,
+              percent: acc,
+              problemsCorrect: state.correct,
+              problemsAttempted: total,
+            });
+        } catch (e) {}
+
         // Tier messages
         let trophy, heading, msg;
         if (acc >= 90) {
@@ -1838,5 +1861,7 @@
     </script>
 
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>

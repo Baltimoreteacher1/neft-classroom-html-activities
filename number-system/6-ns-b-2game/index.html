@@ -1184,6 +1184,21 @@
           create() {
             const d = this.d;
 
+            try {
+              window.EduPulse &&
+                EduPulse.record({
+                  activityTitle: document.title,
+                  score: d.correct,
+                  maxScore: d.total,
+                  percent: d.total
+                    ? Math.round((d.correct / d.total) * 100)
+                    : 0,
+                  problemsCorrect: d.correct,
+                  problemsAttempted: d.total,
+                  standard: "6.NS.B.2",
+                });
+            } catch (e) {}
+
             for (let i = 0; i < 100; i++) {
               this.add.circle(
                 rand(0, W),
@@ -1353,6 +1368,8 @@
         new Phaser.Game(config);
       })();
     </script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
   </body>
 </html>
