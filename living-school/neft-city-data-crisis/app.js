@@ -886,11 +886,14 @@
     $("#ppOutcome").textContent = tier === "good" ? "New concession stand approved 🎉"
       : tier === "medium" ? "Decision under review 🤔" : "Report sent back for revision ⚠️";
 
+    // "recommend" skill credit requires the best choice AND real evidence,
+    // not just the 18-word gate, so the checkmark reflects genuine reasoning.
+    const recommendEarned = state.decision.accepted && countEvidence(state.decision.text) >= 2;
     const earned = {
       sort: state.sort.solved,
       calc: CALC_DEFS.every((d) => state.calc[d.key].solved),
       graph: state.graph.solved,
-      recommend: state.decision.accepted,
+      recommend: recommendEarned,
       revise: state.decision.revisions > 0 || state.decision.accepted,
     };
     const list = $("#ppSkills");
@@ -923,7 +926,7 @@
       "Sort data": state.sort.solved,
       "Mean/median/mode/range": CALC_DEFS.every((d) => state.calc[d.key].solved),
       "Build a graph": state.graph.solved,
-      "Recommend with evidence": state.decision.accepted,
+      "Recommend with evidence": state.decision.accepted && countEvidence(state.decision.text) >= 2,
       "Revise thinking": state.decision.revisions > 0 || state.decision.accepted,
     };
     return `
