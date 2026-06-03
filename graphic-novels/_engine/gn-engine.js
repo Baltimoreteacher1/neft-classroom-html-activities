@@ -38,6 +38,23 @@
 
   /* Interaction + feature extensibility seams. */
   var INTERACTIONS = {}; // name -> { render(step, groupEl, onSolve) }  (must emit .choices/.choice.correct on solve)
+
+  INTERACTIONS["evidence"] = {
+    render: function (step, groupEl) {
+      groupEl.classList.add("evidence");
+      step.choices.forEach(function (c) {
+        var b = el(
+          "button",
+          "choice ev",
+          "&#128206; " +
+            c.en +
+            (c.es ? '<span class="es">' + c.es + "</span>" : ""),
+        );
+        b.dataset.correct = !!c.correct;
+        groupEl.appendChild(b);
+      });
+    },
+  };
   var FEATURES = []; // [{ onBeat(beat,ctx), onSolve(step,ctx), onComplete(ctx) }]
   function fire(hook, a, b) {
     FEATURES.forEach(function (f) {
