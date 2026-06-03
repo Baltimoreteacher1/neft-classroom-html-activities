@@ -1037,3 +1037,191 @@ main {
     padding: 10px 12px;
   }
 }
+
+/* ============================ Literacy layer ============================ */
+.reading-tag {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.rt-skill {
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-weight: 900;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.rt-std,
+.rt-dok {
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+
+.choices.evidence {
+  gap: 8px;
+}
+.choice.ev {
+  font-style: normal;
+}
+
+.seq-list {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+.seq-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: var(--sh-sm);
+  cursor: grab;
+  font-weight: 700;
+}
+.seq-card:focus-visible {
+  outline: 4px solid var(--gold);
+  outline-offset: 2px;
+}
+.seq-card .seq-h {
+  color: var(--muted);
+  font-weight: 900;
+}
+.seq-card .seq-t {
+  flex: 1;
+}
+.seq-card .seq-t .es {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.seq-ctl {
+  display: flex;
+  gap: 4px;
+}
+.seq-up,
+.seq-down {
+  min-width: 44px;
+  min-height: 44px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+}
+.seq-up:hover,
+.seq-down:hover {
+  background: var(--gold);
+}
+.seq-list.solved .seq-card {
+  border-color: var(--green);
+  background: #ecfdf5;
+  cursor: default;
+}
+.seq-list.nudge {
+  animation: figrise 0.25s ease;
+}
+.seq-check {
+  margin-top: 10px;
+}
+
+.tts {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.tts-btn {
+  min-width: 36px;
+  min-height: 36px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+.tts-btn:hover {
+  background: var(--gold);
+}
+
+.notebook {
+  text-align: left;
+  border: 3px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  margin: 18px auto 0;
+  max-width: 640px;
+  box-shadow: var(--sh-sm);
+}
+.notebook h3 {
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+.nb-row {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+  font-weight: 600;
+}
+.nb-row:last-child {
+  border-bottom: 0;
+}
+.nb-frame {
+  margin-top: 4px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.nb-blank {
+  display: inline-block;
+  min-width: 160px;
+  border-bottom: 2px solid var(--line);
+}
+
+@media print {
+  .topbar,
+  .tabs,
+  .scene-foot,
+  .next,
+  .advance,
+  .start,
+  .restart,
+  .tts,
+  .dlg-row,
+  .chal-tools,
+  #print-nb,
+  .callout,
+  .gn-pop,
+  .gn-pop-back {
+    display: none !important;
+  }
+  .scene {
+    display: block !important;
+    page-break-after: always;
+  }
+  body {
+    background: #fff;
+  }
+  .panel {
+    box-shadow: none;
+  }
+  .speaker-fig {
+    display: none !important;
+  }
+}
