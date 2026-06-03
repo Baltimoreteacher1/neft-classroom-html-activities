@@ -306,7 +306,28 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // links out to a standalone activity/game; shows a friendly empty state when
     // a lesson has no projects yet. Never touches phase state, XP, or stars.
     openProjects() {
-      const projects = Array.isArray(config.projects) ? config.projects : [];
+      const projects = Array.isArray(config.projects)
+        ? [...config.projects]
+        : [];
+      // Auto-append this unit's culminating project (mapped by verified subject)
+      // after any lesson-specific projects, unless it is already listed.
+      const unitHref = UNIT_CULMINATING_PROJECT[config.unit];
+      if (
+        unitHref &&
+        !projects.some(
+          (p) =>
+            p.href === unitHref ||
+            (Array.isArray(p.links) &&
+              p.links.some((l) => l.href === unitHref)),
+        )
+      ) {
+        projects.push({
+          emoji: "🏆",
+          title: "Unit Culminating Projects",
+          desc: "Multi-day projects that bring this unit's skills together.",
+          href: unitHref,
+        });
+      }
       this.setExtraActive("projects");
       phaseContainer.innerHTML = "";
       const el = document.createElement("div");
@@ -455,6 +476,23 @@ function preLessonNavHtml(config) {
       ${items.join("\n      ")}
     </div>`;
 }
+
+// Each Reveal lesson unit's culminating-project page. Mapped by VERIFIED SUBJECT
+// (standard family), not raw number, because the classroom /math/unit-N folders
+// are reordered vs Reveal lesson units for 7/8/9: Reveal 7 (equations) ->
+// /math/unit-8, Reveal 9 (coordinate plane) -> /math/unit-7. Reveal unit 8
+// (statistics, 6.SP) has no classroom culminating-project page, so it is omitted.
+const UNIT_CULMINATING_PROJECT = {
+  1: "/math/unit-1/projects/",
+  2: "/math/unit-2/projects/",
+  3: "/math/unit-3/projects/",
+  4: "/math/unit-4/projects/",
+  5: "/math/unit-5/projects/",
+  6: "/math/unit-6/projects/",
+  7: "/math/unit-8/projects/",
+  9: "/math/unit-7/projects/",
+  10: "/math/unit-10/projects/",
+};
 
 // "Extend" group: a non-graded Projects tab shown on every lesson. It opens
 // inline (see app.openProjects) and lists config.projects, or a "coming soon"
