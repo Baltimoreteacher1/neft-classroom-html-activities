@@ -2464,6 +2464,13 @@
 
       const links = [
         {
+          title: "EduPulse Gradebook",
+          cat: "Data",
+          desc: "Live score ingestion from classroom games → standards mastery, per-student progress, misconception heatmap, CSV export, and Momentum Brief.",
+          url: "https://edupulse-gradebook.pages.dev",
+          icon: "EP",
+        },
+        {
           title: "Student Information System",
           cat: "Core Systems",
           desc: "Official attendance, grades, demographics, and schedules.",
@@ -3206,7 +3213,7 @@
             '<span class="pill blue">No more link hunting</span><span class="pill green">Role-ready</span>',
           ) +
           `
-    <div class="card"><div class="card-title"><div><h3>Staff Link Hub</h3><p>Centralize approved systems and documents without duplicating sensitive records.</p></div><button class="btn primary" onclick="openModal('link')">+ Add Link</button></div><div class="filters">${cats.map((c) => `<button class="filter ${state.linkFilter === c ? "active" : ""}" onclick="state.linkFilter='${c}';renderLinks();">${c === "all" ? "All" : c}</button>`).join("")}</div><div class="grid grid-3">${arr.map((l) => `<div class="link-card"><div class="link-icon">${esc(l.icon)}</div><div><h4>${esc(l.title)}</h4><p>${esc(l.desc)}</p><br/><div class="tags"><span class="tag blue">${esc(l.cat)}</span><a href="${esc(l.url)}" onclick="event.preventDefault();toast('Demo link clicked.')">Open link →</a></div></div></div>`).join("")}</div></div>`;
+    <div class="card"><div class="card-title"><div><h3>Staff Link Hub</h3><p>Centralize approved systems and documents without duplicating sensitive records.</p></div><button class="btn primary" onclick="openModal('link')">+ Add Link</button></div><div class="filters">${cats.map((c) => `<button class="filter ${state.linkFilter === c ? "active" : ""}" onclick="state.linkFilter='${c}';renderLinks();">${c === "all" ? "All" : c}</button>`).join("")}</div><div class="grid grid-3">${arr.map((l) => `<div class="link-card"><div class="link-icon">${esc(l.icon)}</div><div><h4>${esc(l.title)}</h4><p>${esc(l.desc)}</p><br/><div class="tags"><span class="tag blue">${esc(l.cat)}</span>${l.url && l.url !== "#" ? `<a href="${esc(l.url)}" target="_blank" rel="noopener">Open link →</a>` : `<a href="${esc(l.url)}" onclick="event.preventDefault();toast('Demo link clicked.')">Open link →</a>`}</div></div></div>`).join("")}</div></div>`;
       }
 
       function renderCoverage() {
