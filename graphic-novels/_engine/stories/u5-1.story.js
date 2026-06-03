@@ -13,6 +13,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Theme Park Engineer: Area Architect &#127906;",
     standard: "6.G.1",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U5 #1: Theme Park Engineer: Area Architect",
     artBase: "../_art/unit5/",
     home: "../index.html",
@@ -70,6 +71,12 @@ window.GN_STORY = {
               es: "&iexcl;Bienvenida, ingeniera! El primer edificio es la PLAZA, con forma de paralelogramo (caja inclinada).",
             },
             {
+              who: "log",
+              caption: true,
+              en: "Opening day is close, and the plaza floor must be poured before any ride can switch on. Get the AREA right and the whole park wakes up.",
+              es: "El d&iacute;a de apertura est&aacute; cerca, y el piso de la plaza debe estar listo antes de encender cualquier juego. Acierta el &Aacute;REA y todo el parque despierta.",
+            },
+            {
               who: "engineer",
               en: "Cool! To build it, I need its AREA. For a parallelogram, area = base times height.",
               es: "&iexcl;Genial! Para construirla necesito el &Aacute;REA. Paralelogramo: &aacute;rea = base &times; altura.",
@@ -94,6 +101,37 @@ window.GN_STORY = {
                 en: "The height (h) goes STRAIGHT UP and makes a right angle with the base &mdash; it is not the slanted side.",
                 es: "La altura (h) va RECTA hacia arriba y forma un &aacute;ngulo recto con la base; no es el lado inclinado.",
               },
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "According to the Park AI, what shape is the entry plaza?",
+            es: "Seg&uacute;n la IA del parque, &iquest;qu&eacute; forma tiene la plaza de entrada?",
+          },
+          choices: [
+            {
+              en: "A parallelogram (a slanted box).",
+              es: "Un paralelogramo (una caja inclinada).",
+              correct: true,
+            },
+            {
+              en: "A triangle (a three-sided sign).",
+              es: "Un tri&aacute;ngulo (un letrero de tres lados).",
+              correct: false,
+            },
+            {
+              en: "A circle (a round fountain).",
+              es: "Un c&iacute;rculo (una fuente redonda).",
+              correct: false,
             },
           ],
         },
@@ -149,6 +187,41 @@ window.GN_STORY = {
             en: "Plaza floor poured! Now a slanted WALKWAY. It is another parallelogram &mdash; same formula!",
             es: "&iexcl;Piso listo! Ahora un PASILLO inclinado: otro paralelogramo. &iexcl;Misma f&oacute;rmula!",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "In the story, what does <b>area</b> mean?",
+            es: "En la historia, &iquest;qu&eacute; significa <b>&aacute;rea</b>?",
+          },
+          hint: {
+            en: "Think about what the Engineer measures to build the plaza floor.",
+            es: "Piensa en lo que mide la ingeniera para construir el piso de la plaza.",
+          },
+          choices: [
+            {
+              en: "The amount of flat space inside a shape, measured in square units.",
+              es: "El espacio plano dentro de una figura, medido en unidades cuadradas.",
+              correct: true,
+            },
+            {
+              en: "The distance all the way around the outside of a shape.",
+              es: "La distancia alrededor del borde de una figura.",
+              correct: false,
+            },
+            {
+              en: "The length of the longest, slanted side of a shape.",
+              es: "El largo del lado m&aacute;s largo e inclinado de una figura.",
+              correct: false,
+            },
+          ],
         },
         {
           type: "challenge",
@@ -218,6 +291,12 @@ window.GN_STORY = {
               es: "&iexcl;Buen trabajo! Ahora el LETRERO es un tri&aacute;ngulo y el TECHO del escenario es un trapecio.",
             },
             {
+              who: "log",
+              caption: true,
+              en: "These two shapes are not simple boxes, so the rules change a little. Watch for the HALF &mdash; BOLT always forgets it.",
+              es: "Estas dos figuras no son cajas simples, as&iacute; que las reglas cambian un poco. Cuidado con la MITAD: BOLT siempre la olvida.",
+            },
+            {
               who: "engineer",
               en: "A triangle is half of a box, so area = one-half times base times height. Let me build the sign!",
               es: "Un tri&aacute;ngulo es la mitad de una caja: &aacute;rea = &frac12; &times; base &times; altura. &iexcl;A construir el letrero!",
@@ -234,6 +313,37 @@ window.GN_STORY = {
               misconception: true,
               en: "Base 10 times height 6 is 60 &mdash; done! Lighting up the sign at 60!",
               es: "Base 10 por altura 6 es 60, &iexcl;listo! &iexcl;Enciendo el letrero en 60!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "What is this chapter mostly about?",
+            es: "&iquest;De qu&eacute; trata principalmente este cap&iacute;tulo?",
+          },
+          choices: [
+            {
+              en: "Building a triangle sign and a trapezoid roof by finding their areas.",
+              es: "Construir un letrero triangular y un techo trapecio hallando sus &aacute;reas.",
+              correct: true,
+            },
+            {
+              en: "Pouring the slanted floor of the entry plaza.",
+              es: "Verter el piso inclinado de la plaza de entrada.",
+              correct: false,
+            },
+            {
+              en: "Teaching BOLT how to drive the construction robots.",
+              es: "Ense&ntilde;ar a BOLT a manejar los robots de construcci&oacute;n.",
+              correct: false,
             },
           ],
         },
@@ -278,6 +388,37 @@ window.GN_STORY = {
             en: "Sign is glowing! Now the trapezoid roof. I add the two flat sides first, then use the half rule.",
             es: "&iexcl;El letrero brilla! Ahora el techo trapecio: sumo los dos lados planos y luego uso la regla de la mitad.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows BOLT <b>forgot to take half</b> for the triangle sign.",
+            es: "Toca la l&iacute;nea que muestra que BOLT <b>olvid&oacute; tomar la mitad</b> del letrero triangular.",
+          },
+          choices: [
+            {
+              en: "&ldquo;Base 10 times height 6 is 60 &mdash; done!&rdquo;",
+              es: "&ldquo;Base 10 por altura 6 es 60, &iexcl;listo!&rdquo;",
+              correct: true,
+            },
+            {
+              en: "&ldquo;A triangle is half of a box.&rdquo;",
+              es: "&ldquo;Un tri&aacute;ngulo es la mitad de una caja.&rdquo;",
+              correct: false,
+            },
+            {
+              en: "&ldquo;The big welcome SIGN is a triangle.&rdquo;",
+              es: "&ldquo;El LETRERO es un tri&aacute;ngulo.&rdquo;",
+              correct: false,
+            },
+          ],
         },
         {
           type: "challenge",
@@ -333,6 +474,37 @@ window.GN_STORY = {
             es: "&iexcl;Todo el parque se enciende! Falta una construcci&oacute;n: el Gran Pabell&oacute;n.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the events of this chapter in the order they happened.",
+            es: "Ordena los sucesos de este cap&iacute;tulo en el orden en que pasaron.",
+          },
+          items: [
+            {
+              en: "BOLT says the triangle sign is just 10 &times; 6 = 60.",
+              es: "BOLT dice que el letrero triangular es solo 10 &times; 6 = 60.",
+              order: 1,
+            },
+            {
+              en: "The Engineer takes half and lights the triangle sign at 30.",
+              es: "La ingeniera toma la mitad y enciende el letrero en 30.",
+              order: 2,
+            },
+            {
+              en: "The Engineer builds the trapezoid roof and the park lights up.",
+              es: "La ingeniera construye el techo trapecio y el parque se enciende.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -367,6 +539,12 @@ window.GN_STORY = {
               who: "engineer",
               en: "I will find each area and ADD them. Rectangle plus triangle. Let's finish the park!",
               es: "Voy a hallar cada &aacute;rea y SUMARLAS: rect&aacute;ngulo m&aacute;s tri&aacute;ngulo. &iexcl;Terminemos el parque!",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "This is the last build before the grand opening. Solve the pavilion and the gates swing wide for every visitor.",
+              es: "Esta es la &uacute;ltima construcci&oacute;n antes de la gran apertura. Resuelve el pabell&oacute;n y las puertas se abren para todos los visitantes.",
             },
             {
               who: "bolt",
@@ -428,6 +606,72 @@ window.GN_STORY = {
             en: "The Grand Pavilion rises! Time for the grand opening, BOLT &mdash; thanks for the help, even the wrong guesses.",
             es: "&iexcl;El Gran Pabell&oacute;n se levanta! Hora de la gran apertura, BOLT. Gracias por la ayuda.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "BOLT keeps getting the wrong total. Why does BOLT keep making mistakes?",
+            es: "BOLT sigue dando el total equivocado. &iquest;Por qu&eacute; BOLT sigue cometiendo errores?",
+          },
+          hint: {
+            en: "Look back: BOLT used the slanted side and forgot to take half of the triangle.",
+            es: "Mira atr&aacute;s: BOLT us&oacute; el lado inclinado y olvid&oacute; tomar la mitad del tri&aacute;ngulo.",
+          },
+          choices: [
+            {
+              en: "BOLT forgets the special rules, like taking half for a triangle.",
+              es: "BOLT olvida las reglas especiales, como tomar la mitad para un tri&aacute;ngulo.",
+              correct: true,
+            },
+            {
+              en: "BOLT wants the park to stay closed forever.",
+              es: "BOLT quiere que el parque siga cerrado para siempre.",
+              correct: false,
+            },
+            {
+              en: "The blueprints show all the wrong measurements.",
+              es: "Los planos muestran todas las medidas equivocadas.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The Grand Pavilion is built. What will the Engineer most likely do next?",
+            es: "El Gran Pabell&oacute;n est&aacute; construido. &iquest;Qu&eacute; har&aacute; probablemente la ingeniera despu&eacute;s?",
+          },
+          choices: [
+            {
+              en: "Hold the grand opening and welcome visitors to the finished park.",
+              es: "Celebrar la gran apertura y recibir a los visitantes en el parque terminado.",
+              correct: true,
+            },
+            {
+              en: "Tear down the plaza floor from Act 1.",
+              es: "Derribar el piso de la plaza del Acto 1.",
+              correct: false,
+            },
+            {
+              en: "Stop using area formulas for good.",
+              es: "Dejar de usar las f&oacute;rmulas de &aacute;rea para siempre.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

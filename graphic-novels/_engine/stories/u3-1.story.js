@@ -12,6 +12,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Global Travel Planner",
     standard: "6.RP.3a",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U3 #1: Global Travel Planner",
     artBase: "../_art/unit3/",
     home: "../index.html",
@@ -87,6 +88,11 @@ window.GN_STORY = {
               es: "Primero, escribe la razón de guías a viajeros para activar la puerta.",
             },
             {
+              who: "traveler",
+              en: "I count 2 guides in red caps and 6 travelers waiting by the gate. Order matters, so I'll write the guides first.",
+              es: "Cuento 2 guías con gorras rojas y 6 viajeros junto a la puerta. El orden importa, así que escribo los guías primero.",
+            },
+            {
               who: "compass",
               misconception: true,
               en: "Easy! There are 6 travelers and 2 guides — so I'll write 6 to 2.",
@@ -138,6 +144,41 @@ window.GN_STORY = {
             en: "Gate one is open! Now I need an EQUIVALENT ratio with the same pattern.",
             es: "¡La primera puerta se abrió! Ahora necesito una razón equivalente con el mismo patrón.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "In the story, what does the word <b>ratio</b> mean?",
+            es: "En la historia, ¿qué significa la palabra <b>razón</b>?",
+          },
+          hint: {
+            en: "Think about how Maya used 2 guides and 6 travelers.",
+            es: "Piensa en cómo Maya usó 2 guías y 6 viajeros.",
+          },
+          choices: [
+            {
+              en: "A way to compare two amounts, like guides to travelers.",
+              es: "Una forma de comparar dos cantidades, como guías a viajeros.",
+              correct: true,
+            },
+            {
+              en: "The total when you add two amounts together.",
+              es: "El total cuando sumas dos cantidades.",
+              correct: false,
+            },
+            {
+              en: "The biggest number on the gate panel.",
+              es: "El número más grande del panel de la puerta.",
+              correct: false,
+            },
+          ],
         },
         {
           type: "beats",
@@ -209,6 +250,37 @@ window.GN_STORY = {
             es: "¡La puerta se abre hacia las pirámides! Sigue Tokio para armar una tabla de razones.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.1b",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows COMPASS <b>added</b> the amounts instead of using the ratio.",
+            es: "Toca la línea que muestra que COMPASS <b>sumó</b> las cantidades en vez de usar la razón.",
+          },
+          choices: [
+            {
+              en: "“4 stamps and 3 passports each? That's 4 + 3 = 7 passports.”",
+              es: "“¿4 sellos y 3 pasaportes? Eso es 4 + 3 = 7 pasaportes.”",
+              correct: true,
+            },
+            {
+              en: "“A ratio compares two amounts.”",
+              es: "“Una razón compara dos cantidades.”",
+              correct: false,
+            },
+            {
+              en: "“Now I need an EQUIVALENT ratio with the same pattern.”",
+              es: "“Ahora necesito una razón equivalente con el mismo patrón.”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -234,8 +306,8 @@ window.GN_STORY = {
             },
             {
               who: "traveler",
-              en: "Every hour the train goes the same distance. I can scale the table up step by step.",
-              es: "Cada hora el tren recorre la misma distancia. Puedo aumentar la tabla paso a paso.",
+              en: "The neon ticket board glows: 50 miles for every 1 hour. Every hour the train goes the same distance. I can scale the table up step by step.",
+              es: "El tablero de boletos brilla: 50 millas por cada 1 hora. Cada hora el tren recorre la misma distancia. Puedo aumentar la tabla paso a paso.",
               vocab: [
                 {
                   term: "ratio table",
@@ -296,6 +368,37 @@ window.GN_STORY = {
             en: "The table works! Now I need to swap money. Same idea: a ratio table for dollars and coins.",
             es: "¡La tabla funciona! Ahora cambio dinero. La misma idea: una tabla de dólares y monedas.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act2.2a",
+          ask: {
+            who: "log",
+            en: "How far does the Tokyo train go in <b>1 hour</b>?",
+            es: "¿Qué distancia recorre el tren de Tokio en <b>1 hora</b>?",
+          },
+          choices: [
+            {
+              en: "50 miles.",
+              es: "50 millas.",
+              correct: true,
+            },
+            {
+              en: "200 miles.",
+              es: "200 millas.",
+              correct: false,
+            },
+            {
+              en: "4 miles.",
+              es: "4 millas.",
+              correct: false,
+            },
+          ],
         },
         {
           type: "beats",
@@ -363,6 +466,68 @@ window.GN_STORY = {
             es: "¡Dinero cambiado! Sigue la Última Puerta; necesita ambas destrezas a la vez.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "What is Maya mainly doing in Tokyo?",
+            es: "¿Qué hace principalmente Maya en Tokio?",
+          },
+          choices: [
+            {
+              en: "Using ratio tables to scale up miles and money the same way.",
+              es: "Usar tablas de razones para aumentar millas y dinero de la misma forma.",
+              correct: true,
+            },
+            {
+              en: "Writing the very first ratio of guides to travelers.",
+              es: "Escribir la primera razón de guías a viajeros.",
+              correct: false,
+            },
+            {
+              en: "Counting the bags each traveler is allowed to bring.",
+              es: "Contar las maletas que cada viajero puede llevar.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the events of the Tokyo chapter in order.",
+            es: "Ordena los sucesos del capítulo de Tokio.",
+          },
+          items: [
+            {
+              en: "Maya fills the train table to find the miles in 4 hours.",
+              es: "Maya completa la tabla del tren para hallar las millas en 4 horas.",
+              order: 1,
+            },
+            {
+              en: "COMPASS adds $6 and 5 coins to guess 11 coins.",
+              es: "COMPASS suma $6 y 5 monedas y adivina 11 monedas.",
+              order: 2,
+            },
+            {
+              en: "Maya multiplies to change $6 into 30 coins and unlocks Tokyo.",
+              es: "Maya multiplica para cambiar $6 por 30 monedas y desbloquea Tokio.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -392,6 +557,12 @@ window.GN_STORY = {
               es: "Razones y tablas juntas. Estoy lista. ¡Vamos a terminar el viaje!",
             },
             {
+              who: "log",
+              caption: true,
+              en: "This gate has only one keypad and one try. A wrong code seals it, so the ratio and the table must both be exactly right.",
+              es: "Esta puerta tiene un solo teclado y un solo intento. Un código incorrecto la cierra, así que la razón y la tabla deben estar exactamente bien.",
+            },
+            {
               who: "compass",
               misconception: true,
               en: "5 travelers and 2 bags each? I'll add them: 5 + 2 = 7 bags!",
@@ -404,8 +575,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "traveler",
-            en: "The last gate needs BOTH skills. The plane uses <b>2 bags for every 1 traveler</b>. Use the ratio table to find the bags for <b>5 travelers</b>. Pick the line that is fully correct. <br><br>Travelers: 1, 2, 3, 5 → Bags: 2, 4, 6, ?",
-            es: "2 maletas por cada 1 viajero. ¿Cuántas maletas para 5 viajeros?",
+            en: "The last gate needs BOTH skills. The plane uses <b>2 bags for every 1 traveler</b>. What is the ratio of bags to travelers, and how many bags do <b>5 travelers</b> need? Pick the line that is fully correct. <br><br>Travelers: 1, 2, 3, 5 → Bags: 2, 4, 6, ?",
+            es: "2 maletas por cada 1 viajero. ¿Cuál es la razón de maletas a viajeros, y cuántas maletas necesitan 5 viajeros?",
           },
           hint: {
             en: "The ratio is bags : travelers = 2 : 1. Multiply travelers by 2. 5 × 2 = ?",
@@ -444,6 +615,72 @@ window.GN_STORY = {
             en: "The Last Gateway opens! The whole trip is planned. Thanks, COMPASS — even the wrong guesses helped.",
             es: "¡La Última Puerta se abre! Todo el viaje está planeado. Gracias, COMPASS.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "COMPASS keeps adding the two amounts together. Why does COMPASS keep guessing wrong?",
+            es: "COMPASS sigue sumando las dos cantidades. ¿Por qué COMPASS sigue adivinando mal?",
+          },
+          hint: {
+            en: "Look back: COMPASS adds when it should multiply or keep the ratio.",
+            es: "Mira atrás: COMPASS suma cuando debería multiplicar o mantener la razón.",
+          },
+          choices: [
+            {
+              en: "It adds the numbers instead of keeping the same ratio.",
+              es: "Suma los números en vez de mantener la misma razón.",
+              correct: true,
+            },
+            {
+              en: "It does not want Maya to finish the trip.",
+              es: "No quiere que Maya termine el viaje.",
+              correct: false,
+            },
+            {
+              en: "The gate panels show the wrong numbers.",
+              es: "Los paneles de la puerta muestran números equivocados.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The Last Gateway is open. What will Maya most likely do next?",
+            es: "La Última Puerta está abierta. ¿Qué hará Maya probablemente después?",
+          },
+          choices: [
+            {
+              en: "Finish planning the trip and collect the last passport stamp.",
+              es: "Terminar de planear el viaje y conseguir el último sello del pasaporte.",
+              correct: true,
+            },
+            {
+              en: "Fly back and lock the Paris gate again.",
+              es: "Regresar y cerrar otra vez la puerta de París.",
+              correct: false,
+            },
+            {
+              en: "Stop using ratio tables for the rest of the trip.",
+              es: "Dejar de usar tablas de razones por el resto del viaje.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

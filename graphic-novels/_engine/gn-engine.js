@@ -36,6 +36,205 @@
     return v == null ? "" : v;
   }
 
+  /* Read-aloud (text-to-speech) via the Web Speech API. Offline, no assets. */
+  var TTS = (function () {
+    var synth = window.speechSynthesis;
+    function speak(text, lang) {
+      if (!synth) return;
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(
+        String(text).replace(/<[^>]+>/g, ""),
+      );
+      u.lang = lang === "es" ? "es-ES" : "en-US";
+      u.rate = 0.95;
+      synth.speak(u);
+    }
+    return { available: !!synth, speak: speak };
+  })();
+
+  /* Interaction + feature extensibility seams. */
+  var INTERACTIONS = {}; // name -> { render(step, groupEl, onSolve) }  (must emit .choices/.choice.correct on solve)
+
+  INTERACTIONS["evidence"] = {
+    render: function (step, groupEl) {
+      groupEl.classList.add("evidence");
+      step.choices.forEach(function (c) {
+        var b = el(
+          "button",
+          "choice ev",
+          "&#128206; " +
+            c.en +
+            (c.es ? '<span class="es">' + c.es + "</span>" : ""),
+        );
+        b.dataset.correct = !!c.correct;
+        groupEl.appendChild(b);
+      });
+    },
+  };
+  INTERACTIONS["sequence"] = {
+    render: function (step, groupEl, onSolve) {
+      groupEl.classList.add("sequence");
+      var list = el("ol", "seq-list");
+      // present in a shuffled-but-deterministic order so the answer isn't given away
+      var order = step.items.map(function (_, i) {
+        return i;
+      });
+      order.sort(function (a, b) {
+        return (
+          ((a * 7 + 3) % step.items.length) - ((b * 7 + 3) % step.items.length)
+        );
+      });
+      order.forEach(function (idx) {
+        var li = el("li", "seq-card");
+        li.draggable = true;
+        li.dataset.idx = idx;
+        li.tabIndex = 0;
+        li.innerHTML =
+          '<span class="seq-h" aria-hidden="true">&#8942;</span>' +
+          '<span class="seq-t">' +
+          step.items[idx].en +
+          (step.items[idx].es
+            ? '<span class="es">' + step.items[idx].es + "</span>"
+            : "") +
+          "</span>" +
+          '<span class="seq-ctl">' +
+          '<button class="seq-up" type="button" aria-label="Move up">&#9650;</button>' +
+          '<button class="seq-down" type="button" aria-label="Move down">&#9660;</button>' +
+          "</span>";
+        list.appendChild(li);
+      });
+      var btn = el("button", "next seq-check", "Check order");
+      btn.type = "button";
+      groupEl.appendChild(list);
+      groupEl.appendChild(btn);
+
+      function moveUp(li) {
+        if (li.previousElementSibling)
+          list.insertBefore(li, li.previousElementSibling);
+      }
+      function moveDown(li) {
+        if (li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
+      }
+      list.addEventListener("click", function (e) {
+        var up = e.target.closest(".seq-up"),
+          dn = e.target.closest(".seq-down");
+        if (up) moveUp(up.closest("li"));
+        if (dn) moveDown(dn.closest("li"));
+      });
+      list.addEventListener("keydown", function (e) {
+        var li = e.target.closest && e.target.closest("li");
+        if (!li) return;
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          moveUp(li);
+          li.focus();
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          moveDown(li);
+          li.focus();
+        }
+      });
+      var dragged = null;
+      list.addEventListener("dragstart", function (e) {
+        dragged = e.target.closest("li");
+      });
+      list.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        var li = e.target.closest("li");
+        if (li && li !== dragged)
+          list.insertBefore(dragged, li.nextSibling || li);
+      });
+      var solved = false;
+      btn.addEventListener("click", function () {
+        if (solved) return;
+        var idxs = Array.prototype.map.call(list.children, function (li) {
+          return +li.dataset.idx;
+        });
+        var ok = true;
+        for (var i = 1; i < idxs.length; i++)
+          if (step.items[idxs[i]].order < step.items[idxs[i - 1]].order)
+            ok = false;
+        if (ok) {
+          solved = true;
+          var mark = el("button", "choice correct");
+          mark.style.display = "none";
+          mark.dataset.correct = "true";
+          groupEl.appendChild(mark);
+          btn.disabled = true;
+          list.classList.add("solved");
+          if (onSolve) onSolve();
+        } else {
+          list.classList.add("nudge");
+          setTimeout(function () {
+            list.classList.remove("nudge");
+          }, 500);
+        }
+      });
+    },
+  };
+  var FEATURES = []; // [{ onBeat(beat,ctx), onSolve(step,ctx), onComplete(ctx) }]
+  function fire(hook, a, b) {
+    FEATURES.forEach(function (f) {
+      if (f[hook])
+        try {
+          f[hook](a, b);
+        } catch (e) {}
+    });
+  }
+  function isComprehension(step) {
+    return step.type === "comprehension";
+  }
+  var SKILLS = {
+    vocab_in_context: "Vocabulary in Context",
+    main_idea: "Determine Main Idea",
+    key_details: "Key Details",
+    sequence: "Sequence / Cause & Effect",
+    inference: "Make an Inference",
+    cite_evidence: "Cite Text Evidence",
+    prediction: "Make a Prediction",
+  };
+  function SKILL_LABEL(k) {
+    return SKILLS[k] || "Reading";
+  }
+
+  /* ---------- Reading + Math notebook (auto-collected, printable) ----------
+     A FEATURE that records each solved step (skill, question, sentence-frame)
+     and renders a printable log on the complete screen. No PII collected. */
+  var NOTEBOOK = { entries: [] };
+  FEATURES.push({
+    onSolve: function (step) {
+      NOTEBOOK.entries.push({
+        kind: isComprehension(step) ? "reading" : "math",
+        skill: step.skill ? SKILL_LABEL(step.skill) : "Math",
+        q: stripTags((step.ask && step.ask.en) || ""),
+        frame: step.frame ? stripTags(step.frame.en) : "",
+      });
+    },
+  });
+  function renderNotebook() {
+    var host = $("nt-notebook");
+    if (!host) return;
+    host.innerHTML =
+      "<h3>My Reading + Math Log</h3>" +
+      NOTEBOOK.entries
+        .map(function (e) {
+          return (
+            '<div class="nb-row"><b>' +
+            e.skill +
+            ":</b> " +
+            e.q +
+            (e.frame
+              ? '<div class="nb-frame">' +
+                e.frame +
+                ' <span class="nb-blank"></span></div>'
+              : "") +
+            "</div>"
+          );
+        })
+        .join("");
+  }
+
   /* Per-unit signature colors so each world looks distinct (the comic shell is
      shared, but the accent/ink differ by unit; version 2 gets a deeper accent). */
   var UNIT_ACCENT = {
@@ -229,6 +428,28 @@
       en +
       "</div>" +
       (beat.es ? '<div class="es">' + beat.es + "</div>" : "");
+    if (TTS.available) {
+      var ctl =
+        '<span class="tts">' +
+        '<button class="tts-btn" type="button" data-tts-en aria-label="Read aloud">&#128266;</button>' +
+        (beat.es
+          ? '<button class="tts-btn" type="button" data-tts-es aria-label="Leer en voz alta">ES</button>'
+          : "") +
+        "</span>";
+      b.insertAdjacentHTML("beforeend", ctl);
+      b.querySelector("[data-tts-en]").addEventListener("click", function (e) {
+        e.stopPropagation();
+        TTS.speak(beat.en, "en");
+      });
+      if (beat.es)
+        b.querySelector("[data-tts-es]").addEventListener(
+          "click",
+          function (e) {
+            e.stopPropagation();
+            TTS.speak(beat.es, "es");
+          },
+        );
+    }
     frag.appendChild(b);
     return frag;
   }
@@ -465,6 +686,8 @@
         '<div class="feedback" id="fbComplete"></div></div>';
     }
     html +=
+      '<div id="nt-notebook" class="notebook"></div>' +
+      '<button class="restart" id="print-nb" type="button">&#128424;&#65039; Print my log</button>' +
       '<button class="restart" id="restart-btn">Play again &#8635;</button>';
     s.innerHTML = html;
     return s;
@@ -536,6 +759,7 @@
   }
 
   function showScene(name) {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
     SCENE_IDS.forEach(function (s) {
       var sc = $("scene-" + s);
       if (sc) sc.classList.toggle("active", s === name);
@@ -569,6 +793,14 @@
     var c = $("scene-complete");
     c.classList.add("active", "show");
     wireMaster();
+    renderNotebook();
+    var pnb = $("print-nb");
+    if (pnb && !pnb.dataset.wired) {
+      pnb.dataset.wired = "1";
+      pnb.addEventListener("click", function () {
+        window.print();
+      });
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -694,7 +926,8 @@
     /* ---- challenge: gating (must solve to advance) ---- */
     function playChallenge(step) {
       renderCard(step, false);
-      wireChoices(step, act, function () {
+      var onSolve = function () {
+        fire("onSolve", step);
         if (step.solveArt) setArt(step.solveArt, step.solveAlt);
         if (step.solveBeat) {
           speechEl.innerHTML = "";
@@ -703,19 +936,40 @@
         stepIdx++;
         // small beat so the success feedback is read before the next panel
         setTimeout(playStep, 400);
-      });
+      };
+      var grp = "choices-" + act.id + "-" + step.id;
+      if (
+        step.interaction &&
+        step.interaction !== "mc" &&
+        INTERACTIONS[step.interaction]
+      ) {
+        // render interaction FIRST so any .choice it creates exists for wireChoices
+        INTERACTIONS[step.interaction].render(step, $(grp), onSolve);
+      }
+      wireChoices(step, act, onSolve);
     }
 
     /* ---- challenge: optional bonus (does NOT gate; still scored) ----
        Renders this and any consecutive optional steps, then reveals advance. */
     function playOptional(step) {
       renderCard(step, true);
-      wireChoices(step, act, function () {
+      var onSolve = function () {
+        fire("onSolve", step);
         if (step.solveBeat) {
           speechEl.innerHTML = "";
           speechEl.appendChild(bubble(step.solveBeat));
         }
-      });
+      };
+      var grp = "choices-" + act.id + "-" + step.id;
+      if (
+        step.interaction &&
+        step.interaction !== "mc" &&
+        INTERACTIONS[step.interaction]
+      ) {
+        // render interaction FIRST so any .choice it creates exists for wireChoices
+        INTERACTIONS[step.interaction].render(step, $(grp), onSolve);
+      }
+      wireChoices(step, act, onSolve);
       stepIdx++;
       var nxt = act.steps[stepIdx];
       if (nxt && nxt.optional) playOptional(nxt);
@@ -796,23 +1050,50 @@
             : "") +
           "</div>";
       }
+      var comp = isComprehension(step);
+      var groupAttr = comp
+        ? ' data-score-group="reading" data-standard="' +
+          (step.standard || "") +
+          '"'
+        : "";
+      var label = comp
+        ? '<div class="reading-tag"><span class="rt-skill">' +
+          SKILL_LABEL(step.skill) +
+          "</span>" +
+          '<span class="rt-std">' +
+          (step.standard || "") +
+          "</span>" +
+          (step.dok ? '<span class="rt-dok">DOK ' + step.dok + "</span>" : "") +
+          "</div>"
+        : "";
       var choices =
-        '<div class="reply-label">Choose your reply</div>' +
+        label +
+        '<div class="reply-label">' +
+        (comp ? "Choose the best answer" : "Choose your reply") +
+        "</div>" +
         '<div class="choices" id="choices-' +
         act.id +
         "-" +
         step.id +
-        '">';
-      step.choices.forEach(function (c) {
-        choices +=
-          '<button class="choice" data-correct="' +
-          !!c.correct +
-          '">' +
-          c.en +
-          (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
-          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
-          "</button>";
-      });
+        '"' +
+        groupAttr +
+        ">";
+      if (
+        !step.interaction ||
+        step.interaction === "mc" ||
+        !INTERACTIONS[step.interaction]
+      ) {
+        step.choices.forEach(function (c) {
+          choices +=
+            '<button class="choice" data-correct="' +
+            !!c.correct +
+            '">' +
+            c.en +
+            (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
+            (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+            "</button>";
+        });
+      }
       choices += "</div>";
       wrap.innerHTML +=
         tools +
@@ -869,7 +1150,7 @@
             btn.classList.add("correct");
             fb.className = "feedback show good";
             fb.innerHTML =
-              step.goodEn +
+              (step.goodEn || "✓ Correct.") +
               (step.goodEs
                 ? '<span class="es">' + step.goodEs + "</span>"
                 : "");
@@ -884,7 +1165,7 @@
             btn.disabled = true;
             fb.className = "feedback show bad";
             fb.innerHTML =
-              step.badEn +
+              (step.badEn || "Not quite — look back at the panel.") +
               (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
           }
         });

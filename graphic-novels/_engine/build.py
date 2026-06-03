@@ -36,13 +36,17 @@ TRACKER = """
       } catch (e) { return "Student"; }
     }
     function score() {
-      var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      var groups = Array.prototype.slice
+        .call(document.querySelectorAll(".choices"))
         .filter(function (g) { return g.id !== "choicesComplete"; });
-      var total = groups.length || 0;
-      var correct = groups.filter(function (g) {
-        return g.querySelector(".choice.correct");
-      }).length;
-      return { correct: correct, total: total };
+      function tally(list) {
+        var total = list.length;
+        var correct = list.filter(function (g) { return g.querySelector(".choice.correct"); }).length;
+        return { correct: correct, total: total };
+      }
+      var reading = groups.filter(function (g) { return g.getAttribute("data-score-group") === "reading"; });
+      var math = groups.filter(function (g) { return g.getAttribute("data-score-group") !== "reading"; });
+      return { math: tally(math), reading: tally(reading) };
     }
     function savedNote() {
       if (document.getElementById("nt-saved-note")) return;
@@ -56,14 +60,20 @@ TRACKER = """
     function record() {
       if (FIRED) return; FIRED = true;
       var s = score();
+      var sections = [{ name: "Math", correct: s.math.correct, total: s.math.total }];
+      var readingStd = window.GN_STORY.meta.readingStandard || null;
+      if (s.reading.total > 0)
+        sections.push({ name: "Reading Comprehension", correct: s.reading.correct, total: s.reading.total, standard: readingStd });
       try {
         NTResults.finish({
           student: studentName(),
           assessment: window.GN_STORY.meta.assessment,
           standard: window.GN_STORY.meta.standard,
           level: String(window.GN_STORY.meta.version),
-          sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
-          correct: s.correct, total: s.total, download: false,
+          sections: sections,
+          correct: s.math.correct + s.reading.correct,
+          total: s.math.total + s.reading.total,
+          download: false,
         });
       } catch (e) {}
       savedNote();

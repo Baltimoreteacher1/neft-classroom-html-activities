@@ -11,6 +11,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Aquarium Architect 🐠🌊",
     standard: "6.G.2",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U10 #1: Aquarium Architect",
     artBase: "../_art/unit10/",
     home: "../index.html",
@@ -68,6 +69,12 @@ window.GN_STORY = {
               es: "¡Bienvenida, Maya! El acuario necesita tanques. Primero, llena el tanque con la cantidad correcta de agua.",
             },
             {
+              who: "log",
+              caption: true,
+              en: "If a tank has too little water, the fish get sick. If it has too much, the glass can crack. The amount must be exact.",
+              es: "Si un tanque tiene muy poca agua, los peces se enferman. Si tiene demasiada, el vidrio se puede romper. La cantidad debe ser exacta.",
+            },
+            {
               who: "architect",
               en: "Got it! To know how much water fits, I find the VOLUME. Volume = length × width × height.",
               es: "¡Entendido! Para saber cuánta agua cabe, busco el VOLUMEN. Volumen = largo × ancho × alto.",
@@ -84,6 +91,37 @@ window.GN_STORY = {
               misconception: true,
               en: "Easy! The tank is 5, 4, and 3 — so the volume is 5 + 4 + 3 = 12 ft³. I'll fill it!",
               es: "¡Fácil! El tanque es 5, 4 y 3, así que el volumen es 5 + 4 + 3 = 12 ft³.",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "log",
+            en: "According to the Site Boss, what happens if a tank has TOO MUCH water?",
+            es: "Según el Jefe de Obra, ¿qué pasa si un tanque tiene DEMASIADA agua?",
+          },
+          choices: [
+            {
+              en: "The glass can crack.",
+              es: "El vidrio se puede romper.",
+              correct: true,
+            },
+            {
+              en: "The fish get a bigger tank.",
+              es: "Los peces reciben un tanque más grande.",
+              correct: false,
+            },
+            {
+              en: "Nothing happens at all.",
+              es: "No pasa nada.",
+              correct: false,
             },
           ],
         },
@@ -130,12 +168,47 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c2",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "In this story, what does <b>volume</b> mean?",
+            es: "En esta historia, ¿qué significa <b>volumen</b>?",
+          },
+          hint: {
+            en: "Think about why Maya MULTIPLIED the three sides, not added them.",
+            es: "Piensa por qué Maya MULTIPLICÓ los tres lados, no los sumó.",
+          },
+          choices: [
+            {
+              en: "How much space (water) fits inside, found by length × width × height.",
+              es: "Cuánto espacio (agua) cabe adentro, hallado con largo × ancho × alto.",
+              correct: true,
+            },
+            {
+              en: "How much glass covers the outside of the tank.",
+              es: "Cuánto vidrio cubre el exterior del tanque.",
+              correct: false,
+            },
+            {
+              en: "The longest side of the tank.",
+              es: "El lado más largo del tanque.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "1b",
           ask: {
             who: "architect",
-            en: "The seahorse tank is long but shallow. It is <b>6 ft long, 4 ft wide,</b> and only <b>½ ft tall</b>. Find the volume.",
-            es: "El tanque mide 6 × 4 × ½. Encuentra el volumen.",
+            en: "The seahorse tank is long but shallow. It is <b>6 ft long, 4 ft wide,</b> and only <b>½ ft tall</b>. What is the volume of the tank?",
+            es: "El tanque mide 6 × 4 × ½. ¿Cuál es el volumen del tanque?",
             vocab: [
               {
                 term: "shallow",
@@ -178,6 +251,37 @@ window.GN_STORY = {
             es: "¡Los dos tanques están llenos! Ahora construyo el vidrio: eso es área de superficie.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows the water amount must be <b>exact</b>.",
+            es: "Toca la línea que muestra que la cantidad de agua debe ser <b>exacta</b>.",
+          },
+          choices: [
+            {
+              en: "“If it has too much, the glass can crack. The amount must be exact.”",
+              es: "“Si tiene demasiada, el vidrio se puede romper. La cantidad debe ser exacta.”",
+              correct: true,
+            },
+            {
+              en: "“Now I have to BUILD the glass — that means surface area.”",
+              es: "“Ahora construyo el vidrio: eso es área de superficie.”",
+              correct: false,
+            },
+            {
+              en: "“Volume = length × width × height.”",
+              es: "“Volumen = largo × ancho × alto.”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -200,6 +304,12 @@ window.GN_STORY = {
               caption: true,
               en: "Great fills, Maya! Now we BUILD the glass. To know how much glass we need, find the SURFACE AREA.",
               es: "¡Buen trabajo! Ahora construimos el vidrio. Para saber cuánto vidrio, busca el ÁREA DE SUPERFICIE.",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "Glass costs money, so we must order the EXACT amount. Too little and the tank leaks; too much and we waste the budget.",
+              es: "El vidrio cuesta dinero, así que debemos pedir la cantidad EXACTA. Si es poco, el tanque gotea; si es mucho, gastamos de más.",
             },
             {
               who: "architect",
@@ -271,8 +381,8 @@ window.GN_STORY = {
           id: "2b",
           ask: {
             who: "architect",
-            en: "This tank is <b>4 ft long, 3 ft wide, 2 ft tall</b>. Each pair of faces matches. Add all six faces to get the <b>surface area</b> (how much glass).",
-            es: "Suma las 6 caras del tanque de 4 × 3 × 2 para hallar el área de superficie.",
+            en: "This tank is <b>4 ft long, 3 ft wide, 2 ft tall</b>. Each pair of faces matches. When you add all six faces, what is the <b>surface area</b> (how much glass)?",
+            es: "Al sumar las 6 caras del tanque de 4 × 3 × 2, ¿cuál es el área de superficie?",
           },
           hint: {
             en: "front & back = 4×3 = 12 each. left & right = 3×2 = 6 each. top & bottom = 4×2 = 8 each. Add: 12+12+6+6+8+8.",
@@ -307,6 +417,68 @@ window.GN_STORY = {
             en: "The glass walls are up! One tank left — the grand centerpiece needs BOTH the water and the glass.",
             es: "¡Las paredes de vidrio están listas! Falta un tanque: el gran centro necesita el agua Y el vidrio.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "What is Maya mainly doing in this chapter?",
+            es: "¿Qué hace Maya principalmente en este capítulo?",
+          },
+          choices: [
+            {
+              en: "Finding the surface area so she can order the right amount of glass.",
+              es: "Hallar el área de superficie para pedir la cantidad correcta de vidrio.",
+              correct: true,
+            },
+            {
+              en: "Filling each tank with the exact amount of water.",
+              es: "Llenar cada tanque con la cantidad exacta de agua.",
+              correct: false,
+            },
+            {
+              en: "Teaching CORAL how to count to six.",
+              es: "Enseñar a CORAL a contar hasta seis.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the steps Maya uses to build the glass in order.",
+            es: "Ordena los pasos que usa Maya para construir el vidrio.",
+          },
+          items: [
+            {
+              en: "Unfold the tank into a flat net.",
+              es: "Desdoblar el tanque en una red plana.",
+              order: 1,
+            },
+            {
+              en: "Count the 6 faces of the box.",
+              es: "Contar las 6 caras de la caja.",
+              order: 2,
+            },
+            {
+              en: "Find the area of each face and add them all together.",
+              es: "Hallar el área de cada cara y sumarlas todas.",
+              order: 3,
+            },
+          ],
         },
       ],
     },
@@ -349,8 +521,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "architect",
-            en: "Careful, CORAL — volume and glass are different! The big centerpiece tank is <b>6 ft long, 5 ft wide, 4 ft tall</b>. The build needs BOTH the <b>volume</b> (water) and the <b>surface area</b> (glass). Pick the line that is fully correct.",
-            es: "Elige la línea correcta: el volumen y el área de superficie de un tanque de 6 × 5 × 4.",
+            en: "Careful, CORAL — volume and glass are different! The big centerpiece tank is <b>6 ft long, 5 ft wide, 4 ft tall</b>. What are the <b>volume</b> (water) and the <b>surface area</b> (glass) of this tank?",
+            es: "¿Cuáles son el volumen y el área de superficie de un tanque de 6 × 5 × 4?",
           },
           hint: {
             en: "Volume = 6×5×4. Surface area: front/back 6×5=30 each, left/right 5×4=20 each, top/bottom 6×4=24 each. Add the six faces.",
@@ -386,6 +558,72 @@ window.GN_STORY = {
             en: "The grand tank is full and the glass is set. The aquarium is ready to open!",
             es: "¡El gran tanque está lleno y el vidrio listo! ¡El acuario está listo para abrir!",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "CORAL keeps mixing up volume and surface area. Why does CORAL keep getting it wrong?",
+            es: "CORAL sigue confundiendo el volumen con el área de superficie. ¿Por qué se equivoca CORAL?",
+          },
+          hint: {
+            en: "Look back: CORAL treats the water number and the glass number as the same kind of measurement.",
+            es: "Mira atrás: CORAL trata el número del agua y el del vidrio como la misma medida.",
+          },
+          choices: [
+            {
+              en: "CORAL treats water (volume) and glass (surface area) as the same thing, but they are measured differently.",
+              es: "CORAL trata el agua (volumen) y el vidrio (área) como lo mismo, pero se miden de forma distinta.",
+              correct: true,
+            },
+            {
+              en: "CORAL does not want the aquarium to open.",
+              es: "CORAL no quiere que el acuario abra.",
+              correct: false,
+            },
+            {
+              en: "The tanks are the wrong size on the blueprints.",
+              es: "Los tanques tienen el tamaño equivocado en los planos.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The grand tank is finished. What will Maya most likely do next?",
+            es: "El gran tanque está terminado. ¿Qué hará Maya probablemente después?",
+          },
+          choices: [
+            {
+              en: "Open the aquarium so visitors and fish can come in.",
+              es: "Abrir el acuario para que entren visitantes y peces.",
+              correct: true,
+            },
+            {
+              en: "Drain all the tanks she just filled.",
+              es: "Vaciar todos los tanques que acaba de llenar.",
+              correct: false,
+            },
+            {
+              en: "Add the three sides together to find the volume again.",
+              es: "Sumar los tres lados otra vez para hallar el volumen.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

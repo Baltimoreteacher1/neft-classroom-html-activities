@@ -11,6 +11,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Prime Station: The Factor Code",
     standard: "6.NS.4",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #1: Prime Station: The Factor Code",
     artBase: "../_art/unit1/",
     home: "../index.html",
@@ -68,6 +69,12 @@ window.GN_STORY = {
               es: "¡Cadete! La estación está dañada. Esta puerta tiene un CÓDIGO DE FACTORES.",
             },
             {
+              who: "log",
+              caption: true,
+              en: "Behind this bay are the crew's escape pods. If the lock stays sealed, no one gets out.",
+              es: "Detrás de esta bahía están las cápsulas de escape de la tripulación. Si el cerrojo sigue cerrado, nadie puede salir.",
+            },
+            {
               who: "cadet",
               en: "I can do this. Factor codes use prime numbers. Let me read the panel.",
               es: "Puedo hacerlo. Los códigos usan números primos. Voy a leer el panel.",
@@ -92,6 +99,37 @@ window.GN_STORY = {
                 en: "The panel only accepts a PRIME number to wake the lock.",
                 es: "El panel solo acepta un número PRIMO para activar el cerrojo.",
               },
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "What is behind the locked bay?",
+            es: "¿Qué hay detrás de la bahía cerrada?",
+          },
+          choices: [
+            {
+              en: "The crew's escape pods.",
+              es: "Las cápsulas de escape de la tripulación.",
+              correct: true,
+            },
+            {
+              en: "A holographic factor tree.",
+              es: "Un árbol de factores holográfico.",
+              correct: false,
+            },
+            {
+              en: "Two starship engines.",
+              es: "Dos motores de la nave.",
+              correct: false,
             },
           ],
         },
@@ -138,6 +176,41 @@ window.GN_STORY = {
             en: "Lock one is open! Now I need the full factor code: the prime factorization of 36.",
             es: "¡El primer cerrojo se abrió! Ahora necesito la factorización en primos de 36.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "In the story, what does <b>prime</b> mean?",
+            es: "En la historia, ¿qué significa <b>primo</b>?",
+          },
+          hint: {
+            en: "Think about why 7 worked but 9 did not.",
+            es: "Piensa por qué 7 sirvió pero 9 no.",
+          },
+          choices: [
+            {
+              en: "A number bigger than 1 with only two factors: 1 and itself.",
+              es: "Un número mayor que 1 con solo dos factores: 1 y él mismo.",
+              correct: true,
+            },
+            {
+              en: "A number you can split many different ways.",
+              es: "Un número que se puede dividir de muchas formas.",
+              correct: false,
+            },
+            {
+              en: "The biggest number on the code panel.",
+              es: "El número más grande del panel de código.",
+              correct: false,
+            },
+          ],
         },
         {
           type: "beats",
@@ -211,6 +284,37 @@ window.GN_STORY = {
             es: "¡Código aceptado, la bahía está abierta! Gracias, AXIS.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows the bay was <b>locked</b>.",
+            es: "Toca la línea que muestra que la bahía estaba <b>cerrada</b>.",
+          },
+          choices: [
+            {
+              en: "“This airlock is locked with a FACTOR CODE.”",
+              es: "“Esta puerta tiene un CÓDIGO DE FACTORES.”",
+              correct: true,
+            },
+            {
+              en: "“Factor codes use prime numbers.”",
+              es: "“Los códigos usan números primos.”",
+              correct: false,
+            },
+            {
+              en: "“Thanks for the help, AXIS.”",
+              es: "“Gracias por la ayuda, AXIS.”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -235,6 +339,12 @@ window.GN_STORY = {
               es: "Buen trabajo. Ahora los dos motores deben SINCRONIZARSE o perderemos energía.",
             },
             {
+              who: "log",
+              caption: true,
+              en: "Power is dropping fast. If the engines do not match up soon, the lights will go dark.",
+              es: "La energía baja rápido. Si los motores no coinciden pronto, las luces se apagarán.",
+            },
+            {
               who: "cadet",
               en: "Engine A is 12, Engine B is 18. I need a number that divides BOTH — a common factor.",
               es: "El motor A es 12 y el B es 18. Necesito un número que divida a AMBOS: un factor común.",
@@ -251,6 +361,37 @@ window.GN_STORY = {
               misconception: true,
               en: "9 divides 18, so 9 syncs them! Locking in 9.",
               es: "9 divide a 18, ¡así que sincronizo con 9!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "What is the Cadet mainly trying to do in this chapter?",
+            es: "¿Qué intenta hacer la cadete principalmente en este capítulo?",
+          },
+          choices: [
+            {
+              en: "Sync the two engines so the station keeps its power.",
+              es: "Sincronizar los dos motores para que la estación conserve su energía.",
+              correct: true,
+            },
+            {
+              en: "Open the locked airlock to the escape pods.",
+              es: "Abrir la puerta cerrada de las cápsulas de escape.",
+              correct: false,
+            },
+            {
+              en: "Teach AXIS how to read the code panel.",
+              es: "Enseñar a AXIS a leer el panel de código.",
+              correct: false,
             },
           ],
         },
@@ -361,6 +502,37 @@ window.GN_STORY = {
             es: "Motores sincronizados. Sigue la Puerta Maestra; terminemos esto.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the events of this chapter in order.",
+            es: "Ordena los sucesos de este capítulo.",
+          },
+          items: [
+            {
+              en: "The Cadet finds a common factor of 12 and 18.",
+              es: "La cadete encuentra un factor común de 12 y 18.",
+              order: 1,
+            },
+            {
+              en: "AXIS guesses that the GCF of 24 and 36 is just 6.",
+              es: "AXIS adivina que el MFC de 24 y 36 es solo 6.",
+              order: 2,
+            },
+            {
+              en: "The Cadet finds the GCF of 12 and the engines lock in sync.",
+              es: "La cadete halla el MFC correcto y los motores se sincronizan.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -385,6 +557,12 @@ window.GN_STORY = {
               es: "La Puerta Maestra necesita un código que use AMBAS destrezas.",
             },
             {
+              who: "log",
+              caption: true,
+              en: "This door has only one chance to enter. A wrong code locks it for good — so the answer must be perfect.",
+              es: "Esta puerta solo da una oportunidad. Un código incorrecto la cierra para siempre, así que la respuesta debe ser perfecta.",
+            },
+            {
               who: "cadet",
               en: "Prime factorization AND the GCF. I'm ready. Let's open it!",
               es: "Factorización en primos Y el MFC. Estoy lista. ¡Vamos a abrirla!",
@@ -402,8 +580,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "cadet",
-            en: "Careful, AXIS. Pick the line that is <b>fully correct</b> — the prime factorization of 30 AND the GCF of 30 and 45.",
-            es: "Cuidado, AXIS. Elige la línea correcta: factorización de 30 y el MFC de 30 y 45.",
+            en: "Careful, AXIS. What is the prime factorization of 30, and what is the GCF of 30 and 45? Pick the line where <b>both</b> are correct.",
+            es: "Cuidado, AXIS. ¿Cuál es la factorización en primos de 30 y el MFC de 30 y 45? Elige la línea donde ambos sean correctos.",
           },
           hint: {
             en: "30 = 2 × 3 × 5. Factors of 30: 1,2,3,5,6,10,15,30. Factors of 45: 1,3,5,9,15,45. The biggest shared one is the GCF.",
@@ -443,6 +621,72 @@ window.GN_STORY = {
             en: "The Master Door swings open! The station is ours again.",
             es: "¡La Puerta Maestra se abre! La estación es nuestra otra vez.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "AXIS keeps guessing wrong codes. Why does AXIS guess wrong?",
+            es: "AXIS sigue adivinando códigos incorrectos. ¿Por qué se equivoca AXIS?",
+          },
+          hint: {
+            en: "Look back: AXIS stops before breaking numbers all the way down.",
+            es: "Mira atrás: AXIS se detiene antes de dividir los números por completo.",
+          },
+          choices: [
+            {
+              en: "AXIS rushes and stops before finishing the math, so it misses the full answer.",
+              es: "AXIS se apura y se detiene antes de terminar las cuentas, así que no llega a la respuesta completa.",
+              correct: true,
+            },
+            {
+              en: "AXIS does not want the station to be fixed.",
+              es: "AXIS no quiere que se arregle la estación.",
+              correct: false,
+            },
+            {
+              en: "The code panels are broken and show the wrong numbers.",
+              es: "Los paneles de código están dañados y muestran números equivocados.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The Master Door is open. What will the Cadet most likely need to do next?",
+            es: "La Puerta Maestra está abierta. ¿Qué necesitará hacer la cadete probablemente después?",
+          },
+          choices: [
+            {
+              en: "Go through the door to finish saving the station and the crew.",
+              es: "Cruzar la puerta para terminar de salvar la estación y a la tripulación.",
+              correct: true,
+            },
+            {
+              en: "Lock the airlock from Act 1 again.",
+              es: "Cerrar otra vez la puerta del Acto 1.",
+              correct: false,
+            },
+            {
+              en: "Stop using prime factorization for good.",
+              es: "Dejar de usar la factorización en primos para siempre.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

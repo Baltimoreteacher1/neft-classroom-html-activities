@@ -14,6 +14,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Global Travel Planner",
     standard: "6.RP.3a",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U3 #2: Global Travel Planner",
     artBase: "../_art/unit3/",
     home: "../index.html",
@@ -70,7 +71,7 @@ window.GN_STORY = {
             },
             {
               who: "traveler",
-              en: "Equivalent ratios scale together. I'll divide both parts by their common factor and prove it's the same comparison.",
+              en: "The manifest reads 4 crew for every 6 travelers — both even, so they share a common factor. Equivalent ratios scale together. I'll divide both parts by their common factor and prove it's the same comparison.",
               vocab: [
                 {
                   term: "equivalent ratio",
@@ -117,6 +118,37 @@ window.GN_STORY = {
             who: "traveler",
             en: "Cipher cracked. Now I need a unit rate to compare offers fairly &mdash; everything per single unit.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "When two ratios are called <b>equivalent</b>, as in 4:6 and 2:3, the word <b>equivalent</b> most nearly means they —",
+          },
+          choices: [
+            {
+              en: "name the same comparison, just written with different numbers.",
+              correct: true,
+            },
+            {
+              en: "add up to the same total when their parts are combined.",
+              correct: false,
+            },
+            {
+              en: "always use the largest possible whole numbers.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Precisely. <i>Equivalent</i> ratios express the identical comparison; you reach one from the other by multiplying or dividing both terms by the same number.",
+          badEn:
+            "❌ In this context, <i>equivalent</i> means the same comparison written differently (4:6 = 2:3), not the same sum or the biggest numbers.",
         },
         {
           type: "beats",
@@ -170,6 +202,68 @@ window.GN_STORY = {
             who: "traveler",
             en: "Paris is open and the route to the pyramids is lit. But the cache outside the Louvre tempts me first…",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.beat3",
+          ask: {
+            who: "log",
+            en: "Claim: <b>COMPASS confuses a difference with a rate.</b> Tap the line that <b>best proves</b> this claim.",
+          },
+          choices: [
+            {
+              en: "“18 km and 3 liters? I'll just take the difference: 18 − 3 = 15 km per liter!”",
+              correct: true,
+            },
+            {
+              en: "“To compare offers, Maya needs the unit rate: kilometers per 1 liter.”",
+              correct: false,
+            },
+            {
+              en: "“Paris is open and the route to the pyramids is lit.”",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Strong evidence — COMPASS subtracts (18 − 3) and mislabels it a per-liter rate, exactly the confusion the claim names.",
+          badEn:
+            "❌ That line states the correct goal or just reacts. Find the line where COMPASS subtracts and calls the result a rate.",
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1b",
+          ask: {
+            who: "log",
+            en: "According to the shuttle reading, exactly how far does the shuttle travel and how much fuel does it use?",
+          },
+          choices: [
+            {
+              en: "18 km on 3 liters of fuel.",
+              correct: true,
+            },
+            {
+              en: "3 km on 18 liters of fuel.",
+              correct: false,
+            },
+            {
+              en: "6 km on 6 liters of fuel.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Exactly — the shuttle covers 18 km using 3 liters, which is why the unit rate is 18 ÷ 3 = 6 km per liter.",
+          badEn:
+            "❌ Reread the gauge: 18 km on 3 liters. (6 km per liter is the rate you compute from those two amounts.)",
         },
         {
           type: "challenge",
@@ -230,7 +324,7 @@ window.GN_STORY = {
             },
             {
               who: "traveler",
-              en: "Find the unit rate, scale the table by it, then plot the pairs. Constant ratio means a straight line through the origin.",
+              en: "The bullet train's log shows 240 km in 3 hours at a steady speed. Find the unit rate, scale the table by it, then plot the pairs. Constant ratio means a straight line through the origin.",
               vocab: [
                 {
                   term: "ratio table",
@@ -331,6 +425,68 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Which statement best captures the <b>central idea</b> of the Tokyo chapter?",
+          },
+          choices: [
+            {
+              en: "A constant ratio lets Maya scale a table by the unit rate and predict points that all fall on one straight line through the origin.",
+              correct: true,
+            },
+            {
+              en: "Bullet trains in Tokyo are faster than trains in any other city.",
+              correct: false,
+            },
+            {
+              en: "The biggest numbers on a graph are always the ones that land on the line.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ That's the heart of it — the steady unit rate (80 km/hr) drives both the scaled table and the straight-line graph through the origin.",
+          badEn:
+            "❌ That's a minor or invented detail. The central idea is that a constant unit rate scales the table and produces a straight line through the origin.",
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Order the steps Maya followed to chart the Tokyo train on a graph.",
+          },
+          items: [
+            {
+              en: "Find the unit rate: 240 km ÷ 3 hours = 80 km per hour.",
+              order: 1,
+            },
+            {
+              en: "Scale the ratio table by 80 to fill in distances like 560 km at 7 hours.",
+              order: 2,
+            },
+            {
+              en: "Plot the (hours, km) pairs and confirm they line up through the origin.",
+              order: 3,
+            },
+          ],
+          goodEn:
+            "✅ Rate first, then scale the table, then plot — each step depends on the constant unit rate.",
+          badEn:
+            "❌ Not quite. Maya must find the unit rate first, then scale the table, and only then plot the points on the line.",
+        },
+        {
           type: "challenge",
           id: "B2",
           optional: true,
@@ -392,6 +548,11 @@ window.GN_STORY = {
               en: "Every skill, one line, zero errors. Compute the rate, scale the leg, verify the point. Entering the cipher now.",
             },
             {
+              who: "log",
+              caption: true,
+              en: "Warning: the Master Gateway grants a single attempt. One miscomputed rate or stray point and the route home is sealed for good.",
+            },
+            {
               who: "compass",
               misconception: true,
               en: "9 liters every 2 hours? I'll ignore the 2 and just call it 9 L per hour — so 8 hours needs 72 L!",
@@ -403,7 +564,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "traveler",
-            en: "The final gateway fuses every skill. A flight burns <b>9 liters every 2 hours</b> (a steady rate). Pick the single line that is fully correct: the unit rate, the fuel for an 8-hour leg, and a point on the graph.",
+            en: "The final gateway fuses every skill. A flight burns <b>9 liters every 2 hours</b> (a steady rate). What is the unit rate, how much fuel does an 8-hour leg need, and which point lies on the graph? Pick the single line where all three are correct.",
           },
           choices: [
             {
@@ -430,6 +591,68 @@ window.GN_STORY = {
             who: "traveler",
             en: "Master cipher verified! One optional layover puzzle remains before the expedition is logged.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.beats",
+          ask: {
+            who: "log",
+            en: "COMPASS reads “9 liters every 2 hours” and announces 9 L per hour. What does this error <b>reveal</b> about how COMPASS reasons?",
+          },
+          choices: [
+            {
+              en: "It ignores the second quantity and treats a two-hour rate as if it were already per one hour, skipping the division.",
+              correct: true,
+            },
+            {
+              en: "It deliberately sabotages the cipher so Maya cannot finish.",
+              correct: false,
+            },
+            {
+              en: "It cannot read any of the numbers on the gauge.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Sharp inference — COMPASS drops the “per 2 hours” and never divides by 2, so its rate is double the true 4.5 L/hr.",
+          badEn:
+            "❌ The text shows no malice or total failure. COMPASS's pattern is skipping the division by the second quantity to find a true unit rate.",
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.F",
+          ask: {
+            who: "log",
+            en: "Given that the Master Gateway allows only one attempt, what should Maya do <b>next</b> before transmitting any combined cipher?",
+          },
+          choices: [
+            {
+              en: "Recompute the unit rate, then re-check the scaled fuel and the graphed point so the one-shot code is exactly right.",
+              correct: true,
+            },
+            {
+              en: "Trust COMPASS's 9 L/hr answer to save time on the single attempt.",
+              correct: false,
+            },
+            {
+              en: "Send only the unit rate and leave out the table and the graph point.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Wise prediction — with one attempt, Maya must verify the rate, the scaled value, and the point before sending the cipher.",
+          badEn:
+            "❌ With a single attempt and no partial credit, Maya must double-check the rate, the fuel, and the graphed point first.",
         },
         {
           type: "challenge",

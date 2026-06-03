@@ -248,3 +248,56 @@ control → `lg`/`xl`), full keyboard nav (tab roving arrows, focus rings,
 Esc closes pop-ups), 48 px minimum targets, `aria-live` speech region, reduced-
 motion support, and functional layout down to 320 px (panel aspect ratio steps
 16:9 → 4:3 → 1:1; bubbles reflow to 94% width).
+
+## Literacy layer (SP1) — comprehension, interactions, dual scoring
+
+### `meta.readingStandard`
+Default reading-comprehension standard for the novel's Reading score rollup,
+e.g. `"RL.6.1"`. Used by the results tracker for the "Reading Comprehension"
+section.
+
+### `comprehension` step type
+A scored READING question, a sibling of `challenge`. Same flow (voiced `ask`,
+choices/interaction, gating), but tagged as reading so it scores separately.
+
+```js
+{ type: "comprehension",
+  id: "c1",
+  skill: "main_idea",          // one of the 7 skills (see below) — REQUIRED
+  standard: "RI.6.2",          // RL/RI.6.x — REQUIRED (aggregates the Reading score)
+  dok: 2,                       // optional Depth of Knowledge 1–3 (shown as a chip)
+  ask: { who: "log", en: "…", es: "…" },   // the question, voiced/captioned
+  passageRef: "act1.beat2",    // optional authoring note: which beat/panel it points back to
+  interaction: "mc",           // "mc" (default) | "evidence" | "sequence"
+  choices: [ { en, es?, correct } ],        // for mc / evidence (exactly one correct)
+  items:   [ { en, es?, order } ],          // for sequence (>=2, numeric order)
+  hint, frame,                  // optional (folded "hint" / "writing coach")
+  goodEn/Es, badEn/Es }         // optional (engine supplies defaults if absent)
+```
+
+`skill` values (→ publisher label): `vocab_in_context` (Vocabulary in Context),
+`main_idea` (Determine Main Idea), `key_details` (Key Details), `sequence`
+(Sequence / Cause & Effect), `inference` (Make an Inference), `cite_evidence`
+(Cite Text Evidence), `prediction` (Make a Prediction). The engine renders a
+`.reading-tag` header with the skill, standard, and DOK.
+
+### `interaction` field (on a comprehension OR challenge step)
+- `"mc"` / omitted — multiple-choice buttons (default; existing behavior).
+- `"evidence"` — each `choices[]` renders as a tappable "text-evidence" line;
+  selecting the `correct` one scores (cite-evidence). Reuses the choice contract.
+- `"sequence"` — `items[]` render as drag/keyboard-reorderable cards; correct
+  order = ascending `order`. On a correct check the engine emits a hidden
+  `.choice.correct` so the results tracker records it.
+
+### Dual scoring contract
+Comprehension `.choices` groups carry `data-score-group="reading"` (and
+`data-standard`). The results tracker reports two sections — **Math** (existing
+`meta.standard`) and **Reading Comprehension** (`meta.readingStandard`) — into
+the `NTResults`/EduPulse pipeline. Math challenge groups are unchanged. The
+`.choices` / `.choice.correct` / `#choicesComplete` contract is never renamed.
+
+### Read-aloud, notebook
+Every bubble (and comprehension `ask`) gets a 🔊 read-aloud control (Web Speech
+API, EN + ES) when the browser supports it. The mission-complete screen renders
+a printable "My Reading + Math Log" (`#nt-notebook`) collecting each solved
+item; a print button triggers the print stylesheet (`@media print`).

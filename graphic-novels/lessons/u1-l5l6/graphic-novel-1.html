@@ -1045,6 +1045,194 @@ main {
   }
 }
 
+/* ============================ Literacy layer ============================ */
+.reading-tag {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.rt-skill {
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-weight: 900;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.rt-std,
+.rt-dok {
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+
+.choices.evidence {
+  gap: 8px;
+}
+.choice.ev {
+  font-style: normal;
+}
+
+.seq-list {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+.seq-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: var(--sh-sm);
+  cursor: grab;
+  font-weight: 700;
+}
+.seq-card:focus-visible {
+  outline: 4px solid var(--gold);
+  outline-offset: 2px;
+}
+.seq-card .seq-h {
+  color: var(--muted);
+  font-weight: 900;
+}
+.seq-card .seq-t {
+  flex: 1;
+}
+.seq-card .seq-t .es {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.seq-ctl {
+  display: flex;
+  gap: 4px;
+}
+.seq-up,
+.seq-down {
+  min-width: 44px;
+  min-height: 44px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+}
+.seq-up:hover,
+.seq-down:hover {
+  background: var(--gold);
+}
+.seq-list.solved .seq-card {
+  border-color: var(--green);
+  background: #ecfdf5;
+  cursor: default;
+}
+.seq-list.nudge {
+  animation: figrise 0.25s ease;
+}
+.seq-check {
+  margin-top: 10px;
+}
+
+.tts {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.tts-btn {
+  min-width: 36px;
+  min-height: 36px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+.tts-btn:hover {
+  background: var(--gold);
+}
+
+.notebook {
+  text-align: left;
+  border: 3px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  margin: 18px auto 0;
+  max-width: 640px;
+  box-shadow: var(--sh-sm);
+}
+.notebook h3 {
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+.nb-row {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+  font-weight: 600;
+}
+.nb-row:last-child {
+  border-bottom: 0;
+}
+.nb-frame {
+  margin-top: 4px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.nb-blank {
+  display: inline-block;
+  min-width: 160px;
+  border-bottom: 2px solid var(--line);
+}
+
+@media print {
+  .topbar,
+  .tabs,
+  .scene-foot,
+  .next,
+  .advance,
+  .start,
+  .restart,
+  .tts,
+  .dlg-row,
+  .chal-tools,
+  #print-nb,
+  .callout,
+  .gn-pop,
+  .gn-pop-back {
+    display: none !important;
+  }
+  .scene {
+    display: block !important;
+    page-break-after: always;
+  }
+  body {
+    background: #fff;
+  }
+  .panel {
+    box-shadow: none;
+  }
+  .speaker-fig {
+    display: none !important;
+  }
+}
+
     </style>
   </head>
   <body>
@@ -1068,6 +1256,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Decimal Docking Bay",
     standard: "6.NS.3",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #1: Decimal Docking Bay",
     artBase: "../../_art/unit1/",
     home: "../../index.html",
@@ -1147,6 +1336,43 @@ window.GN_STORY = {
               en: "Easy — I'll just add the digits: 3.4 + 2.75 = 6.9 liters. Entering it!",
               es: "Fácil: sumo los dígitos, 3.4 + 2.75 = 6.9 litros. ¡Lo ingreso!",
             },
+            {
+              who: "log",
+              caption: true,
+              en: "The supply ship is low on fuel and cannot dock until the total is exactly right. One wrong digit and it drifts past the bay.",
+              es: "La nave de carga tiene poco combustible y no puede acoplar hasta que el total sea exacto. Un dígito mal y se aleja de la bahía.",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "How many liters of fuel does Tank A hold?",
+            es: "¿Cuántos litros de combustible tiene el tanque A?",
+          },
+          choices: [
+            {
+              en: "3.4 liters.",
+              es: "3.4 litros.",
+              correct: true,
+            },
+            {
+              en: "2.75 liters.",
+              es: "2.75 litros.",
+              correct: false,
+            },
+            {
+              en: "6.9 liters.",
+              es: "6.9 litros.",
+              correct: false,
+            },
           ],
         },
         {
@@ -1196,6 +1422,37 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c2",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "log",
+            en: "The Cadet says she can <b>annex a zero</b> to write 3.4 as 3.40. In this story, what does <b>annex a zero</b> mean?",
+            es: "La cadete dice que puede <b>agregar un cero</b> para escribir 3.4 como 3.40. En la historia, ¿qué significa <b>agregar un cero</b>?",
+          },
+          choices: [
+            {
+              en: "Add a zero at the end so the decimals line up evenly.",
+              es: "Agregar un cero al final para que los decimales se alineen.",
+              correct: true,
+            },
+            {
+              en: "Erase the decimal point from the number.",
+              es: "Borrar el punto decimal del número.",
+              correct: false,
+            },
+            {
+              en: "Make the number ten times bigger.",
+              es: "Hacer el número diez veces más grande.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "1b",
           ask: {
@@ -1239,6 +1496,44 @@ window.GN_STORY = {
             en: "Fuel total confirmed and the leak accounted for. The ship can dock!",
             es: "Total de combustible confirmado y la fuga contada. ¡La nave puede acoplar!",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows the supply ship <b>cannot dock</b> until the fuel total is exactly right.",
+            es: "Toca la línea que muestra que la nave <b>no puede acoplar</b> hasta que el total sea exacto.",
+          },
+          choices: [
+            {
+              en: "“The supply ship is low on fuel and cannot dock until the total is exactly right.”",
+              es: "“La nave de carga tiene poco combustible y no puede acoplar hasta que el total sea exacto.”",
+              correct: true,
+            },
+            {
+              en: "“To add decimals I line up the decimal points first.”",
+              es: "“Para sumar decimales alineo los puntos primero.”",
+              correct: false,
+            },
+            {
+              en: "“Now a leak — I must subtract what we lost.”",
+              es: "“Ahora hay una fuga: debo restar lo que perdimos.”",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Strong evidence — that line states the ship can only dock once the total is exactly right.",
+          goodEs: "¡Buena prueba! Esa línea dice que el total debe ser exacto.",
+          badEn:
+            "❌ That line is about a math step, not the docking rule. Find the line about the ship needing an exact total.",
+          badEs:
+            "❌ Esa línea es sobre un paso, no la regla de acople. Busca la del total exacto.",
         },
       ],
     },
@@ -1338,8 +1633,8 @@ window.GN_STORY = {
           id: "2b",
           ask: {
             who: "cadet",
-            en: "⚡ Power Lock #2 — fine-tune the power: 1.2 × 0.05. Multiply, then place the decimal point correctly.",
-            es: "Ajuste fino: 1.2 × 0.05. Multiplica y coloca bien el punto.",
+            en: "⚡ Power Lock #2 — fine-tune the power: 1.2 × 0.05. Multiply, then place the decimal point correctly. What is the product?",
+            es: "Ajuste fino: 1.2 × 0.05. Multiplica y coloca bien el punto. ¿Cuál es el producto?",
           },
           hint: {
             en: "12 × 5 = 60. Places: 1 (in 1.2) + 2 (in 0.05) = 3. You may need to annex a zero in front.",
@@ -1376,6 +1671,84 @@ window.GN_STORY = {
             en: "Reactor charged and tuned. Now for the final launch code.",
             es: "Reactor cargado y ajustado. Ahora el código final de lanzamiento.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "What is this chapter mainly about?",
+            es: "¿De qué trata principalmente este capítulo?",
+          },
+          choices: [
+            {
+              en: "Multiplying decimals and placing the decimal point to set the reactor power.",
+              es: "Multiplicar decimales y colocar el punto para ajustar la potencia del reactor.",
+              correct: true,
+            },
+            {
+              en: "Lining up decimal points to add fuel from two tanks.",
+              es: "Alinear los puntos para sumar el combustible de dos tanques.",
+              correct: false,
+            },
+            {
+              en: "Subtracting to find how much fuel a leak drained away.",
+              es: "Restar para hallar cuánto combustible drenó una fuga.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Right — the whole chapter is about multiplying decimals and counting places to set the power.",
+          goodEs:
+            "✅ Correcto: el capítulo trata de multiplicar decimales y contar lugares.",
+          badEn:
+            "❌ That happened in another chapter. This one is about multiplying decimals for the reactor.",
+          badEs:
+            "❌ Eso fue en otro capítulo. Este trata de multiplicar decimales.",
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the steps for multiplying decimals in the right order.",
+            es: "Ordena los pasos para multiplicar decimales.",
+          },
+          items: [
+            {
+              en: "Multiply the numbers as if they were whole numbers.",
+              es: "Multiplica los números como si fueran enteros.",
+              order: 1,
+            },
+            {
+              en: "Count the total number of decimal places in both factors.",
+              es: "Cuenta el total de lugares decimales en ambos factores.",
+              order: 2,
+            },
+            {
+              en: "Place the decimal point so the product has that many places.",
+              es: "Coloca el punto para que el producto tenga esos lugares.",
+              order: 3,
+            },
+          ],
+          goodEn:
+            "✅ Multiply first, count the places, then place the point — that's the decimal-multiplication procedure.",
+          goodEs:
+            "✅ Multiplica, cuenta los lugares y coloca el punto: ese es el procedimiento.",
+          badEn:
+            "❌ Not quite. Multiply like whole numbers first, then count places, and only then place the point.",
+          badEs:
+            "❌ Casi. Primero multiplica como enteros, luego cuenta los lugares y coloca el punto.",
         },
       ],
     },
@@ -1418,8 +1791,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "cadet",
-            en: "🔒 Launch Code — compute (4.5 + 1.5) × 0.5. Add first, then multiply. Which line is fully correct?",
-            es: "Calcula (4.5 + 1.5) × 0.5. Suma primero, luego multiplica. ¿Cuál línea es correcta?",
+            en: "🔒 Launch Code — add first, then multiply. What is (4.5 + 1.5) × 0.5?",
+            es: "Suma primero, luego multiplica. ¿Cuánto es (4.5 + 1.5) × 0.5?",
           },
           hint: {
             en: "4.5 + 1.5 = 6.0. Then 6.0 × 0.5 = 3.0 (half of 6).",
@@ -1458,6 +1831,88 @@ window.GN_STORY = {
             en: "Launch code accepted — the supply ship is away! Great teamwork, AXIS.",
             es: "¡Código aceptado, la nave despega! Buen trabajo en equipo, AXIS.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "AXIS keeps getting decimal answers like 6.9, 2.4, and 30. Why does AXIS keep making the same kind of mistake?",
+            es: "AXIS sigue dando respuestas como 6.9, 2.4 y 30. ¿Por qué comete el mismo tipo de error?",
+          },
+          hint: {
+            en: "Look back: AXIS skips lining up the points or miscounts the decimal places.",
+            es: "Mira atrás: AXIS no alinea los puntos o cuenta mal los lugares decimales.",
+          },
+          choices: [
+            {
+              en: "AXIS does not line up or place the decimal point carefully, so the point lands in the wrong spot.",
+              es: "AXIS no alinea ni coloca el punto con cuidado, así que queda en el lugar equivocado.",
+              correct: true,
+            },
+            {
+              en: "AXIS does not know how to multiply whole numbers at all.",
+              es: "AXIS no sabe multiplicar números enteros para nada.",
+              correct: false,
+            },
+            {
+              en: "The fuel gauges on the station are broken and show fake numbers.",
+              es: "Los medidores de combustible están dañados y muestran números falsos.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Good thinking — every AXIS error comes from misplacing the decimal point, not from the multiplying itself.",
+          goodEs:
+            "✅ Bien pensado: todos los errores de AXIS vienen de colocar mal el punto decimal.",
+          badEn:
+            "❌ Look again at the answers. AXIS multiplies fine — the problem is where the decimal point lands.",
+          badEs:
+            "❌ Mira otra vez. AXIS multiplica bien; el problema es dónde queda el punto.",
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The launch code worked and the supply ship is away. What will most likely happen next?",
+            es: "El código funcionó y la nave despegó. ¿Qué pasará probablemente después?",
+          },
+          choices: [
+            {
+              en: "The crew gets their supplies and the station stays fueled and safe.",
+              es: "La tripulación recibe sus provisiones y la estación queda con combustible y segura.",
+              correct: true,
+            },
+            {
+              en: "The supply ship turns around and re-locks the docking bay.",
+              es: "La nave regresa y vuelve a cerrar la bahía de acople.",
+              correct: false,
+            },
+            {
+              en: "The Cadet stops using decimals for the rest of the mission.",
+              es: "La cadete deja de usar decimales por el resto de la misión.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Most likely — a successful launch means the supplies arrive and the station stays safe.",
+          goodEs:
+            "✅ Lo más probable: un lanzamiento exitoso lleva las provisiones y mantiene segura la estación.",
+          badEn:
+            "❌ Think about what a successful launch leads to: the crew gets supplied, not re-locked.",
+          badEs:
+            "❌ Piensa qué sigue tras un lanzamiento exitoso: llegan las provisiones.",
         },
       ],
     },
@@ -1587,6 +2042,205 @@ window.GN_STORY = {
   }
   function txt(v) {
     return v == null ? "" : v;
+  }
+
+  /* Read-aloud (text-to-speech) via the Web Speech API. Offline, no assets. */
+  var TTS = (function () {
+    var synth = window.speechSynthesis;
+    function speak(text, lang) {
+      if (!synth) return;
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(
+        String(text).replace(/<[^>]+>/g, ""),
+      );
+      u.lang = lang === "es" ? "es-ES" : "en-US";
+      u.rate = 0.95;
+      synth.speak(u);
+    }
+    return { available: !!synth, speak: speak };
+  })();
+
+  /* Interaction + feature extensibility seams. */
+  var INTERACTIONS = {}; // name -> { render(step, groupEl, onSolve) }  (must emit .choices/.choice.correct on solve)
+
+  INTERACTIONS["evidence"] = {
+    render: function (step, groupEl) {
+      groupEl.classList.add("evidence");
+      step.choices.forEach(function (c) {
+        var b = el(
+          "button",
+          "choice ev",
+          "&#128206; " +
+            c.en +
+            (c.es ? '<span class="es">' + c.es + "</span>" : ""),
+        );
+        b.dataset.correct = !!c.correct;
+        groupEl.appendChild(b);
+      });
+    },
+  };
+  INTERACTIONS["sequence"] = {
+    render: function (step, groupEl, onSolve) {
+      groupEl.classList.add("sequence");
+      var list = el("ol", "seq-list");
+      // present in a shuffled-but-deterministic order so the answer isn't given away
+      var order = step.items.map(function (_, i) {
+        return i;
+      });
+      order.sort(function (a, b) {
+        return (
+          ((a * 7 + 3) % step.items.length) - ((b * 7 + 3) % step.items.length)
+        );
+      });
+      order.forEach(function (idx) {
+        var li = el("li", "seq-card");
+        li.draggable = true;
+        li.dataset.idx = idx;
+        li.tabIndex = 0;
+        li.innerHTML =
+          '<span class="seq-h" aria-hidden="true">&#8942;</span>' +
+          '<span class="seq-t">' +
+          step.items[idx].en +
+          (step.items[idx].es
+            ? '<span class="es">' + step.items[idx].es + "</span>"
+            : "") +
+          "</span>" +
+          '<span class="seq-ctl">' +
+          '<button class="seq-up" type="button" aria-label="Move up">&#9650;</button>' +
+          '<button class="seq-down" type="button" aria-label="Move down">&#9660;</button>' +
+          "</span>";
+        list.appendChild(li);
+      });
+      var btn = el("button", "next seq-check", "Check order");
+      btn.type = "button";
+      groupEl.appendChild(list);
+      groupEl.appendChild(btn);
+
+      function moveUp(li) {
+        if (li.previousElementSibling)
+          list.insertBefore(li, li.previousElementSibling);
+      }
+      function moveDown(li) {
+        if (li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
+      }
+      list.addEventListener("click", function (e) {
+        var up = e.target.closest(".seq-up"),
+          dn = e.target.closest(".seq-down");
+        if (up) moveUp(up.closest("li"));
+        if (dn) moveDown(dn.closest("li"));
+      });
+      list.addEventListener("keydown", function (e) {
+        var li = e.target.closest && e.target.closest("li");
+        if (!li) return;
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          moveUp(li);
+          li.focus();
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          moveDown(li);
+          li.focus();
+        }
+      });
+      var dragged = null;
+      list.addEventListener("dragstart", function (e) {
+        dragged = e.target.closest("li");
+      });
+      list.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        var li = e.target.closest("li");
+        if (li && li !== dragged)
+          list.insertBefore(dragged, li.nextSibling || li);
+      });
+      var solved = false;
+      btn.addEventListener("click", function () {
+        if (solved) return;
+        var idxs = Array.prototype.map.call(list.children, function (li) {
+          return +li.dataset.idx;
+        });
+        var ok = true;
+        for (var i = 1; i < idxs.length; i++)
+          if (step.items[idxs[i]].order < step.items[idxs[i - 1]].order)
+            ok = false;
+        if (ok) {
+          solved = true;
+          var mark = el("button", "choice correct");
+          mark.style.display = "none";
+          mark.dataset.correct = "true";
+          groupEl.appendChild(mark);
+          btn.disabled = true;
+          list.classList.add("solved");
+          if (onSolve) onSolve();
+        } else {
+          list.classList.add("nudge");
+          setTimeout(function () {
+            list.classList.remove("nudge");
+          }, 500);
+        }
+      });
+    },
+  };
+  var FEATURES = []; // [{ onBeat(beat,ctx), onSolve(step,ctx), onComplete(ctx) }]
+  function fire(hook, a, b) {
+    FEATURES.forEach(function (f) {
+      if (f[hook])
+        try {
+          f[hook](a, b);
+        } catch (e) {}
+    });
+  }
+  function isComprehension(step) {
+    return step.type === "comprehension";
+  }
+  var SKILLS = {
+    vocab_in_context: "Vocabulary in Context",
+    main_idea: "Determine Main Idea",
+    key_details: "Key Details",
+    sequence: "Sequence / Cause & Effect",
+    inference: "Make an Inference",
+    cite_evidence: "Cite Text Evidence",
+    prediction: "Make a Prediction",
+  };
+  function SKILL_LABEL(k) {
+    return SKILLS[k] || "Reading";
+  }
+
+  /* ---------- Reading + Math notebook (auto-collected, printable) ----------
+     A FEATURE that records each solved step (skill, question, sentence-frame)
+     and renders a printable log on the complete screen. No PII collected. */
+  var NOTEBOOK = { entries: [] };
+  FEATURES.push({
+    onSolve: function (step) {
+      NOTEBOOK.entries.push({
+        kind: isComprehension(step) ? "reading" : "math",
+        skill: step.skill ? SKILL_LABEL(step.skill) : "Math",
+        q: stripTags((step.ask && step.ask.en) || ""),
+        frame: step.frame ? stripTags(step.frame.en) : "",
+      });
+    },
+  });
+  function renderNotebook() {
+    var host = $("nt-notebook");
+    if (!host) return;
+    host.innerHTML =
+      "<h3>My Reading + Math Log</h3>" +
+      NOTEBOOK.entries
+        .map(function (e) {
+          return (
+            '<div class="nb-row"><b>' +
+            e.skill +
+            ":</b> " +
+            e.q +
+            (e.frame
+              ? '<div class="nb-frame">' +
+                e.frame +
+                ' <span class="nb-blank"></span></div>'
+              : "") +
+            "</div>"
+          );
+        })
+        .join("");
   }
 
   /* Per-unit signature colors so each world looks distinct (the comic shell is
@@ -1782,6 +2436,28 @@ window.GN_STORY = {
       en +
       "</div>" +
       (beat.es ? '<div class="es">' + beat.es + "</div>" : "");
+    if (TTS.available) {
+      var ctl =
+        '<span class="tts">' +
+        '<button class="tts-btn" type="button" data-tts-en aria-label="Read aloud">&#128266;</button>' +
+        (beat.es
+          ? '<button class="tts-btn" type="button" data-tts-es aria-label="Leer en voz alta">ES</button>'
+          : "") +
+        "</span>";
+      b.insertAdjacentHTML("beforeend", ctl);
+      b.querySelector("[data-tts-en]").addEventListener("click", function (e) {
+        e.stopPropagation();
+        TTS.speak(beat.en, "en");
+      });
+      if (beat.es)
+        b.querySelector("[data-tts-es]").addEventListener(
+          "click",
+          function (e) {
+            e.stopPropagation();
+            TTS.speak(beat.es, "es");
+          },
+        );
+    }
     frag.appendChild(b);
     return frag;
   }
@@ -2018,6 +2694,8 @@ window.GN_STORY = {
         '<div class="feedback" id="fbComplete"></div></div>';
     }
     html +=
+      '<div id="nt-notebook" class="notebook"></div>' +
+      '<button class="restart" id="print-nb" type="button">&#128424;&#65039; Print my log</button>' +
       '<button class="restart" id="restart-btn">Play again &#8635;</button>';
     s.innerHTML = html;
     return s;
@@ -2089,6 +2767,7 @@ window.GN_STORY = {
   }
 
   function showScene(name) {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
     SCENE_IDS.forEach(function (s) {
       var sc = $("scene-" + s);
       if (sc) sc.classList.toggle("active", s === name);
@@ -2122,6 +2801,14 @@ window.GN_STORY = {
     var c = $("scene-complete");
     c.classList.add("active", "show");
     wireMaster();
+    renderNotebook();
+    var pnb = $("print-nb");
+    if (pnb && !pnb.dataset.wired) {
+      pnb.dataset.wired = "1";
+      pnb.addEventListener("click", function () {
+        window.print();
+      });
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -2247,7 +2934,8 @@ window.GN_STORY = {
     /* ---- challenge: gating (must solve to advance) ---- */
     function playChallenge(step) {
       renderCard(step, false);
-      wireChoices(step, act, function () {
+      var onSolve = function () {
+        fire("onSolve", step);
         if (step.solveArt) setArt(step.solveArt, step.solveAlt);
         if (step.solveBeat) {
           speechEl.innerHTML = "";
@@ -2256,19 +2944,40 @@ window.GN_STORY = {
         stepIdx++;
         // small beat so the success feedback is read before the next panel
         setTimeout(playStep, 400);
-      });
+      };
+      var grp = "choices-" + act.id + "-" + step.id;
+      if (
+        step.interaction &&
+        step.interaction !== "mc" &&
+        INTERACTIONS[step.interaction]
+      ) {
+        // render interaction FIRST so any .choice it creates exists for wireChoices
+        INTERACTIONS[step.interaction].render(step, $(grp), onSolve);
+      }
+      wireChoices(step, act, onSolve);
     }
 
     /* ---- challenge: optional bonus (does NOT gate; still scored) ----
        Renders this and any consecutive optional steps, then reveals advance. */
     function playOptional(step) {
       renderCard(step, true);
-      wireChoices(step, act, function () {
+      var onSolve = function () {
+        fire("onSolve", step);
         if (step.solveBeat) {
           speechEl.innerHTML = "";
           speechEl.appendChild(bubble(step.solveBeat));
         }
-      });
+      };
+      var grp = "choices-" + act.id + "-" + step.id;
+      if (
+        step.interaction &&
+        step.interaction !== "mc" &&
+        INTERACTIONS[step.interaction]
+      ) {
+        // render interaction FIRST so any .choice it creates exists for wireChoices
+        INTERACTIONS[step.interaction].render(step, $(grp), onSolve);
+      }
+      wireChoices(step, act, onSolve);
       stepIdx++;
       var nxt = act.steps[stepIdx];
       if (nxt && nxt.optional) playOptional(nxt);
@@ -2349,23 +3058,50 @@ window.GN_STORY = {
             : "") +
           "</div>";
       }
+      var comp = isComprehension(step);
+      var groupAttr = comp
+        ? ' data-score-group="reading" data-standard="' +
+          (step.standard || "") +
+          '"'
+        : "";
+      var label = comp
+        ? '<div class="reading-tag"><span class="rt-skill">' +
+          SKILL_LABEL(step.skill) +
+          "</span>" +
+          '<span class="rt-std">' +
+          (step.standard || "") +
+          "</span>" +
+          (step.dok ? '<span class="rt-dok">DOK ' + step.dok + "</span>" : "") +
+          "</div>"
+        : "";
       var choices =
-        '<div class="reply-label">Choose your reply</div>' +
+        label +
+        '<div class="reply-label">' +
+        (comp ? "Choose the best answer" : "Choose your reply") +
+        "</div>" +
         '<div class="choices" id="choices-' +
         act.id +
         "-" +
         step.id +
-        '">';
-      step.choices.forEach(function (c) {
-        choices +=
-          '<button class="choice" data-correct="' +
-          !!c.correct +
-          '">' +
-          c.en +
-          (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
-          (c.es ? '<span class="es">' + c.es + "</span>" : "") +
-          "</button>";
-      });
+        '"' +
+        groupAttr +
+        ">";
+      if (
+        !step.interaction ||
+        step.interaction === "mc" ||
+        !INTERACTIONS[step.interaction]
+      ) {
+        step.choices.forEach(function (c) {
+          choices +=
+            '<button class="choice" data-correct="' +
+            !!c.correct +
+            '">' +
+            c.en +
+            (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
+            (c.es ? '<span class="es">' + c.es + "</span>" : "") +
+            "</button>";
+        });
+      }
       choices += "</div>";
       wrap.innerHTML +=
         tools +
@@ -2422,7 +3158,7 @@ window.GN_STORY = {
             btn.classList.add("correct");
             fb.className = "feedback show good";
             fb.innerHTML =
-              step.goodEn +
+              (step.goodEn || "✓ Correct.") +
               (step.goodEs
                 ? '<span class="es">' + step.goodEs + "</span>"
                 : "");
@@ -2437,7 +3173,7 @@ window.GN_STORY = {
             btn.disabled = true;
             fb.className = "feedback show bad";
             fb.innerHTML =
-              step.badEn +
+              (step.badEn || "Not quite — look back at the panel.") +
               (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
           }
         });
@@ -2496,8 +3232,6 @@ window.GN_STORY = {
     </script>
 
   <script src="/teacher-tools/nt-results.js"></script>
-    <script src="/assets/edupulse-config.js"></script>
-    <script src="/assets/edupulse-bridge.js"></script>
   <script>
   /* Graphic-novel completion tracking -> NTResults (Neft Teacher). Unchanged. */
   (function () {
@@ -2517,13 +3251,17 @@ window.GN_STORY = {
       } catch (e) { return "Student"; }
     }
     function score() {
-      var groups = Array.prototype.slice.call(document.querySelectorAll(".choices"))
+      var groups = Array.prototype.slice
+        .call(document.querySelectorAll(".choices"))
         .filter(function (g) { return g.id !== "choicesComplete"; });
-      var total = groups.length || 0;
-      var correct = groups.filter(function (g) {
-        return g.querySelector(".choice.correct");
-      }).length;
-      return { correct: correct, total: total };
+      function tally(list) {
+        var total = list.length;
+        var correct = list.filter(function (g) { return g.querySelector(".choice.correct"); }).length;
+        return { correct: correct, total: total };
+      }
+      var reading = groups.filter(function (g) { return g.getAttribute("data-score-group") === "reading"; });
+      var math = groups.filter(function (g) { return g.getAttribute("data-score-group") !== "reading"; });
+      return { math: tally(math), reading: tally(reading) };
     }
     function savedNote() {
       if (document.getElementById("nt-saved-note")) return;
@@ -2537,14 +3275,20 @@ window.GN_STORY = {
     function record() {
       if (FIRED) return; FIRED = true;
       var s = score();
+      var sections = [{ name: "Math", correct: s.math.correct, total: s.math.total }];
+      var readingStd = window.GN_STORY.meta.readingStandard || null;
+      if (s.reading.total > 0)
+        sections.push({ name: "Reading Comprehension", correct: s.reading.correct, total: s.reading.total, standard: readingStd });
       try {
         NTResults.finish({
           student: studentName(),
           assessment: window.GN_STORY.meta.assessment,
           standard: window.GN_STORY.meta.standard,
           level: String(window.GN_STORY.meta.version),
-          sections: [{ name: "Story Challenges", correct: s.correct, total: s.total }],
-          correct: s.correct, total: s.total, download: false,
+          sections: sections,
+          correct: s.math.correct + s.reading.correct,
+          total: s.math.total + s.reading.total,
+          download: false,
         });
       } catch (e) {}
       savedNote();

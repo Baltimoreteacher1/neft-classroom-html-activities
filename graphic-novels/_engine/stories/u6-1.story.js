@@ -11,6 +11,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Festival Producer: Power Up the Show 🎤",
     standard: "6.EE.2c",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U6 #1: Festival Producer: Power Up the Show",
     artBase: "../_art/unit6/",
     home: "../index.html",
@@ -68,6 +69,12 @@ window.GN_STORY = {
               es: "¡El show es esta noche y los escenarios están apagados! El muro de bocinas necesita la potencia 2 a la 4.",
             },
             {
+              who: "log",
+              caption: true,
+              en: "Ten thousand fans already line up outside the gates. If the speakers stay silent, the whole festival is canceled.",
+              es: "Diez mil fans ya hacen fila afuera de las puertas. Si las bocinas siguen en silencio, todo el festival se cancela.",
+            },
+            {
               who: "producer",
               en: "A power means I multiply the base by itself. The base is 2, the exponent is 4. Let me read the panel.",
               es: "Una potencia significa multiplicar la base por sí misma. La base es 2 y el exponente es 4. Voy a leer el panel.",
@@ -84,6 +91,37 @@ window.GN_STORY = {
               misconception: true,
               en: "Easy — 2 to the 4th is just 2 × 4 = 8. I'll punch in 8 and wake the speakers!",
               es: "Fácil: 2 a la 4 es solo 2 × 4 = 8. ¡Voy a poner 8 para encender las bocinas!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat2",
+          ask: {
+            who: "log",
+            en: "What will happen if the speakers stay silent?",
+            es: "¿Qué pasará si las bocinas siguen en silencio?",
+          },
+          choices: [
+            {
+              en: "The whole festival will be canceled.",
+              es: "Todo el festival se cancelará.",
+              correct: true,
+            },
+            {
+              en: "The light towers will turn on by themselves.",
+              es: "Las torres de luz se encenderán solas.",
+              correct: false,
+            },
+            {
+              en: "ECHO will fix the math correctly.",
+              es: "ECHO arreglará las matemáticas correctamente.",
+              correct: false,
             },
           ],
         },
@@ -130,6 +168,41 @@ window.GN_STORY = {
             en: "Speakers on! Now the light towers need power 5 to the 3rd. Let me evaluate it.",
             es: "¡Bocinas encendidas! Ahora las torres de luz necesitan 5 a la 3. Voy a evaluarla.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "In the story, what does the word <b>power</b> (like 2⁴) mean?",
+            es: "En la historia, ¿qué significa la palabra <b>potencia</b> (como 2⁴)?",
+          },
+          hint: {
+            en: "Think about why 2⁴ equals 16, not 8.",
+            es: "Piensa por qué 2⁴ es igual a 16, no a 8.",
+          },
+          choices: [
+            {
+              en: "Multiplying the base by itself the number of times the exponent shows.",
+              es: "Multiplicar la base por sí misma las veces que indica el exponente.",
+              correct: true,
+            },
+            {
+              en: "Multiplying the base times the exponent one time.",
+              es: "Multiplicar la base por el exponente una sola vez.",
+              correct: false,
+            },
+            {
+              en: "Adding the base and the exponent together.",
+              es: "Sumar la base y el exponente.",
+              correct: false,
+            },
+          ],
         },
         {
           type: "challenge",
@@ -189,6 +262,37 @@ window.GN_STORY = {
             es: "¡Todo el escenario brilla! Ahora hay que pagar el escenario y las luces.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows the stages were <b>dark</b> at the start.",
+            es: "Toca la línea que muestra que los escenarios estaban <b>apagados</b> al principio.",
+          },
+          choices: [
+            {
+              en: "“The show is tonight and the stages are dark!”",
+              es: "“¡El show es esta noche y los escenarios están apagados!”",
+              correct: true,
+            },
+            {
+              en: "“A power means I multiply the base by itself.”",
+              es: "“Una potencia significa multiplicar la base por sí misma.”",
+              correct: false,
+            },
+            {
+              en: "“The whole stage is glowing!”",
+              es: "“¡Todo el escenario brilla!”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -213,6 +317,12 @@ window.GN_STORY = {
               es: "¡Buen trabajo, Mika! Ahora hay que pagar el escenario y las luces. ¡Cuidado con las matemáticas!",
             },
             {
+              who: "log",
+              caption: true,
+              en: "The festival budget is tight. One wrong total and there will not be enough coins left to pay the headliner band.",
+              es: "El presupuesto del festival es ajustado. Un total equivocado y no quedarán monedas para pagar a la banda principal.",
+            },
+            {
               who: "producer",
               en: "The stage cost is 3 + 4 times 5. I have to multiply BEFORE I add. Order of operations!",
               es: "El costo del escenario es 3 + 4 por 5. Debo multiplicar ANTES de sumar. ¡Orden de operaciones!",
@@ -229,6 +339,37 @@ window.GN_STORY = {
               misconception: true,
               en: "I read it left to right: 3 + 4 = 7, then 7 × 5 = 35. Locking in 35 coins!",
               es: "Lo leo de izquierda a derecha: 3 + 4 = 7, luego 7 × 5 = 35. ¡Pongo 35 monedas!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "What is Mika mainly trying to do in this chapter?",
+            es: "¿Qué intenta hacer Mika principalmente en este capítulo?",
+          },
+          choices: [
+            {
+              en: "Use the order of operations to pay the right cost for the stage and lights.",
+              es: "Usar el orden de operaciones para pagar el costo correcto del escenario y las luces.",
+              correct: true,
+            },
+            {
+              en: "Turn the speaker wall back off to save power.",
+              es: "Apagar otra vez el muro de bocinas para ahorrar energía.",
+              correct: false,
+            },
+            {
+              en: "Teach ECHO how to sing on stage.",
+              es: "Enseñar a ECHO a cantar en el escenario.",
+              correct: false,
             },
           ],
         },
@@ -333,6 +474,37 @@ window.GN_STORY = {
             es: "¡Luces pagadas! Sigue el show principal; vamos a encender el interruptor maestro.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the events of this chapter in order.",
+            es: "Ordena los sucesos de este capítulo.",
+          },
+          items: [
+            {
+              en: "ECHO adds 3 + 4 first and guesses the stage costs 35 coins.",
+              es: "ECHO suma 3 + 4 primero y adivina que el escenario cuesta 35 monedas.",
+              order: 1,
+            },
+            {
+              en: "Mika multiplies first and finds the stage really costs 23 coins.",
+              es: "Mika multiplica primero y halla que el escenario cuesta 23 monedas.",
+              order: 2,
+            },
+            {
+              en: "Mika writes the expression 8n + 20 to pay for the lights.",
+              es: "Mika escribe la expresión 8n + 20 para pagar las luces.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -355,6 +527,12 @@ window.GN_STORY = {
               caption: true,
               en: "It's almost showtime! The master switch needs BOTH skills at once, Mika.",
               es: "¡Ya casi es hora del show! El interruptor maestro necesita AMBAS destrezas, Mika.",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "The master switch takes only one try. A wrong number shuts the grid down for the night — so the answer has to be exactly right.",
+              es: "El interruptor maestro solo acepta un intento. Un número equivocado apaga la red por toda la noche, así que la respuesta debe ser exacta.",
             },
             {
               who: "producer",
@@ -418,6 +596,72 @@ window.GN_STORY = {
             en: "The headliner lights up the whole festival! Thanks for the help, ECHO — even the wrong guesses.",
             es: "¡El show principal ilumina todo el festival! Gracias, ECHO, hasta por los errores.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "ECHO keeps getting the math wrong. Why does ECHO keep guessing wrong?",
+            es: "ECHO sigue equivocándose en las matemáticas. ¿Por qué ECHO sigue adivinando mal?",
+          },
+          hint: {
+            en: "Look back: ECHO reads left-to-right and ignores powers and the order of operations.",
+            es: "Mira atrás: ECHO lee de izquierda a derecha e ignora las potencias y el orden de operaciones.",
+          },
+          choices: [
+            {
+              en: "ECHO reads left-to-right and skips powers, so it does the steps in the wrong order.",
+              es: "ECHO lee de izquierda a derecha y se salta las potencias, así que hace los pasos en el orden equivocado.",
+              correct: true,
+            },
+            {
+              en: "ECHO does not want the show to happen.",
+              es: "ECHO no quiere que el show se realice.",
+              correct: false,
+            },
+            {
+              en: "The control panels show the wrong numbers on purpose.",
+              es: "Los paneles de control muestran números equivocados a propósito.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The headliner is starting. What will Mika most likely do next?",
+            es: "El show principal está comenzando. ¿Qué hará Mika probablemente después?",
+          },
+          choices: [
+            {
+              en: "Run the show for the cheering crowd now that every system is powered.",
+              es: "Presentar el show para el público que aplaude ahora que todo está encendido.",
+              correct: true,
+            },
+            {
+              en: "Turn off the speaker wall from Act 1 again.",
+              es: "Apagar otra vez el muro de bocinas del Acto 1.",
+              correct: false,
+            },
+            {
+              en: "Stop using the order of operations for good.",
+              es: "Dejar de usar el orden de operaciones para siempre.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

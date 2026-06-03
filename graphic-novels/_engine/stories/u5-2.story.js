@@ -13,6 +13,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Theme Park Engineer: Area Architect &#127906;",
     standard: "6.G.1",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U5 #2: Theme Park Engineer: Area Architect",
     artBase: "../_art/unit5/",
     home: "../index.html",
@@ -68,6 +69,11 @@ window.GN_STORY = {
               en: "Lead Engineer, the simulator is live. The entry plaza renders as a parallelogram &mdash; pour its slab once you compute the area.",
             },
             {
+              who: "log",
+              caption: true,
+              en: "Thirty days to launch. Every structure stays locked in the simulator until its area is verified to the square meter &mdash; so precision is everything.",
+            },
+            {
               who: "engineer",
               en: "Standard A = b &times; h. The trap is the slanted edge &mdash; area only ever uses the perpendicular height. Feeding the solver now.",
               vocab: [
@@ -81,6 +87,10 @@ window.GN_STORY = {
               who: "bolt",
               misconception: true,
               en: "The slanted edge reads 7 m &mdash; I&rsquo;ll plug that in as the height: 14 &times; 7 = 98. Sending the slab spec!",
+            },
+            {
+              who: "engineer",
+              en: "Freeze the spec, BOLT. The slant always reads longer than the true drop &mdash; if we pour to a slant, every slab in the park inherits the error. We measure the perpendicular drop or we measure nothing.",
             },
           ],
         },
@@ -119,6 +129,37 @@ window.GN_STORY = {
             who: "engineer",
             en: "Slab poured. Next the walkway is defined by its target area, not its height &mdash; so I reverse the formula and solve for the missing dimension.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "log",
+            en: "The Engineer insists area uses the <b>perpendicular</b> height. In this build, <b>perpendicular</b> most nearly describes a measurement that &mdash;",
+          },
+          choices: [
+            {
+              en: "meets the base at a right angle, giving the straight-line drop between the two bases.",
+              correct: true,
+            },
+            {
+              en: "runs along the longest slanted edge of the figure.",
+              correct: false,
+            },
+            {
+              en: "is simply the largest number printed on the blueprint.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "&#9989; Exactly. <i>Perpendicular</i> means meeting at a right angle &mdash; the true vertical drop between the bases, never the slanted side.",
+          badEn:
+            "&#10060; In this context, <i>perpendicular</i> means meeting the base at a right angle (the straight drop), not the slant or the biggest number.",
         },
         {
           type: "challenge",
@@ -163,13 +204,44 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c2",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.1b",
+          ask: {
+            who: "log",
+            en: "Claim: <b>the walkway was designed from its required area, not from a given height.</b> Tap the line that <b>best proves</b> this claim.",
+          },
+          choices: [
+            {
+              en: "&ldquo;The walkway must cover exactly 96 m&sup2; of ground, and the blueprint fixes the base at 12 m.&rdquo;",
+              correct: true,
+            },
+            {
+              en: "&ldquo;Standard A = b &times; h. The trap is the slanted edge.&rdquo;",
+              correct: false,
+            },
+            {
+              en: "&ldquo;Slab poured. Next the walkway is defined by its target area.&rdquo;",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "&#9989; Strong evidence &mdash; that line gives the fixed AREA (96 m&sup2;) and base, the known facts the Engineer works backward from.",
+          badEn:
+            "&#10060; That line states a general rule or only reacts. Find the line that supplies the walkway&rsquo;s required area and base.",
+        },
+        {
           type: "challenge",
           id: "B1",
           optional: true,
           bonusTag: "⭐ Captain's Challenge",
           ask: {
             who: "log",
-            en: "Optional &mdash; the plaza is already open. A diamond-shaped VIP court is a parallelogram that must cover <b>150 m&sup2;</b>. Its perpendicular height is fixed at <b>10 m</b>. Reverse-engineer the base it needs.",
+            en: 'Optional &mdash; the plaza is already open. A diamond-shaped VIP court is a parallelogram that must cover <b>150 m&sup2;</b>. Its perpendicular height is fixed at <b>10 m</b>. Working backward from <span class="formula">A = b &times; h</span>, what base does the court need?',
           },
           choices: [
             {
@@ -231,6 +303,10 @@ window.GN_STORY = {
               misconception: true,
               en: "Beacon sign: base 16 times height 9 is 144 &mdash; fabricating at 144!",
             },
+            {
+              who: "engineer",
+              en: "Hold it, BOLT &mdash; a triangle fills only HALF the rectangle that frames it. Cut a parallelogram corner to corner and you get two equal triangles, so the one-half is not optional. Halve it before we waste the panel.",
+            },
           ],
         },
         {
@@ -262,6 +338,37 @@ window.GN_STORY = {
             who: "engineer",
             en: "Beacon online. Now the canopy &mdash; two parallel edges, one height. Average the edges, scale by height. Straightforward.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.2a",
+          ask: {
+            who: "log",
+            en: "According to the beacon-sign problem, what are the exact <b>base</b> and <b>height</b> the Engineer must use for the triangular sign face?",
+          },
+          choices: [
+            {
+              en: "Base 16 m and height 9 m.",
+              correct: true,
+            },
+            {
+              en: "Base 9 m and height 16 m.",
+              correct: false,
+            },
+            {
+              en: "Base 16 m and height 144 m.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "&#9989; Right &mdash; the base spans 16 m and the height rises 9 m; 144 is BOLT&rsquo;s un-halved product, not a dimension.",
+          badEn:
+            "&#10060; Reread the spec: the base is 16 m and the height is 9 m. (144 is the rectangle area before halving, not a side.)",
         },
         {
           type: "challenge",
@@ -301,6 +408,68 @@ window.GN_STORY = {
             caption: true,
             en: "Optional flourish: a sail banner with a fixed area. Reverse the triangle formula for its height &mdash; or move straight to the final build.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Which statement best captures the <b>central idea</b> of this chapter?",
+          },
+          choices: [
+            {
+              en: "Triangles and trapezoids each demand their own rule &mdash; the halving and the averaged bases &mdash; that BOLT keeps skipping.",
+              correct: true,
+            },
+            {
+              en: "The beacon sign and the canopy are both painted in neon colors.",
+              correct: false,
+            },
+            {
+              en: "Every structure in the park can be built with a single area formula.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "&#9989; That&rsquo;s the heart of it &mdash; each new shape needs its own correct formula, not BOLT&rsquo;s shortcut.",
+          badEn:
+            "&#10060; That&rsquo;s a surface detail or an overgeneralization. The chapter is about applying each shape&rsquo;s correct area rule.",
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2.2b",
+          ask: {
+            who: "log",
+            en: "Order the steps the Engineer followed to find the area of the trapezoidal canopy.",
+          },
+          items: [
+            {
+              en: "Add the two parallel bases together (8 + 14 = 22).",
+              order: 1,
+            },
+            {
+              en: "Multiply that sum by the height between them (22 &times; 10 = 220).",
+              order: 2,
+            },
+            {
+              en: "Take half of the result to get the area (&frac12; &times; 220 = 110 m&sup2;).",
+              order: 3,
+            },
+          ],
+          goodEn:
+            "&#9989; Add the parallel bases, multiply by the height, then halve &mdash; the trapezoid procedure.",
+          badEn:
+            "&#10060; Not quite. Add BOTH bases first, then multiply by the height, and only then take half.",
         },
         {
           type: "challenge",
@@ -371,6 +540,10 @@ window.GN_STORY = {
               misconception: true,
               en: "Spire: base 18 times height 6 is 108 &mdash; plus the trapezoid 112 is 220! Locking in 220!",
             },
+            {
+              who: "engineer",
+              en: "Same trap, last build, BOLT &mdash; the spire is a triangle, so it still earns its one-half. Decompose, halve the spire, then add. The whole park is riding on this total.",
+            },
           ],
         },
         {
@@ -403,6 +576,68 @@ window.GN_STORY = {
             caption: true,
             en: "Pavilion certified. One optional master flourish remains: the reflecting pool cutout. Skip it anytime &mdash; the park is already cleared to open.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.beats",
+          ask: {
+            who: "log",
+            en: "Across all three acts BOLT multiplies base &times; height and stops. What does this repeated error <b>reveal</b> about how BOLT reasons?",
+          },
+          choices: [
+            {
+              en: "It reaches for the rectangle product and never adjusts for what makes each shape different, like halving a triangle.",
+              correct: true,
+            },
+            {
+              en: "It cannot multiply two numbers together at all.",
+              correct: false,
+            },
+            {
+              en: "It is intentionally sabotaging the park to delay opening day.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "&#9989; Sharp inference &mdash; BOLT defaults to base &times; height and skips each shape&rsquo;s adjustment (the &frac12;, the averaged bases).",
+          badEn:
+            "&#10060; The text shows BOLT multiplying fine but skipping each shape&rsquo;s special step &mdash; not malice or an inability to multiply.",
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final.F",
+          ask: {
+            who: "log",
+            en: "Given how BOLT keeps dropping the &frac12; on triangles, what should the Engineer do <b>next</b> before locking in the pavilion total?",
+          },
+          choices: [
+            {
+              en: "Re-check that the triangular spire was halved before adding it to the trapezoid area.",
+              correct: true,
+            },
+            {
+              en: "Trust BOLT&rsquo;s 220 to save time on the final build.",
+              correct: false,
+            },
+            {
+              en: "Add the slanted edges of every shape into the total for safety.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "&#9989; Wise prediction &mdash; the Engineer should verify the spire&rsquo;s &frac12; before committing the composite total.",
+          badEn:
+            "&#10060; BOLT&rsquo;s pattern is dropping the &frac12;, so the Engineer must re-check that the spire was halved, not trust 220 or add slants.",
         },
         {
           type: "challenge",

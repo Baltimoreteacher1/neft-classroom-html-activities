@@ -12,6 +12,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Master Chef Kitchen: The Recipe Rescue",
     standard: "6.NS.1",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U2 #1: Master Chef Kitchen: The Recipe Rescue",
     artBase: "../_art/unit2/",
     home: "../index.html",
@@ -69,6 +70,12 @@ window.GN_STORY = {
               es: "¡Kai! Llegaron muchos clientes y la despensa está CERRADA. ¡Solo las porciones correctas la abren!",
             },
             {
+              who: "chef_log",
+              caption: true,
+              en: "The pantry holds every fresh ingredient for tonight. If it stays sealed, the kitchen runs dry and no plate goes out.",
+              es: "La despensa guarda todos los ingredientes frescos de esta noche. Si sigue cerrada, la cocina se queda sin nada y ningún plato sale.",
+            },
+            {
               who: "chef",
               en: "I can do this. The first ticket says 3 ÷ 1/4. Let me think about what that means.",
               es: "Puedo hacerlo. El primer ticket dice 3 ÷ 1/4. Voy a pensar qué significa.",
@@ -85,6 +92,37 @@ window.GN_STORY = {
               misconception: true,
               en: "Easy, Chef! 3 ÷ 1/4 is just 3 times 1/4. I'll punch that in!",
               es: "¡Fácil, Chef! 3 ÷ 1/4 es 3 por 1/4. ¡Lo ingreso!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "chef_log",
+            en: "Why does the pantry need to be opened tonight?",
+            es: "¿Por qué hay que abrir la despensa esta noche?",
+          },
+          choices: [
+            {
+              en: "It holds every fresh ingredient, so no plates go out until it opens.",
+              es: "Guarda todos los ingredientes frescos, así que no sale ningún plato hasta que se abra.",
+              correct: true,
+            },
+            {
+              en: "PIP is trapped inside the pantry.",
+              es: "PIP está atrapado dentro de la despensa.",
+              correct: false,
+            },
+            {
+              en: "The customers want to see the locked door.",
+              es: "Los clientes quieren ver la puerta cerrada.",
+              correct: false,
             },
           ],
         },
@@ -131,6 +169,41 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "chef_log",
+            en: "On a ticket, a <b>portion</b> is —",
+            es: "En un ticket, una <b>porción</b> es —",
+          },
+          hint: {
+            en: "Think about the 1/4-cup bowls Kai fills for each order.",
+            es: "Piensa en los tazones de 1/4 de taza que Kai llena para cada pedido.",
+          },
+          choices: [
+            {
+              en: "one share of food, like a 1/4-cup serving.",
+              es: "una porción de comida, como una ración de 1/4 de taza.",
+              correct: true,
+            },
+            {
+              en: "the whole locked pantry.",
+              es: "toda la despensa cerrada.",
+              correct: false,
+            },
+            {
+              en: "the name of the kitchen bot.",
+              es: "el nombre del robot de cocina.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "1b",
           ask: {
@@ -175,6 +248,37 @@ window.GN_STORY = {
             es: "¡12 tazones, la despensa está abierta! Gracias, PIP.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "chef_log",
+            en: "Tap the line that shows the pantry was <b>locked</b>.",
+            es: "Toca la línea que muestra que la despensa estaba <b>cerrada</b>.",
+          },
+          choices: [
+            {
+              en: "“The dinner rush is here and the pantry is LOCKED.”",
+              es: "“Llegaron muchos clientes y la despensa está CERRADA.”",
+              correct: true,
+            },
+            {
+              en: "“The first ticket says 3 ÷ 1/4.”",
+              es: "“El primer ticket dice 3 ÷ 1/4.”",
+              correct: false,
+            },
+            {
+              en: "“Thanks for the help, PIP.”",
+              es: "“Gracias, PIP.”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -199,6 +303,12 @@ window.GN_STORY = {
               es: "¡Buen trabajo! Ahora pidió una fiesta GRANDE. Debemos servir el guiso y escalar la salsa. ¡Rápido!",
             },
             {
+              who: "chef_log",
+              caption: true,
+              en: "Twenty hungry guests are seated and watching the kitchen. Every plate must be the same size, or the party falls apart.",
+              es: "Veinte invitados hambrientos están sentados mirando la cocina. Cada plato debe ser del mismo tamaño, o la fiesta se arruina.",
+            },
+            {
               who: "chef",
               en: "Six cups of stew, each plate gets 1/3 cup. I need to divide to count the plates.",
               es: "Seis tazas de guiso, cada plato lleva 1/3 de taza. Necesito dividir para contar los platos.",
@@ -215,6 +325,37 @@ window.GN_STORY = {
               misconception: true,
               en: "6 ÷ 1/3 is just 6 ÷ 3 = 2 plates! Locking it in!",
               es: "6 ÷ 1/3 es 6 ÷ 3 = 2 platos. ¡Lo ingreso!",
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "chef_log",
+            en: "What is Kai mainly trying to do in this chapter?",
+            es: "¿Qué intenta hacer Kai principalmente en este capítulo?",
+          },
+          choices: [
+            {
+              en: "Divide the food into equal portions so every guest gets the same plate.",
+              es: "Dividir la comida en porciones iguales para que cada invitado reciba el mismo plato.",
+              correct: true,
+            },
+            {
+              en: "Open the locked pantry door again.",
+              es: "Abrir otra vez la puerta cerrada de la despensa.",
+              correct: false,
+            },
+            {
+              en: "Teach PIP how to read order tickets.",
+              es: "Enseñar a PIP a leer los tickets de pedidos.",
+              correct: false,
             },
           ],
         },
@@ -300,6 +441,37 @@ window.GN_STORY = {
             es: "Salsa repartida en 6 platos. ¡El pedido grande está listo!",
           },
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "chef_log",
+            en: "Put the steps of this chapter in order.",
+            es: "Ordena los pasos de este capítulo.",
+          },
+          items: [
+            {
+              en: "PIP guesses that 6 ÷ 1/3 is just 6 ÷ 3 = 2 plates.",
+              es: "PIP adivina que 6 ÷ 1/3 es solo 6 ÷ 3 = 2 platos.",
+              order: 1,
+            },
+            {
+              en: "Kai divides the stew and fills 18 plates.",
+              es: "Kai divide el guiso y llena 18 platos.",
+              order: 2,
+            },
+            {
+              en: "Kai portions the sauce into 6 dishes and sends the order.",
+              es: "Kai reparte la salsa en 6 platos y envía el pedido.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -322,6 +494,12 @@ window.GN_STORY = {
               caption: true,
               en: "The banquet table is the BIGGEST order tonight. One more portion problem, Kai. You ready?",
               es: "La mesa del banquete es el pedido MÁS GRANDE de la noche. Un problema más, Kai. ¿Listo?",
+            },
+            {
+              who: "chef_log",
+              caption: true,
+              en: "This is the table that decides our review tonight. Get every bowl right and the whole kitchen earns its star.",
+              es: "Esta es la mesa que decide nuestra reseña de esta noche. Si cada tazón sale bien, toda la cocina gana su estrella.",
             },
             {
               who: "chef",
@@ -382,6 +560,72 @@ window.GN_STORY = {
             en: "Six bowls — the banquet is plated! The kitchen is saved.",
             es: "Seis tazones: ¡el banquete está servido! La cocina está salvada.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "chef_log",
+            en: "PIP keeps guessing wrong portions. Why does PIP guess wrong?",
+            es: "PIP sigue adivinando porciones incorrectas. ¿Por qué se equivoca PIP?",
+          },
+          hint: {
+            en: "Look back: PIP treats “÷ 1/n” as if it were just “÷ n.”",
+            es: "Mira atrás: PIP trata “÷ 1/n” como si fuera solo “÷ n.”",
+          },
+          choices: [
+            {
+              en: "PIP flips which number divides which, so it never finishes dividing by the fraction.",
+              es: "PIP confunde cuál número divide a cuál, así que nunca termina de dividir entre la fracción.",
+              correct: true,
+            },
+            {
+              en: "PIP does not want the dinner to be served.",
+              es: "PIP no quiere que se sirva la cena.",
+              correct: false,
+            },
+            {
+              en: "The order tickets show the wrong recipes.",
+              es: "Los tickets de pedidos muestran las recetas equivocadas.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "chef_log",
+            en: "The banquet is plated. What will Kai most likely do next?",
+            es: "El banquete está servido. ¿Qué hará Kai probablemente después?",
+          },
+          choices: [
+            {
+              en: "Send out the finished bowls so every guest is served.",
+              es: "Servir los tazones terminados para que cada invitado coma.",
+              correct: true,
+            },
+            {
+              en: "Lock the pantry from Act 1 again.",
+              es: "Cerrar otra vez la despensa del Acto 1.",
+              correct: false,
+            },
+            {
+              en: "Stop dividing fractions for good.",
+              es: "Dejar de dividir fracciones para siempre.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

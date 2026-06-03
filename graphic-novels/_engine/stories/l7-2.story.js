@@ -14,6 +14,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Decimal Division Drive: Deep Space",
     standard: "6.NS.3",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U1 #2: Decimal Division Drive: Deep Space",
     artBase: "../../_art/unit1/",
     home: "../../index.html",
@@ -71,6 +72,12 @@ window.GN_STORY = {
               es: "Comandante, planea una ruta de 12.6 unidades en tramos de 0.6. ¿Cuántos tramos?",
             },
             {
+              who: "log",
+              caption: true,
+              en: "A command route is only trusted once you can explain WHY shifting the decimal in both numbers leaves the quotient unchanged.",
+              es: "Una ruta de mando solo se confía cuando puedes explicar POR QUÉ mover el punto en ambos números no cambia el cociente.",
+            },
+            {
               who: "cadet",
               en: "Multiply both by 10 to get 126 ÷ 6. Moving the decimal the same way in both keeps the quotient identical.",
               es: "Multiplico ambos por 10: 126 ÷ 6. Mover el punto igual en ambos no cambia el cociente.",
@@ -91,12 +98,43 @@ window.GN_STORY = {
           ],
         },
         {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "According to the route order, what makes one route 'leg' in this chapter?",
+            es: "Según la orden de ruta, ¿qué forma un 'tramo' de la ruta en este capítulo?",
+          },
+          choices: [
+            {
+              en: "A distance of 0.6 light-units the drive can cross in one move.",
+              es: "Una distancia de 0.6 unidades que el impulsor cruza en un movimiento.",
+              correct: true,
+            },
+            {
+              en: "A distance of 12.6 light-units crossed all at once.",
+              es: "Una distancia de 12.6 unidades cruzada de una sola vez.",
+              correct: false,
+            },
+            {
+              en: "A distance of 21 light-units between two stations.",
+              es: "Una distancia de 21 unidades entre dos estaciones.",
+              correct: false,
+            },
+          ],
+        },
+        {
           type: "challenge",
           id: "1a",
           ask: {
             who: "axis",
-            en: "Check me, Commander. Compute <b>12.6 ÷ 0.6</b> to count the legs. Make the divisor whole first.",
-            es: "Compruébame, Comandante. Calcula 12.6 ÷ 0.6 para contar los tramos. Haz el divisor entero primero.",
+            en: "Check me, Commander. Make the divisor whole first. What is <b>12.6 ÷ 0.6</b>?",
+            es: "Compruébame, Comandante. Haz el divisor entero primero. ¿Cuánto es 12.6 ÷ 0.6?",
           },
           hint: {
             en: "Multiply both by 10: 12.6 ÷ 0.6 = 126 ÷ 6 = 21.",
@@ -125,6 +163,41 @@ window.GN_STORY = {
             en: "Route set. Now I'll check it with multiplication.",
             es: "Ruta lista. Ahora la compruebo con multiplicación.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "The Cadet says moving the decimal the same way in both numbers makes an <b>equivalent</b> division. What does <b>equivalent</b> mean here?",
+            es: "La cadete dice que mover el punto igual en ambos números crea una división <b>equivalente</b>. ¿Qué significa <b>equivalente</b> aquí?",
+          },
+          hint: {
+            en: "Think about why 12.6 ÷ 0.6 and 126 ÷ 6 give the very same answer.",
+            es: "Piensa por qué 12.6 ÷ 0.6 y 126 ÷ 6 dan exactamente la misma respuesta.",
+          },
+          choices: [
+            {
+              en: "A different-looking problem that has the exact same quotient.",
+              es: "Un problema con otra apariencia pero exactamente el mismo cociente.",
+              correct: true,
+            },
+            {
+              en: "A problem with a larger answer than the original.",
+              es: "Un problema con una respuesta más grande que el original.",
+              correct: false,
+            },
+            {
+              en: "A problem that can only be solved with a calculator.",
+              es: "Un problema que solo se resuelve con calculadora.",
+              correct: false,
+            },
+          ],
         },
         {
           type: "challenge",
@@ -170,6 +243,68 @@ window.GN_STORY = {
             es: "Ruta confirmada de dos formas. Ahora el tramo de precisión a casa.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "act1",
+          ask: {
+            who: "log",
+            en: "What is the central idea of this chapter?",
+            es: "¿Cuál es la idea central de este capítulo?",
+          },
+          choices: [
+            {
+              en: "You can rewrite a decimal division as an equivalent one and confirm it by multiplying back.",
+              es: "Puedes reescribir una división decimal como una equivalente y confirmarla multiplicando de vuelta.",
+              correct: true,
+            },
+            {
+              en: "Larger distances always need more fuel than shorter ones.",
+              es: "Las distancias más largas siempre necesitan más combustible que las cortas.",
+              correct: false,
+            },
+            {
+              en: "AXIS is faster at math than the Commander is.",
+              es: "AXIS es más rápida en matemáticas que la Comandante.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1",
+          ask: {
+            who: "log",
+            en: "Tap the line that proves the Commander <b>checked</b> the division a second way.",
+            es: "Toca la línea que prueba que la Comandante <b>comprobó</b> la división de otra forma.",
+          },
+          choices: [
+            {
+              en: "“if 12.6 ÷ 0.6 = 21, then 21 × 0.6 should equal 12.6.”",
+              es: "“si 12.6 ÷ 0.6 = 21, entonces 21 × 0.6 debe ser 12.6.”",
+              correct: true,
+            },
+            {
+              en: "“plan a route of 12.6 light-units in legs of 0.6 each.”",
+              es: "“planea una ruta de 12.6 unidades en tramos de 0.6.”",
+              correct: false,
+            },
+            {
+              en: "“Now the precision leg home.”",
+              es: "“Ahora el tramo de precisión a casa.”",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -192,6 +327,12 @@ window.GN_STORY = {
               caption: true,
               en: "Precision leg, Commander: 1.25 light-units in jumps of 0.25. How many?",
               es: "Tramo de precisión, Comandante: 1.25 unidades en saltos de 0.25. ¿Cuántos?",
+            },
+            {
+              who: "log",
+              caption: true,
+              en: "This jump reaches into the hundredths place, so the scaling factor that makes the divisor whole is no longer 10 — reason it out before committing the fleet.",
+              es: "Este salto llega a las centésimas, así que el factor que hace entero el divisor ya no es 10: razónalo antes de comprometer a la flota.",
             },
             {
               who: "cadet",
@@ -218,8 +359,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "cadet",
-            en: "Careful, AXIS — recount that division. Compute <b>1.25 ÷ 0.25</b>. The divisor has hundredths. Which line is correct?",
-            es: "Cuidado, AXIS: vuelve a contar esa división. Calcula 1.25 ÷ 0.25. El divisor tiene centésimas. ¿Cuál línea es correcta?",
+            en: "Careful, AXIS — recount that division. The divisor has hundredths. What is <b>1.25 ÷ 0.25</b>?",
+            es: "Cuidado, AXIS: vuelve a contar esa división. El divisor tiene centésimas. ¿Cuánto es 1.25 ÷ 0.25?",
           },
           hint: {
             en: "Multiply both by 100: 1.25 ÷ 0.25 = 125 ÷ 25 = 5.",
@@ -257,6 +398,103 @@ window.GN_STORY = {
             en: "Precision jump executed — the fleet is home. Command rank earned, AXIS.",
             es: "Salto de precisión ejecutado: la flota llegó a casa. Rango de mando ganado, AXIS.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 3,
+          interaction: "sequence",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "Order the reasoning the Commander uses for the precision jump.",
+            es: "Ordena el razonamiento que usa la Comandante para el salto de precisión.",
+          },
+          items: [
+            {
+              en: "Notice that 1.25 and 0.25 reach the hundredths place.",
+              es: "Notar que 1.25 y 0.25 llegan a las centésimas.",
+              order: 1,
+            },
+            {
+              en: "Multiply both numbers by 100 to make the divisor whole.",
+              es: "Multiplicar ambos números por 100 para hacer entero el divisor.",
+              order: 2,
+            },
+            {
+              en: "Divide 125 ÷ 25 to find exactly 5 jumps.",
+              es: "Dividir 125 ÷ 25 para hallar exactamente 5 saltos.",
+              order: 3,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "AXIS scaled both numbers by 100 correctly but still answered 50 jumps. What can you infer caused this slip?",
+            es: "AXIS escaló ambos números por 100 correctamente, pero respondió 50 saltos. ¿Qué puedes inferir que causó este error?",
+          },
+          hint: {
+            en: "The setup 125 ÷ 25 was right, so the mistake came after that.",
+            es: "El planteo 125 ÷ 25 estaba bien, así que el error vino después.",
+          },
+          choices: [
+            {
+              en: "AXIS divided wrong once the digits were whole, not the decimal shift.",
+              es: "AXIS dividió mal una vez que los dígitos eran enteros, no en el movimiento del punto.",
+              correct: true,
+            },
+            {
+              en: "AXIS forgot to multiply both numbers by 100.",
+              es: "AXIS olvidó multiplicar ambos números por 100.",
+              correct: false,
+            },
+            {
+              en: "AXIS used a smaller distance than the order gave.",
+              es: "AXIS usó una distancia más pequeña que la de la orden.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "On the next mission AXIS faces 4.8 ÷ 0.16. Based on its pattern, what will AXIS most likely do?",
+            es: "En la próxima misión AXIS enfrenta 4.8 ÷ 0.16. Según su patrón, ¿qué hará probablemente AXIS?",
+          },
+          choices: [
+            {
+              en: "Scale by 100 but rush the final whole-number division and miscount.",
+              es: "Escalar por 100 pero apurar la división final entera y contar mal.",
+              correct: true,
+            },
+            {
+              en: "Refuse to attempt the division at all.",
+              es: "Negarse por completo a intentar la división.",
+              correct: false,
+            },
+            {
+              en: "Solve it perfectly without any checking.",
+              es: "Resolverlo perfectamente sin ninguna comprobación.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

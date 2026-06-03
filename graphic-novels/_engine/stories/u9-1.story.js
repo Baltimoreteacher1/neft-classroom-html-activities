@@ -15,6 +15,7 @@ window.GN_STORY = {
     level: "Support",
     title: "Treasure Map Navigator",
     standard: "6.NS.7",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U9 #1: Treasure Map Navigator",
     artBase: "../_art/unit9/",
     home: "../index.html",
@@ -82,6 +83,11 @@ window.GN_STORY = {
                   es: "Dos números (x, y) que nombran un punto. x primero (izquierda/derecha), y después (arriba/abajo).",
                 },
               ],
+            },
+            {
+              who: "marlow",
+              en: "Aye, Navigator! I'll squawk out every clue I spot. The grid lines cross at the center — sailors call that the origin, the spot (0, 0).",
+              es: "¡Sí, Navegante! Voy a leer cada pista. Las líneas se cruzan en el centro: ese es el origen, el punto (0, 0).",
             },
             {
               who: "log",
@@ -185,6 +191,68 @@ window.GN_STORY = {
             es: "¡Camino marcado! El mapa lleva hacia los acantilados sobre el mar.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 1,
+          interaction: "mc",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "log",
+            en: "On the map grid, what point do the two lines cross at — the center the clues count from?",
+            es: "En la cuadrícula, ¿en qué punto se cruzan las dos líneas — el centro desde donde cuentan las pistas?",
+          },
+          choices: [
+            {
+              en: "The origin, (0, 0).",
+              es: "El origen, (0, 0).",
+              correct: true,
+            },
+            {
+              en: "The treasure clue, (−4, 3).",
+              es: "La pista del tesoro, (−4, 3).",
+              correct: false,
+            },
+            {
+              en: "The cliff edge, (3, −2).",
+              es: "El borde del acantilado, (3, −2).",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1",
+          ask: {
+            who: "log",
+            en: "What is the Navigator mainly trying to do in this chapter?",
+            es: "¿Qué intenta hacer el Navegante principalmente en este capítulo?",
+          },
+          choices: [
+            {
+              en: "Read points like (x, y) on the grid to follow the map.",
+              es: "Leer puntos como (x, y) en la cuadrícula para seguir el mapa.",
+              correct: true,
+            },
+            {
+              en: "Dive 20 meters below the sea to find the chest.",
+              es: "Bucear 20 metros bajo el mar para hallar el cofre.",
+              correct: false,
+            },
+            {
+              en: "Teach MARLOW how to draw a treasure map.",
+              es: "Enseñar a MARLOW a dibujar un mapa del tesoro.",
+              correct: false,
+            },
+          ],
+        },
       ],
     },
 
@@ -206,6 +274,11 @@ window.GN_STORY = {
               who: "navigator",
               en: "The path leads to a cliff over the sea. Some clues are ABOVE the water and some are BELOW it.",
               es: "El camino lleva a un acantilado. Algunas pistas están ARRIBA del agua y otras ABAJO.",
+            },
+            {
+              who: "navigator",
+              en: "I can see waves crashing far below. One slip off this cliff and I'd fall straight to the rocks — so I have to read every depth exactly right.",
+              es: "Veo las olas chocar muy abajo. Un resbalón y caería a las rocas, así que debo leer cada profundidad con cuidado.",
             },
             {
               who: "log",
@@ -233,8 +306,8 @@ window.GN_STORY = {
           id: "2a",
           ask: {
             who: "marlow",
-            en: "The clues are at these heights: <b>6 m</b> up, <b>−8 m</b> (below sea level), <b>0 m</b> (sea level), <b>12 m</b> up, and <b>−15 m</b> deep. Put them in order from <b>lowest to highest</b> — stop me if I'm wrong!",
-            es: "Ordena de menor a mayor: 6, −8, 0, 12, −15.",
+            en: "The clues are at these heights: <b>6 m</b> up, <b>−8 m</b> (below sea level), <b>0 m</b> (sea level), <b>12 m</b> up, and <b>−15 m</b> deep. Which list puts them in order from <b>lowest to highest</b>?",
+            es: "¿Cuál lista ordena estas alturas de menor a mayor: 6, −8, 0, 12, −15?",
           },
           hint: {
             en: "On a number line, numbers get <b>bigger</b> to the right. Negative numbers are <b>below zero</b>. The most negative (deepest) is the smallest.",
@@ -327,6 +400,103 @@ window.GN_STORY = {
             es: "¡Veinte metros abajo! El tesoro está cerca. La X marca el lugar.",
           },
         },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2.2b",
+          ask: {
+            who: "log",
+            en: "In the story, what does <b>absolute value</b> mean?",
+            es: "En la historia, ¿qué significa <b>valor absoluto</b>?",
+          },
+          hint: {
+            en: "Think about why the diver at −20 m is 20 meters from the surface, not −20.",
+            es: "Piensa por qué el buzo a −20 m está a 20 metros, no a −20.",
+          },
+          choices: [
+            {
+              en: "How far a number is from 0, so it is never negative.",
+              es: "Qué tan lejos está un número de 0, así que nunca es negativo.",
+              correct: true,
+            },
+            {
+              en: "The deepest a diver can swim below the sea.",
+              es: "Lo más profundo que un buzo puede nadar bajo el mar.",
+              correct: false,
+            },
+            {
+              en: "The bigger of two numbers on the number line.",
+              es: "El mayor de dos números en la recta numérica.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 2,
+          interaction: "evidence",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "Tap the line that shows MARLOW <b>ordered the negatives the wrong way</b>.",
+            es: "Toca la línea que muestra que MARLOW <b>ordenó mal los negativos</b>.",
+          },
+          choices: [
+            {
+              en: "“−8 is below −15, because 8 is smaller than 15.”",
+              es: "“−8 está debajo de −15, porque 8 es menor que 15.”",
+              correct: true,
+            },
+            {
+              en: "“Sea level is 0. Up is positive (+). Below the water is negative (−).”",
+              es: "“El nivel del mar es 0. Arriba es +, abajo es −.”",
+              correct: false,
+            },
+            {
+              en: "“Now I dive deep. I need to know how FAR below the surface I am.”",
+              es: "“Ahora me sumerjo. Necesito saber qué tan LEJOS estoy.”",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2",
+          ask: {
+            who: "log",
+            en: "Put the events of this chapter in order.",
+            es: "Ordena los sucesos de este capítulo.",
+          },
+          items: [
+            {
+              en: "MARLOW guesses the order 0, −8, −15, 6, 12.",
+              es: "MARLOW adivina el orden 0, −8, −15, 6, 12.",
+              order: 1,
+            },
+            {
+              en: "The Navigator orders the heights correctly: −15, −8, 0, 6, 12.",
+              es: "El Navegante ordena bien las alturas: −15, −8, 0, 6, 12.",
+              order: 2,
+            },
+            {
+              en: "The Navigator dives to −20 m and finds |−20| = 20 meters.",
+              es: "El Navegante baja a −20 m y halla |−20| = 20 metros.",
+              order: 3,
+            },
+          ],
+        },
       ],
     },
 
@@ -356,6 +526,12 @@ window.GN_STORY = {
               es: "Plano de coordenadas Y valor absoluto. ¡Estoy lista! ¡La X marca el lugar!",
             },
             {
+              who: "log",
+              caption: true,
+              en: "Be careful — the tide is rising. You get one clean dig before the sea covers the X for good.",
+              es: "Ten cuidado: la marea sube. Tienes una sola oportunidad de cavar antes de que el mar cubra la X.",
+            },
+            {
               who: "marlow",
               misconception: true,
               en: "I'll start: −5 is way below the surface, so the distance must be −5 too, right?",
@@ -368,8 +544,8 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "navigator",
-            en: "Careful, MARLOW. The treasure is at point <b>(−2, −5)</b>, buried <b>5 m below</b> sea level. Pick the line that is <b>fully correct</b>: the quadrant of the point AND the distance of −5 from the surface.",
-            es: "Elige la línea correcta: el cuadrante de (−2, −5) y la distancia de −5 desde 0.",
+            en: "Careful, MARLOW. The treasure is at point <b>(−2, −5)</b>, buried <b>5 m below</b> sea level. In which quadrant is the point, and what is the distance of −5 from the surface?",
+            es: "¿En qué cuadrante está (−2, −5) y cuál es la distancia de −5 desde la superficie (0)?",
           },
           hint: {
             en: "x = −2 (left) and y = −5 (down) → bottom-left = <b>Quadrant III</b>. And |−5| = 5.",
@@ -409,6 +585,72 @@ window.GN_STORY = {
             en: "The chest! We did it, MARLOW — even with your wild guesses. The gold is ours!",
             es: "¡El cofre! Lo logramos, MARLOW. ¡El oro es nuestro!",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "act2.beat1",
+          ask: {
+            who: "log",
+            en: "MARLOW keeps ordering negatives the wrong way, like saying −8 is below −15. Why does MARLOW keep making this mistake?",
+            es: "MARLOW sigue ordenando mal los negativos, como decir que −8 está debajo de −15. ¿Por qué comete MARLOW este error?",
+          },
+          hint: {
+            en: "Look back: MARLOW only looks at the digits (8 and 15) and forgets the negative sign means below zero.",
+            es: "Mira atrás: MARLOW solo mira los dígitos (8 y 15) y olvida que el signo negativo significa bajo cero.",
+          },
+          choices: [
+            {
+              en: "MARLOW judges a negative by the size of its digits and forgets that more negative means deeper and smaller.",
+              es: "MARLOW juzga un negativo por el tamaño de sus dígitos y olvida que más negativo es más profundo y menor.",
+              correct: true,
+            },
+            {
+              en: "MARLOW cannot see the numbers on the map at all.",
+              es: "MARLOW no puede ver los números en el mapa.",
+              correct: false,
+            },
+            {
+              en: "MARLOW wants the Navigator to lose the treasure.",
+              es: "MARLOW quiere que el Navegante pierda el tesoro.",
+              correct: false,
+            },
+          ],
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "log",
+            en: "The X is found and the chest is dug up. What will the Navigator most likely do next?",
+            es: "Se encontró la X y se desenterró el cofre. ¿Qué hará probablemente el Navegante después?",
+          },
+          choices: [
+            {
+              en: "Open the chest and bring the treasure back up the cliff to safety.",
+              es: "Abrir el cofre y subir el tesoro por el acantilado a un lugar seguro.",
+              correct: true,
+            },
+            {
+              en: "Bury the chest again at point (−4, 3).",
+              es: "Volver a enterrar el cofre en el punto (−4, 3).",
+              correct: false,
+            },
+            {
+              en: "Stop using the coordinate grid for good.",
+              es: "Dejar de usar la cuadrícula de coordenadas para siempre.",
+              correct: false,
+            },
+          ],
         },
       ],
     },

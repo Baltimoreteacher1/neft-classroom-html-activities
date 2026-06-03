@@ -11,6 +11,7 @@ window.GN_STORY = {
     level: "Enrichment",
     title: "Shopping Mall Mogul &#128717;&#65039;",
     standard: "6.RP.2",
+    readingStandard: "RL.6.1",
     assessment: "Graphic Novel U4 #2: Shopping Mall Mogul",
     artBase: "../_art/unit4/",
     home: "../index.html",
@@ -66,6 +67,11 @@ window.GN_STORY = {
               en: "Welcome to the Nexus Galleria, boss. Suppliers are bidding for shelf space &mdash; but only the sharpest VALUE wins shoppers.",
             },
             {
+              who: "helper",
+              caption: true,
+              en: "Remember: a jumbo size only wins if its price per unit is lower. Bulk and value are not the same thing &mdash; the unit rate is what decides every shelf.",
+            },
+            {
               who: "mogul",
               en: "Then I reduce every offer to a unit rate &mdash; price per millilitre, per gram, per item. Whoever's cheaper per unit gets the shelf.",
               vocab: [
@@ -87,7 +93,7 @@ window.GN_STORY = {
           id: "1a",
           ask: {
             who: "helper",
-            en: "First bid is on the energy drinks. Different sizes, different prices. Pick the real best value. Two suppliers pitch the same energy drink. Vendor A: a <b>750 mL</b> bottle for <b>$4.50</b>. Vendor B: a <b>1.25 L</b> (1250 mL) bottle for <b>$6.25</b>. Stock the better value &mdash; compare the price per millilitre.",
+            en: "First bid is on the energy drinks. Two suppliers pitch the same energy drink. Vendor A: a <b>750 mL</b> bottle for <b>$4.50</b>. Vendor B: a <b>1.25 L</b> (1250 mL) bottle for <b>$6.25</b>. Comparing the price per millilitre, which vendor is the better value?",
           },
           choices: [
             {
@@ -107,6 +113,37 @@ window.GN_STORY = {
             who: "mogul",
             en: "Shelf secured. Next, the roastery quotes a bulk price &mdash; I'll express it per 100 grams so shoppers can compare instantly.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c1",
+          skill: "vocab_in_context",
+          standard: "RI.6.4",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1a",
+          ask: {
+            who: "helper",
+            en: "The Mogul vows to <b>reduce</b> every offer to a unit rate. In this context, <b>reduce</b> most nearly means to &mdash;",
+          },
+          choices: [
+            {
+              en: "rewrite each offer as a single price per one unit so deals can be compared.",
+              correct: true,
+            },
+            {
+              en: "lower the price the supplier is charging for the product.",
+              correct: false,
+            },
+            {
+              en: "throw away the larger of the two packages on the shelf.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Exactly. Here <i>reduce</i> means to express each deal as one comparable rate &mdash; the price for a single unit.",
+          badEn:
+            "❌ In this context, <i>reduce</i> means to boil each offer down to a price per one unit, not to lower a price or discard a package.",
         },
         {
           type: "challenge",
@@ -144,6 +181,37 @@ window.GN_STORY = {
           },
         },
         {
+          type: "comprehension",
+          id: "c2",
+          skill: "key_details",
+          standard: "RI.6.1",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act1.1b",
+          ask: {
+            who: "helper",
+            en: "According to the roastery's quote, how much premium coffee do you get for $9.60?",
+          },
+          choices: [
+            {
+              en: "240 grams of coffee.",
+              correct: true,
+            },
+            {
+              en: "100 grams of coffee.",
+              correct: false,
+            },
+            {
+              en: "1250 millilitres of coffee.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Correct &mdash; the roastery offers 240 g for $9.60, which is what you scaled to a per-100-g price.",
+          badEn:
+            "❌ Reread the quote: the roastery offers 240 g for $9.60. The 100 g was the unit you compared in, and 1250 mL was the earlier energy-drink bottle.",
+        },
+        {
           type: "challenge",
           id: "B1",
           optional: true,
@@ -171,6 +239,37 @@ window.GN_STORY = {
           badEn:
             "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.)",
         },
+        {
+          type: "comprehension",
+          id: "c3",
+          skill: "cite_evidence",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "evidence",
+          passageRef: "act1.beat1",
+          ask: {
+            who: "helper",
+            en: "Claim: <b>PENNY chooses a deal by its size instead of its real value.</b> Tap the line that <b>best proves</b> this claim.",
+          },
+          choices: [
+            {
+              en: "&ldquo;Bigger bottle, better deal&hellip; B's the cheap one because it's HUGE!&rdquo;",
+              correct: true,
+            },
+            {
+              en: "&ldquo;Whoever's cheaper per unit gets the shelf.&rdquo;",
+              correct: false,
+            },
+            {
+              en: "&ldquo;I'll express it per 100 grams so shoppers can compare instantly.&rdquo;",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Strong evidence &mdash; PENNY calls the bottle &ldquo;the cheap one because it's HUGE,&rdquo; judging by size, not price per unit.",
+          badEn:
+            "❌ Those lines describe the Mogul's careful unit-rate method. Find PENNY's line that picks a deal just because the package is bigger.",
+        },
       ],
     },
 
@@ -192,6 +291,11 @@ window.GN_STORY = {
               who: "helper",
               caption: true,
               en: "A rival across the atrium just slashed prices. It's a markdown war, and shoppers are watching the percent signs.",
+            },
+            {
+              who: "helper",
+              caption: true,
+              en: "Shoppers compare the percent on each sign, but the real savings is a percent OF the price. A bigger sticker price means a bigger dollar discount for the same percent.",
             },
             {
               who: "mogul",
@@ -239,6 +343,37 @@ window.GN_STORY = {
             who: "mogul",
             en: "My dashboard is throwing huge growth numbers and microscopic fees. Percents over 100% and under 1% &mdash; I have to read them precisely.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c4",
+          skill: "main_idea",
+          standard: "RI.6.2",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "act2",
+          ask: {
+            who: "helper",
+            en: "What is the Mogul mainly trying to do in this chapter?",
+          },
+          choices: [
+            {
+              en: "Use percents accurately to set winning sale prices in the markdown war.",
+              correct: true,
+            },
+            {
+              en: "Find the price per millilitre of a bottled energy drink.",
+              correct: false,
+            },
+            {
+              en: "Grab the jumbo package because it looks like the bigger value.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Right &mdash; the whole chapter is about converting percents correctly to mark prices down and beat the rival.",
+          badEn:
+            "❌ Per-millilitre pricing was Act 1, and grabbing the jumbo size is PENNY's mistake. This chapter is about pricing with percents.",
         },
         {
           type: "challenge",
@@ -306,6 +441,37 @@ window.GN_STORY = {
           badEn:
             "&#10060; The $60 equals 75% of the original. Divide: 60 &divide; 0.75. (Optional &mdash; you can still advance.)",
         },
+        {
+          type: "comprehension",
+          id: "c5",
+          skill: "sequence",
+          standard: "RI.6.3",
+          dok: 2,
+          interaction: "sequence",
+          passageRef: "act2.2a",
+          ask: {
+            who: "helper",
+            en: "Order the steps the Mogul used to find the $52 sale price on the $80 sneakers at 35% off.",
+          },
+          items: [
+            {
+              en: "Convert 35% off to the decimal you keep: 1 &minus; 0.35 = 0.65.",
+              order: 1,
+            },
+            {
+              en: "Multiply the original price: $80 &times; 0.65.",
+              order: 2,
+            },
+            {
+              en: "Read the result as the sale price shoppers pay: $52.00.",
+              order: 3,
+            },
+          ],
+          goodEn:
+            "✅ Convert the percent, multiply by the original, then read the sale price &mdash; that's the markdown procedure.",
+          badEn:
+            "❌ Not quite. First turn 35% off into 0.65, then multiply $80 by it, and only then read off the $52 sale price.",
+        },
       ],
     },
 
@@ -329,6 +495,11 @@ window.GN_STORY = {
               en: "Grand opening, boss. The headline deal goes on every billboard &mdash; it has to fuse a unit rate with a percent markdown, flawlessly.",
             },
             {
+              who: "helper",
+              caption: true,
+              en: "Order matters here, boss. Find the price for ONE first, then apply the percent off &mdash; do it backward and the headline number will be wrong.",
+            },
+            {
               who: "mogul",
               en: "Per-unit price first, then the discount. One clean number for one bulb. Let's give this city the deal of the year.",
             },
@@ -344,7 +515,7 @@ window.GN_STORY = {
           id: "F",
           ask: {
             who: "mogul",
-            en: "The grand-opening special: a <b>6-pack</b> of smart bulbs at <b>$48</b>, then <b>15% off</b>. Find the final price for <b>one bulb</b>.",
+            en: "The grand-opening special: a <b>6-pack</b> of smart bulbs at <b>$48</b>, then <b>15% off</b>. What is the final price for <b>one bulb</b>?",
           },
           choices: [
             {
@@ -400,6 +571,68 @@ window.GN_STORY = {
             who: "mogul",
             en: "Even the rival's deal teaches me something. The galleria opens stronger than ever.",
           },
+        },
+        {
+          type: "comprehension",
+          id: "c6",
+          skill: "inference",
+          standard: "RL.6.1",
+          dok: 3,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "helper",
+            en: "Throughout the galleria, PENNY reaches for the jumbo size and rounds the percent. What can you <b>infer</b> about why PENNY's deals keep coming out wrong?",
+          },
+          choices: [
+            {
+              en: "PENNY trusts quick instincts about size and rounding instead of doing the per-unit and percent math, so the real best deal slips by.",
+              correct: true,
+            },
+            {
+              en: "PENNY is secretly working for the rival mall and wants the Mogul to lose.",
+              correct: false,
+            },
+            {
+              en: "Every price tag in the galleria is printed incorrectly.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Good inference &mdash; PENNY leans on gut reactions (bigger = cheaper, round the percent) rather than the unit-rate and percent steps, so the numbers miss.",
+          badEn:
+            "❌ Nothing shows PENNY is disloyal or that the tags are wrong. The pattern is that PENNY guesses by size and rounding instead of computing.",
+        },
+        {
+          type: "comprehension",
+          id: "c7",
+          skill: "prediction",
+          standard: "RL.6.3",
+          dok: 2,
+          interaction: "mc",
+          passageRef: "final",
+          ask: {
+            who: "helper",
+            en: "The Nexus Galleria is open and investors are calling. What will the Mogul most likely need to do next?",
+          },
+          choices: [
+            {
+              en: "Keep using unit rates and percent markdowns to negotiate new deals and grow the empire.",
+              correct: true,
+            },
+            {
+              en: "Shut down the shelves and shops that just opened in Act 1.",
+              correct: false,
+            },
+            {
+              en: "Stop comparing prices and let suppliers charge whatever they want.",
+              correct: false,
+            },
+          ],
+          goodEn:
+            "✅ Likely &mdash; the story ends with the empire &ldquo;just getting started,&rdquo; so the Mogul keeps using these pricing skills to grow.",
+          badEn:
+            "❌ Closing shops or ignoring prices would undo everything the Mogul built. The ending points to more deal-making ahead.",
         },
       ],
     },
