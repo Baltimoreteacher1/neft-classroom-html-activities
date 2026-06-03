@@ -55,6 +55,108 @@
       });
     },
   };
+  INTERACTIONS["sequence"] = {
+    render: function (step, groupEl, onSolve) {
+      groupEl.classList.add("sequence");
+      var list = el("ol", "seq-list");
+      // present in a shuffled-but-deterministic order so the answer isn't given away
+      var order = step.items.map(function (_, i) {
+        return i;
+      });
+      order.sort(function (a, b) {
+        return (
+          ((a * 7 + 3) % step.items.length) - ((b * 7 + 3) % step.items.length)
+        );
+      });
+      order.forEach(function (idx) {
+        var li = el("li", "seq-card");
+        li.draggable = true;
+        li.dataset.idx = idx;
+        li.tabIndex = 0;
+        li.innerHTML =
+          '<span class="seq-h" aria-hidden="true">&#8942;</span>' +
+          '<span class="seq-t">' +
+          step.items[idx].en +
+          (step.items[idx].es
+            ? '<span class="es">' + step.items[idx].es + "</span>"
+            : "") +
+          "</span>" +
+          '<span class="seq-ctl">' +
+          '<button class="seq-up" type="button" aria-label="Move up">&#9650;</button>' +
+          '<button class="seq-down" type="button" aria-label="Move down">&#9660;</button>' +
+          "</span>";
+        list.appendChild(li);
+      });
+      var btn = el("button", "next seq-check", "Check order");
+      btn.type = "button";
+      groupEl.appendChild(list);
+      groupEl.appendChild(btn);
+
+      function moveUp(li) {
+        if (li.previousElementSibling)
+          list.insertBefore(li, li.previousElementSibling);
+      }
+      function moveDown(li) {
+        if (li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
+      }
+      list.addEventListener("click", function (e) {
+        var up = e.target.closest(".seq-up"),
+          dn = e.target.closest(".seq-down");
+        if (up) moveUp(up.closest("li"));
+        if (dn) moveDown(dn.closest("li"));
+      });
+      list.addEventListener("keydown", function (e) {
+        var li = e.target.closest && e.target.closest("li");
+        if (!li) return;
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          moveUp(li);
+          li.focus();
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          moveDown(li);
+          li.focus();
+        }
+      });
+      var dragged = null;
+      list.addEventListener("dragstart", function (e) {
+        dragged = e.target.closest("li");
+      });
+      list.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        var li = e.target.closest("li");
+        if (li && li !== dragged)
+          list.insertBefore(dragged, li.nextSibling || li);
+      });
+      var solved = false;
+      btn.addEventListener("click", function () {
+        if (solved) return;
+        var idxs = Array.prototype.map.call(list.children, function (li) {
+          return +li.dataset.idx;
+        });
+        var ok = true;
+        for (var i = 1; i < idxs.length; i++)
+          if (step.items[idxs[i]].order < step.items[idxs[i - 1]].order)
+            ok = false;
+        if (ok) {
+          solved = true;
+          var mark = el("button", "choice correct");
+          mark.style.display = "none";
+          mark.dataset.correct = "true";
+          groupEl.appendChild(mark);
+          btn.disabled = true;
+          list.classList.add("solved");
+          if (onSolve) onSolve();
+        } else {
+          list.classList.add("nudge");
+          setTimeout(function () {
+            list.classList.remove("nudge");
+          }, 500);
+        }
+      });
+    },
+  };
   var FEATURES = []; // [{ onBeat(beat,ctx), onSolve(step,ctx), onComplete(ctx) }]
   function fire(hook, a, b) {
     FEATURES.forEach(function (f) {
