@@ -18,14 +18,14 @@ This file maps classroom activity source repository names into the organized sta
 ## Unit 5 Geometry and Measurement
 | Source repository name | Target folder |
 | --- | --- |
-| `Unit5WorldarchitectureProjet` | `/unit-5/unit5worldarchitectureprojet/` |
+| `Unit5WorldarchitectureProjet` | `/unit-5/world-architect-project/` |
 | `Unit5PracticeHTML` | `/unit-5/unit5practicehtml/` |
 | `Unit5TestReview` | `/unit-5/unit5testreview/` |
 | `5.8InteractiveHtml` | `/unit-5/5-8interactivehtml/` |
 | `5.6Session1` | `/unit-5/5-6session1/` |
 | `NoamUnit5QuizBaseball` | `/unit-5/noamunit5quizbaseball/` |
 | `5.5SquareTriangle` | `/unit-5/5-5squaretriangle/` |
-| `5.5gemini` | `/unit-5/5-5gemini/` |
+| `5.5gemini` | `/unit-5/volume-scaffold-module/` |
 | `RectangularPrismStoryESL` | `/unit-5/rectangularprismstoryesl/` |
 | `RectangularPrismStory` | `/unit-5/rectangularprismstory/` |
 | `VolumeofRectangularPrism` | `/unit-5/volumeofrectangularprism/` |
