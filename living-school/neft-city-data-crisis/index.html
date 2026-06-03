@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Neft City: Data Crisis — a Living School math simulation where 6th-grade students analyze data, build a graph, and make a city decision using mean, median, mode, and range."
+    />
+    <title>Neft City: Data Crisis · Living School</title>
+    <link rel="icon" href="/assets/favicon.svg" />
+    <meta property="og:title" content="Neft City: Data Crisis" />
+    <meta
+      property="og:description"
+      content="Enter a living city simulation. Solve the data crisis. Make a decision the city can trust."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Neft Teacher · Living School" />
+    <!-- Repo-shared base styles (kept per repo convention); app styles layer on top. -->
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <!-- ===================== APP HEADER + PROGRESS MAP ===================== -->
+    <header class="app-header" role="banner">
+      <div class="brand">
+        <span class="brand-badge" aria-hidden="true">◆</span>
+        <div class="brand-text">
+          <span class="brand-title">Neft City</span>
+          <span class="brand-sub">Data Crisis · Living School</span>
+        </div>
+      </div>
+
+      <nav class="progress-map" aria-label="Mission progress">
+        <ol id="progressMap"></ol>
+      </nav>
+
+      <div class="header-tools">
+        <button id="vocabOpenBtn" class="btn-ghost" type="button" aria-haspopup="dialog">
+          📘 Vocabulary
+        </button>
+        <button id="teacherBtn" class="btn-ghost" type="button" aria-haspopup="dialog" title="Teacher View (Shift+T)">
+          🧑‍🏫 Teacher
+        </button>
+      </div>
+    </header>
+
+    <main id="main" class="stage" tabindex="-1">
+      <!-- ===================== 1. ENTER THE CITY ===================== -->
+      <section class="screen is-active" id="screen-enter" data-screen="enter" aria-label="Enter the City">
+        <div class="hero card">
+          <div class="hero-art" aria-hidden="true">
+            <div class="skyline">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="hero-body">
+            <p class="eyebrow">Living School · Chapter 1</p>
+            <h1 class="hero-title">Neft City: Data Crisis</h1>
+            <p class="hero-intro">
+              Neft City is growing fast. The mayor needs your team to use
+              <strong>data</strong> to make a smart decision. Are you ready to help?
+            </p>
+
+            <div class="field">
+              <label for="studentName">First, tell us your <strong>first name</strong></label>
+              <input
+                id="studentName"
+                type="text"
+                autocomplete="off"
+                maxlength="24"
+                placeholder="Type your first name"
+                aria-describedby="nameHelp"
+              />
+              <p id="nameHelp" class="field-help">We use this on your final report.</p>
+            </div>
+
+            <fieldset class="field roles">
+              <legend>Choose your <strong>role</strong> on the city team</legend>
+              <div class="role-grid" id="roleGrid" role="group" aria-label="Choose your role">
+                <button class="role-card" type="button" aria-pressed="false" data-role="Data Analyst">
+                  <span class="role-icon" aria-hidden="true">📊</span>
+                  <span class="role-name">Data Analyst</span>
+                  <span class="role-desc">You love numbers and patterns.</span>
+                </button>
+                <button class="role-card" type="button" aria-pressed="false" data-role="City Planner">
+                  <span class="role-icon" aria-hidden="true">🏙️</span>
+                  <span class="role-name">City Planner</span>
+                  <span class="role-desc">You design how the city works.</span>
+                </button>
+                <button class="role-card" type="button" aria-pressed="false" data-role="News Reporter">
+                  <span class="role-icon" aria-hidden="true">📰</span>
+                  <span class="role-name">News Reporter</span>
+                  <span class="role-desc">You tell the city's story.</span>
+                </button>
+                <button class="role-card" type="button" aria-pressed="false" data-role="Budget Advisor">
+                  <span class="role-icon" aria-hidden="true">💰</span>
+                  <span class="role-name">Budget Advisor</span>
+                  <span class="role-desc">You watch the city's money.</span>
+                </button>
+                <button class="role-card" type="button" aria-pressed="false" data-role="Community Advocate">
+                  <span class="role-icon" aria-hidden="true">🤝</span>
+                  <span class="role-name">Community Advocate</span>
+                  <span class="role-desc">You speak up for the people.</span>
+                </button>
+              </div>
+            </fieldset>
+
+            <button id="startBtn" class="btn-primary btn-lg" type="button" disabled>
+              Enter Neft City →
+            </button>
+            <p class="field-help" id="startHelp">Add your name and pick a role to begin.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 2. MISSION BRIEFING ===================== -->
+      <section class="screen" id="screen-briefing" data-screen="briefing" aria-label="Mission Briefing" hidden>
+        <div class="card">
+          <h2 class="screen-title">🏛️ Mission Briefing</h2>
+          <div class="mayor-row">
+            <div class="avatar mayor" aria-hidden="true">🧑🏽‍⚖️</div>
+            <div class="speech">
+              <p class="speaker">Mayor Reyes</p>
+              <p id="mayorBriefing">
+                Welcome to the team! Neft City's new sports arena is amazing — but the
+                concession stands have <strong>long wait times</strong>. We surveyed
+                <strong>20 visitors</strong> and timed how long each one waited in line.
+                Your job: study the data and tell us what the city should do.
+              </p>
+            </div>
+          </div>
+
+          <h3 class="block-title">🎯 Your Mission Goals</h3>
+          <ul class="goal-list">
+            <li><span class="goal-num">1</span> Sort the data from least to greatest.</li>
+            <li><span class="goal-num">2</span> Find the <em>mean, median, mode,</em> and <em>range</em>.</li>
+            <li><span class="goal-num">3</span> Build a histogram (bar graph) of the wait times.</li>
+            <li><span class="goal-num">4</span> Decide what the city should do.</li>
+            <li><span class="goal-num">5</span> Explain your decision using <em>evidence</em>.</li>
+          </ul>
+
+          <div class="vocab-hint">
+            <p>New word? Tap a blue word to see what it means:</p>
+            <div class="vocab-chips" id="briefingVocab"></div>
+          </div>
+
+          <div class="screen-actions">
+            <button class="btn-ghost" type="button" data-nav="enter">← Back</button>
+            <button class="btn-primary" type="button" data-nav="datalab">Go to the Data Lab →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 3. DATA LAB ===================== -->
+      <section class="screen" id="screen-datalab" data-screen="datalab" aria-label="Data Lab" hidden>
+        <div class="card">
+          <h2 class="screen-title">🔬 Data Lab</h2>
+          <p class="lead" id="datalabIntro">
+            Here are the <strong>20 wait times</strong> (in minutes). Click the numbers
+            in order from <strong>least to greatest</strong> to sort them.
+          </p>
+
+          <!-- SORT TASK -->
+          <div class="lab-block">
+            <h3 class="block-title">Step 1 · Sort the data</h3>
+            <p class="task-help">Click a number to place it in line. Click a placed number to send it back.</p>
+
+            <div class="sort-area">
+              <div>
+                <p class="mini-label">Numbers to sort</p>
+                <div id="sortPool" class="chip-pool" role="list" aria-label="Numbers to sort"></div>
+              </div>
+              <div>
+                <p class="mini-label">Sorted line (least → greatest)</p>
+                <div id="sortTray" class="chip-tray" role="list" aria-label="Sorted numbers"></div>
+              </div>
+            </div>
+
+            <div class="inline-actions">
+              <button id="checkSortBtn" class="btn-primary" type="button">Check Sort</button>
+              <button id="resetSortBtn" class="btn-ghost" type="button">Clear</button>
+            </div>
+            <p id="sortFeedback" class="feedback" role="status" aria-live="polite"></p>
+          </div>
+
+          <!-- CALCULATIONS (locked until sorted) -->
+          <div class="lab-block locked" id="calcBlock" aria-disabled="true">
+            <h3 class="block-title">Step 2 · Find the values <span class="lock-tag" id="calcLockTag">🔒 Locked</span></h3>
+            <p class="task-help">Use the formula cards to help you. After two tries you'll get a hint.</p>
+
+            <div class="formula-cards">
+              <div class="formula-card"><strong>Mean</strong><span>total ÷ number of values</span></div>
+              <div class="formula-card"><strong>Median</strong><span>middle after sorting</span></div>
+              <div class="formula-card"><strong>Mode</strong><span>number that appears most</span></div>
+              <div class="formula-card"><strong>Range</strong><span>greatest − least</span></div>
+            </div>
+
+            <div class="calc-grid" id="calcGrid">
+              <!-- calc rows injected by JS -->
+            </div>
+          </div>
+
+          <div class="screen-actions">
+            <button class="btn-ghost" type="button" data-nav="briefing">← Back</button>
+            <button class="btn-primary" id="toGraphBtn" type="button" data-nav="graph" disabled>
+              Build the Graph →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 4. BUILD THE VISUAL ===================== -->
+      <section class="screen" id="screen-graph" data-screen="graph" aria-label="Build the Visual" hidden>
+        <div class="card">
+          <h2 class="screen-title">📊 Build the Histogram</h2>
+          <p class="lead">
+            Count how many wait times fall in each interval. Use <strong>+</strong> and
+            <strong>−</strong> (or click a bar) to set each bar's height.
+          </p>
+
+          <div class="histogram" id="histogram" role="group" aria-label="Histogram bars"></div>
+
+          <div class="inline-actions">
+            <button id="checkGraphBtn" class="btn-primary" type="button">Check Graph</button>
+            <button id="resetGraphBtn" class="btn-ghost" type="button">Reset bars</button>
+          </div>
+          <p id="graphFeedback" class="feedback" role="status" aria-live="polite"></p>
+
+          <!-- INTERPRETATION (locked until graph correct) -->
+          <div class="lab-block locked" id="interpBlock" aria-disabled="true">
+            <h3 class="block-title">Interpret your graph <span class="lock-tag" id="interpLockTag">🔒 Locked</span></h3>
+            <div id="interpQuestions"></div>
+            <button id="checkInterpBtn" class="btn-primary" type="button">Check Answers</button>
+            <p id="interpFeedback" class="feedback" role="status" aria-live="polite"></p>
+          </div>
+
+          <div class="screen-actions">
+            <button class="btn-ghost" type="button" data-nav="datalab">← Back</button>
+            <button class="btn-primary" id="toDecisionBtn" type="button" data-nav="decision" disabled>
+              Go to the Decision Room →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 5. DECISION ROOM ===================== -->
+      <section class="screen" id="screen-decision" data-screen="decision" aria-label="Decision Room" hidden>
+        <div class="card">
+          <h2 class="screen-title">🗳️ Decision Room</h2>
+          <div class="mayor-row">
+            <div class="avatar council" aria-hidden="true">👥</div>
+            <div class="speech">
+              <p class="speaker">City Council</p>
+              <p>What should Neft City do about the long concession wait times? Choose one
+                recommendation, then explain it with <strong>evidence</strong> from your data.</p>
+            </div>
+          </div>
+
+          <div class="choice-list" id="decisionChoices" role="group" aria-label="Recommendation choices">
+            <button class="choice" type="button" aria-pressed="false" data-choice="A">
+              <span class="choice-key">A</span> Add one more concession stand.
+            </button>
+            <button class="choice" type="button" aria-pressed="false" data-choice="B">
+              <span class="choice-key">B</span> Do nothing because the waits are fine.
+            </button>
+            <button class="choice" type="button" aria-pressed="false" data-choice="C">
+              <span class="choice-key">C</span> Close the arena early.
+            </button>
+            <button class="choice" type="button" aria-pressed="false" data-choice="D">
+              <span class="choice-key">D</span> Only serve snacks during halftime.
+            </button>
+          </div>
+
+          <h3 class="block-title">Explain with evidence</h3>
+          <p class="task-help">Use at least <strong>two pieces of evidence</strong> from your data and graph. (At least 18 words.)</p>
+          <div class="starters" id="decisionStarters" aria-label="Sentence starters"></div>
+          <textarea id="decisionText" class="writebox" rows="5"
+            placeholder="Type your explanation here. Tap a sentence starter above to help you begin."
+            aria-describedby="decisionCount"></textarea>
+          <p class="wordcount" id="decisionCount">0 words</p>
+
+          <div class="screen-actions">
+            <button class="btn-ghost" type="button" data-nav="graph">← Back</button>
+            <button class="btn-primary" id="submitDecisionBtn" type="button">Submit Recommendation</button>
+          </div>
+          <p id="decisionFeedback" class="feedback" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- ===================== 6. CITY REACTION ===================== -->
+      <section class="screen" id="screen-reaction" data-screen="reaction" aria-label="City Reaction" hidden>
+        <div class="card">
+          <h2 class="screen-title">🌆 City Reaction</h2>
+          <div class="outcome-banner" id="outcomeBanner">
+            <div class="outcome-icon" id="outcomeIcon" aria-hidden="true">🏙️</div>
+            <p id="outcomeStory">Your decision is being reviewed…</p>
+          </div>
+
+          <h3 class="block-title">City Status</h3>
+          <div class="meters" id="meters"></div>
+
+          <div class="screen-actions">
+            <button class="btn-ghost" type="button" data-nav="decision">← Revise Decision</button>
+            <button class="btn-primary" data-nav="news" type="button">Write the News Report →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 7. NEWS REPORT ===================== -->
+      <section class="screen" id="screen-news" data-screen="news" aria-label="News Report" hidden>
+        <div class="card">
+          <h2 class="screen-title">📰 Neft City News</h2>
+          <p class="lead">
+            Write a short public report: <strong>3–5 sentences</strong> about what happened,
+            what the data showed, and what Neft City should do next. (At least 35 words.)
+          </p>
+
+          <div class="support-cols">
+            <div>
+              <p class="mini-label">Word bank — tap to add</p>
+              <div class="wordbank" id="newsWordbank"></div>
+            </div>
+            <div>
+              <p class="mini-label">Sentence frames — tap to add</p>
+              <div class="starters" id="newsStarters"></div>
+            </div>
+          </div>
+
+          <textarea id="newsText" class="writebox" rows="7"
+            placeholder="Breaking news from Neft City…" aria-describedby="newsCount"></textarea>
+          <p class="wordcount" id="newsCount">0 words</p>
+
+          <details class="checklist-box">
+            <summary>📋 Read my report checklist</summary>
+            <ul class="self-check">
+              <li><label><input type="checkbox" /> I explained the problem.</label></li>
+              <li><label><input type="checkbox" /> I used data evidence.</label></li>
+              <li><label><input type="checkbox" /> I made a recommendation.</label></li>
+              <li><label><input type="checkbox" /> I wrote in complete sentences.</label></li>
+            </ul>
+          </details>
+
+          <div class="screen-actions">
+            <button class="btn-ghost" type="button" data-nav="reaction">← Back</button>
+            <button class="btn-primary" id="submitNewsBtn" type="button">Publish & Get Passport →</button>
+          </div>
+          <p id="newsFeedback" class="feedback" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- ===================== 8. PASSPORT ===================== -->
+      <section class="screen" id="screen-passport" data-screen="passport" aria-label="Proof of Learning Passport" hidden>
+        <div class="card">
+          <h2 class="screen-title">🪪 Proof-of-Learning Passport</h2>
+
+          <div class="passport" id="passportCard">
+            <div class="passport-head">
+              <div>
+                <p class="passport-eyebrow">Neft City · Living School</p>
+                <p class="passport-name" id="ppName">—</p>
+                <p class="passport-role" id="ppRole">—</p>
+              </div>
+              <div class="passport-seal" id="ppSeal" aria-hidden="true">★</div>
+            </div>
+
+            <p class="passport-mission">Mission: <strong>Data Crisis at the Arena</strong> — <span id="ppStatus">Completed</span></p>
+
+            <p class="mini-label">Skills demonstrated</p>
+            <ul class="skill-list" id="ppSkills"></ul>
+
+            <p class="passport-outcome">City Outcome: <strong id="ppOutcome">—</strong></p>
+          </div>
+
+          <h3 class="block-title">Reflection</h3>
+          <label class="reflect-label" for="reflect1">One thing I understand better now is…</label>
+          <textarea id="reflect1" class="writebox" rows="2" placeholder="Type your reflection"></textarea>
+          <label class="reflect-label" for="reflect2">One thing I still want to practice is…</label>
+          <textarea id="reflect2" class="writebox" rows="2" placeholder="Type your reflection"></textarea>
+
+          <h3 class="block-title">Export your work</h3>
+          <div class="export-row">
+            <button id="printBtn" class="btn-primary" type="button">🖨️ Print / Save PDF</button>
+            <button id="downloadBtn" class="btn-secondary" type="button">⬇️ Download JSON</button>
+            <button id="resetBtn" class="btn-ghost" type="button">♻️ Reset Mission</button>
+          </div>
+
+          <div class="screen-actions">
+            <button class="btn-ghost" type="button" data-nav="news">← Back</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================== VOCAB MODAL ===================== -->
+    <div class="modal" id="vocabModal" role="dialog" aria-modal="true" aria-labelledby="vocabTitle" hidden>
+      <div class="modal-panel">
+        <div class="modal-head">
+          <h2 id="vocabTitle">📘 Vocabulary Helper</h2>
+          <button class="modal-close" id="vocabClose" type="button" aria-label="Close vocabulary">✕</button>
+        </div>
+        <div class="vocab-list" id="vocabList"></div>
+      </div>
+    </div>
+
+    <!-- ===================== TEACHER MODAL ===================== -->
+    <div class="modal" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="teacherTitle" hidden>
+      <div class="modal-panel">
+        <div class="modal-head">
+          <h2 id="teacherTitle">🧑‍🏫 Teacher View</h2>
+          <button class="modal-close" id="teacherClose" type="button" aria-label="Close teacher view">✕</button>
+        </div>
+        <div id="teacherBody" class="teacher-body"></div>
+      </div>
+    </div>
+
+    <!-- ===================== PRINT-ONLY REPORT ===================== -->
+    <div id="printReport" class="print-report" aria-hidden="true"></div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
